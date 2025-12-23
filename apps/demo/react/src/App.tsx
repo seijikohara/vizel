@@ -1,7 +1,14 @@
 import { useEditor, EditorContent } from "@tiptap/react";
+import { BubbleMenu as TiptapBubbleMenu } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useState, useEffect } from "react";
+import {
+  SlashCommand,
+  createImageExtension,
+  defaultSlashCommands,
+} from "@vizel/core";
+import { createSlashMenuRenderer } from "@vizel/react";
+import { useState } from "react";
 
 type JSONContent = Record<string, unknown>;
 
@@ -28,7 +35,7 @@ const initialContent: JSONContent = {
       content: [
         { type: "text", text: "Try typing " },
         { type: "text", marks: [{ type: "code" }], text: "/" },
-        { type: "text", text: " for commands (coming soon)." },
+        { type: "text", text: " for commands, or select text for formatting." },
       ],
     },
     {
@@ -44,7 +51,9 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [{ type: "text", text: "Rich text formatting" }],
+              content: [
+                { type: "text", text: "Bubble menu - select text to format" },
+              ],
             },
           ],
         },
@@ -53,7 +62,9 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [{ type: "text", text: "Headings (H1-H3)" }],
+              content: [
+                { type: "text", text: 'Slash commands - type "/" for options' },
+              ],
             },
           ],
         },
@@ -62,7 +73,12 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [{ type: "text", text: "Lists and blockquotes" }],
+              content: [
+                {
+                  type: "text",
+                  text: 'Markdown shortcuts - try "# " or "- " at start of line',
+                },
+              ],
             },
           ],
         },
@@ -75,8 +91,8 @@ const initialContent: JSONContent = {
           type: "paragraph",
           content: [
             { type: "text", text: "This is a blockquote. Use " },
-            { type: "text", marks: [{ type: "code" }], text: ">" },
-            { type: "text", text: " to create one." },
+            { type: "text", marks: [{ type: "code" }], text: "> " },
+            { type: "text", text: "at the start of a line to create one." },
           ],
         },
       ],
@@ -92,7 +108,14 @@ export function App() {
       StarterKit,
       Placeholder.configure({
         placeholder: "Type '/' for commands...",
+        emptyEditorClass: "vizel-editor-empty",
+        emptyNodeClass: "vizel-node-empty",
       }),
+      SlashCommand.configure({
+        items: defaultSlashCommands,
+        suggestion: createSlashMenuRenderer(),
+      }),
+      createImageExtension(),
     ],
     content: initialContent,
     autofocus: "end",
@@ -116,6 +139,42 @@ export function App() {
         <div className="editor-container">
           <div className="editor-root">
             <EditorContent editor={editor} className="editor-content" />
+            {editor && (
+              <TiptapBubbleMenu
+                editor={editor}
+                tippyOptions={{ duration: 100 }}
+                className="vizel-bubble-menu"
+              >
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleBold().run()}
+                  className={`vizel-bubble-menu-button ${editor.isActive("bold") ? "is-active" : ""}`}
+                >
+                  <strong>B</strong>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleItalic().run()}
+                  className={`vizel-bubble-menu-button ${editor.isActive("italic") ? "is-active" : ""}`}
+                >
+                  <em>I</em>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleStrike().run()}
+                  className={`vizel-bubble-menu-button ${editor.isActive("strike") ? "is-active" : ""}`}
+                >
+                  <s>S</s>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleCode().run()}
+                  className={`vizel-bubble-menu-button ${editor.isActive("code") ? "is-active" : ""}`}
+                >
+                  {"</>"}
+                </button>
+              </TiptapBubbleMenu>
+            )}
           </div>
         </div>
 

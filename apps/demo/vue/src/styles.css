@@ -184,3 +184,114 @@ body {
   color: #f9fafb;
   max-height: 400px;
 }
+
+/* Bubble Menu */
+.vizel-bubble-menu {
+  display: flex;
+  background: white;
+  border-radius: 8px;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.vizel-bubble-menu-button {
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+  transition: background-color 0.15s;
+}
+
+.vizel-bubble-menu-button:hover {
+  background-color: #f3f4f6;
+}
+
+.vizel-bubble-menu-button.is-active {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+.vizel-bubble-menu-button + .vizel-bubble-menu-button {
+  border-left: 1px solid #e5e7eb;
+}
+
+/* Slash Menu */
+.vizel-slash-menu {
+  background: white;
+  border-radius: 8px;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.vizel-slash-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s;
+}
+
+.vizel-slash-menu-item:hover,
+.vizel-slash-menu-item.is-selected {
+  background-color: #f3f4f6;
+}
+
+.vizel-slash-menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: #f3f4f6;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.vizel-slash-menu-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.vizel-slash-menu-title {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: #111827;
+}
+
+.vizel-slash-menu-description {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.vizel-slash-menu-empty {
+  padding: 1rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Image */
+.vizel-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}

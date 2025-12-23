@@ -1,0 +1,96 @@
+import type { Editor } from "@tiptap/core";
+
+export interface SlashCommandItem {
+  title: string;
+  description: string;
+  icon: string;
+  command: (props: { editor: Editor; range: Range }) => void;
+}
+
+interface Range {
+  from: number;
+  to: number;
+}
+
+export const defaultSlashCommands: SlashCommandItem[] = [
+  {
+    title: "Heading 1",
+    description: "Large section heading",
+    icon: "H1",
+    command: ({ editor, range }) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .setNode("heading", { level: 1 })
+        .run();
+    },
+  },
+  {
+    title: "Heading 2",
+    description: "Medium section heading",
+    icon: "H2",
+    command: ({ editor, range }) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .setNode("heading", { level: 2 })
+        .run();
+    },
+  },
+  {
+    title: "Heading 3",
+    description: "Small section heading",
+    icon: "H3",
+    command: ({ editor, range }) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .setNode("heading", { level: 3 })
+        .run();
+    },
+  },
+  {
+    title: "Bullet List",
+    description: "Create a simple bullet list",
+    icon: "•",
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleBulletList().run();
+    },
+  },
+  {
+    title: "Numbered List",
+    description: "Create a numbered list",
+    icon: "1.",
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleOrderedList().run();
+    },
+  },
+  {
+    title: "Quote",
+    description: "Capture a quote",
+    icon: '"',
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleBlockquote().run();
+    },
+  },
+  {
+    title: "Code Block",
+    description: "Insert a code snippet",
+    icon: "</>",
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
+    },
+  },
+];
+
+export function filterSlashCommands(
+  items: SlashCommandItem[],
+  query: string
+): SlashCommandItem[] {
+  return items.filter((item) =>
+    item.title.toLowerCase().includes(query.toLowerCase())
+  );
+}
