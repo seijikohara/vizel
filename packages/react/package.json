@@ -14,8 +14,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tiptap/react": "^2.11.5",
+    "@tiptap/suggestion": "^2.11.5",
     "@vizel/core": "workspace:*",
-    "@tiptap/react": "^2.11.5"
+    "tippy.js": "^6.3.7"
   },
   "peerDependencies": {
     "react": "^18 || ^19",

@@ -11,9 +11,16 @@ export {
   EditorProvider,
   useEditorContext,
   useEditorContextSafe,
+  BubbleMenu,
+  SlashMenu,
+  createSlashMenuRenderer,
   type EditorRootProps,
   type EditorContentProps,
   type EditorProviderProps,
+  type BubbleMenuProps,
+  type SlashMenuProps,
+  type SlashMenuRef,
+  type SlashMenuRendererOptions,
 } from "./components/index.ts";
 
 // Hooks
@@ -25,7 +32,18 @@ export type {
   VizelEditorState,
   Editor,
   JSONContent,
+  SlashCommandItem,
+  SlashCommandOptions,
 } from "@vizel/core";
 
 // Re-export core extensions
-export { createVizelExtensions, type VizelStarterKitOptions } from "@vizel/core";
+export {
+  createVizelExtensions,
+  SlashCommand,
+  defaultSlashCommands,
+  filterSlashCommands,
+  createImageExtension,
+  Image,
+  type VizelStarterKitOptions,
+  type VizelImageOptions,
+} from "@vizel/core";

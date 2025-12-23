@@ -20,6 +20,14 @@ export {
   StarterKit,
   Placeholder,
   type VizelStarterKitOptions,
+  SlashCommand,
+  defaultSlashCommands,
+  filterSlashCommands,
+  type SlashCommandItem,
+  type SlashCommandOptions,
+  createImageExtension,
+  Image,
+  type VizelImageOptions,
 } from "./extensions/index.ts";
 
 // Re-export Tiptap core for advanced usage
