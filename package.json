@@ -8,12 +8,13 @@
     "dev:react": "bun run --cwd apps/demo/react dev",
     "dev:vue": "bun run --cwd apps/demo/vue dev",
     "dev:svelte": "bun run --cwd apps/demo/svelte dev",
-    "dev:all": "bun run dev:react & bun run dev:vue & bun run dev:svelte",
+    "dev:all": "concurrently -n react,vue,svelte -c blue,green,magenta \"bun run dev:react\" \"bun run dev:vue\" \"bun run dev:svelte\"",
     "test": "bun run --filter '*' test",
     "typecheck": "bun run --filter '*' typecheck"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "concurrently": "^9",
     "typescript": "^5"
   }
 }
