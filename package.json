@@ -1,12 +1,15 @@
 {
   "name": "vizel",
-  "module": "index.ts",
-  "type": "module",
   "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "build": "bun run --filter '*' build",
+    "dev": "bun run --cwd apps/demo dev",
+    "test": "bun run --filter '*' test",
+    "typecheck": "bun run --filter '*' typecheck"
   },
-  "peerDependencies": {
+  "devDependencies": {
+    "@types/bun": "latest",
     "typescript": "^5"
   }
 }
