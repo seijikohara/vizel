@@ -1,14 +1,16 @@
 import { createApp, ref, onMounted, onBeforeUnmount, h } from "vue";
-import { Editor } from "@tiptap/core";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import BubbleMenu from "@tiptap/extension-bubble-menu";
 import {
+  Editor,
+  BubbleMenuExtension,
+  createVanillaSlashMenuRenderer,
+  StarterKit,
+  Placeholder,
   SlashCommand,
   defaultSlashCommands,
   createImageExtension,
-} from "@vizel/core";
-import tippy, { type Instance as TippyInstance } from "tippy.js";
+  createLinkExtension,
+  createTableExtensions,
+} from "@vizel/vue";
 
 const initialContent = {
   type: "doc",
@@ -16,7 +18,7 @@ const initialContent = {
     {
       type: "heading",
       attrs: { level: 1 },
-      content: [{ type: "text", text: "Welcome to Vizel Editor (Vue)" }],
+      content: [{ type: "text", text: "Welcome to Vizel Editor" }],
     },
     {
       type: "paragraph",
@@ -25,7 +27,13 @@ const initialContent = {
         { type: "text", marks: [{ type: "bold" }], text: "Notion-style" },
         { type: "text", text: " visual editor built with " },
         { type: "text", marks: [{ type: "code" }], text: "Tiptap" },
-        { type: "text", text: "." },
+        { type: "text", text: ". Try clicking this " },
+        {
+          type: "text",
+          marks: [{ type: "link", attrs: { href: "https://tiptap.dev" } }],
+          text: "link to Tiptap",
+        },
+        { type: "text", text: "!" },
       ],
     },
     {
@@ -71,11 +79,17 @@ const initialContent = {
           content: [
             {
               type: "paragraph",
+              content: [{ type: "text", text: "Links - clickable hyperlinks" }],
+            },
+          ],
+        },
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
               content: [
-                {
-                  type: "text",
-                  text: 'Markdown shortcuts - try "# " or "- " at start of line',
-                },
+                { type: "text", text: 'Tables - type "/table" to insert' },
               ],
             },
           ],
@@ -87,130 +101,46 @@ const initialContent = {
       content: [
         {
           type: "paragraph",
-          content: [{ type: "text", text: "This is a blockquote in Vue 3!" }],
+          content: [
+            { type: "text", text: "This is a blockquote. Use " },
+            { type: "text", marks: [{ type: "code" }], text: '"' },
+            { type: "text", text: " from slash commands to create one." },
+          ],
         },
       ],
     },
   ],
 };
 
-// Vanilla JS Slash Menu Renderer
-function createVanillaSlashMenuRenderer() {
-  let popup: TippyInstance[] | null = null;
-  let menuElement: HTMLElement | null = null;
-  let selectedIndex = 0;
-  let items: typeof defaultSlashCommands = [];
-  let commandFn: ((item: (typeof defaultSlashCommands)[0]) => void) | null =
-    null;
-
-  function renderMenu() {
-    if (!menuElement) return;
-    menuElement.innerHTML = items
-      .map(
-        (item, index) => `
-      <button class="vizel-slash-menu-item ${index === selectedIndex ? "is-selected" : ""}" data-index="${index}">
-        <span class="vizel-slash-menu-icon">${item.icon}</span>
-        <div class="vizel-slash-menu-text">
-          <span class="vizel-slash-menu-title">${item.title}</span>
-          <span class="vizel-slash-menu-description">${item.description}</span>
-        </div>
-      </button>
-    `
-      )
-      .join("");
-
-    menuElement.querySelectorAll(".vizel-slash-menu-item").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const index = parseInt(btn.getAttribute("data-index") || "0");
-        if (commandFn && items[index]) {
-          commandFn(items[index]);
-        }
-      });
-    });
-  }
-
-  return {
-    render: () => ({
-      onStart: (props: {
-        items: typeof defaultSlashCommands;
-        command: (item: (typeof defaultSlashCommands)[0]) => void;
-        clientRect?: (() => DOMRect) | null;
-      }) => {
-        items = props.items;
-        commandFn = props.command;
-        selectedIndex = 0;
-
-        menuElement = document.createElement("div");
-        menuElement.className = "vizel-slash-menu";
-        renderMenu();
-
-        if (!props.clientRect) return;
-
-        popup = tippy("body", {
-          getReferenceClientRect: props.clientRect,
-          appendTo: () => document.body,
-          content: menuElement,
-          showOnCreate: true,
-          interactive: true,
-          trigger: "manual",
-          placement: "bottom-start",
-        });
+// Vue Logo SVG
+const VueLogo = {
+  render() {
+    return h(
+      "svg",
+      {
+        viewBox: "0 0 128 128",
+        class: "framework-logo",
       },
-
-      onUpdate: (props: {
-        items: typeof defaultSlashCommands;
-        command: (item: (typeof defaultSlashCommands)[0]) => void;
-        clientRect?: (() => DOMRect) | null;
-      }) => {
-        items = props.items;
-        commandFn = props.command;
-        selectedIndex = 0;
-        renderMenu();
-
-        if (props.clientRect) {
-          popup?.[0]?.setProps({
-            getReferenceClientRect: props.clientRect,
-          });
-        }
-      },
-
-      onKeyDown: (props: { event: KeyboardEvent }) => {
-        if (props.event.key === "ArrowUp") {
-          selectedIndex = (selectedIndex + items.length - 1) % items.length;
-          renderMenu();
-          return true;
-        }
-        if (props.event.key === "ArrowDown") {
-          selectedIndex = (selectedIndex + 1) % items.length;
-          renderMenu();
-          return true;
-        }
-        if (props.event.key === "Enter") {
-          if (commandFn && items[selectedIndex]) {
-            commandFn(items[selectedIndex]);
-          }
-          return true;
-        }
-        if (props.event.key === "Escape") {
-          popup?.[0]?.hide();
-          return true;
-        }
-        return false;
-      },
-
-      onExit: () => {
-        popup?.[0]?.destroy();
-        menuElement = null;
-      },
-    }),
-  };
-}
+      [
+        h("path", {
+          fill: "currentColor",
+          d: "M78.8,10L64,35.4L49.2,10H0l64,110l64-110C128,10,78.8,10,78.8,10z",
+        }),
+        h("path", {
+          fill: "rgba(255,255,255,0.5)",
+          d: "M78.8,10L64,35.4L49.2,10H25.6L64,76l38.4-66H78.8z",
+        }),
+      ]
+    );
+  },
+};
 
 const App = {
   setup() {
     const output = ref<Record<string, unknown> | null>(null);
     const editorElement = ref<HTMLElement | null>(null);
     const bubbleMenuElement = ref<HTMLElement | null>(null);
+    const showOutput = ref(false);
     let editor: Editor | null = null;
 
     onMounted(() => {
@@ -218,13 +148,15 @@ const App = {
         editor = new Editor({
           element: editorElement.value,
           extensions: [
-            StarterKit,
+            StarterKit.configure({
+              link: false,
+            }),
             Placeholder.configure({
               placeholder: "Type '/' for commands...",
               emptyEditorClass: "vizel-editor-empty",
               emptyNodeClass: "vizel-node-empty",
             }),
-            BubbleMenu.configure({
+            BubbleMenuExtension.configure({
               element: bubbleMenuElement.value!,
             }),
             SlashCommand.configure({
@@ -232,6 +164,8 @@ const App = {
               suggestion: createVanillaSlashMenuRenderer(),
             }),
             createImageExtension(),
+            createLinkExtension(),
+            ...createTableExtensions(),
           ],
           content: initialContent,
           autofocus: "end",
@@ -255,24 +189,61 @@ const App = {
     const toggleItalic = () => editor?.chain().focus().toggleItalic().run();
     const toggleStrike = () => editor?.chain().focus().toggleStrike().run();
     const toggleCode = () => editor?.chain().focus().toggleCode().run();
+    const toggleOutput = () => (showOutput.value = !showOutput.value);
 
     return {
       output,
       editorElement,
       bubbleMenuElement,
+      showOutput,
       toggleBold,
       toggleItalic,
       toggleStrike,
       toggleCode,
+      toggleOutput,
     };
   },
   render() {
     return h("div", { class: "app" }, [
+      // Header
       h("header", { class: "header" }, [
-        h("h1", "Vizel Editor Demo"),
-        h("p", "Vue 3 • A Notion-style visual editor"),
+        h("div", { class: "header-content" }, [
+          h(VueLogo),
+          h("div", { class: "header-text" }, [
+            h("h1", "Vizel Editor"),
+            h("span", { class: "framework-badge" }, "Vue 3"),
+          ]),
+        ]),
+        h(
+          "p",
+          { class: "header-description" },
+          "A Notion-style visual editor for modern web applications"
+        ),
       ]),
+
+      // Main
       h("main", { class: "main" }, [
+        // Features Bar
+        h("div", { class: "features-bar" }, [
+          h("div", { class: "feature-tag" }, [
+            h("span", { class: "feature-icon" }, "/"),
+            h("span", "Slash Commands"),
+          ]),
+          h("div", { class: "feature-tag" }, [
+            h("span", { class: "feature-icon" }, "B"),
+            h("span", "Bubble Menu"),
+          ]),
+          h("div", { class: "feature-tag" }, [
+            h("span", { class: "feature-icon" }, "T"),
+            h("span", "Tables"),
+          ]),
+          h("div", { class: "feature-tag" }, [
+            h("span", { class: "feature-icon" }, "L"),
+            h("span", "Links"),
+          ]),
+        ]),
+
+        // Editor Container
         h("div", { class: "editor-container" }, [
           h("div", { class: "editor-root" }, [
             h("div", {
@@ -316,15 +287,45 @@ const App = {
                     class: "vizel-bubble-menu-button",
                     onClick: this.toggleCode,
                   },
-                  "</>",
+                  "</>"
                 ),
               ]
             ),
           ]),
         ]),
-        h("details", { class: "output" }, [
-          h("summary", "JSON Output"),
-          h("pre", JSON.stringify(this.output, null, 2)),
+
+        // Output Section
+        h("div", { class: "output-section" }, [
+          h(
+            "button",
+            {
+              class: "output-toggle",
+              onClick: this.toggleOutput,
+            },
+            [
+              h(
+                "span",
+                { class: "output-toggle-icon" },
+                this.showOutput ? "−" : "+"
+              ),
+              h("span", "JSON Output"),
+            ]
+          ),
+          this.showOutput
+            ? h(
+                "pre",
+                { class: "output-content" },
+                JSON.stringify(this.output, null, 2)
+              )
+            : null,
+        ]),
+      ]),
+
+      // Footer
+      h("footer", { class: "footer" }, [
+        h("p", [
+          "Built with ",
+          h("span", { class: "footer-highlight" }, "@vizel/vue"),
         ]),
       ]),
     ]);

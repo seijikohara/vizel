@@ -18,3 +18,18 @@ export {
   Image,
   type VizelImageOptions,
 } from "./image.ts";
+
+export {
+  createLinkExtension,
+  Link,
+  type VizelLinkOptions,
+} from "./link.ts";
+
+export {
+  createTableExtensions,
+  Table,
+  TableRow,
+  TableHeader,
+  TableCell,
+  type VizelTableOptions,
+} from "./table.ts";

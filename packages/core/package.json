@@ -14,12 +14,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tiptap/core": "^2.11.5",
-    "@tiptap/extension-image": "^2.11.5",
-    "@tiptap/extension-placeholder": "^2.11.5",
-    "@tiptap/pm": "^2.11.5",
-    "@tiptap/starter-kit": "^2.11.5",
-    "@tiptap/suggestion": "^2.11.5"
+    "@tiptap/core": "^3.14.0",
+    "@tiptap/extension-image": "^3.14.0",
+    "@tiptap/extension-link": "^3.14.0",
+    "@tiptap/extension-placeholder": "^3.14.0",
+    "@tiptap/extension-table": "^3.14.0",
+    "@tiptap/pm": "^3.14.0",
+    "@tiptap/starter-kit": "^3.14.0",
+    "@tiptap/suggestion": "^3.14.0"
   },
   "peerDependencies": {
     "typescript": "^5"

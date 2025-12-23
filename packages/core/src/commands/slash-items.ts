@@ -84,6 +84,30 @@ export const defaultSlashCommands: SlashCommandItem[] = [
       editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
     },
   },
+  {
+    title: "Table",
+    description: "Insert a table",
+    icon: "T",
+    command: ({ editor, range }) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+        .run();
+    },
+  },
+  {
+    title: "Image",
+    description: "Insert an image from URL",
+    icon: "I",
+    command: ({ editor, range }) => {
+      const url = window.prompt("Enter image URL:");
+      if (url) {
+        editor.chain().focus().deleteRange(range).setImage({ src: url }).run();
+      }
+    },
+  },
 ];
 
 export function filterSlashCommands(
