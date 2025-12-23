@@ -1,10 +1,14 @@
 {
   "name": "vizel",
   "private": true,
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": ["packages/*", "apps/demo/*"],
   "scripts": {
     "build": "bun run --filter '*' build",
-    "dev": "bun run --cwd apps/demo dev",
+    "dev": "bun run dev:react",
+    "dev:react": "bun run --cwd apps/demo/react dev",
+    "dev:vue": "bun run --cwd apps/demo/vue dev",
+    "dev:svelte": "bun run --cwd apps/demo/svelte dev",
+    "dev:all": "bun run dev:react & bun run dev:vue & bun run dev:svelte",
     "test": "bun run --filter '*' test",
     "typecheck": "bun run --filter '*' typecheck"
   },

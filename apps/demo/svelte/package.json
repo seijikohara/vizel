@@ -1,0 +1,13 @@
+{
+  "name": "@vizel/demo-svelte",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot run server.ts"
+  },
+  "dependencies": {
+    "@vizel/svelte": "workspace:*",
+    "svelte": "^5.14.1"
+  }
+}
