@@ -1,10 +1,9 @@
-import {
-  EditorRoot,
-  EditorContent,
-  useVizelEditor,
-  type JSONContent,
-} from "@vizel/react";
-import { useState } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+import { useState, useEffect } from "react";
+
+type JSONContent = Record<string, unknown>;
 
 const initialContent: JSONContent = {
   type: "doc",
@@ -88,12 +87,21 @@ const initialContent: JSONContent = {
 export function App() {
   const [output, setOutput] = useState<JSONContent | null>(null);
 
-  const editor = useVizelEditor({
-    initialContent,
-    placeholder: "Type '/' for commands...",
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Placeholder.configure({
+        placeholder: "Type '/' for commands...",
+      }),
+    ],
+    content: initialContent,
     autofocus: "end",
-    onUpdate: ({ editor }) => {
-      setOutput(editor.getJSON());
+    immediatelyRender: false,
+    onUpdate: ({ editor: e }) => {
+      setOutput(e.getJSON());
+    },
+    onCreate: ({ editor: e }) => {
+      setOutput(e.getJSON());
     },
   });
 
@@ -106,9 +114,9 @@ export function App() {
 
       <main className="main">
         <div className="editor-container">
-          <EditorRoot editor={editor} className="editor-root">
-            <EditorContent className="editor-content" />
-          </EditorRoot>
+          <div className="editor-root">
+            <EditorContent editor={editor} className="editor-content" />
+          </div>
         </div>
 
         <details className="output">

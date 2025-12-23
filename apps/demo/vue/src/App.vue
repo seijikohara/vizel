@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import {
-  EditorRoot,
-  EditorContent,
-  useVizelEditor,
-  type JSONContent,
-} from "@vizel/vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { Editor } from "@tiptap/core";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+
+type JSONContent = Record<string, unknown>;
 
 const output = ref<JSONContent | null>(null);
+const editorRef = ref<HTMLElement | null>(null);
+let editor: Editor | null = null;
 
 const initialContent: JSONContent = {
   type: "doc",
@@ -23,7 +24,7 @@ const initialContent: JSONContent = {
         { type: "text", text: "This is a " },
         { type: "text", marks: [{ type: "bold" }], text: "Notion-style" },
         { type: "text", text: " visual editor built with " },
-        { type: "text", marks: [{ type: "code" }], text: "@vizel/vue" },
+        { type: "text", marks: [{ type: "code" }], text: "Tiptap" },
         { type: "text", text: "." },
       ],
     },
@@ -76,18 +77,31 @@ const initialContent: JSONContent = {
   ],
 };
 
-const editor = useVizelEditor({
-  initialContent,
-  placeholder: "Type '/' for commands...",
-  autofocus: "end",
-  onUpdate: ({ editor: e }) => {
-    output.value = e.getJSON();
-  },
+onMounted(() => {
+  if (editorRef.value) {
+    editor = new Editor({
+      element: editorRef.value,
+      extensions: [
+        StarterKit,
+        Placeholder.configure({
+          placeholder: "Type '/' for commands...",
+        }),
+      ],
+      content: initialContent,
+      autofocus: "end",
+      onUpdate: ({ editor: e }) => {
+        output.value = e.getJSON();
+      },
+      onCreate: ({ editor: e }) => {
+        output.value = e.getJSON();
+      },
+    });
+  }
 });
 
-watch(editor, (newEditor) => {
-  if (newEditor) {
-    output.value = newEditor.getJSON();
+onBeforeUnmount(() => {
+  if (editor) {
+    editor.destroy();
   }
 });
 </script>
@@ -101,9 +115,9 @@ watch(editor, (newEditor) => {
 
     <main class="main">
       <div class="editor-container">
-        <EditorRoot :editor="editor" class="editor-root">
-          <EditorContent :editor="editor" class="editor-content" />
-        </EditorRoot>
+        <div class="editor-root">
+          <div ref="editorRef" class="editor-content"></div>
+        </div>
       </div>
 
       <details class="output">

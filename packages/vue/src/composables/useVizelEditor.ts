@@ -1,6 +1,6 @@
-import { useEditor, type UseEditorOptions } from "@tiptap/vue-3";
+import { useEditor, type Editor } from "@tiptap/vue-3";
 import { createVizelExtensions, type Extensions } from "@vizel/core";
-import type { VizelEditorOptions, Editor } from "@vizel/core";
+import type { VizelEditorOptions } from "@vizel/core";
 import type { ShallowRef } from "vue";
 
 export interface UseVizelEditorOptions extends VizelEditorOptions {
@@ -46,7 +46,7 @@ export function useVizelEditor(
     onBlur,
   } = options;
 
-  const editorOptions: UseEditorOptions = {
+  return useEditor({
     extensions: [
       ...createVizelExtensions({ placeholder }),
       ...additionalExtensions,
@@ -60,7 +60,5 @@ export function useVizelEditor(
     onSelectionUpdate,
     onFocus,
     onBlur,
-  };
-
-  return useEditor(editorOptions);
+  });
 }

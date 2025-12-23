@@ -20,9 +20,11 @@ export { useVizelEditor, type UseVizelEditorOptions } from "./composables/index.
 export type {
   VizelEditorOptions,
   VizelEditorState,
-  Editor,
   JSONContent,
 } from "@vizel/core";
+
+// Re-export Vue-specific Editor type
+export type { Editor } from "@tiptap/vue-3";
 
 // Re-export core extensions
 export { createVizelExtensions, type VizelStarterKitOptions } from "@vizel/core";

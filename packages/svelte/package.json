@@ -16,7 +16,8 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@vizel/core": "workspace:*"
+    "@vizel/core": "workspace:*",
+    "@tiptap/core": "^2.11.5"
   },
   "peerDependencies": {
     "svelte": "^5",

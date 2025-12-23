@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { provide } from "vue";
-import type { Editor } from "@vizel/core";
+import type { Editor } from "@tiptap/vue-3";
 import { EDITOR_INJECTION_KEY } from "./EditorContext.ts";
 
 const props = defineProps<{

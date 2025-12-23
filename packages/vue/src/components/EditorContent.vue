@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { EditorContent as TiptapEditorContent } from "@tiptap/vue-3";
-import type { Editor } from "@vizel/core";
+import { EditorContent as TiptapEditorContent, type Editor } from "@tiptap/vue-3";
 
 defineProps<{
   editor: Editor | undefined;

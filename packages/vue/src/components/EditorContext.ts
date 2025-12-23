@@ -1,5 +1,5 @@
 import { inject, type InjectionKey } from "vue";
-import type { Editor } from "@vizel/core";
+import type { Editor } from "@tiptap/vue-3";
 
 export const EDITOR_INJECTION_KEY: InjectionKey<() => Editor | undefined> =
   Symbol("vizel-editor");

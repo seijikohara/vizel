@@ -7,7 +7,10 @@
     "dev": "bun --hot run server.ts"
   },
   "dependencies": {
-    "@vizel/react": "workspace:*",
+    "@tiptap/react": "^2.11.5",
+    "@tiptap/starter-kit": "^2.11.5",
+    "@tiptap/extension-placeholder": "^2.11.5",
+    "@tiptap/pm": "^2.11.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
