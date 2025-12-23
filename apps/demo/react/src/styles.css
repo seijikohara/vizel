@@ -295,3 +295,98 @@ body {
   height: auto;
   border-radius: 8px;
 }
+
+/* Link */
+.vizel-link {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.vizel-link:hover {
+  color: #1d4ed8;
+}
+
+.vizel-link-editor {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+}
+
+.vizel-link-input {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  width: 200px;
+  outline: none;
+}
+
+.vizel-link-input:focus {
+  border-color: #2563eb;
+}
+
+.vizel-link-button {
+  padding: 0.25rem 0.5rem;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.vizel-link-button:hover {
+  background: #e5e7eb;
+}
+
+.vizel-link-remove {
+  color: #dc2626;
+}
+
+/* Table */
+.vizel-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  table-layout: fixed;
+}
+
+.vizel-table-row {
+}
+
+.vizel-table-cell,
+.vizel-table-header {
+  border: 1px solid #e5e7eb;
+  padding: 0.5em 0.75em;
+  min-width: 100px;
+  vertical-align: top;
+  position: relative;
+}
+
+.vizel-table-header {
+  background: #f9fafb;
+  font-weight: 600;
+  text-align: left;
+}
+
+.vizel-table-cell p,
+.vizel-table-header p {
+  margin: 0;
+}
+
+/* Table selection */
+.vizel-table-cell.selectedCell,
+.vizel-table-header.selectedCell {
+  background: #dbeafe;
+}
+
+/* Table resize handle */
+.tableWrapper {
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.resize-cursor {
+  cursor: col-resize;
+}

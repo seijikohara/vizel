@@ -28,6 +28,15 @@ export {
   createImageExtension,
   Image,
   type VizelImageOptions,
+  createLinkExtension,
+  Link,
+  type VizelLinkOptions,
+  createTableExtensions,
+  Table,
+  TableRow,
+  TableHeader,
+  TableCell,
+  type VizelTableOptions,
 } from "./extensions/index.ts";
 
 // Re-export Tiptap core for advanced usage

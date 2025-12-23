@@ -3,6 +3,13 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import {
+  SlashCommand,
+  defaultSlashCommands,
+  createLinkExtension,
+  createImageExtension,
+  createTableExtensions,
+} from "@vizel/core";
 
 type JSONContent = Record<string, unknown>;
 
@@ -25,7 +32,21 @@ const initialContent: JSONContent = {
         { type: "text", marks: [{ type: "bold" }], text: "Notion-style" },
         { type: "text", text: " visual editor built with " },
         { type: "text", marks: [{ type: "code" }], text: "Tiptap" },
-        { type: "text", text: "." },
+        { type: "text", text: ". Try clicking this " },
+        {
+          type: "text",
+          marks: [{ type: "link", attrs: { href: "https://tiptap.dev" } }],
+          text: "link to Tiptap",
+        },
+        { type: "text", text: "!" },
+      ],
+    },
+    {
+      type: "paragraph",
+      content: [
+        { type: "text", text: "Try typing " },
+        { type: "text", marks: [{ type: "code" }], text: "/" },
+        { type: "text", text: " for commands." },
       ],
     },
     {
@@ -41,7 +62,9 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [{ type: "text", text: "Rich text formatting" }],
+              content: [
+                { type: "text", text: 'Slash commands - type "/" for options' },
+              ],
             },
           ],
         },
@@ -50,7 +73,7 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [{ type: "text", text: "Headings (H1-H3)" }],
+              content: [{ type: "text", text: "Links - clickable hyperlinks" }],
             },
           ],
         },
@@ -59,7 +82,9 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [{ type: "text", text: "Lists and blockquotes" }],
+              content: [
+                { type: "text", text: 'Tables - type "/table" to insert' },
+              ],
             },
           ],
         },
@@ -70,7 +95,11 @@ const initialContent: JSONContent = {
       content: [
         {
           type: "paragraph",
-          content: [{ type: "text", text: "This is a blockquote in Vue 3!" }],
+          content: [
+            { type: "text", text: "This is a blockquote. Use " },
+            { type: "text", marks: [{ type: "code" }], text: '"' },
+            { type: "text", text: " from slash commands to create one." },
+          ],
         },
       ],
     },
@@ -85,7 +114,15 @@ onMounted(() => {
         StarterKit,
         Placeholder.configure({
           placeholder: "Type '/' for commands...",
+          emptyEditorClass: "vizel-editor-empty",
+          emptyNodeClass: "vizel-node-empty",
         }),
+        SlashCommand.configure({
+          items: defaultSlashCommands,
+        }),
+        createLinkExtension(),
+        createImageExtension(),
+        ...createTableExtensions(),
       ],
       content: initialContent,
       autofocus: "end",

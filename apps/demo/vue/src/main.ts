@@ -7,6 +7,8 @@ import {
   SlashCommand,
   defaultSlashCommands,
   createImageExtension,
+  createLinkExtension,
+  createTableExtensions,
 } from "@vizel/core";
 import tippy, { type Instance as TippyInstance } from "tippy.js";
 
@@ -25,7 +27,13 @@ const initialContent = {
         { type: "text", marks: [{ type: "bold" }], text: "Notion-style" },
         { type: "text", text: " visual editor built with " },
         { type: "text", marks: [{ type: "code" }], text: "Tiptap" },
-        { type: "text", text: "." },
+        { type: "text", text: ". Try clicking this " },
+        {
+          type: "text",
+          marks: [{ type: "link", attrs: { href: "https://tiptap.dev" } }],
+          text: "link to Tiptap",
+        },
+        { type: "text", text: "!" },
       ],
     },
     {
@@ -71,11 +79,17 @@ const initialContent = {
           content: [
             {
               type: "paragraph",
+              content: [{ type: "text", text: "Links - clickable hyperlinks" }],
+            },
+          ],
+        },
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
               content: [
-                {
-                  type: "text",
-                  text: 'Markdown shortcuts - try "# " or "- " at start of line',
-                },
+                { type: "text", text: 'Tables - type "/table" to insert' },
               ],
             },
           ],
@@ -87,7 +101,11 @@ const initialContent = {
       content: [
         {
           type: "paragraph",
-          content: [{ type: "text", text: "This is a blockquote in Vue 3!" }],
+          content: [
+            { type: "text", text: "This is a blockquote. Use " },
+            { type: "text", marks: [{ type: "code" }], text: '"' },
+            { type: "text", text: " from slash commands to create one." },
+          ],
         },
       ],
     },
@@ -232,6 +250,8 @@ const App = {
               suggestion: createVanillaSlashMenuRenderer(),
             }),
             createImageExtension(),
+            createLinkExtension(),
+            ...createTableExtensions(),
           ],
           content: initialContent,
           autofocus: "end",
