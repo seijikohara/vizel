@@ -4,6 +4,9 @@
  * React components and hooks for the Vizel visual editor.
  */
 
+// Tiptap React re-exports for convenience
+export { useEditor, EditorContent as TiptapEditorContent } from "@tiptap/react";
+
 // Components
 export {
   EditorRoot,
@@ -34,16 +37,27 @@ export type {
   JSONContent,
   SlashCommandItem,
   SlashCommandOptions,
+  VizelLinkOptions,
+  VizelTableOptions,
 } from "@vizel/core";
 
 // Re-export core extensions
 export {
   createVizelExtensions,
+  StarterKit,
+  Placeholder,
   SlashCommand,
   defaultSlashCommands,
   filterSlashCommands,
   createImageExtension,
   Image,
+  createLinkExtension,
+  Link,
+  createTableExtensions,
+  Table,
+  TableRow,
+  TableHeader,
+  TableCell,
   type VizelStarterKitOptions,
   type VizelImageOptions,
 } from "@vizel/core";

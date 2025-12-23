@@ -15,7 +15,10 @@
   },
   "dependencies": {
     "@vizel/core": "workspace:*",
-    "@tiptap/vue-3": "^2.11.5"
+    "@tiptap/core": "^3.14.0",
+    "@tiptap/extension-bubble-menu": "^3.14.0",
+    "@tiptap/vue-3": "^3.14.0",
+    "tippy.js": "^6.3.7"
   },
   "peerDependencies": {
     "vue": "^3.4",

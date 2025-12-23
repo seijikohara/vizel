@@ -1,15 +1,15 @@
-import { Editor } from "@tiptap/core";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import BubbleMenu from "@tiptap/extension-bubble-menu";
 import {
+  Editor,
+  BubbleMenuExtension,
+  createVanillaSlashMenuRenderer,
+  StarterKit,
+  Placeholder,
   SlashCommand,
   defaultSlashCommands,
   createImageExtension,
   createLinkExtension,
   createTableExtensions,
-} from "@vizel/core";
-import tippy, { type Instance as TippyInstance } from "tippy.js";
+} from "@vizel/svelte";
 
 const initialContent = {
   type: "doc",
@@ -17,7 +17,7 @@ const initialContent = {
     {
       type: "heading",
       attrs: { level: 1 },
-      content: [{ type: "text", text: "Welcome to Vizel Editor (Svelte)" }],
+      content: [{ type: "text", text: "Welcome to Vizel Editor" }],
     },
     {
       type: "paragraph",
@@ -111,128 +111,53 @@ const initialContent = {
   ],
 };
 
-// Vanilla JS Slash Menu Renderer
-function createVanillaSlashMenuRenderer() {
-  let popup: TippyInstance[] | null = null;
-  let menuElement: HTMLElement | null = null;
-  let selectedIndex = 0;
-  let items: typeof defaultSlashCommands = [];
-  let commandFn: ((item: (typeof defaultSlashCommands)[0]) => void) | null =
-    null;
-
-  function renderMenu() {
-    if (!menuElement) return;
-    menuElement.innerHTML = items
-      .map(
-        (item, index) => `
-      <button class="vizel-slash-menu-item ${index === selectedIndex ? "is-selected" : ""}" data-index="${index}">
-        <span class="vizel-slash-menu-icon">${item.icon}</span>
-        <div class="vizel-slash-menu-text">
-          <span class="vizel-slash-menu-title">${item.title}</span>
-          <span class="vizel-slash-menu-description">${item.description}</span>
-        </div>
-      </button>
-    `
-      )
-      .join("");
-
-    menuElement.querySelectorAll(".vizel-slash-menu-item").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const index = parseInt(btn.getAttribute("data-index") || "0");
-        if (commandFn && items[index]) {
-          commandFn(items[index]);
-        }
-      });
-    });
-  }
-
-  return {
-    render: () => ({
-      onStart: (props: {
-        items: typeof defaultSlashCommands;
-        command: (item: (typeof defaultSlashCommands)[0]) => void;
-        clientRect?: (() => DOMRect) | null;
-      }) => {
-        items = props.items;
-        commandFn = props.command;
-        selectedIndex = 0;
-
-        menuElement = document.createElement("div");
-        menuElement.className = "vizel-slash-menu";
-        renderMenu();
-
-        if (!props.clientRect) return;
-
-        popup = tippy("body", {
-          getReferenceClientRect: props.clientRect,
-          appendTo: () => document.body,
-          content: menuElement,
-          showOnCreate: true,
-          interactive: true,
-          trigger: "manual",
-          placement: "bottom-start",
-        });
-      },
-
-      onUpdate: (props: {
-        items: typeof defaultSlashCommands;
-        command: (item: (typeof defaultSlashCommands)[0]) => void;
-        clientRect?: (() => DOMRect) | null;
-      }) => {
-        items = props.items;
-        commandFn = props.command;
-        selectedIndex = 0;
-        renderMenu();
-
-        if (props.clientRect) {
-          popup?.[0]?.setProps({
-            getReferenceClientRect: props.clientRect,
-          });
-        }
-      },
-
-      onKeyDown: (props: { event: KeyboardEvent }) => {
-        if (props.event.key === "ArrowUp") {
-          selectedIndex = (selectedIndex + items.length - 1) % items.length;
-          renderMenu();
-          return true;
-        }
-        if (props.event.key === "ArrowDown") {
-          selectedIndex = (selectedIndex + 1) % items.length;
-          renderMenu();
-          return true;
-        }
-        if (props.event.key === "Enter") {
-          if (commandFn && items[selectedIndex]) {
-            commandFn(items[selectedIndex]);
-          }
-          return true;
-        }
-        if (props.event.key === "Escape") {
-          popup?.[0]?.hide();
-          return true;
-        }
-        return false;
-      },
-
-      onExit: () => {
-        popup?.[0]?.destroy();
-        menuElement = null;
-      },
-    }),
-  };
-}
-
-// Create the app HTML structure
+// Create the app HTML structure with Svelte branding
 const app = document.getElementById("app")!;
 app.innerHTML = `
   <div class="app">
     <header class="header">
-      <h1>Vizel Editor Demo</h1>
-      <p>Svelte • A Notion-style visual editor</p>
+      <div class="header-content">
+        <svg viewBox="0 0 98.1 118" class="framework-logo">
+          <path fill="currentColor" d="M91.8,15.6C80.9-0.1,59.2-4.7,43.6,5.2L16.1,22.8C8.6,27.5,3.4,35.2,1.9,43.9c-1.3,7.3-0.2,14.8,3.3,21.3
+            c-2.4,3.6-4,7.6-4.7,11.8c-1.6,8.9,0.5,18.1,5.7,25.4c11,15.7,32.6,20.3,48.2,10.4l27.5-17.5c7.5-4.7,12.7-12.4,14.2-21.1
+            c1.3-7.3,0.2-14.8-3.3-21.3c2.4-3.6,4-7.6,4.7-11.8C99.1,32.2,97,23,91.8,15.6z"/>
+          <path fill="rgba(255,255,255,0.5)" d="M40.9,103.9c-8.9,2.3-18.2-1.2-23.4-8.7c-3.2-4.4-4.4-9.9-3.5-15.3c0.2-0.9,0.4-1.7,0.6-2.6l0.5-1.6l1.4,1
+            c3.3,2.4,6.9,4.2,10.8,5.4l1,0.3l-0.1,1c-0.1,1.4,0.3,2.9,1.1,4.1c1.6,2.3,4.4,3.4,7.1,2.7c0.6-0.2,1.2-0.4,1.7-0.7L65.5,72
+            c1.4-0.9,2.3-2.2,2.6-3.8c0.3-1.6-0.1-3.3-1-4.6c-1.6-2.3-4.4-3.3-7.1-2.6c-0.6,0.2-1.2,0.4-1.7,0.7l-10.5,6.7
+            c-1.7,1.1-3.6,1.9-5.6,2.4c-8.9,2.3-18.2-1.2-23.4-8.7c-3.1-4.4-4.4-9.9-3.4-15.3c0.9-5.2,4.1-9.9,8.6-12.7l27.5-17.5
+            c1.7-1.1,3.6-1.9,5.6-2.5c8.9-2.3,18.2,1.2,23.4,8.7c3.2,4.4,4.4,9.9,3.5,15.3c-0.2,0.9-0.4,1.7-0.7,2.6l-0.5,1.6l-1.4-1
+            c-3.3-2.4-6.9-4.2-10.8-5.4l-1-0.3l0.1-1c0.1-1.4-0.3-2.9-1.1-4.1c-1.6-2.3-4.4-3.3-7.1-2.6c-0.6,0.2-1.2,0.4-1.7,0.7L32.4,46
+            c-1.4,0.9-2.3,2.2-2.6,3.8s0.1,3.3,1,4.6c1.6,2.3,4.4,3.3,7.1,2.6c0.6-0.2,1.2-0.4,1.7-0.7l10.5-6.7c1.7-1.1,3.6-1.9,5.6-2.5
+            c8.9-2.3,18.2,1.2,23.4,8.7c3.2,4.4,4.4,9.9,3.5,15.3c-0.9,5.2-4.1,9.9-8.6,12.7l-27.5,17.5C44.8,102.5,42.9,103.3,40.9,103.9z"/>
+        </svg>
+        <div class="header-text">
+          <h1>Vizel Editor</h1>
+          <span class="framework-badge">Svelte 5</span>
+        </div>
+      </div>
+      <p class="header-description">A Notion-style visual editor for modern web applications</p>
     </header>
 
     <main class="main">
+      <div class="features-bar">
+        <div class="feature-tag">
+          <span class="feature-icon">/</span>
+          <span>Slash Commands</span>
+        </div>
+        <div class="feature-tag">
+          <span class="feature-icon">B</span>
+          <span>Bubble Menu</span>
+        </div>
+        <div class="feature-tag">
+          <span class="feature-icon">T</span>
+          <span>Tables</span>
+        </div>
+        <div class="feature-tag">
+          <span class="feature-icon">L</span>
+          <span>Links</span>
+        </div>
+      </div>
+
       <div class="editor-container">
         <div class="editor-root">
           <div id="editor" class="editor-content"></div>
@@ -245,28 +170,47 @@ app.innerHTML = `
         </div>
       </div>
 
-      <details class="output">
-        <summary>JSON Output</summary>
-        <pre id="output"></pre>
-      </details>
+      <div class="output-section">
+        <button class="output-toggle" id="output-toggle">
+          <span class="output-toggle-icon" id="output-icon">+</span>
+          <span>JSON Output</span>
+        </button>
+        <pre class="output-content" id="output" style="display: none;"></pre>
+      </div>
     </main>
+
+    <footer class="footer">
+      <p>Built with <span class="footer-highlight">@vizel/svelte</span></p>
+    </footer>
   </div>
 `;
 
 const editorElement = document.getElementById("editor")!;
 const outputElement = document.getElementById("output")!;
 const bubbleMenuElement = document.getElementById("bubble-menu")!;
+const outputToggle = document.getElementById("output-toggle")!;
+const outputIcon = document.getElementById("output-icon")!;
+
+let showOutput = false;
+
+outputToggle.addEventListener("click", () => {
+  showOutput = !showOutput;
+  outputElement.style.display = showOutput ? "block" : "none";
+  outputIcon.textContent = showOutput ? "−" : "+";
+});
 
 const editor = new Editor({
   element: editorElement,
   extensions: [
-    StarterKit,
+    StarterKit.configure({
+      link: false,
+    }),
     Placeholder.configure({
       placeholder: "Type '/' for commands...",
       emptyEditorClass: "vizel-editor-empty",
       emptyNodeClass: "vizel-node-empty",
     }),
-    BubbleMenu.configure({
+    BubbleMenuExtension.configure({
       element: bubbleMenuElement,
     }),
     SlashCommand.configure({
@@ -288,22 +232,24 @@ const editor = new Editor({
 });
 
 // Setup bubble menu button handlers
-bubbleMenuElement.querySelectorAll(".vizel-bubble-menu-button").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const action = btn.getAttribute("data-action");
-    switch (action) {
-      case "bold":
-        editor.chain().focus().toggleBold().run();
-        break;
-      case "italic":
-        editor.chain().focus().toggleItalic().run();
-        break;
-      case "strike":
-        editor.chain().focus().toggleStrike().run();
-        break;
-      case "code":
-        editor.chain().focus().toggleCode().run();
-        break;
-    }
+bubbleMenuElement
+  .querySelectorAll(".vizel-bubble-menu-button")
+  .forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const action = btn.getAttribute("data-action");
+      switch (action) {
+        case "bold":
+          editor.chain().focus().toggleBold().run();
+          break;
+        case "italic":
+          editor.chain().focus().toggleItalic().run();
+          break;
+        case "strike":
+          editor.chain().focus().toggleStrike().run();
+          break;
+        case "code":
+          editor.chain().focus().toggleCode().run();
+          break;
+      }
+    });
   });
-});

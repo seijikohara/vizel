@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
-import { BubbleMenu as TiptapBubbleMenu } from "@tiptap/react";
-import { useEditorContext } from "./EditorContext.tsx";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
+import { useEditorContextSafe } from "./EditorContext.tsx";
 import type { Editor } from "@vizel/core";
 import type { ReactNode } from "react";
 
@@ -13,6 +13,16 @@ export interface BubbleMenuProps {
   children?: ReactNode;
   /** Whether to show the default formatting toolbar */
   showDefaultToolbar?: boolean;
+  /** Plugin key for the bubble menu */
+  pluginKey?: string;
+  /** Delay in ms before updating the menu position */
+  updateDelay?: number;
+  /** Custom shouldShow function */
+  shouldShow?: (props: {
+    editor: Editor;
+    from: number;
+    to: number;
+  }) => boolean;
 }
 
 interface ToolbarButtonProps {
@@ -160,25 +170,51 @@ export function BubbleMenu({
   className,
   children,
   showDefaultToolbar = true,
+  pluginKey = "vizelBubbleMenu",
+  updateDelay = 100,
+  shouldShow,
 }: BubbleMenuProps) {
-  const context = useEditorContext();
-  const editor = editorProp ?? context.editor;
+  const context = useEditorContextSafe();
+  const editor = editorProp ?? context?.editor ?? null;
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!editor || !menuRef.current) {
+      return;
+    }
+
+    const plugin = BubbleMenuPlugin({
+      pluginKey,
+      editor,
+      element: menuRef.current,
+      updateDelay,
+      shouldShow: shouldShow
+        ? ({ editor: e, from, to }) => shouldShow({ editor: e as Editor, from, to })
+        : undefined,
+      options: {
+        placement: "top",
+      },
+    });
+
+    editor.registerPlugin(plugin);
+
+    return () => {
+      editor.unregisterPlugin(pluginKey);
+    };
+  }, [editor, pluginKey, updateDelay, shouldShow]);
 
   if (!editor) {
     return null;
   }
 
   return (
-    <TiptapBubbleMenu
-      editor={editor}
-      tippyOptions={{
-        duration: 100,
-        placement: "top",
-      }}
+    <div
+      ref={menuRef}
       className={`vizel-bubble-menu ${className ?? ""}`}
       data-vizel-bubble-menu=""
+      style={{ visibility: "hidden" }}
     >
       {children ?? (showDefaultToolbar && <DefaultToolbar editor={editor} />)}
-    </TiptapBubbleMenu>
+    </div>
   );
 }

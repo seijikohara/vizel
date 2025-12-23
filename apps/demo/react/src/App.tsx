@@ -1,18 +1,18 @@
-import { useEditor, EditorContent } from "@tiptap/react";
-import { BubbleMenu as TiptapBubbleMenu } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
+import { useState, useCallback } from "react";
 import {
+  useEditor,
+  TiptapEditorContent,
+  BubbleMenu,
+  createSlashMenuRenderer,
+  StarterKit,
+  Placeholder,
   SlashCommand,
+  defaultSlashCommands,
   createImageExtension,
   createLinkExtension,
   createTableExtensions,
-  defaultSlashCommands,
-} from "@vizel/core";
-import { createSlashMenuRenderer } from "@vizel/react";
-import { useState, useCallback } from "react";
-
-type JSONContent = Record<string, unknown>;
+  type JSONContent,
+} from "@vizel/react";
 
 const initialContent: JSONContent = {
   type: "doc",
@@ -116,6 +116,19 @@ const initialContent: JSONContent = {
   ],
 };
 
+function ReactLogo() {
+  return (
+    <svg viewBox="-11.5 -10.23174 23 20.46348" className="framework-logo">
+      <circle cx="0" cy="0" r="2.05" fill="currentColor" />
+      <g stroke="currentColor" strokeWidth="1" fill="none">
+        <ellipse rx="11" ry="4.2" />
+        <ellipse rx="11" ry="4.2" transform="rotate(60)" />
+        <ellipse rx="11" ry="4.2" transform="rotate(120)" />
+      </g>
+    </svg>
+  );
+}
+
 function LinkEditor({
   editor,
   onClose,
@@ -174,10 +187,13 @@ function LinkEditor({
 export function App() {
   const [output, setOutput] = useState<JSONContent | null>(null);
   const [showLinkEditor, setShowLinkEditor] = useState(false);
+  const [showOutput, setShowOutput] = useState(false);
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        link: false,
+      }),
       Placeholder.configure({
         placeholder: "Type '/' for commands...",
         emptyEditorClass: "vizel-editor-empty",
@@ -205,20 +221,43 @@ export function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>Vizel Editor Demo</h1>
-        <p>A Notion-style visual editor for React, Vue, and Svelte</p>
+        <div className="header-content">
+          <ReactLogo />
+          <div className="header-text">
+            <h1>Vizel Editor</h1>
+            <span className="framework-badge">React 19</span>
+          </div>
+        </div>
+        <p className="header-description">
+          A Notion-style visual editor for modern web applications
+        </p>
       </header>
 
       <main className="main">
+        <div className="features-bar">
+          <div className="feature-tag">
+            <span className="feature-icon">/</span>
+            <span>Slash Commands</span>
+          </div>
+          <div className="feature-tag">
+            <span className="feature-icon">B</span>
+            <span>Bubble Menu</span>
+          </div>
+          <div className="feature-tag">
+            <span className="feature-icon">T</span>
+            <span>Tables</span>
+          </div>
+          <div className="feature-tag">
+            <span className="feature-icon">L</span>
+            <span>Links</span>
+          </div>
+        </div>
+
         <div className="editor-container">
           <div className="editor-root">
-            <EditorContent editor={editor} className="editor-content" />
+            <TiptapEditorContent editor={editor} className="editor-content" />
             {editor && (
-              <TiptapBubbleMenu
-                editor={editor}
-                tippyOptions={{ duration: 100 }}
-                className="vizel-bubble-menu"
-              >
+              <BubbleMenu editor={editor}>
                 {showLinkEditor ? (
                   <LinkEditor
                     editor={editor}
@@ -267,16 +306,32 @@ export function App() {
                     </button>
                   </>
                 )}
-              </TiptapBubbleMenu>
+              </BubbleMenu>
             )}
           </div>
         </div>
 
-        <details className="output">
-          <summary>JSON Output</summary>
-          <pre>{JSON.stringify(output, null, 2)}</pre>
-        </details>
+        <div className="output-section">
+          <button
+            className="output-toggle"
+            onClick={() => setShowOutput(!showOutput)}
+          >
+            <span className="output-toggle-icon">{showOutput ? "−" : "+"}</span>
+            <span>JSON Output</span>
+          </button>
+          {showOutput && (
+            <pre className="output-content">
+              {JSON.stringify(output, null, 2)}
+            </pre>
+          )}
+        </div>
       </main>
+
+      <footer className="footer">
+        <p>
+          Built with <span className="footer-highlight">@vizel/react</span>
+        </p>
+      </footer>
     </div>
   );
 }

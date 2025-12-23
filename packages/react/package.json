@@ -14,8 +14,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tiptap/react": "^2.11.5",
-    "@tiptap/suggestion": "^2.11.5",
+    "@tiptap/extension-bubble-menu": "^3.14.0",
+    "@tiptap/react": "^3.14.0",
+    "@tiptap/suggestion": "^3.14.0",
     "@vizel/core": "workspace:*",
     "tippy.js": "^6.3.7"
   },
