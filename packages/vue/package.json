@@ -43,6 +43,6 @@
     "@vitejs/plugin-vue": "^5",
     "vite": "^6",
     "vite-plugin-dts": "^4",
-    "vue-tsc": "^2"
+    "vue-tsc": "^3"
   }
 }
