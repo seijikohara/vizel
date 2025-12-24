@@ -6,12 +6,12 @@
     "apps/demo/*"
   ],
   "scripts": {
-    "build": "bun run --filter '*' build",
     "dev": "bun run dev:react",
     "dev:react": "bun run --cwd apps/demo/react dev",
     "dev:vue": "bun run --cwd apps/demo/vue dev",
     "dev:svelte": "bun run --cwd apps/demo/svelte dev",
     "dev:all": "concurrently -n react,vue,svelte -c blue,green,magenta \"bun run dev:react\" \"bun run dev:vue\" \"bun run dev:svelte\"",
+    "build": "bun run --filter '@vizel/*' build",
     "test": "bun run --filter '*' test",
     "typecheck": "bun run --filter '*' typecheck",
     "lint": "biome lint .",
