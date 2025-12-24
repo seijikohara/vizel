@@ -49,6 +49,9 @@ export {
 // Hooks
 export { useVizelEditor, type UseVizelEditorOptions } from "./hooks/index.ts";
 
+// Utilities (framework-agnostic)
+export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";
+
 // Re-export core types for convenience
 export type {
   VizelEditorOptions,
