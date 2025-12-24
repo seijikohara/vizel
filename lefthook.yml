@@ -1,0 +1,50 @@
+# Lefthook configuration
+# https://github.com/evilmartians/lefthook
+
+pre-commit:
+  parallel: true
+  commands:
+    biome-check:
+      glob: "*.{js,ts,cjs,mjs,jsx,tsx,json,jsonc,vue,svelte}"
+      run: bunx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      stage_fixed: true
+
+    typecheck-core:
+      glob: "packages/core/**/*.ts"
+      run: bun run --filter @vizel/core typecheck
+
+    typecheck-react:
+      glob: "packages/react/**/*.{ts,tsx}"
+      run: bun run --filter @vizel/react typecheck
+
+    typecheck-vue:
+      glob: "packages/vue/**/*.{ts,vue}"
+      run: bun run --filter @vizel/vue typecheck
+
+    typecheck-svelte:
+      glob: "packages/svelte/**/*.{ts,svelte}"
+      run: bun run --filter @vizel/svelte typecheck
+
+commit-msg:
+  commands:
+    commitlint:
+      run: |
+        # Validate commit message follows Conventional Commits
+        message=$(cat {1})
+        if ! echo "$message" | grep -qE "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .+"; then
+          echo "Error: Commit message must follow Conventional Commits format"
+          echo "Examples:"
+          echo "  feat: add new feature"
+          echo "  fix(core): resolve bug in editor"
+          echo "  docs: update README"
+          exit 1
+        fi
+
+pre-push:
+  parallel: true
+  commands:
+    lint:
+      run: bun run lint
+
+    typecheck:
+      run: bun run typecheck
