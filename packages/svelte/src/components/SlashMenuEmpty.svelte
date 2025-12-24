@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
+import type { Snippet } from "svelte";
 
-  interface Props {
-    class?: string;
-    children?: Snippet;
-  }
+interface Props {
+  class?: string;
+  children?: Snippet;
+}
 
-  let { class: className, children }: Props = $props();
+let { class: className, children }: Props = $props();
 </script>
 
 <div class="vizel-slash-menu-empty {className ?? ''}">

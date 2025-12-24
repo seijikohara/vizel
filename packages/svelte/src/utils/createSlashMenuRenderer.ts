@@ -1,7 +1,7 @@
-import { mount, unmount } from "svelte";
-import tippy, { type Instance as TippyInstance } from "tippy.js";
 import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 import type { SlashCommandItem } from "@vizel/core";
+import { mount, unmount } from "svelte";
+import tippy, { type Instance as TippyInstance } from "tippy.js";
 import SlashMenu from "../components/SlashMenu.svelte";
 
 export interface SlashMenuRendererOptions {

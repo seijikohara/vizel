@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, onBeforeUnmount, useSlots } from "vue";
 import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
 import type { Editor } from "@tiptap/vue-3";
-import BubbleMenuToolbar from "./BubbleMenuToolbar.vue";
+import { onBeforeUnmount, ref, useSlots, watch } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -26,7 +25,7 @@ const menuRef = ref<HTMLElement | null>(null);
 watch(
   [() => props.editor, menuRef],
   ([editor, element], [, oldElement]) => {
-    if (!editor || !element) return;
+    if (!(editor && element)) return;
 
     // Unregister old plugin if element changed
     if (oldElement) {
@@ -40,7 +39,7 @@ watch(
       updateDelay: props.updateDelay,
       shouldShow: props.shouldShow
         ? ({ editor: e, from, to }) =>
-            props.shouldShow!({ editor: e as Editor, from, to })
+            props.shouldShow?.({ editor: e as Editor, from, to }) ?? false
         : undefined,
       options: {
         placement: "top",

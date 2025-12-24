@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
 import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
-import { useEditorContextSafe } from "./EditorContext.tsx";
-import { BubbleMenuToolbar } from "./BubbleMenuToolbar.tsx";
 import type { Editor } from "@vizel/core";
 import type { ReactNode } from "react";
+import { useEffect, useRef } from "react";
+import { BubbleMenuToolbar } from "./BubbleMenuToolbar.tsx";
+import { useEditorContextSafe } from "./EditorContext.tsx";
 
 export interface BubbleMenuProps {
   /** Override the editor from context */
@@ -19,11 +19,7 @@ export interface BubbleMenuProps {
   /** Delay in ms before updating the menu position */
   updateDelay?: number;
   /** Custom shouldShow function */
-  shouldShow?: (props: {
-    editor: Editor;
-    from: number;
-    to: number;
-  }) => boolean;
+  shouldShow?: (props: { editor: Editor; from: number; to: number }) => boolean;
 }
 
 /**
@@ -67,7 +63,7 @@ export function BubbleMenu({
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!editor || !menuRef.current) {
+    if (!(editor && menuRef.current)) {
       return;
     }
 

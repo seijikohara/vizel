@@ -46,14 +46,8 @@ export interface BubbleMenuState {
  * </div>
  * ```
  */
-export function createBubbleMenu(
-  options: CreateBubbleMenuOptions = {}
-): BubbleMenuState {
-  const {
-    pluginKey = "vizelBubbleMenu",
-    updateDelay = 100,
-    shouldShow,
-  } = options;
+export function createBubbleMenu(options: CreateBubbleMenuOptions = {}): BubbleMenuState {
+  const { pluginKey = "vizelBubbleMenu", updateDelay = 100, shouldShow } = options;
 
   let element = $state<HTMLElement | null>(null);
   let isRegistered = $state(false);
@@ -67,8 +61,7 @@ export function createBubbleMenu(
       element: el,
       updateDelay,
       shouldShow: shouldShow
-        ? ({ editor: e, from, to }) =>
-            shouldShow({ editor: e as Editor, from, to })
+        ? ({ editor: e, from, to }) => shouldShow({ editor: e as Editor, from, to })
         : undefined,
       options: {
         placement: "top",

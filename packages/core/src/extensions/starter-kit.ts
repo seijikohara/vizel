@@ -1,6 +1,6 @@
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
 import type { Extensions } from "@tiptap/core";
+import Placeholder from "@tiptap/extension-placeholder";
+import StarterKit from "@tiptap/starter-kit";
 
 export interface VizelStarterKitOptions {
   /** Placeholder text when editor is empty */
@@ -12,11 +12,8 @@ export interface VizelStarterKitOptions {
 /**
  * Create the default set of extensions for Vizel editor
  */
-export function createVizelExtensions(
-  options: VizelStarterKitOptions = {}
-): Extensions {
-  const { placeholder = "Type '/' for commands...", headingLevels = [1, 2, 3] } =
-    options;
+export function createVizelExtensions(options: VizelStarterKitOptions = {}): Extensions {
+  const { placeholder = "Type '/' for commands...", headingLevels = [1, 2, 3] } = options;
 
   return [
     StarterKit.configure({

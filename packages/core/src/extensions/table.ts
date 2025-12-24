@@ -1,10 +1,5 @@
-import {
-  Table,
-  TableRow,
-  TableHeader,
-  TableCell,
-} from "@tiptap/extension-table";
 import type { Extensions } from "@tiptap/core";
+import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
 
 export interface VizelTableOptions {
   /**
@@ -58,9 +53,7 @@ export interface VizelTableOptions {
  * editor.chain().focus().deleteTable().run();
  * ```
  */
-export function createTableExtensions(
-  options: VizelTableOptions = {}
-): Extensions {
+export function createTableExtensions(options: VizelTableOptions = {}): Extensions {
   return [
     Table.configure({
       resizable: options.resizable ?? false,

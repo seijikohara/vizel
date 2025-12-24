@@ -17,8 +17,6 @@ export interface SlashMenuEmptyProps {
  */
 export function SlashMenuEmpty({ children, className }: SlashMenuEmptyProps) {
   return (
-    <div className={`vizel-slash-menu-empty ${className ?? ""}`}>
-      {children ?? "No results"}
-    </div>
+    <div className={`vizel-slash-menu-empty ${className ?? ""}`}>{children ?? "No results"}</div>
   );
 }

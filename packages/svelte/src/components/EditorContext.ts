@@ -1,5 +1,5 @@
-import { getContext } from "svelte";
 import type { Editor } from "@vizel/core";
+import { getContext } from "svelte";
 
 export const EDITOR_CONTEXT_KEY = Symbol("vizel-editor");
 

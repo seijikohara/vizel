@@ -1,19 +1,14 @@
 <script lang="ts">
-  import type { SlashCommandItem } from "@vizel/core";
+import type { SlashCommandItem } from "@vizel/core";
 
-  interface Props {
-    item: SlashCommandItem;
-    isSelected?: boolean;
-    class?: string;
-    onclick?: () => void;
-  }
+interface Props {
+  item: SlashCommandItem;
+  isSelected?: boolean;
+  class?: string;
+  onclick?: () => void;
+}
 
-  let {
-    item,
-    isSelected = false,
-    class: className,
-    onclick,
-  }: Props = $props();
+let { item, isSelected = false, class: className, onclick }: Props = $props();
 </script>
 
 <button

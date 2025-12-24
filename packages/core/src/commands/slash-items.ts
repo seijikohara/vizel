@@ -18,12 +18,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     description: "Large section heading",
     icon: "H1",
     command: ({ editor, range }) => {
-      editor
-        .chain()
-        .focus()
-        .deleteRange(range)
-        .setNode("heading", { level: 1 })
-        .run();
+      editor.chain().focus().deleteRange(range).setNode("heading", { level: 1 }).run();
     },
   },
   {
@@ -31,12 +26,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     description: "Medium section heading",
     icon: "H2",
     command: ({ editor, range }) => {
-      editor
-        .chain()
-        .focus()
-        .deleteRange(range)
-        .setNode("heading", { level: 2 })
-        .run();
+      editor.chain().focus().deleteRange(range).setNode("heading", { level: 2 }).run();
     },
   },
   {
@@ -44,12 +34,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     description: "Small section heading",
     icon: "H3",
     command: ({ editor, range }) => {
-      editor
-        .chain()
-        .focus()
-        .deleteRange(range)
-        .setNode("heading", { level: 3 })
-        .run();
+      editor.chain().focus().deleteRange(range).setNode("heading", { level: 3 }).run();
     },
   },
   {
@@ -110,11 +95,6 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   },
 ];
 
-export function filterSlashCommands(
-  items: SlashCommandItem[],
-  query: string
-): SlashCommandItem[] {
-  return items.filter((item) =>
-    item.title.toLowerCase().includes(query.toLowerCase())
-  );
+export function filterSlashCommands(items: SlashCommandItem[], query: string): SlashCommandItem[] {
+  return items.filter((item) => item.title.toLowerCase().includes(query.toLowerCase()));
 }

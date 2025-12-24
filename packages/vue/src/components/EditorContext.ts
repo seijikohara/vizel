@@ -1,8 +1,7 @@
-import { inject, type InjectionKey } from "vue";
 import type { Editor } from "@tiptap/vue-3";
+import { type InjectionKey, inject } from "vue";
 
-export const EDITOR_INJECTION_KEY: InjectionKey<() => Editor | undefined> =
-  Symbol("vizel-editor");
+export const EDITOR_INJECTION_KEY: InjectionKey<() => Editor | undefined> = Symbol("vizel-editor");
 
 /**
  * Composable to access the editor instance from EditorRoot context.

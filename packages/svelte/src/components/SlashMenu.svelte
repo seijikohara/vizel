@@ -1,7 +1,7 @@
 <script lang="ts" module>
-  export interface SlashMenuRef {
-    onKeyDown: (event: KeyboardEvent) => boolean;
-  }
+export interface SlashMenuRef {
+  onKeyDown: (event: KeyboardEvent) => boolean;
+}
 </script>
 
 <script lang="ts">

@@ -1,14 +1,14 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  forwardRef,
-  useImperativeHandle,
-  type ReactNode,
-} from "react";
 import type { SlashCommandItem } from "@vizel/core";
-import { SlashMenuItem } from "./SlashMenuItem.tsx";
+import {
+  forwardRef,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { SlashMenuEmpty } from "./SlashMenuEmpty.tsx";
+import { SlashMenuItem } from "./SlashMenuItem.tsx";
 
 export interface SlashMenuRef {
   onKeyDown: (props: { event: KeyboardEvent }) => boolean;
@@ -90,7 +90,7 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
 
     useEffect(() => {
       setSelectedIndex(0);
-    }, [items]);
+    }, []);
 
     useImperativeHandle(ref, () => ({
       onKeyDown: ({ event }) => {
@@ -128,20 +128,11 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
           const onClick = () => selectItem(index);
 
           if (renderItem) {
-            return (
-              <div key={item.title}>
-                {renderItem({ item, isSelected, onClick })}
-              </div>
-            );
+            return <div key={item.title}>{renderItem({ item, isSelected, onClick })}</div>;
           }
 
           return (
-            <SlashMenuItem
-              key={item.title}
-              item={item}
-              isSelected={isSelected}
-              onClick={onClick}
-            />
+            <SlashMenuItem key={item.title} item={item} isSelected={isSelected} onClick={onClick} />
           );
         })}
       </div>

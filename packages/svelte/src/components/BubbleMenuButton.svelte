@@ -1,23 +1,23 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
+import type { Snippet } from "svelte";
 
-  interface Props {
-    isActive?: boolean;
-    disabled?: boolean;
-    title?: string;
-    class?: string;
-    children: Snippet;
-    onclick?: () => void;
-  }
+interface Props {
+  isActive?: boolean;
+  disabled?: boolean;
+  title?: string;
+  class?: string;
+  children: Snippet;
+  onclick?: () => void;
+}
 
-  let {
-    isActive = false,
-    disabled = false,
-    title,
-    class: className,
-    children,
-    onclick,
-  }: Props = $props();
+let {
+  isActive = false,
+  disabled = false,
+  title,
+  class: className,
+  children,
+  onclick,
+}: Props = $props();
 </script>
 
 <button

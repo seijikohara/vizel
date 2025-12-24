@@ -7,77 +7,66 @@
 // Tiptap re-exports for convenience
 export { Editor } from "@tiptap/core";
 export { default as BubbleMenuExtension } from "@tiptap/extension-bubble-menu";
-
-// Editor components
+// Re-export core types for convenience
+export type {
+  JSONContent,
+  SlashCommandItem,
+  SlashCommandOptions,
+  VizelEditorOptions,
+  VizelEditorState,
+  VizelLinkOptions,
+  VizelTableOptions,
+} from "@vizel/core";
+// Re-export core extensions
 export {
-  EditorRoot,
-  EditorContent,
-  useEditorContext,
-  useEditorContextSafe,
-  EDITOR_INJECTION_KEY,
-} from "./components/index.ts";
-
+  createImageExtension,
+  createLinkExtension,
+  createTableExtensions,
+  createVizelExtensions,
+  defaultSlashCommands,
+  filterSlashCommands,
+  Image,
+  Link,
+  Placeholder,
+  SlashCommand,
+  StarterKit,
+  Table,
+  TableCell,
+  TableHeader,
+  TableRow,
+  type VizelImageOptions,
+  type VizelStarterKitOptions,
+} from "@vizel/core";
+// Editor components
 // BubbleMenu components
+// SlashMenu components
 export {
   BubbleMenu,
   BubbleMenuButton,
   BubbleMenuDivider,
   BubbleMenuLinkEditor,
   BubbleMenuToolbar,
-} from "./components/index.ts";
-
-// SlashMenu components
-export {
+  EDITOR_INJECTION_KEY,
+  EditorContent,
+  EditorRoot,
   SlashMenu,
-  SlashMenuItem,
   SlashMenuEmpty,
+  SlashMenuItem,
+  useEditorContext,
+  useEditorContextSafe,
 } from "./components/index.ts";
-
 // Composables
 export {
-  useVizelEditor,
-  useBubbleMenu,
-  useSlashMenu,
   createSlashMenuRenderer,
-  type UseVizelEditorOptions,
+  type SlashMenuRendererOptions,
   type UseBubbleMenuOptions,
   type UseBubbleMenuReturn,
   type UseSlashMenuOptions,
   type UseSlashMenuReturn,
-  type SlashMenuRendererOptions,
+  type UseVizelEditorOptions,
+  useBubbleMenu,
+  useSlashMenu,
+  useVizelEditor,
 } from "./composables/index.ts";
-
 // Utilities (framework-agnostic)
 export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";
-
-// Re-export core types for convenience
-export type {
-  VizelEditorOptions,
-  VizelEditorState,
-  JSONContent,
-  SlashCommandItem,
-  SlashCommandOptions,
-  VizelLinkOptions,
-  VizelTableOptions,
-} from "@vizel/core";
-
-// Re-export core extensions
-export {
-  createVizelExtensions,
-  StarterKit,
-  Placeholder,
-  SlashCommand,
-  defaultSlashCommands,
-  filterSlashCommands,
-  createImageExtension,
-  Image,
-  createLinkExtension,
-  Link,
-  createTableExtensions,
-  Table,
-  TableRow,
-  TableHeader,
-  TableCell,
-  type VizelStarterKitOptions,
-  type VizelImageOptions,
-} from "@vizel/core";

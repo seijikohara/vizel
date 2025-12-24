@@ -1,5 +1,5 @@
-import { createContext, useContext, type ReactNode } from "react";
 import type { Editor } from "@vizel/core";
+import { createContext, type ReactNode, useContext } from "react";
 
 interface EditorContextValue {
   editor: Editor | null;
@@ -16,11 +16,7 @@ export interface EditorProviderProps {
  * Provider component that makes the editor instance available to child components.
  */
 export function EditorProvider({ editor, children }: EditorProviderProps) {
-  return (
-    <EditorContext.Provider value={{ editor }}>
-      {children}
-    </EditorContext.Provider>
-  );
+  return <EditorContext.Provider value={{ editor }}>{children}</EditorContext.Provider>;
 }
 
 /**

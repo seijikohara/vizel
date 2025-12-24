@@ -1,5 +1,5 @@
-import { ref, computed, type Ref, type ComputedRef } from "vue";
 import type { SlashCommandItem } from "@vizel/core";
+import { type ComputedRef, computed, type Ref, ref } from "vue";
 
 export interface UseSlashMenuOptions {
   /** Initial items */
@@ -78,8 +78,7 @@ export function useSlashMenu(options: UseSlashMenuOptions = {}): UseSlashMenuRet
 
   function moveUp() {
     if (items.value.length === 0) return;
-    selectedIndex.value =
-      (selectedIndex.value + items.value.length - 1) % items.value.length;
+    selectedIndex.value = (selectedIndex.value + items.value.length - 1) % items.value.length;
   }
 
   function moveDown() {

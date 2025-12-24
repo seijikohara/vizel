@@ -5,82 +5,71 @@
  */
 
 // Tiptap React re-exports for convenience
-export { useEditor, EditorContent as TiptapEditorContent } from "@tiptap/react";
-
-// Editor components
-export {
-  EditorRoot,
-  EditorContent,
-  EditorProvider,
-  useEditorContext,
-  useEditorContextSafe,
-  type EditorRootProps,
-  type EditorContentProps,
-  type EditorProviderProps,
-} from "./components/index.ts";
-
-// BubbleMenu components
-export {
-  BubbleMenu,
-  BubbleMenuButton,
-  BubbleMenuDivider,
-  BubbleMenuLinkEditor,
-  BubbleMenuToolbar,
-  type BubbleMenuProps,
-  type BubbleMenuButtonProps,
-  type BubbleMenuDividerProps,
-  type BubbleMenuLinkEditorProps,
-  type BubbleMenuToolbarProps,
-} from "./components/index.ts";
-
-// SlashMenu components
-export {
-  SlashMenu,
-  SlashMenuItem,
-  SlashMenuEmpty,
-  createSlashMenuRenderer,
-  type SlashMenuProps,
-  type SlashMenuRef,
-  type SlashMenuItemProps,
-  type SlashMenuEmptyProps,
-  type SlashMenuRendererOptions,
-} from "./components/index.ts";
-
-// Hooks
-export { useVizelEditor, type UseVizelEditorOptions } from "./hooks/index.ts";
-
-// Utilities (framework-agnostic)
-export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";
-
+export { EditorContent as TiptapEditorContent, useEditor } from "@tiptap/react";
 // Re-export core types for convenience
 export type {
-  VizelEditorOptions,
-  VizelEditorState,
   Editor,
   JSONContent,
   SlashCommandItem,
   SlashCommandOptions,
+  VizelEditorOptions,
+  VizelEditorState,
   VizelLinkOptions,
   VizelTableOptions,
 } from "@vizel/core";
-
 // Re-export core extensions
 export {
+  createImageExtension,
+  createLinkExtension,
+  createTableExtensions,
   createVizelExtensions,
-  StarterKit,
-  Placeholder,
-  SlashCommand,
   defaultSlashCommands,
   filterSlashCommands,
-  createImageExtension,
   Image,
-  createLinkExtension,
   Link,
-  createTableExtensions,
+  Placeholder,
+  SlashCommand,
+  StarterKit,
   Table,
-  TableRow,
-  TableHeader,
   TableCell,
-  type VizelStarterKitOptions,
+  TableHeader,
+  TableRow,
   type VizelImageOptions,
+  type VizelStarterKitOptions,
 } from "@vizel/core";
+// Editor components
+// BubbleMenu components
+// SlashMenu components
+export {
+  BubbleMenu,
+  BubbleMenuButton,
+  type BubbleMenuButtonProps,
+  BubbleMenuDivider,
+  type BubbleMenuDividerProps,
+  BubbleMenuLinkEditor,
+  type BubbleMenuLinkEditorProps,
+  type BubbleMenuProps,
+  BubbleMenuToolbar,
+  type BubbleMenuToolbarProps,
+  createSlashMenuRenderer,
+  EditorContent,
+  type EditorContentProps,
+  EditorProvider,
+  type EditorProviderProps,
+  EditorRoot,
+  type EditorRootProps,
+  SlashMenu,
+  SlashMenuEmpty,
+  type SlashMenuEmptyProps,
+  SlashMenuItem,
+  type SlashMenuItemProps,
+  type SlashMenuProps,
+  type SlashMenuRef,
+  type SlashMenuRendererOptions,
+  useEditorContext,
+  useEditorContextSafe,
+} from "./components/index.ts";
+// Hooks
+export { type UseVizelEditorOptions, useVizelEditor } from "./hooks/index.ts";
+// Utilities (framework-agnostic)
+export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";

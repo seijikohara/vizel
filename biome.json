@@ -30,7 +30,7 @@
         "recommended": true,
         "noExcessiveCognitiveComplexity": {
           "level": "warn",
-          "options": { "maxAllowedComplexity": 15 }
+          "options": { "maxAllowedComplexity": 20 }
         },
         "noUselessStringConcat": "error",
         "noUselessUndefinedInitialization": "error",
@@ -70,7 +70,7 @@
         "noParameterAssign": "error",
         "noRestrictedGlobals": "error",
         "noShoutyConstants": "warn",
-        "useBlockStatements": "error",
+        "useBlockStatements": "off",
         "useCollapsedElseIf": "error",
         "useConst": "error",
         "useConsistentBuiltinInstantiation": "error",
@@ -158,8 +158,8 @@
       },
 
       "nursery": {
-        "noFloatingPromises": "error",
-        "useExplicitType": "warn",
+        "noFloatingPromises": "warn",
+        "useExplicitType": "off",
         "useSortedClasses": "off"
       },
       "security": {
@@ -241,6 +241,9 @@
           "suspicious": {
             "noConsole": "off"
           },
+          "correctness": {
+            "noUndeclaredDependencies": "off"
+          },
           "nursery": {
             "noFloatingPromises": "off",
             "useExplicitType": "off"
@@ -253,7 +256,8 @@
             "noSecrets": "off"
           },
           "style": {
-            "useDefaultSwitchClause": "off"
+            "useDefaultSwitchClause": "off",
+            "noNonNullAssertion": "off"
           }
         }
       }

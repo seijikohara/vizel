@@ -1,6 +1,6 @@
 import { useEditor } from "@tiptap/react";
+import type { Editor, VizelEditorOptions } from "@vizel/core";
 import { createVizelExtensions, type Extensions } from "@vizel/core";
-import type { VizelEditorOptions, Editor } from "@vizel/core";
 
 export interface UseVizelEditorOptions extends VizelEditorOptions {
   /** Additional extensions to include */
@@ -22,9 +22,7 @@ export interface UseVizelEditorOptions extends VizelEditorOptions {
  * return <EditorContent editor={editor} />;
  * ```
  */
-export function useVizelEditor(
-  options: UseVizelEditorOptions = {}
-): Editor | null {
+export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | null {
   const {
     initialContent,
     placeholder,
@@ -40,10 +38,7 @@ export function useVizelEditor(
   } = options;
 
   const editor = useEditor({
-    extensions: [
-      ...createVizelExtensions({ placeholder }),
-      ...additionalExtensions,
-    ],
+    extensions: [...createVizelExtensions({ placeholder }), ...additionalExtensions],
     content: initialContent,
     editable,
     autofocus,

@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
 import type { Editor } from "@vizel/core";
+import { useCallback, useState } from "react";
 
 export interface BubbleMenuLinkEditorProps {
   editor: Editor;
@@ -27,11 +27,7 @@ export interface BubbleMenuLinkEditorProps {
  * )}
  * ```
  */
-export function BubbleMenuLinkEditor({
-  editor,
-  onClose,
-  className,
-}: BubbleMenuLinkEditorProps) {
+export function BubbleMenuLinkEditor({ editor, onClose, className }: BubbleMenuLinkEditorProps) {
   const currentHref = editor.getAttributes("link").href || "";
   const [url, setUrl] = useState(currentHref);
 
@@ -54,17 +50,13 @@ export function BubbleMenuLinkEditor({
   }, [editor, onClose]);
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={`vizel-link-editor ${className ?? ""}`}
-    >
+    <form onSubmit={handleSubmit} className={`vizel-link-editor ${className ?? ""}`}>
       <input
         type="url"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         placeholder="Enter URL..."
         className="vizel-link-input"
-        autoFocus
       />
       <button type="submit" className="vizel-link-button" title="Apply">
         OK

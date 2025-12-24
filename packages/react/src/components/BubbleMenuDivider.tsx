@@ -16,7 +16,5 @@ export interface BubbleMenuDividerProps {
  * ```
  */
 export function BubbleMenuDivider({ className }: BubbleMenuDividerProps) {
-  return (
-    <span className={`vizel-bubble-menu-divider ${className ?? ""}`} />
-  );
+  return <span className={`vizel-bubble-menu-divider ${className ?? ""}`} />;
 }

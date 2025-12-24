@@ -1,8 +1,8 @@
 import { ReactRenderer } from "@tiptap/react";
-import tippy, { type Instance as TippyInstance } from "tippy.js";
 import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
-import { SlashMenu, type SlashMenuRef } from "./SlashMenu.tsx";
 import type { SlashCommandItem } from "@vizel/core";
+import tippy, { type Instance as TippyInstance } from "tippy.js";
+import { SlashMenu, type SlashMenuRef } from "./SlashMenu.tsx";
 
 export interface SlashMenuRendererOptions {
   /** Custom class name for the menu */

@@ -1,14 +1,14 @@
 import {
-  Editor,
   BubbleMenuExtension,
-  createVanillaSlashMenuRenderer,
-  StarterKit,
-  Placeholder,
-  SlashCommand,
-  defaultSlashCommands,
   createImageExtension,
   createLinkExtension,
   createTableExtensions,
+  createVanillaSlashMenuRenderer,
+  defaultSlashCommands,
+  Editor,
+  Placeholder,
+  SlashCommand,
+  StarterKit,
 } from "@vizel/svelte";
 
 const initialContent = {
@@ -56,9 +56,7 @@ const initialContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: "Bubble menu - select text to format" },
-              ],
+              content: [{ type: "text", text: "Bubble menu - select text to format" }],
             },
           ],
         },
@@ -67,9 +65,7 @@ const initialContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: 'Slash commands - type "/" for options' },
-              ],
+              content: [{ type: "text", text: 'Slash commands - type "/" for options' }],
             },
           ],
         },
@@ -87,9 +83,7 @@ const initialContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: 'Tables - type "/table" to insert' },
-              ],
+              content: [{ type: "text", text: 'Tables - type "/table" to insert' }],
             },
           ],
         },
@@ -232,24 +226,22 @@ const editor = new Editor({
 });
 
 // Setup bubble menu button handlers
-bubbleMenuElement
-  .querySelectorAll(".vizel-bubble-menu-button")
-  .forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const action = btn.getAttribute("data-action");
-      switch (action) {
-        case "bold":
-          editor.chain().focus().toggleBold().run();
-          break;
-        case "italic":
-          editor.chain().focus().toggleItalic().run();
-          break;
-        case "strike":
-          editor.chain().focus().toggleStrike().run();
-          break;
-        case "code":
-          editor.chain().focus().toggleCode().run();
-          break;
-      }
-    });
+bubbleMenuElement.querySelectorAll(".vizel-bubble-menu-button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const action = btn.getAttribute("data-action");
+    switch (action) {
+      case "bold":
+        editor.chain().focus().toggleBold().run();
+        break;
+      case "italic":
+        editor.chain().focus().toggleItalic().run();
+        break;
+      case "strike":
+        editor.chain().focus().toggleStrike().run();
+        break;
+      case "code":
+        editor.chain().focus().toggleCode().run();
+        break;
+    }
   });
+});

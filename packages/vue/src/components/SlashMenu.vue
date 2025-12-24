@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { ref, watch, useSlots } from "vue";
 import type { SlashCommandItem } from "@vizel/core";
-import SlashMenuItem from "./SlashMenuItem.vue";
-import SlashMenuEmpty from "./SlashMenuEmpty.vue";
+import { ref, useSlots, watch } from "vue";
 
 const props = defineProps<{
   items: SlashCommandItem[];
@@ -33,8 +31,7 @@ function selectItem(index: number) {
 
 function handleKeyDown(event: KeyboardEvent): boolean {
   if (event.key === "ArrowUp") {
-    selectedIndex.value =
-      (selectedIndex.value + props.items.length - 1) % props.items.length;
+    selectedIndex.value = (selectedIndex.value + props.items.length - 1) % props.items.length;
     return true;
   }
 

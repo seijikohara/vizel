@@ -1,5 +1,5 @@
-import tippy, { type Instance as TippyInstance } from "tippy.js";
 import type { SlashCommandItem } from "@vizel/core";
+import tippy, { type Instance as TippyInstance } from "tippy.js";
 
 interface SlashMenuState {
   popup: TippyInstance[] | null;
@@ -62,7 +62,7 @@ export function createVanillaSlashMenuRenderer() {
 
     state.menuElement.querySelectorAll(".vizel-slash-menu-item").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const index = parseInt(btn.getAttribute("data-index") || "0");
+        const index = Number.parseInt(btn.getAttribute("data-index") || "0", 10);
         if (state.commandFn && state.items[index]) {
           state.commandFn(state.items[index]);
         }
@@ -117,8 +117,7 @@ export function createVanillaSlashMenuRenderer() {
 
       onKeyDown: (props: { event: KeyboardEvent }) => {
         if (props.event.key === "ArrowUp") {
-          state.selectedIndex =
-            (state.selectedIndex + state.items.length - 1) % state.items.length;
+          state.selectedIndex = (state.selectedIndex + state.items.length - 1) % state.items.length;
           renderMenu();
           return true;
         }
