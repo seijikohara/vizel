@@ -533,3 +533,43 @@ body {
 .resize-cursor {
   cursor: col-resize;
 }
+
+/* Image Upload Placeholder */
+.vizel-image-placeholder {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  margin: 0.5em 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.vizel-image-uploading {
+  max-width: 100%;
+  height: auto;
+  filter: blur(2px);
+  opacity: 0.7;
+}
+
+.vizel-image-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid var(--framework-color);
+  border-radius: 50%;
+  animation: vizel-spin 1s linear infinite;
+}
+
+@keyframes vizel-spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}

@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/vue-3";
+import type { Editor } from "@tiptap/core";
 import { ref } from "vue";
+import BubbleMenuButton from "./BubbleMenuButton.vue";
+import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.vue";
 
 const props = defineProps<{
   editor: Editor;

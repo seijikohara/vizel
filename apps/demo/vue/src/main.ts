@@ -1,6 +1,7 @@
 import {
   BubbleMenuExtension,
-  createImageExtension,
+  createImageUploadExtension,
+  createImageUploader,
   createLinkExtension,
   createTableExtensions,
   createVanillaSlashMenuRenderer,
@@ -11,6 +12,28 @@ import {
   StarterKit,
 } from "@vizel/vue";
 import { createApp, h, onBeforeUnmount, onMounted, ref } from "vue";
+
+// Mock upload function that simulates server upload
+async function mockUploadImage(file: File): Promise<string> {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+const uploadOptions = {
+  onUpload: mockUploadImage,
+  maxFileSize: 10 * 1024 * 1024,
+  onValidationError: (error: { message: string }) => {
+    alert(`Validation error: ${error.message}`);
+  },
+  onUploadError: (error: Error) => {
+    alert(`Upload failed: ${error.message}`);
+  },
+};
 
 const initialContent = {
   type: "doc",
@@ -75,7 +98,7 @@ const initialContent = {
           content: [
             {
               type: "paragraph",
-              content: [{ type: "text", text: "Links - clickable hyperlinks" }],
+              content: [{ type: "text", text: "Links - select text and click L button" }],
             },
           ],
         },
@@ -157,7 +180,9 @@ const App = {
               items: defaultSlashCommands,
               suggestion: createVanillaSlashMenuRenderer(),
             }),
-            createImageExtension(),
+            ...createImageUploadExtension({
+              upload: uploadOptions,
+            }),
             createLinkExtension(),
             ...createTableExtensions(),
           ],
@@ -173,7 +198,22 @@ const App = {
       }
     });
 
+    // Handle vizel:upload-image custom event from slash command
+    const handleUploadEvent = (event: Event) => {
+      if (!editor) return;
+      const customEvent = event as CustomEvent<{ file: File }>;
+      const { file } = customEvent.detail;
+      const pos = editor.state.selection.from;
+      const uploadFn = createImageUploader(uploadOptions);
+      uploadFn(file, editor.view, pos);
+    };
+
+    onMounted(() => {
+      document.addEventListener("vizel:upload-image", handleUploadEvent);
+    });
+
     onBeforeUnmount(() => {
+      document.removeEventListener("vizel:upload-image", handleUploadEvent);
       if (editor) {
         editor.destroy();
       }
@@ -183,6 +223,12 @@ const App = {
     const toggleItalic = () => editor?.chain().focus().toggleItalic().run();
     const toggleStrike = () => editor?.chain().focus().toggleStrike().run();
     const toggleCode = () => editor?.chain().focus().toggleCode().run();
+    const toggleLink = () => {
+      const url = window.prompt("Enter URL:");
+      if (url) {
+        editor?.chain().focus().setLink({ href: url }).run();
+      }
+    };
     const toggleOutput = () => {
       showOutput.value = !showOutput.value;
     };
@@ -196,6 +242,7 @@ const App = {
       toggleItalic,
       toggleStrike,
       toggleCode,
+      toggleLink,
       toggleOutput,
     };
   },
@@ -237,6 +284,10 @@ const App = {
             h("span", { class: "feature-icon" }, "L"),
             h("span", "Links"),
           ]),
+          h("div", { class: "feature-tag" }, [
+            h("span", { class: "feature-icon" }, "U"),
+            h("span", "Image Upload"),
+          ]),
         ]),
 
         // Editor Container
@@ -251,6 +302,7 @@ const App = {
               {
                 ref: "bubbleMenuElement",
                 class: "vizel-bubble-menu",
+                style: { visibility: "hidden" },
               },
               [
                 h(
@@ -284,6 +336,14 @@ const App = {
                     onClick: this.toggleCode,
                   },
                   "</>"
+                ),
+                h(
+                  "button",
+                  {
+                    class: "vizel-bubble-menu-button",
+                    onClick: this.toggleLink,
+                  },
+                  "L"
                 ),
               ]
             ),

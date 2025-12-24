@@ -1,21 +1,37 @@
 <script setup lang="ts">
-import { Editor } from "@tiptap/core";
-import Placeholder from "@tiptap/extension-placeholder";
-import StarterKit from "@tiptap/starter-kit";
+import { useEditor } from "@tiptap/vue-3";
 import {
-  createImageExtension,
+  BubbleMenu,
+  createImageUploadExtension,
+  createImageUploader,
   createLinkExtension,
+  createSlashMenuRenderer,
   createTableExtensions,
   defaultSlashCommands,
+  EditorContent,
+  type JSONContent,
+  Placeholder,
   SlashCommand,
-} from "@vizel/core";
+  StarterKit,
+} from "@vizel/vue";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
-type JSONContent = Record<string, unknown>;
+// Mock upload function that simulates server upload
+async function mockUploadImage(file: File): Promise<string> {
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // Convert to base64 for demo purposes
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 const output = ref<JSONContent | null>(null);
-const editorRef = ref<HTMLElement | null>(null);
-let editor: Editor | null = null;
+const showOutput = ref(false);
 
 const initialContent: JSONContent = {
   type: "doc",
@@ -23,7 +39,7 @@ const initialContent: JSONContent = {
     {
       type: "heading",
       attrs: { level: 1 },
-      content: [{ type: "text", text: "Welcome to Vizel Editor (Vue)" }],
+      content: [{ type: "text", text: "Welcome to Vizel Editor" }],
     },
     {
       type: "paragraph",
@@ -46,7 +62,7 @@ const initialContent: JSONContent = {
       content: [
         { type: "text", text: "Try typing " },
         { type: "text", marks: [{ type: "code" }], text: "/" },
-        { type: "text", text: " for commands." },
+        { type: "text", text: " for commands, or select text for formatting." },
       ],
     },
     {
@@ -62,6 +78,15 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
+              content: [{ type: "text", text: "Bubble menu - select text to format" }],
+            },
+          ],
+        },
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
               content: [{ type: "text", text: 'Slash commands - type "/" for options' }],
             },
           ],
@@ -71,7 +96,7 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [{ type: "text", text: "Links - clickable hyperlinks" }],
+              content: [{ type: "text", text: "Links - select text and click L button" }],
             },
           ],
         },
@@ -102,61 +127,132 @@ const initialContent: JSONContent = {
   ],
 };
 
+const uploadOptions = {
+  onUpload: mockUploadImage,
+  maxFileSize: 10 * 1024 * 1024, // 10MB
+  onValidationError: (error: { message: string }) => {
+    alert(`Validation error: ${error.message}`);
+  },
+  onUploadError: (error: Error) => {
+    alert(`Upload failed: ${error.message}`);
+  },
+};
+
+// Handle vizel:upload-image custom event from slash command
+function handleUploadEvent(event: Event) {
+  if (!editor.value) return;
+  const customEvent = event as CustomEvent<{ file: File }>;
+  const { file } = customEvent.detail;
+  const pos = editor.value.state.selection.from;
+  const uploadFn = createImageUploader(uploadOptions);
+  uploadFn(file, editor.value.view, pos);
+}
+
+const editor = useEditor({
+  extensions: [
+    StarterKit.configure({
+      link: false,
+    }),
+    Placeholder.configure({
+      placeholder: "Type '/' for commands...",
+      emptyEditorClass: "vizel-editor-empty",
+      emptyNodeClass: "vizel-node-empty",
+    }),
+    SlashCommand.configure({
+      items: defaultSlashCommands,
+      suggestion: createSlashMenuRenderer(),
+    }),
+    ...createImageUploadExtension({
+      upload: uploadOptions,
+    }),
+    createLinkExtension(),
+    ...createTableExtensions(),
+  ],
+  content: initialContent,
+  autofocus: "end",
+  onUpdate: ({ editor: e }) => {
+    output.value = e.getJSON();
+  },
+  onCreate: ({ editor: e }) => {
+    output.value = e.getJSON();
+  },
+});
+
 onMounted(() => {
-  if (editorRef.value) {
-    editor = new Editor({
-      element: editorRef.value,
-      extensions: [
-        StarterKit,
-        Placeholder.configure({
-          placeholder: "Type '/' for commands...",
-          emptyEditorClass: "vizel-editor-empty",
-          emptyNodeClass: "vizel-node-empty",
-        }),
-        SlashCommand.configure({
-          items: defaultSlashCommands,
-        }),
-        createLinkExtension(),
-        createImageExtension(),
-        ...createTableExtensions(),
-      ],
-      content: initialContent,
-      autofocus: "end",
-      onUpdate: ({ editor: e }) => {
-        output.value = e.getJSON();
-      },
-      onCreate: ({ editor: e }) => {
-        output.value = e.getJSON();
-      },
-    });
-  }
+  document.addEventListener("vizel:upload-image", handleUploadEvent);
 });
 
 onBeforeUnmount(() => {
-  if (editor) {
-    editor.destroy();
-  }
+  document.removeEventListener("vizel:upload-image", handleUploadEvent);
 });
 </script>
 
 <template>
   <div class="app">
     <header class="header">
-      <h1>Vizel Editor Demo</h1>
-      <p>Vue 3 • A Notion-style visual editor</p>
+      <div class="header-content">
+        <svg class="framework-logo" viewBox="0 0 128 128">
+          <path fill="currentColor" d="M78.8,10L64,35.4L49.2,10H0l64,110l64-110H78.8z" />
+          <path fill="currentColor" d="M78.8,10L64,35.4L49.2,10H25.6L64,76l38.4-66H78.8z" opacity="0.6" />
+        </svg>
+        <div class="header-text">
+          <h1>Vizel Editor</h1>
+          <span class="framework-badge">Vue 3</span>
+        </div>
+      </div>
+      <p class="header-description">
+        A Notion-style visual editor for modern web applications
+      </p>
     </header>
 
     <main class="main">
-      <div class="editor-container">
-        <div class="editor-root">
-          <div ref="editorRef" class="editor-content"></div>
+      <div class="features-bar">
+        <div class="feature-tag">
+          <span class="feature-icon">/</span>
+          <span>Slash Commands</span>
+        </div>
+        <div class="feature-tag">
+          <span class="feature-icon">B</span>
+          <span>Bubble Menu</span>
+        </div>
+        <div class="feature-tag">
+          <span class="feature-icon">T</span>
+          <span>Tables</span>
+        </div>
+        <div class="feature-tag">
+          <span class="feature-icon">L</span>
+          <span>Links</span>
+        </div>
+        <div class="feature-tag">
+          <span class="feature-icon">U</span>
+          <span>Image Upload</span>
         </div>
       </div>
 
-      <details class="output">
-        <summary>JSON Output</summary>
-        <pre>{{ JSON.stringify(output, null, 2) }}</pre>
-      </details>
+      <div class="editor-container">
+        <div class="editor-root">
+          <EditorContent :editor="editor" class="editor-content" />
+          <BubbleMenu v-if="editor" :editor="editor" />
+        </div>
+      </div>
+
+      <div class="output-section">
+        <button
+          type="button"
+          class="output-toggle"
+          @click="showOutput = !showOutput"
+        >
+          <span class="output-toggle-icon">{{ showOutput ? '−' : '+' }}</span>
+          <span>JSON Output</span>
+        </button>
+        <pre v-if="showOutput" class="output-content">{{ JSON.stringify(output, null, 2) }}</pre>
+      </div>
     </main>
+
+    <footer class="footer">
+      <p>
+        Built with <span class="footer-highlight">@vizel/vue</span>
+      </p>
+    </footer>
   </div>
 </template>
