@@ -93,6 +93,30 @@ export const defaultSlashCommands: SlashCommandItem[] = [
       }
     },
   },
+  {
+    title: "Upload Image",
+    description: "Upload an image from your device",
+    icon: "U",
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).run();
+
+      // Open file picker dialog
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = () => {
+        const file = input.files?.[0];
+        if (file) {
+          // Dispatch custom event for external handling
+          const event = new CustomEvent("vizel:upload-image", {
+            detail: { file, editor },
+          });
+          document.dispatchEvent(event);
+        }
+      };
+      input.click();
+    },
+  },
 ];
 
 export function filterSlashCommands(items: SlashCommandItem[], query: string): SlashCommandItem[] {

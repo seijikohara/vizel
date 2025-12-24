@@ -20,12 +20,21 @@ export type {
 // Re-export core extensions
 export {
   createImageExtension,
+  createImageUploadExtension,
+  createImageUploader,
+  createImageUploadPlugin,
   createLinkExtension,
   createTableExtensions,
   createVizelExtensions,
   defaultSlashCommands,
   filterSlashCommands,
+  getImageUploadPluginKey,
+  handleImageDrop,
+  handleImagePaste,
   Image,
+  type ImageUploadOptions,
+  type ImageValidationError,
+  type ImageValidationErrorType,
   Link,
   Placeholder,
   SlashCommand,
@@ -34,8 +43,11 @@ export {
   TableCell,
   TableHeader,
   TableRow,
+  type UploadImageFn,
   type VizelImageOptions,
+  type VizelImageUploadOptions,
   type VizelStarterKitOptions,
+  validateImageFile,
 } from "@vizel/core";
 // Editor components
 // BubbleMenu components

@@ -1,7 +1,19 @@
 export {
   createImageExtension,
+  createImageUploadExtension,
+  createImageUploader,
+  createImageUploadPlugin,
+  getImageUploadPluginKey,
+  handleImageDrop,
+  handleImagePaste,
   Image,
+  type ImageUploadOptions,
+  type ImageValidationError,
+  type ImageValidationErrorType,
+  type UploadImageFn,
   type VizelImageOptions,
+  type VizelImageUploadOptions,
+  validateImageFile,
 } from "./image.ts";
 export {
   createLinkExtension,

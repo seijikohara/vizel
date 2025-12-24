@@ -11,12 +11,21 @@ export { Editor as TiptapEditor } from "@tiptap/core";
 // Extensions
 export {
   createImageExtension,
+  createImageUploadExtension,
+  createImageUploader,
+  createImageUploadPlugin,
   createLinkExtension,
   createTableExtensions,
   createVizelExtensions,
   defaultSlashCommands,
   filterSlashCommands,
+  getImageUploadPluginKey,
+  handleImageDrop,
+  handleImagePaste,
   Image,
+  type ImageUploadOptions,
+  type ImageValidationError,
+  type ImageValidationErrorType,
   Link,
   Placeholder,
   SlashCommand,
@@ -27,10 +36,13 @@ export {
   TableCell,
   TableHeader,
   TableRow,
+  type UploadImageFn,
   type VizelImageOptions,
+  type VizelImageUploadOptions,
   type VizelLinkOptions,
   type VizelStarterKitOptions,
   type VizelTableOptions,
+  validateImageFile,
 } from "./extensions/index.ts";
 // Types
 export type {
