@@ -1,7 +1,7 @@
-import { createApp, h, ref, type App } from "vue";
-import tippy, { type Instance as TippyInstance } from "tippy.js";
 import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 import type { SlashCommandItem } from "@vizel/core";
+import tippy, { type Instance as TippyInstance } from "tippy.js";
+import { type App, createApp, h, ref } from "vue";
 import { SlashMenu } from "../components/index.ts";
 
 export interface SlashMenuRendererOptions {
@@ -38,7 +38,7 @@ export function createSlashMenuRenderer(
       let app: App | null = null;
       let popup: TippyInstance[] | null = null;
       let container: HTMLElement | null = null;
-      let componentRef = ref<SlashMenuRef | null>(null);
+      const componentRef = ref<SlashMenuRef | null>(null);
       const items = ref<SlashCommandItem[]>([]);
       const commandFn = ref<((item: SlashCommandItem) => void) | null>(null);
 

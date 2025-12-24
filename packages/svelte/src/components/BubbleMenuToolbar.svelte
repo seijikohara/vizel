@@ -1,15 +1,15 @@
 <script lang="ts">
-  import type { Editor } from "@vizel/core";
-  import BubbleMenuButton from "./BubbleMenuButton.svelte";
-  import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.svelte";
+import type { Editor } from "@vizel/core";
+import BubbleMenuButton from "./BubbleMenuButton.svelte";
+import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.svelte";
 
-  interface Props {
-    editor: Editor;
-    class?: string;
-  }
+interface Props {
+  editor: Editor;
+  class?: string;
+}
 
-  let { editor, class: className }: Props = $props();
-  let showLinkEditor = $state(false);
+let { editor, class: className }: Props = $props();
+let showLinkEditor = $state(false);
 </script>
 
 {#if showLinkEditor}

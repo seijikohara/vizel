@@ -1,6 +1,6 @@
-import { useEditor, type Editor } from "@tiptap/vue-3";
-import { createVizelExtensions, type Extensions } from "@vizel/core";
+import { type Editor, useEditor } from "@tiptap/vue-3";
 import type { VizelEditorOptions } from "@vizel/core";
+import { createVizelExtensions, type Extensions } from "@vizel/core";
 import type { ShallowRef } from "vue";
 
 export interface UseVizelEditorOptions extends VizelEditorOptions {
@@ -47,10 +47,7 @@ export function useVizelEditor(
   } = options;
 
   return useEditor({
-    extensions: [
-      ...createVizelExtensions({ placeholder }),
-      ...additionalExtensions,
-    ],
+    extensions: [...createVizelExtensions({ placeholder }), ...additionalExtensions],
     content: initialContent,
     editable,
     autofocus,

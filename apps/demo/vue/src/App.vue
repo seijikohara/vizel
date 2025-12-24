@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue";
 import { Editor } from "@tiptap/core";
-import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import StarterKit from "@tiptap/starter-kit";
 import {
-  SlashCommand,
-  defaultSlashCommands,
-  createLinkExtension,
   createImageExtension,
+  createLinkExtension,
   createTableExtensions,
+  defaultSlashCommands,
+  SlashCommand,
 } from "@vizel/core";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 type JSONContent = Record<string, unknown>;
 
@@ -62,9 +62,7 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: 'Slash commands - type "/" for options' },
-              ],
+              content: [{ type: "text", text: 'Slash commands - type "/" for options' }],
             },
           ],
         },
@@ -82,9 +80,7 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: 'Tables - type "/table" to insert' },
-              ],
+              content: [{ type: "text", text: 'Tables - type "/table" to insert' }],
             },
           ],
         },

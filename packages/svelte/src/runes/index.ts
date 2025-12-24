@@ -1,7 +1,7 @@
 export {
-  createBubbleMenu,
-  type CreateBubbleMenuOptions,
   type BubbleMenuState,
+  type CreateBubbleMenuOptions,
+  createBubbleMenu,
 } from "./bubbleMenu.svelte.ts";
 
 export {

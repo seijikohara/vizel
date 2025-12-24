@@ -5,39 +5,38 @@
  * Built on top of Tiptap and ProseMirror.
  */
 
-// Types
-export type {
-  VizelEditorOptions,
-  VizelEditorState,
-  Editor,
-  JSONContent,
-  Extensions,
-} from "./types.ts";
+// Re-export Tiptap core for advanced usage
+export { Editor as TiptapEditor } from "@tiptap/core";
 
 // Extensions
 export {
+  createImageExtension,
+  createLinkExtension,
+  createTableExtensions,
   createVizelExtensions,
-  StarterKit,
-  Placeholder,
-  type VizelStarterKitOptions,
-  SlashCommand,
   defaultSlashCommands,
   filterSlashCommands,
+  Image,
+  Link,
+  Placeholder,
+  SlashCommand,
   type SlashCommandItem,
   type SlashCommandOptions,
-  createImageExtension,
-  Image,
-  type VizelImageOptions,
-  createLinkExtension,
-  Link,
-  type VizelLinkOptions,
-  createTableExtensions,
+  StarterKit,
   Table,
-  TableRow,
-  TableHeader,
   TableCell,
+  TableHeader,
+  TableRow,
+  type VizelImageOptions,
+  type VizelLinkOptions,
+  type VizelStarterKitOptions,
   type VizelTableOptions,
 } from "./extensions/index.ts";
-
-// Re-export Tiptap core for advanced usage
-export { Editor as TiptapEditor } from "@tiptap/core";
+// Types
+export type {
+  Editor,
+  Extensions,
+  JSONContent,
+  VizelEditorOptions,
+  VizelEditorState,
+} from "./types.ts";

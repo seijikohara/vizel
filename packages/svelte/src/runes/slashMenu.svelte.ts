@@ -53,9 +53,7 @@ export interface SlashMenuState {
  * {/each}
  * ```
  */
-export function createSlashMenu(
-  initialItems: SlashCommandItem[] = []
-): SlashMenuState {
+export function createSlashMenu(initialItems: SlashCommandItem[] = []): SlashMenuState {
   let items = $state<SlashCommandItem[]>(initialItems);
   let selectedIndex = $state(0);
 

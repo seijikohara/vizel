@@ -7,7 +7,7 @@
     "dev": "bun --hot run server.ts"
   },
   "dependencies": {
-    "@vizel/core": "workspace:*",
+    "@vizel/vue": "workspace:*",
     "@tiptap/core": "^3.14.0",
     "@tiptap/starter-kit": "^3.14.0",
     "@tiptap/extension-placeholder": "^3.14.0",

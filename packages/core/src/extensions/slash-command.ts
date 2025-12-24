@@ -1,10 +1,7 @@
 import { Extension } from "@tiptap/core";
 import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
 import type { SlashCommandItem } from "../commands/slash-items.ts";
-import {
-  defaultSlashCommands,
-  filterSlashCommands,
-} from "../commands/slash-items.ts";
+import { defaultSlashCommands, filterSlashCommands } from "../commands/slash-items.ts";
 
 export interface SlashCommandOptions {
   /** Custom slash command items (defaults to heading, list, quote, code) */

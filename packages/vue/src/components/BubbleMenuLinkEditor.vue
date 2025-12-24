@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
 import type { Editor } from "@tiptap/vue-3";
+import { computed, onMounted, ref } from "vue";
 
 const props = defineProps<{
   editor: Editor;

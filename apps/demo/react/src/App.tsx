@@ -1,18 +1,18 @@
-import { useState, useCallback } from "react";
 import {
-  useEditor,
-  TiptapEditorContent,
   BubbleMenu,
-  createSlashMenuRenderer,
-  StarterKit,
-  Placeholder,
-  SlashCommand,
-  defaultSlashCommands,
   createImageExtension,
   createLinkExtension,
+  createSlashMenuRenderer,
   createTableExtensions,
+  defaultSlashCommands,
   type JSONContent,
+  Placeholder,
+  SlashCommand,
+  StarterKit,
+  TiptapEditorContent,
+  useEditor,
 } from "@vizel/react";
+import { useCallback, useState } from "react";
 
 const initialContent: JSONContent = {
   type: "doc",
@@ -59,9 +59,7 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: "Bubble menu - select text to format" },
-              ],
+              content: [{ type: "text", text: "Bubble menu - select text to format" }],
             },
           ],
         },
@@ -70,9 +68,7 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: 'Slash commands - type "/" for options' },
-              ],
+              content: [{ type: "text", text: 'Slash commands - type "/" for options' }],
             },
           ],
         },
@@ -81,9 +77,7 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: "Links - select text and click L button" },
-              ],
+              content: [{ type: "text", text: "Links - select text and click L button" }],
             },
           ],
         },
@@ -92,9 +86,7 @@ const initialContent: JSONContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: 'Tables - type "/table" to insert' },
-              ],
+              content: [{ type: "text", text: 'Tables - type "/table" to insert' }],
             },
           ],
         },
@@ -259,10 +251,7 @@ export function App() {
             {editor && (
               <BubbleMenu editor={editor}>
                 {showLinkEditor ? (
-                  <LinkEditor
-                    editor={editor}
-                    onClose={() => setShowLinkEditor(false)}
-                  />
+                  <LinkEditor editor={editor} onClose={() => setShowLinkEditor(false)} />
                 ) : (
                   <>
                     <button
@@ -274,18 +263,14 @@ export function App() {
                     </button>
                     <button
                       type="button"
-                      onClick={() =>
-                        editor.chain().focus().toggleItalic().run()
-                      }
+                      onClick={() => editor.chain().focus().toggleItalic().run()}
                       className={`vizel-bubble-menu-button ${editor.isActive("italic") ? "is-active" : ""}`}
                     >
                       <em>I</em>
                     </button>
                     <button
                       type="button"
-                      onClick={() =>
-                        editor.chain().focus().toggleStrike().run()
-                      }
+                      onClick={() => editor.chain().focus().toggleStrike().run()}
                       className={`vizel-bubble-menu-button ${editor.isActive("strike") ? "is-active" : ""}`}
                     >
                       <s>S</s>
@@ -313,17 +298,14 @@ export function App() {
 
         <div className="output-section">
           <button
+            type="button"
             className="output-toggle"
             onClick={() => setShowOutput(!showOutput)}
           >
             <span className="output-toggle-icon">{showOutput ? "−" : "+"}</span>
             <span>JSON Output</span>
           </button>
-          {showOutput && (
-            <pre className="output-content">
-              {JSON.stringify(output, null, 2)}
-            </pre>
-          )}
+          {showOutput && <pre className="output-content">{JSON.stringify(output, null, 2)}</pre>}
         </div>
       </main>
 

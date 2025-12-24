@@ -1,5 +1,5 @@
-import { useState } from "react";
 import type { Editor } from "@vizel/core";
+import { useState } from "react";
 import { BubbleMenuButton } from "./BubbleMenuButton.tsx";
 import { BubbleMenuLinkEditor } from "./BubbleMenuLinkEditor.tsx";
 
@@ -23,12 +23,7 @@ export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps)
   const [showLinkEditor, setShowLinkEditor] = useState(false);
 
   if (showLinkEditor) {
-    return (
-      <BubbleMenuLinkEditor
-        editor={editor}
-        onClose={() => setShowLinkEditor(false)}
-      />
-    );
+    return <BubbleMenuLinkEditor editor={editor} onClose={() => setShowLinkEditor(false)} />;
   }
 
   return (

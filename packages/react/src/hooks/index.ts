@@ -1,1 +1,1 @@
-export { useVizelEditor, type UseVizelEditorOptions } from "./useVizelEditor.ts";
+export { type UseVizelEditorOptions, useVizelEditor } from "./useVizelEditor.ts";

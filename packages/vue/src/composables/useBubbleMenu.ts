@@ -1,6 +1,6 @@
-import { ref, watch, onBeforeUnmount, type Ref } from "vue";
 import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
 import type { Editor } from "@tiptap/vue-3";
+import { onBeforeUnmount, type Ref, ref, watch } from "vue";
 
 export interface UseBubbleMenuOptions {
   /** The editor instance */
@@ -39,19 +39,14 @@ export interface UseBubbleMenuReturn {
  * ```
  */
 export function useBubbleMenu(options: UseBubbleMenuOptions): UseBubbleMenuReturn {
-  const {
-    editor,
-    pluginKey = "vizelBubbleMenu",
-    updateDelay = 100,
-    shouldShow,
-  } = options;
+  const { editor, pluginKey = "vizelBubbleMenu", updateDelay = 100, shouldShow } = options;
 
   const menuRef = ref<HTMLElement | null>(null);
 
   watch(
     [editor, menuRef],
     ([editorInstance, element], [oldEditor]) => {
-      if (!editorInstance || !element) return;
+      if (!(editorInstance && element)) return;
 
       // Unregister old plugin if editor changed
       if (oldEditor) {
@@ -64,8 +59,7 @@ export function useBubbleMenu(options: UseBubbleMenuOptions): UseBubbleMenuRetur
         element,
         updateDelay,
         shouldShow: shouldShow
-          ? ({ editor: e, from, to }) =>
-              shouldShow({ editor: e as Editor, from, to })
+          ? ({ editor: e, from, to }) => shouldShow({ editor: e as Editor, from, to })
           : undefined,
         options: {
           placement: "top",

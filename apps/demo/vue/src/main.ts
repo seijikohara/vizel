@@ -1,16 +1,16 @@
-import { createApp, ref, onMounted, onBeforeUnmount, h } from "vue";
 import {
-  Editor,
   BubbleMenuExtension,
-  createVanillaSlashMenuRenderer,
-  StarterKit,
-  Placeholder,
-  SlashCommand,
-  defaultSlashCommands,
   createImageExtension,
   createLinkExtension,
   createTableExtensions,
+  createVanillaSlashMenuRenderer,
+  defaultSlashCommands,
+  Editor,
+  Placeholder,
+  SlashCommand,
+  StarterKit,
 } from "@vizel/vue";
+import { createApp, h, onBeforeUnmount, onMounted, ref } from "vue";
 
 const initialContent = {
   type: "doc",
@@ -57,9 +57,7 @@ const initialContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: "Bubble menu - select text to format" },
-              ],
+              content: [{ type: "text", text: "Bubble menu - select text to format" }],
             },
           ],
         },
@@ -68,9 +66,7 @@ const initialContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: 'Slash commands - type "/" for options' },
-              ],
+              content: [{ type: "text", text: 'Slash commands - type "/" for options' }],
             },
           ],
         },
@@ -88,9 +84,7 @@ const initialContent = {
           content: [
             {
               type: "paragraph",
-              content: [
-                { type: "text", text: 'Tables - type "/table" to insert' },
-              ],
+              content: [{ type: "text", text: 'Tables - type "/table" to insert' }],
             },
           ],
         },
@@ -189,7 +183,9 @@ const App = {
     const toggleItalic = () => editor?.chain().focus().toggleItalic().run();
     const toggleStrike = () => editor?.chain().focus().toggleStrike().run();
     const toggleCode = () => editor?.chain().focus().toggleCode().run();
-    const toggleOutput = () => (showOutput.value = !showOutput.value);
+    const toggleOutput = () => {
+      showOutput.value = !showOutput.value;
+    };
 
     return {
       output,
@@ -303,30 +299,19 @@ const App = {
               onClick: this.toggleOutput,
             },
             [
-              h(
-                "span",
-                { class: "output-toggle-icon" },
-                this.showOutput ? "−" : "+"
-              ),
+              h("span", { class: "output-toggle-icon" }, this.showOutput ? "−" : "+"),
               h("span", "JSON Output"),
             ]
           ),
           this.showOutput
-            ? h(
-                "pre",
-                { class: "output-content" },
-                JSON.stringify(this.output, null, 2)
-              )
+            ? h("pre", { class: "output-content" }, JSON.stringify(this.output, null, 2))
             : null,
         ]),
       ]),
 
       // Footer
       h("footer", { class: "footer" }, [
-        h("p", [
-          "Built with ",
-          h("span", { class: "footer-highlight" }, "@vizel/vue"),
-        ]),
+        h("p", ["Built with ", h("span", { class: "footer-highlight" }, "@vizel/vue")]),
       ]),
     ]);
   },

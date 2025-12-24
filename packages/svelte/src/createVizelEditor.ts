@@ -1,6 +1,6 @@
 import { Editor } from "@tiptap/core";
+import type { VizelEditorOptions } from "@vizel/core";
 import { createVizelExtensions, type Extensions } from "@vizel/core";
-import type { VizelEditorOptions, JSONContent } from "@vizel/core";
 
 export interface CreateVizelEditorOptions extends VizelEditorOptions {
   /** The DOM element to mount the editor to */
@@ -57,10 +57,7 @@ export function createVizelEditor(options: CreateVizelEditorOptions): Editor {
 
   return new Editor({
     element,
-    extensions: [
-      ...createVizelExtensions({ placeholder }),
-      ...additionalExtensions,
-    ],
+    extensions: [...createVizelExtensions({ placeholder }), ...additionalExtensions],
     content: initialContent,
     editable,
     autofocus,

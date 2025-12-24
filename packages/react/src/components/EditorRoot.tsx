@@ -1,6 +1,6 @@
+import type { Editor } from "@vizel/core";
 import type { ReactNode } from "react";
 import { EditorProvider } from "./EditorContext.tsx";
-import type { Editor } from "@vizel/core";
 
 export interface EditorRootProps {
   /** The editor instance from useVizelEditor */

@@ -1,6 +1,6 @@
 import { EditorContent as TiptapEditorContent } from "@tiptap/react";
-import { useEditorContext } from "./EditorContext.tsx";
 import type { Editor } from "@vizel/core";
+import { useEditorContext } from "./EditorContext.tsx";
 
 export interface EditorContentProps {
   /** Override the editor from context */
@@ -33,11 +33,5 @@ export function EditorContent({ editor: editorProp, className }: EditorContentPr
     return null;
   }
 
-  return (
-    <TiptapEditorContent
-      editor={editor}
-      className={className}
-      data-vizel-content=""
-    />
-  );
+  return <TiptapEditorContent editor={editor} className={className} data-vizel-content="" />;
 }
