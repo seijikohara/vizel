@@ -40,12 +40,23 @@ export {
   type CreateVizelEditorOptions,
 } from "./createVizelEditor.ts";
 
-// Utilities
-export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";
+// Runes (Svelte 5 reactive state)
+export {
+  createBubbleMenu,
+  createSlashMenu,
+  type CreateBubbleMenuOptions,
+  type BubbleMenuState,
+  type SlashMenuState,
+} from "./runes/index.ts";
+
+// Renderers
 export {
   createSlashMenuRenderer,
   type SlashMenuRendererOptions,
 } from "./utils/createSlashMenuRenderer.ts";
+
+// Utilities (framework-agnostic)
+export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";
 
 // Re-export core types for convenience
 export type {

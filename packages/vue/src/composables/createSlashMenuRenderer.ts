@@ -2,7 +2,7 @@ import { createApp, h, ref, type App } from "vue";
 import tippy, { type Instance as TippyInstance } from "tippy.js";
 import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 import type { SlashCommandItem } from "@vizel/core";
-import SlashMenu from "../components/SlashMenu.vue";
+import { SlashMenu } from "../components/index.ts";
 
 export interface SlashMenuRendererOptions {
   /** Custom class name for the menu */

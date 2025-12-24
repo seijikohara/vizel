@@ -34,14 +34,21 @@ export {
 } from "./components/index.ts";
 
 // Composables
-export { useVizelEditor, type UseVizelEditorOptions } from "./composables/index.ts";
-
-// Utilities
-export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";
 export {
+  useVizelEditor,
+  useBubbleMenu,
+  useSlashMenu,
   createSlashMenuRenderer,
+  type UseVizelEditorOptions,
+  type UseBubbleMenuOptions,
+  type UseBubbleMenuReturn,
+  type UseSlashMenuOptions,
+  type UseSlashMenuReturn,
   type SlashMenuRendererOptions,
-} from "./utils/createSlashMenuRenderer.ts";
+} from "./composables/index.ts";
+
+// Utilities (framework-agnostic)
+export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";
 
 // Re-export core types for convenience
 export type {
