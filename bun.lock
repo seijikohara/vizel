@@ -99,6 +99,7 @@
       "dependencies": {
         "@tiptap/core": "^3.14.0",
         "@tiptap/extension-bubble-menu": "^3.14.0",
+        "@tiptap/suggestion": "^3.14.0",
         "@vizel/core": "workspace:*",
         "tippy.js": "^6.3.7",
       },
@@ -116,6 +117,7 @@
       "dependencies": {
         "@tiptap/core": "^3.14.0",
         "@tiptap/extension-bubble-menu": "^3.14.0",
+        "@tiptap/suggestion": "^3.14.0",
         "@tiptap/vue-3": "^3.14.0",
         "@vizel/core": "workspace:*",
         "tippy.js": "^6.3.7",

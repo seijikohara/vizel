@@ -7,22 +7,42 @@
 // Tiptap React re-exports for convenience
 export { useEditor, EditorContent as TiptapEditorContent } from "@tiptap/react";
 
-// Components
+// Editor components
 export {
   EditorRoot,
   EditorContent,
   EditorProvider,
   useEditorContext,
   useEditorContextSafe,
-  BubbleMenu,
-  SlashMenu,
-  createSlashMenuRenderer,
   type EditorRootProps,
   type EditorContentProps,
   type EditorProviderProps,
+} from "./components/index.ts";
+
+// BubbleMenu components
+export {
+  BubbleMenu,
+  BubbleMenuButton,
+  BubbleMenuDivider,
+  BubbleMenuLinkEditor,
+  BubbleMenuToolbar,
   type BubbleMenuProps,
+  type BubbleMenuButtonProps,
+  type BubbleMenuDividerProps,
+  type BubbleMenuLinkEditorProps,
+  type BubbleMenuToolbarProps,
+} from "./components/index.ts";
+
+// SlashMenu components
+export {
+  SlashMenu,
+  SlashMenuItem,
+  SlashMenuEmpty,
+  createSlashMenuRenderer,
   type SlashMenuProps,
   type SlashMenuRef,
+  type SlashMenuItemProps,
+  type SlashMenuEmptyProps,
   type SlashMenuRendererOptions,
 } from "./components/index.ts";
 

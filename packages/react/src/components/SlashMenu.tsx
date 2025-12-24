@@ -7,6 +7,8 @@ import {
   type ReactNode,
 } from "react";
 import type { SlashCommandItem } from "@vizel/core";
+import { SlashMenuItem } from "./SlashMenuItem.tsx";
+import { SlashMenuEmpty } from "./SlashMenuEmpty.tsx";
 
 export interface SlashMenuRef {
   onKeyDown: (props: { event: KeyboardEvent }) => boolean;
@@ -23,34 +25,8 @@ export interface SlashMenuProps {
     isSelected: boolean;
     onClick: () => void;
   }) => ReactNode;
-}
-
-/**
- * Default menu item renderer
- */
-function DefaultMenuItem({
-  item,
-  isSelected,
-  onClick,
-}: {
-  item: SlashCommandItem;
-  isSelected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      className={`vizel-slash-menu-item ${isSelected ? "is-selected" : ""}`}
-      onClick={onClick}
-      data-selected={isSelected || undefined}
-    >
-      <span className="vizel-slash-menu-icon">{item.icon}</span>
-      <div className="vizel-slash-menu-text">
-        <span className="vizel-slash-menu-title">{item.title}</span>
-        <span className="vizel-slash-menu-description">{item.description}</span>
-      </div>
-    </button>
-  );
+  /** Custom empty state component */
+  renderEmpty?: () => ReactNode;
 }
 
 /**
@@ -60,27 +36,34 @@ function DefaultMenuItem({
  *
  * @example
  * ```tsx
- * // This component is typically used via the suggestion plugin:
- * SlashCommand.configure({
- *   suggestion: {
- *     render: () => {
- *       let component: ReactRenderer<SlashMenuRef>;
- *       return {
- *         onStart: (props) => {
- *           component = new ReactRenderer(SlashMenu, {
- *             props,
- *             editor: props.editor,
- *           });
- *         },
- *         // ... other handlers
- *       };
- *     },
- *   },
- * })
+ * // Basic usage via createSlashMenuRenderer
+ * import { SlashCommand, createSlashMenuRenderer } from '@vizel/react';
+ *
+ * const editor = useEditor({
+ *   extensions: [
+ *     SlashCommand.configure({
+ *       suggestion: createSlashMenuRenderer(),
+ *     }),
+ *   ],
+ * });
+ *
+ * // Custom rendering with sub-components
+ * <SlashMenu
+ *   items={items}
+ *   command={command}
+ *   renderItem={({ item, isSelected, onClick }) => (
+ *     <SlashMenuItem
+ *       item={item}
+ *       isSelected={isSelected}
+ *       onClick={onClick}
+ *     />
+ *   )}
+ *   renderEmpty={() => <SlashMenuEmpty>No commands</SlashMenuEmpty>}
+ * />
  * ```
  */
 export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
-  ({ items, command, className, renderItem }, ref) => {
+  ({ items, command, className, renderItem, renderEmpty }, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const selectItem = useCallback(
@@ -133,7 +116,7 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
     if (items.length === 0) {
       return (
         <div className={`vizel-slash-menu ${className ?? ""}`} data-vizel-slash-menu="">
-          <div className="vizel-slash-menu-empty">No results</div>
+          {renderEmpty?.() ?? <SlashMenuEmpty />}
         </div>
       );
     }
@@ -153,7 +136,7 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
           }
 
           return (
-            <DefaultMenuItem
+            <SlashMenuItem
               key={item.title}
               item={item}
               isSelected={isSelected}

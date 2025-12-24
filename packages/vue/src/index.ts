@@ -8,7 +8,7 @@
 export { Editor } from "@tiptap/core";
 export { default as BubbleMenuExtension } from "@tiptap/extension-bubble-menu";
 
-// Components
+// Editor components
 export {
   EditorRoot,
   EditorContent,
@@ -17,11 +17,31 @@ export {
   EDITOR_INJECTION_KEY,
 } from "./components/index.ts";
 
+// BubbleMenu components
+export {
+  BubbleMenu,
+  BubbleMenuButton,
+  BubbleMenuDivider,
+  BubbleMenuLinkEditor,
+  BubbleMenuToolbar,
+} from "./components/index.ts";
+
+// SlashMenu components
+export {
+  SlashMenu,
+  SlashMenuItem,
+  SlashMenuEmpty,
+} from "./components/index.ts";
+
 // Composables
 export { useVizelEditor, type UseVizelEditorOptions } from "./composables/index.ts";
 
 // Utilities
 export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";
+export {
+  createSlashMenuRenderer,
+  type SlashMenuRendererOptions,
+} from "./utils/createSlashMenuRenderer.ts";
 
 // Re-export core types for convenience
 export type {
