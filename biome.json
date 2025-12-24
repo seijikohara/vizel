@@ -199,6 +199,7 @@
         "rules": {
           "correctness": {
             "noUnusedVariables": "off",
+            "noUnusedImports": "off",
             "useHookAtTopLevel": "off"
           },
           "nursery": {

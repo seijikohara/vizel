@@ -1,18 +1,44 @@
 import {
   BubbleMenu,
-  createImageExtension,
+  createImageUploadExtension,
+  createImageUploader,
   createLinkExtension,
   createSlashMenuRenderer,
   createTableExtensions,
   defaultSlashCommands,
+  EditorContent,
   type JSONContent,
   Placeholder,
   SlashCommand,
   StarterKit,
-  TiptapEditorContent,
   useEditor,
 } from "@vizel/react";
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
+
+// Mock upload function that simulates server upload
+async function mockUploadImage(file: File): Promise<string> {
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // Convert to base64 for demo purposes
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+const uploadOptions = {
+  onUpload: mockUploadImage,
+  maxFileSize: 10 * 1024 * 1024, // 10MB
+  onValidationError: (error: { message: string }) => {
+    alert(`Validation error: ${error.message}`);
+  },
+  onUploadError: (error: Error) => {
+    alert(`Upload failed: ${error.message}`);
+  },
+};
 
 const initialContent: JSONContent = {
   type: "doc",
@@ -121,64 +147,8 @@ function ReactLogo() {
   );
 }
 
-function LinkEditor({
-  editor,
-  onClose,
-}: {
-  editor: ReturnType<typeof useEditor>;
-  onClose: () => void;
-}) {
-  const currentHref = editor?.getAttributes("link").href || "";
-  const [url, setUrl] = useState(currentHref);
-
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      if (url.trim()) {
-        editor?.chain().focus().setLink({ href: url.trim() }).run();
-      } else {
-        editor?.chain().focus().unsetLink().run();
-      }
-      onClose();
-    },
-    [editor, url, onClose]
-  );
-
-  const handleRemove = useCallback(() => {
-    editor?.chain().focus().unsetLink().run();
-    onClose();
-  }, [editor, onClose]);
-
-  return (
-    <form onSubmit={handleSubmit} className="vizel-link-editor">
-      <input
-        type="url"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        placeholder="Enter URL..."
-        className="vizel-link-input"
-        autoFocus
-      />
-      <button type="submit" className="vizel-link-button" title="Apply">
-        OK
-      </button>
-      {currentHref && (
-        <button
-          type="button"
-          onClick={handleRemove}
-          className="vizel-link-button vizel-link-remove"
-          title="Remove link"
-        >
-          X
-        </button>
-      )}
-    </form>
-  );
-}
-
 export function App() {
   const [output, setOutput] = useState<JSONContent | null>(null);
-  const [showLinkEditor, setShowLinkEditor] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
 
   const editor = useEditor({
@@ -195,7 +165,9 @@ export function App() {
         items: defaultSlashCommands,
         suggestion: createSlashMenuRenderer(),
       }),
-      createImageExtension(),
+      ...createImageUploadExtension({
+        upload: uploadOptions,
+      }),
       createLinkExtension(),
       ...createTableExtensions(),
     ],
@@ -209,6 +181,25 @@ export function App() {
       setOutput(e.getJSON());
     },
   });
+
+  // Handle vizel:upload-image custom event from slash command
+  useEffect(() => {
+    if (!editor) return;
+
+    const uploadFn = createImageUploader(uploadOptions);
+
+    const handleUploadEvent = (event: Event) => {
+      const customEvent = event as CustomEvent<{ file: File }>;
+      const { file } = customEvent.detail;
+      const pos = editor.state.selection.from;
+      uploadFn(file, editor.view, pos);
+    };
+
+    document.addEventListener("vizel:upload-image", handleUploadEvent);
+    return () => {
+      document.removeEventListener("vizel:upload-image", handleUploadEvent);
+    };
+  }, [editor]);
 
   return (
     <div className="app">
@@ -243,56 +234,16 @@ export function App() {
             <span className="feature-icon">L</span>
             <span>Links</span>
           </div>
+          <div className="feature-tag">
+            <span className="feature-icon">U</span>
+            <span>Image Upload</span>
+          </div>
         </div>
 
         <div className="editor-container">
           <div className="editor-root">
-            <TiptapEditorContent editor={editor} className="editor-content" />
-            {editor && (
-              <BubbleMenu editor={editor}>
-                {showLinkEditor ? (
-                  <LinkEditor editor={editor} onClose={() => setShowLinkEditor(false)} />
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => editor.chain().focus().toggleBold().run()}
-                      className={`vizel-bubble-menu-button ${editor.isActive("bold") ? "is-active" : ""}`}
-                    >
-                      <strong>B</strong>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => editor.chain().focus().toggleItalic().run()}
-                      className={`vizel-bubble-menu-button ${editor.isActive("italic") ? "is-active" : ""}`}
-                    >
-                      <em>I</em>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => editor.chain().focus().toggleStrike().run()}
-                      className={`vizel-bubble-menu-button ${editor.isActive("strike") ? "is-active" : ""}`}
-                    >
-                      <s>S</s>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => editor.chain().focus().toggleCode().run()}
-                      className={`vizel-bubble-menu-button ${editor.isActive("code") ? "is-active" : ""}`}
-                    >
-                      {"</>"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowLinkEditor(true)}
-                      className={`vizel-bubble-menu-button ${editor.isActive("link") ? "is-active" : ""}`}
-                    >
-                      L
-                    </button>
-                  </>
-                )}
-              </BubbleMenu>
-            )}
+            <EditorContent editor={editor} className="editor-content" />
+            {editor && <BubbleMenu editor={editor} />}
           </div>
         </div>
 

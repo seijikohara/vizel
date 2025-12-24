@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { Editor } from "@tiptap/core";
 import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
-import type { Editor } from "@tiptap/vue-3";
 import { onBeforeUnmount, ref, useSlots, watch } from "vue";
+import BubbleMenuToolbar from "./BubbleMenuToolbar.vue";
 
 const props = withDefaults(
   defineProps<{
