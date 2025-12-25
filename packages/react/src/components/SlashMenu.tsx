@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from "react";
 import { SlashMenuEmpty } from "./SlashMenuEmpty.tsx";
@@ -65,6 +66,15 @@ export interface SlashMenuProps {
 export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
   ({ items, command, className, renderItem, renderEmpty }, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+    // Scroll selected item into view when selection changes
+    useEffect(() => {
+      const selectedElement = itemRefs.current[selectedIndex];
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }, [selectedIndex]);
 
     const selectItem = useCallback(
       (index: number) => {
@@ -128,11 +138,27 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
           const onClick = () => selectItem(index);
 
           if (renderItem) {
-            return <div key={item.title}>{renderItem({ item, isSelected, onClick })}</div>;
+            return (
+              <div
+                key={item.title}
+                ref={(el) => {
+                  itemRefs.current[index] = el;
+                }}
+              >
+                {renderItem({ item, isSelected, onClick })}
+              </div>
+            );
           }
 
           return (
-            <SlashMenuItem key={item.title} item={item} isSelected={isSelected} onClick={onClick} />
+            <div
+              key={item.title}
+              ref={(el) => {
+                itemRefs.current[index] = el;
+              }}
+            >
+              <SlashMenuItem item={item} isSelected={isSelected} onClick={onClick} />
+            </div>
           );
         })}
       </div>

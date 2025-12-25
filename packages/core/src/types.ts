@@ -1,9 +1,47 @@
 import type { Editor, JSONContent } from "@tiptap/core";
+import type { SlashCommandItem } from "./extensions/slash-command.ts";
+import type { ImageUploadOptions } from "./plugins/image-upload.ts";
+
+/**
+ * Slash command feature options
+ */
+export interface VizelSlashCommandOptions {
+  /** Custom slash command items */
+  items?: SlashCommandItem[];
+  /** Suggestion options (framework-specific renderer) */
+  suggestion?: Record<string, unknown>;
+}
+
+/**
+ * Image feature options
+ */
+export interface VizelImageFeatureOptions extends Partial<ImageUploadOptions> {
+  /** Enable image resizing (default: true) */
+  resize?: boolean;
+}
+
+/**
+ * Feature configuration for Vizel editor.
+ * All features are enabled by default.
+ * Set to false to disable a feature, or pass options to configure it.
+ */
+export interface VizelFeatureOptions {
+  /** Slash command menu (type "/" to open) */
+  slashCommand?: VizelSlashCommandOptions | false;
+  /** Table support */
+  table?: boolean;
+  /** Link extension */
+  link?: boolean;
+  /** Image upload and resize */
+  image?: VizelImageFeatureOptions | false;
+}
 
 /**
  * Editor configuration options
  */
 export interface VizelEditorOptions {
+  /** Feature configuration */
+  features?: VizelFeatureOptions;
   /** Initial content in JSON format */
   initialContent?: JSONContent;
   /** Placeholder text when editor is empty */

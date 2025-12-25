@@ -1,0 +1,71 @@
+/**
+ * Vizel Slash Menu Styles
+ *
+ * Styles for the slash command menu that appears when typing "/".
+ */
+
+.vizel-slash-menu {
+  background: var(--vizel-bg-color);
+  border-radius: var(--vizel-radius-lg);
+  box-shadow: var(--vizel-shadow-md);
+  border: 1px solid var(--vizel-border-color);
+  overflow: hidden;
+  min-width: 220px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.vizel-slash-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s;
+}
+
+.vizel-slash-menu-item:hover,
+.vizel-slash-menu-item.is-selected {
+  background-color: var(--vizel-primary-bg);
+}
+
+.vizel-slash-menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: var(--vizel-primary-bg);
+  border-radius: var(--vizel-radius-md);
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--vizel-primary-color-dark);
+}
+
+.vizel-slash-menu-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.vizel-slash-menu-title {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--vizel-text-color);
+}
+
+.vizel-slash-menu-description {
+  font-size: 0.75rem;
+  color: var(--vizel-text-color-secondary);
+}
+
+.vizel-slash-menu-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--vizel-text-color-secondary);
+  font-size: 0.875rem;
+}

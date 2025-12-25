@@ -1,0 +1,38 @@
+/**
+ * Vizel Bubble Menu Styles
+ *
+ * Styles for the floating bubble menu that appears on text selection.
+ */
+
+.vizel-bubble-menu {
+  display: flex;
+  background: var(--vizel-bg-color);
+  border-radius: var(--vizel-radius-lg);
+  box-shadow: var(--vizel-shadow-md);
+  border: 1px solid var(--vizel-border-color);
+  overflow: hidden;
+}
+
+.vizel-bubble-menu-button {
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--vizel-text-color);
+  transition: all 0.15s;
+}
+
+.vizel-bubble-menu-button:hover {
+  background-color: var(--vizel-primary-bg);
+  color: var(--vizel-primary-color-dark);
+}
+
+.vizel-bubble-menu-button.is-active {
+  background-color: var(--vizel-primary-color);
+  color: var(--vizel-bg-color);
+}
+
+.vizel-bubble-menu-button + .vizel-bubble-menu-button {
+  border-left: 1px solid var(--vizel-border-color);
+}
