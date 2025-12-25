@@ -6,11 +6,22 @@ paths: packages/core/**/*.ts
 
 ## Package Purpose
 
-The core package is framework-agnostic and contains:
+The core package is the single source of truth for all framework-agnostic code.
+Framework packages (react/vue/svelte) only wrap and re-export from core.
 
-- Tiptap extension configurations
-- Editor utilities and helpers
-- Type definitions shared across frameworks
+### Must be in core
+
+- All TypeScript types and interfaces
+- All constants
+- All Tiptap extensions
+- All utility functions
+- All CSS styles
+
+### Must NOT be in core
+
+- Framework-specific components
+- Framework-specific state management (hooks/composables/runes)
+- Framework runtime dependencies
 
 ## Extension Development
 

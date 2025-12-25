@@ -90,6 +90,13 @@ interface ImageUploadRemoveAction {
 
 type ImageUploadAction = ImageUploadAddAction | ImageUploadRemoveAction;
 
+/** Type guard for ImageUploadAction */
+const isImageUploadAction = (value: unknown): value is ImageUploadAction =>
+  typeof value === "object" &&
+  value !== null &&
+  "type" in value &&
+  (value.type === "add" || value.type === "remove");
+
 /**
  * Create an image upload plugin with decoration-based placeholders
  */
@@ -107,7 +114,8 @@ export function createImageUploadPlugin(options: ImageUploadOptions): Plugin {
         // Map decorations through document changes
         let decoSet = currentSet.map(tr.mapping, tr.doc);
 
-        const action = tr.getMeta(imageUploadKey) as ImageUploadAction | undefined;
+        const meta = tr.getMeta(imageUploadKey);
+        const action = isImageUploadAction(meta) ? meta : undefined;
 
         if (action?.type === "add") {
           const { id, pos, previewSrc } = action;
@@ -203,7 +211,10 @@ export function createImageUploader(options: ImageUploadOptions): UploadImageFn 
 
   return (file: File, view: EditorView, pos: number): void => {
     // Validate file
-    const validationError = validateImageFile(file, { maxFileSize, allowedTypes });
+    const validationError = validateImageFile(file, {
+      ...(maxFileSize !== undefined && { maxFileSize }),
+      ...(allowedTypes !== undefined && { allowedTypes }),
+    });
     if (validationError) {
       onValidationError?.(validationError);
       return;
@@ -217,7 +228,8 @@ export function createImageUploader(options: ImageUploadOptions): UploadImageFn 
     reader.readAsDataURL(file);
 
     reader.onload = () => {
-      const previewSrc = reader.result as string;
+      if (typeof reader.result !== "string") return;
+      const previewSrc = reader.result;
 
       // Add placeholder decoration
       const tr = view.state.tr;

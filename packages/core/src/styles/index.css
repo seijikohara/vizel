@@ -15,13 +15,13 @@
  */
 
 /* CSS Variables (must be first) */
-@import './variables.css';
+@import "./variables.css";
 
 /* Component styles */
-@import './editor.css';
-@import './placeholder.css';
-@import './bubble-menu.css';
-@import './slash-menu.css';
-@import './link.css';
-@import './table.css';
-@import './image.css';
+@import "./editor.css";
+@import "./placeholder.css";
+@import "./bubble-menu.css";
+@import "./slash-menu.css";
+@import "./link.css";
+@import "./table.css";
+@import "./image.css";

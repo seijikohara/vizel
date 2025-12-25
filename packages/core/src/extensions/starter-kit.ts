@@ -43,7 +43,11 @@ export interface VizelExtensionsOptions {
 function defaultBase64Upload(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      }
+    };
     reader.onerror = () => reject(new Error("Failed to read file"));
     reader.readAsDataURL(file);
   });
@@ -149,7 +153,9 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
     extensions.push(
       SlashCommand.configure({
         items,
-        suggestion: slashOptions.suggestion as Record<string, unknown> | undefined,
+        ...(slashOptions.suggestion !== undefined && {
+          suggestion: slashOptions.suggestion as Record<string, unknown>,
+        }),
       })
     );
   }
@@ -174,10 +180,16 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
       ...createImageUploadExtension({
         upload: {
           onUpload,
-          maxFileSize: imageOptions.maxFileSize,
-          allowedTypes: imageOptions.allowedTypes,
-          onValidationError: imageOptions.onValidationError,
-          onUploadError: imageOptions.onUploadError,
+          ...(imageOptions.maxFileSize !== undefined && { maxFileSize: imageOptions.maxFileSize }),
+          ...(imageOptions.allowedTypes !== undefined && {
+            allowedTypes: imageOptions.allowedTypes,
+          }),
+          ...(imageOptions.onValidationError !== undefined && {
+            onValidationError: imageOptions.onValidationError,
+          }),
+          ...(imageOptions.onUploadError !== undefined && {
+            onUploadError: imageOptions.onUploadError,
+          }),
         },
         resize: resizeEnabled ? defaultImageResizeOptions : false,
       })

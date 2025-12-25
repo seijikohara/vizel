@@ -74,7 +74,7 @@ export function createSlashMenuRenderer(
               return () =>
                 h(SlashMenu, {
                   items: items.value,
-                  class: options.className,
+                  ...(options.className !== undefined && { class: options.className }),
                   ref: componentRef,
                   onCommand: (item: SlashCommandItem) => {
                     commandFn.value?.(item);

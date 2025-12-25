@@ -4,13 +4,12 @@ paths: packages/react/**/*.{ts,tsx}
 
 # @vizel/react Package Guidelines
 
+See `cross-framework.md` for component/hook equivalence requirements.
+
 ## Package Purpose
 
-React 18/19 components and hooks for Vizel editor:
-
-- React components (EditorContent, BubbleMenu, SlashMenu)
-- Custom hooks (useVizelEditor)
-- Context providers
+React 18/19 components and hooks for Vizel editor.
+This package only contains React-specific wrappers around `@vizel/core`.
 
 ## Component Development
 
@@ -77,21 +76,6 @@ const editor = useVizelEditor({
 - Provides editor instance to child components
 - Use `useEditorContext()` to access
 - Use `useEditorContextSafe()` for optional access
-
-## Re-exports from Core
-
-- Re-export all core extensions
-- Re-export all core types
-- Maintain alphabetical order
-
-```typescript
-export {
-  Blockquote,
-  Bold,
-  createVizelExtensions,
-  type VizelExtensionsOptions,
-} from "@vizel/core";
-```
 
 ## Testing
 

@@ -49,9 +49,9 @@ $effect(() => {
     editor,
     element: menuElement,
     updateDelay,
-    shouldShow: shouldShow
-      ? ({ editor: e, from, to }) => shouldShow({ editor: e as Editor, from, to })
-      : undefined,
+    ...(shouldShow && {
+      shouldShow: ({ editor: e, from, to }) => shouldShow({ editor: e as Editor, from, to }),
+    }),
     options: {
       placement: "top",
     },

@@ -10,6 +10,10 @@ export interface SlashCommandOptions {
   suggestion?: Partial<SuggestionOptions>;
 }
 
+/** Type guard for SlashCommandItem */
+const isSlashCommandItem = (value: unknown): value is SlashCommandItem =>
+  typeof value === "object" && value !== null && "title" in value && "command" in value;
+
 export const SlashCommand = Extension.create<SlashCommandOptions>({
   name: "slashCommand",
 
@@ -33,8 +37,9 @@ export const SlashCommand = Extension.create<SlashCommandOptions>({
           return filterSlashCommands(this.options.items ?? [], query);
         },
         command: ({ editor, range, props }) => {
-          const item = props as SlashCommandItem;
-          item.command({ editor, range });
+          if (isSlashCommandItem(props)) {
+            props.command({ editor, range });
+          }
         },
         ...this.options.suggestion,
       }),

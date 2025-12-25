@@ -27,11 +27,11 @@ export interface VizelImageResizeOptions {
 /**
  * Default resize options for images
  */
-export const defaultImageResizeOptions: VizelImageResizeOptions = {
+export const defaultImageResizeOptions = {
   enabled: true,
   minWidth: 100,
   minHeight: 100,
-};
+} satisfies VizelImageResizeOptions;
 
 export interface VizelImageOptions {
   /** Allow inline images */
@@ -110,7 +110,7 @@ export function createImageUploadExtension(options: VizelImageUploadOptions) {
         allowBase64: options.allowBase64 ?? true,
         minWidth: resizeOptions.minWidth ?? 100,
         minHeight: resizeOptions.minHeight ?? 100,
-        maxWidth: resizeOptions.maxWidth,
+        ...(resizeOptions.maxWidth !== undefined && { maxWidth: resizeOptions.maxWidth }),
         HTMLAttributes: {
           class: "vizel-image",
           ...options.HTMLAttributes,

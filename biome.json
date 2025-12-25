@@ -35,6 +35,7 @@
           "level": "warn",
           "options": { "maxAllowedComplexity": 20 }
         },
+        "noForEach": "error",
         "noUselessStringConcat": "error",
         "noUselessUndefinedInitialization": "error",
         "useDateNow": "error",
@@ -66,7 +67,7 @@
 
       "style": {
         "recommended": true,
-        "noDefaultExport": "off",
+        "noDefaultExport": "error",
         "noNamespace": "error",
         "noNegationElse": "error",
         "noNonNullAssertion": "warn",
@@ -276,6 +277,21 @@
         "rules": {
           "complexity": {
             "noImportantStyles": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/vite.config.ts",
+        "**/svelte.config.js",
+        "**/tailwind.config.ts",
+        "**/postcss.config.js"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off"
           }
         }
       }
