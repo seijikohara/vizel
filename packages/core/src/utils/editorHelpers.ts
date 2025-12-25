@@ -87,10 +87,14 @@ export function createUploadEventHandler(
             reader.onload = () => resolve(reader.result as string);
             reader.readAsDataURL(f);
           })),
-      maxFileSize: imageOptions.maxFileSize,
-      allowedTypes: imageOptions.allowedTypes,
-      onValidationError: imageOptions.onValidationError,
-      onUploadError: imageOptions.onUploadError,
+      ...(imageOptions.maxFileSize !== undefined && { maxFileSize: imageOptions.maxFileSize }),
+      ...(imageOptions.allowedTypes !== undefined && { allowedTypes: imageOptions.allowedTypes }),
+      ...(imageOptions.onValidationError !== undefined && {
+        onValidationError: imageOptions.onValidationError,
+      }),
+      ...(imageOptions.onUploadError !== undefined && {
+        onUploadError: imageOptions.onUploadError,
+      }),
     });
 
     uploadFn(file, editor.view as EditorView, pos);

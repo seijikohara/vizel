@@ -54,7 +54,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
   } = options;
 
   const resolvedFeatures = resolveFeatures({
-    features,
+    ...(features !== undefined && { features }),
     createSlashMenuRenderer,
   });
 
@@ -69,10 +69,13 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
   onMounted(() => {
     editor.value = new Editor({
       extensions: [
-        ...createVizelExtensions({ placeholder, features: resolvedFeatures }),
+        ...createVizelExtensions({
+          ...(placeholder !== undefined && { placeholder }),
+          ...(resolvedFeatures !== undefined && { features: resolvedFeatures }),
+        }),
         ...additionalExtensions,
       ],
-      content: initialContent,
+      ...(initialContent !== undefined && { content: initialContent }),
       editable,
       autofocus,
       editorProps: defaultEditorProps,

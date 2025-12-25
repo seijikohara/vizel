@@ -45,10 +45,10 @@ watch(
       editor: editorValue,
       element,
       updateDelay: props.updateDelay,
-      shouldShow: props.shouldShow
-        ? ({ editor: e, from, to }) =>
-            props.shouldShow?.({ editor: e as Editor, from, to }) ?? false
-        : undefined,
+      ...(props.shouldShow && {
+        shouldShow: ({ editor: e, from, to }) =>
+          props.shouldShow?.({ editor: e as Editor, from, to }) ?? false,
+      }),
       options: {
         placement: "top",
       },

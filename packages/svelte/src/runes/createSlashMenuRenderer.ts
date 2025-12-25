@@ -72,7 +72,7 @@ export function createSlashMenuRenderer(
             target: menuContainer,
             props: {
               items,
-              class: options.className,
+              ...(options.className !== undefined && { class: options.className }),
               oncommand: (item: SlashCommandItem) => {
                 commandFn?.(item);
               },
@@ -94,7 +94,7 @@ export function createSlashMenuRenderer(
               target: menuContainer,
               props: {
                 items,
-                class: options.className,
+                ...(options.className !== undefined && { class: options.className }),
                 oncommand: (item: SlashCommandItem) => {
                   commandFn?.(item);
                 },

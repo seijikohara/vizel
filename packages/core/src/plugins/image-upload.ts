@@ -203,7 +203,10 @@ export function createImageUploader(options: ImageUploadOptions): UploadImageFn 
 
   return (file: File, view: EditorView, pos: number): void => {
     // Validate file
-    const validationError = validateImageFile(file, { maxFileSize, allowedTypes });
+    const validationError = validateImageFile(file, {
+      ...(maxFileSize !== undefined && { maxFileSize }),
+      ...(allowedTypes !== undefined && { allowedTypes }),
+    });
     if (validationError) {
       onValidationError?.(validationError);
       return;

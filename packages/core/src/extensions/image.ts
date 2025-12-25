@@ -110,7 +110,7 @@ export function createImageUploadExtension(options: VizelImageUploadOptions) {
         allowBase64: options.allowBase64 ?? true,
         minWidth: resizeOptions.minWidth ?? 100,
         minHeight: resizeOptions.minHeight ?? 100,
-        maxWidth: resizeOptions.maxWidth,
+        ...(resizeOptions.maxWidth !== undefined && { maxWidth: resizeOptions.maxWidth }),
         HTMLAttributes: {
           class: "vizel-image",
           ...options.HTMLAttributes,

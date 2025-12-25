@@ -49,7 +49,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
   const [editor, setEditor] = useState<Editor | null>(null);
 
   const resolvedFeatures = resolveFeatures({
-    features,
+    ...(features !== undefined && { features }),
     createSlashMenuRenderer,
   });
 
@@ -81,12 +81,12 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
     const instance = new Editor({
       extensions: [
         ...createVizelExtensions({
-          placeholder: opts.placeholder,
-          features: opts.resolvedFeatures,
+          ...(opts.placeholder !== undefined && { placeholder: opts.placeholder }),
+          ...(opts.resolvedFeatures !== undefined && { features: opts.resolvedFeatures }),
         }),
         ...opts.additionalExtensions,
       ],
-      content: opts.initialContent,
+      ...(opts.initialContent !== undefined && { content: opts.initialContent }),
       editable: opts.editable,
       autofocus: opts.autofocus,
       editorProps: defaultEditorProps,

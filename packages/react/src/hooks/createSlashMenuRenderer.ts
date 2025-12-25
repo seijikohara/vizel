@@ -59,7 +59,7 @@ export function createSlashMenuRenderer(
           createElement(SlashMenu, {
             items,
             command: commandFn,
-            className: options.className,
+            ...(options.className !== undefined && { className: options.className }),
             ref: menuRef,
           })
         );
