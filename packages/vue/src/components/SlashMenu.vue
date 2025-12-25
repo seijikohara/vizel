@@ -4,10 +4,18 @@ import { nextTick, ref, useSlots, watch } from "vue";
 import SlashMenuEmpty from "./SlashMenuEmpty.vue";
 import SlashMenuItem from "./SlashMenuItem.vue";
 
-const props = defineProps<{
+export interface SlashMenuRef {
+  onKeyDown: (props: { event: KeyboardEvent }) => boolean;
+}
+
+export interface SlashMenuProps {
+  /** The list of slash command items */
   items: SlashCommandItem[];
+  /** Custom class name */
   class?: string;
-}>();
+}
+
+const props = defineProps<SlashMenuProps>();
 
 const emit = defineEmits<{
   command: [item: SlashCommandItem];

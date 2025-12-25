@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import { computed, onMounted, ref } from "vue";
 
-const props = defineProps<{
+export interface BubbleMenuLinkEditorProps {
+  /** The editor instance */
   editor: Editor;
+  /** Custom class name */
   class?: string;
-}>();
+}
+
+const props = defineProps<BubbleMenuLinkEditorProps>();
 
 const emit = defineEmits<{
   close: [];

@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/vue-3";
+import type { Editor } from "@vizel/core";
 import { provide } from "vue";
-import { EDITOR_INJECTION_KEY } from "./EditorContext.ts";
+import { EDITOR_CONTEXT_KEY } from "./EditorContext.ts";
 
-const props = defineProps<{
-  editor: Editor | undefined;
+export interface EditorRootProps {
+  /** The editor instance */
+  editor: Editor | null;
+  /** Custom class name */
   class?: string;
-}>();
+}
 
-provide(EDITOR_INJECTION_KEY, () => props.editor);
+const props = defineProps<EditorRootProps>();
+
+provide(EDITOR_CONTEXT_KEY, () => props.editor);
 </script>
 
 <template>

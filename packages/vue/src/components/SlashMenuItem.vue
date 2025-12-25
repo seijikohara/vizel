@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import type { SlashCommandItem } from "@vizel/core";
 
-defineProps<{
+export interface SlashMenuItemProps {
+  /** The slash command item to display */
   item: SlashCommandItem;
+  /** Whether the item is selected */
   isSelected?: boolean;
+  /** Custom class name */
   class?: string;
-}>();
+}
+
+defineProps<SlashMenuItemProps>();
 
 const emit = defineEmits<{
   click: [];

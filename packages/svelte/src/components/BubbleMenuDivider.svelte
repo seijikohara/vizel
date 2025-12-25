@@ -1,9 +1,12 @@
-<script lang="ts">
-interface Props {
+<script lang="ts" module>
+export interface BubbleMenuDividerProps {
+  /** Custom class name */
   class?: string;
 }
+</script>
 
-let { class: className }: Props = $props();
+<script lang="ts">
+let { class: className }: BubbleMenuDividerProps = $props();
 </script>
 
 <span class="vizel-bubble-menu-divider {className ?? ''}"></span>

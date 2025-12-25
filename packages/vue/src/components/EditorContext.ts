@@ -1,7 +1,7 @@
-import type { Editor } from "@tiptap/vue-3";
+import type { Editor } from "@vizel/core";
 import { type InjectionKey, inject } from "vue";
 
-export const EDITOR_INJECTION_KEY: InjectionKey<() => Editor | undefined> = Symbol("vizel-editor");
+export const EDITOR_CONTEXT_KEY: InjectionKey<() => Editor | null> = Symbol("vizel-editor");
 
 /**
  * Composable to access the editor instance from EditorRoot context.
@@ -23,8 +23,8 @@ export const EDITOR_INJECTION_KEY: InjectionKey<() => Editor | undefined> = Symb
  * </template>
  * ```
  */
-export function useEditorContext(): Editor | undefined {
-  const getEditor = inject(EDITOR_INJECTION_KEY);
+export function useEditorContext(): Editor | null {
+  const getEditor = inject(EDITOR_CONTEXT_KEY);
   if (!getEditor) {
     throw new Error("useEditorContext must be used within an EditorRoot");
   }
@@ -32,10 +32,11 @@ export function useEditorContext(): Editor | undefined {
 }
 
 /**
- * Composable to access the editor instance from context.
- * Returns undefined if used outside of EditorRoot (does not throw).
+ * Composable to access the editor getter from context.
+ * Returns null if used outside of EditorRoot (does not throw).
+ *
+ * @returns A getter function that returns the editor, or null if outside EditorRoot
  */
-export function useEditorContextSafe(): Editor | undefined {
-  const getEditor = inject(EDITOR_INJECTION_KEY);
-  return getEditor?.();
+export function useEditorContextSafe(): (() => Editor | null) | null {
+  return inject(EDITOR_CONTEXT_KEY) ?? null;
 }

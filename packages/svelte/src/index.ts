@@ -1,12 +1,9 @@
 /**
  * @vizel/svelte
  *
- * Svelte 5 components for the Vizel visual editor.
+ * Svelte 5 components and runes for the Vizel visual editor.
  */
 
-// Tiptap re-exports for convenience
-export { Editor } from "@tiptap/core";
-export { default as BubbleMenuExtension } from "@tiptap/extension-bubble-menu";
 // Re-export core types for convenience
 export type {
   JSONContent,
@@ -17,8 +14,10 @@ export type {
   VizelLinkOptions,
   VizelTableOptions,
 } from "@vizel/core";
+
 // Re-export core extensions
 export {
+  BubbleMenuExtension,
   createImageExtension,
   createImageUploadExtension,
   createImageUploader,
@@ -27,6 +26,7 @@ export {
   createTableExtensions,
   createVizelExtensions,
   defaultSlashCommands,
+  Editor,
   filterSlashCommands,
   getImageUploadPluginKey,
   handleImageDrop,
@@ -49,44 +49,39 @@ export {
   type VizelStarterKitOptions,
   validateImageFile,
 } from "@vizel/core";
-// Editor components
 // BubbleMenu components
+// Editor components
 // SlashMenu components
 export {
   BubbleMenu,
   BubbleMenuButton,
+  type BubbleMenuButtonProps,
   BubbleMenuDivider,
+  type BubbleMenuDividerProps,
   BubbleMenuLinkEditor,
+  type BubbleMenuLinkEditorProps,
+  type BubbleMenuProps,
   BubbleMenuToolbar,
-  EDITOR_CONTEXT_KEY,
+  type BubbleMenuToolbarProps,
   EditorContent,
+  type EditorContentProps,
   EditorRoot,
-  getEditorContext,
-  getEditorContextSafe,
+  type EditorRootProps,
   SlashMenu,
   SlashMenuEmpty,
+  type SlashMenuEmptyProps,
   SlashMenuItem,
+  type SlashMenuItemProps,
+  type SlashMenuProps,
   type SlashMenuRef,
+  useEditorContext,
+  useEditorContextSafe,
 } from "./components/index.ts";
-// Editor factory
-export {
-  type CreateVizelEditorOptions,
-  createVizelEditor,
-} from "./createVizelEditor.ts";
+
 // Runes (Svelte 5 reactive state)
-export {
-  type BubbleMenuState,
-  type CreateBubbleMenuOptions,
-  createBubbleMenu,
-  createSlashMenu,
-  type SlashMenuState,
-  type UseVizelEditorOptions,
-  useVizelEditor,
-} from "./runes/index.ts";
-// Renderers
 export {
   createSlashMenuRenderer,
   type SlashMenuRendererOptions,
-} from "./utils/createSlashMenuRenderer.ts";
-// Utilities (framework-agnostic)
-export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";
+  type UseVizelEditorOptions,
+  useVizelEditor,
+} from "./runes/index.ts";

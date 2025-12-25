@@ -1,7 +1,10 @@
 <script setup lang="ts">
-defineProps<{
+export interface BubbleMenuDividerProps {
+  /** Custom class name */
   class?: string;
-}>();
+}
+
+defineProps<BubbleMenuDividerProps>();
 </script>
 
 <template>

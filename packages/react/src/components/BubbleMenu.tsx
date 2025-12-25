@@ -1,5 +1,4 @@
-import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
-import type { Editor } from "@vizel/core";
+import { BubbleMenuPlugin, type Editor } from "@vizel/core";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { BubbleMenuToolbar } from "./BubbleMenuToolbar.tsx";

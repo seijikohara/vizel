@@ -1,48 +1,18 @@
-import { useEditor } from "@tiptap/react";
-import type { Editor, VizelEditorOptions, VizelFeatureOptions } from "@vizel/core";
-import { createImageUploader, createVizelExtensions, type Extensions } from "@vizel/core";
-import { useEffect, useRef } from "react";
-import { createSlashMenuRenderer } from "../components/SlashMenuRenderer.tsx";
+import {
+  createVizelExtensions,
+  defaultEditorProps,
+  Editor,
+  type Extensions,
+  registerUploadEventHandler,
+  resolveFeatures,
+  type VizelEditorOptions,
+} from "@vizel/core";
+import { useEffect, useRef, useState } from "react";
+import { createSlashMenuRenderer } from "./createSlashMenuRenderer.ts";
 
 export interface UseVizelEditorOptions extends VizelEditorOptions {
   /** Additional extensions to include */
   extensions?: Extensions;
-}
-
-/**
- * Resolves feature options with default slash menu renderer.
- * If slashCommand is enabled but no suggestion renderer is provided,
- * automatically adds the framework-specific renderer.
- */
-function resolveFeatures(features?: VizelFeatureOptions): VizelFeatureOptions | undefined {
-  if (!features) {
-    // No features specified, use defaults with auto slash menu
-    return {
-      slashCommand: {
-        suggestion: createSlashMenuRenderer(),
-      },
-    };
-  }
-
-  if (features.slashCommand === false) {
-    // Slash command explicitly disabled
-    return features;
-  }
-
-  const slashOptions = typeof features.slashCommand === "object" ? features.slashCommand : {};
-
-  // If suggestion is already provided, use it; otherwise add default
-  if (slashOptions.suggestion) {
-    return features;
-  }
-
-  return {
-    ...features,
-    slashCommand: {
-      ...slashOptions,
-      suggestion: createSlashMenuRenderer(),
-    },
-  };
 }
 
 /**
@@ -76,70 +46,74 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
     onBlur,
   } = options;
 
-  const resolvedFeatures = resolveFeatures(features);
+  const [editor, setEditor] = useState<Editor | null>(null);
+
+  const resolvedFeatures = resolveFeatures({
+    features,
+    createSlashMenuRenderer,
+  });
 
   // Store image upload options for event handler
   const imageOptions = typeof features?.image === "object" ? features.image : {};
   const imageOptionsRef = useRef(imageOptions);
   imageOptionsRef.current = imageOptions;
 
-  const editor = useEditor({
-    extensions: [
-      ...createVizelExtensions({ placeholder, features: resolvedFeatures }),
-      ...additionalExtensions,
-    ],
-    content: initialContent,
+  // Store options in ref to avoid recreating editor on every render
+  const optionsRef = useRef({
+    initialContent,
+    placeholder,
     editable,
     autofocus,
+    resolvedFeatures,
+    additionalExtensions,
     onUpdate,
     onCreate,
     onDestroy,
     onSelectionUpdate,
     onFocus,
     onBlur,
-    // Prevent SSR hydration issues
-    immediatelyRender: false,
-    // Add vizel-editor class for styling
-    editorProps: {
-      attributes: {
-        class: "vizel-editor",
-      },
-    },
   });
+
+  // Create editor on mount
+  useEffect(() => {
+    const opts = optionsRef.current;
+
+    const instance = new Editor({
+      extensions: [
+        ...createVizelExtensions({
+          placeholder: opts.placeholder,
+          features: opts.resolvedFeatures,
+        }),
+        ...opts.additionalExtensions,
+      ],
+      content: opts.initialContent,
+      editable: opts.editable,
+      autofocus: opts.autofocus,
+      editorProps: defaultEditorProps,
+      // Only pass event handlers that are defined to avoid tiptap emit errors
+      ...(opts.onUpdate && { onUpdate: opts.onUpdate }),
+      ...(opts.onCreate && { onCreate: opts.onCreate }),
+      ...(opts.onDestroy && { onDestroy: opts.onDestroy }),
+      ...(opts.onSelectionUpdate && { onSelectionUpdate: opts.onSelectionUpdate }),
+      ...(opts.onFocus && { onFocus: opts.onFocus }),
+      ...(opts.onBlur && { onBlur: opts.onBlur }),
+    });
+
+    setEditor(instance);
+
+    return () => {
+      instance.destroy();
+    };
+  }, []);
 
   // Handle vizel:upload-image custom event from slash command
   useEffect(() => {
     if (!editor) return;
 
-    const handleUploadEvent = (event: Event) => {
-      const customEvent = event as CustomEvent<{ file: File; editor: Editor }>;
-      const { file } = customEvent.detail;
-      const pos = editor.state.selection.from;
-
-      // Create upload function with configured options
-      const uploadFn = createImageUploader({
-        onUpload:
-          imageOptionsRef.current.onUpload ??
-          ((f: File) =>
-            new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result as string);
-              reader.readAsDataURL(f);
-            })),
-        maxFileSize: imageOptionsRef.current.maxFileSize,
-        allowedTypes: imageOptionsRef.current.allowedTypes,
-        onValidationError: imageOptionsRef.current.onValidationError,
-        onUploadError: imageOptionsRef.current.onUploadError,
-      });
-
-      uploadFn(file, editor.view, pos);
-    };
-
-    document.addEventListener("vizel:upload-image", handleUploadEvent);
-
-    return () => {
-      document.removeEventListener("vizel:upload-image", handleUploadEvent);
-    };
+    return registerUploadEventHandler({
+      getEditor: () => editor,
+      getImageOptions: () => imageOptionsRef.current,
+    });
   }, [editor]);
 
   return editor;

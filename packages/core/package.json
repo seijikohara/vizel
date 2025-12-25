@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@tiptap/core": "^3.14.0",
+    "@tiptap/extension-bubble-menu": "^3.14.0",
     "@tiptap/extension-image": "^3.14.0",
     "@tiptap/extension-link": "^3.14.0",
     "@tiptap/extension-placeholder": "^3.14.0",
@@ -36,9 +37,6 @@
     "@tiptap/pm": "^3.14.0",
     "@tiptap/starter-kit": "^3.14.0",
     "@tiptap/suggestion": "^3.14.0"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
   },
   "devDependencies": {
     "vite": "^6",

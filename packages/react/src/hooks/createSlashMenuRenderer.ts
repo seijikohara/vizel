@@ -1,26 +1,24 @@
 import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 import type { SlashCommandItem } from "@vizel/core";
-import { type App, createApp, h, ref } from "vue";
-import { SlashMenu } from "../components/index.ts";
+import { createElement, type RefObject } from "react";
+import { createRoot, type Root } from "react-dom/client";
+import { SlashMenu, type SlashMenuRef } from "../components/SlashMenu.tsx";
 
 export interface SlashMenuRendererOptions {
   /** Custom class name for the menu */
   className?: string;
 }
 
-interface SlashMenuRef {
-  onKeyDown: (event: KeyboardEvent) => boolean;
-}
-
 /**
  * Creates a suggestion render configuration for the SlashCommand extension.
- * This handles the popup positioning and Vue component lifecycle.
+ * This handles the popup positioning and React component lifecycle.
  *
  * @example
- * ```ts
- * import { SlashCommand, createSlashMenuRenderer } from '@vizel/vue';
+ * ```tsx
+ * import { SlashCommand } from '@vizel/core';
+ * import { createSlashMenuRenderer } from '@vizel/react';
  *
- * const editor = new Editor({
+ * const editor = useEditor({
  *   extensions: [
  *     SlashCommand.configure({
  *       suggestion: createSlashMenuRenderer(),
@@ -34,12 +32,12 @@ export function createSlashMenuRenderer(
 ): Partial<SuggestionOptions<SlashCommandItem>> {
   return {
     render: () => {
-      let app: App | null = null;
+      let root: Root | null = null;
       let container: HTMLDivElement | null = null;
       let menuContainer: HTMLDivElement | null = null;
-      const componentRef = ref<SlashMenuRef | null>(null);
-      const items = ref<SlashCommandItem[]>([]);
-      const commandFn = ref<((item: SlashCommandItem) => void) | null>(null);
+      let items: SlashCommandItem[] = [];
+      let commandFn: ((item: SlashCommandItem) => void) | null = null;
+      const menuRef: RefObject<SlashMenuRef | null> = { current: null };
 
       const updatePosition = (clientRect: (() => DOMRect | null) | null | undefined) => {
         if (!(container && clientRect)) return;
@@ -55,10 +53,22 @@ export function createSlashMenuRenderer(
         container.style.left = `${left}px`;
       };
 
+      const renderMenu = () => {
+        if (!(root && commandFn)) return;
+        root.render(
+          createElement(SlashMenu, {
+            items,
+            command: commandFn,
+            className: options.className,
+            ref: menuRef,
+          })
+        );
+      };
+
       return {
         onStart: (props: SuggestionProps<SlashCommandItem>) => {
-          items.value = props.items;
-          commandFn.value = props.command;
+          items = props.items;
+          commandFn = props.command;
 
           // Create positioned container
           container = document.createElement("div");
@@ -69,27 +79,17 @@ export function createSlashMenuRenderer(
           menuContainer = document.createElement("div");
           container.appendChild(menuContainer);
 
-          app = createApp({
-            setup() {
-              return () =>
-                h(SlashMenu, {
-                  items: items.value,
-                  class: options.className,
-                  ref: componentRef,
-                  onCommand: (item: SlashCommandItem) => {
-                    commandFn.value?.(item);
-                  },
-                });
-            },
-          });
+          root = createRoot(menuContainer);
+          renderMenu();
 
-          app.mount(menuContainer);
           updatePosition(props.clientRect);
         },
 
         onUpdate: (props: SuggestionProps<SlashCommandItem>) => {
-          items.value = props.items;
-          commandFn.value = props.command;
+          items = props.items;
+          commandFn = props.command;
+          renderMenu();
+
           updatePosition(props.clientRect);
         },
 
@@ -98,13 +98,13 @@ export function createSlashMenuRenderer(
             return true;
           }
 
-          return componentRef.value?.onKeyDown(props.event) ?? false;
+          return menuRef.current?.onKeyDown(props) ?? false;
         },
 
         onExit: () => {
-          app?.unmount();
+          root?.unmount();
           container?.remove();
-          app = null;
+          root = null;
           container = null;
           menuContainer = null;
         },

@@ -1,41 +1,48 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/core";
-import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
-import { onBeforeUnmount, ref, useSlots, watch } from "vue";
+import { BubbleMenuPlugin, type Editor } from "@vizel/core";
+import { computed, onBeforeUnmount, ref, useSlots, watch } from "vue";
 import BubbleMenuToolbar from "./BubbleMenuToolbar.vue";
+import { useEditorContextSafe } from "./EditorContext.ts";
 
-const props = withDefaults(
-  defineProps<{
-    editor: Editor | undefined;
-    class?: string;
-    showDefaultToolbar?: boolean;
-    pluginKey?: string;
-    updateDelay?: number;
-    shouldShow?: (props: { editor: Editor; from: number; to: number }) => boolean;
-  }>(),
-  {
-    showDefaultToolbar: true,
-    pluginKey: "vizelBubbleMenu",
-    updateDelay: 100,
-  }
-);
+export interface BubbleMenuProps {
+  /** Override the editor from context */
+  editor?: Editor;
+  /** Custom class name for the menu container */
+  class?: string;
+  /** Whether to show the default formatting toolbar */
+  showDefaultToolbar?: boolean;
+  /** Plugin key for the bubble menu */
+  pluginKey?: string;
+  /** Delay in ms before updating the menu position */
+  updateDelay?: number;
+  /** Custom shouldShow function */
+  shouldShow?: (props: { editor: Editor; from: number; to: number }) => boolean;
+}
+
+const props = withDefaults(defineProps<BubbleMenuProps>(), {
+  showDefaultToolbar: true,
+  pluginKey: "vizelBubbleMenu",
+  updateDelay: 100,
+});
 
 const slots = useSlots();
 const menuRef = ref<HTMLElement | null>(null);
+const getContextEditor = useEditorContextSafe();
+const editor = computed(() => props.editor ?? getContextEditor?.());
 
 watch(
-  [() => props.editor, menuRef],
-  ([editor, element], [, oldElement]) => {
-    if (!(editor && element)) return;
+  [editor, menuRef],
+  ([editorValue, element], [, oldElement]) => {
+    if (!(editorValue && element)) return;
 
     // Unregister old plugin if element changed
     if (oldElement) {
-      editor.unregisterPlugin(props.pluginKey);
+      editorValue.unregisterPlugin(props.pluginKey);
     }
 
     const plugin = BubbleMenuPlugin({
       pluginKey: props.pluginKey,
-      editor,
+      editor: editorValue,
       element,
       updateDelay: props.updateDelay,
       shouldShow: props.shouldShow
@@ -47,14 +54,14 @@ watch(
       },
     });
 
-    editor.registerPlugin(plugin);
+    editorValue.registerPlugin(plugin);
   },
   { immediate: true }
 );
 
 onBeforeUnmount(() => {
-  if (props.editor) {
-    props.editor.unregisterPlugin(props.pluginKey);
+  if (editor.value) {
+    editor.value.unregisterPlugin(props.pluginKey);
   }
 });
 </script>

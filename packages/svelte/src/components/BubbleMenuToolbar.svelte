@@ -1,14 +1,19 @@
-<script lang="ts">
+<script lang="ts" module>
 import type { Editor } from "@vizel/core";
+
+export interface BubbleMenuToolbarProps {
+  /** The editor instance */
+  editor: Editor;
+  /** Custom class name */
+  class?: string;
+}
+</script>
+
+<script lang="ts">
 import BubbleMenuButton from "./BubbleMenuButton.svelte";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.svelte";
 
-interface Props {
-  editor: Editor;
-  class?: string;
-}
-
-let { editor, class: className }: Props = $props();
+let { editor, class: className }: BubbleMenuToolbarProps = $props();
 let showLinkEditor = $state(false);
 </script>
 

@@ -1,31 +1,37 @@
 <script lang="ts" module>
+import type { SlashCommandItem } from "@vizel/core";
+import type { Snippet } from "svelte";
+
 export interface SlashMenuRef {
   onKeyDown: (event: KeyboardEvent) => boolean;
+}
+
+export interface SlashMenuProps {
+  /** The list of slash command items */
+  items: SlashCommandItem[];
+  /** Custom class name */
+  class?: string;
+  /** Command handler */
+  oncommand?: (item: SlashCommandItem) => void;
+  /** Custom item renderer */
+  renderItem?: Snippet<[{ item: SlashCommandItem; isSelected: boolean; onclick: () => void }]>;
+  /** Custom empty state renderer */
+  renderEmpty?: Snippet;
 }
 </script>
 
 <script lang="ts">
-  import { tick } from "svelte";
-  import type { SlashCommandItem } from "@vizel/core";
-  import type { Snippet } from "svelte";
-  import SlashMenuItem from "./SlashMenuItem.svelte";
-  import SlashMenuEmpty from "./SlashMenuEmpty.svelte";
+import { tick } from "svelte";
+import SlashMenuItem from "./SlashMenuItem.svelte";
+import SlashMenuEmpty from "./SlashMenuEmpty.svelte";
 
-  interface Props {
-    items: SlashCommandItem[];
-    class?: string;
-    oncommand?: (item: SlashCommandItem) => void;
-    renderItem?: Snippet<[{ item: SlashCommandItem; isSelected: boolean; onclick: () => void }]>;
-    renderEmpty?: Snippet;
-  }
-
-  let {
-    items,
-    class: className,
-    oncommand,
-    renderItem,
-    renderEmpty,
-  }: Props = $props();
+let {
+  items,
+  class: className,
+  oncommand,
+  renderItem,
+  renderEmpty,
+}: SlashMenuProps = $props();
 
   let selectedIndex = $state(0);
   let itemRefs: (HTMLElement | null)[] = $state([]);

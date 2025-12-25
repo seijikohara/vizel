@@ -1,12 +1,22 @@
-<script lang="ts">
+<script lang="ts" module>
 import type { Editor } from "@vizel/core";
 
-interface Props {
-  editor: Editor | null;
+export interface EditorContentProps {
+  /** Override the editor from context */
+  editor?: Editor | null;
+  /** Custom class name */
   class?: string;
 }
+</script>
 
-let { editor, class: className }: Props = $props();
+<script lang="ts">
+import { useEditorContextSafe } from "./EditorContext.ts";
+
+let { editor: editorProp, class: className }: EditorContentProps = $props();
+
+const contextEditor = useEditorContextSafe();
+const editor = $derived(editorProp ?? contextEditor?.());
+
 let element: HTMLElement | undefined = $state();
 
 $effect(() => {

@@ -1,12 +1,16 @@
-<script lang="ts">
+<script lang="ts" module>
 import type { Snippet } from "svelte";
 
-interface Props {
+export interface SlashMenuEmptyProps {
+  /** Custom class name */
   class?: string;
+  /** Custom content */
   children?: Snippet;
 }
+</script>
 
-let { class: className, children }: Props = $props();
+<script lang="ts">
+let { class: className, children }: SlashMenuEmptyProps = $props();
 </script>
 
 <div class="vizel-slash-menu-empty {className ?? ''}">

@@ -85,4 +85,4 @@ export interface VizelEditorState {
 /**
  * Re-export Tiptap types for convenience
  */
-export type { Editor, Extensions, JSONContent } from "@tiptap/core";
+export type { Extensions, JSONContent } from "@tiptap/core";

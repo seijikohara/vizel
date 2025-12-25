@@ -1,18 +1,24 @@
-<script lang="ts">
+<script lang="ts" module>
 import type { Editor } from "@vizel/core";
-import { onMount } from "svelte";
 
-interface Props {
+export interface BubbleMenuLinkEditorProps {
+  /** The editor instance */
   editor: Editor;
+  /** Custom class name */
   class?: string;
+  /** Close handler */
   onclose?: () => void;
 }
+</script>
 
-let { editor, class: className, onclose }: Props = $props();
+<script lang="ts">
+import { onMount, untrack } from "svelte";
+
+let { editor, class: className, onclose }: BubbleMenuLinkEditorProps = $props();
 
 let inputElement: HTMLInputElement;
 let currentHref = $derived(editor.getAttributes("link").href || "");
-let url = $state(editor.getAttributes("link").href || "");
+let url = $state(untrack(() => editor.getAttributes("link").href || ""));
 
 onMount(() => {
   inputElement?.focus();

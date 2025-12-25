@@ -1,20 +1,44 @@
-// Editor components
-
 // BubbleMenu components
-export { default as BubbleMenu } from "./BubbleMenu.svelte";
-export { default as BubbleMenuButton } from "./BubbleMenuButton.svelte";
-export { default as BubbleMenuDivider } from "./BubbleMenuDivider.svelte";
-export { default as BubbleMenuLinkEditor } from "./BubbleMenuLinkEditor.svelte";
-export { default as BubbleMenuToolbar } from "./BubbleMenuToolbar.svelte";
-export { default as EditorContent } from "./EditorContent.svelte";
 export {
-  EDITOR_CONTEXT_KEY,
-  getEditorContext,
-  getEditorContextSafe,
-} from "./EditorContext.ts";
-export { default as EditorRoot } from "./EditorRoot.svelte";
+  type BubbleMenuProps,
+  default as BubbleMenu,
+} from "./BubbleMenu.svelte";
+export {
+  type BubbleMenuButtonProps,
+  default as BubbleMenuButton,
+} from "./BubbleMenuButton.svelte";
+export {
+  type BubbleMenuDividerProps,
+  default as BubbleMenuDivider,
+} from "./BubbleMenuDivider.svelte";
+export {
+  type BubbleMenuLinkEditorProps,
+  default as BubbleMenuLinkEditor,
+} from "./BubbleMenuLinkEditor.svelte";
+export {
+  type BubbleMenuToolbarProps,
+  default as BubbleMenuToolbar,
+} from "./BubbleMenuToolbar.svelte";
+
+// Editor components
+export {
+  default as EditorContent,
+  type EditorContentProps,
+} from "./EditorContent.svelte";
+export { useEditorContext, useEditorContextSafe } from "./EditorContext.ts";
+export { default as EditorRoot, type EditorRootProps } from "./EditorRoot.svelte";
 
 // SlashMenu components
-export { default as SlashMenu, type SlashMenuRef } from "./SlashMenu.svelte";
-export { default as SlashMenuEmpty } from "./SlashMenuEmpty.svelte";
-export { default as SlashMenuItem } from "./SlashMenuItem.svelte";
+export {
+  default as SlashMenu,
+  type SlashMenuProps,
+  type SlashMenuRef,
+} from "./SlashMenu.svelte";
+export {
+  default as SlashMenuEmpty,
+  type SlashMenuEmptyProps,
+} from "./SlashMenuEmpty.svelte";
+export {
+  default as SlashMenuItem,
+  type SlashMenuItemProps,
+} from "./SlashMenuItem.svelte";

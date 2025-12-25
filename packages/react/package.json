@@ -28,16 +28,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tiptap/extension-bubble-menu": "^3.14.0",
-    "@tiptap/react": "^3.14.0",
     "@tiptap/suggestion": "^3.14.0",
-    "@vizel/core": "workspace:*",
-    "tippy.js": "^6.3.7"
+    "@vizel/core": "workspace:*"
   },
   "peerDependencies": {
     "react": "^18 || ^19",
-    "react-dom": "^18 || ^19",
-    "typescript": "^5"
+    "react-dom": "^18 || ^19"
   },
   "devDependencies": {
     "@types/react": "^19",

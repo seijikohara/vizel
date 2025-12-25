@@ -6,7 +6,11 @@
  */
 
 // Re-export Tiptap core for advanced usage
-export { Editor as TiptapEditor } from "@tiptap/core";
+export { Editor, Editor as TiptapEditor } from "@tiptap/core";
+export {
+  BubbleMenuPlugin,
+  default as BubbleMenuExtension,
+} from "@tiptap/extension-bubble-menu";
 
 // Extensions
 export {
@@ -49,7 +53,6 @@ export {
 } from "./extensions/index.ts";
 // Types
 export type {
-  Editor,
   Extensions,
   JSONContent,
   VizelEditorOptions,
@@ -58,3 +61,13 @@ export type {
   VizelImageFeatureOptions,
   VizelSlashCommandOptions,
 } from "./types.ts";
+// Utilities
+export {
+  type CreateUploadEventHandlerOptions,
+  createUploadEventHandler,
+  defaultEditorProps,
+  type ResolveFeaturesOptions,
+  registerUploadEventHandler,
+  resolveFeatures,
+  VIZEL_UPLOAD_IMAGE_EVENT,
+} from "./utils/index.ts";
