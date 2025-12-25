@@ -1,0 +1,55 @@
+name: PR Labeler
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  label:
+    name: Label PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label PR based on title
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            const labels = [];
+
+            // Map Conventional Commits prefixes to labels
+            const prefixMap = {
+              'feat': 'feature',
+              'fix': 'fix',
+              'docs': 'documentation',
+              'refactor': 'refactor',
+              'perf': 'performance',
+              'test': 'test',
+              'chore': 'chore',
+              'ci': 'ci',
+              'build': 'build',
+            };
+
+            // Extract prefix from title (e.g., "feat(scope): description" or "feat: description")
+            const match = title.match(/^(\w+)(?:\([^)]+\))?:/);
+            if (match) {
+              const prefix = match[1].toLowerCase();
+              const label = prefixMap[prefix];
+              if (label) {
+                labels.push(label);
+              }
+            }
+
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: labels,
+              });
+              console.log(`Added labels: ${labels.join(', ')}`);
+            } else {
+              console.log('No matching prefix found in title');
+            }
