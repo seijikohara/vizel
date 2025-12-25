@@ -1,19 +1,5 @@
-import {
-  BubbleMenu,
-  createImageUploadExtension,
-  createImageUploader,
-  createLinkExtension,
-  createSlashMenuRenderer,
-  createTableExtensions,
-  defaultSlashCommands,
-  EditorContent,
-  type JSONContent,
-  Placeholder,
-  SlashCommand,
-  StarterKit,
-  useEditor,
-} from "@vizel/react";
-import { useEffect, useState } from "react";
+import { BubbleMenu, EditorContent, type JSONContent, useVizelEditor } from "@vizel/react";
+import { useState } from "react";
 
 // Mock upload function that simulates server upload
 async function mockUploadImage(file: File): Promise<string> {
@@ -28,17 +14,6 @@ async function mockUploadImage(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
-
-const uploadOptions = {
-  onUpload: mockUploadImage,
-  maxFileSize: 10 * 1024 * 1024, // 10MB
-  onValidationError: (error: { message: string }) => {
-    alert(`Validation error: ${error.message}`);
-  },
-  onUploadError: (error: Error) => {
-    alert(`Upload failed: ${error.message}`);
-  },
-};
 
 const initialContent: JSONContent = {
   type: "doc",
@@ -151,29 +126,21 @@ export function App() {
   const [output, setOutput] = useState<JSONContent | null>(null);
   const [showOutput, setShowOutput] = useState(false);
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        link: false,
-      }),
-      Placeholder.configure({
-        placeholder: "Type '/' for commands...",
-        emptyEditorClass: "vizel-editor-empty",
-        emptyNodeClass: "vizel-node-empty",
-      }),
-      SlashCommand.configure({
-        items: defaultSlashCommands,
-        suggestion: createSlashMenuRenderer(),
-      }),
-      ...createImageUploadExtension({
-        upload: uploadOptions,
-      }),
-      createLinkExtension(),
-      ...createTableExtensions(),
-    ],
-    content: initialContent,
+  const editor = useVizelEditor({
+    initialContent,
     autofocus: "end",
-    immediatelyRender: false,
+    features: {
+      image: {
+        onUpload: mockUploadImage,
+        maxFileSize: 10 * 1024 * 1024, // 10MB
+        onValidationError: (error) => {
+          alert(`Validation error: ${error.message}`);
+        },
+        onUploadError: (error) => {
+          alert(`Upload failed: ${error.message}`);
+        },
+      },
+    },
     onUpdate: ({ editor: e }) => {
       setOutput(e.getJSON());
     },
@@ -181,25 +148,6 @@ export function App() {
       setOutput(e.getJSON());
     },
   });
-
-  // Handle vizel:upload-image custom event from slash command
-  useEffect(() => {
-    if (!editor) return;
-
-    const uploadFn = createImageUploader(uploadOptions);
-
-    const handleUploadEvent = (event: Event) => {
-      const customEvent = event as CustomEvent<{ file: File }>;
-      const { file } = customEvent.detail;
-      const pos = editor.state.selection.from;
-      uploadFn(file, editor.view, pos);
-    };
-
-    document.addEventListener("vizel:upload-image", handleUploadEvent);
-    return () => {
-      document.removeEventListener("vizel:upload-image", handleUploadEvent);
-    };
-  }, [editor]);
 
   return (
     <div className="app">

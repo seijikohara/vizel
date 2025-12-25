@@ -1,20 +1,6 @@
 <script setup lang="ts">
-import { useEditor } from "@tiptap/vue-3";
-import {
-  BubbleMenu,
-  createImageUploadExtension,
-  createImageUploader,
-  createLinkExtension,
-  createSlashMenuRenderer,
-  createTableExtensions,
-  defaultSlashCommands,
-  EditorContent,
-  type JSONContent,
-  Placeholder,
-  SlashCommand,
-  StarterKit,
-} from "@vizel/vue";
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { BubbleMenu, EditorContent, type JSONContent, useVizelEditor } from "@vizel/vue";
+import { ref } from "vue";
 
 // Mock upload function that simulates server upload
 async function mockUploadImage(file: File): Promise<string> {
@@ -127,63 +113,27 @@ const initialContent: JSONContent = {
   ],
 };
 
-const uploadOptions = {
-  onUpload: mockUploadImage,
-  maxFileSize: 10 * 1024 * 1024, // 10MB
-  onValidationError: (error: { message: string }) => {
-    alert(`Validation error: ${error.message}`);
-  },
-  onUploadError: (error: Error) => {
-    alert(`Upload failed: ${error.message}`);
-  },
-};
-
-// Handle vizel:upload-image custom event from slash command
-function handleUploadEvent(event: Event) {
-  if (!editor.value) return;
-  const customEvent = event as CustomEvent<{ file: File }>;
-  const { file } = customEvent.detail;
-  const pos = editor.value.state.selection.from;
-  const uploadFn = createImageUploader(uploadOptions);
-  uploadFn(file, editor.value.view, pos);
-}
-
-const editor = useEditor({
-  extensions: [
-    StarterKit.configure({
-      link: false,
-    }),
-    Placeholder.configure({
-      placeholder: "Type '/' for commands...",
-      emptyEditorClass: "vizel-editor-empty",
-      emptyNodeClass: "vizel-node-empty",
-    }),
-    SlashCommand.configure({
-      items: defaultSlashCommands,
-      suggestion: createSlashMenuRenderer(),
-    }),
-    ...createImageUploadExtension({
-      upload: uploadOptions,
-    }),
-    createLinkExtension(),
-    ...createTableExtensions(),
-  ],
-  content: initialContent,
+const editor = useVizelEditor({
+  initialContent,
   autofocus: "end",
+  features: {
+    image: {
+      onUpload: mockUploadImage,
+      maxFileSize: 10 * 1024 * 1024, // 10MB
+      onValidationError: (error) => {
+        alert(`Validation error: ${error.message}`);
+      },
+      onUploadError: (error) => {
+        alert(`Upload failed: ${error.message}`);
+      },
+    },
+  },
   onUpdate: ({ editor: e }) => {
     output.value = e.getJSON();
   },
   onCreate: ({ editor: e }) => {
     output.value = e.getJSON();
   },
-});
-
-onMounted(() => {
-  document.addEventListener("vizel:upload-image", handleUploadEvent);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("vizel:upload-image", handleUploadEvent);
 });
 </script>
 

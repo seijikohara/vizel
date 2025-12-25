@@ -1,20 +1,5 @@
 <script lang="ts">
-import {
-  BubbleMenu,
-  createImageUploadExtension,
-  createImageUploader,
-  createLinkExtension,
-  createSlashMenuRenderer,
-  createTableExtensions,
-  defaultSlashCommands,
-  Editor,
-  EditorContent,
-  type JSONContent,
-  Placeholder,
-  SlashCommand,
-  StarterKit,
-} from "@vizel/svelte";
-import { onDestroy, onMount } from "svelte";
+import { BubbleMenu, EditorContent, type JSONContent, useVizelEditor } from "@vizel/svelte";
 
 // Mock upload function that simulates server upload
 async function mockUploadImage(file: File): Promise<string> {
@@ -30,7 +15,6 @@ async function mockUploadImage(file: File): Promise<string> {
   });
 }
 
-let editor: Editor | null = $state(null);
 let output: JSONContent | null = $state(null);
 let showOutput = $state(false);
 
@@ -128,67 +112,27 @@ const initialContent: JSONContent = {
   ],
 };
 
-const uploadOptions = {
-  onUpload: mockUploadImage,
-  maxFileSize: 10 * 1024 * 1024, // 10MB
-  onValidationError: (error: { message: string }) => {
-    alert(`Validation error: ${error.message}`);
-  },
-  onUploadError: (error: Error) => {
-    alert(`Upload failed: ${error.message}`);
-  },
-};
-
-// Handle vizel:upload-image custom event from slash command
-function handleUploadEvent(event: Event) {
-  if (!editor) return;
-  const customEvent = event as CustomEvent<{ file: File }>;
-  const { file } = customEvent.detail;
-  const pos = editor.state.selection.from;
-  const uploadFn = createImageUploader(uploadOptions);
-  uploadFn(file, editor.view, pos);
-}
-
-onMount(() => {
-  editor = new Editor({
-    extensions: [
-      StarterKit.configure({
-        link: false,
-      }),
-      Placeholder.configure({
-        placeholder: "Type '/' for commands...",
-        emptyEditorClass: "vizel-editor-empty",
-        emptyNodeClass: "vizel-node-empty",
-      }),
-      SlashCommand.configure({
-        items: defaultSlashCommands,
-        suggestion: createSlashMenuRenderer(),
-      }),
-      createLinkExtension(),
-      ...createImageUploadExtension({
-        upload: uploadOptions,
-      }),
-      ...createTableExtensions(),
-    ],
-    content: initialContent,
-    autofocus: "end",
-    onUpdate: ({ editor: e }) => {
-      output = e.getJSON();
+const editor = useVizelEditor({
+  initialContent,
+  autofocus: "end",
+  features: {
+    image: {
+      onUpload: mockUploadImage,
+      maxFileSize: 10 * 1024 * 1024, // 10MB
+      onValidationError: (error) => {
+        alert(`Validation error: ${error.message}`);
+      },
+      onUploadError: (error) => {
+        alert(`Upload failed: ${error.message}`);
+      },
     },
-    onCreate: ({ editor: e }) => {
-      output = e.getJSON();
-    },
-  });
-
-  // Add event listener for slash menu upload
-  document.addEventListener("vizel:upload-image", handleUploadEvent);
-});
-
-onDestroy(() => {
-  document.removeEventListener("vizel:upload-image", handleUploadEvent);
-  if (editor) {
-    editor.destroy();
-  }
+  },
+  onUpdate: ({ editor: e }) => {
+    output = e.getJSON();
+  },
+  onCreate: ({ editor: e }) => {
+    output = e.getJSON();
+  },
 });
 </script>
 
@@ -235,9 +179,9 @@ onDestroy(() => {
 
     <div class="editor-container">
       <div class="editor-root">
-        <EditorContent {editor} class="editor-content" />
-        {#if editor}
-          <BubbleMenu {editor} />
+        <EditorContent editor={editor.current} class="editor-content" />
+        {#if editor.current}
+          <BubbleMenu editor={editor.current} />
         {/if}
       </div>
     </div>
