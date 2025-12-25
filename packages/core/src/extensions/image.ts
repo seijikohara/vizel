@@ -8,6 +8,30 @@ import {
   handleImagePaste,
   type ImageUploadOptions,
 } from "../plugins/image-upload.ts";
+import { ResizableImage } from "./image-resize.ts";
+
+/**
+ * Options for image resize functionality
+ */
+export interface VizelImageResizeOptions {
+  /** Enable image resizing (default: true when resize options provided) */
+  enabled?: boolean;
+  /** Minimum width in pixels (default: 100) */
+  minWidth?: number;
+  /** Minimum height in pixels (default: 100) */
+  minHeight?: number;
+  /** Maximum width in pixels (default: undefined - uses container width) */
+  maxWidth?: number;
+}
+
+/**
+ * Default resize options for images
+ */
+export const defaultImageResizeOptions: VizelImageResizeOptions = {
+  enabled: true,
+  minWidth: 100,
+  minHeight: 100,
+};
 
 export interface VizelImageOptions {
   /** Allow inline images */
@@ -46,6 +70,8 @@ export function createImageExtension(options: VizelImageOptions = {}) {
 export interface VizelImageUploadOptions extends VizelImageOptions {
   /** Image upload configuration */
   upload: ImageUploadOptions;
+  /** Image resize options (set to false to disable) */
+  resize?: VizelImageResizeOptions | false;
 }
 
 /**
@@ -74,7 +100,23 @@ export interface VizelImageUploadOptions extends VizelImageOptions {
 export function createImageUploadExtension(options: VizelImageUploadOptions) {
   const uploadFn = createImageUploader(options.upload);
 
-  const imageExtension = createImageExtension(options);
+  // Use ResizableImage if resize is enabled, otherwise use standard Image
+  const resizeEnabled = options.resize !== false;
+  const resizeOptions = typeof options.resize === "object" ? options.resize : {};
+
+  const imageExtension = resizeEnabled
+    ? ResizableImage.configure({
+        inline: options.inline ?? false,
+        allowBase64: options.allowBase64 ?? true,
+        minWidth: resizeOptions.minWidth ?? 100,
+        minHeight: resizeOptions.minHeight ?? 100,
+        maxWidth: resizeOptions.maxWidth,
+        HTMLAttributes: {
+          class: "vizel-image",
+          ...options.HTMLAttributes,
+        },
+      })
+    : createImageExtension(options);
 
   const uploadExtension = Extension.create({
     name: "imageUpload",

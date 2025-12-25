@@ -1,0 +1,22 @@
+/**
+ * Vizel Placeholder Styles
+ *
+ * Styles for editor placeholder text when content is empty.
+ */
+
+/* Empty paragraph placeholder (first child) */
+.vizel-editor p.vizel-node-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--vizel-text-color-muted);
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* Empty editor placeholder */
+.vizel-editor.vizel-editor-empty::before {
+  content: attr(data-placeholder);
+  color: var(--vizel-text-color-muted);
+  pointer-events: none;
+  position: absolute;
+}

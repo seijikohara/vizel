@@ -1,0 +1,69 @@
+/**
+ * Vizel CSS Custom Properties (CSS Variables)
+ *
+ * These variables provide theming capabilities for Vizel components.
+ * Override these in your application's CSS to customize the appearance.
+ *
+ * @example
+ * ```css
+ * :root {
+ *   --vizel-primary-color: #3b82f6;
+ *   --vizel-primary-color-dark: #2563eb;
+ * }
+ * ```
+ */
+
+:root {
+  /* Primary theme colors - override these for framework-specific theming */
+  --vizel-primary-color: #3b82f6;
+  --vizel-primary-color-dark: #1d4ed8;
+  --vizel-primary-bg: rgba(59, 130, 246, 0.1);
+  --vizel-primary-bg-hover: rgba(59, 130, 246, 0.15);
+
+  /* Text colors */
+  --vizel-text-color: #111827;
+  --vizel-text-color-secondary: #6b7280;
+  --vizel-text-color-muted: #9ca3af;
+
+  /* Border colors */
+  --vizel-border-color: #e5e7eb;
+  --vizel-border-color-hover: #d1d5db;
+
+  /* Background colors */
+  --vizel-bg-color: #ffffff;
+  --vizel-bg-color-secondary: #f9fafb;
+  --vizel-bg-color-tertiary: #f3f4f6;
+  --vizel-bg-color-dark: #1f2937;
+
+  /* Shadow */
+  --vizel-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --vizel-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* Border radius */
+  --vizel-radius-sm: 4px;
+  --vizel-radius-md: 6px;
+  --vizel-radius-lg: 8px;
+  --vizel-radius-xl: 12px;
+  --vizel-radius-full: 9999px;
+
+  /* Editor layout */
+  --vizel-editor-min-height: 350px;
+  --vizel-editor-padding: 1.5rem;
+
+  /* Image */
+  --vizel-image-border-radius: var(--vizel-radius-lg);
+
+  /* Font family */
+  --vizel-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+  --vizel-font-family-mono: "Fira Code", "Monaco", monospace;
+
+  /* Danger color (for delete actions) */
+  --vizel-danger-color: #dc2626;
+  --vizel-danger-bg: rgba(220, 38, 38, 0.1);
+
+  /* Image resize handles (can be overridden) */
+  --vizel-resize-handle-color: var(--vizel-primary-color);
+  --vizel-resize-handle-color-hover: var(--vizel-primary-color-dark);
+  --vizel-image-outline-color: var(--vizel-primary-color);
+}

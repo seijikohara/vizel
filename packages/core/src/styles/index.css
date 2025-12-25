@@ -1,0 +1,27 @@
+/**
+ * Vizel Core Styles
+ *
+ * Import this file to include all Vizel editor styles.
+ *
+ * @example
+ * ```ts
+ * import '@vizel/core/styles';
+ * ```
+ *
+ * Or import individual style modules:
+ * ```ts
+ * import '@vizel/core/styles/image.css';
+ * ```
+ */
+
+/* CSS Variables (must be first) */
+@import './variables.css';
+
+/* Component styles */
+@import './editor.css';
+@import './placeholder.css';
+@import './bubble-menu.css';
+@import './slash-menu.css';
+@import './link.css';
+@import './table.css';
+@import './image.css';
