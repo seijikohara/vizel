@@ -1,6 +1,6 @@
 # Vizel
 
-A Notion-style visual editor built with [Tiptap](https://tiptap.dev/), supporting React, Vue, and Svelte.
+A block-based rich text editor built with [Tiptap](https://tiptap.dev/), supporting React, Vue, and Svelte.
 
 ## Packages
 
