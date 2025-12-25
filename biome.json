@@ -35,6 +35,7 @@
           "level": "warn",
           "options": { "maxAllowedComplexity": 20 }
         },
+        "noForEach": "error",
         "noUselessStringConcat": "error",
         "noUselessUndefinedInitialization": "error",
         "useDateNow": "error",
