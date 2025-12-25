@@ -12,6 +12,10 @@ interface SlashMenuRef {
   onKeyDown: (event: KeyboardEvent) => boolean;
 }
 
+/** Type guard for SlashMenuRef */
+const isSlashMenuRef = (value: unknown): value is SlashMenuRef =>
+  typeof value === "object" && value !== null && "onKeyDown" in value;
+
 /**
  * Creates a suggestion render configuration for the SlashCommand extension.
  * This handles the popup positioning and Svelte component lifecycle.
@@ -110,9 +114,8 @@ export function createSlashMenuRenderer(
             return true;
           }
 
-          if (component) {
-            const ref = component as unknown as SlashMenuRef;
-            return ref.onKeyDown?.(props.event) ?? false;
+          if (component && isSlashMenuRef(component)) {
+            return component.onKeyDown(props.event);
           }
           return false;
         },

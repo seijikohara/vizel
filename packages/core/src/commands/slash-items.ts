@@ -12,7 +12,7 @@ interface Range {
   to: number;
 }
 
-export const defaultSlashCommands: SlashCommandItem[] = [
+export const defaultSlashCommands = [
   {
     title: "Heading 1",
     description: "Large section heading",
@@ -122,7 +122,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
       input.click();
     },
   },
-];
+] satisfies SlashCommandItem[];
 
 export function filterSlashCommands(items: SlashCommandItem[], query: string): SlashCommandItem[] {
   return items.filter((item) => item.title.toLowerCase().includes(query.toLowerCase()));

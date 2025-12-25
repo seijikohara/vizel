@@ -55,7 +55,8 @@
   --vizel-image-border-radius: var(--vizel-radius-lg);
 
   /* Font family */
-  --vizel-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+  --vizel-font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
   --vizel-font-family-mono: "Fira Code", "Monaco", monospace;
 
   /* Danger color (for delete actions) */

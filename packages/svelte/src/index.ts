@@ -67,9 +67,8 @@ export {
   type VizelImageUploadOptions,
   validateImageFile,
 } from "@vizel/core";
-// BubbleMenu components
-// Editor components
-// SlashMenu components
+
+// Components
 export {
   BubbleMenu,
   BubbleMenuButton,

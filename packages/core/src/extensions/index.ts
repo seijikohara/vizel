@@ -15,7 +15,11 @@ export {
   type VizelImageUploadOptions,
   validateImageFile,
 } from "./image.ts";
-export { ImageResize, type ImageResizeOptions, ResizableImage } from "./image-resize.ts";
+export {
+  ImageResize,
+  type ImageResizeOptions,
+  ResizableImage,
+} from "./image-resize.ts";
 export {
   createLinkExtension,
   Link,
@@ -52,7 +56,6 @@ export {
   Text,
   type VizelExtensionsOptions,
 } from "./starter-kit.ts";
-
 export {
   createTableExtensions,
   Table,

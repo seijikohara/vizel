@@ -4,13 +4,12 @@ paths: packages/svelte/**/*.{ts,svelte}
 
 # @vizel/svelte Package Guidelines
 
+See `cross-framework.md` for component/rune equivalence requirements.
+
 ## Package Purpose
 
-Svelte 5 components and runes for Vizel editor:
-
-- Svelte components (EditorContent, BubbleMenu, SlashMenu)
-- Runes (useVizelEditor)
-- Context API
+Svelte 5 components and runes for Vizel editor.
+This package only contains Svelte-specific wrappers around `@vizel/core`.
 
 ## Svelte 5 Runes
 
@@ -117,12 +116,6 @@ setContext("editor", editor);
 // Get context
 const editor = getContext<Editor>("editor");
 ```
-
-## Re-exports from Core
-
-- Re-export all core extensions
-- Re-export all core types
-- Maintain alphabetical order
 
 ## Event Handling
 

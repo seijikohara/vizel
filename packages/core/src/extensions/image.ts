@@ -27,11 +27,11 @@ export interface VizelImageResizeOptions {
 /**
  * Default resize options for images
  */
-export const defaultImageResizeOptions: VizelImageResizeOptions = {
+export const defaultImageResizeOptions = {
   enabled: true,
   minWidth: 100,
   minHeight: 100,
-};
+} satisfies VizelImageResizeOptions;
 
 export interface VizelImageOptions {
   /** Allow inline images */

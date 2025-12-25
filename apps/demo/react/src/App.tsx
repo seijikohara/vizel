@@ -9,7 +9,11 @@ async function mockUploadImage(file: File): Promise<string> {
   // Convert to base64 for demo purposes
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      }
+    };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });

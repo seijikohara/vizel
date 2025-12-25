@@ -69,6 +69,7 @@ export {
   type VizelTableOptions,
   validateImageFile,
 } from "./extensions/index.ts";
+
 // Types
 export type {
   Extensions,
@@ -79,6 +80,7 @@ export type {
   VizelImageFeatureOptions,
   VizelSlashCommandOptions,
 } from "./types.ts";
+
 // Utilities
 export {
   type CreateUploadEventHandlerOptions,

@@ -4,13 +4,12 @@ paths: packages/vue/**/*.{ts,vue}
 
 # @vizel/vue Package Guidelines
 
+See `cross-framework.md` for component/composable equivalence requirements.
+
 ## Package Purpose
 
-Vue 3 components and composables for Vizel editor:
-
-- Vue components (EditorContent, BubbleMenu, SlashMenu)
-- Composables (useVizelEditor)
-- Provide/Inject context
+Vue 3 components and composables for Vizel editor.
+This package only contains Vue-specific wrappers around `@vizel/core`.
 
 ## Component Development
 
@@ -95,12 +94,6 @@ provide(EditorContextKey, editor);
 // Inject
 const editor = inject(EditorContextKey);
 ```
-
-## Re-exports from Core
-
-- Re-export all core extensions
-- Re-export all core types
-- Maintain alphabetical order
 
 ## Reactivity
 

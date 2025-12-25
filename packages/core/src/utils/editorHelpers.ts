@@ -51,6 +51,16 @@ export function resolveFeatures(options: ResolveFeaturesOptions): VizelFeatureOp
   };
 }
 
+/** Type guard for vizel upload image custom event */
+const isVizelUploadImageEvent = (
+  event: Event
+): event is CustomEvent<{ file: File; editor: Editor }> =>
+  event instanceof CustomEvent &&
+  typeof event.detail === "object" &&
+  event.detail !== null &&
+  "file" in event.detail &&
+  "editor" in event.detail;
+
 /**
  * Options for creating an image upload event handler.
  */
@@ -72,8 +82,8 @@ export function createUploadEventHandler(
     const editor = options.getEditor();
     if (!editor) return;
 
-    const customEvent = event as CustomEvent<{ file: File; editor: Editor }>;
-    const { file } = customEvent.detail;
+    if (!isVizelUploadImageEvent(event)) return;
+    const { file } = event.detail;
     const pos = editor.state.selection.from;
     const imageOptions = options.getImageOptions();
 
@@ -84,7 +94,11 @@ export function createUploadEventHandler(
         ((f: File) =>
           new Promise((resolve) => {
             const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
+            reader.onload = () => {
+              if (typeof reader.result === "string") {
+                resolve(reader.result);
+              }
+            };
             reader.readAsDataURL(f);
           })),
       ...(imageOptions.maxFileSize !== undefined && { maxFileSize: imageOptions.maxFileSize }),
