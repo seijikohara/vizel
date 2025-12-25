@@ -5,6 +5,7 @@ export interface SlashMenuRef {
 </script>
 
 <script lang="ts">
+  import { tick } from "svelte";
   import type { SlashCommandItem } from "@vizel/core";
   import type { Snippet } from "svelte";
   import SlashMenuItem from "./SlashMenuItem.svelte";
@@ -27,11 +28,23 @@ export interface SlashMenuRef {
   }: Props = $props();
 
   let selectedIndex = $state(0);
+  let itemRefs: (HTMLElement | null)[] = $state([]);
 
   // Reset selection when items change
   $effect(() => {
     items;
     selectedIndex = 0;
+  });
+
+  // Scroll selected item into view when selection changes
+  $effect(() => {
+    const index = selectedIndex;
+    tick().then(() => {
+      const selectedElement = itemRefs[index];
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    });
   });
 
   function selectItem(index: number) {
@@ -70,19 +83,21 @@ export interface SlashMenuRef {
     {/if}
   {:else}
     {#each items as item, index (item.title)}
-      {#if renderItem}
-        {@render renderItem({
-          item,
-          isSelected: index === selectedIndex,
-          onclick: () => selectItem(index),
-        })}
-      {:else}
-        <SlashMenuItem
-          {item}
-          isSelected={index === selectedIndex}
-          onclick={() => selectItem(index)}
-        />
-      {/if}
+      <div bind:this={itemRefs[index]}>
+        {#if renderItem}
+          {@render renderItem({
+            item,
+            isSelected: index === selectedIndex,
+            onclick: () => selectItem(index),
+          })}
+        {:else}
+          <SlashMenuItem
+            {item}
+            isSelected={index === selectedIndex}
+            onclick={() => selectItem(index)}
+          />
+        {/if}
+      </div>
     {/each}
   {/if}
 </div>

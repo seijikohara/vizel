@@ -1,8 +1,8 @@
-import { useEditor } from "@tiptap/react";
-import type { Editor, VizelEditorOptions, VizelFeatureOptions } from "@vizel/core";
+import { Editor } from "@tiptap/core";
+import type { VizelEditorOptions, VizelFeatureOptions } from "@vizel/core";
 import { createImageUploader, createVizelExtensions, type Extensions } from "@vizel/core";
-import { useEffect, useRef } from "react";
-import { createSlashMenuRenderer } from "../components/SlashMenuRenderer.tsx";
+import { onDestroy, onMount } from "svelte";
+import { createSlashMenuRenderer } from "../utils/createSlashMenuRenderer.ts";
 
 export interface UseVizelEditorOptions extends VizelEditorOptions {
   /** Additional extensions to include */
@@ -46,21 +46,29 @@ function resolveFeatures(features?: VizelFeatureOptions): VizelFeatureOptions | 
 }
 
 /**
- * React hook to create and manage a Vizel editor instance.
+ * Svelte 5 rune to create and manage a Vizel editor instance.
+ * Returns a reactive editor state that works with EditorContent component.
  *
  * @example
- * ```tsx
+ * ```svelte
+ * <script lang="ts">
+ * import { useVizelEditor, EditorContent, BubbleMenu } from '@vizel/svelte';
+ *
  * const editor = useVizelEditor({
  *   placeholder: "Start typing...",
  *   onUpdate: ({ editor }) => {
  *     console.log(editor.getJSON());
  *   },
  * });
+ * </script>
  *
- * return <EditorContent editor={editor} />;
+ * <EditorContent editor={editor.current} />
+ * {#if editor.current}
+ *   <BubbleMenu editor={editor.current} />
+ * {/if}
  * ```
  */
-export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | null {
+export function useVizelEditor(options: UseVizelEditorOptions = {}) {
   const {
     initialContent,
     placeholder,
@@ -70,7 +78,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
     extensions: additionalExtensions = [],
     onUpdate,
     onCreate,
-    onDestroy,
+    onDestroy: onEditorDestroy,
     onSelectionUpdate,
     onFocus,
     onBlur,
@@ -80,10 +88,11 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
 
   // Store image upload options for event handler
   const imageOptions = typeof features?.image === "object" ? features.image : {};
-  const imageOptionsRef = useRef(imageOptions);
-  imageOptionsRef.current = imageOptions;
 
-  const editor = useEditor({
+  let editor = $state<Editor | null>(null);
+
+  // Create editor on initialization
+  editor = new Editor({
     extensions: [
       ...createVizelExtensions({ placeholder, features: resolvedFeatures }),
       ...additionalExtensions,
@@ -93,12 +102,10 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
     autofocus,
     onUpdate,
     onCreate,
-    onDestroy,
+    onDestroy: onEditorDestroy,
     onSelectionUpdate,
     onFocus,
     onBlur,
-    // Prevent SSR hydration issues
-    immediatelyRender: false,
     // Add vizel-editor class for styling
     editorProps: {
       attributes: {
@@ -108,39 +115,44 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
   });
 
   // Handle vizel:upload-image custom event from slash command
-  useEffect(() => {
+  const handleUploadEvent = (event: Event) => {
     if (!editor) return;
+    const customEvent = event as CustomEvent<{ file: File; editor: Editor }>;
+    const { file } = customEvent.detail;
+    const pos = editor.state.selection.from;
 
-    const handleUploadEvent = (event: Event) => {
-      const customEvent = event as CustomEvent<{ file: File; editor: Editor }>;
-      const { file } = customEvent.detail;
-      const pos = editor.state.selection.from;
+    // Create upload function with configured options
+    const uploadFn = createImageUploader({
+      onUpload:
+        imageOptions.onUpload ??
+        ((f: File) =>
+          new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(f);
+          })),
+      maxFileSize: imageOptions.maxFileSize,
+      allowedTypes: imageOptions.allowedTypes,
+      onValidationError: imageOptions.onValidationError,
+      onUploadError: imageOptions.onUploadError,
+    });
 
-      // Create upload function with configured options
-      const uploadFn = createImageUploader({
-        onUpload:
-          imageOptionsRef.current.onUpload ??
-          ((f: File) =>
-            new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result as string);
-              reader.readAsDataURL(f);
-            })),
-        maxFileSize: imageOptionsRef.current.maxFileSize,
-        allowedTypes: imageOptionsRef.current.allowedTypes,
-        onValidationError: imageOptionsRef.current.onValidationError,
-        onUploadError: imageOptionsRef.current.onUploadError,
-      });
+    uploadFn(file, editor.view, pos);
+  };
 
-      uploadFn(file, editor.view, pos);
-    };
-
+  onMount(() => {
     document.addEventListener("vizel:upload-image", handleUploadEvent);
+  });
 
-    return () => {
-      document.removeEventListener("vizel:upload-image", handleUploadEvent);
-    };
-  }, [editor]);
+  // Cleanup on component destroy
+  onDestroy(() => {
+    document.removeEventListener("vizel:upload-image", handleUploadEvent);
+    editor?.destroy();
+  });
 
-  return editor;
+  return {
+    get current() {
+      return editor;
+    },
+  };
 }

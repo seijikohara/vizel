@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { SlashCommandItem } from "@vizel/core";
-import { ref, useSlots, watch } from "vue";
+import { nextTick, ref, useSlots, watch } from "vue";
+import SlashMenuEmpty from "./SlashMenuEmpty.vue";
+import SlashMenuItem from "./SlashMenuItem.vue";
 
 const props = defineProps<{
   items: SlashCommandItem[];
@@ -13,6 +15,7 @@ const emit = defineEmits<{
 
 const slots = useSlots();
 const selectedIndex = ref(0);
+const itemRefs = ref<(HTMLElement | null)[]>([]);
 
 // Reset selection when items change
 watch(
@@ -21,6 +24,15 @@ watch(
     selectedIndex.value = 0;
   }
 );
+
+// Scroll selected item into view when selection changes
+watch(selectedIndex, async (newIndex) => {
+  await nextTick();
+  const selectedElement = itemRefs.value[newIndex];
+  if (selectedElement) {
+    selectedElement.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+});
 
 function selectItem(index: number) {
   const item = props.items[index];
@@ -64,7 +76,11 @@ defineExpose({
       <SlashMenuEmpty v-else />
     </template>
     <template v-else>
-      <template v-for="(item, index) in items" :key="item.title">
+      <div
+        v-for="(item, index) in items"
+        :key="item.title"
+        :ref="(el) => (itemRefs[index] = el as HTMLElement)"
+      >
         <slot
           v-if="slots.item"
           name="item"
@@ -78,7 +94,7 @@ defineExpose({
           :is-selected="index === selectedIndex"
           @click="selectItem(index)"
         />
-      </template>
+      </div>
     </template>
   </div>
 </template>

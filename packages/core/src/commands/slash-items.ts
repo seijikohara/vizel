@@ -98,9 +98,14 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     description: "Upload an image from your device",
     icon: "U",
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).run();
+      // Delete the slash command text first
+      try {
+        editor.chain().focus().deleteRange(range).run();
+      } catch {
+        // Ignore errors from editor operations to ensure file picker opens
+      }
 
-      // Open file picker dialog
+      // Open file picker dialog (must happen synchronously in user event handler)
       const input = document.createElement("input");
       input.type = "file";
       input.accept = "image/*";

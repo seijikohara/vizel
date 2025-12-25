@@ -80,6 +80,8 @@ export {
   createBubbleMenu,
   createSlashMenu,
   type SlashMenuState,
+  type UseVizelEditorOptions,
+  useVizelEditor,
 } from "./runes/index.ts";
 // Renderers
 export {
