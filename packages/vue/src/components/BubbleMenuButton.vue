@@ -1,10 +1,16 @@
 <script setup lang="ts">
-defineProps<{
+export interface BubbleMenuButtonProps {
+  /** Whether the button is in active state */
   isActive?: boolean;
+  /** Whether the button is disabled */
   disabled?: boolean;
+  /** Tooltip title */
   title?: string;
+  /** Custom class name */
   class?: string;
-}>();
+}
+
+defineProps<BubbleMenuButtonProps>();
 
 const emit = defineEmits<{
   click: [];

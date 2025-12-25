@@ -29,10 +29,28 @@ export {
   type SlashCommandOptions,
 } from "./slash-command.ts";
 export {
+  Blockquote,
+  Bold,
+  BulletList,
+  Code,
+  CodeBlock,
   createVizelExtensions,
+  Document,
+  Dropcursor,
+  Gapcursor,
+  HardBreak,
+  Heading,
+  History,
+  HorizontalRule,
+  Italic,
+  ListItem,
+  ListKeymap,
+  OrderedList,
+  Paragraph,
   Placeholder,
-  StarterKit,
-  type VizelStarterKitOptions,
+  Strike,
+  Text,
+  type VizelExtensionsOptions,
 } from "./starter-kit.ts";
 
 export {

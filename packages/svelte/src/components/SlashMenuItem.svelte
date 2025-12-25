@@ -1,14 +1,20 @@
-<script lang="ts">
+<script lang="ts" module>
 import type { SlashCommandItem } from "@vizel/core";
 
-interface Props {
+export interface SlashMenuItemProps {
+  /** The slash command item to display */
   item: SlashCommandItem;
+  /** Whether the item is selected */
   isSelected?: boolean;
+  /** Custom class name */
   class?: string;
+  /** Click handler */
   onclick?: () => void;
 }
+</script>
 
-let { item, isSelected = false, class: className, onclick }: Props = $props();
+<script lang="ts">
+let { item, isSelected = false, class: className, onclick }: SlashMenuItemProps = $props();
 </script>
 
 <button

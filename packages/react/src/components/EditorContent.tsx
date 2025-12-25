@@ -1,5 +1,5 @@
-import { EditorContent as TiptapEditorContent } from "@tiptap/react";
 import type { Editor } from "@vizel/core";
+import { useEffect, useRef } from "react";
 import { useEditorContextSafe } from "./EditorContext.tsx";
 
 export interface EditorContentProps {
@@ -28,10 +28,23 @@ export interface EditorContentProps {
 export function EditorContent({ editor: editorProp, className }: EditorContentProps) {
   const context = useEditorContextSafe();
   const editor = editorProp ?? context?.editor;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (editor && containerRef.current) {
+      // Mount the editor's DOM view to the container element
+      containerRef.current.appendChild(editor.view.dom);
+
+      // Update editable state
+      editor.view.setProps({
+        editable: () => editor?.isEditable ?? false,
+      });
+    }
+  }, [editor]);
 
   if (!editor) {
     return null;
   }
 
-  return <TiptapEditorContent editor={editor} className={className} data-vizel-content="" />;
+  return <div ref={containerRef} className={className} data-vizel-content="" />;
 }

@@ -1,16 +1,22 @@
-<script lang="ts">
+<script lang="ts" module>
 import type { Editor } from "@vizel/core";
 import type { Snippet } from "svelte";
+
+export interface EditorRootProps {
+  /** The editor instance */
+  editor: Editor | null;
+  /** Custom class name */
+  class?: string;
+  /** Children content */
+  children: Snippet;
+}
+</script>
+
+<script lang="ts">
 import { setContext } from "svelte";
 import { EDITOR_CONTEXT_KEY } from "./EditorContext.ts";
 
-interface Props {
-  editor: Editor | null;
-  class?: string;
-  children: Snippet;
-}
-
-let { editor, class: className, children }: Props = $props();
+let { editor, class: className, children }: EditorRootProps = $props();
 
 setContext(EDITOR_CONTEXT_KEY, () => editor);
 </script>

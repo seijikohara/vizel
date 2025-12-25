@@ -27,7 +27,7 @@ const initialContent: JSONContent = {
       type: "paragraph",
       content: [
         { type: "text", text: "This is a " },
-        { type: "text", marks: [{ type: "bold" }], text: "Notion-style" },
+        { type: "text", marks: [{ type: "bold" }], text: "block-based rich text" },
         { type: "text", text: " visual editor built with " },
         { type: "text", marks: [{ type: "code" }], text: "Tiptap" },
         { type: "text", text: ". Try clicking this " },
@@ -160,7 +160,7 @@ export function App() {
           </div>
         </div>
         <p className="header-description">
-          A Notion-style visual editor for modern web applications
+          A block-based rich text editor with slash commands and inline formatting
         </p>
       </header>
 

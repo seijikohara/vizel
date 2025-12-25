@@ -8,13 +8,7 @@
   },
   "dependencies": {
     "@vizel/svelte": "workspace:*",
-    "svelte": "^5.0.0",
-    "@tiptap/core": "^3.14.0",
-    "@tiptap/starter-kit": "^3.14.0",
-    "@tiptap/extension-placeholder": "^3.14.0",
-    "@tiptap/extension-bubble-menu": "^3.14.0",
-    "@tiptap/pm": "^3.14.0",
-    "tippy.js": "^6.3.7"
+    "svelte": "^5.0.0"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",

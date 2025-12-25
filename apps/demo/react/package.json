@@ -7,13 +7,7 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@vizel/core": "workspace:*",
     "@vizel/react": "workspace:*",
-    "@tiptap/react": "^3.14.0",
-    "@tiptap/starter-kit": "^3.14.0",
-    "@tiptap/extension-placeholder": "^3.14.0",
-    "@tiptap/extension-bubble-menu": "^3.14.0",
-    "@tiptap/pm": "^3.14.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

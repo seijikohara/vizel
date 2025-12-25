@@ -1,7 +1,6 @@
 import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 import type { SlashCommandItem } from "@vizel/core";
 import { mount, unmount } from "svelte";
-import tippy, { type Instance as TippyInstance } from "tippy.js";
 import SlashMenu from "../components/SlashMenu.svelte";
 
 export interface SlashMenuRendererOptions {
@@ -36,20 +35,41 @@ export function createSlashMenuRenderer(
   return {
     render: () => {
       let component: ReturnType<typeof mount> | null = null;
-      let popup: TippyInstance[] | null = null;
-      let container: HTMLElement | null = null;
+      let container: HTMLDivElement | null = null;
+      let menuContainer: HTMLDivElement | null = null;
       let items: SlashCommandItem[] = [];
       let commandFn: ((item: SlashCommandItem) => void) | null = null;
+
+      const updatePosition = (clientRect: (() => DOMRect | null) | null | undefined) => {
+        if (!(container && clientRect)) return;
+
+        const rect = clientRect();
+        if (!rect) return;
+
+        // Position below the cursor
+        const top = rect.bottom + window.scrollY;
+        const left = rect.left + window.scrollX;
+
+        container.style.top = `${top}px`;
+        container.style.left = `${left}px`;
+      };
 
       return {
         onStart: (props: SuggestionProps<SlashCommandItem>) => {
           items = props.items;
           commandFn = props.command;
 
+          // Create positioned container
           container = document.createElement("div");
+          container.style.position = "absolute";
+          container.style.zIndex = "50";
+          document.body.appendChild(container);
+
+          menuContainer = document.createElement("div");
+          container.appendChild(menuContainer);
 
           component = mount(SlashMenu, {
-            target: container,
+            target: menuContainer,
             props: {
               items,
               class: options.className,
@@ -59,44 +79,34 @@ export function createSlashMenuRenderer(
             },
           });
 
-          if (!props.clientRect) {
-            return;
-          }
-
-          popup = tippy("body", {
-            getReferenceClientRect: props.clientRect as () => DOMRect,
-            appendTo: () => document.body,
-            content: container,
-            showOnCreate: true,
-            interactive: true,
-            trigger: "manual",
-            placement: "bottom-start",
-          });
+          updatePosition(props.clientRect);
         },
 
         onUpdate: (props: SuggestionProps<SlashCommandItem>) => {
           items = props.items;
           commandFn = props.command;
 
-          // Update component props
-          if (component) {
-            // Svelte 5 mount returns the component instance
-            // We need to update props through the returned object
-            (component as unknown as { items: SlashCommandItem[] }).items = items;
+          // Svelte 5 mount doesn't support updating props after mount
+          // We need to remount the component with new props
+          if (component && menuContainer) {
+            unmount(component);
+            component = mount(SlashMenu, {
+              target: menuContainer,
+              props: {
+                items,
+                class: options.className,
+                oncommand: (item: SlashCommandItem) => {
+                  commandFn?.(item);
+                },
+              },
+            });
           }
 
-          if (!props.clientRect) {
-            return;
-          }
-
-          popup?.[0]?.setProps({
-            getReferenceClientRect: props.clientRect as () => DOMRect,
-          });
+          updatePosition(props.clientRect);
         },
 
         onKeyDown: (props: { event: KeyboardEvent }) => {
           if (props.event.key === "Escape") {
-            popup?.[0]?.hide();
             return true;
           }
 
@@ -108,13 +118,13 @@ export function createSlashMenuRenderer(
         },
 
         onExit: () => {
-          popup?.[0]?.destroy();
           if (component) {
             unmount(component);
           }
           container?.remove();
           component = null;
           container = null;
+          menuContainer = null;
         },
       };
     },

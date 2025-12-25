@@ -4,11 +4,8 @@
  * React components and hooks for the Vizel visual editor.
  */
 
-// Tiptap React re-exports for convenience
-export { EditorContent as TiptapEditorContent, useEditor } from "@tiptap/react";
 // Re-export core types for convenience
 export type {
-  Editor,
   JSONContent,
   SlashCommandItem,
   SlashCommandOptions,
@@ -17,8 +14,15 @@ export type {
   VizelLinkOptions,
   VizelTableOptions,
 } from "@vizel/core";
+
 // Re-export core extensions
 export {
+  Blockquote,
+  Bold,
+  BubbleMenuExtension,
+  BulletList,
+  Code,
+  CodeBlock,
   createImageExtension,
   createImageUploadExtension,
   createImageUploader,
@@ -26,31 +30,45 @@ export {
   createLinkExtension,
   createTableExtensions,
   createVizelExtensions,
+  Document,
+  Dropcursor,
   defaultSlashCommands,
+  Editor,
   filterSlashCommands,
+  Gapcursor,
   getImageUploadPluginKey,
+  HardBreak,
+  Heading,
+  History,
+  HorizontalRule,
   handleImageDrop,
   handleImagePaste,
   Image,
   type ImageUploadOptions,
   type ImageValidationError,
   type ImageValidationErrorType,
+  Italic,
   Link,
+  ListItem,
+  ListKeymap,
+  OrderedList,
+  Paragraph,
   Placeholder,
   SlashCommand,
-  StarterKit,
+  Strike,
   Table,
   TableCell,
   TableHeader,
   TableRow,
+  Text,
   type UploadImageFn,
+  type VizelExtensionsOptions,
   type VizelImageOptions,
   type VizelImageUploadOptions,
-  type VizelStarterKitOptions,
   validateImageFile,
 } from "@vizel/core";
-// Editor components
 // BubbleMenu components
+// Editor components
 // SlashMenu components
 export {
   BubbleMenu,
@@ -63,11 +81,8 @@ export {
   type BubbleMenuProps,
   BubbleMenuToolbar,
   type BubbleMenuToolbarProps,
-  createSlashMenuRenderer,
   EditorContent,
   type EditorContentProps,
-  EditorProvider,
-  type EditorProviderProps,
   EditorRoot,
   type EditorRootProps,
   SlashMenu,
@@ -77,11 +92,14 @@ export {
   type SlashMenuItemProps,
   type SlashMenuProps,
   type SlashMenuRef,
-  type SlashMenuRendererOptions,
   useEditorContext,
   useEditorContextSafe,
 } from "./components/index.ts";
+
 // Hooks
-export { type UseVizelEditorOptions, useVizelEditor } from "./hooks/index.ts";
-// Utilities (framework-agnostic)
-export { createVanillaSlashMenuRenderer } from "./utils/slashMenuRenderer.ts";
+export {
+  createSlashMenuRenderer,
+  type SlashMenuRendererOptions,
+  type UseVizelEditorOptions,
+  useVizelEditor,
+} from "./hooks/index.ts";

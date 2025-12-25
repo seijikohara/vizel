@@ -1,15 +1,23 @@
-<script lang="ts">
+<script lang="ts" module>
 import type { Snippet } from "svelte";
 
-interface Props {
+export interface BubbleMenuButtonProps {
+  /** Whether the button is in active state */
   isActive?: boolean;
+  /** Whether the button is disabled */
   disabled?: boolean;
+  /** Tooltip title */
   title?: string;
+  /** Custom class name */
   class?: string;
+  /** Button content */
   children: Snippet;
+  /** Click handler */
   onclick?: () => void;
 }
+</script>
 
+<script lang="ts">
 let {
   isActive = false,
   disabled = false,
@@ -17,7 +25,7 @@ let {
   class: className,
   children,
   onclick,
-}: Props = $props();
+}: BubbleMenuButtonProps = $props();
 </script>
 
 <button

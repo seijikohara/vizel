@@ -32,15 +32,12 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@vizel/core": "workspace:*",
     "@tiptap/core": "^3.14.0",
-    "@tiptap/extension-bubble-menu": "^3.14.0",
     "@tiptap/suggestion": "^3.14.0",
-    "tippy.js": "^6.3.7"
+    "@vizel/core": "workspace:*"
   },
   "peerDependencies": {
-    "svelte": "^5",
-    "typescript": "^5"
+    "svelte": "^5"
   },
   "devDependencies": {
     "@sveltejs/package": "^2",

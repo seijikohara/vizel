@@ -26,7 +26,6 @@ export default defineConfig({
         "@tiptap/suggestion",
         "@tiptap/vue-3",
         "@vizel/core",
-        "tippy.js",
       ],
       output: {
         preserveModules: true,

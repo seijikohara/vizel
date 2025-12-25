@@ -28,7 +28,6 @@ export default defineConfig({
         "@tiptap/react",
         "@tiptap/suggestion",
         "@vizel/core",
-        "tippy.js",
       ],
       output: {
         preserveModules: true,

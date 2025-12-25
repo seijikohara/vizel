@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useSlots } from "vue";
 
-defineProps<{
+export interface SlashMenuEmptyProps {
+  /** Custom class name */
   class?: string;
-}>();
+}
+
+defineProps<SlashMenuEmptyProps>();
 
 const slots = useSlots();
 </script>

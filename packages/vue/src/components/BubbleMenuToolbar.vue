@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import { ref } from "vue";
 import BubbleMenuButton from "./BubbleMenuButton.vue";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.vue";
 
-const props = defineProps<{
+export interface BubbleMenuToolbarProps {
+  /** The editor instance */
   editor: Editor;
+  /** Custom class name */
   class?: string;
-}>();
+}
+
+const props = defineProps<BubbleMenuToolbarProps>();
 
 const showLinkEditor = ref(false);
 </script>
