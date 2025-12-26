@@ -30,6 +30,14 @@ const menuRef = ref<HTMLElement | null>(null);
 const getContextEditor = useEditorContextSafe();
 const editor = computed(() => props.editor ?? getContextEditor?.());
 
+// Handle Escape key to hide bubble menu by collapsing selection
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key === "Escape" && editor.value && !editor.value.view.state.selection.empty) {
+    event.preventDefault();
+    editor.value.commands.setTextSelection(editor.value.view.state.selection.to);
+  }
+}
+
 watch(
   [editor, menuRef],
   ([editorValue, element], [, oldElement]) => {
@@ -38,6 +46,7 @@ watch(
     // Unregister old plugin if element changed
     if (oldElement) {
       editorValue.unregisterPlugin(props.pluginKey);
+      document.removeEventListener("keydown", handleKeyDown);
     }
 
     const plugin = BubbleMenuPlugin({
@@ -55,6 +64,7 @@ watch(
     });
 
     editorValue.registerPlugin(plugin);
+    document.addEventListener("keydown", handleKeyDown);
   },
   { immediate: true }
 );
@@ -63,6 +73,7 @@ onBeforeUnmount(() => {
   if (editor.value) {
     editor.value.unregisterPlugin(props.pluginKey);
   }
+  document.removeEventListener("keydown", handleKeyDown);
 });
 </script>
 

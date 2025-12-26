@@ -1,5 +1,6 @@
 import type { Editor } from "@vizel/core";
 import { useState } from "react";
+import { useEditorState } from "../hooks/useEditorState.ts";
 import { BubbleMenuButton } from "./BubbleMenuButton.tsx";
 import { BubbleMenuLinkEditor } from "./BubbleMenuLinkEditor.tsx";
 
@@ -20,6 +21,8 @@ export interface BubbleMenuToolbarProps {
  * ```
  */
 export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps) {
+  // Subscribe to editor state changes to update active states
+  useEditorState(editor);
   const [showLinkEditor, setShowLinkEditor] = useState(false);
 
   if (showLinkEditor) {
@@ -29,6 +32,7 @@ export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps)
   return (
     <div className={`vizel-bubble-menu-toolbar ${className ?? ""}`}>
       <BubbleMenuButton
+        action="bold"
         onClick={() => editor.chain().focus().toggleBold().run()}
         isActive={editor.isActive("bold")}
         title="Bold (Cmd+B)"
@@ -36,6 +40,7 @@ export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps)
         <strong>B</strong>
       </BubbleMenuButton>
       <BubbleMenuButton
+        action="italic"
         onClick={() => editor.chain().focus().toggleItalic().run()}
         isActive={editor.isActive("italic")}
         title="Italic (Cmd+I)"
@@ -43,6 +48,7 @@ export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps)
         <em>I</em>
       </BubbleMenuButton>
       <BubbleMenuButton
+        action="strike"
         onClick={() => editor.chain().focus().toggleStrike().run()}
         isActive={editor.isActive("strike")}
         title="Strikethrough"
@@ -50,6 +56,7 @@ export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps)
         <s>S</s>
       </BubbleMenuButton>
       <BubbleMenuButton
+        action="code"
         onClick={() => editor.chain().focus().toggleCode().run()}
         isActive={editor.isActive("code")}
         title="Code (Cmd+E)"
@@ -57,6 +64,7 @@ export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps)
         <code>&lt;/&gt;</code>
       </BubbleMenuButton>
       <BubbleMenuButton
+        action="link"
         onClick={() => setShowLinkEditor(true)}
         isActive={editor.isActive("link")}
         title="Link (Cmd+K)"

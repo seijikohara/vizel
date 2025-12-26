@@ -59,3 +59,95 @@ jobs:
 
       - name: Build packages
         run: bun run build
+
+  e2e:
+    name: E2E (${{ matrix.framework }})
+    runs-on: ubuntu-latest
+    needs: [build]
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: [react, vue, svelte]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        id: test
+        run: bun run test:ct:${{ matrix.framework }} --project=chromium
+
+      - name: Save test result
+        if: always()
+        run: echo "${{ job.status }}" > result.txt
+
+      - name: Upload test result
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: e2e-result-${{ matrix.framework }}
+          path: result.txt
+          retention-days: 1
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v6
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report-${{ matrix.framework }}
+          path: playwright-report/
+          retention-days: 7
+
+  e2e-summary:
+    name: E2E Summary
+    runs-on: ubuntu-latest
+    needs: [e2e]
+    if: always()
+    steps:
+      - name: Download all results
+        uses: actions/download-artifact@v6
+        with:
+          pattern: e2e-result-*
+          merge-multiple: false
+
+      - name: Generate summary
+        run: |
+          REACT_RESULT=$(cat e2e-result-react/result.txt 2>/dev/null || echo "unknown")
+          VUE_RESULT=$(cat e2e-result-vue/result.txt 2>/dev/null || echo "unknown")
+          SVELTE_RESULT=$(cat e2e-result-svelte/result.txt 2>/dev/null || echo "unknown")
+
+          get_status() {
+            case "$1" in
+              success) echo "✅ Passed" ;;
+              failure) echo "❌ Failed" ;;
+              cancelled) echo "⏹️ Cancelled" ;;
+              *) echo "❓ Unknown" ;;
+            esac
+          }
+
+          echo "## E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Framework | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| React | $(get_status $REACT_RESULT) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Vue | $(get_status $VUE_RESULT) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Svelte | $(get_status $SVELTE_RESULT) |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check overall result
+        run: |
+          REACT_RESULT=$(cat e2e-result-react/result.txt 2>/dev/null || echo "unknown")
+          VUE_RESULT=$(cat e2e-result-vue/result.txt 2>/dev/null || echo "unknown")
+          SVELTE_RESULT=$(cat e2e-result-svelte/result.txt 2>/dev/null || echo "unknown")
+
+          if [ "$REACT_RESULT" != "success" ] || [ "$VUE_RESULT" != "success" ] || [ "$SVELTE_RESULT" != "success" ]; then
+            echo "❌ Some E2E tests failed"
+            exit 1
+          fi
+          echo "✅ All E2E tests passed"
