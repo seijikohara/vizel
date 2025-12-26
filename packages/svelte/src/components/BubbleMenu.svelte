@@ -41,6 +41,14 @@ const editor = $derived(editorProp ?? contextEditor?.());
 
 let menuElement = $state<HTMLElement | null>(null);
 
+// Handle Escape key to hide bubble menu by collapsing selection
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key === "Escape" && editor && !editor.view.state.selection.empty) {
+    event.preventDefault();
+    editor.commands.setTextSelection(editor.view.state.selection.to);
+  }
+}
+
 $effect(() => {
   if (!(editor && menuElement)) return;
 
@@ -58,9 +66,11 @@ $effect(() => {
   });
 
   editor.registerPlugin(plugin);
+  document.addEventListener("keydown", handleKeyDown);
 
   return () => {
     editor.unregisterPlugin(pluginKey);
+    document.removeEventListener("keydown", handleKeyDown);
   };
 });
 
@@ -68,6 +78,7 @@ onDestroy(() => {
   if (editor) {
     editor.unregisterPlugin(pluginKey);
   }
+  document.removeEventListener("keydown", handleKeyDown);
 });
 </script>
 

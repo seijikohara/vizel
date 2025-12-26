@@ -13,7 +13,7 @@ export interface SlashMenuEmptyProps {
 let { class: className, children }: SlashMenuEmptyProps = $props();
 </script>
 
-<div class="vizel-slash-menu-empty {className ?? ''}">
+<div class="vizel-slash-menu-empty {className ?? ''}" data-vizel-slash-menu-empty="">
   {#if children}
     {@render children()}
   {:else}

@@ -100,5 +100,6 @@ export {
   createSlashMenuRenderer,
   type SlashMenuRendererOptions,
   type UseVizelEditorOptions,
+  useEditorState,
   useVizelEditor,
 } from "./runes/index.ts";

@@ -10,11 +10,37 @@ export interface BubbleMenuToolbarProps {
 </script>
 
 <script lang="ts">
+import { useEditorState } from "../runes/useEditorState.svelte.ts";
 import BubbleMenuButton from "./BubbleMenuButton.svelte";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.svelte";
 
 let { editor, class: className }: BubbleMenuToolbarProps = $props();
 let showLinkEditor = $state(false);
+
+// Subscribe to editor state changes to update active states
+const editorState = useEditorState(() => editor);
+
+// Create derived values that depend on editorState.current to trigger re-renders
+const isBoldActive = $derived.by(() => {
+  void editorState.current; // Trigger reactivity
+  return editor.isActive("bold");
+});
+const isItalicActive = $derived.by(() => {
+  void editorState.current;
+  return editor.isActive("italic");
+});
+const isStrikeActive = $derived.by(() => {
+  void editorState.current;
+  return editor.isActive("strike");
+});
+const isCodeActive = $derived.by(() => {
+  void editorState.current;
+  return editor.isActive("code");
+});
+const isLinkActive = $derived.by(() => {
+  void editorState.current;
+  return editor.isActive("link");
+});
 </script>
 
 {#if showLinkEditor}
@@ -22,35 +48,40 @@ let showLinkEditor = $state(false);
 {:else}
   <div class="vizel-bubble-menu-toolbar {className ?? ''}">
     <BubbleMenuButton
-      isActive={editor.isActive("bold")}
+      action="bold"
+      isActive={isBoldActive}
       title="Bold (Cmd+B)"
       onclick={() => editor.chain().focus().toggleBold().run()}
     >
       <strong>B</strong>
     </BubbleMenuButton>
     <BubbleMenuButton
-      isActive={editor.isActive("italic")}
+      action="italic"
+      isActive={isItalicActive}
       title="Italic (Cmd+I)"
       onclick={() => editor.chain().focus().toggleItalic().run()}
     >
       <em>I</em>
     </BubbleMenuButton>
     <BubbleMenuButton
-      isActive={editor.isActive("strike")}
+      action="strike"
+      isActive={isStrikeActive}
       title="Strikethrough"
       onclick={() => editor.chain().focus().toggleStrike().run()}
     >
       <s>S</s>
     </BubbleMenuButton>
     <BubbleMenuButton
-      isActive={editor.isActive("code")}
+      action="code"
+      isActive={isCodeActive}
       title="Code (Cmd+E)"
       onclick={() => editor.chain().focus().toggleCode().run()}
     >
       <code>&lt;/&gt;</code>
     </BubbleMenuButton>
     <BubbleMenuButton
-      isActive={editor.isActive("link")}
+      action="link"
+      isActive={isLinkActive}
       title="Link (Cmd+K)"
       onclick={() => (showLinkEditor = true)}
     >

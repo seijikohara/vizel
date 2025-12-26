@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/dist", "!**/.svelte-kit"]
+    "includes": ["**", "!**/dist", "!**/.svelte-kit", "!playwright-report", "!**/.cache"]
   },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "formatter": {
@@ -286,12 +286,26 @@
         "**/vite.config.ts",
         "**/svelte.config.js",
         "**/tailwind.config.ts",
-        "**/postcss.config.js"
+        "**/postcss.config.js",
+        "**/playwright-ct.config.ts"
       ],
       "linter": {
         "rules": {
           "style": {
             "noDefaultExport": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["tests/ct/**/*"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUndeclaredDependencies": "off"
+          },
+          "suspicious": {
+            "noSkippedTests": "off"
           }
         }
       }

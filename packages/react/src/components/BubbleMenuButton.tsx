@@ -7,6 +7,8 @@ export interface BubbleMenuButtonProps {
   children: ReactNode;
   title?: string;
   className?: string;
+  /** Action identifier for testing */
+  action?: string;
 }
 
 /**
@@ -30,6 +32,7 @@ export function BubbleMenuButton({
   children,
   title,
   className,
+  action,
 }: BubbleMenuButtonProps) {
   return (
     <button
@@ -39,6 +42,7 @@ export function BubbleMenuButton({
       className={`vizel-bubble-menu-button ${isActive ? "is-active" : ""} ${className ?? ""}`}
       title={title}
       data-active={isActive || undefined}
+      data-action={action}
     >
       {children}
     </button>

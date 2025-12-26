@@ -81,8 +81,20 @@ export function BubbleMenu({
 
     editor.registerPlugin(plugin);
 
+    // Handle Escape key to hide bubble menu by collapsing selection
+    const currentEditor = editor;
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && !currentEditor.view.state.selection.empty) {
+        event.preventDefault();
+        currentEditor.commands.setTextSelection(currentEditor.view.state.selection.to);
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
     return () => {
       editor.unregisterPlugin(pluginKey);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [editor, pluginKey, updateDelay, shouldShow]);
 

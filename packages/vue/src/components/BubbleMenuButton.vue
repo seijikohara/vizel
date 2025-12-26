@@ -8,9 +8,11 @@ export interface BubbleMenuButtonProps {
   title?: string;
   /** Custom class name */
   class?: string;
+  /** Action identifier for testing */
+  action?: string;
 }
 
-defineProps<BubbleMenuButtonProps>();
+const props = defineProps<BubbleMenuButtonProps>();
 
 const emit = defineEmits<{
   click: [];
@@ -28,6 +30,7 @@ const emit = defineEmits<{
     ]"
     :title="title"
     :data-active="isActive || undefined"
+    :data-action="props.action"
     @click="emit('click')"
   >
     <slot />

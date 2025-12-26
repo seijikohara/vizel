@@ -14,6 +14,8 @@ export interface BubbleMenuButtonProps {
   children: Snippet;
   /** Click handler */
   onclick?: () => void;
+  /** Action identifier for testing */
+  action?: string;
 }
 </script>
 
@@ -25,6 +27,7 @@ let {
   class: className,
   children,
   onclick,
+  action,
 }: BubbleMenuButtonProps = $props();
 </script>
 
@@ -34,6 +37,7 @@ let {
   class="vizel-bubble-menu-button {isActive ? 'is-active' : ''} {className ?? ''}"
   {title}
   data-active={isActive || undefined}
+  data-action={action}
   {onclick}
 >
   {@render children()}
