@@ -12,6 +12,7 @@ export interface BubbleMenuToolbarProps {
 <script lang="ts">
 import { useEditorState } from "../runes/useEditorState.svelte.ts";
 import BubbleMenuButton from "./BubbleMenuButton.svelte";
+import BubbleMenuColorPicker from "./BubbleMenuColorPicker.svelte";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.svelte";
 
 let { editor, class: className }: BubbleMenuToolbarProps = $props();
@@ -99,5 +100,7 @@ const isLinkActive = $derived.by(() => {
     >
       <span>L</span>
     </BubbleMenuButton>
+    <BubbleMenuColorPicker {editor} type="textColor" />
+    <BubbleMenuColorPicker {editor} type="highlight" />
   </div>
 {/if}

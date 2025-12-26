@@ -3,6 +3,7 @@ import type { VizelCharacterCountOptions } from "./extensions/character-count.ts
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { SlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTaskListOptions } from "./extensions/task-list.ts";
+import type { VizelTextColorOptions } from "./extensions/text-color.ts";
 import type { ImageUploadOptions } from "./plugins/image-upload.ts";
 
 /**
@@ -43,6 +44,8 @@ export interface VizelFeatureOptions {
   taskList?: VizelTaskListOptions | boolean;
   /** Character and word count tracking */
   characterCount?: VizelCharacterCountOptions | boolean;
+  /** Text color and highlight support */
+  textColor?: VizelTextColorOptions | boolean;
 }
 
 /**

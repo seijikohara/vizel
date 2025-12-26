@@ -2,6 +2,7 @@ import type { Editor } from "@vizel/core";
 import { useState } from "react";
 import { useEditorState } from "../hooks/useEditorState.ts";
 import { BubbleMenuButton } from "./BubbleMenuButton.tsx";
+import { BubbleMenuColorPicker } from "./BubbleMenuColorPicker.tsx";
 import { BubbleMenuLinkEditor } from "./BubbleMenuLinkEditor.tsx";
 
 export interface BubbleMenuToolbarProps {
@@ -79,6 +80,8 @@ export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps)
       >
         <span>L</span>
       </BubbleMenuButton>
+      <BubbleMenuColorPicker editor={editor} type="textColor" />
+      <BubbleMenuColorPicker editor={editor} type="highlight" />
     </div>
   );
 }

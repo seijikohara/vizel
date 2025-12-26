@@ -5,6 +5,10 @@ export {
   type BubbleMenuButtonProps,
 } from "./BubbleMenuButton.tsx";
 export {
+  BubbleMenuColorPicker,
+  type BubbleMenuColorPickerProps,
+} from "./BubbleMenuColorPicker.tsx";
+export {
   BubbleMenuDivider,
   type BubbleMenuDividerProps,
 } from "./BubbleMenuDivider.tsx";

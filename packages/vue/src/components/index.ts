@@ -5,6 +5,10 @@ export {
   default as BubbleMenuButton,
 } from "./BubbleMenuButton.vue";
 export {
+  type BubbleMenuColorPickerProps,
+  default as BubbleMenuColorPicker,
+} from "./BubbleMenuColorPicker.vue";
+export {
   type BubbleMenuDividerProps,
   default as BubbleMenuDivider,
 } from "./BubbleMenuDivider.vue";
