@@ -20,6 +20,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
 import type { VizelFeatureOptions } from "../types.ts";
+import { createCharacterCountExtension } from "./character-count.ts";
 import {
   createImageUploadExtension,
   defaultBase64Upload,
@@ -148,6 +149,17 @@ function addTaskListExtension(extensions: Extensions, features: VizelFeatureOpti
 }
 
 /**
+ * Add Character Count extension if enabled
+ */
+function addCharacterCountExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.characterCount === false) return;
+
+  const characterCountOptions =
+    typeof features.characterCount === "object" ? features.characterCount : {};
+  extensions.push(createCharacterCountExtension(characterCountOptions));
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * Most features (SlashCommand, Table, Link, Image) are enabled by default.
  * Markdown support is disabled by default and must be explicitly enabled.
@@ -226,6 +238,7 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
   addImageExtension(extensions, features);
   addMarkdownExtension(extensions, features);
   addTaskListExtension(extensions, features);
+  addCharacterCountExtension(extensions, features);
 
   return extensions;
 }

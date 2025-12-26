@@ -15,20 +15,24 @@ export type {
   VizelTableOptions,
 } from "@vizel/core";
 
-// Re-export core extensions
+// Re-export core extensions and utilities
 export {
   Blockquote,
   Bold,
   BubbleMenuExtension,
   BulletList,
+  CharacterCount,
+  type CharacterCountStorage,
   Code,
   CodeBlock,
+  createCharacterCountExtension,
   createImageExtension,
   createImageUploadExtension,
   createImageUploader,
   createImageUploadPlugin,
   createLinkExtension,
   createTableExtensions,
+  createTaskListExtensions,
   createVizelExtensions,
   Document,
   Dropcursor,
@@ -36,6 +40,7 @@ export {
   Editor,
   filterSlashCommands,
   Gapcursor,
+  getEditorState,
   getImageUploadPluginKey,
   HardBreak,
   Heading,
@@ -60,11 +65,17 @@ export {
   TableCell,
   TableHeader,
   TableRow,
+  TaskItem,
+  type TaskItemOptions,
+  TaskList,
+  type TaskListOptions,
   Text,
   type UploadImageFn,
+  type VizelCharacterCountOptions,
   type VizelExtensionsOptions,
   type VizelImageOptions,
   type VizelImageUploadOptions,
+  type VizelTaskListOptions,
   validateImageFile,
 } from "@vizel/core";
 

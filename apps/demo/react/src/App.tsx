@@ -1,4 +1,11 @@
-import { BubbleMenu, EditorContent, type JSONContent, useVizelEditor } from "@vizel/react";
+import {
+  BubbleMenu,
+  EditorContent,
+  getEditorState,
+  type JSONContent,
+  useEditorState,
+  useVizelEditor,
+} from "@vizel/react";
 import { useState } from "react";
 import { initialContent } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
@@ -50,6 +57,10 @@ export function App() {
     },
   });
 
+  // Track editor state for character/word count
+  useEditorState(editor);
+  const editorState = getEditorState(editor);
+
   const handleImportMarkdown = () => {
     if (editor && markdownInput.trim()) {
       editor.commands.setContent(markdownInput, { contentType: "markdown" });
@@ -99,12 +110,21 @@ export function App() {
             <span className="feature-icon">M</span>
             <span>Markdown</span>
           </div>
+          <div className="feature-tag">
+            <span className="feature-icon">#</span>
+            <span>Character Count</span>
+          </div>
         </div>
 
         <div className="editor-container">
           <div className="editor-root">
             <EditorContent editor={editor} className="editor-content" />
             {editor && <BubbleMenu editor={editor} />}
+          </div>
+          <div className="status-bar">
+            <span className="status-item">{editorState.characterCount} characters</span>
+            <span className="status-divider">·</span>
+            <span className="status-item">{editorState.wordCount} words</span>
           </div>
         </div>
 

@@ -144,6 +144,27 @@ body {
   /* padding is now handled by .vizel-editor in core */
 }
 
+/* Status Bar */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+}
+
+.status-divider {
+  color: #d1d5db;
+}
+
 /* Output Section */
 .output-section {
   background: white;

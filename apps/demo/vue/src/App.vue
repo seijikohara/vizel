@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { BubbleMenu, EditorContent, type JSONContent, useVizelEditor } from "@vizel/vue";
-import { ref } from "vue";
+import {
+  BubbleMenu,
+  EditorContent,
+  getEditorState,
+  type JSONContent,
+  useEditorState,
+  useVizelEditor,
+} from "@vizel/vue";
+import { computed, ref } from "vue";
 import { initialContent } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
 
@@ -35,6 +42,13 @@ const editor = useVizelEditor({
     output.value = e.getJSON();
     markdownOutput.value = e.getMarkdown();
   },
+});
+
+// Track editor state for character/word count
+const updateCount = useEditorState(() => editor.value);
+const editorState = computed(() => {
+  void updateCount.value;
+  return getEditorState(editor.value);
 });
 
 function handleImportMarkdown() {
@@ -90,12 +104,21 @@ function handleImportMarkdown() {
           <span class="feature-icon">M</span>
           <span>Markdown</span>
         </div>
+        <div class="feature-tag">
+          <span class="feature-icon">#</span>
+          <span>Character Count</span>
+        </div>
       </div>
 
       <div class="editor-container">
         <div class="editor-root">
           <EditorContent :editor="editor" class="editor-content" />
           <BubbleMenu v-if="editor" :editor="editor" />
+        </div>
+        <div class="status-bar">
+          <span class="status-item">{{ editorState.characterCount }} characters</span>
+          <span class="status-divider">·</span>
+          <span class="status-item">{{ editorState.wordCount }} words</span>
         </div>
       </div>
 

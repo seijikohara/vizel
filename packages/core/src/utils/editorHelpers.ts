@@ -1,7 +1,8 @@
 import type { Editor } from "@tiptap/core";
 import type { EditorView } from "@tiptap/pm/view";
+import type { CharacterCountStorage } from "../extensions/character-count.ts";
 import { createImageUploader } from "../extensions/image.ts";
-import type { VizelFeatureOptions, VizelImageFeatureOptions } from "../types.ts";
+import type { VizelEditorState, VizelFeatureOptions, VizelImageFeatureOptions } from "../types.ts";
 
 /**
  * Options for resolving features with a custom slash menu renderer.
@@ -140,3 +141,64 @@ export const defaultEditorProps = {
     class: "vizel-editor",
   },
 };
+
+/**
+ * Type guard to check if character count storage is available.
+ */
+function hasCharacterCountStorage(
+  storage: Record<string, unknown>
+): storage is { characterCount: CharacterCountStorage } {
+  return (
+    "characterCount" in storage &&
+    typeof storage.characterCount === "object" &&
+    storage.characterCount !== null &&
+    "characters" in storage.characterCount &&
+    "words" in storage.characterCount
+  );
+}
+
+/**
+ * Extracts the current editor state from an editor instance.
+ * This provides a snapshot of common editor state values including
+ * focus, empty status, undo/redo availability, and character/word counts.
+ *
+ * @param editor - The editor instance to extract state from
+ * @returns The current editor state
+ *
+ * @example
+ * ```typescript
+ * const state = getEditorState(editor);
+ * console.log(`Characters: ${state.characterCount}, Words: ${state.wordCount}`);
+ * console.log(`Can undo: ${state.canUndo}, Can redo: ${state.canRedo}`);
+ * ```
+ */
+export function getEditorState(editor: Editor | null | undefined): VizelEditorState {
+  if (!editor) {
+    return {
+      isFocused: false,
+      isEmpty: true,
+      canUndo: false,
+      canRedo: false,
+      characterCount: 0,
+      wordCount: 0,
+    };
+  }
+
+  const storage = editor.storage as unknown as Record<string, unknown>;
+  let characterCount = 0;
+  let wordCount = 0;
+
+  if (hasCharacterCountStorage(storage)) {
+    characterCount = storage.characterCount.characters();
+    wordCount = storage.characterCount.words();
+  }
+
+  return {
+    isFocused: editor.isFocused,
+    isEmpty: editor.isEmpty,
+    canUndo: editor.can().undo(),
+    canRedo: editor.can().redo(),
+    characterCount,
+    wordCount,
+  };
+}

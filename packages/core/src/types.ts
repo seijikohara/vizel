@@ -1,4 +1,5 @@
 import type { Editor, JSONContent } from "@tiptap/core";
+import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { SlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTaskListOptions } from "./extensions/task-list.ts";
@@ -40,6 +41,8 @@ export interface VizelFeatureOptions {
   markdown?: VizelMarkdownOptions | boolean;
   /** Task list (checkbox) support */
   taskList?: VizelTaskListOptions | boolean;
+  /** Character and word count tracking */
+  characterCount?: VizelCharacterCountOptions | boolean;
 }
 
 /**
