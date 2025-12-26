@@ -8,6 +8,8 @@ import {
   testBubbleMenuItalicToggle,
   testBubbleMenuLinkEditor,
   testBubbleMenuStrikeToggle,
+  testBubbleMenuUnderlineShortcut,
+  testBubbleMenuUnderlineToggle,
 } from "../../scenarios/bubble-menu.scenario";
 import { EditorFixture } from "./EditorFixture";
 
@@ -35,6 +37,16 @@ test.describe("BubbleMenu - React", () => {
   test("toggles strikethrough formatting", async ({ mount, page }) => {
     const component = await mount(<EditorFixture />);
     await testBubbleMenuStrikeToggle(component, page);
+  });
+
+  test("toggles underline formatting", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testBubbleMenuUnderlineToggle(component, page);
+  });
+
+  test("toggles underline with keyboard shortcut", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testBubbleMenuUnderlineShortcut(component, page);
   });
 
   test("toggles inline code formatting", async ({ mount, page }) => {

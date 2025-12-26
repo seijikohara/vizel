@@ -78,6 +78,37 @@ export async function testBubbleMenuStrikeToggle(component: Locator, page: Page)
   await expect(strike).toContainText("Select this text");
 }
 
+/** Verify underline button toggles underline formatting */
+export async function testBubbleMenuUnderlineToggle(component: Locator, page: Page): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const underlineButton = bubbleMenu.locator('[data-action="underline"]');
+
+  await underlineButton.click();
+
+  const editor = component.locator(".vizel-editor");
+  const underline = editor.locator("u");
+  await expect(underline).toContainText("Select this text");
+}
+
+/** Verify underline keyboard shortcut (Cmd+U) works */
+export async function testBubbleMenuUnderlineShortcut(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  // Type text with underline using keyboard shortcut
+  await page.keyboard.press("ControlOrMeta+u");
+  await page.keyboard.type("Underlined");
+  await page.keyboard.press("ControlOrMeta+u");
+
+  const underline = editor.locator("u");
+  await expect(underline).toContainText("Underlined");
+}
+
 /** Verify code button toggles inline code formatting */
 export async function testBubbleMenuCodeToggle(component: Locator, page: Page): Promise<void> {
   await selectTextInEditor(component, page);

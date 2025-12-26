@@ -19,6 +19,7 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Placeholder from "@tiptap/extension-placeholder";
 import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
+import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
 import { createCharacterCountExtension } from "./character-count.ts";
 import {
@@ -73,6 +74,7 @@ function createBaseExtensions(
     Code,
     Italic,
     Strike,
+    Underline,
     // Functionality
     Dropcursor.configure({ color: "#3b82f6", width: 2 }),
     Gapcursor,
@@ -265,4 +267,5 @@ export {
   Placeholder,
   Strike,
   Text,
+  Underline,
 };
