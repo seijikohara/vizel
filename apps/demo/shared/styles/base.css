@@ -232,7 +232,9 @@ body {
   resize: vertical;
   background: #f9fafb;
   color: #1f2937;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .markdown-input:focus {
@@ -255,7 +257,9 @@ body {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.15s, transform 0.1s;
+  transition:
+    background-color 0.15s,
+    transform 0.1s;
 }
 
 .import-button:hover {
