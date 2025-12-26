@@ -87,11 +87,15 @@ export {
   type VizelTaskListOptions,
 } from "./task-list.ts";
 export {
+  addRecentColor,
   Color,
   type ColorDefinition,
   createTextColorExtensions,
+  getRecentColors,
   HIGHLIGHT_COLORS,
   Highlight,
+  isValidHexColor,
+  normalizeHexColor,
   TEXT_COLORS,
   TextStyle,
   type VizelTextColorOptions,

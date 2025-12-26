@@ -14,6 +14,7 @@ export {
 
 // Extensions
 export {
+  addRecentColor,
   Blockquote,
   Bold,
   BulletList,
@@ -40,6 +41,7 @@ export {
   filterSlashCommands,
   Gapcursor,
   getImageUploadPluginKey,
+  getRecentColors,
   HardBreak,
   Heading,
   HIGHLIGHT_COLORS,
@@ -55,10 +57,12 @@ export {
   type ImageValidationError,
   type ImageValidationErrorType,
   Italic,
+  isValidHexColor,
   Link,
   ListItem,
   ListKeymap,
   Markdown,
+  normalizeHexColor,
   OrderedList,
   Paragraph,
   Placeholder,

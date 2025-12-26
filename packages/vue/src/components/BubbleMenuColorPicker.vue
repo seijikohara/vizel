@@ -1,6 +1,15 @@
 <script setup lang="ts">
-import { type ColorDefinition, type Editor, HIGHLIGHT_COLORS, TEXT_COLORS } from "@vizel/core";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import {
+  addRecentColor,
+  type ColorDefinition,
+  type Editor,
+  getRecentColors,
+  HIGHLIGHT_COLORS,
+  isValidHexColor,
+  normalizeHexColor,
+  TEXT_COLORS,
+} from "@vizel/core";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 export interface BubbleMenuColorPickerProps {
   /** The editor instance */
@@ -11,11 +20,20 @@ export interface BubbleMenuColorPickerProps {
   colors?: ColorDefinition[];
   /** Custom class name */
   class?: string;
+  /** Enable custom color input (default: true) */
+  allowCustomColor?: boolean;
+  /** Enable recent colors (default: true) */
+  showRecentColors?: boolean;
 }
 
-const props = defineProps<BubbleMenuColorPickerProps>();
+const props = withDefaults(defineProps<BubbleMenuColorPickerProps>(), {
+  allowCustomColor: true,
+  showRecentColors: true,
+});
 
 const isOpen = ref(false);
+const customColor = ref("");
+const recentColors = ref<string[]>([]);
 const containerRef = ref<HTMLDivElement | null>(null);
 
 const colorPalette = computed(() => {
@@ -31,19 +49,71 @@ const currentColor = computed(() => {
 
 const isTextColor = computed(() => props.type === "textColor");
 
-function handleColorSelect(color: string) {
+const isCustomColorValid = computed(() => {
+  return isValidHexColor(normalizeHexColor(customColor.value));
+});
+
+// Load recent colors and set initial input value when dropdown opens
+watch(isOpen, (open) => {
+  if (open && props.showRecentColors) {
+    recentColors.value = getRecentColors(props.type);
+  }
+  if (open) {
+    const current = currentColor.value;
+    if (current && current !== "inherit" && current !== "transparent") {
+      customColor.value = current;
+    } else {
+      customColor.value = "";
+    }
+  }
+});
+
+function applyColor(color: string) {
   if (props.type === "textColor") {
     if (color === "inherit") {
       props.editor.chain().focus().unsetColor().run();
     } else {
       props.editor.chain().focus().setColor(color).run();
+      addRecentColor(props.type, color);
     }
   } else if (color === "transparent") {
     props.editor.chain().focus().unsetHighlight().run();
   } else {
     props.editor.chain().focus().toggleHighlight({ color }).run();
+    addRecentColor(props.type, color);
   }
   isOpen.value = false;
+  customColor.value = "";
+}
+
+function handleSwatchClick(color: string) {
+  if (color === "inherit" || color === "transparent") {
+    applyColor(color);
+  } else {
+    customColor.value = color;
+    applyColor(color);
+  }
+}
+
+function handleCustomColorSubmit() {
+  const normalized = normalizeHexColor(customColor.value);
+  if (isValidHexColor(normalized)) {
+    applyColor(normalized);
+  }
+}
+
+const previewColor = computed(() => {
+  if (isCustomColorValid.value) {
+    return normalizeHexColor(customColor.value);
+  }
+  return undefined;
+});
+
+function handleKeyDown(e: KeyboardEvent) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    handleCustomColorSubmit();
+  }
 }
 
 function handleClickOutside(event: MouseEvent) {
@@ -95,21 +165,67 @@ function getTriggerStyle() {
     </button>
 
     <div v-if="isOpen" class="vizel-color-picker-dropdown">
-      <div class="vizel-color-picker-grid">
-        <button
-          v-for="colorDef in colorPalette"
-          :key="colorDef.color"
-          type="button"
-          :class="['vizel-color-picker-swatch', { 'is-active': currentColor === colorDef.color }]"
-          :title="colorDef.name"
-          :style="getSwatchStyle(colorDef.color)"
-          :data-color="colorDef.color"
-          @click="handleColorSelect(colorDef.color)"
+      <!-- Recent colors -->
+      <div v-if="showRecentColors && recentColors.length > 0" class="vizel-color-picker-section">
+        <div class="vizel-color-picker-label">Recent</div>
+        <div class="vizel-color-picker-recent">
+          <button
+            v-for="color in recentColors"
+            :key="color"
+            type="button"
+            :class="['vizel-color-picker-swatch', { 'is-active': currentColor === color }]"
+            :title="color"
+            :style="{ backgroundColor: color }"
+            :data-color="color"
+            @click="handleSwatchClick(color)"
+          />
+        </div>
+      </div>
+
+      <!-- Color palette -->
+      <div class="vizel-color-picker-section">
+        <div class="vizel-color-picker-grid">
+          <button
+            v-for="colorDef in colorPalette"
+            :key="colorDef.color"
+            type="button"
+            :class="['vizel-color-picker-swatch', { 'is-active': currentColor === colorDef.color }]"
+            :title="colorDef.name"
+            :style="getSwatchStyle(colorDef.color)"
+            :data-color="colorDef.color"
+            @click="handleSwatchClick(colorDef.color)"
+          >
+            <span
+              v-if="colorDef.color === 'inherit' || colorDef.color === 'transparent'"
+              class="vizel-color-picker-none"
+            >×</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- HEX input with preview -->
+      <div v-if="allowCustomColor" class="vizel-color-picker-input-row">
+        <span
+          class="vizel-color-picker-preview"
+          :style="{ backgroundColor: previewColor || 'transparent' }"
+        />
+        <input
+          type="text"
+          class="vizel-color-picker-input"
+          placeholder="#000000"
+          :value="customColor"
+          maxlength="7"
+          @input="customColor = ($event.target as HTMLInputElement).value"
+          @keydown="handleKeyDown"
         >
-          <span
-            v-if="colorDef.color === 'inherit' || colorDef.color === 'transparent'"
-            class="vizel-color-picker-none"
-          >×</span>
+        <button
+          type="button"
+          class="vizel-color-picker-apply"
+          :disabled="!isCustomColorValid"
+          title="Apply"
+          @click="handleCustomColorSubmit"
+        >
+          ✓
         </button>
       </div>
     </div>
