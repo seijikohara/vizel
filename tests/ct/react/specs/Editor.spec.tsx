@@ -8,6 +8,9 @@ import {
   testHeadingShortcut,
   testItalicShortcut,
   testOrderedList,
+  testTaskListCheckboxToggle,
+  testTaskListCheckedInputRule,
+  testTaskListInputRule,
 } from "../../scenarios/editor.scenario";
 import { EditorFixture } from "./EditorFixture";
 
@@ -50,5 +53,20 @@ test.describe("Editor - React", () => {
   test("creates ordered list", async ({ mount, page }) => {
     const component = await mount(<EditorFixture />);
     await testOrderedList(component, page);
+  });
+
+  test("creates task list with input rule", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testTaskListInputRule(component, page);
+  });
+
+  test("toggles task list checkbox", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testTaskListCheckboxToggle(component, page);
+  });
+
+  test("creates checked task with [x] input rule", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testTaskListCheckedInputRule(component, page);
   });
 });

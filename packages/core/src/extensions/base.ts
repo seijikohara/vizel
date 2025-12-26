@@ -29,6 +29,7 @@ import { createLinkExtension } from "./link.ts";
 import { createMarkdownExtension } from "./markdown.ts";
 import { defaultSlashCommands, SlashCommand, type SlashCommandItem } from "./slash-command.ts";
 import { createTableExtensions } from "./table.ts";
+import { createTaskListExtensions } from "./task-list.ts";
 
 export interface VizelExtensionsOptions {
   /** Placeholder text when editor is empty */
@@ -137,6 +138,16 @@ function addMarkdownExtension(extensions: Extensions, features: VizelFeatureOpti
 }
 
 /**
+ * Add Task List extension if enabled
+ */
+function addTaskListExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.taskList === false) return;
+
+  const taskListOptions = typeof features.taskList === "object" ? features.taskList : {};
+  extensions.push(...createTaskListExtensions(taskListOptions));
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * Most features (SlashCommand, Table, Link, Image) are enabled by default.
  * Markdown support is disabled by default and must be explicitly enabled.
@@ -214,6 +225,7 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
 
   addImageExtension(extensions, features);
   addMarkdownExtension(extensions, features);
+  addTaskListExtension(extensions, features);
 
   return extensions;
 }

@@ -54,6 +54,14 @@ export const defaultSlashCommands = [
     },
   },
   {
+    title: "Task List",
+    description: "Create a task list with checkboxes",
+    icon: "☑",
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleTaskList().run();
+    },
+  },
+  {
     title: "Quote",
     description: "Capture a quote",
     icon: '"',

@@ -52,6 +52,8 @@
     "@tiptap/extension-placeholder": "^3.14.0",
     "@tiptap/extension-strike": "^3.14.0",
     "@tiptap/extension-table": "^3.14.0",
+    "@tiptap/extension-task-item": "^3.14.0",
+    "@tiptap/extension-task-list": "^3.14.0",
     "@tiptap/extension-text": "^3.14.0",
     "@tiptap/markdown": "^3.14.0",
     "@tiptap/pm": "^3.14.0",

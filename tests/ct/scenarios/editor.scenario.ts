@@ -111,3 +111,76 @@ export async function testOrderedList(component: Locator, page: Page): Promise<v
   const items = editor.locator("li");
   await expect(items).toHaveCount(2);
 }
+
+/** Verify task list creation with input rule */
+export async function testTaskListInputRule(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  // Create task list with [ ] input rule - needs space after ] to trigger
+  await page.keyboard.type("[ ] First task");
+
+  // Wait for task list to be created (use class selector)
+  const taskList = editor.locator(".vizel-task-list");
+  await expect(taskList).toBeVisible({ timeout: 3000 });
+
+  // Continue with second task
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Second task");
+
+  const taskItems = editor.locator(".vizel-task-item");
+  await expect(taskItems).toHaveCount(2);
+}
+
+/** Verify task list checkbox toggle */
+export async function testTaskListCheckboxToggle(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  // Create task list with [ ] input rule
+  await page.keyboard.type("[ ] Task to complete");
+
+  // Wait for task list to be created first (use class selector)
+  const taskList = editor.locator(".vizel-task-list");
+  await expect(taskList).toBeVisible({ timeout: 3000 });
+
+  // Find the task item - checkbox is inside label due to nested: true option
+  const taskItem = editor.locator(".vizel-task-item");
+  await expect(taskItem).toBeVisible();
+
+  // Find checkbox within task item (may be nested in label)
+  const checkbox = taskItem.locator("input[type='checkbox']");
+  await expect(checkbox).toBeVisible();
+
+  // Initially unchecked
+  await expect(checkbox).not.toBeChecked();
+  await expect(taskItem).toHaveAttribute("data-checked", "false");
+
+  // Click to check
+  await checkbox.click();
+  await expect(checkbox).toBeChecked();
+
+  // Task item should have data-checked attribute
+  await expect(taskItem).toHaveAttribute("data-checked", "true");
+}
+
+/** Verify task list created with [x] input rule is pre-checked */
+export async function testTaskListCheckedInputRule(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  // Create checked task with [x] input rule
+  await page.keyboard.type("[x] Completed task");
+
+  // Wait for task list to be created first (use class selector)
+  const taskList = editor.locator(".vizel-task-list");
+  await expect(taskList).toBeVisible({ timeout: 3000 });
+
+  const taskItem = editor.locator(".vizel-task-item");
+  await expect(taskItem).toBeVisible();
+
+  const checkbox = taskItem.locator("input[type='checkbox']");
+  await expect(checkbox).toBeChecked();
+
+  await expect(taskItem).toHaveAttribute("data-checked", "true");
+}

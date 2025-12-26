@@ -10,6 +10,7 @@ import {
   testSlashMenuHeading,
   testSlashMenuKeyboardNavigation,
   testSlashMenuOrderedList,
+  testSlashMenuTaskList,
 } from "../../scenarios/slash-menu.scenario";
 import { EditorFixture } from "./EditorFixture";
 
@@ -42,6 +43,11 @@ test.describe("SlashMenu - React", () => {
   test("inserts ordered list", async ({ mount, page }) => {
     const component = await mount(<EditorFixture />);
     await testSlashMenuOrderedList(component, page);
+  });
+
+  test("inserts task list", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testSlashMenuTaskList(component, page);
   });
 
   test("inserts code block", async ({ mount, page }) => {
