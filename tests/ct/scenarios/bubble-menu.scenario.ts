@@ -156,3 +156,113 @@ export async function testBubbleMenuActiveState(component: Locator, page: Page):
   // Check if button has is-active class (the data-active might not be set correctly)
   await expect(boldButton).toHaveClass(/is-active/);
 }
+
+/** Verify text color picker dropdown opens and applies color */
+export async function testBubbleMenuTextColorToggle(component: Locator, page: Page): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const textColorButton = bubbleMenu.locator('[data-action="textColor"]');
+
+  await textColorButton.click();
+
+  // Dropdown should be visible (rendered inside the color picker container)
+  const dropdown = bubbleMenu.locator(".vizel-color-picker-dropdown");
+  await expect(dropdown).toBeVisible();
+
+  // Click a color swatch (red)
+  const redSwatch = dropdown.locator('[data-color="#ef4444"]');
+  await redSwatch.click();
+
+  // Verify color is applied
+  const editor = component.locator(".vizel-editor");
+  const coloredText = editor.locator('span[style*="color"]');
+  await expect(coloredText).toContainText("Select this text");
+}
+
+/** Verify highlight color picker dropdown opens and applies highlight */
+export async function testBubbleMenuHighlightToggle(component: Locator, page: Page): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const highlightButton = bubbleMenu.locator('[data-action="highlight"]');
+
+  await highlightButton.click();
+
+  // Dropdown should be visible
+  const dropdown = bubbleMenu.locator(".vizel-color-picker-dropdown");
+  await expect(dropdown).toBeVisible();
+
+  // Click a highlight swatch (yellow)
+  const yellowSwatch = dropdown.locator('[data-color="#fef08a"]');
+  await yellowSwatch.click();
+
+  // Verify highlight is applied
+  const editor = component.locator(".vizel-editor");
+  const highlightedText = editor.locator("mark");
+  await expect(highlightedText).toContainText("Select this text");
+}
+
+/** Verify text color can be reset to default */
+export async function testBubbleMenuTextColorReset(component: Locator, page: Page): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const textColorButton = bubbleMenu.locator('[data-action="textColor"]');
+
+  // First apply a color
+  await textColorButton.click();
+  const dropdown = bubbleMenu.locator(".vizel-color-picker-dropdown");
+  const redSwatch = dropdown.locator('[data-color="#ef4444"]');
+  await redSwatch.click();
+
+  // Verify color is applied
+  const editor = component.locator(".vizel-editor");
+  let coloredText = editor.locator('span[style*="color"]');
+  await expect(coloredText).toContainText("Select this text");
+
+  // Re-select the text
+  await page.keyboard.press("ControlOrMeta+a");
+  await expect(bubbleMenu).toBeVisible();
+
+  // Reset the color
+  await textColorButton.click();
+  const defaultSwatch = dropdown.locator('[data-color="inherit"]');
+  await defaultSwatch.click();
+
+  // Verify color is removed
+  coloredText = editor.locator('span[style*="color"]');
+  await expect(coloredText).toHaveCount(0);
+}
+
+/** Verify highlight can be removed */
+export async function testBubbleMenuHighlightReset(component: Locator, page: Page): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const highlightButton = bubbleMenu.locator('[data-action="highlight"]');
+
+  // First apply a highlight
+  await highlightButton.click();
+  const dropdown = bubbleMenu.locator(".vizel-color-picker-dropdown");
+  const yellowSwatch = dropdown.locator('[data-color="#fef08a"]');
+  await yellowSwatch.click();
+
+  // Verify highlight is applied
+  const editor = component.locator(".vizel-editor");
+  let highlightedText = editor.locator("mark");
+  await expect(highlightedText).toContainText("Select this text");
+
+  // Re-select the text
+  await page.keyboard.press("ControlOrMeta+a");
+  await expect(bubbleMenu).toBeVisible();
+
+  // Remove the highlight
+  await highlightButton.click();
+  const transparentSwatch = dropdown.locator('[data-color="transparent"]');
+  await transparentSwatch.click();
+
+  // Verify highlight is removed
+  highlightedText = editor.locator("mark");
+  await expect(highlightedText).toHaveCount(0);
+}

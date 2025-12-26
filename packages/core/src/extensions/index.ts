@@ -20,6 +20,7 @@ export {
   Placeholder,
   Strike,
   Text,
+  Underline,
   type VizelExtensionsOptions,
 } from "./base.ts";
 export {
@@ -85,3 +86,13 @@ export {
   type TaskListOptions,
   type VizelTaskListOptions,
 } from "./task-list.ts";
+export {
+  Color,
+  type ColorDefinition,
+  createTextColorExtensions,
+  HIGHLIGHT_COLORS,
+  Highlight,
+  TEXT_COLORS,
+  TextStyle,
+  type VizelTextColorOptions,
+} from "./text-color.ts";

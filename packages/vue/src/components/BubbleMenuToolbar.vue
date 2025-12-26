@@ -3,6 +3,7 @@ import type { Editor } from "@vizel/core";
 import { computed, ref } from "vue";
 import { useEditorState } from "../composables/useEditorState.ts";
 import BubbleMenuButton from "./BubbleMenuButton.vue";
+import BubbleMenuColorPicker from "./BubbleMenuColorPicker.vue";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.vue";
 
 export interface BubbleMenuToolbarProps {
@@ -101,5 +102,7 @@ const showLinkEditor = ref(false);
     >
       <span>L</span>
     </BubbleMenuButton>
+    <BubbleMenuColorPicker :editor="props.editor" type="textColor" />
+    <BubbleMenuColorPicker :editor="props.editor" type="highlight" />
   </div>
 </template>

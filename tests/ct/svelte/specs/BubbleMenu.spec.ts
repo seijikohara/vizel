@@ -5,9 +5,13 @@ import {
   testBubbleMenuBoldToggle,
   testBubbleMenuCodeToggle,
   testBubbleMenuHides,
+  testBubbleMenuHighlightReset,
+  testBubbleMenuHighlightToggle,
   testBubbleMenuItalicToggle,
   testBubbleMenuLinkEditor,
   testBubbleMenuStrikeToggle,
+  testBubbleMenuTextColorReset,
+  testBubbleMenuTextColorToggle,
   testBubbleMenuUnderlineShortcut,
   testBubbleMenuUnderlineToggle,
 } from "../../scenarios/bubble-menu.scenario";
@@ -62,5 +66,25 @@ test.describe("BubbleMenu - Svelte", () => {
   test("shows active state for formatted text", async ({ mount, page }) => {
     const component = await mount(EditorFixture);
     await testBubbleMenuActiveState(component, page);
+  });
+
+  test("applies text color", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testBubbleMenuTextColorToggle(component, page);
+  });
+
+  test("applies highlight color", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testBubbleMenuHighlightToggle(component, page);
+  });
+
+  test("resets text color to default", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testBubbleMenuTextColorReset(component, page);
+  });
+
+  test("removes highlight", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testBubbleMenuHighlightReset(component, page);
   });
 });

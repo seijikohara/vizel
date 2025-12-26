@@ -8,6 +8,10 @@ export {
   default as BubbleMenuButton,
 } from "./BubbleMenuButton.svelte";
 export {
+  type BubbleMenuColorPickerProps,
+  default as BubbleMenuColorPicker,
+} from "./BubbleMenuColorPicker.svelte";
+export {
   type BubbleMenuDividerProps,
   default as BubbleMenuDivider,
 } from "./BubbleMenuDivider.svelte";
