@@ -111,6 +111,26 @@ export async function testSlashMenuOrderedList(component: Locator, page: Page): 
   await expect(list).toBeVisible();
 }
 
+/** Verify selecting task list from slash menu */
+export async function testSlashMenuTaskList(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await page.keyboard.type("/task");
+  await page.keyboard.press("Enter");
+
+  // Wait for task list to be created (use class selector)
+  const taskList = editor.locator(".vizel-task-list");
+  await expect(taskList).toBeVisible({ timeout: 3000 });
+
+  // Type task content
+  await page.keyboard.type("My task");
+
+  // Checkbox is nested inside task item
+  const taskItem = editor.locator(".vizel-task-item");
+  const checkbox = taskItem.locator("input[type='checkbox']");
+  await expect(checkbox).toBeVisible();
+}
+
 /** Verify selecting code block from slash menu */
 export async function testSlashMenuCodeBlock(component: Locator, page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");

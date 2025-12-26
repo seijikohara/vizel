@@ -75,6 +75,65 @@ export const initialContent = {
             },
           ],
         },
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: 'Task lists - type "[ ]" or "/task" to create' }],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: "heading",
+      attrs: { level: 2 },
+      content: [{ type: "text", text: "Task List Example" }],
+    },
+    {
+      type: "taskList",
+      content: [
+        {
+          type: "taskItem",
+          attrs: { checked: true },
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "Build the editor core" }],
+            },
+          ],
+        },
+        {
+          type: "taskItem",
+          attrs: { checked: true },
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "Add React/Vue/Svelte support" }],
+            },
+          ],
+        },
+        {
+          type: "taskItem",
+          attrs: { checked: false },
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "Add more features" }],
+            },
+          ],
+        },
+        {
+          type: "taskItem",
+          attrs: { checked: false },
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "Write documentation" }],
+            },
+          ],
+        },
       ],
     },
     {

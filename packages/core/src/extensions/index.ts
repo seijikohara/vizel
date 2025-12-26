@@ -71,3 +71,11 @@ export {
   TableRow,
   type VizelTableOptions,
 } from "./table.ts";
+export {
+  createTaskListExtensions,
+  TaskItem,
+  type TaskItemOptions,
+  TaskList,
+  type TaskListOptions,
+  type VizelTaskListOptions,
+} from "./task-list.ts";
