@@ -1,125 +1,20 @@
 <script lang="ts">
 import { BubbleMenu, EditorContent, type JSONContent, useVizelEditor } from "@vizel/svelte";
-
-// Mock upload function that simulates server upload
-async function mockUploadImage(file: File): Promise<string> {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Convert to base64 for demo purposes
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        resolve(reader.result);
-      }
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
+import { initialContent } from "../../shared/content";
+import { mockUploadImage } from "../../shared/utils";
 
 let output: JSONContent | null = $state(null);
 let showOutput = $state(false);
-
-const initialContent: JSONContent = {
-  type: "doc",
-  content: [
-    {
-      type: "heading",
-      attrs: { level: 1 },
-      content: [{ type: "text", text: "Welcome to Vizel Editor" }],
-    },
-    {
-      type: "paragraph",
-      content: [
-        { type: "text", text: "This is a " },
-        { type: "text", marks: [{ type: "bold" }], text: "block-based rich text" },
-        { type: "text", text: " visual editor built with " },
-        { type: "text", marks: [{ type: "code" }], text: "Tiptap" },
-        { type: "text", text: ". Try clicking this " },
-        {
-          type: "text",
-          marks: [{ type: "link", attrs: { href: "https://tiptap.dev" } }],
-          text: "link to Tiptap",
-        },
-        { type: "text", text: "!" },
-      ],
-    },
-    {
-      type: "paragraph",
-      content: [
-        { type: "text", text: "Try typing " },
-        { type: "text", marks: [{ type: "code" }], text: "/" },
-        { type: "text", text: " for commands, or select text for formatting." },
-      ],
-    },
-    {
-      type: "heading",
-      attrs: { level: 2 },
-      content: [{ type: "text", text: "Features" }],
-    },
-    {
-      type: "bulletList",
-      content: [
-        {
-          type: "listItem",
-          content: [
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "Bubble menu - select text to format" }],
-            },
-          ],
-        },
-        {
-          type: "listItem",
-          content: [
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: 'Slash commands - type "/" for options' }],
-            },
-          ],
-        },
-        {
-          type: "listItem",
-          content: [
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "Links - select text and click L button" }],
-            },
-          ],
-        },
-        {
-          type: "listItem",
-          content: [
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: 'Tables - type "/table" to insert' }],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      type: "blockquote",
-      content: [
-        {
-          type: "paragraph",
-          content: [
-            { type: "text", text: "This is a blockquote. Use " },
-            { type: "text", marks: [{ type: "code" }], text: '"' },
-            { type: "text", text: " from slash commands to create one." },
-          ],
-        },
-      ],
-    },
-  ],
-};
+let markdownOutput = $state("");
+let showMarkdown = $state(false);
+let markdownInput = $state("");
+let showMarkdownInput = $state(false);
 
 const editor = useVizelEditor({
   initialContent,
   autofocus: "end",
   features: {
+    markdown: true,
     image: {
       onUpload: mockUploadImage,
       maxFileSize: 10 * 1024 * 1024, // 10MB
@@ -133,11 +28,21 @@ const editor = useVizelEditor({
   },
   onUpdate: ({ editor: e }) => {
     output = e.getJSON();
+    markdownOutput = e.getMarkdown();
   },
   onCreate: ({ editor: e }) => {
     output = e.getJSON();
+    markdownOutput = e.getMarkdown();
   },
 });
+
+function handleImportMarkdown() {
+  if (editor.current && markdownInput.trim()) {
+    editor.current.commands.setContent(markdownInput, { contentType: "markdown" });
+    markdownInput = "";
+    showMarkdownInput = false;
+  }
+}
 </script>
 
 <div class="app">
@@ -179,6 +84,10 @@ const editor = useVizelEditor({
         <span class="feature-icon">U</span>
         <span>Image Upload</span>
       </div>
+      <div class="feature-tag">
+        <span class="feature-icon">M</span>
+        <span>Markdown</span>
+      </div>
     </div>
 
     <div class="editor-container">
@@ -188,6 +97,44 @@ const editor = useVizelEditor({
           <BubbleMenu editor={editor.current} />
         {/if}
       </div>
+    </div>
+
+    <div class="output-section">
+      <button
+        type="button"
+        class="output-toggle"
+        onclick={() => showMarkdownInput = !showMarkdownInput}
+      >
+        <span class="output-toggle-icon">{showMarkdownInput ? '−' : '+'}</span>
+        <span>Markdown Import</span>
+      </button>
+      {#if showMarkdownInput}
+        <div class="markdown-input-container">
+          <textarea
+            class="markdown-input"
+            bind:value={markdownInput}
+            placeholder="Paste Markdown here..."
+            rows="6"
+          ></textarea>
+          <button type="button" class="import-button" onclick={handleImportMarkdown}>
+            Import to Editor
+          </button>
+        </div>
+      {/if}
+    </div>
+
+    <div class="output-section">
+      <button
+        type="button"
+        class="output-toggle"
+        onclick={() => showMarkdown = !showMarkdown}
+      >
+        <span class="output-toggle-icon">{showMarkdown ? '−' : '+'}</span>
+        <span>Markdown Export</span>
+      </button>
+      {#if showMarkdown}
+        <pre class="output-content">{markdownOutput}</pre>
+      {/if}
     </div>
 
     <div class="output-section">
