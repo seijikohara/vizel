@@ -1,5 +1,7 @@
 import { test } from "@playwright/experimental-ct-svelte";
 import {
+  testEditorStateCharacterCount,
+  testEditorStateEmptyAndFocus,
   testEditorStateTracksBoldActive,
   testEditorStateTracksItalicActive,
   testEditorStateUpdatesOnChange,
@@ -28,5 +30,15 @@ test.describe("useEditorState - Svelte", () => {
       props: { nullEditor: true },
     });
     await testEditorStateWithNullEditor(component, page);
+  });
+
+  test("tracks character and word count", async ({ mount, page }) => {
+    const component = await mount(UseEditorStateFixture);
+    await testEditorStateCharacterCount(component, page);
+  });
+
+  test("tracks empty and focus state", async ({ mount, page }) => {
+    const component = await mount(UseEditorStateFixture);
+    await testEditorStateEmptyAndFocus(component, page);
   });
 });

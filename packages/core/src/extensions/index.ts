@@ -23,6 +23,12 @@ export {
   type VizelExtensionsOptions,
 } from "./base.ts";
 export {
+  CharacterCount,
+  type CharacterCountStorage,
+  createCharacterCountExtension,
+  type VizelCharacterCountOptions,
+} from "./character-count.ts";
+export {
   createImageExtension,
   createImageUploadExtension,
   createImageUploader,

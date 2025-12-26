@@ -3,6 +3,7 @@ export {
   type CreateUploadEventHandlerOptions,
   createUploadEventHandler,
   defaultEditorProps,
+  getEditorState,
   type ResolveFeaturesOptions,
   registerUploadEventHandler,
   resolveFeatures,

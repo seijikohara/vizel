@@ -1,5 +1,12 @@
 <script lang="ts">
-import { BubbleMenu, EditorContent, type JSONContent, useVizelEditor } from "@vizel/svelte";
+import {
+  BubbleMenu,
+  EditorContent,
+  getEditorState,
+  type JSONContent,
+  useEditorState,
+  useVizelEditor,
+} from "@vizel/svelte";
 import { initialContent } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
 
@@ -34,6 +41,13 @@ const editor = useVizelEditor({
     output = e.getJSON();
     markdownOutput = e.getMarkdown();
   },
+});
+
+// Track editor state for character/word count
+const updateCount = useEditorState(() => editor.current);
+const editorState = $derived.by(() => {
+  void updateCount.current;
+  return getEditorState(editor.current);
 });
 
 function handleImportMarkdown() {
@@ -88,6 +102,10 @@ function handleImportMarkdown() {
         <span class="feature-icon">M</span>
         <span>Markdown</span>
       </div>
+      <div class="feature-tag">
+        <span class="feature-icon">#</span>
+        <span>Character Count</span>
+      </div>
     </div>
 
     <div class="editor-container">
@@ -96,6 +114,11 @@ function handleImportMarkdown() {
         {#if editor.current}
           <BubbleMenu editor={editor.current} />
         {/if}
+      </div>
+      <div class="status-bar">
+        <span class="status-item">{editorState.characterCount} characters</span>
+        <span class="status-divider">·</span>
+        <span class="status-item">{editorState.wordCount} words</span>
       </div>
     </div>
 

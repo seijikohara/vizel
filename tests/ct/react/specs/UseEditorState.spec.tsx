@@ -1,5 +1,7 @@
 import { test } from "@playwright/experimental-ct-react";
 import {
+  testEditorStateCharacterCount,
+  testEditorStateEmptyAndFocus,
   testEditorStateTracksBoldActive,
   testEditorStateTracksItalicActive,
   testEditorStateUpdatesOnChange,
@@ -26,5 +28,15 @@ test.describe("useEditorState - React", () => {
   test("handles null editor", async ({ mount, page }) => {
     const component = await mount(<UseEditorStateFixture nullEditor={true} />);
     await testEditorStateWithNullEditor(component, page);
+  });
+
+  test("tracks character and word count", async ({ mount, page }) => {
+    const component = await mount(<UseEditorStateFixture />);
+    await testEditorStateCharacterCount(component, page);
+  });
+
+  test("tracks empty and focus state", async ({ mount, page }) => {
+    const component = await mount(<UseEditorStateFixture />);
+    await testEditorStateEmptyAndFocus(component, page);
   });
 });
