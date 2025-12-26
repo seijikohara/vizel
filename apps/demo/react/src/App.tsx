@@ -114,6 +114,10 @@ export function App() {
             <span className="feature-icon">#</span>
             <span>Character Count</span>
           </div>
+          <div className="feature-tag">
+            <span className="feature-icon">{"</>"}</span>
+            <span>Code Blocks</span>
+          </div>
         </div>
 
         <div className="editor-container">

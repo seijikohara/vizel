@@ -137,6 +137,42 @@ export const initialContent = {
       ],
     },
     {
+      type: "heading",
+      attrs: { level: 2 },
+      content: [{ type: "text", text: "Code Block with Syntax Highlighting" }],
+    },
+    {
+      type: "paragraph",
+      content: [
+        { type: "text", text: "Type " },
+        { type: "text", marks: [{ type: "code" }], text: '"/code"' },
+        {
+          type: "text",
+          text: " to insert a code block. Select language from dropdown or type your own.",
+        },
+      ],
+    },
+    {
+      type: "codeBlock",
+      attrs: { language: "typescript", lineNumbers: true },
+      content: [
+        {
+          type: "text",
+          text: 'import { createVizelExtensions } from "@vizel/core";\n\nconst extensions = createVizelExtensions({\n  features: {\n    codeBlock: {\n      defaultLanguage: "typescript",\n      lineNumbers: true,\n    },\n  },\n});',
+        },
+      ],
+    },
+    {
+      type: "codeBlock",
+      attrs: { language: "python", lineNumbers: false },
+      content: [
+        {
+          type: "text",
+          text: 'def greet(name: str) -> str:\n    """Return a greeting message."""\n    return f"Hello, {name}!"',
+        },
+      ],
+    },
+    {
       type: "blockquote",
       content: [
         {

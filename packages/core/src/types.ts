@@ -1,5 +1,6 @@
 import type { Editor, JSONContent } from "@tiptap/core";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
+import type { VizelCodeBlockOptions } from "./extensions/code-block-lowlight.ts";
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { SlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTaskListOptions } from "./extensions/task-list.ts";
@@ -46,6 +47,8 @@ export interface VizelFeatureOptions {
   characterCount?: VizelCharacterCountOptions | boolean;
   /** Text color and highlight support */
   textColor?: VizelTextColorOptions | boolean;
+  /** Code block with syntax highlighting */
+  codeBlock?: VizelCodeBlockOptions | boolean;
 }
 
 /**
