@@ -33,7 +33,7 @@
   border-radius: 4px;
   background: var(--vizel-bg-color, #ffffff);
   cursor: pointer;
-  margin-top: 0.125rem;
+  margin-top: 0.3rem;
   transition: all 0.15s ease;
   position: relative;
 }
