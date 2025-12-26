@@ -20,8 +20,13 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
 import type { VizelFeatureOptions } from "../types.ts";
-import { createImageUploadExtension, defaultImageResizeOptions } from "./image.ts";
+import {
+  createImageUploadExtension,
+  defaultBase64Upload,
+  defaultImageResizeOptions,
+} from "./image.ts";
 import { createLinkExtension } from "./link.ts";
+import { createMarkdownExtension } from "./markdown.ts";
 import { defaultSlashCommands, SlashCommand, type SlashCommandItem } from "./slash-command.ts";
 import { createTableExtensions } from "./table.ts";
 
@@ -38,23 +43,7 @@ export interface VizelExtensionsOptions {
 }
 
 /**
- * Default base64 image uploader (converts file to data URL)
- */
-function defaultBase64Upload(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        resolve(reader.result);
-      }
-    };
-    reader.onerror = () => reject(new Error("Failed to read file"));
-    reader.readAsDataURL(file);
-  });
-}
-
-/**
- * Create base extensions that were previously provided by StarterKit.
+ * Create base extensions for text editing.
  * Includes: Document, Paragraph, Text, Heading, Blockquote, BulletList, OrderedList,
  * ListItem, CodeBlock, HardBreak, HorizontalRule, Bold, Code, Italic, Strike,
  * Dropcursor, Gapcursor, History, ListKeymap
@@ -69,9 +58,7 @@ function createBaseExtensions(
     Document,
     Paragraph,
     Text,
-    Heading.configure({
-      levels: headingLevels,
-    }),
+    Heading.configure({ levels: headingLevels }),
     Blockquote,
     BulletList,
     OrderedList,
@@ -85,10 +72,7 @@ function createBaseExtensions(
     Italic,
     Strike,
     // Functionality
-    Dropcursor.configure({
-      color: "#3b82f6",
-      width: 2,
-    }),
+    Dropcursor.configure({ color: "#3b82f6", width: 2 }),
     Gapcursor,
     History,
     ListKeymap,
@@ -96,10 +80,68 @@ function createBaseExtensions(
 }
 
 /**
+ * Add SlashCommand extension if enabled
+ */
+function addSlashCommandExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.slashCommand === false) return;
+
+  const slashOptions = typeof features.slashCommand === "object" ? features.slashCommand : {};
+  const items: SlashCommandItem[] = slashOptions.items ?? defaultSlashCommands;
+
+  extensions.push(
+    SlashCommand.configure({
+      items,
+      ...(slashOptions.suggestion !== undefined && {
+        suggestion: slashOptions.suggestion as Record<string, unknown>,
+      }),
+    })
+  );
+}
+
+/**
+ * Add Image extension if enabled
+ */
+function addImageExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.image === false) return;
+
+  const imageOptions = typeof features.image === "object" ? features.image : {};
+  const onUpload = imageOptions.onUpload ?? defaultBase64Upload;
+  const resizeEnabled = imageOptions.resize !== false;
+
+  extensions.push(
+    ...createImageUploadExtension({
+      upload: {
+        onUpload,
+        ...(imageOptions.maxFileSize !== undefined && { maxFileSize: imageOptions.maxFileSize }),
+        ...(imageOptions.allowedTypes !== undefined && { allowedTypes: imageOptions.allowedTypes }),
+        ...(imageOptions.onValidationError !== undefined && {
+          onValidationError: imageOptions.onValidationError,
+        }),
+        ...(imageOptions.onUploadError !== undefined && {
+          onUploadError: imageOptions.onUploadError,
+        }),
+      },
+      resize: resizeEnabled ? defaultImageResizeOptions : false,
+    })
+  );
+}
+
+/**
+ * Add Markdown extension if enabled
+ */
+function addMarkdownExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.markdown !== true && typeof features.markdown !== "object") return;
+
+  const markdownOptions = typeof features.markdown === "object" ? features.markdown : {};
+  extensions.push(createMarkdownExtension(markdownOptions));
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
- * All features (SlashCommand, Table, Link, Image) are enabled by default.
+ * Most features (SlashCommand, Table, Link, Image) are enabled by default.
+ * Markdown support is disabled by default and must be explicitly enabled.
  *
- * @example Basic usage (all features enabled)
+ * @example Basic usage (all default features enabled)
  * ```ts
  * const extensions = createVizelExtensions();
  * ```
@@ -112,6 +154,19 @@ function createBaseExtensions(
  *     slashCommand: false,
  *   },
  * });
+ * ```
+ *
+ * @example Enable Markdown support
+ * ```ts
+ * const extensions = createVizelExtensions({
+ *   features: {
+ *     markdown: true,
+ *   },
+ * });
+ *
+ * // Then use:
+ * editor.commands.setContent('# Hello', { contentType: 'markdown' });
+ * const md = editor.getMarkdown();
  * ```
  *
  * @example Custom image upload
@@ -146,55 +201,19 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
     }),
   ];
 
-  // Slash Command (enabled by default)
-  if (features.slashCommand !== false) {
-    const slashOptions = typeof features.slashCommand === "object" ? features.slashCommand : {};
-    const items: SlashCommandItem[] = slashOptions.items ?? defaultSlashCommands;
-    extensions.push(
-      SlashCommand.configure({
-        items,
-        ...(slashOptions.suggestion !== undefined && {
-          suggestion: slashOptions.suggestion as Record<string, unknown>,
-        }),
-      })
-    );
-  }
+  // Add optional features
+  addSlashCommandExtension(extensions, features);
 
-  // Table (enabled by default)
   if (features.table !== false) {
     extensions.push(...createTableExtensions());
   }
 
-  // Link (enabled by default)
   if (features.link !== false) {
     extensions.push(createLinkExtension());
   }
 
-  // Image (enabled by default with base64 upload)
-  if (features.image !== false) {
-    const imageOptions = typeof features.image === "object" ? features.image : {};
-    const onUpload = imageOptions.onUpload ?? defaultBase64Upload;
-    const resizeEnabled = imageOptions.resize !== false;
-
-    extensions.push(
-      ...createImageUploadExtension({
-        upload: {
-          onUpload,
-          ...(imageOptions.maxFileSize !== undefined && { maxFileSize: imageOptions.maxFileSize }),
-          ...(imageOptions.allowedTypes !== undefined && {
-            allowedTypes: imageOptions.allowedTypes,
-          }),
-          ...(imageOptions.onValidationError !== undefined && {
-            onValidationError: imageOptions.onValidationError,
-          }),
-          ...(imageOptions.onUploadError !== undefined && {
-            onUploadError: imageOptions.onUploadError,
-          }),
-        },
-        resize: resizeEnabled ? defaultImageResizeOptions : false,
-      })
-    );
-  }
+  addImageExtension(extensions, features);
+  addMarkdownExtension(extensions, features);
 
   return extensions;
 }

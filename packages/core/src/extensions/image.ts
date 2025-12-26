@@ -33,6 +33,23 @@ export const defaultImageResizeOptions = {
   minHeight: 100,
 } satisfies VizelImageResizeOptions;
 
+/**
+ * Default base64 image uploader (converts file to data URL).
+ * Use this as the default onUpload handler when no custom uploader is provided.
+ */
+export function defaultBase64Upload(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      }
+    };
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
+}
+
 export interface VizelImageOptions {
   /** Allow inline images */
   inline?: boolean;
