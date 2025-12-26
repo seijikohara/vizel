@@ -1,4 +1,5 @@
 import type { Editor, JSONContent } from "@tiptap/core";
+import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { SlashCommandItem } from "./extensions/slash-command.ts";
 import type { ImageUploadOptions } from "./plugins/image-upload.ts";
 
@@ -34,6 +35,8 @@ export interface VizelFeatureOptions {
   link?: boolean;
   /** Image upload and resize */
   image?: VizelImageFeatureOptions | false;
+  /** Markdown import/export support */
+  markdown?: VizelMarkdownOptions | boolean;
 }
 
 /**

@@ -26,6 +26,12 @@ export {
   type VizelLinkOptions,
 } from "./link.ts";
 export {
+  createMarkdownExtension,
+  Markdown,
+  TiptapMarkdown,
+  type VizelMarkdownOptions,
+} from "./markdown.ts";
+export {
   defaultSlashCommands,
   filterSlashCommands,
   SlashCommand,

@@ -22,6 +22,7 @@ import Text from "@tiptap/extension-text";
 import type { VizelFeatureOptions } from "../types.ts";
 import { createImageUploadExtension, defaultImageResizeOptions } from "./image.ts";
 import { createLinkExtension } from "./link.ts";
+import { createMarkdownExtension } from "./markdown.ts";
 import { defaultSlashCommands, SlashCommand, type SlashCommandItem } from "./slash-command.ts";
 import { createTableExtensions } from "./table.ts";
 
@@ -97,9 +98,10 @@ function createBaseExtensions(
 
 /**
  * Create the default set of extensions for Vizel editor.
- * All features (SlashCommand, Table, Link, Image) are enabled by default.
+ * Most features (SlashCommand, Table, Link, Image) are enabled by default.
+ * Markdown support is disabled by default and must be explicitly enabled.
  *
- * @example Basic usage (all features enabled)
+ * @example Basic usage (all default features enabled)
  * ```ts
  * const extensions = createVizelExtensions();
  * ```
@@ -112,6 +114,19 @@ function createBaseExtensions(
  *     slashCommand: false,
  *   },
  * });
+ * ```
+ *
+ * @example Enable Markdown support
+ * ```ts
+ * const extensions = createVizelExtensions({
+ *   features: {
+ *     markdown: true,
+ *   },
+ * });
+ *
+ * // Then use:
+ * editor.commands.setContent('# Hello', { contentType: 'markdown' });
+ * const md = editor.getMarkdown();
  * ```
  *
  * @example Custom image upload
@@ -194,6 +209,12 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
         resize: resizeEnabled ? defaultImageResizeOptions : false,
       })
     );
+  }
+
+  // Markdown (disabled by default)
+  if (features.markdown === true || typeof features.markdown === "object") {
+    const markdownOptions = typeof features.markdown === "object" ? features.markdown : {};
+    extensions.push(createMarkdownExtension(markdownOptions));
   }
 
   return extensions;

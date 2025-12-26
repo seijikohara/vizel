@@ -53,6 +53,7 @@
     "@tiptap/extension-strike": "^3.14.0",
     "@tiptap/extension-table": "^3.14.0",
     "@tiptap/extension-text": "^3.14.0",
+    "@tiptap/markdown": "^3.14.0",
     "@tiptap/pm": "^3.14.0",
     "@tiptap/suggestion": "^3.14.0"
   },
