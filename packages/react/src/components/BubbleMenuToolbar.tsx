@@ -56,6 +56,14 @@ export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps)
         <s>S</s>
       </BubbleMenuButton>
       <BubbleMenuButton
+        action="underline"
+        onClick={() => editor.chain().focus().toggleUnderline().run()}
+        isActive={editor.isActive("underline")}
+        title="Underline (Cmd+U)"
+      >
+        <u>U</u>
+      </BubbleMenuButton>
+      <BubbleMenuButton
         action="code"
         onClick={() => editor.chain().focus().toggleCode().run()}
         isActive={editor.isActive("code")}

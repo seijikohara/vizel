@@ -33,6 +33,10 @@ const isStrikeActive = $derived.by(() => {
   void editorState.current;
   return editor.isActive("strike");
 });
+const isUnderlineActive = $derived.by(() => {
+  void editorState.current;
+  return editor.isActive("underline");
+});
 const isCodeActive = $derived.by(() => {
   void editorState.current;
   return editor.isActive("code");
@@ -70,6 +74,14 @@ const isLinkActive = $derived.by(() => {
       onclick={() => editor.chain().focus().toggleStrike().run()}
     >
       <s>S</s>
+    </BubbleMenuButton>
+    <BubbleMenuButton
+      action="underline"
+      isActive={isUnderlineActive}
+      title="Underline (Cmd+U)"
+      onclick={() => editor.chain().focus().toggleUnderline().run()}
+    >
+      <u>U</u>
     </BubbleMenuButton>
     <BubbleMenuButton
       action="code"

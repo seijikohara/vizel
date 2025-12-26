@@ -30,6 +30,10 @@ const isStrikeActive = computed(() => {
   void editorStateVersion.value;
   return props.editor.isActive("strike");
 });
+const isUnderlineActive = computed(() => {
+  void editorStateVersion.value;
+  return props.editor.isActive("underline");
+});
 const isCodeActive = computed(() => {
   void editorStateVersion.value;
   return props.editor.isActive("code");
@@ -72,6 +76,14 @@ const showLinkEditor = ref(false);
       @click="props.editor.chain().focus().toggleStrike().run()"
     >
       <s>S</s>
+    </BubbleMenuButton>
+    <BubbleMenuButton
+      action="underline"
+      :is-active="isUnderlineActive"
+      title="Underline (Cmd+U)"
+      @click="props.editor.chain().focus().toggleUnderline().run()"
+    >
+      <u>U</u>
     </BubbleMenuButton>
     <BubbleMenuButton
       action="code"
