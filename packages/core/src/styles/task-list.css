@@ -18,9 +18,8 @@
 
 .vizel-task-item > label {
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  flex: 1;
+  align-items: center;
+  flex-shrink: 0;
   cursor: pointer;
 }
 
@@ -66,13 +65,14 @@
   outline-offset: 2px;
 }
 
-.vizel-task-item > label > div {
+/* Text content container (sibling of label) */
+.vizel-task-item > div {
   flex: 1;
   min-width: 0;
 }
 
 /* Checked state text styling */
-.vizel-task-item[data-checked="true"] > label > div {
+.vizel-task-item[data-checked="true"] > div {
   text-decoration: line-through;
   color: var(--vizel-text-muted, #9ca3af);
 }
