@@ -22,6 +22,7 @@ import Text from "@tiptap/extension-text";
 import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
 import { createCharacterCountExtension } from "./character-count.ts";
+import { createCodeBlockLowlightExtension } from "./code-block-lowlight.ts";
 import {
   createImageUploadExtension,
   defaultBase64Upload,
@@ -49,8 +50,11 @@ export interface VizelExtensionsOptions {
 /**
  * Create base extensions for text editing.
  * Includes: Document, Paragraph, Text, Heading, Blockquote, BulletList, OrderedList,
- * ListItem, CodeBlock, HardBreak, HorizontalRule, Bold, Code, Italic, Strike,
+ * ListItem, HardBreak, HorizontalRule, Bold, Code, Italic, Strike,
  * Dropcursor, Gapcursor, History, ListKeymap
+ *
+ * Note: CodeBlock is NOT included here - it's added separately based on feature options
+ * to support syntax highlighting when enabled.
  */
 function createBaseExtensions(
   options: { headingLevels?: (1 | 2 | 3 | 4 | 5 | 6)[] } = {}
@@ -67,7 +71,7 @@ function createBaseExtensions(
     BulletList,
     OrderedList,
     ListItem,
-    CodeBlock,
+    // CodeBlock is added separately based on feature options
     HardBreak,
     HorizontalRule,
     // Marks
@@ -173,6 +177,25 @@ function addTextColorExtension(extensions: Extensions, features: VizelFeatureOpt
 }
 
 /**
+ * Add Code Block extension (with or without syntax highlighting)
+ */
+function addCodeBlockExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  // If codeBlock is explicitly set to false, don't add any code block extension
+  if (features.codeBlock === false) {
+    return;
+  }
+
+  // If codeBlock is enabled (true or options object), use syntax highlighting
+  if (features.codeBlock === true || typeof features.codeBlock === "object") {
+    const codeBlockOptions = typeof features.codeBlock === "object" ? features.codeBlock : {};
+    extensions.push(...createCodeBlockLowlightExtension(codeBlockOptions));
+  } else {
+    // Default: use syntax highlighting with default options
+    extensions.push(...createCodeBlockLowlightExtension());
+  }
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * Most features (SlashCommand, Table, Link, Image) are enabled by default.
  * Markdown support is disabled by default and must be explicitly enabled.
@@ -253,6 +276,7 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
   addTaskListExtension(extensions, features);
   addCharacterCountExtension(extensions, features);
   addTextColorExtension(extensions, features);
+  addCodeBlockExtension(extensions, features);
 
   return extensions;
 }
