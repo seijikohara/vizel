@@ -38,5 +38,6 @@ export function useEditorContext(): Editor | null {
  * @returns A getter function that returns the editor, or null if outside EditorRoot
  */
 export function useEditorContextSafe(): (() => Editor | null) | null {
-  return inject(EDITOR_CONTEXT_KEY) ?? null;
+  // Provide null as default to suppress Vue warning when used outside EditorRoot
+  return inject(EDITOR_CONTEXT_KEY, null);
 }

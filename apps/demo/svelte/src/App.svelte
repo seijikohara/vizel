@@ -106,6 +106,10 @@ function handleImportMarkdown() {
         <span class="feature-icon">#</span>
         <span>Character Count</span>
       </div>
+      <div class="feature-tag">
+        <span class="feature-icon">{"</>"}</span>
+        <span>Code Blocks</span>
+      </div>
     </div>
 
     <div class="editor-container">

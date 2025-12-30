@@ -30,6 +30,16 @@ export {
   type VizelCharacterCountOptions,
 } from "./character-count.ts";
 export {
+  type CodeBlockLanguage,
+  CodeBlockLowlight,
+  createCodeBlockLowlightExtension,
+  findLanguage,
+  getAllLanguageIds,
+  getRegisteredLanguages,
+  lowlight,
+  type VizelCodeBlockOptions,
+} from "./code-block-lowlight.ts";
+export {
   createImageExtension,
   createImageUploadExtension,
   createImageUploader,
