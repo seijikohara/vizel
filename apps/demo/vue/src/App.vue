@@ -23,6 +23,7 @@ const editor = useVizelEditor({
   autofocus: "end",
   features: {
     markdown: true,
+    mathematics: true,
     image: {
       onUpload: mockUploadImage,
       maxFileSize: 10 * 1024 * 1024, // 10MB
@@ -111,6 +112,10 @@ function handleImportMarkdown() {
         <div class="feature-tag">
           <span class="feature-icon">&lt;/&gt;</span>
           <span>Code Blocks</span>
+        </div>
+        <div class="feature-tag">
+          <span class="feature-icon">∑</span>
+          <span>Math (LaTeX)</span>
         </div>
       </div>
 

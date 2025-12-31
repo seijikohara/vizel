@@ -130,6 +130,30 @@ export const defaultSlashCommands = [
       input.click();
     },
   },
+  {
+    title: "Math Equation",
+    description: "Insert a mathematical expression",
+    icon: "∑",
+    command: ({ editor, range }) => {
+      // Check if mathematics extension is available
+      if (!editor.can().insertMathBlock?.({ latex: "" })) {
+        return;
+      }
+      editor.chain().focus().deleteRange(range).insertMathBlock({ latex: "" }).run();
+    },
+  },
+  {
+    title: "Inline Math",
+    description: "Insert an inline math expression",
+    icon: "x²",
+    command: ({ editor, range }) => {
+      // Check if mathematics extension is available
+      if (!editor.can().insertMath?.({ latex: "" })) {
+        return;
+      }
+      editor.chain().focus().deleteRange(range).insertMath({ latex: "" }).run();
+    },
+  },
 ] satisfies SlashCommandItem[];
 
 export function filterSlashCommands(items: SlashCommandItem[], query: string): SlashCommandItem[] {

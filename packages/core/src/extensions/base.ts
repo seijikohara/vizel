@@ -30,6 +30,7 @@ import {
 } from "./image.ts";
 import { createLinkExtension } from "./link.ts";
 import { createMarkdownExtension } from "./markdown.ts";
+import { createMathematicsExtensions } from "./mathematics.ts";
 import { defaultSlashCommands, SlashCommand, type SlashCommandItem } from "./slash-command.ts";
 import { createTableExtensions } from "./table.ts";
 import { createTaskListExtensions } from "./task-list.ts";
@@ -196,6 +197,19 @@ function addCodeBlockExtension(extensions: Extensions, features: VizelFeatureOpt
 }
 
 /**
+ * Add Mathematics extension if enabled
+ */
+function addMathematicsExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.mathematics === false) return;
+
+  // Mathematics is disabled by default, must be explicitly enabled
+  if (features.mathematics === true || typeof features.mathematics === "object") {
+    const mathOptions = typeof features.mathematics === "object" ? features.mathematics : {};
+    extensions.push(...createMathematicsExtensions(mathOptions));
+  }
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * Most features (SlashCommand, Table, Link, Image) are enabled by default.
  * Markdown support is disabled by default and must be explicitly enabled.
@@ -277,6 +291,7 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
   addCharacterCountExtension(extensions, features);
   addTextColorExtension(extensions, features);
   addCodeBlockExtension(extensions, features);
+  addMathematicsExtension(extensions, features);
 
   return extensions;
 }

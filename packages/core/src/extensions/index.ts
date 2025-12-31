@@ -74,6 +74,13 @@ export {
   type VizelMarkdownOptions,
 } from "./markdown.ts";
 export {
+  createMathematicsExtensions,
+  katex,
+  MathBlock,
+  MathInline,
+  type VizelMathematicsOptions,
+} from "./mathematics.ts";
+export {
   defaultSlashCommands,
   filterSlashCommands,
   SlashCommand,
