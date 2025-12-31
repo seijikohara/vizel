@@ -24,6 +24,7 @@ const editorState = createEditorState(() => editor);
 let isOpen = $state(false);
 let focusedIndex = $state(0);
 let containerRef: HTMLDivElement | undefined = $state();
+let dropdownRef: HTMLDivElement | undefined = $state();
 
 const activeNodeType = $derived.by(() => {
   void editorState.current; // Trigger reactivity
@@ -43,6 +44,13 @@ function handleClickOutside(event: MouseEvent) {
 onMount(() => {
   document.addEventListener("mousedown", handleClickOutside);
   return () => document.removeEventListener("mousedown", handleClickOutside);
+});
+
+// Focus the dropdown when it opens to ensure keyboard navigation works
+$effect(() => {
+  if (isOpen && dropdownRef) {
+    dropdownRef.focus();
+  }
 });
 
 function handleKeyDown(event: KeyboardEvent) {
@@ -124,10 +132,13 @@ function isNodeTypeActive(nodeType: NodeTypeOption): boolean {
 
   {#if isOpen}
     <div
+      bind:this={dropdownRef}
       class="vizel-node-selector-dropdown"
       role="listbox"
       aria-label="Block types"
       data-vizel-node-selector-dropdown
+      tabindex="-1"
+      onkeydown={handleKeyDown}
     >
       {#each nodeTypes as nodeType, index}
         {@const active = isNodeTypeActive(nodeType)}

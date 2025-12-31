@@ -23,6 +23,7 @@ import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
 import { createCharacterCountExtension } from "./character-count.ts";
 import { createCodeBlockLowlightExtension } from "./code-block-lowlight.ts";
+import { createDragHandleExtensions } from "./drag-handle.ts";
 import {
   createImageUploadExtension,
   defaultBase64Upload,
@@ -210,6 +211,16 @@ function addMathematicsExtension(extensions: Extensions, features: VizelFeatureO
 }
 
 /**
+ * Add Drag Handle extension if enabled
+ */
+function addDragHandleExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.dragHandle === false) return;
+
+  const dragHandleOptions = typeof features.dragHandle === "object" ? features.dragHandle : {};
+  extensions.push(...createDragHandleExtensions(dragHandleOptions));
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * Most features (SlashCommand, Table, Link, Image) are enabled by default.
  * Markdown support is disabled by default and must be explicitly enabled.
@@ -292,6 +303,7 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
   addTextColorExtension(extensions, features);
   addCodeBlockExtension(extensions, features);
   addMathematicsExtension(extensions, features);
+  addDragHandleExtension(extensions, features);
 
   return extensions;
 }
