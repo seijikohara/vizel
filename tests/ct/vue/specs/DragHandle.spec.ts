@@ -1,37 +1,72 @@
 import { test } from "@playwright/experimental-ct-vue";
 import {
   testDragHandleAccessibility,
+  testDragHandleHoverBehavior,
+  testDragHandleIsClickable,
   testDragHandleVisibleOnHover,
   testMoveBlockDownWithKeyboard,
   testMoveBlockUpWithKeyboard,
   testMoveHeadingWithKeyboard,
+  testMoveListItemDownWithKeyboard,
+  testMoveListItemUpWithKeyboard,
+  testMoveTaskItemWithKeyboard,
 } from "../../scenarios/drag-handle.scenario";
 import EditorFixture from "./EditorFixture.vue";
 
 test.describe("DragHandle - Vue", () => {
-  test("drag handle is visible on hover", async ({ mount, page }) => {
-    const component = await mount(EditorFixture);
-    await testDragHandleVisibleOnHover(component, page);
+  test.describe("Visibility", () => {
+    test("shows drag handle on hover", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testDragHandleVisibleOnHover(component, page);
+    });
+
+    test("hover shows and hides drag handle", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testDragHandleHoverBehavior(component, page);
+    });
   });
 
-  test("block can be moved up with Alt+ArrowUp", async ({ mount, page }) => {
-    const component = await mount(EditorFixture);
-    await testMoveBlockUpWithKeyboard(component, page);
+  test.describe("Mouse Operations", () => {
+    test("drag handle is clickable", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testDragHandleIsClickable(component, page);
+    });
+
+    test("drag handle has correct accessibility attributes", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testDragHandleAccessibility(component, page);
+    });
   });
 
-  // TODO: Fix this test - moveBlockDown command works but test setup issue
-  test.skip("block can be moved down with Alt+ArrowDown", async ({ mount, page }) => {
-    const component = await mount(EditorFixture);
-    await testMoveBlockDownWithKeyboard(component, page);
-  });
+  test.describe("Keyboard Operations", () => {
+    test("moves block up with Alt+ArrowUp", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testMoveBlockUpWithKeyboard(component, page);
+    });
 
-  test("heading can be moved with keyboard", async ({ mount, page }) => {
-    const component = await mount(EditorFixture);
-    await testMoveHeadingWithKeyboard(component, page);
-  });
+    test("moves block down with Alt+ArrowDown", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testMoveBlockDownWithKeyboard(component, page);
+    });
 
-  test("drag handle has accessibility attributes", async ({ mount, page }) => {
-    const component = await mount(EditorFixture);
-    await testDragHandleAccessibility(component, page);
+    test("moves heading with keyboard", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testMoveHeadingWithKeyboard(component, page);
+    });
+
+    test("moves list item up with Alt+ArrowUp", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testMoveListItemUpWithKeyboard(component, page);
+    });
+
+    test("moves list item down with Alt+ArrowDown", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testMoveListItemDownWithKeyboard(component, page);
+    });
+
+    test("moves task item with keyboard", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testMoveTaskItemWithKeyboard(component, page);
+    });
   });
 });
