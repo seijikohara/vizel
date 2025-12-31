@@ -1,0 +1,205 @@
+/**
+ * Mathematics (LaTeX) Styles
+ *
+ * Styles for inline and block math expressions rendered with KaTeX.
+ */
+
+/* Base math styles */
+.vizel-math {
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+/* Inline math */
+.vizel-math-inline {
+  display: inline;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  background-color: var(--vizel-math-inline-bg, rgba(0, 0, 0, 0.03));
+  vertical-align: baseline;
+}
+
+.vizel-math-inline:hover {
+  background-color: var(--vizel-math-inline-hover-bg, rgba(0, 0, 0, 0.06));
+}
+
+.vizel-math-inline.vizel-math-selected {
+  background-color: var(--vizel-math-inline-selected-bg, rgba(59, 130, 246, 0.1));
+  outline: 2px solid var(--vizel-primary-color, #3b82f6);
+  outline-offset: 1px;
+}
+
+.vizel-math-inline .vizel-math-render {
+  display: inline;
+}
+
+.vizel-math-inline .vizel-math-input {
+  font-family: var(--vizel-font-mono, ui-monospace, monospace);
+  font-size: 0.875rem;
+  padding: 0.125rem 0.25rem;
+  border: 1px solid var(--vizel-border-color, #d1d5db);
+  border-radius: 0.25rem;
+  background: var(--vizel-bg-color, #ffffff);
+  outline: none;
+  min-width: 4rem;
+}
+
+.vizel-math-inline .vizel-math-input:focus {
+  border-color: var(--vizel-primary-color, #3b82f6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Block math */
+.vizel-math-block {
+  display: block;
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--vizel-math-block-bg, rgba(0, 0, 0, 0.02));
+  text-align: center;
+  min-height: 3rem;
+}
+
+.vizel-math-block:hover {
+  background-color: var(--vizel-math-block-hover-bg, rgba(0, 0, 0, 0.04));
+}
+
+.vizel-math-block.vizel-math-selected {
+  background-color: var(--vizel-math-block-selected-bg, rgba(59, 130, 246, 0.05));
+  outline: 2px solid var(--vizel-primary-color, #3b82f6);
+  outline-offset: 2px;
+}
+
+.vizel-math-block .vizel-math-render {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+/* Block math editing container */
+.vizel-math-block .vizel-math-edit-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.vizel-math-block .vizel-math-textarea {
+  font-family: var(--vizel-font-mono, ui-monospace, monospace);
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--vizel-border-color, #d1d5db);
+  border-radius: 0.375rem;
+  background: var(--vizel-bg-color, #ffffff);
+  resize: vertical;
+  min-height: 4rem;
+  width: 100%;
+  outline: none;
+}
+
+.vizel-math-block .vizel-math-textarea:focus {
+  border-color: var(--vizel-primary-color, #3b82f6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.vizel-math-block .vizel-math-textarea::placeholder {
+  color: var(--vizel-text-muted, #9ca3af);
+}
+
+.vizel-math-block .vizel-math-preview {
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  background: var(--vizel-math-preview-bg, rgba(0, 0, 0, 0.02));
+  border: 1px dashed var(--vizel-border-color, #e5e7eb);
+  min-height: 2.5rem;
+}
+
+/* Editing state */
+.vizel-math.vizel-math-editing {
+  background-color: var(--vizel-math-editing-bg, rgba(59, 130, 246, 0.05));
+}
+
+/* Error display */
+.vizel-math-error {
+  color: var(--vizel-error-color, #ef4444);
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+/* KaTeX overrides for better integration */
+.vizel-math .katex {
+  font-size: 1.1em;
+}
+
+.vizel-math-block .katex {
+  font-size: 1.2em;
+}
+
+.vizel-math .katex-display {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure KaTeX doesn't overflow container */
+.vizel-math .katex-html {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .vizel-math-inline {
+    background-color: var(--vizel-math-inline-bg, rgba(255, 255, 255, 0.05));
+  }
+
+  .vizel-math-inline:hover {
+    background-color: var(--vizel-math-inline-hover-bg, rgba(255, 255, 255, 0.08));
+  }
+
+  .vizel-math-block {
+    background-color: var(--vizel-math-block-bg, rgba(255, 255, 255, 0.03));
+  }
+
+  .vizel-math-block:hover {
+    background-color: var(--vizel-math-block-hover-bg, rgba(255, 255, 255, 0.05));
+  }
+
+  .vizel-math-block .vizel-math-preview {
+    background: var(--vizel-math-preview-bg, rgba(255, 255, 255, 0.02));
+  }
+
+  .vizel-math-block .vizel-math-textarea,
+  .vizel-math-inline .vizel-math-input {
+    background: var(--vizel-bg-color, #1f2937);
+    color: var(--vizel-text-color, #f3f4f6);
+    border-color: var(--vizel-border-color, #374151);
+  }
+}
+
+/* Vizel dark theme class override */
+.vizel-dark .vizel-math-inline {
+  background-color: var(--vizel-math-inline-bg, rgba(255, 255, 255, 0.05));
+}
+
+.vizel-dark .vizel-math-inline:hover {
+  background-color: var(--vizel-math-inline-hover-bg, rgba(255, 255, 255, 0.08));
+}
+
+.vizel-dark .vizel-math-block {
+  background-color: var(--vizel-math-block-bg, rgba(255, 255, 255, 0.03));
+}
+
+.vizel-dark .vizel-math-block:hover {
+  background-color: var(--vizel-math-block-hover-bg, rgba(255, 255, 255, 0.05));
+}
+
+.vizel-dark .vizel-math-block .vizel-math-preview {
+  background: var(--vizel-math-preview-bg, rgba(255, 255, 255, 0.02));
+}
+
+.vizel-dark .vizel-math-block .vizel-math-textarea,
+.vizel-dark .vizel-math-inline .vizel-math-input {
+  background: var(--vizel-bg-color, #1f2937);
+  color: var(--vizel-text-color, #f3f4f6);
+  border-color: var(--vizel-border-color, #374151);
+}

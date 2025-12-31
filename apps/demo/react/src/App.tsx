@@ -36,6 +36,7 @@ export function App() {
     autofocus: "end",
     features: {
       markdown: true,
+      mathematics: true,
       image: {
         onUpload: mockUploadImage,
         maxFileSize: 10 * 1024 * 1024, // 10MB
@@ -117,6 +118,10 @@ export function App() {
           <div className="feature-tag">
             <span className="feature-icon">{"</>"}</span>
             <span>Code Blocks</span>
+          </div>
+          <div className="feature-tag">
+            <span className="feature-icon">∑</span>
+            <span>Math (LaTeX)</span>
           </div>
         </div>
 

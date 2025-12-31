@@ -14,6 +14,9 @@ export function EditorFixture({
   const editor = useVizelEditor({
     placeholder,
     initialContent,
+    features: {
+      mathematics: true,
+    },
   });
 
   return (

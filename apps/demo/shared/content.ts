@@ -173,6 +173,31 @@ export const initialContent = {
       ],
     },
     {
+      type: "heading",
+      attrs: { level: 2 },
+      content: [{ type: "text", text: "Mathematics (LaTeX)" }],
+    },
+    {
+      type: "paragraph",
+      content: [
+        { type: "text", text: "Type " },
+        { type: "text", marks: [{ type: "code" }], text: "$E=mc^2$" },
+        { type: "text", text: " for inline math or " },
+        { type: "text", marks: [{ type: "code" }], text: "$$...$$" },
+        { type: "text", text: " for block equations. Here's an inline example: " },
+        { type: "mathInline", attrs: { latex: "E = mc^2" } },
+        { type: "text", text: " (Einstein's famous equation)." },
+      ],
+    },
+    {
+      type: "mathBlock",
+      attrs: { latex: "\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}" },
+    },
+    {
+      type: "paragraph",
+      content: [{ type: "text", text: "Click on any math expression to edit it." }],
+    },
+    {
       type: "blockquote",
       content: [
         {

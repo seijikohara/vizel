@@ -2,6 +2,7 @@ import type { Editor, JSONContent } from "@tiptap/core";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelCodeBlockOptions } from "./extensions/code-block-lowlight.ts";
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
+import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
 import type { SlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTaskListOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
@@ -49,6 +50,8 @@ export interface VizelFeatureOptions {
   textColor?: VizelTextColorOptions | boolean;
   /** Code block with syntax highlighting */
   codeBlock?: VizelCodeBlockOptions | boolean;
+  /** Mathematics (LaTeX) support with KaTeX rendering */
+  mathematics?: VizelMathematicsOptions | boolean;
 }
 
 /**
