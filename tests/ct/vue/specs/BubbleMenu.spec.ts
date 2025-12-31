@@ -14,6 +14,13 @@ import {
   testBubbleMenuTextColorToggle,
   testBubbleMenuUnderlineShortcut,
   testBubbleMenuUnderlineToggle,
+  testNodeSelectorActiveState,
+  testNodeSelectorAppears,
+  testNodeSelectorBulletList,
+  testNodeSelectorDropdownOpens,
+  testNodeSelectorEscapeCloses,
+  testNodeSelectorHeading1,
+  testNodeSelectorKeyboardNavigation,
 } from "../../scenarios/bubble-menu.scenario";
 import EditorFixture from "./EditorFixture.vue";
 
@@ -86,5 +93,41 @@ test.describe("BubbleMenu - Vue", () => {
   test("removes highlight", async ({ mount, page }) => {
     const component = await mount(EditorFixture);
     await testBubbleMenuHighlightReset(component, page);
+  });
+
+  // Node Selector tests
+  test("node selector appears in bubble menu", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testNodeSelectorAppears(component, page);
+  });
+
+  test("node selector dropdown opens on click", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testNodeSelectorDropdownOpens(component, page);
+  });
+
+  test("node selector converts to heading 1", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testNodeSelectorHeading1(component, page);
+  });
+
+  test("node selector converts to bullet list", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testNodeSelectorBulletList(component, page);
+  });
+
+  test("node selector shows active state", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testNodeSelectorActiveState(component, page);
+  });
+
+  test("node selector keyboard navigation works", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testNodeSelectorKeyboardNavigation(component, page);
+  });
+
+  test("node selector closes with Escape", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testNodeSelectorEscapeCloses(component, page);
   });
 });

@@ -266,3 +266,165 @@ export async function testBubbleMenuHighlightReset(component: Locator, page: Pag
   highlightedText = editor.locator("mark");
   await expect(highlightedText).toHaveCount(0);
 }
+
+// Node Selector Tests
+
+const NODE_SELECTOR_SELECTOR = "[data-vizel-node-selector]";
+
+/** Verify node selector appears in bubble menu */
+export async function testNodeSelectorAppears(component: Locator, page: Page): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  await expect(bubbleMenu).toBeVisible();
+
+  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
+  await expect(nodeSelector).toBeVisible();
+}
+
+/** Verify node selector dropdown opens on click */
+export async function testNodeSelectorDropdownOpens(component: Locator, page: Page): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
+  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
+
+  await trigger.click();
+
+  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
+  await expect(dropdown).toBeVisible();
+}
+
+/** Verify selecting heading 1 converts text */
+export async function testNodeSelectorHeading1(component: Locator, page: Page): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
+  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
+
+  await trigger.click();
+
+  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
+  const heading1Option = dropdown
+    .locator(".vizel-node-selector-option")
+    .filter({ hasText: "Heading 1" });
+  await heading1Option.click();
+
+  const editor = component.locator(".vizel-editor");
+  const heading1 = editor.locator("h1");
+  await expect(heading1).toContainText("Select this text");
+}
+
+/** Verify selecting bullet list converts paragraph */
+export async function testNodeSelectorBulletList(component: Locator, page: Page): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
+  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
+
+  await trigger.click();
+
+  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
+  const bulletListOption = dropdown
+    .locator(".vizel-node-selector-option")
+    .filter({ hasText: "Bullet List" });
+  await bulletListOption.click();
+
+  const editor = component.locator(".vizel-editor");
+  const bulletList = editor.locator("ul li");
+  await expect(bulletList).toContainText("Select this text");
+}
+
+/** Verify active node type shows check mark */
+export async function testNodeSelectorActiveState(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  // Type text and convert to heading via NodeSelector
+  await page.keyboard.type("Heading Text");
+  await page.keyboard.press("ControlOrMeta+a");
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  await expect(bubbleMenu).toBeVisible();
+
+  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
+  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
+
+  // Convert to Heading 1
+  await trigger.click();
+  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
+  const heading1Option = dropdown
+    .locator(".vizel-node-selector-option")
+    .filter({ hasText: "Heading 1" });
+  await heading1Option.click();
+
+  // Verify heading was created
+  const heading1 = editor.locator("h1");
+  await expect(heading1).toContainText("Heading Text");
+
+  // Re-select the heading and check trigger shows Heading 1
+  await page.keyboard.press("ControlOrMeta+a");
+  await expect(bubbleMenu).toBeVisible();
+
+  // Trigger should now show Heading 1
+  await expect(trigger).toContainText("Heading 1");
+
+  // Open dropdown and verify active state
+  await trigger.click();
+  const heading1OptionAgain = dropdown
+    .locator(".vizel-node-selector-option")
+    .filter({ hasText: "Heading 1" });
+  await expect(heading1OptionAgain).toHaveClass(/is-active/);
+}
+
+/** Verify keyboard navigation works in node selector */
+export async function testNodeSelectorKeyboardNavigation(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
+  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
+
+  // Open dropdown by clicking
+  await trigger.click();
+
+  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
+  await expect(dropdown).toBeVisible();
+
+  // Navigate down to Heading 1 (first item is Text, so one ArrowDown gets to Heading 1)
+  await page.keyboard.press("ArrowDown");
+  const heading1Option = dropdown
+    .locator(".vizel-node-selector-option")
+    .filter({ hasText: "Heading 1" });
+  await expect(heading1Option).toHaveClass(/is-focused/);
+
+  // Select with Enter
+  await page.keyboard.press("Enter");
+
+  const editor = component.locator(".vizel-editor");
+  const heading1 = editor.locator("h1");
+  await expect(heading1).toContainText("Select this text");
+}
+
+/** Verify Escape closes the dropdown */
+export async function testNodeSelectorEscapeCloses(component: Locator, page: Page): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
+  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
+
+  await trigger.click();
+
+  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
+  await expect(dropdown).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(dropdown).not.toBeVisible();
+}

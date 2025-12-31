@@ -81,6 +81,11 @@ export {
   type VizelMathematicsOptions,
 } from "./mathematics.ts";
 export {
+  defaultNodeTypes,
+  getActiveNodeType,
+  type NodeTypeOption,
+} from "./node-types.ts";
+export {
   defaultSlashCommands,
   filterSlashCommands,
   SlashCommand,

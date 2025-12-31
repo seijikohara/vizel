@@ -4,6 +4,7 @@ import { useEditorState } from "../hooks/useEditorState.ts";
 import { BubbleMenuButton } from "./BubbleMenuButton.tsx";
 import { BubbleMenuColorPicker } from "./BubbleMenuColorPicker.tsx";
 import { BubbleMenuLinkEditor } from "./BubbleMenuLinkEditor.tsx";
+import { NodeSelector } from "./NodeSelector.tsx";
 
 export interface BubbleMenuToolbarProps {
   editor: Editor;
@@ -32,6 +33,7 @@ export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps)
 
   return (
     <div className={`vizel-bubble-menu-toolbar ${className ?? ""}`}>
+      <NodeSelector editor={editor} />
       <BubbleMenuButton
         action="bold"
         onClick={() => editor.chain().focus().toggleBold().run()}
