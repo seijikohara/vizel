@@ -176,7 +176,7 @@ const previewColor = computed(() =>
   >
     <!-- Recent colors -->
     <div
-      v-if="showRecentColors && recentColors.length > 0"
+      v-if="showRecentColors && props.recentColors && props.recentColors.length > 0"
       class="vizel-color-picker-section"
     >
       <div class="vizel-color-picker-label">Recent</div>
