@@ -2,6 +2,7 @@
  * Save Indicator Styles
  *
  * Displays the current save state with visual feedback.
+ * Uses CSS custom properties for theme support.
  */
 
 .vizel-save-indicator {
@@ -11,11 +12,9 @@
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
   font-family: inherit;
-  color: var(--vizel-text-muted, #6b7280);
+  color: var(--vizel-text-color-muted);
   border-radius: 0.25rem;
-  transition:
-    color 0.2s ease,
-    background-color 0.2s ease;
+  transition: var(--vizel-theme-transition);
 }
 
 .vizel-save-indicator-icon {
@@ -38,12 +37,12 @@
 
 /* Saved state */
 .vizel-save-indicator--saved {
-  color: var(--vizel-success-color, #10b981);
+  color: var(--vizel-success-color);
 }
 
 /* Saving state */
 .vizel-save-indicator--saving {
-  color: var(--vizel-primary-color, #3b82f6);
+  color: var(--vizel-primary-color);
 }
 
 .vizel-save-indicator-spinner {
@@ -62,33 +61,10 @@
 
 /* Unsaved state */
 .vizel-save-indicator--unsaved {
-  color: var(--vizel-warning-color, #f59e0b);
+  color: var(--vizel-warning-color);
 }
 
 /* Error state */
 .vizel-save-indicator--error {
-  color: var(--vizel-error-color, #ef4444);
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .vizel-save-indicator {
-    color: var(--vizel-text-muted-dark, #9ca3af);
-  }
-
-  .vizel-save-indicator--saved {
-    color: var(--vizel-success-color-dark, #34d399);
-  }
-
-  .vizel-save-indicator--saving {
-    color: var(--vizel-primary-color-dark, #60a5fa);
-  }
-
-  .vizel-save-indicator--unsaved {
-    color: var(--vizel-warning-color-dark, #fbbf24);
-  }
-
-  .vizel-save-indicator--error {
-    color: var(--vizel-error-color-dark, #f87171);
-  }
+  color: var(--vizel-error-color);
 }

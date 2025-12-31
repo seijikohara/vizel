@@ -51,3 +51,7 @@ export {
 } from "./SlashMenu.vue";
 export { default as SlashMenuEmpty, type SlashMenuEmptyProps } from "./SlashMenuEmpty.vue";
 export { default as SlashMenuItem, type SlashMenuItemProps } from "./SlashMenuItem.vue";
+
+// ThemeProvider component
+export { ThemeContextKey } from "./ThemeContext";
+export { default as ThemeProvider, type ThemeProviderProps } from "./ThemeProvider.vue";

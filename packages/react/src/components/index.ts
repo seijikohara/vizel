@@ -42,3 +42,11 @@ export {
 } from "./SlashMenu.tsx";
 export { SlashMenuEmpty, type SlashMenuEmptyProps } from "./SlashMenuEmpty.tsx";
 export { SlashMenuItem, type SlashMenuItemProps } from "./SlashMenuItem.tsx";
+
+// ThemeProvider component
+export {
+  ThemeProvider,
+  type ThemeProviderProps,
+  useTheme,
+  useThemeSafe,
+} from "./ThemeProvider.tsx";

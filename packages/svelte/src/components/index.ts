@@ -63,3 +63,9 @@ export {
   default as SlashMenuItem,
   type SlashMenuItemProps,
 } from "./SlashMenuItem.svelte";
+
+// ThemeProvider component
+export {
+  default as ThemeProvider,
+  THEME_CONTEXT_KEY,
+} from "./ThemeProvider.svelte";

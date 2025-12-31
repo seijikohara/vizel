@@ -4,8 +4,10 @@ import {
   getEditorState,
   type JSONContent,
   SaveIndicator,
+  ThemeProvider,
   useAutoSave,
   useEditorState,
+  useTheme,
   useVizelEditor,
 } from "@vizel/react";
 import { useState } from "react";
@@ -25,7 +27,22 @@ function ReactLogo() {
   );
 }
 
-export function App() {
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+
+  return (
+    <button
+      type="button"
+      className="theme-toggle"
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      aria-label={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+    >
+      {resolvedTheme === "dark" ? "☀️" : "🌙"}
+    </button>
+  );
+}
+
+function AppContent() {
   const [output, setOutput] = useState<JSONContent | null>(null);
   const [showOutput, setShowOutput] = useState(false);
   const [markdownOutput, setMarkdownOutput] = useState("");
@@ -88,6 +105,7 @@ export function App() {
             <h1>Vizel Editor</h1>
             <span className="framework-badge">React 19</span>
           </div>
+          <ThemeToggle />
         </div>
         <p className="header-description">
           A block-based rich text editor with slash commands and inline formatting
@@ -135,6 +153,10 @@ export function App() {
           <div className="feature-tag">
             <span className="feature-icon">💾</span>
             <span>Auto-save</span>
+          </div>
+          <div className="feature-tag">
+            <span className="feature-icon">🌓</span>
+            <span>Dark Mode</span>
           </div>
         </div>
 
@@ -208,5 +230,13 @@ export function App() {
         </p>
       </footer>
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="vizel-theme">
+      <AppContent />
+    </ThemeProvider>
   );
 }

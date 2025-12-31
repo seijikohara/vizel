@@ -10,10 +10,14 @@ export type {
   AutoSaveOptions,
   AutoSaveState,
   JSONContent,
+  ResolvedTheme,
   SaveStatus,
   SlashCommandItem,
   SlashCommandOptions,
   StorageBackend,
+  Theme,
+  ThemeProviderOptions,
+  ThemeState,
   VizelEditorOptions,
   VizelEditorState,
   VizelLinkOptions,
@@ -140,6 +144,8 @@ export {
   type SlashMenuItemProps,
   type SlashMenuProps,
   type SlashMenuRef,
+  THEME_CONTEXT_KEY,
+  ThemeProvider,
 } from "./components/index.ts";
 // Runes (Svelte 5 reactive state)
 export {
@@ -149,5 +155,7 @@ export {
   createEditorState,
   createSlashMenuRenderer,
   createVizelEditor,
+  getTheme,
+  getThemeSafe,
   type SlashMenuRendererOptions,
 } from "./runes/index.ts";

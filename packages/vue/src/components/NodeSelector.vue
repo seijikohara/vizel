@@ -50,7 +50,7 @@ onUnmounted(() => {
 // Focus the dropdown when it opens to ensure keyboard navigation works
 watch(isOpen, (newValue) => {
   if (newValue) {
-    nextTick(() => {
+    void nextTick(() => {
       dropdownRef.value?.focus();
     });
   }

@@ -8,9 +8,11 @@ import {
   getEditorState,
   type JSONContent,
   SaveIndicator,
+  ThemeProvider,
 } from "@vizel/svelte";
 import { initialContent } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
+import ThemeToggle from "./ThemeToggle.svelte";
 
 let output: JSONContent | null = $state(null);
 let showOutput = $state(false);
@@ -69,6 +71,7 @@ function handleImportMarkdown() {
 }
 </script>
 
+<ThemeProvider defaultTheme="system" storageKey="vizel-theme">
 <div class="app">
   <header class="header">
     <div class="header-content">
@@ -80,6 +83,7 @@ function handleImportMarkdown() {
         <h1>Vizel Editor</h1>
         <span class="framework-badge">Svelte 5</span>
       </div>
+      <ThemeToggle />
     </div>
     <p class="header-description">
       A block-based rich text editor with slash commands and inline formatting
@@ -127,6 +131,10 @@ function handleImportMarkdown() {
       <div class="feature-tag">
         <span class="feature-icon">💾</span>
         <span>Auto-save</span>
+      </div>
+      <div class="feature-tag">
+        <span class="feature-icon">🌓</span>
+        <span>Dark Mode</span>
       </div>
     </div>
 
@@ -205,3 +213,4 @@ function handleImportMarkdown() {
     </p>
   </footer>
 </div>
+</ThemeProvider>

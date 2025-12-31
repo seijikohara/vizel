@@ -123,6 +123,23 @@ export {
   type VizelTextColorOptions,
   validateImageFile,
 } from "./extensions/index.ts";
+// Theme
+export {
+  applyTheme,
+  createSystemThemeListener,
+  DEFAULT_THEME,
+  DEFAULT_THEME_STORAGE_KEY,
+  getStoredTheme,
+  getSystemTheme,
+  getThemeInitScript,
+  type ResolvedTheme,
+  resolveTheme,
+  storeTheme,
+  THEME_DATA_ATTRIBUTE,
+  type Theme,
+  type ThemeProviderOptions,
+  type ThemeState,
+} from "./theme.ts";
 // Types
 export type {
   Extensions,
