@@ -23,6 +23,9 @@ export function createDragHandleExtension(options: VizelDragHandleOptions = {}):
     return Extension.create({ name: "vizelDragHandleDisabled" });
   }
 
+  // Store reference to the element for use in onNodeChange
+  let dragHandleElement: HTMLElement | null = null;
+
   return DragHandle.configure({
     render() {
       const element = document.createElement("div");
@@ -47,7 +50,20 @@ export function createDragHandleExtension(options: VizelDragHandleOptions = {}):
       `;
       element.appendChild(grip);
 
+      // Store reference for onNodeChange callback
+      dragHandleElement = element;
+
       return element;
+    },
+    onNodeChange({ node }) {
+      // Toggle visibility class based on whether a node is being targeted
+      if (dragHandleElement) {
+        if (node) {
+          dragHandleElement.classList.add("is-visible");
+        } else {
+          dragHandleElement.classList.remove("is-visible");
+        }
+      }
     },
     computePositionConfig: {
       placement: "left",

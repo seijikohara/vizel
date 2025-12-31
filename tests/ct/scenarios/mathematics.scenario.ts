@@ -9,11 +9,11 @@ import { expect } from "@playwright/test";
 const MATH_BLOCK_SELECTOR = ".vizel-math-block";
 const MATH_INLINE_SELECTOR = ".vizel-math-inline";
 
-/** Helper to click at editor start position */
+/** Helper to click editor to focus it */
 async function clickEditorStart(component: Locator, page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
-  // Click at a safe position to avoid bubble menu
-  await editor.click({ position: { x: 5, y: 5 }, force: true });
+  // Click at the center of the editor to avoid overlap with drag handle
+  await editor.click();
   // Dismiss any bubble menu
   await page.keyboard.press("Escape");
   await page.waitForTimeout(50);

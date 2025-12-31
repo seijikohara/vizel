@@ -17,6 +17,7 @@
   background-color: transparent;
   color: var(--vizel-text-muted, #9ca3af);
   opacity: 0;
+  pointer-events: none;
   transition:
     opacity 0.15s ease,
     background-color 0.15s ease,
@@ -58,14 +59,14 @@
   flex-shrink: 0;
 }
 
-/* Show drag handle on hover
- * Note: The drag handle is rendered as a sibling to .ProseMirror by the extension,
- * so we use :has() to target the common parent container.
+/* Show drag handle when visible (set by extension), hovering, or active
+ * The is-visible class is toggled by onNodeChange callback when hovering over blocks.
  */
-*:has(> .ProseMirror):hover .vizel-drag-handle,
+.vizel-drag-handle.is-visible,
 .vizel-drag-handle:hover,
 .vizel-drag-handle.is-active {
   opacity: 1;
+  pointer-events: auto;
 }
 
 /* Dark mode support */
@@ -88,6 +89,7 @@
 .vizel-drag-handle[data-dragging="true"] {
   cursor: grabbing;
   opacity: 1;
+  pointer-events: auto;
 }
 
 /* Drop indicator styles (for visual feedback during drag) */
