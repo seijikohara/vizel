@@ -23,6 +23,11 @@ export {
   type BubbleMenuToolbarProps,
   default as BubbleMenuToolbar,
 } from "./BubbleMenuToolbar.svelte";
+// ColorPicker component
+export {
+  type ColorPickerProps,
+  default as ColorPicker,
+} from "./ColorPicker.svelte";
 
 // Editor components
 export {

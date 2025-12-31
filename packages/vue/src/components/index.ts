@@ -20,6 +20,11 @@ export {
   type BubbleMenuToolbarProps,
   default as BubbleMenuToolbar,
 } from "./BubbleMenuToolbar.vue";
+// ColorPicker component
+export {
+  type ColorPickerProps,
+  default as ColorPicker,
+} from "./ColorPicker.vue";
 
 // Editor components
 export { default as EditorContent, type EditorContentProps } from "./EditorContent.vue";

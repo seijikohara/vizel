@@ -119,6 +119,8 @@ export {
   type BubbleMenuProps,
   BubbleMenuToolbar,
   type BubbleMenuToolbarProps,
+  ColorPicker,
+  type ColorPickerProps,
   EditorContent,
   type EditorContentProps,
   EditorRoot,
