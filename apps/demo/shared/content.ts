@@ -84,6 +84,15 @@ export const initialContent = {
             },
           ],
         },
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: 'Dividers - type "---" or "/divider" to insert' }],
+            },
+          ],
+        },
       ],
     },
     {
@@ -208,6 +217,19 @@ export const initialContent = {
             { type: "text", text: " from slash commands to create one." },
           ],
         },
+      ],
+    },
+    {
+      type: "horizontalRule",
+    },
+    {
+      type: "paragraph",
+      content: [
+        { type: "text", text: "Use " },
+        { type: "text", marks: [{ type: "code" }], text: "---" },
+        { type: "text", text: " or " },
+        { type: "text", marks: [{ type: "code" }], text: '"/divider"' },
+        { type: "text", text: " to insert a horizontal divider like the one above." },
       ],
     },
   ],
