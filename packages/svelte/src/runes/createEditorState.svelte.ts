@@ -12,13 +12,13 @@ import { onDestroy } from "svelte";
  * @example
  * ```svelte
  * <script lang="ts">
- * const state = useEditorState(() => editor);
+ * const state = createEditorState(() => editor);
  * // Access state.current to trigger reactivity
  * </script>
  * <button class:active={state.current >= 0 && editor.isActive('bold')}>Bold</button>
  * ```
  */
-export function useEditorState(getEditor: () => Editor | null | undefined): {
+export function createEditorState(getEditor: () => Editor | null | undefined): {
   readonly current: number;
 } {
   let updateCount = $state(0);

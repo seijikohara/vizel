@@ -73,12 +73,19 @@ let isActive = $derived(editor?.isActive("bold") ?? false);
 
 ## Runes
 
-### useVizelEditor
+### Naming Conventions
+
+Svelte runes follow Svelte-idiomatic naming (NOT React-style `use*`):
+
+- `create*` for factory functions that create reactive state
+- `get*` for context getters
+
+### createVizelEditor
 
 Primary rune for creating editor instances.
 
 ```typescript
-const editor = useVizelEditor({
+const editor = createVizelEditor({
   initialContent,
   placeholder,
   features: {
@@ -89,6 +96,15 @@ const editor = useVizelEditor({
 
 // Access editor with .current
 editor.current?.commands.setContent(content);
+```
+
+### createEditorState
+
+Rune for tracking editor state changes.
+
+```typescript
+const updateCount = createEditorState(() => editor.current);
+// Use updateCount.current to trigger reactivity
 ```
 
 ### Rune Conventions

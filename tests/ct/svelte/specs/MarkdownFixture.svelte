@@ -1,10 +1,10 @@
 <script lang="ts">
 import { Markdown } from "@vizel/core";
-import { EditorContent, EditorRoot, useVizelEditor } from "@vizel/svelte";
+import { createVizelEditor, EditorContent, EditorRoot } from "@vizel/svelte";
 
 let markdownOutput = $state("");
 
-const editor = useVizelEditor({
+const editor = createVizelEditor({
   extensions: [Markdown],
 });
 

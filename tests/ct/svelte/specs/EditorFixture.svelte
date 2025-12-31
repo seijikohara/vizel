@@ -1,5 +1,5 @@
 <script lang="ts">
-import { BubbleMenu, EditorContent, EditorRoot, useVizelEditor } from "@vizel/svelte";
+import { BubbleMenu, createVizelEditor, EditorContent, EditorRoot } from "@vizel/svelte";
 
 interface Props {
   placeholder?: string;
@@ -13,7 +13,7 @@ let {
   showBubbleMenu = true,
 }: Props = $props();
 
-const editor = useVizelEditor({
+const editor = createVizelEditor({
   placeholder,
   initialContent,
   features: {

@@ -11,9 +11,9 @@ export const EDITOR_CONTEXT_KEY = Symbol("vizel-editor");
  * @example
  * ```svelte
  * <script lang="ts">
- * import { useEditorContext } from '@vizel/svelte';
+ * import { getEditorContext } from '@vizel/svelte';
  *
- * const getEditor = useEditorContext();
+ * const getEditor = getEditorContext();
  * </script>
  *
  * <button onclick={() => getEditor()?.chain().focus().toggleBold().run()}>
@@ -21,10 +21,10 @@ export const EDITOR_CONTEXT_KEY = Symbol("vizel-editor");
  * </button>
  * ```
  */
-export function useEditorContext(): () => Editor | null {
+export function getEditorContext(): () => Editor | null {
   const getEditor = getContext<(() => Editor | null) | undefined>(EDITOR_CONTEXT_KEY);
   if (!getEditor) {
-    throw new Error("useEditorContext must be used within an EditorRoot");
+    throw new Error("getEditorContext must be used within an EditorRoot");
   }
   return getEditor;
 }
@@ -33,6 +33,6 @@ export function useEditorContext(): () => Editor | null {
  * Get the editor instance from context.
  * Returns undefined if used outside of EditorRoot (does not throw).
  */
-export function useEditorContextSafe(): (() => Editor | null) | undefined {
+export function getEditorContextSafe(): (() => Editor | null) | undefined {
   return getContext<(() => Editor | null) | undefined>(EDITOR_CONTEXT_KEY);
 }

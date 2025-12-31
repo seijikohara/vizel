@@ -29,7 +29,7 @@ export {
   default as EditorContent,
   type EditorContentProps,
 } from "./EditorContent.svelte";
-export { useEditorContext, useEditorContextSafe } from "./EditorContext.ts";
+export { getEditorContext, getEditorContextSafe } from "./EditorContext.ts";
 export { default as EditorRoot, type EditorRootProps } from "./EditorRoot.svelte";
 
 // SlashMenu components

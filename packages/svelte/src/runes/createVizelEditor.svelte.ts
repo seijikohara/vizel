@@ -10,7 +10,7 @@ import {
 import { onDestroy, onMount } from "svelte";
 import { createSlashMenuRenderer } from "./createSlashMenuRenderer.ts";
 
-export interface UseVizelEditorOptions extends VizelEditorOptions {
+export interface CreateVizelEditorOptions extends VizelEditorOptions {
   /** Additional extensions to include */
   extensions?: Extensions;
 }
@@ -22,9 +22,9 @@ export interface UseVizelEditorOptions extends VizelEditorOptions {
  * @example
  * ```svelte
  * <script lang="ts">
- * import { useVizelEditor, EditorContent, BubbleMenu } from '@vizel/svelte';
+ * import { createVizelEditor, EditorContent, BubbleMenu } from '@vizel/svelte';
  *
- * const editor = useVizelEditor({
+ * const editor = createVizelEditor({
  *   placeholder: "Start typing...",
  *   onUpdate: ({ editor }) => {
  *     console.log(editor.getJSON());
@@ -38,7 +38,7 @@ export interface UseVizelEditorOptions extends VizelEditorOptions {
  * {/if}
  * ```
  */
-export function useVizelEditor(options: UseVizelEditorOptions = {}) {
+export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
   const {
     initialContent,
     placeholder,

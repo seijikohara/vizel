@@ -10,11 +10,11 @@ export interface EditorContentProps {
 </script>
 
 <script lang="ts">
-import { useEditorContextSafe } from "./EditorContext.ts";
+import { getEditorContextSafe } from "./EditorContext.ts";
 
 let { editor: editorProp, class: className }: EditorContentProps = $props();
 
-const contextEditor = useEditorContextSafe();
+const contextEditor = getEditorContextSafe();
 const editor = $derived(editorProp ?? contextEditor?.());
 
 let element: HTMLElement | undefined = $state();
