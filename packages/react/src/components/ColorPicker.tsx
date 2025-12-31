@@ -23,6 +23,7 @@ export interface ColorPickerProps {
 }
 
 const GRID_COLUMNS = 4;
+const DEFAULT_NONE_VALUES = ["transparent", "inherit"];
 
 /**
  * A reusable color picker component with keyboard navigation and accessibility support.
@@ -36,7 +37,7 @@ export function ColorPicker({
   allowCustomColor = true,
   recentColors = [],
   showRecentColors = true,
-  noneValues = ["transparent", "inherit"],
+  noneValues = DEFAULT_NONE_VALUES,
 }: ColorPickerProps) {
   const [inputValue, setInputValue] = useState("");
   const [focusedIndex, setFocusedIndex] = useState(-1);
