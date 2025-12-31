@@ -31,6 +31,9 @@ export { EditorRoot, type EditorRootProps } from "./EditorRoot.tsx";
 // NodeSelector component
 export { NodeSelector, type NodeSelectorProps } from "./NodeSelector.tsx";
 
+// SaveIndicator component
+export { SaveIndicator, type SaveIndicatorProps } from "./SaveIndicator.tsx";
+
 // SlashMenu components
 export {
   SlashMenu,

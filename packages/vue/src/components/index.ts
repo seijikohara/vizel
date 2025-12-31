@@ -37,6 +37,12 @@ export {
   type NodeSelectorProps,
 } from "./NodeSelector.vue";
 
+// SaveIndicator component
+export {
+  default as SaveIndicator,
+  type SaveIndicatorProps,
+} from "./SaveIndicator.vue";
+
 // SlashMenu components
 export {
   default as SlashMenu,

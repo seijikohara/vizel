@@ -1,3 +1,7 @@
+export {
+  type CreateAutoSaveResult,
+  createAutoSave,
+} from "./createAutoSave.svelte.ts";
 export { createEditorState } from "./createEditorState.svelte.ts";
 export {
   createSlashMenuRenderer,
