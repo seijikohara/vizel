@@ -98,4 +98,15 @@
   border: none;
   border-top: 2px solid var(--vizel-border-color);
   margin: 1.5em 0;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.vizel-editor hr:hover {
+  border-top-color: var(--vizel-primary-color-light);
+}
+
+.vizel-editor hr.ProseMirror-selectednode {
+  border-top-color: var(--vizel-primary-color);
+  outline: none;
 }

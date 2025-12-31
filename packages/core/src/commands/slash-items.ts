@@ -70,6 +70,14 @@ export const defaultSlashCommands = [
     },
   },
   {
+    title: "Divider",
+    description: "Insert a horizontal divider",
+    icon: "―",
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setHorizontalRule().run();
+    },
+  },
+  {
     title: "Code Block",
     description: "Insert a code snippet",
     icon: "</>",
