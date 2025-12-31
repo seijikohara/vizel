@@ -91,6 +91,11 @@
   width: fit-content;
 }
 
+/* Generic ColorPicker content (used inside dropdown or standalone) */
+.vizel-color-picker-content {
+  width: fit-content;
+}
+
 .vizel-color-picker-section {
   margin-bottom: 0.5rem;
 }
@@ -142,6 +147,12 @@
   transform: scale(1.15);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 1;
+}
+
+.vizel-color-picker-swatch:focus-visible {
+  outline: 2px solid var(--vizel-primary-color);
+  outline-offset: 2px;
+  z-index: 2;
 }
 
 .vizel-color-picker-swatch.is-active {

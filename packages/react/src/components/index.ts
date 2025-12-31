@@ -20,6 +20,8 @@ export {
   BubbleMenuToolbar,
   type BubbleMenuToolbarProps,
 } from "./BubbleMenuToolbar.tsx";
+// ColorPicker component
+export { ColorPicker, type ColorPickerProps } from "./ColorPicker.tsx";
 
 // Editor components
 export { EditorContent, type EditorContentProps } from "./EditorContent.tsx";

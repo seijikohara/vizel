@@ -5,11 +5,10 @@ import {
   type Editor,
   getRecentColors,
   HIGHLIGHT_COLORS,
-  isValidHexColor,
-  normalizeHexColor,
   TEXT_COLORS,
 } from "@vizel/core";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import ColorPicker from "./ColorPicker.vue";
 
 export interface BubbleMenuColorPickerProps {
   /** The editor instance */
@@ -32,7 +31,6 @@ const props = withDefaults(defineProps<BubbleMenuColorPickerProps>(), {
 });
 
 const isOpen = ref(false);
-const customColor = ref("");
 const recentColors = ref<string[]>([]);
 const containerRef = ref<HTMLDivElement | null>(null);
 
@@ -49,26 +47,16 @@ const currentColor = computed(() => {
 
 const isTextColor = computed(() => props.type === "textColor");
 
-const isCustomColorValid = computed(() => {
-  return isValidHexColor(normalizeHexColor(customColor.value));
-});
+const noneValues = computed(() => (isTextColor.value ? ["inherit"] : ["transparent"]));
 
-// Load recent colors and set initial input value when dropdown opens
+// Load recent colors when dropdown opens
 watch(isOpen, (open) => {
   if (open && props.showRecentColors) {
     recentColors.value = getRecentColors(props.type);
   }
-  if (open) {
-    const current = currentColor.value;
-    if (current && current !== "inherit" && current !== "transparent") {
-      customColor.value = current;
-    } else {
-      customColor.value = "";
-    }
-  }
 });
 
-function applyColor(color: string) {
+function handleColorChange(color: string) {
   if (props.type === "textColor") {
     if (color === "inherit") {
       props.editor.chain().focus().unsetColor().run();
@@ -83,37 +71,6 @@ function applyColor(color: string) {
     addRecentColor(props.type, color);
   }
   isOpen.value = false;
-  customColor.value = "";
-}
-
-function handleSwatchClick(color: string) {
-  if (color === "inherit" || color === "transparent") {
-    applyColor(color);
-  } else {
-    customColor.value = color;
-    applyColor(color);
-  }
-}
-
-function handleCustomColorSubmit() {
-  const normalized = normalizeHexColor(customColor.value);
-  if (isValidHexColor(normalized)) {
-    applyColor(normalized);
-  }
-}
-
-const previewColor = computed(() => {
-  if (isCustomColorValid.value) {
-    return normalizeHexColor(customColor.value);
-  }
-  return undefined;
-});
-
-function handleKeyDown(e: KeyboardEvent) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    handleCustomColorSubmit();
-  }
 }
 
 function handleClickOutside(event: MouseEvent) {
@@ -129,12 +86,6 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener("mousedown", handleClickOutside);
 });
-
-function getSwatchStyle(color: string) {
-  return {
-    backgroundColor: color === "inherit" ? "transparent" : color,
-  };
-}
 
 function getTriggerStyle() {
   if (isTextColor.value) {
@@ -165,69 +116,16 @@ function getTriggerStyle() {
     </button>
 
     <div v-if="isOpen" class="vizel-color-picker-dropdown">
-      <!-- Recent colors -->
-      <div v-if="showRecentColors && recentColors.length > 0" class="vizel-color-picker-section">
-        <div class="vizel-color-picker-label">Recent</div>
-        <div class="vizel-color-picker-recent">
-          <button
-            v-for="color in recentColors"
-            :key="color"
-            type="button"
-            :class="['vizel-color-picker-swatch', { 'is-active': currentColor === color }]"
-            :title="color"
-            :style="{ backgroundColor: color }"
-            :data-color="color"
-            @click="handleSwatchClick(color)"
-          />
-        </div>
-      </div>
-
-      <!-- Color palette -->
-      <div class="vizel-color-picker-section">
-        <div class="vizel-color-picker-grid">
-          <button
-            v-for="colorDef in colorPalette"
-            :key="colorDef.color"
-            type="button"
-            :class="['vizel-color-picker-swatch', { 'is-active': currentColor === colorDef.color }]"
-            :title="colorDef.name"
-            :style="getSwatchStyle(colorDef.color)"
-            :data-color="colorDef.color"
-            @click="handleSwatchClick(colorDef.color)"
-          >
-            <span
-              v-if="colorDef.color === 'inherit' || colorDef.color === 'transparent'"
-              class="vizel-color-picker-none"
-            >×</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- HEX input with preview -->
-      <div v-if="allowCustomColor" class="vizel-color-picker-input-row">
-        <span
-          class="vizel-color-picker-preview"
-          :style="{ backgroundColor: previewColor || 'transparent' }"
-        />
-        <input
-          type="text"
-          class="vizel-color-picker-input"
-          placeholder="#000000"
-          :value="customColor"
-          maxlength="7"
-          @input="customColor = ($event.target as HTMLInputElement).value"
-          @keydown="handleKeyDown"
-        >
-        <button
-          type="button"
-          class="vizel-color-picker-apply"
-          :disabled="!isCustomColorValid"
-          title="Apply"
-          @click="handleCustomColorSubmit"
-        >
-          ✓
-        </button>
-      </div>
+      <ColorPicker
+        :colors="colorPalette"
+        :value="currentColor"
+        :label="isTextColor ? 'Text color palette' : 'Highlight color palette'"
+        :allow-custom-color="allowCustomColor"
+        :recent-colors="recentColors"
+        :show-recent-colors="showRecentColors"
+        :none-values="noneValues"
+        @change="handleColorChange"
+      />
     </div>
   </div>
 </template>
