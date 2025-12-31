@@ -1,11 +1,10 @@
+export { createEditorState } from "./createEditorState.svelte.ts";
 export {
   createSlashMenuRenderer,
   type SlashMenuRendererOptions,
 } from "./createSlashMenuRenderer.ts";
 
-export { useEditorState } from "./useEditorState.svelte.ts";
-
 export {
-  type UseVizelEditorOptions,
-  useVizelEditor,
-} from "./useVizelEditor.svelte.ts";
+  type CreateVizelEditorOptions,
+  createVizelEditor,
+} from "./createVizelEditor.svelte.ts";

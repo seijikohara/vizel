@@ -1,11 +1,11 @@
 <script lang="ts">
 import {
   BubbleMenu,
+  createEditorState,
+  createVizelEditor,
   EditorContent,
   getEditorState,
   type JSONContent,
-  useEditorState,
-  useVizelEditor,
 } from "@vizel/svelte";
 import { initialContent } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
@@ -17,7 +17,7 @@ let showMarkdown = $state(false);
 let markdownInput = $state("");
 let showMarkdownInput = $state(false);
 
-const editor = useVizelEditor({
+const editor = createVizelEditor({
   initialContent,
   autofocus: "end",
   features: {
@@ -45,7 +45,7 @@ const editor = useVizelEditor({
 });
 
 // Track editor state for character/word count
-const updateCount = useEditorState(() => editor.current);
+const updateCount = createEditorState(() => editor.current);
 const editorState = $derived.by(() => {
   void updateCount.current;
   return getEditorState(editor.current);

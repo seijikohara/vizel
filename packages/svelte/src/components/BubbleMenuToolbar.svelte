@@ -10,7 +10,7 @@ export interface BubbleMenuToolbarProps {
 </script>
 
 <script lang="ts">
-import { useEditorState } from "../runes/useEditorState.svelte.ts";
+import { createEditorState } from "../runes/createEditorState.svelte.ts";
 import BubbleMenuButton from "./BubbleMenuButton.svelte";
 import BubbleMenuColorPicker from "./BubbleMenuColorPicker.svelte";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.svelte";
@@ -19,7 +19,7 @@ let { editor, class: className }: BubbleMenuToolbarProps = $props();
 let showLinkEditor = $state(false);
 
 // Subscribe to editor state changes to update active states
-const editorState = useEditorState(() => editor);
+const editorState = createEditorState(() => editor);
 
 // Create derived values that depend on editorState.current to trigger re-renders
 const isBoldActive = $derived.by(() => {

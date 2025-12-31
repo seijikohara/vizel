@@ -123,6 +123,8 @@ export {
   type EditorContentProps,
   EditorRoot,
   type EditorRootProps,
+  getEditorContext,
+  getEditorContextSafe,
   SlashMenu,
   SlashMenuEmpty,
   type SlashMenuEmptyProps,
@@ -130,15 +132,13 @@ export {
   type SlashMenuItemProps,
   type SlashMenuProps,
   type SlashMenuRef,
-  useEditorContext,
-  useEditorContextSafe,
 } from "./components/index.ts";
 
 // Runes (Svelte 5 reactive state)
 export {
+  type CreateVizelEditorOptions,
+  createEditorState,
   createSlashMenuRenderer,
+  createVizelEditor,
   type SlashMenuRendererOptions,
-  type UseVizelEditorOptions,
-  useEditorState,
-  useVizelEditor,
 } from "./runes/index.ts";

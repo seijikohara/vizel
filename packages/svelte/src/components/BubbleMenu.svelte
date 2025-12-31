@@ -24,7 +24,7 @@ export interface BubbleMenuProps {
 import { BubbleMenuPlugin } from "@vizel/core";
 import { onDestroy } from "svelte";
 import BubbleMenuToolbar from "./BubbleMenuToolbar.svelte";
-import { useEditorContextSafe } from "./EditorContext.ts";
+import { getEditorContextSafe } from "./EditorContext.ts";
 
 let {
   editor: editorProp,
@@ -36,7 +36,7 @@ let {
   children,
 }: BubbleMenuProps = $props();
 
-const contextEditor = useEditorContextSafe();
+const contextEditor = getEditorContextSafe();
 const editor = $derived(editorProp ?? contextEditor?.());
 
 let menuElement = $state<HTMLElement | null>(null);

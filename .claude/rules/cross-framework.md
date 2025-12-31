@@ -63,8 +63,17 @@ interface BubbleMenuProps {
 | React | Vue | Svelte |
 |-------|-----|--------|
 | `hooks/` | `composables/` | `runes/` |
-| `useVizelEditor` | `useVizelEditor` | `useVizelEditor` |
+| `useVizelEditor` | `useVizelEditor` | `createVizelEditor` |
+| `useEditorState` | `useEditorState` | `createEditorState` |
 | `createSlashMenuRenderer` | `createSlashMenuRenderer` | `createSlashMenuRenderer` |
+
+### Naming Conventions
+
+Each framework follows its idiomatic naming:
+
+- **React**: `use*` prefix for hooks (React convention)
+- **Vue**: `use*` prefix for composables (Vue convention)
+- **Svelte**: `create*` for factory functions, `get*` for context getters (Svelte convention)
 
 ### Options Interface
 
@@ -72,8 +81,9 @@ All must accept identical options (defined in core):
 
 ```typescript
 // @vizel/core - shared type
-interface UseVizelEditorOptions extends VizelEditorOptions {
+interface VizelEditorOptions {
   extensions?: Extensions;
+  // ...
 }
 ```
 
@@ -88,8 +98,8 @@ interface UseVizelEditorOptions extends VizelEditorOptions {
 | Feature | React | Vue | Svelte |
 |---------|-------|-----|--------|
 | Provider | `EditorProvider` | `provide()` | `setContext()` |
-| Consumer | `useEditorContext()` | `inject()` | `getContext()` |
-| Safe access | `useEditorContextSafe()` | `useEditorContextSafe()` | `useEditorContextSafe()` |
+| Consumer | `useEditorContext()` | `useEditorContext()` | `getEditorContext()` |
+| Safe access | `useEditorContextSafe()` | `useEditorContextSafe()` | `getEditorContextSafe()` |
 
 ## Adding New Features
 
