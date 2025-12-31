@@ -37,6 +37,12 @@ export {
 export { getEditorContext, getEditorContextSafe } from "./EditorContext.ts";
 export { default as EditorRoot, type EditorRootProps } from "./EditorRoot.svelte";
 
+// NodeSelector component
+export {
+  default as NodeSelector,
+  type NodeSelectorProps,
+} from "./NodeSelector.svelte";
+
 // SlashMenu components
 export {
   default as SlashMenu,

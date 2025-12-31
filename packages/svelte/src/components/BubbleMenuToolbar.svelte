@@ -14,6 +14,7 @@ import { createEditorState } from "../runes/createEditorState.svelte.ts";
 import BubbleMenuButton from "./BubbleMenuButton.svelte";
 import BubbleMenuColorPicker from "./BubbleMenuColorPicker.svelte";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.svelte";
+import NodeSelector from "./NodeSelector.svelte";
 
 let { editor, class: className }: BubbleMenuToolbarProps = $props();
 let showLinkEditor = $state(false);
@@ -52,6 +53,7 @@ const isLinkActive = $derived.by(() => {
   <BubbleMenuLinkEditor {editor} onclose={() => (showLinkEditor = false)} />
 {:else}
   <div class="vizel-bubble-menu-toolbar {className ?? ''}">
+    <NodeSelector {editor} />
     <BubbleMenuButton
       action="bold"
       isActive={isBoldActive}

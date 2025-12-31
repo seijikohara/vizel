@@ -5,6 +5,7 @@ import { useEditorState } from "../composables/useEditorState.ts";
 import BubbleMenuButton from "./BubbleMenuButton.vue";
 import BubbleMenuColorPicker from "./BubbleMenuColorPicker.vue";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.vue";
+import NodeSelector from "./NodeSelector.vue";
 
 export interface BubbleMenuToolbarProps {
   /** The editor instance */
@@ -54,6 +55,7 @@ const showLinkEditor = ref(false);
     @close="showLinkEditor = false"
   />
   <div v-else :class="['vizel-bubble-menu-toolbar', $props.class]">
+    <NodeSelector :editor="props.editor" />
     <BubbleMenuButton
       action="bold"
       :is-active="isBoldActive"

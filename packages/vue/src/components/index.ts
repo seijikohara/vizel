@@ -31,6 +31,12 @@ export { default as EditorContent, type EditorContentProps } from "./EditorConte
 export { useEditorContext, useEditorContextSafe } from "./EditorContext.ts";
 export { default as EditorRoot, type EditorRootProps } from "./EditorRoot.vue";
 
+// NodeSelector component
+export {
+  default as NodeSelector,
+  type NodeSelectorProps,
+} from "./NodeSelector.vue";
+
 // SlashMenu components
 export {
   default as SlashMenu,
