@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Editor } from "@vizel/core";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 
 export interface BubbleMenuLinkEditorProps {
   /** The editor instance */
@@ -15,12 +15,41 @@ const emit = defineEmits<{
   close: [];
 }>();
 
+const formRef = ref<HTMLFormElement | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
 const currentHref = computed(() => props.editor.getAttributes("link").href || "");
 const url = ref(currentHref.value);
 
+// Handle click outside to close
+function handleClickOutside(event: MouseEvent) {
+  if (formRef.value && !formRef.value.contains(event.target as Node)) {
+    emit("close");
+  }
+}
+
+// Handle Escape key to close
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    emit("close");
+  }
+}
+
 onMounted(() => {
   inputRef.value?.focus();
+
+  // Use setTimeout to avoid immediate trigger from the click that opened the editor
+  setTimeout(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+  }, 0);
+  // Use capture phase so this handler runs before BubbleMenu's handler
+  document.addEventListener("keydown", handleKeyDown, true);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("mousedown", handleClickOutside);
+  document.removeEventListener("keydown", handleKeyDown, true);
 });
 
 function handleSubmit(e: Event) {
@@ -41,6 +70,7 @@ function handleRemove() {
 
 <template>
   <form
+    ref="formRef"
     :class="['vizel-link-editor', $props.class]"
     @submit="handleSubmit"
   >

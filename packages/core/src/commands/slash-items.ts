@@ -1,22 +1,69 @@
 import type { Editor } from "@tiptap/core";
+import type { IFuseOptions } from "fuse.js";
+import Fuse from "fuse.js";
 
-export interface SlashCommandItem {
-  title: string;
-  description: string;
-  icon: string;
-  command: (props: { editor: Editor; range: Range }) => void;
-}
-
-interface Range {
+/**
+ * Range for slash command execution
+ */
+export interface SlashCommandRange {
   from: number;
   to: number;
 }
 
-export const defaultSlashCommands = [
+/**
+ * Extended slash command item with enhanced features
+ */
+export interface SlashCommandItem {
+  /** Display title */
+  title: string;
+  /** Description of the command */
+  description: string;
+  /** Icon to display (text/emoji) */
+  icon: string;
+  /** Command to execute */
+  command: (props: { editor: Editor; range: SlashCommandRange }) => void;
+  /** Keyboard shortcut hint (e.g., "⌘B") */
+  shortcut?: string;
+  /** Additional keywords for fuzzy search */
+  keywords?: string[];
+  /** Group name for categorization */
+  group?: string;
+}
+
+/**
+ * Command group for categorized display
+ */
+export interface SlashCommandGroup {
+  /** Group name */
+  name: string;
+  /** Commands in this group */
+  items: SlashCommandItem[];
+}
+
+/**
+ * Fuzzy search result with match highlighting
+ */
+export interface SlashCommandSearchResult {
+  /** The original item */
+  item: SlashCommandItem;
+  /** Match score (0 = perfect match, higher = worse) */
+  score: number;
+  /** Matched indices for title highlighting */
+  titleMatches?: [number, number][] | undefined;
+}
+
+/**
+ * Default slash commands with groups and keywords
+ */
+export const defaultSlashCommands: SlashCommandItem[] = [
+  // Text group
   {
     title: "Heading 1",
     description: "Large section heading",
     icon: "H1",
+    group: "Text",
+    keywords: ["h1", "title", "header", "big"],
+    shortcut: "⌘⌥1",
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setNode("heading", { level: 1 }).run();
     },
@@ -25,6 +72,9 @@ export const defaultSlashCommands = [
     title: "Heading 2",
     description: "Medium section heading",
     icon: "H2",
+    group: "Text",
+    keywords: ["h2", "subtitle", "header"],
+    shortcut: "⌘⌥2",
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setNode("heading", { level: 2 }).run();
     },
@@ -33,14 +83,21 @@ export const defaultSlashCommands = [
     title: "Heading 3",
     description: "Small section heading",
     icon: "H3",
+    group: "Text",
+    keywords: ["h3", "header", "section"],
+    shortcut: "⌘⌥3",
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setNode("heading", { level: 3 }).run();
     },
   },
+  // Lists group
   {
     title: "Bullet List",
     description: "Create a simple bullet list",
     icon: "•",
+    group: "Lists",
+    keywords: ["ul", "unordered", "bullets", "points"],
+    shortcut: "⌘⇧8",
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleBulletList().run();
     },
@@ -49,6 +106,9 @@ export const defaultSlashCommands = [
     title: "Numbered List",
     description: "Create a numbered list",
     icon: "1.",
+    group: "Lists",
+    keywords: ["ol", "ordered", "numbers", "steps"],
+    shortcut: "⌘⇧7",
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleOrderedList().run();
     },
@@ -57,14 +117,20 @@ export const defaultSlashCommands = [
     title: "Task List",
     description: "Create a task list with checkboxes",
     icon: "☑",
+    group: "Lists",
+    keywords: ["todo", "checkbox", "checklist", "tasks"],
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleTaskList().run();
     },
   },
+  // Blocks group
   {
     title: "Quote",
     description: "Capture a quote",
     icon: '"',
+    group: "Blocks",
+    keywords: ["blockquote", "citation", "cite"],
+    shortcut: "⌘⇧B",
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleBlockquote().run();
     },
@@ -73,6 +139,8 @@ export const defaultSlashCommands = [
     title: "Divider",
     description: "Insert a horizontal divider",
     icon: "―",
+    group: "Blocks",
+    keywords: ["hr", "horizontal", "line", "separator", "break"],
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setHorizontalRule().run();
     },
@@ -81,6 +149,9 @@ export const defaultSlashCommands = [
     title: "Code Block",
     description: "Insert a code snippet",
     icon: "</>",
+    group: "Blocks",
+    keywords: ["pre", "code", "programming", "syntax", "snippet"],
+    shortcut: "⌘⌥C",
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
     },
@@ -88,7 +159,9 @@ export const defaultSlashCommands = [
   {
     title: "Table",
     description: "Insert a table",
-    icon: "T",
+    icon: "⊞",
+    group: "Blocks",
+    keywords: ["grid", "spreadsheet", "columns", "rows"],
     command: ({ editor, range }) => {
       editor
         .chain()
@@ -98,10 +171,13 @@ export const defaultSlashCommands = [
         .run();
     },
   },
+  // Media group
   {
     title: "Image",
     description: "Insert an image from URL",
-    icon: "I",
+    icon: "🖼",
+    group: "Media",
+    keywords: ["picture", "photo", "img", "url"],
     command: ({ editor, range }) => {
       const url = window.prompt("Enter image URL:");
       if (url) {
@@ -112,7 +188,9 @@ export const defaultSlashCommands = [
   {
     title: "Upload Image",
     description: "Upload an image from your device",
-    icon: "U",
+    icon: "📤",
+    group: "Media",
+    keywords: ["picture", "photo", "upload", "file"],
     command: ({ editor, range }) => {
       // Delete the slash command text first
       try {
@@ -138,10 +216,13 @@ export const defaultSlashCommands = [
       input.click();
     },
   },
+  // Advanced group
   {
     title: "Math Equation",
     description: "Insert a mathematical expression",
     icon: "∑",
+    group: "Advanced",
+    keywords: ["latex", "formula", "equation", "katex", "math"],
     command: ({ editor, range }) => {
       // Check if mathematics extension is available
       if (!editor.can().insertMathBlock?.({ latex: "" })) {
@@ -154,6 +235,8 @@ export const defaultSlashCommands = [
     title: "Inline Math",
     description: "Insert an inline math expression",
     icon: "x²",
+    group: "Advanced",
+    keywords: ["latex", "formula", "inline", "katex", "math"],
     command: ({ editor, range }) => {
       // Check if mathematics extension is available
       if (!editor.can().insertMath?.({ latex: "" })) {
@@ -162,8 +245,121 @@ export const defaultSlashCommands = [
       editor.chain().focus().deleteRange(range).insertMath({ latex: "" }).run();
     },
   },
-] satisfies SlashCommandItem[];
+];
 
+/**
+ * Default group order for display
+ */
+export const defaultGroupOrder = ["Text", "Lists", "Blocks", "Media", "Advanced"];
+
+/**
+ * Fuse.js configuration for fuzzy search
+ */
+const fuseOptions: IFuseOptions<SlashCommandItem> = {
+  keys: [
+    { name: "title", weight: 0.4 },
+    { name: "description", weight: 0.2 },
+    { name: "keywords", weight: 0.4 },
+  ],
+  threshold: 0.4,
+  includeScore: true,
+  includeMatches: true,
+  minMatchCharLength: 1,
+};
+
+/**
+ * Filter slash commands using fuzzy search
+ * @param items - The items to filter
+ * @param query - The search query
+ * @returns Filtered and sorted items
+ */
 export function filterSlashCommands(items: SlashCommandItem[], query: string): SlashCommandItem[] {
-  return items.filter((item) => item.title.toLowerCase().includes(query.toLowerCase()));
+  if (!query.trim()) {
+    return items;
+  }
+
+  const fuse = new Fuse(items, fuseOptions);
+  const results = fuse.search(query);
+
+  return results.map((result) => result.item);
+}
+
+/**
+ * Filter slash commands with search result metadata
+ * @param items - The items to filter
+ * @param query - The search query
+ * @returns Search results with score and match info
+ */
+export function searchSlashCommands(
+  items: SlashCommandItem[],
+  query: string
+): SlashCommandSearchResult[] {
+  if (!query.trim()) {
+    return items.map((item) => ({ item, score: 0 }));
+  }
+
+  const fuse = new Fuse(items, fuseOptions);
+  const results = fuse.search(query);
+
+  return results.map((result) => {
+    const titleMatch = result.matches?.find((m) => m.key === "title");
+    const titleMatches = titleMatch?.indices as [number, number][] | undefined;
+
+    return {
+      item: result.item,
+      score: result.score ?? 0,
+      titleMatches,
+    };
+  });
+}
+
+/**
+ * Group slash commands by their group property
+ * @param items - The items to group
+ * @param groupOrder - Optional order for groups
+ * @returns Grouped commands
+ */
+export function groupSlashCommands(
+  items: SlashCommandItem[],
+  groupOrder: string[] = defaultGroupOrder
+): SlashCommandGroup[] {
+  const groupMap = new Map<string, SlashCommandItem[]>();
+
+  // Group items
+  for (const item of items) {
+    const groupName = item.group ?? "Other";
+    const existing = groupMap.get(groupName) ?? [];
+    existing.push(item);
+    groupMap.set(groupName, existing);
+  }
+
+  // Sort groups by order
+  const sortedGroups: SlashCommandGroup[] = [];
+
+  // Add groups in specified order
+  for (const name of groupOrder) {
+    const groupItems = groupMap.get(name);
+    if (groupItems && groupItems.length > 0) {
+      sortedGroups.push({ name, items: groupItems });
+      groupMap.delete(name);
+    }
+  }
+
+  // Add remaining groups (Other, etc.)
+  for (const [name, groupItems] of groupMap) {
+    if (groupItems.length > 0) {
+      sortedGroups.push({ name, items: groupItems });
+    }
+  }
+
+  return sortedGroups;
+}
+
+/**
+ * Flatten grouped commands back to a single array
+ * @param groups - The groups to flatten
+ * @returns Flat array of items
+ */
+export function flattenSlashCommandGroups(groups: SlashCommandGroup[]): SlashCommandItem[] {
+  return groups.flatMap((group) => group.items);
 }

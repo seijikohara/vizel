@@ -192,3 +192,98 @@ export async function testSlashMenuEmptyState(component: Locator, page: Page): P
   const emptyState = slashMenu.locator("[data-vizel-slash-menu-empty]");
   await expect(emptyState).toBeVisible();
 }
+
+/** Verify group headers are displayed when slash menu opens */
+export async function testSlashMenuGroupHeaders(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await page.keyboard.type("/");
+
+  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
+  await expect(slashMenu).toBeVisible();
+
+  // Check for group headers
+  const groupHeaders = slashMenu.locator(".vizel-slash-menu-group-header");
+  await expect(groupHeaders.first()).toBeVisible();
+
+  // Verify at least Text group is visible
+  const textGroup = slashMenu.locator(".vizel-slash-menu-group-header", { hasText: "Text" });
+  await expect(textGroup).toBeVisible();
+}
+
+/** Verify keyboard shortcut hints are displayed */
+export async function testSlashMenuShortcuts(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await page.keyboard.type("/");
+
+  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
+  await expect(slashMenu).toBeVisible();
+
+  // Find an item with a shortcut (Heading 1 has ⌘⌥1)
+  const headingItem = slashMenu.locator(".vizel-slash-menu-item", { hasText: "Heading 1" });
+  await expect(headingItem).toBeVisible();
+
+  // Check for shortcut display within the item
+  const shortcut = headingItem.locator(".vizel-slash-menu-shortcut");
+  await expect(shortcut).toBeVisible();
+}
+
+/** Verify Tab key navigates between groups */
+export async function testSlashMenuTabNavigation(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await page.keyboard.type("/");
+
+  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
+  await expect(slashMenu).toBeVisible();
+
+  // First item should be selected (in Text group)
+  let selectedItem = slashMenu.locator("[data-selected='true']");
+  await expect(selectedItem).toBeVisible();
+  await expect(selectedItem).toContainText("Heading");
+
+  // Press Tab to go to next group (Lists)
+  await page.keyboard.press("Tab");
+
+  // Check that a different item is selected
+  selectedItem = slashMenu.locator("[data-selected='true']");
+  await expect(selectedItem).toBeVisible();
+  await expect(selectedItem).toContainText("Bullet List");
+}
+
+/** Verify fuzzy search works with keywords */
+export async function testSlashMenuKeywordSearch(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  // Search by keyword "checkbox" which should match "Task List"
+  await page.keyboard.type("/checkbox");
+
+  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
+  await expect(slashMenu).toBeVisible();
+
+  // Should find Task List item via keyword match
+  const taskListItem = slashMenu.locator(".vizel-slash-menu-item", {
+    hasText: "Task List",
+  });
+  await expect(taskListItem).toBeVisible();
+}
+
+/** Verify fuzzy search partial matching */
+export async function testSlashMenuFuzzySearch(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  // Partial match for "bullet" - typing "bul" should still find it
+  await page.keyboard.type("/bul");
+
+  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
+  await expect(slashMenu).toBeVisible();
+
+  // Should find Bullet List via fuzzy match
+  const bulletItem = slashMenu.locator(".vizel-slash-menu-item", {
+    hasText: "Bullet List",
+  });
+  await expect(bulletItem).toBeVisible();
+}
