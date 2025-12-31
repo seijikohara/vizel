@@ -12,6 +12,10 @@
   border: 1px solid var(--vizel-border-color);
 }
 
+.vizel-bubble-menu-toolbar {
+  display: flex;
+}
+
 .vizel-bubble-menu-button {
   padding: 0.5rem 0.75rem;
   background: transparent;

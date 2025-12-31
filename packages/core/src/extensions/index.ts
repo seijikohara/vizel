@@ -94,11 +94,18 @@ export {
   type NodeTypeOption,
 } from "./node-types.ts";
 export {
+  defaultGroupOrder,
   defaultSlashCommands,
   filterSlashCommands,
+  flattenSlashCommandGroups,
+  groupSlashCommands,
   SlashCommand,
+  type SlashCommandGroup,
   type SlashCommandItem,
   type SlashCommandOptions,
+  type SlashCommandRange,
+  type SlashCommandSearchResult,
+  searchSlashCommands,
 } from "./slash-command.ts";
 export {
   createTableExtensions,

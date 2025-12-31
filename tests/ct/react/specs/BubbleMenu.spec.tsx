@@ -9,6 +9,10 @@ import {
   testBubbleMenuHighlightToggle,
   testBubbleMenuItalicToggle,
   testBubbleMenuLinkEditor,
+  testBubbleMenuLinkEditorClickOutsideCloses,
+  testBubbleMenuLinkEditorEscapeCloses,
+  testBubbleMenuLinkEditorRemoveLink,
+  testBubbleMenuLinkEditorSetLink,
   testBubbleMenuStrikeToggle,
   testBubbleMenuTextColorReset,
   testBubbleMenuTextColorToggle,
@@ -68,6 +72,26 @@ test.describe("BubbleMenu - React", () => {
   test("opens link editor", async ({ mount, page }) => {
     const component = await mount(<EditorFixture />);
     await testBubbleMenuLinkEditor(component, page);
+  });
+
+  test("link editor closes with Escape", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testBubbleMenuLinkEditorEscapeCloses(component, page);
+  });
+
+  test("link editor closes on click outside", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testBubbleMenuLinkEditorClickOutsideCloses(component, page);
+  });
+
+  test("link editor sets link", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testBubbleMenuLinkEditorSetLink(component, page);
+  });
+
+  test("link editor removes link", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testBubbleMenuLinkEditorRemoveLink(component, page);
   });
 
   test("shows active state for formatted text", async ({ mount, page }) => {

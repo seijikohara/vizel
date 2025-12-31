@@ -65,6 +65,7 @@
     "@tiptap/markdown": "^3.14.0",
     "@tiptap/pm": "^3.14.0",
     "@tiptap/suggestion": "^3.14.0",
+    "fuse.js": "^7.1.0",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.27",
     "lowlight": "^3.3.0"

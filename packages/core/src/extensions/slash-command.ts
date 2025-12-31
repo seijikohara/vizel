@@ -1,7 +1,17 @@
 import { Extension } from "@tiptap/core";
 import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
-import type { SlashCommandItem } from "../commands/slash-items.ts";
-import { defaultSlashCommands, filterSlashCommands } from "../commands/slash-items.ts";
+import {
+  defaultGroupOrder,
+  defaultSlashCommands,
+  filterSlashCommands,
+  flattenSlashCommandGroups,
+  groupSlashCommands,
+  type SlashCommandGroup,
+  type SlashCommandItem,
+  type SlashCommandRange,
+  type SlashCommandSearchResult,
+  searchSlashCommands,
+} from "../commands/slash-items.ts";
 
 export interface SlashCommandOptions {
   /** Custom slash command items (defaults to heading, list, quote, code) */
@@ -47,4 +57,15 @@ export const SlashCommand = Extension.create<SlashCommandOptions>({
   },
 });
 
-export { defaultSlashCommands, filterSlashCommands, type SlashCommandItem };
+export {
+  defaultGroupOrder,
+  defaultSlashCommands,
+  filterSlashCommands,
+  flattenSlashCommandGroups,
+  groupSlashCommands,
+  searchSlashCommands,
+  type SlashCommandGroup,
+  type SlashCommandItem,
+  type SlashCommandRange,
+  type SlashCommandSearchResult,
+};

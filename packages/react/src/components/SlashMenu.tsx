@@ -1,15 +1,16 @@
-import type { SlashCommandItem } from "@vizel/core";
+import { groupSlashCommands, type SlashCommandGroup, type SlashCommandItem } from "@vizel/core";
 import {
   forwardRef,
   type ReactNode,
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { SlashMenuEmpty } from "./SlashMenuEmpty.tsx";
-import { SlashMenuItem } from "./SlashMenuItem.tsx";
+import { SlashMenuItem, type SlashMenuItemProps } from "./SlashMenuItem.tsx";
 
 export interface SlashMenuRef {
   onKeyDown: (props: { event: KeyboardEvent }) => boolean;
@@ -20,6 +21,8 @@ export interface SlashMenuProps {
   command: (item: SlashCommandItem) => void;
   /** Custom class name for the menu container */
   className?: string;
+  /** Whether to show items grouped by category (default: true when not searching) */
+  showGroups?: boolean;
   /** Custom render function for items */
   renderItem?: (props: {
     item: SlashCommandItem;
@@ -28,12 +31,13 @@ export interface SlashMenuProps {
   }) => ReactNode;
   /** Custom empty state component */
   renderEmpty?: () => ReactNode;
+  /** Custom group order */
+  groupOrder?: string[];
 }
 
 /**
  * Slash command menu component for displaying command suggestions.
- * This is used internally by the SlashCommand extension and should be
- * rendered via the suggestion plugin's render function.
+ * Supports grouping, keyboard navigation, and fuzzy search highlighting.
  *
  * @example
  * ```tsx
@@ -47,26 +51,24 @@ export interface SlashMenuProps {
  *     }),
  *   ],
  * });
- *
- * // Custom rendering with sub-components
- * <SlashMenu
- *   items={items}
- *   command={command}
- *   renderItem={({ item, isSelected, onClick }) => (
- *     <SlashMenuItem
- *       item={item}
- *       isSelected={isSelected}
- *       onClick={onClick}
- *     />
- *   )}
- *   renderEmpty={() => <SlashMenuEmpty>No commands</SlashMenuEmpty>}
- * />
  * ```
  */
 export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
-  ({ items, command, className, renderItem, renderEmpty }, ref) => {
+  ({ items, command, className, showGroups = true, renderItem, renderEmpty, groupOrder }, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+    // Group items when showGroups is true and there are enough items
+    const groups = useMemo<SlashCommandGroup[]>(() => {
+      if (!showGroups || items.length <= 5) {
+        // Don't group if explicitly disabled or few items (likely search results)
+        return [{ name: "", items }];
+      }
+      return groupSlashCommands(items, groupOrder);
+    }, [items, showGroups, groupOrder]);
+
+    // Flatten for navigation
+    const flatItems = useMemo(() => groups.flatMap((g) => g.items), [groups]);
 
     // Scroll selected item into view when selection changes
     useEffect(() => {
@@ -78,29 +80,59 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
 
     const selectItem = useCallback(
       (index: number) => {
-        const item = items[index];
+        const item = flatItems[index];
         if (item) {
           command(item);
         }
       },
-      [items, command]
+      [flatItems, command]
     );
 
     const upHandler = useCallback(() => {
-      setSelectedIndex((index) => (index + items.length - 1) % items.length);
-    }, [items.length]);
+      setSelectedIndex((index) => (index + flatItems.length - 1) % flatItems.length);
+    }, [flatItems.length]);
 
     const downHandler = useCallback(() => {
-      setSelectedIndex((index) => (index + 1) % items.length);
-    }, [items.length]);
+      setSelectedIndex((index) => (index + 1) % flatItems.length);
+    }, [flatItems.length]);
 
     const enterHandler = useCallback(() => {
       selectItem(selectedIndex);
     }, [selectItem, selectedIndex]);
 
+    // Navigate to next group with Tab
+    const tabHandler = useCallback(() => {
+      if (groups.length <= 1) return;
+
+      let currentGroupIndex = 0;
+      let itemCount = 0;
+      for (let i = 0; i < groups.length; i++) {
+        const group = groups[i];
+        if (!group) continue;
+        if (selectedIndex < itemCount + group.items.length) {
+          currentGroupIndex = i;
+          break;
+        }
+        itemCount += group.items.length;
+      }
+
+      // Move to next group
+      const nextGroupIndex = (currentGroupIndex + 1) % groups.length;
+      let nextIndex = 0;
+      for (let i = 0; i < nextGroupIndex; i++) {
+        const group = groups[i];
+        if (group) {
+          nextIndex += group.items.length;
+        }
+      }
+      setSelectedIndex(nextIndex);
+    }, [groups, selectedIndex]);
+
+    // Reset selection when items change (tracked via groups length)
+    // biome-ignore lint/correctness/useExhaustiveDependencies: intentional dependency on groups to reset selection
     useEffect(() => {
       setSelectedIndex(0);
-    }, []);
+    }, [groups]);
 
     useImperativeHandle(ref, () => ({
       onKeyDown: ({ event }) => {
@@ -119,11 +151,17 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
           return true;
         }
 
+        if (event.key === "Tab") {
+          event.preventDefault();
+          tabHandler();
+          return true;
+        }
+
         return false;
       },
     }));
 
-    if (items.length === 0) {
+    if (flatItems.length === 0) {
       return (
         <div className={`vizel-slash-menu ${className ?? ""}`} data-vizel-slash-menu="">
           {renderEmpty?.() ?? <SlashMenuEmpty />}
@@ -131,13 +169,30 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
       );
     }
 
+    // Render with groups
+    let globalIndex = 0;
+
     return (
       <div className={`vizel-slash-menu ${className ?? ""}`} data-vizel-slash-menu="">
-        {items.map((item, index) => {
-          const isSelected = index === selectedIndex;
-          const onClick = () => selectItem(index);
+        {groups.map((group) => {
+          const groupItems = group.items.map((item) => {
+            const index = globalIndex++;
+            const isSelected = index === selectedIndex;
+            const onClick = () => selectItem(index);
 
-          if (renderItem) {
+            if (renderItem) {
+              return (
+                <div
+                  key={item.title}
+                  ref={(el) => {
+                    itemRefs.current[index] = el;
+                  }}
+                >
+                  {renderItem({ item, isSelected, onClick })}
+                </div>
+              );
+            }
+
             return (
               <div
                 key={item.title}
@@ -145,19 +200,20 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
                   itemRefs.current[index] = el;
                 }}
               >
-                {renderItem({ item, isSelected, onClick })}
+                <SlashMenuItem item={item} isSelected={isSelected} onClick={onClick} />
               </div>
             );
+          });
+
+          // If no group name, just render items
+          if (!group.name) {
+            return groupItems;
           }
 
           return (
-            <div
-              key={item.title}
-              ref={(el) => {
-                itemRefs.current[index] = el;
-              }}
-            >
-              <SlashMenuItem item={item} isSelected={isSelected} onClick={onClick} />
+            <div key={group.name} className="vizel-slash-menu-group" data-vizel-slash-menu-group>
+              <div className="vizel-slash-menu-group-header">{group.name}</div>
+              {groupItems}
             </div>
           );
         })}
@@ -167,3 +223,6 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
 );
 
 SlashMenu.displayName = "SlashMenu";
+
+// Re-export SlashMenuItem props for consumers
+export type { SlashMenuItemProps };

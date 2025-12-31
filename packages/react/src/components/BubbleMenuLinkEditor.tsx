@@ -1,5 +1,5 @@
 import type { Editor } from "@vizel/core";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface BubbleMenuLinkEditorProps {
   editor: Editor;
@@ -30,6 +30,44 @@ export interface BubbleMenuLinkEditorProps {
 export function BubbleMenuLinkEditor({ editor, onClose, className }: BubbleMenuLinkEditorProps) {
   const currentHref = editor.getAttributes("link").href || "";
   const [url, setUrl] = useState(currentHref);
+  const formRef = useRef<HTMLFormElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus input on mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  // Handle click outside to close
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (formRef.current && !formRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    }
+
+    // Handle Escape key to close
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        onClose();
+      }
+    }
+
+    // Use setTimeout to avoid immediate trigger from the click that opened the editor
+    const timeoutId = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 0);
+    // Use capture phase so this handler runs before BubbleMenu's handler
+    document.addEventListener("keydown", handleKeyDown, true);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [onClose]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -50,8 +88,9 @@ export function BubbleMenuLinkEditor({ editor, onClose, className }: BubbleMenuL
   }, [editor, onClose]);
 
   return (
-    <form onSubmit={handleSubmit} className={`vizel-link-editor ${className ?? ""}`}>
+    <form ref={formRef} onSubmit={handleSubmit} className={`vizel-link-editor ${className ?? ""}`}>
       <input
+        ref={inputRef}
         type="url"
         value={url}
         onChange={(e) => setUrl(e.target.value)}

@@ -136,6 +136,114 @@ export async function testBubbleMenuLinkEditor(component: Locator, page: Page): 
   await expect(linkEditor).toBeVisible();
 }
 
+/** Verify link editor closes when Escape key is pressed */
+export async function testBubbleMenuLinkEditorEscapeCloses(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const linkButton = bubbleMenu.locator('[data-action="link"]');
+
+  await linkButton.click();
+
+  const linkEditor = component.locator(".vizel-link-editor");
+  await expect(linkEditor).toBeVisible();
+
+  // Press Escape to close link editor
+  await page.keyboard.press("Escape");
+
+  // Link editor should close, toolbar should show
+  await expect(linkEditor).not.toBeVisible();
+  await expect(bubbleMenu.locator(".vizel-bubble-menu-toolbar")).toBeVisible();
+}
+
+/** Verify link editor closes when clicking outside */
+export async function testBubbleMenuLinkEditorClickOutsideCloses(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const linkButton = bubbleMenu.locator('[data-action="link"]');
+
+  await linkButton.click();
+
+  const linkEditor = component.locator(".vizel-link-editor");
+  await expect(linkEditor).toBeVisible();
+
+  // Click outside the link editor (on the editor area)
+  const editor = component.locator(".vizel-editor");
+  await editor.click({ position: { x: 10, y: 100 } });
+
+  // Link editor should close
+  await expect(linkEditor).not.toBeVisible();
+}
+
+/** Verify link can be set via link editor */
+export async function testBubbleMenuLinkEditorSetLink(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const linkButton = bubbleMenu.locator('[data-action="link"]');
+
+  await linkButton.click();
+
+  const linkEditor = component.locator(".vizel-link-editor");
+  await expect(linkEditor).toBeVisible();
+
+  // Enter URL and submit
+  const urlInput = linkEditor.locator(".vizel-link-input");
+  await urlInput.fill("https://example.com");
+  await linkEditor.locator('button[type="submit"]').click();
+
+  // Link editor should close
+  await expect(linkEditor).not.toBeVisible();
+
+  // Verify link was created
+  const editor = component.locator(".vizel-editor");
+  const link = editor.locator("a");
+  await expect(link).toHaveAttribute("href", "https://example.com");
+}
+
+/** Verify link can be removed via link editor */
+export async function testBubbleMenuLinkEditorRemoveLink(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  await selectTextInEditor(component, page);
+
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  const linkButton = bubbleMenu.locator('[data-action="link"]');
+
+  // First, set a link
+  await linkButton.click();
+  const linkEditor = component.locator(".vizel-link-editor");
+  const urlInput = linkEditor.locator(".vizel-link-input");
+  await urlInput.fill("https://example.com");
+  await linkEditor.locator('button[type="submit"]').click();
+
+  // Re-select text and open link editor
+  await page.keyboard.press("ControlOrMeta+a");
+  await expect(bubbleMenu).toBeVisible();
+  await linkButton.click();
+  await expect(linkEditor).toBeVisible();
+
+  // Click remove button
+  const removeButton = linkEditor.locator(".vizel-link-remove");
+  await removeButton.click();
+
+  // Link should be removed
+  const editor = component.locator(".vizel-editor");
+  const link = editor.locator("a");
+  await expect(link).toHaveCount(0);
+}
+
 /** Verify active state is shown for formatted text */
 export async function testBubbleMenuActiveState(component: Locator, page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");

@@ -8,6 +8,8 @@ export interface SlashMenuItemProps {
   isSelected?: boolean;
   /** Custom class name */
   class?: string;
+  /** Match indices for highlighting (from fuzzy search) */
+  titleMatches?: [number, number][];
 }
 
 defineProps<SlashMenuItemProps>();
@@ -15,6 +17,38 @@ defineProps<SlashMenuItemProps>();
 const emit = defineEmits<{
   click: [];
 }>();
+
+/**
+ * Highlight text based on match indices from fuzzy search
+ */
+function highlightMatches(
+  text: string,
+  matches?: [number, number][]
+): { text: string; highlight: boolean }[] {
+  if (!matches || matches.length === 0) {
+    return [{ text, highlight: false }];
+  }
+
+  const result: { text: string; highlight: boolean }[] = [];
+  let lastIndex = 0;
+
+  for (const [start, end] of matches) {
+    // Add text before match
+    if (start > lastIndex) {
+      result.push({ text: text.slice(lastIndex, start), highlight: false });
+    }
+    // Add highlighted match
+    result.push({ text: text.slice(start, end + 1), highlight: true });
+    lastIndex = end + 1;
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    result.push({ text: text.slice(lastIndex), highlight: false });
+  }
+
+  return result;
+}
 </script>
 
 <template>
@@ -30,8 +64,14 @@ const emit = defineEmits<{
   >
     <span class="vizel-slash-menu-icon">{{ item.icon }}</span>
     <div class="vizel-slash-menu-text">
-      <span class="vizel-slash-menu-title">{{ item.title }}</span>
+      <span class="vizel-slash-menu-title">
+        <template v-for="(part, idx) in highlightMatches(item.title, titleMatches)" :key="idx">
+          <mark v-if="part.highlight" class="vizel-slash-menu-highlight">{{ part.text }}</mark>
+          <template v-else>{{ part.text }}</template>
+        </template>
+      </span>
       <span class="vizel-slash-menu-description">{{ item.description }}</span>
     </div>
+    <span v-if="item.shortcut" class="vizel-slash-menu-shortcut">{{ item.shortcut }}</span>
   </button>
 </template>

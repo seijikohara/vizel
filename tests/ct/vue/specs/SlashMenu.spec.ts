@@ -7,9 +7,14 @@ import {
   testSlashMenuEmptyState,
   testSlashMenuEscape,
   testSlashMenuFiltering,
+  testSlashMenuFuzzySearch,
+  testSlashMenuGroupHeaders,
   testSlashMenuHeading,
   testSlashMenuKeyboardNavigation,
+  testSlashMenuKeywordSearch,
   testSlashMenuOrderedList,
+  testSlashMenuShortcuts,
+  testSlashMenuTabNavigation,
   testSlashMenuTaskList,
 } from "../../scenarios/slash-menu.scenario";
 import EditorFixture from "./EditorFixture.vue";
@@ -68,5 +73,30 @@ test.describe("SlashMenu - Vue", () => {
   test("shows empty state when no items match", async ({ mount, page }) => {
     const component = await mount(EditorFixture);
     await testSlashMenuEmptyState(component, page);
+  });
+
+  test("displays group headers", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testSlashMenuGroupHeaders(component, page);
+  });
+
+  test("displays keyboard shortcuts", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testSlashMenuShortcuts(component, page);
+  });
+
+  test("Tab key navigates between groups", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testSlashMenuTabNavigation(component, page);
+  });
+
+  test("fuzzy search by keywords", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testSlashMenuKeywordSearch(component, page);
+  });
+
+  test("fuzzy search partial matching", async ({ mount, page }) => {
+    const component = await mount(EditorFixture);
+    await testSlashMenuFuzzySearch(component, page);
   });
 });
