@@ -26,6 +26,7 @@ export default defineConfig({
         "@tiptap/extension-code",
         "@tiptap/extension-code-block",
         "@tiptap/extension-document",
+        "@tiptap/extension-drag-handle",
         "@tiptap/extension-dropcursor",
         "@tiptap/extension-gapcursor",
         "@tiptap/extension-hard-break",

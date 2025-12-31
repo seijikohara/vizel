@@ -1,6 +1,7 @@
 import type { Editor, JSONContent } from "@tiptap/core";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelCodeBlockOptions } from "./extensions/code-block-lowlight.ts";
+import type { VizelDragHandleOptions } from "./extensions/drag-handle.ts";
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
 import type { SlashCommandItem } from "./extensions/slash-command.ts";
@@ -52,6 +53,8 @@ export interface VizelFeatureOptions {
   codeBlock?: VizelCodeBlockOptions | boolean;
   /** Mathematics (LaTeX) support with KaTeX rendering */
   mathematics?: VizelMathematicsOptions | boolean;
+  /** Drag handle for block reordering (includes Alt+Up/Down keyboard shortcuts) */
+  dragHandle?: VizelDragHandleOptions | boolean;
 }
 
 /**

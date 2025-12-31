@@ -1,0 +1,118 @@
+/**
+ * Drag Handle Styles
+ *
+ * Styles for the block drag handle that appears on hover.
+ */
+
+.vizel-drag-handle {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.5rem;
+  padding: 0.125rem;
+  cursor: grab;
+  border-radius: 0.25rem;
+  background-color: transparent;
+  color: var(--vizel-text-muted, #9ca3af);
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+  user-select: none;
+  touch-action: none;
+}
+
+.vizel-drag-handle:hover {
+  background-color: var(--vizel-hover-bg, #f3f4f6);
+  color: var(--vizel-text-color, #374151);
+}
+
+.vizel-drag-handle:active {
+  cursor: grabbing;
+  background-color: var(--vizel-active-bg, #e5e7eb);
+}
+
+.vizel-drag-handle:focus {
+  outline: none;
+}
+
+.vizel-drag-handle:focus-visible {
+  outline: 2px solid var(--vizel-primary-color, #3b82f6);
+  outline-offset: 1px;
+}
+
+/* Grip icon container */
+.vizel-drag-handle-grip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.vizel-drag-handle-grip svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Show drag handle on hover */
+.ProseMirror:hover .vizel-drag-handle,
+.vizel-drag-handle.is-active {
+  opacity: 1;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .vizel-drag-handle {
+    color: var(--vizel-text-muted-dark, #6b7280);
+  }
+
+  .vizel-drag-handle:hover {
+    background-color: var(--vizel-hover-bg-dark, #374151);
+    color: var(--vizel-text-color-dark, #e5e7eb);
+  }
+
+  .vizel-drag-handle:active {
+    background-color: var(--vizel-active-bg-dark, #4b5563);
+  }
+}
+
+/* Dragging state */
+.vizel-drag-handle[data-dragging="true"] {
+  cursor: grabbing;
+  opacity: 1;
+}
+
+/* Drop indicator styles (for visual feedback during drag) */
+.vizel-drop-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--vizel-primary-color, #3b82f6);
+  pointer-events: none;
+  z-index: 50;
+}
+
+.vizel-drop-indicator::before,
+.vizel-drop-indicator::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--vizel-primary-color, #3b82f6);
+  transform: translateY(-50%);
+}
+
+.vizel-drop-indicator::before {
+  left: -3px;
+}
+
+.vizel-drop-indicator::after {
+  right: -3px;
+}
