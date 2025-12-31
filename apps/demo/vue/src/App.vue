@@ -4,6 +4,8 @@ import {
   EditorContent,
   getEditorState,
   type JSONContent,
+  SaveIndicator,
+  useAutoSave,
   useEditorState,
   useVizelEditor,
 } from "@vizel/vue";
@@ -50,6 +52,13 @@ const updateCount = useEditorState(() => editor.value);
 const editorState = computed(() => {
   void updateCount.value;
   return getEditorState(editor.value);
+});
+
+// Auto-save functionality
+const { status, lastSaved } = useAutoSave(() => editor.value, {
+  debounceMs: 2000,
+  storage: "localStorage",
+  key: "vizel-demo-vue",
 });
 
 function handleImportMarkdown() {
@@ -117,6 +126,10 @@ function handleImportMarkdown() {
           <span class="feature-icon">∑</span>
           <span>Math (LaTeX)</span>
         </div>
+        <div class="feature-tag">
+          <span class="feature-icon">💾</span>
+          <span>Auto-save</span>
+        </div>
       </div>
 
       <div class="editor-container">
@@ -125,6 +138,8 @@ function handleImportMarkdown() {
           <BubbleMenu v-if="editor" :editor="editor" />
         </div>
         <div class="status-bar">
+          <SaveIndicator :status="status" :lastSaved="lastSaved" />
+          <span class="status-divider">·</span>
           <span class="status-item">{{ editorState.characterCount }} characters</span>
           <span class="status-divider">·</span>
           <span class="status-item">{{ editorState.wordCount }} words</span>

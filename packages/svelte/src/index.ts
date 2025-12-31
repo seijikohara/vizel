@@ -5,16 +5,20 @@
  */
 
 // Re-export core types for convenience
+// Re-export auto-save types from core
 export type {
+  AutoSaveOptions,
+  AutoSaveState,
   JSONContent,
+  SaveStatus,
   SlashCommandItem,
   SlashCommandOptions,
+  StorageBackend,
   VizelEditorOptions,
   VizelEditorState,
   VizelLinkOptions,
   VizelTableOptions,
 } from "@vizel/core";
-
 // Re-export core extensions and utilities
 export {
   // Text color and highlight
@@ -49,6 +53,7 @@ export {
   Editor,
   filterSlashCommands,
   findLanguage,
+  formatRelativeTime,
   Gapcursor,
   getAllLanguageIds,
   getEditorState,
@@ -104,7 +109,6 @@ export {
   type VizelTextColorOptions,
   validateImageFile,
 } from "@vizel/core";
-
 // Components
 export {
   BubbleMenu,
@@ -127,6 +131,8 @@ export {
   type EditorRootProps,
   getEditorContext,
   getEditorContextSafe,
+  SaveIndicator,
+  type SaveIndicatorProps,
   SlashMenu,
   SlashMenuEmpty,
   type SlashMenuEmptyProps,
@@ -135,10 +141,11 @@ export {
   type SlashMenuProps,
   type SlashMenuRef,
 } from "./components/index.ts";
-
 // Runes (Svelte 5 reactive state)
 export {
+  type CreateAutoSaveResult,
   type CreateVizelEditorOptions,
+  createAutoSave,
   createEditorState,
   createSlashMenuRenderer,
   createVizelEditor,

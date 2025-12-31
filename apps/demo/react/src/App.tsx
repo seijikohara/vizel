@@ -3,6 +3,8 @@ import {
   EditorContent,
   getEditorState,
   type JSONContent,
+  SaveIndicator,
+  useAutoSave,
   useEditorState,
   useVizelEditor,
 } from "@vizel/react";
@@ -61,6 +63,13 @@ export function App() {
   // Track editor state for character/word count
   useEditorState(editor);
   const editorState = getEditorState(editor);
+
+  // Auto-save functionality
+  const { status, lastSaved } = useAutoSave(editor, {
+    debounceMs: 2000,
+    storage: "localStorage",
+    key: "vizel-demo-react",
+  });
 
   const handleImportMarkdown = () => {
     if (editor && markdownInput.trim()) {
@@ -123,6 +132,10 @@ export function App() {
             <span className="feature-icon">∑</span>
             <span>Math (LaTeX)</span>
           </div>
+          <div className="feature-tag">
+            <span className="feature-icon">💾</span>
+            <span>Auto-save</span>
+          </div>
         </div>
 
         <div className="editor-container">
@@ -131,6 +144,8 @@ export function App() {
             {editor && <BubbleMenu editor={editor} />}
           </div>
           <div className="status-bar">
+            <SaveIndicator status={status} lastSaved={lastSaved} />
+            <span className="status-divider">·</span>
             <span className="status-item">{editorState.characterCount} characters</span>
             <span className="status-divider">·</span>
             <span className="status-item">{editorState.wordCount} words</span>

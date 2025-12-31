@@ -1,11 +1,13 @@
 <script lang="ts">
 import {
   BubbleMenu,
+  createAutoSave,
   createEditorState,
   createVizelEditor,
   EditorContent,
   getEditorState,
   type JSONContent,
+  SaveIndicator,
 } from "@vizel/svelte";
 import { initialContent } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
@@ -49,6 +51,13 @@ const updateCount = createEditorState(() => editor.current);
 const editorState = $derived.by(() => {
   void updateCount.current;
   return getEditorState(editor.current);
+});
+
+// Auto-save functionality
+const autoSave = createAutoSave(() => editor.current, {
+  debounceMs: 2000,
+  storage: "localStorage",
+  key: "vizel-demo-svelte",
 });
 
 function handleImportMarkdown() {
@@ -115,6 +124,10 @@ function handleImportMarkdown() {
         <span class="feature-icon">∑</span>
         <span>Math (LaTeX)</span>
       </div>
+      <div class="feature-tag">
+        <span class="feature-icon">💾</span>
+        <span>Auto-save</span>
+      </div>
     </div>
 
     <div class="editor-container">
@@ -125,6 +138,8 @@ function handleImportMarkdown() {
         {/if}
       </div>
       <div class="status-bar">
+        <SaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
+        <span class="status-divider">·</span>
         <span class="status-item">{editorState.characterCount} characters</span>
         <span class="status-divider">·</span>
         <span class="status-item">{editorState.wordCount} words</span>

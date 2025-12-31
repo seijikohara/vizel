@@ -43,6 +43,12 @@ export {
   type NodeSelectorProps,
 } from "./NodeSelector.svelte";
 
+// SaveIndicator component
+export {
+  default as SaveIndicator,
+  type SaveIndicatorProps,
+} from "./SaveIndicator.svelte";
+
 // SlashMenu components
 export {
   default as SlashMenu,

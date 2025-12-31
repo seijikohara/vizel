@@ -5,16 +5,20 @@
  */
 
 // Re-export core types for convenience
+// Re-export auto-save types from core
 export type {
+  AutoSaveOptions,
+  AutoSaveState,
   JSONContent,
+  SaveStatus,
   SlashCommandItem,
   SlashCommandOptions,
+  StorageBackend,
   VizelEditorOptions,
   VizelEditorState,
   VizelLinkOptions,
   VizelTableOptions,
 } from "@vizel/core";
-
 // Re-export core extensions and utilities
 export {
   // Text color and highlight
@@ -49,6 +53,7 @@ export {
   Editor,
   filterSlashCommands,
   findLanguage,
+  formatRelativeTime,
   Gapcursor,
   getAllLanguageIds,
   getEditorState,
@@ -104,7 +109,6 @@ export {
   type VizelTextColorOptions,
   validateImageFile,
 } from "@vizel/core";
-
 // Components
 export {
   BubbleMenu,
@@ -125,6 +129,8 @@ export {
   type EditorContentProps,
   EditorRoot,
   type EditorRootProps,
+  SaveIndicator,
+  type SaveIndicatorProps,
   SlashMenu,
   SlashMenuEmpty,
   type SlashMenuEmptyProps,
@@ -135,12 +141,13 @@ export {
   useEditorContext,
   useEditorContextSafe,
 } from "./components/index.ts";
-
 // Hooks
 export {
   createSlashMenuRenderer,
   type SlashMenuRendererOptions,
+  type UseAutoSaveResult,
   type UseVizelEditorOptions,
+  useAutoSave,
   useEditorState,
   useVizelEditor,
 } from "./hooks/index.ts";

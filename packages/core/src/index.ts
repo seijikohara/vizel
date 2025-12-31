@@ -11,7 +11,18 @@ export {
   BubbleMenuPlugin,
   default as BubbleMenuExtension,
 } from "@tiptap/extension-bubble-menu";
-
+// Auto-save
+export {
+  type AutoSaveOptions,
+  type AutoSaveState,
+  createAutoSaveHandlers,
+  DEFAULT_AUTO_SAVE_OPTIONS,
+  debounce,
+  formatRelativeTime,
+  getStorageBackend,
+  type SaveStatus,
+  type StorageBackend,
+} from "./auto-save.ts";
 // Extensions
 export {
   addRecentColor,
@@ -112,7 +123,6 @@ export {
   type VizelTextColorOptions,
   validateImageFile,
 } from "./extensions/index.ts";
-
 // Types
 export type {
   Extensions,
@@ -123,7 +133,6 @@ export type {
   VizelImageFeatureOptions,
   VizelSlashCommandOptions,
 } from "./types.ts";
-
 // Utilities
 export {
   type CreateUploadEventHandlerOptions,
