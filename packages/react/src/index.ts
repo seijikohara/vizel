@@ -10,10 +10,14 @@ export type {
   AutoSaveOptions,
   AutoSaveState,
   JSONContent,
+  ResolvedTheme,
   SaveStatus,
   SlashCommandItem,
   SlashCommandOptions,
   StorageBackend,
+  Theme,
+  ThemeProviderOptions,
+  ThemeState,
   VizelEditorOptions,
   VizelEditorState,
   VizelLinkOptions,
@@ -138,8 +142,12 @@ export {
   type SlashMenuItemProps,
   type SlashMenuProps,
   type SlashMenuRef,
+  ThemeProvider,
+  type ThemeProviderProps,
   useEditorContext,
   useEditorContextSafe,
+  useTheme,
+  useThemeSafe,
 } from "./components/index.ts";
 // Hooks
 export {

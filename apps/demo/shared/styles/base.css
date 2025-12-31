@@ -291,3 +291,119 @@ body {
 .import-button:active {
   transform: scale(0.98);
 }
+
+/* Theme Toggle Button */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  margin-left: auto;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    transform 0.1s;
+}
+
+.theme-toggle:hover {
+  background: #f3f4f6;
+  border-color: var(--framework-color);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Dark Mode Styles */
+[data-vizel-theme="dark"] body {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #f3f4f6;
+}
+
+[data-vizel-theme="dark"] .header h1 {
+  background: linear-gradient(135deg, #f3f4f6 0%, #9ca3af 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-vizel-theme="dark"] .header-description {
+  color: #9ca3af;
+}
+
+[data-vizel-theme="dark"] .feature-tag {
+  background: #1f2937;
+  border-color: #374151;
+  color: #d1d5db;
+}
+
+[data-vizel-theme="dark"] .feature-tag:hover {
+  background: rgba(var(--framework-color-rgb, 97, 218, 251), 0.1);
+}
+
+[data-vizel-theme="dark"] .editor-container {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+[data-vizel-theme="dark"] .status-bar {
+  background: #111827;
+  border-top-color: #374151;
+  color: #9ca3af;
+}
+
+[data-vizel-theme="dark"] .status-divider {
+  color: #4b5563;
+}
+
+[data-vizel-theme="dark"] .output-section {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+[data-vizel-theme="dark"] .output-toggle {
+  background: #111827;
+  color: #d1d5db;
+}
+
+[data-vizel-theme="dark"] .output-toggle:hover {
+  background: #1f2937;
+}
+
+[data-vizel-theme="dark"] .output-content {
+  background: #0f172a;
+  border-top-color: #374151;
+}
+
+[data-vizel-theme="dark"] .markdown-input-container {
+  border-top-color: #374151;
+}
+
+[data-vizel-theme="dark"] .markdown-input {
+  background: #111827;
+  border-color: #374151;
+  color: #f3f4f6;
+}
+
+[data-vizel-theme="dark"] .markdown-input::placeholder {
+  color: #6b7280;
+}
+
+[data-vizel-theme="dark"] .footer {
+  color: #9ca3af;
+}
+
+[data-vizel-theme="dark"] .theme-toggle {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+[data-vizel-theme="dark"] .theme-toggle:hover {
+  background: #374151;
+}

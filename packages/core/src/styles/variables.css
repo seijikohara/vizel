@@ -4,6 +4,10 @@
  * These variables provide theming capabilities for Vizel components.
  * Override these in your application's CSS to customize the appearance.
  *
+ * Theme is controlled via the data-vizel-theme attribute:
+ * - data-vizel-theme="light" - Light theme
+ * - data-vizel-theme="dark" - Dark theme
+ *
  * @example
  * ```css
  * :root {
@@ -13,7 +17,8 @@
  * ```
  */
 
-:root {
+:root,
+[data-vizel-theme="light"] {
   /* Primary theme colors - override these for framework-specific theming */
   --vizel-primary-color: #3b82f6;
   --vizel-primary-color-dark: #1d4ed8;
@@ -33,7 +38,6 @@
   --vizel-bg-color: #ffffff;
   --vizel-bg-color-secondary: #f9fafb;
   --vizel-bg-color-tertiary: #f3f4f6;
-  --vizel-bg-color-dark: #1f2937;
 
   /* Shadow */
   --vizel-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -59,7 +63,10 @@
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
   --vizel-font-family-mono: "Fira Code", "Monaco", monospace;
 
-  /* Danger color (for delete actions) */
+  /* Status colors */
+  --vizel-success-color: #10b981;
+  --vizel-warning-color: #f59e0b;
+  --vizel-error-color: #ef4444;
   --vizel-danger-color: #dc2626;
   --vizel-danger-bg: rgba(220, 38, 38, 0.1);
 
@@ -67,4 +74,84 @@
   --vizel-resize-handle-color: var(--vizel-primary-color);
   --vizel-resize-handle-color-hover: var(--vizel-primary-color-dark);
   --vizel-image-outline-color: var(--vizel-primary-color);
+
+  /* Theme transition */
+  --vizel-theme-transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Dark theme */
+[data-vizel-theme="dark"] {
+  /* Primary theme colors */
+  --vizel-primary-color: #60a5fa;
+  --vizel-primary-color-dark: #3b82f6;
+  --vizel-primary-bg: rgba(96, 165, 250, 0.15);
+  --vizel-primary-bg-hover: rgba(96, 165, 250, 0.2);
+
+  /* Text colors */
+  --vizel-text-color: #f9fafb;
+  --vizel-text-color-secondary: #d1d5db;
+  --vizel-text-color-muted: #9ca3af;
+
+  /* Border colors */
+  --vizel-border-color: #374151;
+  --vizel-border-color-hover: #4b5563;
+
+  /* Background colors */
+  --vizel-bg-color: #1f2937;
+  --vizel-bg-color-secondary: #111827;
+  --vizel-bg-color-tertiary: #374151;
+
+  /* Shadow (darker shadows for dark mode) */
+  --vizel-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --vizel-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+
+  /* Status colors (brighter for dark mode) */
+  --vizel-success-color: #34d399;
+  --vizel-warning-color: #fbbf24;
+  --vizel-error-color: #f87171;
+  --vizel-danger-color: #f87171;
+  --vizel-danger-bg: rgba(248, 113, 113, 0.15);
+
+  /* Image resize handles */
+  --vizel-resize-handle-color: var(--vizel-primary-color);
+  --vizel-resize-handle-color-hover: var(--vizel-primary-color-dark);
+  --vizel-image-outline-color: var(--vizel-primary-color);
+}
+
+/* System preference fallback (when no data attribute is set) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-vizel-theme]) {
+    /* Primary theme colors */
+    --vizel-primary-color: #60a5fa;
+    --vizel-primary-color-dark: #3b82f6;
+    --vizel-primary-bg: rgba(96, 165, 250, 0.15);
+    --vizel-primary-bg-hover: rgba(96, 165, 250, 0.2);
+
+    /* Text colors */
+    --vizel-text-color: #f9fafb;
+    --vizel-text-color-secondary: #d1d5db;
+    --vizel-text-color-muted: #9ca3af;
+
+    /* Border colors */
+    --vizel-border-color: #374151;
+    --vizel-border-color-hover: #4b5563;
+
+    /* Background colors */
+    --vizel-bg-color: #1f2937;
+    --vizel-bg-color-secondary: #111827;
+    --vizel-bg-color-tertiary: #374151;
+
+    /* Shadow */
+    --vizel-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --vizel-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+
+    /* Status colors */
+    --vizel-success-color: #34d399;
+    --vizel-warning-color: #fbbf24;
+    --vizel-error-color: #f87171;
+    --vizel-danger-color: #f87171;
+    --vizel-danger-bg: rgba(248, 113, 113, 0.15);
+  }
 }
