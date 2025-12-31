@@ -51,6 +51,13 @@ export function NodeSelector({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
+  // Focus the dropdown when it opens to ensure keyboard navigation works
+  useEffect(() => {
+    if (isOpen && dropdownRef.current) {
+      dropdownRef.current.focus();
+    }
+  }, [isOpen]);
+
   // Handle keyboard navigation
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (!isOpen) {
@@ -133,6 +140,8 @@ export function NodeSelector({
           role="listbox"
           aria-label="Block types"
           data-vizel-node-selector-dropdown
+          tabIndex={-1}
+          onKeyDown={handleKeyDown}
         >
           {nodeTypes.map((nodeType, index) => {
             const isActive = nodeType.isActive(editor);

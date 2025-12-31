@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defaultNodeTypes, type Editor, getActiveNodeType, type NodeTypeOption } from "@vizel/core";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useEditorState } from "../composables/useEditorState.ts";
 
 export interface NodeSelectorProps {
@@ -22,6 +22,7 @@ const editorStateVersion = useEditorState(() => props.editor);
 const isOpen = ref(false);
 const focusedIndex = ref(0);
 const containerRef = ref<HTMLDivElement | null>(null);
+const dropdownRef = ref<HTMLDivElement | null>(null);
 
 const activeNodeType = computed(() => {
   void editorStateVersion.value; // Trigger reactivity
@@ -44,6 +45,15 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener("mousedown", handleClickOutside);
+});
+
+// Focus the dropdown when it opens to ensure keyboard navigation works
+watch(isOpen, (newValue) => {
+  if (newValue) {
+    nextTick(() => {
+      dropdownRef.value?.focus();
+    });
+  }
 });
 
 function handleKeyDown(event: KeyboardEvent) {
@@ -127,10 +137,13 @@ function isNodeTypeActive(nodeType: NodeTypeOption): boolean {
 
     <div
       v-if="isOpen"
+      ref="dropdownRef"
       class="vizel-node-selector-dropdown"
       role="listbox"
       aria-label="Block types"
       data-vizel-node-selector-dropdown
+      tabindex="-1"
+      @keydown="handleKeyDown"
     >
       <button
         v-for="(nodeType, index) in props.nodeTypes"
