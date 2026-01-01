@@ -24,6 +24,7 @@ import type { VizelFeatureOptions } from "../types.ts";
 import { createCharacterCountExtension } from "./character-count.ts";
 import { createCodeBlockLowlightExtension } from "./code-block-lowlight.ts";
 import { createDragHandleExtensions } from "./drag-handle.ts";
+import { createEmbedExtension } from "./embed.ts";
 import {
   createImageUploadExtension,
   defaultBase64Upload,
@@ -221,6 +222,17 @@ function addDragHandleExtension(extensions: Extensions, features: VizelFeatureOp
 }
 
 /**
+ * Add Embed extension if enabled
+ */
+function addEmbedExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  // Embed is disabled by default, must be explicitly enabled
+  if (features.embed !== true && typeof features.embed !== "object") return;
+
+  const embedOptions = typeof features.embed === "object" ? features.embed : {};
+  extensions.push(createEmbedExtension(embedOptions));
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * Most features (SlashCommand, Table, Link, Image) are enabled by default.
  * Markdown support is disabled by default and must be explicitly enabled.
@@ -304,6 +316,7 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
   addCodeBlockExtension(extensions, features);
   addMathematicsExtension(extensions, features);
   addDragHandleExtension(extensions, features);
+  addEmbedExtension(extensions, features);
 
   return extensions;
 }

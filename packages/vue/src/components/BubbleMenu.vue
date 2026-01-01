@@ -17,6 +17,8 @@ export interface BubbleMenuProps {
   updateDelay?: number;
   /** Custom shouldShow function */
   shouldShow?: (props: { editor: Editor; from: number; to: number }) => boolean;
+  /** Enable embed option in link editor (requires Embed extension) */
+  enableEmbed?: boolean;
 }
 
 const props = withDefaults(defineProps<BubbleMenuProps>(), {
@@ -86,6 +88,6 @@ onBeforeUnmount(() => {
     style="visibility: hidden"
   >
     <slot v-if="slots.default" />
-    <BubbleMenuToolbar v-else-if="showDefaultToolbar" :editor="editor" />
+    <BubbleMenuToolbar v-else-if="showDefaultToolbar" :editor="editor" :enable-embed="props.enableEmbed" />
   </div>
 </template>

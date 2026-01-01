@@ -31,6 +31,9 @@ export { default as EditorContent, type EditorContentProps } from "./EditorConte
 export { useEditorContext, useEditorContextSafe } from "./EditorContext.ts";
 export { default as EditorRoot, type EditorRootProps } from "./EditorRoot.vue";
 
+// EmbedView component
+export { default as EmbedView, type EmbedViewProps } from "./EmbedView.vue";
+
 // NodeSelector component
 export {
   default as NodeSelector,

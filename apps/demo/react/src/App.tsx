@@ -56,6 +56,7 @@ function AppContent() {
     features: {
       markdown: true,
       mathematics: true,
+      embed: true,
       image: {
         onUpload: mockUploadImage,
         maxFileSize: 10 * 1024 * 1024, // 10MB
@@ -155,6 +156,10 @@ function AppContent() {
             <span>Auto-save</span>
           </div>
           <div className="feature-tag">
+            <span className="feature-icon">🔗</span>
+            <span>Embeds</span>
+          </div>
+          <div className="feature-tag">
             <span className="feature-icon">🌓</span>
             <span>Dark Mode</span>
           </div>
@@ -163,7 +168,7 @@ function AppContent() {
         <div className="editor-container">
           <div className="editor-root">
             <EditorContent editor={editor} className="editor-content" />
-            {editor && <BubbleMenu editor={editor} />}
+            {editor && <BubbleMenu editor={editor} enableEmbed />}
           </div>
           <div className="status-bar">
             <SaveIndicator status={status} lastSaved={lastSaved} />

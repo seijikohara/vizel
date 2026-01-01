@@ -28,6 +28,7 @@ const editor = useVizelEditor({
   features: {
     markdown: true,
     mathematics: true,
+    embed: true,
     image: {
       onUpload: mockUploadImage,
       maxFileSize: 10 * 1024 * 1024, // 10MB
@@ -135,6 +136,10 @@ function handleImportMarkdown() {
             <span>Auto-save</span>
           </div>
           <div class="feature-tag">
+            <span class="feature-icon">🔗</span>
+            <span>Embeds</span>
+          </div>
+          <div class="feature-tag">
             <span class="feature-icon">🌓</span>
             <span>Dark Mode</span>
           </div>
@@ -143,7 +148,7 @@ function handleImportMarkdown() {
         <div class="editor-container">
           <div class="editor-root">
             <EditorContent :editor="editor" class="editor-content" />
-            <BubbleMenu v-if="editor" :editor="editor" />
+            <BubbleMenu v-if="editor" :editor="editor" enable-embed />
           </div>
           <div class="status-bar">
             <SaveIndicator :status="status" :lastSaved="lastSaved" />

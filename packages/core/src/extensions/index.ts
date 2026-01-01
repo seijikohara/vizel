@@ -48,6 +48,20 @@ export {
   type VizelDragHandleOptions,
 } from "./drag-handle.ts";
 export {
+  createDefaultFetchEmbedData,
+  createEmbedExtension,
+  defaultEmbedProviders,
+  detectProvider,
+  Embed,
+  type EmbedData,
+  type EmbedProvider,
+  type EmbedType,
+  embedPastePluginKey,
+  type FetchEmbedDataFn,
+  isValidUrl,
+  type VizelEmbedOptions,
+} from "./embed.ts";
+export {
   createImageExtension,
   createImageUploadExtension,
   createImageUploader,

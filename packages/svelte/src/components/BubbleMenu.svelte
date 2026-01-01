@@ -17,6 +17,8 @@ export interface BubbleMenuProps {
   shouldShow?: (props: { editor: Editor; from: number; to: number }) => boolean;
   /** Custom menu items (overrides default toolbar) */
   children?: Snippet;
+  /** Enable embed option in link editor (requires Embed extension) */
+  enableEmbed?: boolean;
 }
 </script>
 
@@ -34,6 +36,7 @@ let {
   updateDelay = 100,
   shouldShow,
   children,
+  enableEmbed,
 }: BubbleMenuProps = $props();
 
 const contextEditor = getEditorContextSafe();
@@ -92,7 +95,7 @@ onDestroy(() => {
     {#if children}
       {@render children()}
     {:else if showDefaultToolbar}
-      <BubbleMenuToolbar {editor} />
+      <BubbleMenuToolbar {editor} {...(enableEmbed ? { enableEmbed } : {})} />
     {/if}
   </div>
 {/if}

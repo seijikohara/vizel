@@ -37,6 +37,12 @@ export {
 export { getEditorContext, getEditorContextSafe } from "./EditorContext.ts";
 export { default as EditorRoot, type EditorRootProps } from "./EditorRoot.svelte";
 
+// EmbedView component
+export {
+  default as EmbedView,
+  type EmbedViewProps,
+} from "./EmbedView.svelte";
+
 // NodeSelector component
 export {
   default as NodeSelector,

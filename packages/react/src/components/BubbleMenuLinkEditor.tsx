@@ -1,15 +1,18 @@
-import type { Editor } from "@vizel/core";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { detectProvider, type Editor } from "@vizel/core";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export interface BubbleMenuLinkEditorProps {
   editor: Editor;
   onClose: () => void;
   className?: string;
+  /** Enable embed option (requires Embed extension) */
+  enableEmbed?: boolean;
 }
 
 /**
  * A link editor component for editing hyperlinks in the BubbleMenu.
  * Provides an input field for URL entry and buttons to apply or remove the link.
+ * Optionally supports converting links to embeds when the Embed extension is loaded.
  *
  * @example
  * ```tsx
@@ -19,6 +22,7 @@ export interface BubbleMenuLinkEditorProps {
  *   <BubbleMenuLinkEditor
  *     editor={editor}
  *     onClose={() => setShowLinkEditor(false)}
+ *     enableEmbed
  *   />
  * ) : (
  *   <BubbleMenuButton onClick={() => setShowLinkEditor(true)}>
@@ -27,11 +31,31 @@ export interface BubbleMenuLinkEditorProps {
  * )}
  * ```
  */
-export function BubbleMenuLinkEditor({ editor, onClose, className }: BubbleMenuLinkEditorProps) {
+export function BubbleMenuLinkEditor({
+  editor,
+  onClose,
+  className,
+  enableEmbed = false,
+}: BubbleMenuLinkEditorProps) {
   const currentHref = editor.getAttributes("link").href || "";
   const [url, setUrl] = useState(currentHref);
+  const [asEmbed, setAsEmbed] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Check if embed extension is available
+  const canEmbed = useMemo(() => {
+    if (!enableEmbed) return false;
+    // Check if setEmbed command exists (embed extension is loaded)
+    const extensionManager = editor.extensionManager;
+    return extensionManager.extensions.some((ext) => ext.name === "embed");
+  }, [editor, enableEmbed]);
+
+  // Check if URL is a known embed provider
+  const isEmbedProvider = useMemo(() => {
+    if (!url.trim()) return false;
+    return detectProvider(url.trim()) !== null;
+  }, [url]);
 
   // Auto-focus input on mount
   useEffect(() => {
@@ -72,14 +96,23 @@ export function BubbleMenuLinkEditor({ editor, onClose, className }: BubbleMenuL
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (url.trim()) {
-        editor.chain().focus().setLink({ href: url.trim() }).run();
-      } else {
+      const trimmedUrl = url.trim();
+
+      if (!trimmedUrl) {
         editor.chain().focus().unsetLink().run();
+        onClose();
+        return;
+      }
+
+      if (asEmbed && canEmbed) {
+        // Remove the link first, then insert embed
+        editor.chain().focus().unsetLink().setEmbed({ url: trimmedUrl }).run();
+      } else {
+        editor.chain().focus().setLink({ href: trimmedUrl }).run();
       }
       onClose();
     },
-    [editor, url, onClose]
+    [editor, url, asEmbed, canEmbed, onClose]
   );
 
   const handleRemove = useCallback(() => {
@@ -89,26 +122,39 @@ export function BubbleMenuLinkEditor({ editor, onClose, className }: BubbleMenuL
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className={`vizel-link-editor ${className ?? ""}`}>
-      <input
-        ref={inputRef}
-        type="url"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        placeholder="Enter URL..."
-        className="vizel-link-input"
-      />
-      <button type="submit" className="vizel-link-button" title="Apply">
-        OK
-      </button>
-      {currentHref && (
-        <button
-          type="button"
-          onClick={handleRemove}
-          className="vizel-link-button vizel-link-remove"
-          title="Remove link"
-        >
-          X
+      <div className="vizel-link-editor-row">
+        <input
+          ref={inputRef}
+          type="url"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="Enter URL..."
+          className="vizel-link-input"
+        />
+        <button type="submit" className="vizel-link-button" title="Apply">
+          OK
         </button>
+        {currentHref && (
+          <button
+            type="button"
+            onClick={handleRemove}
+            className="vizel-link-button vizel-link-remove"
+            title="Remove link"
+          >
+            X
+          </button>
+        )}
+      </div>
+      {canEmbed && isEmbedProvider && (
+        <div className="vizel-link-editor-embed-toggle">
+          <input
+            type="checkbox"
+            id="vizel-embed-toggle"
+            checked={asEmbed}
+            onChange={(e) => setAsEmbed(e.target.checked)}
+          />
+          <label htmlFor="vizel-embed-toggle">Embed as rich content</label>
+        </div>
       )}
     </form>
   );

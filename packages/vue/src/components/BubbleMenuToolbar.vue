@@ -12,6 +12,8 @@ export interface BubbleMenuToolbarProps {
   editor: Editor;
   /** Custom class name */
   class?: string;
+  /** Enable embed option in link editor (requires Embed extension) */
+  enableEmbed?: boolean;
 }
 
 const props = defineProps<BubbleMenuToolbarProps>();
@@ -52,6 +54,7 @@ const showLinkEditor = ref(false);
   <BubbleMenuLinkEditor
     v-if="showLinkEditor"
     :editor="props.editor"
+    :enable-embed="props.enableEmbed"
     @close="showLinkEditor = false"
   />
   <div v-else :class="['vizel-bubble-menu-toolbar', $props.class]">

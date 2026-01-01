@@ -6,6 +6,8 @@ export interface BubbleMenuToolbarProps {
   editor: Editor;
   /** Custom class name */
   class?: string;
+  /** Enable embed option in link editor (requires Embed extension) */
+  enableEmbed?: boolean;
 }
 </script>
 
@@ -16,7 +18,7 @@ import BubbleMenuColorPicker from "./BubbleMenuColorPicker.svelte";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.svelte";
 import NodeSelector from "./NodeSelector.svelte";
 
-let { editor, class: className }: BubbleMenuToolbarProps = $props();
+let { editor, class: className, enableEmbed }: BubbleMenuToolbarProps = $props();
 let showLinkEditor = $state(false);
 
 // Subscribe to editor state changes to update active states
@@ -50,7 +52,7 @@ const isLinkActive = $derived.by(() => {
 </script>
 
 {#if showLinkEditor}
-  <BubbleMenuLinkEditor {editor} onclose={() => (showLinkEditor = false)} />
+  <BubbleMenuLinkEditor {editor} {...(enableEmbed ? { enableEmbed } : {})} onclose={() => (showLinkEditor = false)} />
 {:else}
   <div class="vizel-bubble-menu-toolbar {className ?? ''}">
     <NodeSelector {editor} />

@@ -28,6 +28,9 @@ export { EditorContent, type EditorContentProps } from "./EditorContent.tsx";
 export { useEditorContext, useEditorContextSafe } from "./EditorContext.tsx";
 export { EditorRoot, type EditorRootProps } from "./EditorRoot.tsx";
 
+// EmbedView component
+export { EmbedView, type EmbedViewProps } from "./EmbedView.tsx";
+
 // NodeSelector component
 export { NodeSelector, type NodeSelectorProps } from "./NodeSelector.tsx";
 
