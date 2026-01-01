@@ -19,6 +19,8 @@ export interface BubbleMenuProps {
   updateDelay?: number;
   /** Custom shouldShow function */
   shouldShow?: (props: { editor: Editor; from: number; to: number }) => boolean;
+  /** Enable embed option in link editor (requires Embed extension) */
+  enableEmbed?: boolean;
 }
 
 /**
@@ -56,6 +58,7 @@ export function BubbleMenu({
   pluginKey = "vizelBubbleMenu",
   updateDelay = 100,
   shouldShow,
+  enableEmbed,
 }: BubbleMenuProps) {
   const context = useEditorContextSafe();
   const editor = editorProp ?? context?.editor ?? null;
@@ -109,7 +112,10 @@ export function BubbleMenu({
       data-vizel-bubble-menu=""
       style={{ visibility: "hidden" }}
     >
-      {children ?? (showDefaultToolbar && <BubbleMenuToolbar editor={editor} />)}
+      {children ??
+        (showDefaultToolbar && (
+          <BubbleMenuToolbar editor={editor} {...(enableEmbed ? { enableEmbed } : {})} />
+        ))}
     </div>
   );
 }

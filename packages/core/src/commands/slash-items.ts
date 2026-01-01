@@ -216,6 +216,30 @@ export const defaultSlashCommands: SlashCommandItem[] = [
       input.click();
     },
   },
+  {
+    title: "Embed",
+    description: "Embed a URL (YouTube, Twitter, etc.)",
+    icon: "🔗",
+    group: "Media",
+    keywords: ["link", "url", "youtube", "video", "twitter", "embed", "iframe", "oembed"],
+    command: ({ editor, range }) => {
+      // Check if embed extension is available by checking if setEmbed command exists
+      const hasEmbedExtension = typeof editor.commands.setEmbed === "function";
+      if (!hasEmbedExtension) {
+        // Fallback to link if embed extension is not loaded
+        const url = window.prompt("Enter URL:");
+        if (url) {
+          editor.chain().focus().deleteRange(range).setLink({ href: url }).run();
+        }
+        return;
+      }
+
+      const url = window.prompt("Enter URL to embed:");
+      if (url) {
+        editor.chain().focus().deleteRange(range).setEmbed({ url }).run();
+      }
+    },
+  },
   // Advanced group
   {
     title: "Math Equation",

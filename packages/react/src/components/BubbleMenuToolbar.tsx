@@ -9,6 +9,8 @@ import { NodeSelector } from "./NodeSelector.tsx";
 export interface BubbleMenuToolbarProps {
   editor: Editor;
   className?: string;
+  /** Enable embed option in link editor (requires Embed extension) */
+  enableEmbed?: boolean;
 }
 
 /**
@@ -22,13 +24,19 @@ export interface BubbleMenuToolbarProps {
  * </BubbleMenu>
  * ```
  */
-export function BubbleMenuToolbar({ editor, className }: BubbleMenuToolbarProps) {
+export function BubbleMenuToolbar({ editor, className, enableEmbed }: BubbleMenuToolbarProps) {
   // Subscribe to editor state changes to update active states
   useEditorState(editor);
   const [showLinkEditor, setShowLinkEditor] = useState(false);
 
   if (showLinkEditor) {
-    return <BubbleMenuLinkEditor editor={editor} onClose={() => setShowLinkEditor(false)} />;
+    return (
+      <BubbleMenuLinkEditor
+        editor={editor}
+        onClose={() => setShowLinkEditor(false)}
+        {...(enableEmbed ? { enableEmbed } : {})}
+      />
+    );
   }
 
   return (
