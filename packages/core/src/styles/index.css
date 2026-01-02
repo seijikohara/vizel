@@ -32,5 +32,6 @@
 @import "./code-block.css";
 @import "./mathematics.css";
 @import "./drag-handle.css";
+@import "./details.css";
 @import "./embed.css";
 @import "./save-indicator.css";

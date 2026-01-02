@@ -40,6 +40,16 @@ export {
   type VizelCodeBlockOptions,
 } from "./code-block-lowlight.ts";
 export {
+  createDetailsExtensions,
+  Details,
+  DetailsContent,
+  type DetailsContentOptions,
+  type DetailsNodeOptions,
+  DetailsSummary,
+  type DetailsSummaryOptions,
+  type VizelDetailsOptions,
+} from "./details.ts";
+export {
   BlockMoveKeymap,
   createDragHandleExtension,
   createDragHandleExtensions,

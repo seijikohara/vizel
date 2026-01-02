@@ -146,6 +146,20 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    title: "Details",
+    description: "Collapsible content block",
+    icon: "▸",
+    group: "Blocks",
+    keywords: ["accordion", "toggle", "collapse", "expand", "summary", "details"],
+    command: ({ editor, range }) => {
+      // Check if details extension is available
+      if (!editor.can().setDetails?.()) {
+        return;
+      }
+      editor.chain().focus().deleteRange(range).setDetails().run();
+    },
+  },
+  {
     title: "Code Block",
     description: "Insert a code snippet",
     icon: "</>",
