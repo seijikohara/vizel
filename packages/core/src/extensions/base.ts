@@ -23,6 +23,7 @@ import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
 import { createCharacterCountExtension } from "./character-count.ts";
 import { createCodeBlockLowlightExtension } from "./code-block-lowlight.ts";
+import { createDetailsExtensions } from "./details.ts";
 import { createDragHandleExtensions } from "./drag-handle.ts";
 import { createEmbedExtension } from "./embed.ts";
 import {
@@ -222,6 +223,17 @@ function addDragHandleExtension(extensions: Extensions, features: VizelFeatureOp
 }
 
 /**
+ * Add Details extension if enabled
+ */
+function addDetailsExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  // Details is disabled by default, must be explicitly enabled
+  if (features.details !== true && typeof features.details !== "object") return;
+
+  const detailsOptions = typeof features.details === "object" ? features.details : {};
+  extensions.push(...createDetailsExtensions(detailsOptions));
+}
+
+/**
  * Add Embed extension if enabled
  */
 function addEmbedExtension(extensions: Extensions, features: VizelFeatureOptions): void {
@@ -316,6 +328,7 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
   addCodeBlockExtension(extensions, features);
   addMathematicsExtension(extensions, features);
   addDragHandleExtension(extensions, features);
+  addDetailsExtension(extensions, features);
   addEmbedExtension(extensions, features);
 
   return extensions;

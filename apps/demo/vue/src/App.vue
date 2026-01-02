@@ -29,6 +29,7 @@ const editor = useVizelEditor({
     markdown: true,
     mathematics: true,
     embed: true,
+    details: true,
     image: {
       onUpload: mockUploadImage,
       maxFileSize: 10 * 1024 * 1024, // 10MB
@@ -138,6 +139,10 @@ function handleImportMarkdown() {
           <div class="feature-tag">
             <span class="feature-icon">🔗</span>
             <span>Embeds</span>
+          </div>
+          <div class="feature-tag">
+            <span class="feature-icon">▸</span>
+            <span>Details</span>
           </div>
           <div class="feature-tag">
             <span class="feature-icon">🌓</span>

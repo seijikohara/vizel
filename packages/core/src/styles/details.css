@@ -1,0 +1,197 @@
+/**
+ * Vizel Details/Accordion Styles
+ *
+ * Styles for collapsible content blocks.
+ * Note: tiptap uses div + button, not native HTML5 details/summary.
+ */
+
+/* Details container */
+.vizel-details {
+  position: relative;
+  border: 1px solid var(--vizel-border-color, #e0e0e0);
+  border-radius: var(--vizel-radius-md, 0.375rem);
+  margin: 0.75rem 0;
+  background: var(--vizel-bg-color, #fff);
+  overflow: hidden;
+}
+
+.vizel-details:first-child {
+  margin-top: 0;
+}
+
+.vizel-details:last-child {
+  margin-bottom: 0;
+}
+
+/* Nested details */
+.vizel-details .vizel-details {
+  margin: 0.5rem 0;
+  border-color: var(--vizel-border-color-light, #eaeaea);
+}
+
+/* Toggle button (tiptap uses button element for toggle) */
+.vizel-details > button {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.vizel-details > button::before {
+  content: "";
+  display: block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid var(--vizel-text-color, #1a1a1a);
+  border-bottom: 2px solid var(--vizel-text-color, #1a1a1a);
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+  opacity: 0.6;
+}
+
+.vizel-details > button:hover::before {
+  opacity: 1;
+}
+
+/* Open state toggle rotation */
+.vizel-details.is-open > button::before {
+  transform: rotate(45deg);
+}
+
+/* Summary (clickable header) */
+.vizel-details-summary {
+  padding: 0.625rem 1rem 0.625rem 2.25rem;
+  cursor: text;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: var(--vizel-text-color, #1a1a1a);
+  background: var(--vizel-bg-muted, #f8f9fa);
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+  min-height: 2.5rem;
+  line-height: 1.25rem;
+}
+
+/* Ensure summary has content space even when empty */
+.vizel-details-summary:empty::before,
+.vizel-details-summary:has(> br:only-child)::before {
+  content: "Click to add title...";
+  color: var(--vizel-text-muted, #999);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.vizel-details-summary:hover {
+  background: var(--vizel-bg-hover, #f0f1f2);
+}
+
+.vizel-details-summary:focus {
+  outline: none;
+}
+
+/* Hide default marker (in case native summary is used) */
+.vizel-details-summary::-webkit-details-marker,
+.vizel-details-summary::marker {
+  display: none;
+  content: "";
+}
+
+/* Open state */
+.vizel-details.is-open > div > .vizel-details-summary {
+  border-bottom-color: var(--vizel-border-color, #e0e0e0);
+}
+
+/* Content area */
+.vizel-details-content {
+  padding: 0.75rem 1rem;
+}
+
+.vizel-details-content > :first-child {
+  margin-top: 0;
+}
+
+.vizel-details-content > :last-child {
+  margin-bottom: 0;
+}
+
+/* Empty summary placeholder */
+.vizel-details-summary.is-empty::after {
+  content: "Click to add summary...";
+  color: var(--vizel-text-muted, #999);
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Empty content placeholder */
+.vizel-details-content.is-empty::before {
+  content: "Add content here...";
+  color: var(--vizel-text-muted, #999);
+  font-style: italic;
+}
+
+/* Selected state */
+.vizel-details.ProseMirror-selectednode {
+  outline: 2px solid var(--vizel-primary-color, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* Focus within */
+.vizel-details:focus-within {
+  border-color: var(--vizel-primary-color, #3b82f6);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .vizel-details {
+    background: var(--vizel-bg-color, #1a1a1a);
+    border-color: var(--vizel-border-color, #333);
+  }
+
+  .vizel-details > button::before {
+    border-color: var(--vizel-text-color, #e5e5e5);
+  }
+
+  .vizel-details-summary {
+    background: var(--vizel-bg-muted, #252525);
+    color: var(--vizel-text-color, #e5e5e5);
+  }
+
+  .vizel-details-summary:hover {
+    background: var(--vizel-bg-hover, #2a2a2a);
+  }
+
+  .vizel-details.is-open > div > .vizel-details-summary {
+    border-bottom-color: var(--vizel-border-color, #333);
+  }
+
+  .vizel-details .vizel-details {
+    border-color: var(--vizel-border-color-light, #3a3a3a);
+  }
+}
+
+/* Print styles */
+@media print {
+  .vizel-details {
+    border: 1px solid #ccc;
+  }
+
+  .vizel-details.is-open {
+    break-inside: avoid;
+  }
+
+  .vizel-details > button {
+    display: none;
+  }
+}

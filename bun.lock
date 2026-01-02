@@ -80,6 +80,9 @@
         "@tiptap/extension-code-block": "^3.14.0",
         "@tiptap/extension-code-block-lowlight": "^3.14.0",
         "@tiptap/extension-color": "^3.14.0",
+        "@tiptap/extension-details": "^3.14.0",
+        "@tiptap/extension-details-content": "^2.26.2",
+        "@tiptap/extension-details-summary": "^2.26.2",
         "@tiptap/extension-document": "^3.14.0",
         "@tiptap/extension-drag-handle": "^3.14.0",
         "@tiptap/extension-dropcursor": "^3.14.0",
@@ -407,6 +410,12 @@
     "@tiptap/extension-collaboration": ["@tiptap/extension-collaboration@3.14.0", "", { "peerDependencies": { "@tiptap/core": "^3.14.0", "@tiptap/pm": "^3.14.0", "@tiptap/y-tiptap": "^3.0.0", "yjs": "^13" } }, "sha512-6DgquRiAw/Mf8Y5KqQ+O9muZAmAWU9RaK5tZHrd8+OLkiGBxH891cZ2WA5jNaCl4T9hSJrpcMNJ3lxmBbxLGPg=="],
 
     "@tiptap/extension-color": ["@tiptap/extension-color@3.14.0", "", { "peerDependencies": { "@tiptap/extension-text-style": "^3.14.0" } }, "sha512-jrHc4HQmAQlU1PlPu0St2T+abKAjs67FV6kpdPUXdlPjXVqm1g3AzSll2QcNoTXNQyH2cZhVTEC6rYqJDwcq5w=="],
+
+    "@tiptap/extension-details": ["@tiptap/extension-details@3.14.0", "", { "peerDependencies": { "@tiptap/core": "^3.14.0", "@tiptap/extension-text-style": "^3.14.0", "@tiptap/pm": "^3.14.0" } }, "sha512-YJyup+/ejKlikCkyLgClTT3ZidZ1B3/vvveEtIY+veM0aCbnw6HThunZk2U7dPJIpAtP7Qo9emUOSuBBCTENaA=="],
+
+    "@tiptap/extension-details-content": ["@tiptap/extension-details-content@2.26.2", "", { "peerDependencies": { "@tiptap/core": "^2.7.0", "@tiptap/extension-text-style": "^2.7.0" } }, "sha512-2Ia2KqwYucuv7dcTpA/PhytUuDhotzi8uZPXBHlGJLHVI9rAmJsSvID9cX/YWRTvCvAxyNqDp0sBH+Qx8QcloQ=="],
+
+    "@tiptap/extension-details-summary": ["@tiptap/extension-details-summary@2.26.2", "", { "peerDependencies": { "@tiptap/core": "^2.7.0", "@tiptap/extension-text-style": "^2.7.0" } }, "sha512-rbRq6f56HKvzIuSpPHt513Ubglq728pz8Jx7WBRVqjpYF5/sTpYu9hZpbrIfLfjb2UakXI/LVU8vS50VwTwCnw=="],
 
     "@tiptap/extension-document": ["@tiptap/extension-document@3.14.0", "", { "peerDependencies": { "@tiptap/core": "^3.14.0" } }, "sha512-O3D7/GPB3XrWGy0y/b4LMHiY0eTd+dyIbSdiFtmUnbC/E9lqQLw43GiqvD9Gm6AyKhBA+Z45dKMbaOe1c6eTwQ=="],
 
