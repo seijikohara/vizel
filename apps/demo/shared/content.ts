@@ -148,6 +148,202 @@ export const initialContent = {
     {
       type: "heading",
       attrs: { level: 2 },
+      content: [{ type: "text", text: "Table Example" }],
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "Hover over column borders (top) to insert columns, row borders (left) to insert rows. Click the column/row handle for options including alignment. Column alignment is Markdown-compatible (",
+        },
+        { type: "text", marks: [{ type: "code" }], text: "|:---|:---:|---:|" },
+        { type: "text", text: ")." },
+      ],
+    },
+    {
+      type: "table",
+      content: [
+        {
+          type: "tableRow",
+          content: [
+            {
+              type: "tableHeader",
+              attrs: { colspan: 1, rowspan: 1 },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Feature" }],
+                },
+              ],
+            },
+            {
+              type: "tableHeader",
+              attrs: { colspan: 1, rowspan: 1 },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Description" }],
+                },
+              ],
+            },
+            {
+              type: "tableHeader",
+              attrs: { colspan: 1, rowspan: 1, textAlign: "center" },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Status" }],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "tableRow",
+          content: [
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1 },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Column Insert" }],
+                },
+              ],
+            },
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1 },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Hover near column borders to add columns" }],
+                },
+              ],
+            },
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1, textAlign: "center" },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "✓" }],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "tableRow",
+          content: [
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1 },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Row Insert" }],
+                },
+              ],
+            },
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1 },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Hover near row borders to add rows" }],
+                },
+              ],
+            },
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1, textAlign: "center" },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "✓" }],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "tableRow",
+          content: [
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1 },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Row Handle" }],
+                },
+              ],
+            },
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1 },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Click handle for edit menu" }],
+                },
+              ],
+            },
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1, textAlign: "center" },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "✓" }],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "tableRow",
+          content: [
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1 },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Column Align" }],
+                },
+              ],
+            },
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1 },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Click column handle to set alignment" }],
+                },
+              ],
+            },
+            {
+              type: "tableCell",
+              attrs: { colspan: 1, rowspan: 1, textAlign: "center" },
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "✓" }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: "heading",
+      attrs: { level: 2 },
       content: [{ type: "text", text: "Code Block with Syntax Highlighting" }],
     },
     {

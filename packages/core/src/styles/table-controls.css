@@ -1,0 +1,234 @@
+/**
+ * Vizel Table Controls Styles
+ *
+ * Styles for interactive table controls:
+ * - Column insert buttons (above table)
+ * - Row insert buttons (left of table)
+ * - Row handle with edit menu
+ */
+
+/* Wrapper for table with controls */
+.vizel-table-controls-wrapper {
+  position: relative;
+  margin: 1.5em 0;
+  padding-left: 32px;
+  padding-top: 32px;
+}
+
+/* Insert buttons (column and row) */
+.vizel-table-insert-button {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--vizel-primary-color, #3b82f6);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+  z-index: 10;
+  padding: 0;
+}
+
+/* Show buttons when wrapper is hovered - CSS based approach */
+.vizel-table-controls-wrapper:hover .vizel-table-insert-button,
+.vizel-table-controls-wrapper:focus-within .vizel-table-insert-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.vizel-table-insert-button:hover {
+  background-color: var(--vizel-primary-color-hover, #2563eb);
+  transform: scale(1.1);
+}
+
+/* Also show when JS sets display: flex (for backward compatibility) */
+.vizel-table-insert-button[style*="display: flex"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.vizel-table-insert-button svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Column insert button (above table) */
+.vizel-table-column-insert {
+  transform: translateX(-50%);
+}
+
+.vizel-table-column-insert:hover {
+  transform: translateX(-50%) scale(1.1);
+}
+
+/* Row insert button (left of table) */
+.vizel-table-row-insert {
+  transform: translateY(-50%);
+}
+
+.vizel-table-row-insert:hover {
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Row handle - click to open table options menu */
+.vizel-table-row-handle {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: var(--vizel-primary-bg, #f3f4f6);
+  color: var(--vizel-text-muted, #6b7280);
+  border: 1px solid var(--vizel-border-color, #e5e7eb);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  z-index: 10;
+  padding: 0;
+}
+
+/* Show row handle when wrapper is hovered */
+.vizel-table-controls-wrapper:hover .vizel-table-row-handle,
+.vizel-table-controls-wrapper:focus-within .vizel-table-row-handle {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Also show when JS sets display: flex (for backward compatibility) */
+.vizel-table-row-handle[style*="display: flex"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.vizel-table-row-handle:hover {
+  background-color: var(--vizel-primary-color, #3b82f6);
+  color: white;
+  border-color: var(--vizel-primary-color, #3b82f6);
+  transform: scale(1.1);
+}
+
+.vizel-table-row-handle svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Column handle - click to open table options menu */
+.vizel-table-column-handle {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: var(--vizel-primary-bg, #f3f4f6);
+  color: var(--vizel-text-muted, #6b7280);
+  border: 1px solid var(--vizel-border-color, #e5e7eb);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  z-index: 10;
+  padding: 0;
+  transform: translateX(-50%);
+}
+
+/* Show column handle when wrapper is hovered */
+.vizel-table-controls-wrapper:hover .vizel-table-column-handle,
+.vizel-table-controls-wrapper:focus-within .vizel-table-column-handle {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.vizel-table-column-handle:hover {
+  background-color: var(--vizel-primary-color, #3b82f6);
+  color: white;
+  border-color: var(--vizel-primary-color, #3b82f6);
+  transform: translateX(-50%) scale(1.1);
+}
+
+.vizel-table-column-handle svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Table menu (dropdown) */
+.vizel-table-menu {
+  background-color: var(--vizel-bg-color, #ffffff);
+  border: 1px solid var(--vizel-border-color, #e5e7eb);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 180px;
+  padding: 4px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* Dark mode adjustments */
+:root[data-theme="dark"] .vizel-table-menu,
+.dark .vizel-table-menu {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Menu divider */
+.vizel-table-menu-divider {
+  height: 1px;
+  background-color: var(--vizel-border-color, #e5e7eb);
+  margin: 4px 0;
+}
+
+/* Menu item */
+.vizel-table-menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--vizel-text-color, #374151);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.1s ease;
+  gap: 8px;
+}
+
+.vizel-table-menu-item:hover {
+  background-color: var(--vizel-primary-bg-hover, #f3f4f6);
+}
+
+.vizel-table-menu-item.is-destructive {
+  color: var(--vizel-danger-color, #dc2626);
+}
+
+.vizel-table-menu-item.is-destructive:hover {
+  background-color: var(--vizel-danger-bg, #fef2f2);
+}
+
+/* Menu item icon */
+.vizel-table-menu-item-icon {
+  width: 16px;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Menu item label */
+.vizel-table-menu-item-label {
+  flex: 1;
+}
+
+/* Override table styles when inside controls wrapper */
+.vizel-table-controls-wrapper .vizel-table {
+  margin: 0;
+}

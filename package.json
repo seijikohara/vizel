@@ -40,7 +40,7 @@
     "@vitejs/plugin-vue": "^6.0.3",
     "@vue/compiler-dom": "^3.5.26",
     "concurrently": "^9.2.1",
-    "lefthook": "^2.0.12",
+    "lefthook": "^2.0.13",
     "playwright": "^1.57.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

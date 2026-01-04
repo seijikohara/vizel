@@ -135,10 +135,21 @@ export {
   createTableExtensions,
   Table,
   TableCell,
+  type TableCellAlignment,
   TableHeader,
   TableRow,
+  VizelTable,
+  VizelTableCell,
+  VizelTableHeader,
   type VizelTableOptions,
 } from "./table.ts";
+export {
+  TABLE_MENU_ITEMS,
+  type TableControlsOptions,
+  type TableControlsUIOptions,
+  type TableMenuItem,
+  VizelTableWithControls,
+} from "./table-controls.ts";
 export {
   createTaskListExtensions,
   TaskItem,

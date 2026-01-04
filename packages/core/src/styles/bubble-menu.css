@@ -10,6 +10,8 @@
   border-radius: var(--vizel-radius-lg);
   box-shadow: var(--vizel-shadow-md);
   border: 1px solid var(--vizel-border-color);
+  /* z-index works with Tippy's position: absolute */
+  z-index: 50;
 }
 
 .vizel-bubble-menu-toolbar {
