@@ -47,3 +47,9 @@
 .vizel-resize-cursor {
   cursor: col-resize;
 }
+
+/* Cell text alignment - applied via inline style from textAlign attribute */
+.vizel-table-cell p,
+.vizel-table-header p {
+  text-align: inherit;
+}

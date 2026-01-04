@@ -1,5 +1,12 @@
 import type { Extensions } from "@tiptap/core";
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
+import {
+  type TableCellAlignment,
+  VizelTable,
+  VizelTableCell,
+  VizelTableHeader,
+} from "./table-base";
+import { type TableControlsOptions, VizelTableWithControls } from "./table-controls";
 
 export interface VizelTableOptions {
   /**
@@ -19,6 +26,13 @@ export interface VizelTableOptions {
    * @default true
    */
   lastColumnResizable?: boolean;
+
+  /**
+   * Enable interactive table controls (column/row insert buttons, row handle with menu).
+   * Set to `true` to enable all controls, `false` to disable, or an object to customize.
+   * @default true
+   */
+  controls?: boolean | TableControlsOptions;
 
   /**
    * Additional HTML attributes for table elements.
@@ -43,45 +57,97 @@ export interface VizelTableOptions {
  * // Insert a table
  * editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
  *
- * // Add row/column
- * editor.chain().focus().addRowAfter().run();
- * editor.chain().focus().addColumnAfter().run();
- *
- * // Delete row/column/table
- * editor.chain().focus().deleteRow().run();
+ * // Column operations
+ * editor.chain().focus().addColumnBefore().run(); // Add column at the beginning/middle
+ * editor.chain().focus().addColumnAfter().run();  // Add column at the end/middle
  * editor.chain().focus().deleteColumn().run();
+ *
+ * // Row operations
+ * editor.chain().focus().addRowBefore().run();    // Add row at the beginning/middle
+ * editor.chain().focus().addRowAfter().run();     // Add row at the end/middle
+ * editor.chain().focus().deleteRow().run();
+ *
+ * // Delete table
  * editor.chain().focus().deleteTable().run();
+ *
+ * // Cell alignment
+ * editor.chain().focus().setCellAttribute('textAlign', 'left').run();
+ * editor.chain().focus().setCellAttribute('textAlign', 'center').run();
+ * editor.chain().focus().setCellAttribute('textAlign', 'right').run();
+ *
+ * // Merge and split cells
+ * editor.chain().focus().mergeCells().run();
+ * editor.chain().focus().splitCell().run();
+ * editor.chain().focus().mergeOrSplit().run();
+ *
+ * // Header operations
+ * editor.chain().focus().toggleHeaderRow().run();
+ * editor.chain().focus().toggleHeaderColumn().run();
+ * editor.chain().focus().toggleHeaderCell().run();
+ *
+ * // Navigation
+ * editor.chain().focus().goToNextCell().run();
+ * editor.chain().focus().goToPreviousCell().run();
+ *
+ * // Cell selection
+ * editor.chain().focus().setCellSelection({ anchorCell: 1, headCell: 2 }).run();
+ *
+ * // Fix table structure
+ * editor.chain().focus().fixTables().run();
  * ```
  */
 export function createTableExtensions(options: VizelTableOptions = {}): Extensions {
+  const { controls = true, ...tableOptions } = options;
+
+  // Determine which Table extension to use
+  const TableExtension = controls
+    ? VizelTableWithControls.configure({
+        resizable: tableOptions.resizable ?? false,
+        cellMinWidth: tableOptions.cellMinWidth ?? 50,
+        lastColumnResizable: tableOptions.lastColumnResizable ?? true,
+        HTMLAttributes: {
+          class: "vizel-table",
+          ...tableOptions.tableHTMLAttributes,
+        },
+        // Pass control options (default to true if not explicitly set)
+        showColumnInsert: typeof controls === "object" ? (controls.showColumnInsert ?? true) : true,
+        showRowInsert: typeof controls === "object" ? (controls.showRowInsert ?? true) : true,
+        showRowHandle: typeof controls === "object" ? (controls.showRowHandle ?? true) : true,
+      })
+    : VizelTable.configure({
+        resizable: tableOptions.resizable ?? false,
+        cellMinWidth: tableOptions.cellMinWidth ?? 50,
+        lastColumnResizable: tableOptions.lastColumnResizable ?? true,
+        HTMLAttributes: {
+          class: "vizel-table",
+          ...tableOptions.tableHTMLAttributes,
+        },
+      });
+
   return [
-    Table.configure({
-      resizable: options.resizable ?? false,
-      cellMinWidth: options.cellMinWidth ?? 50,
-      lastColumnResizable: options.lastColumnResizable ?? true,
-      HTMLAttributes: {
-        class: "vizel-table",
-        ...options.tableHTMLAttributes,
-      },
-    }),
+    TableExtension,
     TableRow.configure({
       HTMLAttributes: {
         class: "vizel-table-row",
       },
     }),
-    TableHeader.configure({
+    VizelTableHeader.configure({
       HTMLAttributes: {
         class: "vizel-table-header",
-        ...options.headerHTMLAttributes,
+        ...tableOptions.headerHTMLAttributes,
       },
     }),
-    TableCell.configure({
+    VizelTableCell.configure({
       HTMLAttributes: {
         class: "vizel-table-cell",
-        ...options.cellHTMLAttributes,
+        ...tableOptions.cellHTMLAttributes,
       },
     }),
   ];
 }
 
+// Export original extensions for advanced usage
 export { Table, TableRow, TableHeader, TableCell };
+
+// Export extended extensions with textAlign and Markdown support
+export { VizelTable, VizelTableCell, VizelTableHeader, type TableCellAlignment };
