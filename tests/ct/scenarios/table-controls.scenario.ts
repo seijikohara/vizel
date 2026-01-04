@@ -522,3 +522,336 @@ export async function testTextAlignmentViaMenu(component: Locator, page: Page): 
   await expect(firstHeaderCell).not.toHaveCSS("text-align", "center");
   await expect(firstBodyCell).not.toHaveCSS("text-align", "center");
 }
+
+/** Verify column handle appears on cell hover */
+export async function testColumnHandleAppearsOnCellHover(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await insertTable(page);
+
+  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
+  const table = wrapper.locator(TABLE_SELECTOR);
+  const columnHandle = wrapper.locator(COLUMN_HANDLE_SELECTOR);
+
+  // Wait for table to be fully rendered
+  await expect(wrapper).toBeVisible();
+  await expect(table).toBeVisible();
+  await expect(table.locator("th").first()).toBeVisible();
+
+  // Give layout time to stabilize
+  await page.waitForTimeout(100);
+
+  // Move mouse outside the wrapper to ensure hover state is reset
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(50);
+
+  // CSS-based approach: handle has opacity: 0 initially, opacity: 1 on hover
+  await expect(columnHandle).toHaveCSS("opacity", "0");
+
+  // Hover over the wrapper to trigger CSS :hover
+  await wrapper.hover();
+
+  // Handle should now be visible (opacity: 1)
+  await expect(columnHandle).toHaveCSS("opacity", "1");
+}
+
+/** Verify clicking column handle opens menu */
+export async function testColumnHandleOpensMenu(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await insertTable(page);
+
+  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
+  const table = wrapper.locator(TABLE_SELECTOR);
+
+  // Wait for table to be fully rendered
+  await expect(wrapper).toBeVisible();
+  await expect(table).toBeVisible();
+
+  // Give layout time to stabilize
+  await page.waitForTimeout(100);
+
+  // Show column handle and click it
+  await showColumnHandleAndClick(page, 0);
+
+  // Verify menu appears (menu is rendered to document.body)
+  const menu = page.locator(TABLE_MENU_SELECTOR);
+  await expect(menu).toBeVisible();
+}
+
+/** Verify column menu contains expected items */
+export async function testColumnMenuContainsExpectedItems(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await insertTable(page);
+
+  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
+  const table = wrapper.locator(TABLE_SELECTOR);
+
+  // Wait for table to be fully rendered
+  await expect(wrapper).toBeVisible();
+  await expect(table).toBeVisible();
+
+  // Open column menu via column handle
+  await showColumnHandleAndClick(page, 0);
+
+  // Verify column menu items
+  const menu = page.locator(TABLE_MENU_SELECTOR);
+  await expect(menu).toBeVisible();
+
+  // Check for column-specific menu items
+  await expect(menu.getByText("Add column left")).toBeVisible();
+  await expect(menu.getByText("Add column right")).toBeVisible();
+  await expect(menu.getByText("Delete column")).toBeVisible();
+  await expect(menu.getByText("Align left")).toBeVisible();
+  await expect(menu.getByText("Align center")).toBeVisible();
+  await expect(menu.getByText("Align right")).toBeVisible();
+  await expect(menu.getByText("Delete table")).toBeVisible();
+}
+
+/** Verify menu action adds column to the left */
+export async function testMenuAddColumnLeftAction(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await insertTable(page);
+
+  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
+  const table = wrapper.locator(TABLE_SELECTOR);
+
+  // Wait for table to be fully rendered
+  await expect(wrapper).toBeVisible();
+  await expect(table).toBeVisible();
+
+  // Type content in first column to verify position
+  const firstHeaderCell = table.locator("th").first();
+  await firstHeaderCell.click({ force: true });
+  await page.keyboard.type("First");
+
+  const initialColumns = await table.locator("th").count();
+  expect(initialColumns).toBe(3);
+
+  // Open column menu for first column
+  await showColumnHandleAndClick(page, 0);
+
+  // Click "Add column left"
+  const menu = page.locator(TABLE_MENU_SELECTOR);
+  await menu.getByText("Add column left").click();
+
+  // Verify column was added
+  const newColumns = await table.locator("th").count();
+  expect(newColumns).toBe(4);
+
+  // Verify the original first column moved to second position
+  const secondHeaderCell = table.locator("th").nth(1);
+  await expect(secondHeaderCell).toContainText("First");
+}
+
+/** Verify menu action adds column to the right */
+export async function testMenuAddColumnRightAction(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await insertTable(page);
+
+  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
+  const table = wrapper.locator(TABLE_SELECTOR);
+
+  // Wait for table to be fully rendered
+  await expect(wrapper).toBeVisible();
+  await expect(table).toBeVisible();
+
+  // Type content in first column
+  const firstHeaderCell = table.locator("th").first();
+  await firstHeaderCell.click({ force: true });
+  await page.keyboard.type("First");
+
+  const initialColumns = await table.locator("th").count();
+  expect(initialColumns).toBe(3);
+
+  // Open column menu for first column
+  await showColumnHandleAndClick(page, 0);
+
+  // Click "Add column right"
+  const menu = page.locator(TABLE_MENU_SELECTOR);
+  await menu.getByText("Add column right").click();
+
+  // Verify column was added
+  const newColumns = await table.locator("th").count();
+  expect(newColumns).toBe(4);
+
+  // Verify the original first column stayed in first position
+  await expect(firstHeaderCell).toContainText("First");
+}
+
+/** Verify menu action deletes column */
+export async function testMenuDeleteColumnAction(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await insertTable(page);
+
+  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
+  const table = wrapper.locator(TABLE_SELECTOR);
+
+  // Wait for table to be fully rendered
+  await expect(wrapper).toBeVisible();
+  await expect(table).toBeVisible();
+
+  const initialColumns = await table.locator("th").count();
+  expect(initialColumns).toBe(3);
+
+  // Open column menu
+  await showColumnHandleAndClick(page, 0);
+
+  // Click "Delete column"
+  const menu = page.locator(TABLE_MENU_SELECTOR);
+  await menu.getByText("Delete column").click();
+
+  // Verify column was deleted
+  const newColumns = await table.locator("th").count();
+  expect(newColumns).toBe(2);
+}
+
+/** Verify menu action adds row above */
+export async function testMenuAddRowAboveAction(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await insertTable(page);
+
+  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
+  const table = wrapper.locator(TABLE_SELECTOR);
+
+  // Wait for table to be fully rendered
+  await expect(wrapper).toBeVisible();
+  await expect(table).toBeVisible();
+
+  // Type content in first body cell to verify position
+  const firstBodyCell = table.locator("td").first();
+  await firstBodyCell.click({ force: true });
+  await page.keyboard.type("Original");
+
+  const initialRows = await table.locator("tr").count();
+  expect(initialRows).toBe(3); // 1 header + 2 body
+
+  // Open row menu
+  await showRowHandleAndClick(page);
+
+  // Click "Add row above"
+  const menu = page.locator(TABLE_MENU_SELECTOR);
+  await menu.getByText("Add row above").click();
+
+  // Verify row was added
+  const newRows = await table.locator("tr").count();
+  expect(newRows).toBe(4);
+
+  // Verify the original first body row moved down (now second body row)
+  const secondBodyRow = table.locator("tr").nth(2);
+  await expect(secondBodyRow.locator("td").first()).toContainText("Original");
+}
+
+/** Verify toggle header row action */
+export async function testMenuToggleHeaderRowAction(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await insertTable(page);
+
+  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
+  const table = wrapper.locator(TABLE_SELECTOR);
+
+  // Wait for table to be fully rendered
+  await expect(wrapper).toBeVisible();
+  await expect(table).toBeVisible();
+
+  // Initially should have header cells (th) - first row is header
+  const initialHeaderCells = await table.locator("th").count();
+  expect(initialHeaderCells).toBe(3);
+
+  // Click on a header cell first (toggle header row affects first row)
+  const firstHeaderCell = table.locator("th").first();
+  await firstHeaderCell.click({ force: true });
+  await page.waitForTimeout(100);
+
+  // Hover and click row handle
+  await firstHeaderCell.hover();
+  const rowHandle = page.locator(ROW_HANDLE_SELECTOR);
+  await expect(rowHandle).toHaveCSS("opacity", "1");
+  await page.waitForTimeout(50);
+  await rowHandle.click({ force: true });
+  await page.waitForTimeout(50);
+
+  // Click "Toggle header row" - this toggles the first row's header state
+  const menu = page.locator(TABLE_MENU_SELECTOR);
+  await expect(menu).toBeVisible();
+  await menu.getByText("Toggle header row").click();
+
+  // Wait for DOM update
+  await page.waitForTimeout(100);
+
+  // After toggle, header cells should become body cells (first row is no longer header)
+  const newHeaderCells = await table.locator("th").count();
+  expect(newHeaderCells).toBe(0);
+
+  // All cells are now td (body cells)
+  const allBodyCells = await table.locator("td").count();
+  expect(allBodyCells).toBe(9); // 3 rows x 3 columns
+}
+
+/** Verify text alignment left via column handle menu */
+export async function testTextAlignmentLeftViaMenu(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await insertTable(page);
+
+  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
+  const table = wrapper.locator(TABLE_SELECTOR);
+
+  // Wait for table to be fully rendered
+  await expect(wrapper).toBeVisible();
+  await expect(table).toBeVisible();
+
+  // First, set center alignment
+  await showColumnHandleAndClick(page, 0);
+  let menu = page.locator(TABLE_MENU_SELECTOR);
+  await menu.getByText("Align center").click();
+
+  // Verify center alignment was applied
+  const firstHeaderCell = table.locator("th").first();
+  await expect(firstHeaderCell).toHaveCSS("text-align", "center");
+
+  // Now change to left alignment
+  await showColumnHandleAndClick(page, 0);
+  menu = page.locator(TABLE_MENU_SELECTOR);
+  await menu.getByText("Align left").click();
+
+  // Verify left alignment was applied
+  await expect(firstHeaderCell).toHaveCSS("text-align", "left");
+}
+
+/** Verify text alignment right via column handle menu */
+export async function testTextAlignmentRightViaMenu(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await insertTable(page);
+
+  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
+  const table = wrapper.locator(TABLE_SELECTOR);
+
+  // Wait for table to be fully rendered
+  await expect(wrapper).toBeVisible();
+  await expect(table).toBeVisible();
+
+  // Set right alignment
+  await showColumnHandleAndClick(page, 0);
+  const menu = page.locator(TABLE_MENU_SELECTOR);
+  await menu.getByText("Align right").click();
+
+  // Verify right alignment was applied to all cells in the column
+  const firstHeaderCell = table.locator("th").first();
+  const firstBodyCell = table.locator("td").first();
+  await expect(firstHeaderCell).toHaveCSS("text-align", "right");
+  await expect(firstBodyCell).toHaveCSS("text-align", "right");
+}
