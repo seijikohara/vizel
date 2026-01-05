@@ -19,7 +19,8 @@ Runs Playwright Component Tests across all frameworks.
 
 | Command | Description |
 |---------|-------------|
-| `bun run test:ct` | Run all framework tests |
+| `bun run test:ct` | Run all framework tests in parallel |
+| `bun run test:ct:seq` | Run all framework tests sequentially |
 | `bun run test:ct:react` | Run React tests only |
 | `bun run test:ct:vue` | Run Vue tests only |
 | `bun run test:ct:svelte` | Run Svelte tests only |
@@ -43,9 +44,16 @@ Based on user request or changed files:
 
 ### 2. Run Tests
 
-#### All Frameworks
+#### All Frameworks (Parallel)
 ```bash
 bun run test:ct
+```
+
+> **Note**: Parallel execution may cause timeout errors when running with all browsers due to resource contention. Use `--project=chromium` for faster, more reliable parallel runs.
+
+#### All Frameworks (Sequential)
+```bash
+bun run test:ct:seq
 ```
 
 #### Single Framework
@@ -152,32 +160,7 @@ For each implementation, determine coverage status:
 | ⚠️ Style-only | Pure styling, may not need test |
 | ❌ Missing | Needs test |
 
-### 4. Coverage Mapping
-
-#### Components
-
-| Component | Test Spec | Coverage Type |
-|-----------|-----------|---------------|
-| EditorRoot | Editor.spec | Direct |
-| EditorContent | Editor.spec | Direct |
-| BubbleMenu | BubbleMenu.spec | Direct |
-| BubbleMenuToolbar | BubbleMenu.spec | Indirect |
-| BubbleMenuButton | BubbleMenu.spec | Indirect |
-| BubbleMenuLinkEditor | BubbleMenu.spec | Indirect |
-| BubbleMenuDivider | - | Style-only |
-| SlashMenu | SlashMenu.spec | Direct |
-| SlashMenuItem | SlashMenu.spec | Indirect |
-| SlashMenuEmpty | SlashMenu.spec | Indirect |
-
-#### Hooks / Composables / Runes
-
-| Function | Test Spec | Coverage Type |
-|----------|-----------|---------------|
-| useVizelEditor | Editor.spec | Indirect |
-| useEditorState | - | Missing |
-| createSlashMenuRenderer | SlashMenu.spec | Indirect |
-
-### 5. Coverage Report Format
+### 4. Coverage Report Format
 
 ```markdown
 ## Test Coverage Report
@@ -224,6 +207,17 @@ test("slow test", async ({ mount, page }) => {
 });
 ```
 
+### Parallel Execution Timeout
+When running all frameworks in parallel with all browsers, you may see timeout errors due to resource contention:
+```
+browserContext.newPage: Test timeout of 10000ms exceeded
+```
+
+**Solutions:**
+1. Use single browser: `bun run test:ct --project=chromium`
+2. Use sequential execution: `bun run test:ct:seq`
+3. Reduce parallel workers in config (currently 50% CPU)
+
 ### Element Not Found
 Check if element is rendered to `document.body` (portal):
 ```typescript
@@ -247,12 +241,18 @@ bun run test:ct:react  # if React files changed
 
 ### Run Before Commit
 ```bash
-# Quick check with single browser
+# Quick parallel check with single browser (recommended)
 bun run test:ct --project=chromium
+
+# Or sequential check with single browser
+bun run test:ct:seq --project=chromium
 ```
 
 ### Full CI-like Test
 ```bash
-# All frameworks, all browsers
+# All frameworks in parallel, all browsers
 bun run test:ct
+
+# All frameworks sequentially, all browsers (more stable)
+bun run test:ct:seq
 ```
