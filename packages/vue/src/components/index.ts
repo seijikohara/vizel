@@ -40,6 +40,9 @@ export {
   type NodeSelectorProps,
 } from "./NodeSelector.vue";
 
+// Portal component
+export { default as Portal, type PortalProps } from "./Portal.vue";
+
 // SaveIndicator component
 export {
   default as SaveIndicator,

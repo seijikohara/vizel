@@ -178,13 +178,24 @@ export type {
   VizelSlashCommandOptions,
 } from "./types.ts";
 // Utilities
+// Portal utilities
 export {
   type CreateUploadEventHandlerOptions,
+  createPortalElement,
   createUploadEventHandler,
   defaultEditorProps,
   getEditorState,
+  getPortalContainer,
+  hasPortalContainer,
+  type MountPortalOptions,
+  mountToPortal,
+  PORTAL_Z_INDEX,
+  type PortalLayer,
   type ResolveFeaturesOptions,
   registerUploadEventHandler,
+  removePortalContainer,
   resolveFeatures,
+  unmountFromPortal,
+  VIZEL_PORTAL_ID,
   VIZEL_UPLOAD_IMAGE_EVENT,
 } from "./utils/index.ts";

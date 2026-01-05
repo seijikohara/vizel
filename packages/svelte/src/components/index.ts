@@ -49,6 +49,9 @@ export {
   type NodeSelectorProps,
 } from "./NodeSelector.svelte";
 
+// Portal component
+export { default as Portal, type PortalProps } from "./Portal.svelte";
+
 // SaveIndicator component
 export {
   default as SaveIndicator,

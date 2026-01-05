@@ -135,6 +135,8 @@ export {
   type EditorRootProps,
   getEditorContext,
   getEditorContextSafe,
+  Portal,
+  type PortalProps,
   SaveIndicator,
   type SaveIndicatorProps,
   SlashMenu,
