@@ -1,10 +1,11 @@
 import type { Editor } from "@vizel/core";
-import { type InjectionKey, inject } from "vue";
+import { type ComputedRef, computed, type InjectionKey, inject } from "vue";
 
 export const EDITOR_CONTEXT_KEY: InjectionKey<() => Editor | null> = Symbol("vizel-editor");
 
 /**
  * Composable to access the editor instance from EditorRoot context.
+ * Returns a computed ref that reactively updates when the editor changes.
  *
  * @throws Error if used outside of EditorRoot
  *
@@ -23,12 +24,12 @@ export const EDITOR_CONTEXT_KEY: InjectionKey<() => Editor | null> = Symbol("viz
  * </template>
  * ```
  */
-export function useEditorContext(): Editor | null {
+export function useEditorContext(): ComputedRef<Editor | null> {
   const getEditor = inject(EDITOR_CONTEXT_KEY);
   if (!getEditor) {
     throw new Error("useEditorContext must be used within an EditorRoot");
   }
-  return getEditor();
+  return computed(() => getEditor());
 }
 
 /**

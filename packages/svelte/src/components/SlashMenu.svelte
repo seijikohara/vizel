@@ -43,6 +43,14 @@ let {
 let selectedIndex = $state(0);
 let itemRefs: (HTMLElement | null)[] = $state([]);
 
+// Clean up itemRefs when items decrease
+$effect(() => {
+  const length = flatItems.length;
+  if (itemRefs.length > length) {
+    itemRefs.length = length;
+  }
+});
+
 // Group items when showGroups is true and there are enough items
 const groups = $derived.by<SlashCommandGroup[]>(() => {
   if (!showGroups || items.length <= 5) {

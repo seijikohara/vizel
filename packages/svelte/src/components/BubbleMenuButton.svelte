@@ -34,6 +34,7 @@ let {
 <button
   type="button"
   {disabled}
+  aria-pressed={isActive}
   class="vizel-bubble-menu-button {isActive ? 'is-active' : ''} {className ?? ''}"
   {title}
   data-active={isActive || undefined}

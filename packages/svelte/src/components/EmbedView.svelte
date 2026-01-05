@@ -28,7 +28,7 @@ const isVideo = $derived(
 
 const hasImage = $derived(Boolean(data.image));
 
-const hostname = $derived(() => {
+const hostname = $derived.by(() => {
   try {
     return new URL(data.url).hostname;
   } catch {
@@ -134,7 +134,7 @@ onMount(loadScripts);
         {#if data.description}
           <div class="vizel-embed-card-description">{data.description}</div>
         {/if}
-        <div class="vizel-embed-card-url">{hostname()}</div>
+        <div class="vizel-embed-card-url">{hostname}</div>
       </div>
     </a>
   </div>

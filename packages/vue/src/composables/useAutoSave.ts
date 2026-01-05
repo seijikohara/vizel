@@ -7,20 +7,20 @@ import {
   type JSONContent,
   type SaveStatus,
 } from "@vizel/core";
-import { computed, onBeforeUnmount, onMounted, type Ref, reactive, watch } from "vue";
+import { type ComputedRef, computed, onBeforeUnmount, onMounted, reactive, watch } from "vue";
 
 /**
  * Auto-save composable result
  */
 export interface UseAutoSaveResult {
   /** Current save status */
-  status: Ref<SaveStatus>;
+  status: ComputedRef<SaveStatus>;
   /** Whether there are unsaved changes */
-  hasUnsavedChanges: Ref<boolean>;
+  hasUnsavedChanges: ComputedRef<boolean>;
   /** Timestamp of last successful save */
-  lastSaved: Ref<Date | null>;
+  lastSaved: ComputedRef<Date | null>;
   /** Last error that occurred */
-  error: Ref<Error | null>;
+  error: ComputedRef<Error | null>;
   /** Manually trigger save */
   save: () => Promise<void>;
   /** Restore content from storage */

@@ -1,5 +1,5 @@
 import type { Editor } from "@vizel/core";
-import { onBeforeUnmount, onMounted, type Ref, ref } from "vue";
+import { onBeforeUnmount, type Ref, ref, watch } from "vue";
 
 /**
  * Composable that forces a re-render whenever the editor's state changes.
@@ -28,9 +28,7 @@ export function useEditorState(getEditor: () => Editor | null | undefined): Ref<
     updateCount.value++;
   }
 
-  function subscribe() {
-    const editor = getEditor();
-
+  function subscribe(editor: Editor | null | undefined) {
     // Unsubscribe from previous editor if different
     if (currentEditor && currentEditor !== editor) {
       currentEditor.off("transaction", handleTransaction);
@@ -44,13 +42,14 @@ export function useEditorState(getEditor: () => Editor | null | undefined): Ref<
     }
   }
 
-  // Subscribe on mount
-  onMounted(() => {
-    subscribe();
-  });
-
-  // Also subscribe immediately for SSR/initial render
-  subscribe();
+  // Watch for editor changes and resubscribe
+  watch(
+    getEditor,
+    (editor) => {
+      subscribe(editor);
+    },
+    { immediate: true }
+  );
 
   // Cleanup on unmount
   onBeforeUnmount(() => {

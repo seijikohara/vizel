@@ -143,7 +143,12 @@
         "noApproximativeNumericConstant": "error",
         "noAssignInExpressions": "error",
         "noConfusingVoidType": "error",
-        "noConsole": "warn",
+        "noConsole": {
+          "level": "warn",
+          "options": {
+            "allow": ["error", "warn"]
+          }
+        },
         "noConstEnum": "error",
         "noEmptyBlockStatements": "error",
         "noEvolvingTypes": "error",

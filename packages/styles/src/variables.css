@@ -83,11 +83,13 @@
    * ---------------------------------------- */
 
   /* Font Families */
-  --vizel-font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --vizel-font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
   --vizel-font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --vizel-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco,
-    Consolas, "Liberation Mono", "Courier New", monospace;
+  --vizel-font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
 
   /* Font Sizes */
   --vizel-font-size-xs: 0.75rem;
@@ -161,8 +163,8 @@
   --vizel-transition-fast: 100ms;
   --vizel-transition-normal: 150ms;
   --vizel-transition-slow: 300ms;
-  --vizel-transition-colors: color var(--vizel-transition-normal) ease,
-    background-color var(--vizel-transition-normal) ease,
+  --vizel-transition-colors:
+    color var(--vizel-transition-normal) ease, background-color var(--vizel-transition-normal) ease,
     border-color var(--vizel-transition-normal) ease;
 
   /* ----------------------------------------

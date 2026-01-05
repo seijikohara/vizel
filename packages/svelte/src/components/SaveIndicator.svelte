@@ -15,7 +15,7 @@ export interface SaveIndicatorProps {
 
 <script lang="ts">
 import { formatRelativeTime } from "@vizel/core";
-import { onDestroy, onMount } from "svelte";
+import { onMount } from "svelte";
 
 let {
   status,
@@ -25,7 +25,6 @@ let {
 }: SaveIndicatorProps = $props();
 
 let relativeTime = $state("");
-let intervalId: ReturnType<typeof setInterval> | null = null;
 
 function updateTime() {
   if (lastSaved) {
@@ -37,7 +36,11 @@ function updateTime() {
 
 onMount(() => {
   updateTime();
-  intervalId = setInterval(updateTime, 10000);
+  const intervalId = setInterval(updateTime, 10000);
+
+  return () => {
+    clearInterval(intervalId);
+  };
 });
 
 // Watch lastSaved changes
@@ -45,12 +48,6 @@ $effect(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   lastSaved;
   updateTime();
-});
-
-onDestroy(() => {
-  if (intervalId) {
-    clearInterval(intervalId);
-  }
 });
 
 const statusText = $derived.by(() => {

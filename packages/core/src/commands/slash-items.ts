@@ -306,6 +306,23 @@ const fuseOptions: IFuseOptions<SlashCommandItem> = {
 };
 
 /**
+ * WeakMap cache for Fuse instances to avoid recreating on every search
+ */
+const fuseCache = new WeakMap<SlashCommandItem[], Fuse<SlashCommandItem>>();
+
+/**
+ * Get or create a Fuse instance for the given items
+ */
+function getFuseInstance(items: SlashCommandItem[]): Fuse<SlashCommandItem> {
+  let fuse = fuseCache.get(items);
+  if (!fuse) {
+    fuse = new Fuse(items, fuseOptions);
+    fuseCache.set(items, fuse);
+  }
+  return fuse;
+}
+
+/**
  * Filter slash commands using fuzzy search
  * @param items - The items to filter
  * @param query - The search query
@@ -316,7 +333,7 @@ export function filterSlashCommands(items: SlashCommandItem[], query: string): S
     return items;
   }
 
-  const fuse = new Fuse(items, fuseOptions);
+  const fuse = getFuseInstance(items);
   const results = fuse.search(query);
 
   return results.map((result) => result.item);
@@ -336,7 +353,7 @@ export function searchSlashCommands(
     return items.map((item) => ({ item, score: 0 }));
   }
 
-  const fuse = new Fuse(items, fuseOptions);
+  const fuse = getFuseInstance(items);
   const results = fuse.search(query);
 
   return results.map((result) => {

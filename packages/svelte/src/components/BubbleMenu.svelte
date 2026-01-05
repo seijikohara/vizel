@@ -24,7 +24,6 @@ export interface BubbleMenuProps {
 
 <script lang="ts">
 import { BubbleMenuPlugin } from "@vizel/core";
-import { onDestroy } from "svelte";
 import BubbleMenuToolbar from "./BubbleMenuToolbar.svelte";
 import { getEditorContextSafe } from "./EditorContext.ts";
 
@@ -55,9 +54,12 @@ function handleKeyDown(event: KeyboardEvent) {
 $effect(() => {
   if (!(editor && menuElement)) return;
 
+  const currentEditor = editor;
+  const currentPluginKey = pluginKey;
+
   const plugin = BubbleMenuPlugin({
-    pluginKey,
-    editor,
+    pluginKey: currentPluginKey,
+    editor: currentEditor,
     element: menuElement,
     updateDelay,
     ...(shouldShow && {
@@ -68,20 +70,13 @@ $effect(() => {
     },
   });
 
-  editor.registerPlugin(plugin);
+  currentEditor.registerPlugin(plugin);
   document.addEventListener("keydown", handleKeyDown);
 
   return () => {
-    editor.unregisterPlugin(pluginKey);
+    currentEditor.unregisterPlugin(currentPluginKey);
     document.removeEventListener("keydown", handleKeyDown);
   };
-});
-
-onDestroy(() => {
-  if (editor) {
-    editor.unregisterPlugin(pluginKey);
-  }
-  document.removeEventListener("keydown", handleKeyDown);
 });
 </script>
 

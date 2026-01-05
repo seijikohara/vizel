@@ -197,8 +197,12 @@ export const ResizableImage = Image.extend<ImageResizeOptions>({
         }
       };
 
-      leftHandle.addEventListener("mousedown", (e) => onMouseDown(e, "left"));
-      rightHandle.addEventListener("mousedown", (e) => onMouseDown(e, "right"));
+      // Store event handler references for proper cleanup
+      const handleLeftMouseDown = (e: MouseEvent) => onMouseDown(e, "left");
+      const handleRightMouseDown = (e: MouseEvent) => onMouseDown(e, "right");
+
+      leftHandle.addEventListener("mousedown", handleLeftMouseDown);
+      rightHandle.addEventListener("mousedown", handleRightMouseDown);
 
       return {
         dom: wrapper,
@@ -222,8 +226,11 @@ export const ResizableImage = Image.extend<ImageResizeOptions>({
           return true;
         },
         destroy: () => {
-          leftHandle.removeEventListener("mousedown", (e) => onMouseDown(e, "left"));
-          rightHandle.removeEventListener("mousedown", (e) => onMouseDown(e, "right"));
+          leftHandle.removeEventListener("mousedown", handleLeftMouseDown);
+          rightHandle.removeEventListener("mousedown", handleRightMouseDown);
+          // Clean up any lingering document listeners
+          document.removeEventListener("mousemove", onMouseMove);
+          document.removeEventListener("mouseup", onMouseUp);
         },
       };
     };

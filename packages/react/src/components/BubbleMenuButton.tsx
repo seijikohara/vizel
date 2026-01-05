@@ -39,6 +39,7 @@ export function BubbleMenuButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
+      aria-pressed={isActive}
       className={`vizel-bubble-menu-button ${isActive ? "is-active" : ""} ${className ?? ""}`}
       title={title}
       data-active={isActive || undefined}

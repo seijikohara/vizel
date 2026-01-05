@@ -39,7 +39,7 @@ const canEmbed = $derived.by(() => {
 });
 
 // Check if URL is a known embed provider
-const isEmbedProvider = $derived(() => {
+const isEmbedProvider = $derived.by(() => {
   if (!url.trim()) return false;
   return detectProvider(url.trim()) !== null;
 });
@@ -129,7 +129,7 @@ function handleRemove() {
       </button>
     {/if}
   </div>
-  {#if canEmbed && isEmbedProvider()}
+  {#if canEmbed && isEmbedProvider}
     <div class="vizel-link-editor-embed-toggle">
       <input
         id="vizel-embed-toggle"

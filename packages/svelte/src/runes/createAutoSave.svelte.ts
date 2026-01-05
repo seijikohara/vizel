@@ -7,7 +7,6 @@ import {
   type JSONContent,
   type SaveStatus,
 } from "@vizel/core";
-import { onDestroy } from "svelte";
 
 /**
  * Auto-save rune result
@@ -91,7 +90,7 @@ export function createAutoSave(
     currentEditor.on("update", handlers.handleUpdate);
   }
 
-  // Watch for editor changes
+  // Watch for editor changes - $effect cleanup handles unmount
   $effect(() => {
     const editor = getEditor();
     subscribe(editor);
@@ -102,14 +101,6 @@ export function createAutoSave(
         handlers.cancel();
       }
     };
-  });
-
-  // Also cleanup on destroy
-  onDestroy(() => {
-    if (currentEditor && handlers) {
-      currentEditor.off("update", handlers.handleUpdate);
-      handlers.cancel();
-    }
   });
 
   async function save(): Promise<void> {

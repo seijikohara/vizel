@@ -70,6 +70,13 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
     // Flatten for navigation
     const flatItems = useMemo(() => groups.flatMap((g) => g.items), [groups]);
 
+    // Trim refs array when items count decreases to prevent stale references
+    useEffect(() => {
+      if (itemRefs.current.length > flatItems.length) {
+        itemRefs.current.length = flatItems.length;
+      }
+    }, [flatItems.length]);
+
     // Scroll selected item into view when selection changes
     useEffect(() => {
       const selectedElement = itemRefs.current[selectedIndex];

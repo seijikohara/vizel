@@ -50,6 +50,13 @@ export function ColorPicker({
     [showRecentColors, recentColors, colors]
   );
 
+  // Trim refs array when colors count decreases to prevent stale references
+  useEffect(() => {
+    if (swatchRefs.current.length > allColors.length) {
+      swatchRefs.current.length = allColors.length;
+    }
+  }, [allColors.length]);
+
   // Calculate the offset for color palette indices (after recent colors)
   const paletteOffset = showRecentColors ? recentColors.length : 0;
 

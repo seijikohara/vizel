@@ -20,15 +20,27 @@ const editor = $derived(editorProp ?? contextEditor?.());
 let element: HTMLElement | undefined = $state();
 
 $effect(() => {
-  if (editor && element) {
-    // Mount the editor's DOM view to the container element
-    element.appendChild(editor.view.dom);
-
-    // Update editable state
-    editor.view.setProps({
-      editable: () => editor?.isEditable ?? false,
-    });
+  if (!editor || !element) {
+    return;
   }
+
+  const currentEditor = editor;
+  const currentElement = element;
+
+  // Mount the editor's DOM view to the container element
+  currentElement.appendChild(currentEditor.view.dom);
+
+  // Update editable state
+  currentEditor.view.setProps({
+    editable: () => currentEditor?.isEditable ?? false,
+  });
+
+  // Cleanup: remove DOM element when editor changes or unmounts
+  return () => {
+    if (currentEditor.view.dom.parentNode === currentElement) {
+      currentElement.removeChild(currentEditor.view.dom);
+    }
+  };
 });
 </script>
 
