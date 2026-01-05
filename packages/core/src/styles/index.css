@@ -20,6 +20,9 @@
 /* CSS Variables (must be first) */
 @import "./variables.css";
 
+/* Portal system */
+@import "./portal.css";
+
 /* Component styles */
 @import "./editor.css";
 @import "./placeholder.css";

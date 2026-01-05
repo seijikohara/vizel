@@ -133,6 +133,8 @@ export {
   type EditorContentProps,
   EditorRoot,
   type EditorRootProps,
+  Portal,
+  type PortalProps,
   SaveIndicator,
   type SaveIndicatorProps,
   SlashMenu,

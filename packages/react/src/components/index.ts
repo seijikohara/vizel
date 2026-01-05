@@ -34,6 +34,9 @@ export { EmbedView, type EmbedViewProps } from "./EmbedView.tsx";
 // NodeSelector component
 export { NodeSelector, type NodeSelectorProps } from "./NodeSelector.tsx";
 
+// Portal component
+export { Portal, type PortalProps } from "./Portal.tsx";
+
 // SaveIndicator component
 export { SaveIndicator, type SaveIndicatorProps } from "./SaveIndicator.tsx";
 

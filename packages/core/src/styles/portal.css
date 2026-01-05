@@ -1,0 +1,35 @@
+/**
+ * Portal Container Styles
+ *
+ * Provides z-index management for floating UI elements rendered
+ * outside the normal DOM hierarchy.
+ */
+
+/* Portal root container */
+#vizel-portal-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: var(--vizel-portal-base-z-index, 9999);
+}
+
+/* Portal layer elements */
+[data-vizel-portal-layer] {
+  pointer-events: auto;
+}
+
+/* Z-index layers for different portal content types */
+[data-vizel-portal-layer="dropdown"] {
+  z-index: var(--vizel-portal-dropdown-z-index, 50);
+}
+
+[data-vizel-portal-layer="modal"] {
+  z-index: var(--vizel-portal-modal-z-index, 100);
+}
+
+[data-vizel-portal-layer="tooltip"] {
+  z-index: var(--vizel-portal-tooltip-z-index, 150);
+}
