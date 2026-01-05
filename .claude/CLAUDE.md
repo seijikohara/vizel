@@ -1,6 +1,6 @@
 # Vizel Project
 
-A block-based rich text editor built with Tiptap, supporting React, Vue, and Svelte.
+A block-based visual editor for Markdown built with Tiptap, supporting React, Vue, and Svelte.
 
 ## Project Structure
 
