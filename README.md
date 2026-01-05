@@ -27,19 +27,22 @@ A block-based visual editor for Markdown built with [Tiptap](https://tiptap.dev/
 | `@vizel/react` | React 18/19 components and hooks |
 | `@vizel/vue` | Vue 3 components and composables |
 | `@vizel/svelte` | Svelte 5 components and runes |
+| `@vizel/styles` | Pre-built CSS styles (optional) |
 
 ## Installation
 
 ```bash
 # React
-bun add @vizel/react
+bun add @vizel/react @vizel/styles
 
 # Vue
-bun add @vizel/vue
+bun add @vizel/vue @vizel/styles
 
 # Svelte
-bun add @vizel/svelte
+bun add @vizel/svelte @vizel/styles
 ```
+
+> **Note**: `@vizel/styles` is optional. Each framework package includes the core styles, but `@vizel/styles` provides a pre-built CSS bundle for convenience.
 
 ## Usage
 
@@ -47,7 +50,7 @@ bun add @vizel/svelte
 
 ```tsx
 import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/react';
-import '@vizel/core/styles';
+import '@vizel/styles';
 
 function Editor() {
   const editor = useVizelEditor({
@@ -81,7 +84,7 @@ function Editor() {
 ```vue
 <script setup lang="ts">
 import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/vue';
-import '@vizel/core/styles';
+import '@vizel/styles';
 
 const editor = useVizelEditor({
   placeholder: "Type '/' for commands...",
@@ -105,7 +108,7 @@ const editor = useVizelEditor({
 ```svelte
 <script lang="ts">
 import { EditorContent, BubbleMenu, createVizelEditor } from '@vizel/svelte';
-import '@vizel/core/styles';
+import '@vizel/styles';
 
 const editor = createVizelEditor({
   placeholder: "Type '/' for commands...",
@@ -246,6 +249,51 @@ function ThemeToggle() {
   );
 }
 ```
+
+## Styling
+
+### Default Styles
+
+Import the pre-built stylesheet:
+
+```typescript
+import '@vizel/styles';
+```
+
+### shadcn/ui Integration
+
+Vizel provides CSS variables compatible with [shadcn/ui](https://ui.shadcn.com/) theming:
+
+```typescript
+// Import shadcn-compatible variables first, then main styles
+import '@vizel/styles/shadcn';
+import '@vizel/styles';
+```
+
+This maps shadcn/ui's CSS variables (like `--primary`, `--background`, `--border`) to Vizel's internal variables, ensuring consistent theming across your application.
+
+### Custom Theming
+
+Override CSS variables to customize the appearance:
+
+```css
+:root {
+  --vizel-primary: #3b82f6;
+  --vizel-background: #ffffff;
+  --vizel-foreground: #111827;
+  --vizel-border: #e5e7eb;
+  --vizel-radius-md: 0.375rem;
+}
+
+[data-vizel-theme="dark"] {
+  --vizel-primary: #60a5fa;
+  --vizel-background: #1f2937;
+  --vizel-foreground: #f9fafb;
+  --vizel-border: #374151;
+}
+```
+
+See [variables.css](packages/core/src/styles/variables.css) for the full list of available CSS variables.
 
 ## Development
 
