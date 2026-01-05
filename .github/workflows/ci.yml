@@ -61,13 +61,14 @@ jobs:
         run: bun run build
 
   e2e:
-    name: E2E (${{ matrix.framework }})
+    name: E2E (${{ matrix.framework }}/${{ matrix.browser }})
     runs-on: ubuntu-latest
     needs: [build]
     strategy:
       fail-fast: false
       matrix:
         framework: [react, vue, svelte]
+        browser: [chromium, firefox, webkit]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -79,11 +80,11 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: bunx playwright install --with-deps chromium
+        run: bunx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Run E2E tests
         id: test
-        run: bun run test:ct:${{ matrix.framework }} --project=chromium
+        run: bun run test:ct:${{ matrix.framework }} --project=${{ matrix.browser }}
 
       - name: Save test result
         if: always()
@@ -93,7 +94,7 @@ jobs:
         uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: e2e-result-${{ matrix.framework }}
+          name: e2e-result-${{ matrix.framework }}-${{ matrix.browser }}
           path: result.txt
           retention-days: 1
 
@@ -101,7 +102,7 @@ jobs:
         uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ matrix.framework }}
+          name: playwright-report-${{ matrix.framework }}-${{ matrix.browser }}
           path: playwright-report/
           retention-days: 7
 
@@ -119,34 +120,42 @@ jobs:
 
       - name: Generate summary
         run: |
-          REACT_RESULT=$(cat e2e-result-react/result.txt 2>/dev/null || echo "unknown")
-          VUE_RESULT=$(cat e2e-result-vue/result.txt 2>/dev/null || echo "unknown")
-          SVELTE_RESULT=$(cat e2e-result-svelte/result.txt 2>/dev/null || echo "unknown")
-
           get_status() {
             case "$1" in
-              success) echo "✅ Passed" ;;
-              failure) echo "❌ Failed" ;;
-              cancelled) echo "⏹️ Cancelled" ;;
-              *) echo "❓ Unknown" ;;
+              success) echo "✅" ;;
+              failure) echo "❌" ;;
+              cancelled) echo "⏹️" ;;
+              *) echo "❓" ;;
             esac
           }
 
           echo "## E2E Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Framework | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| React | $(get_status $REACT_RESULT) |" >> $GITHUB_STEP_SUMMARY
-          echo "| Vue | $(get_status $VUE_RESULT) |" >> $GITHUB_STEP_SUMMARY
-          echo "| Svelte | $(get_status $SVELTE_RESULT) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Framework | Chromium | Firefox | WebKit |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|:--------:|:-------:|:------:|" >> $GITHUB_STEP_SUMMARY
+
+          for framework in react vue svelte; do
+            CHROMIUM=$(cat e2e-result-${framework}-chromium/result.txt 2>/dev/null || echo "unknown")
+            FIREFOX=$(cat e2e-result-${framework}-firefox/result.txt 2>/dev/null || echo "unknown")
+            WEBKIT=$(cat e2e-result-${framework}-webkit/result.txt 2>/dev/null || echo "unknown")
+            FRAMEWORK_NAME=$(echo "$framework" | sed 's/.*/\u&/')
+            echo "| $FRAMEWORK_NAME | $(get_status $CHROMIUM) | $(get_status $FIREFOX) | $(get_status $WEBKIT) |" >> $GITHUB_STEP_SUMMARY
+          done
 
       - name: Check overall result
         run: |
-          REACT_RESULT=$(cat e2e-result-react/result.txt 2>/dev/null || echo "unknown")
-          VUE_RESULT=$(cat e2e-result-vue/result.txt 2>/dev/null || echo "unknown")
-          SVELTE_RESULT=$(cat e2e-result-svelte/result.txt 2>/dev/null || echo "unknown")
+          FAILED=0
+          for framework in react vue svelte; do
+            for browser in chromium firefox webkit; do
+              RESULT=$(cat e2e-result-${framework}-${browser}/result.txt 2>/dev/null || echo "unknown")
+              if [ "$RESULT" != "success" ]; then
+                echo "❌ ${framework}/${browser}: $RESULT"
+                FAILED=1
+              fi
+            done
+          done
 
-          if [ "$REACT_RESULT" != "success" ] || [ "$VUE_RESULT" != "success" ] || [ "$SVELTE_RESULT" != "success" ]; then
+          if [ "$FAILED" = "1" ]; then
             echo "❌ Some E2E tests failed"
             exit 1
           fi
