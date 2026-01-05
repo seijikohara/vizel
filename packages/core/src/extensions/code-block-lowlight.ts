@@ -167,7 +167,16 @@ export function createCodeBlockLowlightExtension(
           if (pos !== null && pos !== undefined) {
             const newLanguage = languageInput.value.toLowerCase().trim() || defaultLanguage;
             languageInput.value = newLanguage;
-            editor.chain().focus().updateAttributes("codeBlock", { language: newLanguage }).run();
+            // Use setNodeMarkup to update the specific node at this position
+            const { tr } = editor.state;
+            const nodeAtPos = editor.state.doc.nodeAt(pos);
+            if (nodeAtPos) {
+              tr.setNodeMarkup(pos, undefined, {
+                ...nodeAtPos.attrs,
+                language: newLanguage,
+              });
+              editor.view.dispatch(tr);
+            }
           }
         };
 
@@ -255,7 +264,16 @@ export function createCodeBlockLowlightExtension(
           const pos = typeof getPos === "function" ? getPos() : null;
           if (pos !== null && pos !== undefined) {
             const newValue = !currentLineNumbers;
-            editor.chain().focus().updateAttributes("codeBlock", { lineNumbers: newValue }).run();
+            // Use setNodeMarkup to update the specific node at this position
+            const { tr } = editor.state;
+            const nodeAtPos = editor.state.doc.nodeAt(pos);
+            if (nodeAtPos) {
+              tr.setNodeMarkup(pos, undefined, {
+                ...nodeAtPos.attrs,
+                lineNumbers: newValue,
+              });
+              editor.view.dispatch(tr);
+            }
           }
         });
 
