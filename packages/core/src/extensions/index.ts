@@ -72,10 +72,23 @@ export {
   type VizelEmbedOptions,
 } from "./embed.ts";
 export {
+  createFileHandlerExtension,
+  createImageFileHandlers,
+  DEFAULT_FILE_MIME_TYPES,
+  FileHandler,
+  type FileHandlerError,
+  type FileHandlerErrorType,
+  filterFilesByMimeType,
+  type ImageFileHandlerOptions,
+  type ImageFileHandlers,
+  type VizelFileHandlerOptions,
+} from "./file-handler.ts";
+export {
   createImageExtension,
   createImageUploadExtension,
   createImageUploader,
   createImageUploadPlugin,
+  createImageUploadWithFileHandler,
   defaultBase64Upload,
   getImageUploadPluginKey,
   handleImageDrop,
@@ -87,6 +100,7 @@ export {
   type UploadImageFn,
   type VizelImageOptions,
   type VizelImageUploadOptions,
+  type VizelImageUploadWithFileHandlerOptions,
   validateImageFile,
 } from "./image.ts";
 export {

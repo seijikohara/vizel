@@ -1,4 +1,5 @@
-import { Extension } from "@tiptap/core";
+import { type Editor, Extension } from "@tiptap/core";
+import { FileHandler } from "@tiptap/extension-file-handler";
 import Image from "@tiptap/extension-image";
 import { Plugin } from "@tiptap/pm/state";
 import {
@@ -7,6 +8,7 @@ import {
   handleImageDrop,
   handleImagePaste,
   type ImageUploadOptions,
+  validateImageFile,
 } from "../plugins/image-upload.ts";
 import { ResizableImage } from "./image-resize.ts";
 
@@ -164,6 +166,140 @@ export function createImageUploadExtension(options: VizelImageUploadOptions) {
   });
 
   return [imageExtension, uploadExtension, dropPasteExtension];
+}
+
+/**
+ * Options for image upload with file handler
+ */
+export interface VizelImageUploadWithFileHandlerOptions extends VizelImageOptions {
+  /** Image upload configuration */
+  upload: ImageUploadOptions;
+  /** Image resize options (set to false to disable) */
+  resize?: VizelImageResizeOptions | false;
+  /** Use @tiptap/extension-file-handler for drop/paste handling (default: true) */
+  useFileHandler?: boolean;
+}
+
+/**
+ * Create Image extension with upload support using @tiptap/extension-file-handler.
+ *
+ * This is an alternative to createImageUploadExtension that uses the official
+ * Tiptap FileHandler extension for more consistent file handling.
+ *
+ * @example
+ * ```ts
+ * const extensions = [
+ *   ...createVizelExtensions(),
+ *   ...createImageUploadWithFileHandler({
+ *     upload: {
+ *       onUpload: async (file) => {
+ *         const formData = new FormData();
+ *         formData.append("image", file);
+ *         const res = await fetch("/api/upload", { method: "POST", body: formData });
+ *         return (await res.json()).url;
+ *       },
+ *     },
+ *   }),
+ * ];
+ * ```
+ */
+export function createImageUploadWithFileHandler(options: VizelImageUploadWithFileHandlerOptions) {
+  const { onUpload, maxFileSize, allowedTypes, onValidationError, onUploadError } = options.upload;
+
+  // Use ResizableImage if resize is enabled, otherwise use standard Image
+  const resizeEnabled = options.resize !== false;
+  const resizeOptions = typeof options.resize === "object" ? options.resize : {};
+
+  const imageExtension = resizeEnabled
+    ? ResizableImage.configure({
+        inline: options.inline ?? false,
+        allowBase64: options.allowBase64 ?? true,
+        minWidth: resizeOptions.minWidth ?? 100,
+        minHeight: resizeOptions.minHeight ?? 100,
+        ...(resizeOptions.maxWidth !== undefined && { maxWidth: resizeOptions.maxWidth }),
+        HTMLAttributes: {
+          class: "vizel-image",
+          ...options.HTMLAttributes,
+        },
+      })
+    : createImageExtension(options);
+
+  const uploadExtension = Extension.create({
+    name: "imageUpload",
+
+    addProseMirrorPlugins() {
+      return [createImageUploadPlugin(options.upload)];
+    },
+  });
+
+  // Allowed MIME types for file handler
+  const mimeTypes = allowedTypes ?? [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "image/svg+xml",
+  ];
+
+  // File handler for drop/paste
+  const fileHandlerExtension = FileHandler.configure({
+    allowedMimeTypes: mimeTypes,
+
+    onPaste: (editor: Editor, files: File[]) => {
+      for (const file of files) {
+        // Validate file
+        const validationError = validateImageFile(file, {
+          ...(maxFileSize !== undefined && { maxFileSize }),
+          ...(allowedTypes !== undefined && { allowedTypes }),
+        });
+
+        if (validationError) {
+          onValidationError?.(validationError);
+          continue;
+        }
+
+        // Upload and insert image
+        onUpload(file)
+          .then((url: string) => {
+            editor.chain().focus().setImage({ src: url }).run();
+          })
+          .catch((error: Error) => {
+            onUploadError?.(error, file);
+          });
+      }
+    },
+
+    onDrop: (editor: Editor, files: File[], pos: number) => {
+      for (const file of files) {
+        // Validate file
+        const validationError = validateImageFile(file, {
+          ...(maxFileSize !== undefined && { maxFileSize }),
+          ...(allowedTypes !== undefined && { allowedTypes }),
+        });
+
+        if (validationError) {
+          onValidationError?.(validationError);
+          continue;
+        }
+
+        // Upload and insert image at drop position
+        onUpload(file)
+          .then((url: string) => {
+            const { schema } = editor.state;
+            const imageNode = schema.nodes.image?.create({ src: url });
+            if (imageNode) {
+              const tr = editor.state.tr.insert(pos, imageNode);
+              editor.view.dispatch(tr);
+            }
+          })
+          .catch((error: Error) => {
+            onUploadError?.(error, file);
+          });
+      }
+    },
+  });
+
+  return [imageExtension, uploadExtension, fileHandlerExtension];
 }
 
 export { Image };

@@ -113,8 +113,12 @@ function handleImportMarkdown() {
             <span>Links</span>
           </div>
           <div class="feature-tag">
-            <span class="feature-icon">U</span>
-            <span>Image Upload</span>
+            <span class="feature-icon">📎</span>
+            <span>Drag & Drop</span>
+          </div>
+          <div class="feature-tag">
+            <span class="feature-icon">📋</span>
+            <span>Paste Images</span>
           </div>
           <div class="feature-tag">
             <span class="feature-icon">M</span>

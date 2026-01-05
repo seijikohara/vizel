@@ -133,8 +133,12 @@ function AppContent() {
             <span>Links</span>
           </div>
           <div className="feature-tag">
-            <span className="feature-icon">U</span>
-            <span>Image Upload</span>
+            <span className="feature-icon">📎</span>
+            <span>Drag & Drop</span>
+          </div>
+          <div className="feature-tag">
+            <span className="feature-icon">📋</span>
+            <span>Paste Images</span>
           </div>
           <div className="feature-tag">
             <span className="feature-icon">M</span>
