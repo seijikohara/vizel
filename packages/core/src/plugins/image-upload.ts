@@ -261,7 +261,6 @@ export function createImageUploader(options: ImageUploadOptions): UploadImageFn 
           const imageNode = schema.nodes.image?.create({ src: uploadedSrc });
 
           if (!imageNode) {
-            // biome-ignore lint/suspicious/noConsole: logging warning for missing node type
             console.warn("Image node type not found in schema");
             return;
           }
