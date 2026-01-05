@@ -33,6 +33,9 @@ export const THEME_CONTEXT_KEY = Symbol("ThemeContext");
     disableTransitionOnChange = false,
   }: Props = $props();
 
+  // Intentionally capture initial values only - theme state should persist
+  // regardless of prop changes after mount
+  // svelte-ignore state_referenced_locally
   let theme = $state<Theme>(getStoredTheme(storageKey) ?? defaultTheme);
   let systemTheme = $state<ResolvedTheme>(getSystemTheme());
 

@@ -15,9 +15,11 @@ async function insertCodeBlock(component: Locator, page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
   await editor.click();
   await page.keyboard.type("/code");
-  await page.waitForTimeout(100);
+  // Wait for slash menu to appear
+  await expect(page.locator(".vizel-slash-menu")).toBeVisible();
   await page.keyboard.press("Enter");
-  await page.waitForTimeout(100);
+  // Wait for code block to be inserted
+  await expect(component.locator(CODE_BLOCK_SELECTOR)).toBeVisible();
 }
 
 /** Verify code block can be inserted via slash command */
@@ -133,23 +135,34 @@ export async function testCodeBlockSyntaxHighlighting(
 ): Promise<void> {
   await insertCodeBlock(component, page);
 
+  const codeBlock = component.locator(CODE_BLOCK_SELECTOR);
+  const code = codeBlock.locator("code");
+
   // Set language to JavaScript
   const languageInput = component.locator(LANGUAGE_INPUT_SELECTOR);
   await languageInput.click();
   await languageInput.fill("javascript");
-  await languageInput.blur();
+  await expect(languageInput).toHaveValue("javascript");
 
-  // Type some code
-  await page.keyboard.type("const x = 42;");
+  // Click on the code block to ensure focus is in the code area
+  await codeBlock.click();
 
-  // Wait for lowlight to apply syntax highlighting (async decoration update)
-  await page.waitForTimeout(200);
+  // Type some code slowly to ensure all characters are captured
+  await page.keyboard.type("const x = 42;", { delay: 10 });
 
-  // Check for highlight.js classes
-  const codeBlock = component.locator(CODE_BLOCK_SELECTOR);
-  const code = codeBlock.locator("code");
+  // Verify the code was typed
+  await expect(code).toContainText("const x = 42;");
 
   // Should have hljs classes for syntax highlighting
-  const hlElements = code.locator("[class^='hljs-']");
-  await expect(hlElements.first()).toBeVisible({ timeout: 10000 });
+  // Use expect.poll to retry checking for syntax highlighting elements
+  // as lowlight applies decorations asynchronously
+  await expect
+    .poll(
+      async () => {
+        const hlElements = code.locator("[class^='hljs-']");
+        return await hlElements.count();
+      },
+      { timeout: 10000 }
+    )
+    .toBeGreaterThan(0);
 }

@@ -16,25 +16,28 @@ async function clickEditorStart(component: Locator, page: Page): Promise<void> {
   await editor.click();
   // Dismiss any bubble menu
   await page.keyboard.press("Escape");
-  await page.waitForTimeout(50);
 }
 
 /** Helper to insert a math block via slash command */
 async function insertMathBlock(component: Locator, page: Page): Promise<void> {
   await clickEditorStart(component, page);
   await page.keyboard.type("/math");
-  await page.waitForTimeout(100);
+  // Wait for slash menu to appear
+  await expect(page.locator(".vizel-slash-menu")).toBeVisible();
   await page.keyboard.press("Enter");
-  await page.waitForTimeout(200);
+  // Wait for math block to be inserted
+  await expect(component.locator(MATH_BLOCK_SELECTOR)).toBeVisible();
 }
 
 /** Helper to insert inline math via slash command */
 async function insertInlineMath(component: Locator, page: Page): Promise<void> {
   await clickEditorStart(component, page);
   await page.keyboard.type("/inline");
-  await page.waitForTimeout(100);
+  // Wait for slash menu to appear
+  await expect(page.locator(".vizel-slash-menu")).toBeVisible();
   await page.keyboard.press("Enter");
-  await page.waitForTimeout(200);
+  // Wait for inline math to be inserted
+  await expect(component.locator(MATH_INLINE_SELECTOR)).toBeVisible();
 }
 
 /** Verify math block can be inserted via slash command */
@@ -84,15 +87,13 @@ export async function testMathBlockTyping(component: Locator, page: Page): Promi
     el.value = "E = mc^2";
     el.dispatchEvent(new Event("input", { bubbles: true }));
   });
-  await page.waitForTimeout(100);
 
   // Blur the textarea to save content
   await textarea.evaluate((el: HTMLTextAreaElement) => {
     el.blur();
   });
-  await page.waitForTimeout(500);
 
-  // Verify the math is rendered
+  // Verify the math is rendered (auto-retrying assertion with timeout)
   const katexElement = mathBlock.locator(".vizel-math-render .katex");
   await expect(katexElement).toBeVisible({ timeout: 10000 });
 }
@@ -103,9 +104,8 @@ export async function testInlineMathInputRule(component: Locator, page: Page): P
 
   // Type inline math using $...$ syntax
   await page.keyboard.type("$E=mc^2$");
-  await page.waitForTimeout(300);
 
-  // Should create an inline math element
+  // Should create an inline math element (auto-retrying assertion)
   const mathInline = component.locator(MATH_INLINE_SELECTOR);
   await expect(mathInline).toBeVisible();
 }
@@ -127,15 +127,13 @@ export async function testKaTeXRendering(component: Locator, page: Page): Promis
     el.value = "\\sum_{i=1}^{n} i";
     el.dispatchEvent(new Event("input", { bubbles: true }));
   });
-  await page.waitForTimeout(100);
 
   // Blur the textarea to save content
   await textarea.evaluate((el: HTMLTextAreaElement) => {
     el.blur();
   });
-  await page.waitForTimeout(500);
 
-  // Should have KaTeX rendered elements
+  // Should have KaTeX rendered elements (auto-retrying assertion with timeout)
   const katexElement = mathBlock.locator(".vizel-math-render .katex");
   await expect(katexElement).toBeVisible({ timeout: 10000 });
 

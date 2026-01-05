@@ -9,7 +9,8 @@ import { expect } from "@playwright/test";
 /** Helper to type slash command and select from menu */
 async function selectSlashCommand(page: Page, command: string): Promise<void> {
   await page.keyboard.type(`/${command}`);
-  await page.waitForTimeout(100);
+  // Wait for slash menu to appear
+  await expect(page.locator(".vizel-slash-menu")).toBeVisible();
   await page.keyboard.press("Enter");
 }
 
@@ -76,9 +77,8 @@ export async function testDetailsToggle(component: Locator, page: Page): Promise
 
   // Click to toggle
   await summary.click();
-  await page.waitForTimeout(200);
 
-  // The details block should still be visible
+  // The details block should still be visible (auto-retrying assertion)
   await expect(details).toBeVisible();
 }
 
@@ -120,14 +120,12 @@ export async function testDetailsContentEditable(component: Locator, page: Page)
   // Tiptap's Details extension uses a hidden attribute on content, not native details behavior
   await details.evaluate((el) => el.setAttribute("open", "true"));
   await content.evaluate((el) => el.removeAttribute("hidden"));
-  await page.waitForTimeout(100);
 
-  // Now content should be visible
+  // Now content should be visible (auto-retrying assertion)
   await expect(content).toBeVisible();
 
   // Click on the content area to focus it
   await content.click();
-  await page.waitForTimeout(100);
 
   // Type in the content area
   await page.keyboard.type("This is the hidden content");

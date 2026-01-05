@@ -14,6 +14,9 @@ async function selectTextInEditor(component: Locator, page: Page): Promise<void>
   await editor.click();
   await page.keyboard.type("Select this text");
   await page.keyboard.press("ControlOrMeta+a");
+  // Wait for bubble menu to appear after selection
+  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
+  await expect(bubbleMenu).toBeVisible();
 }
 
 /** Verify bubble menu appears when text is selected */
@@ -220,6 +223,8 @@ export async function testBubbleMenuLinkEditorRemoveLink(
 
   const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
   const linkButton = bubbleMenu.locator('[data-action="link"]');
+  const editor = component.locator(".vizel-editor");
+  const link = editor.locator("a");
 
   // First, set a link
   await linkButton.click();
@@ -227,6 +232,10 @@ export async function testBubbleMenuLinkEditorRemoveLink(
   const urlInput = linkEditor.locator(".vizel-link-input");
   await urlInput.fill("https://example.com");
   await linkEditor.locator('button[type="submit"]').click();
+
+  // Wait for link editor to close and link to be applied
+  await expect(linkEditor).not.toBeVisible();
+  await expect(link).toHaveCount(1);
 
   // Re-select text and open link editor
   await page.keyboard.press("ControlOrMeta+a");
@@ -238,9 +247,10 @@ export async function testBubbleMenuLinkEditorRemoveLink(
   const removeButton = linkEditor.locator(".vizel-link-remove");
   await removeButton.click();
 
+  // Wait for link editor to close
+  await expect(linkEditor).not.toBeVisible();
+
   // Link should be removed
-  const editor = component.locator(".vizel-editor");
-  const link = editor.locator("a");
   await expect(link).toHaveCount(0);
 }
 

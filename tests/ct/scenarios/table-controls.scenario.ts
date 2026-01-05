@@ -61,12 +61,8 @@ export async function testColumnInsertButtonAppearsOnHover(
   await expect(table).toBeVisible();
   await expect(table.locator("th").first()).toBeVisible();
 
-  // Give layout time to stabilize
-  await page.waitForTimeout(100);
-
   // Move mouse outside the wrapper to ensure hover state is reset
   await page.mouse.move(0, 0);
-  await page.waitForTimeout(50);
 
   // CSS-based approach: button has opacity: 0 initially, opacity: 1 on hover
   // Initially button should be hidden (opacity: 0)
@@ -97,17 +93,12 @@ export async function testColumnInsertButtonAddsColumn(
   await expect(table).toBeVisible();
   await expect(table.locator("th").first()).toBeVisible();
 
-  // Give layout time to stabilize
-  await page.waitForTimeout(100);
-
   // Get initial column count
-  const initialHeaderCells = await table.locator("th").count();
-  expect(initialHeaderCells).toBe(3);
+  await expect(table.locator("th")).toHaveCount(3);
 
   // Click on a cell first to set up editor focus
   const firstHeaderCell = table.locator("th").first();
   await firstHeaderCell.click({ force: true });
-  await page.waitForTimeout(100);
 
   // Hover over wrapper to show button (CSS :hover)
   await wrapper.hover();
@@ -116,12 +107,8 @@ export async function testColumnInsertButtonAddsColumn(
   // Click the column insert button
   await columnInsertBtn.click({ force: true });
 
-  // Wait for DOM update
-  await page.waitForTimeout(200);
-
-  // Verify column was added
-  const newHeaderCells = await table.locator("th").count();
-  expect(newHeaderCells).toBe(4);
+  // Verify column was added (auto-retrying assertion)
+  await expect(table.locator("th")).toHaveCount(4);
 }
 
 /** Verify row insert button appears on hover near row border */
@@ -142,12 +129,8 @@ export async function testRowInsertButtonAppearsOnHover(
   await expect(table).toBeVisible();
   await expect(table.locator("th").first()).toBeVisible();
 
-  // Give layout time to stabilize
-  await page.waitForTimeout(100);
-
   // Move mouse outside the wrapper to ensure hover state is reset
   await page.mouse.move(0, 0);
-  await page.waitForTimeout(50);
 
   // CSS-based approach: button has opacity: 0 initially, opacity: 1 on hover
   // Initially button should be hidden (opacity: 0)
@@ -175,17 +158,12 @@ export async function testRowInsertButtonAddsRow(component: Locator, page: Page)
   await expect(table).toBeVisible();
   await expect(table.locator("th").first()).toBeVisible();
 
-  // Give layout time to stabilize
-  await page.waitForTimeout(100);
-
   // Get initial row count (1 header row + 2 body rows = 3 rows)
-  const initialRows = await table.locator("tr").count();
-  expect(initialRows).toBe(3);
+  await expect(table.locator("tr")).toHaveCount(3);
 
   // Click on a cell first to set up editor focus
   const firstCell = table.locator("td").first();
   await firstCell.click({ force: true });
-  await page.waitForTimeout(100);
 
   // Hover over wrapper to show button (CSS :hover)
   await wrapper.hover();
@@ -194,12 +172,8 @@ export async function testRowInsertButtonAddsRow(component: Locator, page: Page)
   // Click the row insert button
   await rowInsertBtn.click({ force: true });
 
-  // Wait for DOM update
-  await page.waitForTimeout(200);
-
-  // Verify row was added
-  const newRows = await table.locator("tr").count();
-  expect(newRows).toBe(4);
+  // Verify row was added (auto-retrying assertion)
+  await expect(table.locator("tr")).toHaveCount(4);
 }
 
 /** Verify row handle appears on cell hover */
@@ -220,12 +194,8 @@ export async function testRowHandleAppearsOnCellHover(
   await expect(table).toBeVisible();
   await expect(table.locator("td").first()).toBeVisible();
 
-  // Give layout time to stabilize
-  await page.waitForTimeout(100);
-
   // Move mouse outside the wrapper to ensure hover state is reset
   await page.mouse.move(0, 0);
-  await page.waitForTimeout(50);
 
   // CSS-based approach: handle has opacity: 0 initially, opacity: 1 on hover
   // Initially handle should be hidden (opacity: 0)
@@ -251,9 +221,6 @@ export async function testRowHandleOpensMenu(component: Locator, page: Page): Pr
   await expect(wrapper).toBeVisible();
   await expect(table).toBeVisible();
 
-  // Give layout time to stabilize
-  await page.waitForTimeout(100);
-
   // Show row handle and click it
   await showRowHandleAndClick(page);
 
@@ -266,30 +233,28 @@ export async function testRowHandleOpensMenu(component: Locator, page: Page): Pr
 async function showRowHandleAndClick(page: Page): Promise<void> {
   const firstCell = page.locator(".vizel-table td").first();
   const rowHandle = page.locator(ROW_HANDLE_SELECTOR);
+  const menu = page.locator(TABLE_MENU_SELECTOR);
 
   // First click on a cell to set up selection
   await firstCell.click({ force: true });
-  await page.waitForTimeout(100);
 
   // Hover over the cell to trigger mousemove (sets currentHoveredRow)
   // This also shows the row handle via CSS :hover on wrapper
   await firstCell.hover();
   await expect(rowHandle).toHaveCSS("opacity", "1");
 
-  // Wait for event handlers to be set up
-  await page.waitForTimeout(50);
-
   // Click the row handle
   await rowHandle.click({ force: true });
 
-  // Wait for menu to render
-  await page.waitForTimeout(50);
+  // Wait for menu to appear (auto-retrying assertion)
+  await expect(menu).toBeVisible();
 }
 
 /** Helper to show column handle and click it for a specific column */
 async function showColumnHandleAndClick(page: Page, columnIndex: number): Promise<void> {
   const table = page.locator(".vizel-table");
   const columnHandle = page.locator(COLUMN_HANDLE_SELECTOR);
+  const menu = page.locator(TABLE_MENU_SELECTOR);
 
   // Get the cell in the specified column (first row) to determine column position
   const headerCells = table.locator("th");
@@ -297,20 +262,16 @@ async function showColumnHandleAndClick(page: Page, columnIndex: number): Promis
 
   // Click on cell to set up selection
   await targetCell.click({ force: true });
-  await page.waitForTimeout(100);
 
   // Hover over the cell to trigger mousemove (sets currentHoveredColumn)
   await targetCell.hover();
   await expect(columnHandle).toHaveCSS("opacity", "1");
 
-  // Wait for event handlers to be set up
-  await page.waitForTimeout(50);
-
   // Click the column handle
   await columnHandle.click({ force: true });
 
-  // Wait for menu to render
-  await page.waitForTimeout(50);
+  // Wait for menu to appear (auto-retrying assertion)
+  await expect(menu).toBeVisible();
 }
 
 /** Verify row menu contains expected items */
@@ -468,18 +429,16 @@ export async function testMenuClosesOnClickOutside(component: Locator, page: Pag
   const menu = page.locator(TABLE_MENU_SELECTOR);
   await expect(menu).toBeVisible();
 
-  // Wait for click outside handler to be registered (setTimeout in createTableMenu)
-  await page.waitForTimeout(50);
-
-  // Click outside the menu - use a position far from the menu
-  // Get page dimensions and click in an empty area
-  const viewport = page.viewportSize();
-  const clickX = viewport ? viewport.width - 10 : 700;
-  const clickY = viewport ? viewport.height - 10 : 500;
-  await page.mouse.click(clickX, clickY);
-
-  // Menu should be closed
-  await expect(menu).not.toBeVisible();
+  // Click outside the menu and verify it closes
+  // The click-outside handler is registered via setTimeout, so we use expect.toPass()
+  // to retry both the click and the verification until successful
+  await expect(async () => {
+    const viewport = page.viewportSize();
+    const clickX = viewport ? viewport.width - 10 : 700;
+    const clickY = viewport ? viewport.height - 10 : 500;
+    await page.mouse.click(clickX, clickY);
+    await expect(menu).not.toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 10000, intervals: [100, 200, 500, 1000] });
 }
 
 /** Verify text alignment via column handle menu (Markdown compatible - column-wide) */
@@ -541,12 +500,8 @@ export async function testColumnHandleAppearsOnCellHover(
   await expect(table).toBeVisible();
   await expect(table.locator("th").first()).toBeVisible();
 
-  // Give layout time to stabilize
-  await page.waitForTimeout(100);
-
   // Move mouse outside the wrapper to ensure hover state is reset
   await page.mouse.move(0, 0);
-  await page.waitForTimeout(50);
 
   // CSS-based approach: handle has opacity: 0 initially, opacity: 1 on hover
   await expect(columnHandle).toHaveCSS("opacity", "0");
@@ -570,9 +525,6 @@ export async function testColumnHandleOpensMenu(component: Locator, page: Page):
   // Wait for table to be fully rendered
   await expect(wrapper).toBeVisible();
   await expect(table).toBeVisible();
-
-  // Give layout time to stabilize
-  await page.waitForTimeout(100);
 
   // Show column handle and click it
   await showColumnHandleAndClick(page, 0);
@@ -767,37 +719,28 @@ export async function testMenuToggleHeaderRowAction(component: Locator, page: Pa
   await expect(table).toBeVisible();
 
   // Initially should have header cells (th) - first row is header
-  const initialHeaderCells = await table.locator("th").count();
-  expect(initialHeaderCells).toBe(3);
+  await expect(table.locator("th")).toHaveCount(3);
 
   // Click on a header cell first (toggle header row affects first row)
   const firstHeaderCell = table.locator("th").first();
   await firstHeaderCell.click({ force: true });
-  await page.waitForTimeout(100);
 
   // Hover and click row handle
   await firstHeaderCell.hover();
   const rowHandle = page.locator(ROW_HANDLE_SELECTOR);
   await expect(rowHandle).toHaveCSS("opacity", "1");
-  await page.waitForTimeout(50);
   await rowHandle.click({ force: true });
-  await page.waitForTimeout(50);
 
   // Click "Toggle header row" - this toggles the first row's header state
   const menu = page.locator(TABLE_MENU_SELECTOR);
   await expect(menu).toBeVisible();
   await menu.getByText("Toggle header row").click();
 
-  // Wait for DOM update
-  await page.waitForTimeout(100);
-
   // After toggle, header cells should become body cells (first row is no longer header)
-  const newHeaderCells = await table.locator("th").count();
-  expect(newHeaderCells).toBe(0);
+  await expect(table.locator("th")).toHaveCount(0);
 
   // All cells are now td (body cells)
-  const allBodyCells = await table.locator("td").count();
-  expect(allBodyCells).toBe(9); // 3 rows x 3 columns
+  await expect(table.locator("td")).toHaveCount(9); // 3 rows x 3 columns
 }
 
 /** Verify text alignment left via column handle menu */

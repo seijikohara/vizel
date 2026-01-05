@@ -55,17 +55,20 @@ export async function testMoveBlockDownWithKeyboard(component: Locator, page: Pa
   await page.keyboard.press("Enter");
   await page.keyboard.type("Second paragraph");
 
-  // Move cursor up to first paragraph (ArrowUp goes to previous line)
-  await page.keyboard.press("ArrowUp");
-  // Brief pause for cursor position update (required for Vue/Svelte reactivity)
-  await page.waitForTimeout(50);
-
-  // Move the first paragraph down with Alt+ArrowDown
-  await page.keyboard.press("Alt+ArrowDown");
-
-  // Now "Second paragraph" should be first
   const paragraphs = editor.locator("p");
-  await expect(paragraphs.first()).toContainText("Second paragraph");
+
+  // Move cursor up to first paragraph and move block down
+  // Use expect.toPass() to retry if cursor position wasn't ready
+  await expect(async () => {
+    // Move cursor up to first paragraph (ArrowUp goes to previous line)
+    await page.keyboard.press("ArrowUp");
+    // Move the first paragraph down with Alt+ArrowDown
+    await page.keyboard.press("Alt+ArrowDown");
+    // Verify the move happened
+    await expect(paragraphs.first()).toContainText("Second paragraph", { timeout: 1000 });
+  }).toPass({ timeout: 5000 });
+
+  // Verify final state
   await expect(paragraphs.nth(1)).toContainText("First paragraph");
 }
 
@@ -169,17 +172,20 @@ export async function testMoveListItemDownWithKeyboard(
   await page.keyboard.press("Enter");
   await page.keyboard.type("Second item");
 
-  // Move cursor up to first list item (ArrowUp goes to previous line)
-  await page.keyboard.press("ArrowUp");
-  // Brief pause for cursor position update (required for Vue/Svelte reactivity)
-  await page.waitForTimeout(50);
-
-  // Move the first item down
-  await page.keyboard.press("Alt+ArrowDown");
-
-  // Now "Second item" should be first
   const listItems = editor.locator("ul li");
-  await expect(listItems.first()).toContainText("Second item");
+
+  // Move cursor up to first list item and move it down
+  // Use expect.toPass() to retry if cursor position wasn't ready
+  await expect(async () => {
+    // Move cursor up to first list item (ArrowUp goes to previous line)
+    await page.keyboard.press("ArrowUp");
+    // Move the first item down
+    await page.keyboard.press("Alt+ArrowDown");
+    // Verify the move happened
+    await expect(listItems.first()).toContainText("Second item", { timeout: 1000 });
+  }).toPass({ timeout: 5000 });
+
+  // Verify final state
   await expect(listItems.nth(1)).toContainText("First item");
 }
 
