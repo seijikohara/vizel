@@ -5,7 +5,9 @@ import {
   testThemeProviderLightCSS,
   testThemeProviderPersistence,
   testThemeProviderShowsResolvedTheme,
+  testThemeProviderSpacingVariables,
   testThemeProviderToggle,
+  testThemeProviderTypographyVariables,
 } from "../../scenarios/theme-provider.scenario";
 import ThemeProviderFixture from "./ThemeProviderFixture.svelte";
 
@@ -59,5 +61,19 @@ test.describe("ThemeProvider", () => {
       props: { defaultTheme: "dark" },
     });
     await testThemeProviderDarkCSS(page);
+  });
+
+  test("defines typography CSS variables", async ({ mount, page }) => {
+    await mount(ThemeProviderFixture, {
+      props: { defaultTheme: "light" },
+    });
+    await testThemeProviderTypographyVariables(page);
+  });
+
+  test("defines spacing CSS variables", async ({ mount, page }) => {
+    await mount(ThemeProviderFixture, {
+      props: { defaultTheme: "light" },
+    });
+    await testThemeProviderSpacingVariables(page);
   });
 });

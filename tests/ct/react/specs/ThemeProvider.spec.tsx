@@ -5,7 +5,9 @@ import {
   testThemeProviderLightCSS,
   testThemeProviderPersistence,
   testThemeProviderShowsResolvedTheme,
+  testThemeProviderSpacingVariables,
   testThemeProviderToggle,
+  testThemeProviderTypographyVariables,
 } from "../../scenarios/theme-provider.scenario";
 import { ThemeProviderFixture } from "./ThemeProviderFixture";
 
@@ -49,5 +51,15 @@ test.describe("ThemeProvider", () => {
   test("applies dark theme CSS variables", async ({ mount, page }) => {
     await mount(<ThemeProviderFixture defaultTheme="dark" />);
     await testThemeProviderDarkCSS(page);
+  });
+
+  test("defines typography CSS variables", async ({ mount, page }) => {
+    await mount(<ThemeProviderFixture defaultTheme="light" />);
+    await testThemeProviderTypographyVariables(page);
+  });
+
+  test("defines spacing CSS variables", async ({ mount, page }) => {
+    await mount(<ThemeProviderFixture defaultTheme="light" />);
+    await testThemeProviderSpacingVariables(page);
   });
 });

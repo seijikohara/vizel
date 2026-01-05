@@ -75,11 +75,24 @@ export async function testThemeProviderLightCSS(page: Page): Promise<void> {
   const html = page.locator("html");
   await html.evaluate((el) => el.setAttribute("data-vizel-theme", "light"));
 
-  // Check CSS variables are set for light theme
-  const bgColor = await page.evaluate(() =>
-    getComputedStyle(document.documentElement).getPropertyValue("--vizel-bg-color").trim()
-  );
-  expect(bgColor).toBe("#ffffff");
+  // Check core CSS variables are set for light theme
+  const variables = await page.evaluate(() => {
+    const style = getComputedStyle(document.documentElement);
+    return {
+      background: style.getPropertyValue("--vizel-background").trim(),
+      foreground: style.getPropertyValue("--vizel-foreground").trim(),
+      primary: style.getPropertyValue("--vizel-primary").trim(),
+      border: style.getPropertyValue("--vizel-border").trim(),
+      // Legacy alias for backward compatibility
+      bgColor: style.getPropertyValue("--vizel-bg-color").trim(),
+    };
+  });
+
+  expect(variables.background).toBe("#ffffff");
+  expect(variables.foreground).toBe("#111827");
+  expect(variables.primary).toBe("#3b82f6");
+  expect(variables.border).toBe("#e5e7eb");
+  expect(variables.bgColor).toBe("#ffffff");
 }
 
 /**
@@ -89,9 +102,64 @@ export async function testThemeProviderDarkCSS(page: Page): Promise<void> {
   const html = page.locator("html");
   await html.evaluate((el) => el.setAttribute("data-vizel-theme", "dark"));
 
-  // Check CSS variables are set for dark theme
-  const bgColor = await page.evaluate(() =>
-    getComputedStyle(document.documentElement).getPropertyValue("--vizel-bg-color").trim()
-  );
-  expect(bgColor).toBe("#1f2937");
+  // Check core CSS variables are set for dark theme
+  const variables = await page.evaluate(() => {
+    const style = getComputedStyle(document.documentElement);
+    return {
+      background: style.getPropertyValue("--vizel-background").trim(),
+      foreground: style.getPropertyValue("--vizel-foreground").trim(),
+      primary: style.getPropertyValue("--vizel-primary").trim(),
+      border: style.getPropertyValue("--vizel-border").trim(),
+      // Legacy alias for backward compatibility
+      bgColor: style.getPropertyValue("--vizel-bg-color").trim(),
+    };
+  });
+
+  expect(variables.background).toBe("#1f2937");
+  expect(variables.foreground).toBe("#f9fafb");
+  expect(variables.primary).toBe("#60a5fa");
+  expect(variables.border).toBe("#374151");
+  expect(variables.bgColor).toBe("#1f2937");
+}
+
+/**
+ * Test that typography CSS variables are defined
+ */
+export async function testThemeProviderTypographyVariables(page: Page): Promise<void> {
+  const variables = await page.evaluate(() => {
+    const style = getComputedStyle(document.documentElement);
+    return {
+      fontSizeBase: style.getPropertyValue("--vizel-font-size-base").trim(),
+      fontSizeSm: style.getPropertyValue("--vizel-font-size-sm").trim(),
+      fontSizeLg: style.getPropertyValue("--vizel-font-size-lg").trim(),
+      lineHeightNormal: style.getPropertyValue("--vizel-line-height-normal").trim(),
+    };
+  });
+
+  expect(variables.fontSizeBase).toBe("1rem");
+  expect(variables.fontSizeSm).toBe("0.875rem");
+  expect(variables.fontSizeLg).toBe("1.125rem");
+  expect(variables.lineHeightNormal).toBe("1.5");
+}
+
+/**
+ * Test that spacing CSS variables are defined
+ */
+export async function testThemeProviderSpacingVariables(page: Page): Promise<void> {
+  const variables = await page.evaluate(() => {
+    const style = getComputedStyle(document.documentElement);
+    return {
+      spacing1: style.getPropertyValue("--vizel-spacing-1").trim(),
+      spacing2: style.getPropertyValue("--vizel-spacing-2").trim(),
+      spacing4: style.getPropertyValue("--vizel-spacing-4").trim(),
+      radiusMd: style.getPropertyValue("--vizel-radius-md").trim(),
+      radiusLg: style.getPropertyValue("--vizel-radius-lg").trim(),
+    };
+  });
+
+  expect(variables.spacing1).toBe("0.25rem");
+  expect(variables.spacing2).toBe("0.5rem");
+  expect(variables.spacing4).toBe("1rem");
+  expect(variables.radiusMd).toBe("0.375rem");
+  expect(variables.radiusLg).toBe("0.5rem");
 }

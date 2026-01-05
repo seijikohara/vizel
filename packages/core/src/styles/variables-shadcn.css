@@ -1,0 +1,228 @@
+/**
+ * shadcn/ui Compatible CSS Variables
+ *
+ * This file provides CSS custom properties compatible with shadcn/ui theming.
+ * Use this file if you want Vizel to integrate seamlessly with shadcn/ui projects.
+ *
+ * Usage:
+ * ```ts
+ * import '@vizel/core/styles/variables-shadcn.css';
+ * ```
+ *
+ * Note: This file uses HSL color values without the hsl() wrapper,
+ * which is the shadcn/ui convention.
+ *
+ * @see https://ui.shadcn.com/docs/theming
+ */
+
+:root,
+.light,
+[data-theme="light"] {
+  /* shadcn/ui core variables */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+
+  --radius: 0.5rem;
+
+  /* Map Vizel variables to shadcn variables */
+  --vizel-primary: hsl(var(--primary));
+  --vizel-primary-hover: hsl(221.2 83.2% 43.3%);
+  --vizel-primary-foreground: hsl(var(--primary-foreground));
+
+  --vizel-secondary: hsl(var(--secondary));
+  --vizel-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --vizel-background: hsl(var(--background));
+  --vizel-background-secondary: hsl(var(--card));
+  --vizel-background-tertiary: hsl(var(--muted));
+
+  --vizel-foreground: hsl(var(--foreground));
+  --vizel-foreground-secondary: hsl(var(--muted-foreground));
+  --vizel-foreground-muted: hsl(215.4 16.3% 56.9%);
+
+  --vizel-muted: hsl(var(--muted));
+  --vizel-muted-foreground: hsl(var(--muted-foreground));
+
+  --vizel-accent: hsl(var(--accent));
+  --vizel-accent-foreground: hsl(var(--accent-foreground));
+
+  --vizel-border: hsl(var(--border));
+  --vizel-border-hover: hsl(214.3 31.8% 81.4%);
+  --vizel-border-focus: hsl(var(--ring));
+
+  --vizel-ring: hsl(var(--ring));
+  --vizel-ring-offset: hsl(var(--background));
+
+  --vizel-destructive: hsl(var(--destructive));
+  --vizel-destructive-foreground: hsl(var(--destructive-foreground));
+  --vizel-destructive-bg: hsl(0 84.2% 60.2% / 0.1);
+
+  --vizel-success: hsl(142.1 76.2% 36.3%);
+  --vizel-warning: hsl(38 92% 50%);
+  --vizel-error: hsl(var(--destructive));
+
+  /* Use shadcn radius */
+  --vizel-radius-sm: calc(var(--radius) - 4px);
+  --vizel-radius-md: calc(var(--radius) - 2px);
+  --vizel-radius-lg: var(--radius);
+  --vizel-radius-xl: calc(var(--radius) + 4px);
+  --vizel-radius-2xl: calc(var(--radius) + 8px);
+}
+
+.dark,
+[data-theme="dark"] {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 62.8% 50.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 224.3 76.3% 48%;
+
+  /* Map Vizel variables to shadcn variables */
+  --vizel-primary: hsl(var(--primary));
+  --vizel-primary-hover: hsl(217.2 91.2% 49.8%);
+  --vizel-primary-foreground: hsl(var(--primary-foreground));
+
+  --vizel-secondary: hsl(var(--secondary));
+  --vizel-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --vizel-background: hsl(var(--background));
+  --vizel-background-secondary: hsl(var(--card));
+  --vizel-background-tertiary: hsl(var(--muted));
+
+  --vizel-foreground: hsl(var(--foreground));
+  --vizel-foreground-secondary: hsl(var(--muted-foreground));
+  --vizel-foreground-muted: hsl(215 20.2% 55.1%);
+
+  --vizel-muted: hsl(var(--muted));
+  --vizel-muted-foreground: hsl(var(--muted-foreground));
+
+  --vizel-accent: hsl(var(--accent));
+  --vizel-accent-foreground: hsl(var(--accent-foreground));
+
+  --vizel-border: hsl(var(--border));
+  --vizel-border-hover: hsl(217.2 32.6% 27.5%);
+  --vizel-border-focus: hsl(var(--ring));
+
+  --vizel-ring: hsl(var(--ring));
+  --vizel-ring-offset: hsl(var(--background));
+
+  --vizel-destructive: hsl(var(--destructive));
+  --vizel-destructive-foreground: hsl(var(--destructive-foreground));
+  --vizel-destructive-bg: hsl(0 62.8% 50.6% / 0.15);
+
+  --vizel-success: hsl(142.1 70.6% 45.3%);
+  --vizel-warning: hsl(48 96% 53%);
+  --vizel-error: hsl(var(--destructive));
+
+  /* Shadows for dark mode */
+  --vizel-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --vizel-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+}
+
+/* System preference fallback for shadcn compatibility */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not([data-theme="light"]) {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    /* Map Vizel variables */
+    --vizel-primary: hsl(var(--primary));
+    --vizel-primary-hover: hsl(217.2 91.2% 49.8%);
+    --vizel-primary-foreground: hsl(var(--primary-foreground));
+
+    --vizel-background: hsl(var(--background));
+    --vizel-background-secondary: hsl(var(--card));
+    --vizel-background-tertiary: hsl(var(--muted));
+
+    --vizel-foreground: hsl(var(--foreground));
+    --vizel-foreground-secondary: hsl(var(--muted-foreground));
+    --vizel-foreground-muted: hsl(215 20.2% 55.1%);
+
+    --vizel-border: hsl(var(--border));
+    --vizel-border-hover: hsl(217.2 32.6% 27.5%);
+
+    --vizel-destructive: hsl(var(--destructive));
+    --vizel-destructive-bg: hsl(0 62.8% 50.6% / 0.15);
+
+    --vizel-success: hsl(142.1 70.6% 45.3%);
+    --vizel-warning: hsl(48 96% 53%);
+    --vizel-error: hsl(var(--destructive));
+
+    --vizel-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --vizel-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  }
+}
