@@ -44,6 +44,7 @@
     "@tiptap/extension-document": "^3.14.0",
     "@tiptap/extension-drag-handle": "^3.14.0",
     "@tiptap/extension-dropcursor": "^3.14.0",
+    "@tiptap/extension-file-handler": "^3.14.0",
     "@tiptap/extension-gapcursor": "^3.14.0",
     "@tiptap/extension-hard-break": "^3.14.0",
     "@tiptap/extension-heading": "^3.14.0",
