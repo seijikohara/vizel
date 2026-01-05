@@ -57,7 +57,16 @@ export function useAutoSave(
   editor: Editor | null,
   options: AutoSaveOptions = {}
 ): UseAutoSaveResult {
-  const opts = useMemo(() => ({ ...DEFAULT_AUTO_SAVE_OPTIONS, ...options }), [options]);
+  // Store full options in ref to access callbacks without recreating handlers
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+
+  // Merge with defaults - use individual primitives as dependencies to avoid
+  // recreating when object reference changes but values are the same
+  const enabled = options.enabled ?? DEFAULT_AUTO_SAVE_OPTIONS.enabled;
+  const debounceMs = options.debounceMs ?? DEFAULT_AUTO_SAVE_OPTIONS.debounceMs;
+  const storage = options.storage ?? DEFAULT_AUTO_SAVE_OPTIONS.storage;
+  const key = options.key ?? DEFAULT_AUTO_SAVE_OPTIONS.key;
 
   const [state, setState] = useState<AutoSaveState>({
     status: "saved",
@@ -74,14 +83,30 @@ export function useAutoSave(
     setState((prev) => ({ ...prev, ...partial }));
   }, []);
 
+  // Create handlers with stable dependencies - use optionsRef for callbacks (onSave, onError, etc.)
+  // that don't need to trigger recreation
   const handlers = useMemo(
-    () => createAutoSaveHandlers(() => editorRef.current, opts, handleStateChange),
-    [opts, handleStateChange]
+    () =>
+      createAutoSaveHandlers(
+        () => editorRef.current,
+        {
+          enabled,
+          debounceMs,
+          storage,
+          key,
+          // Access callbacks through ref to avoid dependency on them
+          onSave: (content) => optionsRef.current.onSave?.(content),
+          onError: (error) => optionsRef.current.onError?.(error),
+          onRestore: (content) => optionsRef.current.onRestore?.(content),
+        },
+        handleStateChange
+      ),
+    [enabled, debounceMs, storage, key, handleStateChange]
   );
 
   // Subscribe to editor updates
   useEffect(() => {
-    if (!(editor && opts.enabled)) return;
+    if (!(editor && enabled)) return;
 
     editor.on("update", handlers.handleUpdate);
 
@@ -89,7 +114,7 @@ export function useAutoSave(
       editor.off("update", handlers.handleUpdate);
       handlers.cancel();
     };
-  }, [editor, opts.enabled, handlers]);
+  }, [editor, enabled, handlers]);
 
   const save = useCallback(async () => {
     await handlers.saveNow();

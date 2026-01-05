@@ -44,6 +44,16 @@ const allColors = computed(() => [
   ...props.colors.map((c) => c.color),
 ]);
 
+// Trim refs array when colors count decreases to prevent stale references
+watch(
+  () => allColors.value.length,
+  (newLength) => {
+    if (swatchRefs.value.length > newLength) {
+      swatchRefs.value.length = newLength;
+    }
+  }
+);
+
 // Calculate the offset for color palette indices (after recent colors)
 const paletteOffset = computed(() => (props.showRecentColors ? props.recentColors.length : 0));
 

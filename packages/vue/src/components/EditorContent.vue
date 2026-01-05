@@ -18,7 +18,17 @@ const editor = computed(() => props.editor ?? getContextEditor?.());
 
 watch(
   () => [editor.value, containerRef.value] as const,
-  ([editorValue, container]) => {
+  (
+    [editorValue, container],
+    oldValue?: readonly [Editor | null | undefined, HTMLDivElement | null]
+  ) => {
+    // Cleanup: remove DOM from previous container if editor or container changed
+    const prevEditor = oldValue?.[0];
+    const prevContainer = oldValue?.[1];
+    if (prevEditor && prevContainer && prevEditor.view.dom.parentNode === prevContainer) {
+      prevContainer.removeChild(prevEditor.view.dom);
+    }
+
     if (editorValue && container) {
       // Mount the editor's DOM view to the container element
       container.appendChild(editorValue.view.dom);

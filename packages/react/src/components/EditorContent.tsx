@@ -31,15 +31,25 @@ export function EditorContent({ editor: editorProp, className }: EditorContentPr
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (editor && containerRef.current) {
-      // Mount the editor's DOM view to the container element
-      containerRef.current.appendChild(editor.view.dom);
-
-      // Update editable state
-      editor.view.setProps({
-        editable: () => editor?.isEditable ?? false,
-      });
+    const container = containerRef.current;
+    if (!(editor && container)) {
+      return;
     }
+
+    // Mount the editor's DOM view to the container element
+    container.appendChild(editor.view.dom);
+
+    // Update editable state
+    editor.view.setProps({
+      editable: () => editor?.isEditable ?? false,
+    });
+
+    // Cleanup: remove DOM element when editor changes or unmounts
+    return () => {
+      if (editor.view.dom.parentNode === container) {
+        container.removeChild(editor.view.dom);
+      }
+    };
   }, [editor]);
 
   if (!editor) {

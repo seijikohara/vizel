@@ -1,5 +1,4 @@
 import type { Editor } from "@vizel/core";
-import { onDestroy } from "svelte";
 
 /**
  * Rune that forces a re-render whenever the editor's state changes.
@@ -42,7 +41,7 @@ export function createEditorState(getEditor: () => Editor | null | undefined): {
     }
   }
 
-  // Use $effect to watch for editor changes
+  // Use $effect to watch for editor changes - $effect cleanup handles unmount
   $effect(() => {
     const editor = getEditor();
     subscribe(editor);
@@ -52,13 +51,6 @@ export function createEditorState(getEditor: () => Editor | null | undefined): {
         currentEditor.off("transaction", handleTransaction);
       }
     };
-  });
-
-  // Also cleanup on destroy
-  onDestroy(() => {
-    if (currentEditor) {
-      currentEditor.off("transaction", handleTransaction);
-    }
   });
 
   return {

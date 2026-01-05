@@ -43,11 +43,13 @@ const groups = computed<SlashCommandGroup[]>(() => {
 // Flatten for navigation
 const flatItems = computed(() => groups.value.flatMap((g) => g.items));
 
-// Reset selection when items change
+// Reset selection and refs when items change
 watch(
   () => props.items,
   () => {
     selectedIndex.value = 0;
+    // Reset refs array to prevent stale references
+    itemRefs.value = [];
   }
 );
 

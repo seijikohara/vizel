@@ -64,6 +64,10 @@ export function BubbleMenu({
   const editor = editorProp ?? context?.editor ?? null;
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Store shouldShow in ref to avoid recreating plugin when callback changes
+  const shouldShowRef = useRef(shouldShow);
+  shouldShowRef.current = shouldShow;
+
   useEffect(() => {
     if (!(editor && menuRef.current)) {
       return;
@@ -74,8 +78,9 @@ export function BubbleMenu({
       editor,
       element: menuRef.current,
       updateDelay,
-      ...(shouldShow && {
-        shouldShow: ({ editor: e, from, to }) => shouldShow({ editor: e as Editor, from, to }),
+      ...(shouldShowRef.current && {
+        shouldShow: ({ editor: e, from, to }) =>
+          shouldShowRef.current?.({ editor: e as Editor, from, to }) ?? false,
       }),
       options: {
         placement: "top",
@@ -99,7 +104,7 @@ export function BubbleMenu({
       editor.unregisterPlugin(pluginKey);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [editor, pluginKey, updateDelay, shouldShow]);
+  }, [editor, pluginKey, updateDelay]);
 
   if (!editor) {
     return null;

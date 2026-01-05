@@ -265,18 +265,18 @@ export const MathInline = Node.create<VizelMathematicsOptions>({
         }
       };
 
-      // Event listeners
-      dom.addEventListener("click", (e) => {
+      // Event listeners - store references for proper cleanup
+      const handleDomClick = (e: MouseEvent) => {
         if (!isEditing) {
           e.preventDefault();
           e.stopPropagation();
           startEditing();
         }
-      });
+      };
 
-      editInput.addEventListener("blur", stopEditing);
+      const handleInputBlur = () => stopEditing();
 
-      editInput.addEventListener("keydown", (e) => {
+      const handleInputKeydown = (e: KeyboardEvent) => {
         if (e.key === "Enter") {
           e.preventDefault();
           stopEditing();
@@ -285,7 +285,11 @@ export const MathInline = Node.create<VizelMathematicsOptions>({
           editInput.value = node.attrs.latex;
           stopEditing();
         }
-      });
+      };
+
+      dom.addEventListener("click", handleDomClick);
+      editInput.addEventListener("blur", handleInputBlur);
+      editInput.addEventListener("keydown", handleInputKeydown);
 
       // Initial render
       renderMath(node.attrs.latex);
@@ -308,7 +312,9 @@ export const MathInline = Node.create<VizelMathematicsOptions>({
           dom.classList.remove("vizel-math-selected");
         },
         destroy() {
-          dom.removeEventListener("click", startEditing);
+          dom.removeEventListener("click", handleDomClick);
+          editInput.removeEventListener("blur", handleInputBlur);
+          editInput.removeEventListener("keydown", handleInputKeydown);
         },
       };
     };

@@ -46,6 +46,14 @@ let focusedIndex = $state(-1);
 let swatchRefs: (HTMLButtonElement | null)[] = $state([]);
 let inputRef: HTMLInputElement | null = $state(null);
 
+// Clean up swatchRefs when colors decrease
+$effect(() => {
+  const length = allColors.length;
+  if (swatchRefs.length > length) {
+    swatchRefs.length = length;
+  }
+});
+
 // Build flat list of all selectable colors for keyboard navigation
 const allColors = $derived([
   ...(showRecentColors ? recentColors : []),

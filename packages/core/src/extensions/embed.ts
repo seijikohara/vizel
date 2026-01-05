@@ -639,27 +639,59 @@ export const Embed = Node.create<VizelEmbedOptions>({
 
           // Fetch embed data if fetchEmbedData is provided
           if (this.options.fetchEmbedData) {
-            this.options.fetchEmbedData(url).then((data) => {
-              // Find and update the embed node
-              editor.state.doc.descendants((node, pos) => {
-                if (node.type.name === this.name && node.attrs.url === url && node.attrs.loading) {
-                  editor
-                    .chain()
-                    .focus()
-                    .command(({ tr }) => {
-                      tr.setNodeMarkup(pos, undefined, {
-                        ...node.attrs,
-                        ...data,
-                        loading: false,
-                      });
-                      return true;
-                    })
-                    .run();
-                  return false; // Stop iteration
-                }
-                return true;
+            this.options
+              .fetchEmbedData(url)
+              .then((data) => {
+                // Find and update the embed node
+                editor.state.doc.descendants((node, pos) => {
+                  if (
+                    node.type.name === this.name &&
+                    node.attrs.url === url &&
+                    node.attrs.loading
+                  ) {
+                    editor
+                      .chain()
+                      .focus()
+                      .command(({ tr }) => {
+                        tr.setNodeMarkup(pos, undefined, {
+                          ...node.attrs,
+                          ...data,
+                          loading: false,
+                        });
+                        return true;
+                      })
+                      .run();
+                    return false; // Stop iteration
+                  }
+                  return true;
+                });
+              })
+              .catch((error) => {
+                console.error("Failed to fetch embed data:", error);
+                // Update node to remove loading state and fallback to link
+                editor.state.doc.descendants((node, pos) => {
+                  if (
+                    node.type.name === this.name &&
+                    node.attrs.url === url &&
+                    node.attrs.loading
+                  ) {
+                    editor
+                      .chain()
+                      .focus()
+                      .command(({ tr }) => {
+                        tr.setNodeMarkup(pos, undefined, {
+                          ...node.attrs,
+                          type: "link",
+                          loading: false,
+                        });
+                        return true;
+                      })
+                      .run();
+                    return false;
+                  }
+                  return true;
+                });
               });
-            });
           }
 
           return result;
@@ -811,25 +843,48 @@ export const Embed = Node.create<VizelEmbedOptions>({
 
             // Fetch embed data
             if (extension.options.fetchEmbedData) {
-              extension.options.fetchEmbedData(trimmedText).then((data) => {
-                view.state.doc.descendants((node, pos) => {
-                  if (
-                    node.type.name === extension.name &&
-                    node.attrs.url === trimmedText &&
-                    node.attrs.loading
-                  ) {
-                    view.dispatch(
-                      view.state.tr.setNodeMarkup(pos, undefined, {
-                        ...node.attrs,
-                        ...data,
-                        loading: false,
-                      })
-                    );
-                    return false;
-                  }
-                  return true;
+              extension.options
+                .fetchEmbedData(trimmedText)
+                .then((data) => {
+                  view.state.doc.descendants((node, pos) => {
+                    if (
+                      node.type.name === extension.name &&
+                      node.attrs.url === trimmedText &&
+                      node.attrs.loading
+                    ) {
+                      view.dispatch(
+                        view.state.tr.setNodeMarkup(pos, undefined, {
+                          ...node.attrs,
+                          ...data,
+                          loading: false,
+                        })
+                      );
+                      return false;
+                    }
+                    return true;
+                  });
+                })
+                .catch((error) => {
+                  console.error("Failed to fetch embed data:", error);
+                  // Update node to remove loading state and fallback to link
+                  view.state.doc.descendants((node, pos) => {
+                    if (
+                      node.type.name === extension.name &&
+                      node.attrs.url === trimmedText &&
+                      node.attrs.loading
+                    ) {
+                      view.dispatch(
+                        view.state.tr.setNodeMarkup(pos, undefined, {
+                          ...node.attrs,
+                          type: "link",
+                          loading: false,
+                        })
+                      );
+                      return false;
+                    }
+                    return true;
+                  });
                 });
-              });
             }
 
             return true;

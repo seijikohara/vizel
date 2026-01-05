@@ -23,6 +23,7 @@ const emit = defineEmits<{
   <button
     type="button"
     :disabled="disabled"
+    :aria-pressed="isActive"
     :class="[
       'vizel-bubble-menu-button',
       { 'is-active': isActive },

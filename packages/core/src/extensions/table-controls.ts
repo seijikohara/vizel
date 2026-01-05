@@ -94,6 +94,9 @@ const CELL_MENU_ITEMS: TableMenuItem[] = [
   { label: "Split cell", command: "splitCell" },
 ];
 
+/** Threshold distance in pixels for detecting boundary hover */
+const BOUNDARY_THRESHOLD_PX = 20;
+
 /** Combined menu items (legacy, for reference) */
 const TABLE_MENU_ITEMS: TableMenuItem[] = [
   ...ROW_MENU_ITEMS.slice(0, 3),
@@ -149,8 +152,8 @@ function findColumnBoundary(
     }
   }
 
-  // Only return if within threshold (20px)
-  if (minDistance <= 20) {
+  // Only return if within threshold
+  if (minDistance <= BOUNDARY_THRESHOLD_PX) {
     return closest;
   }
 
@@ -198,8 +201,8 @@ function findRowBoundary(
     }
   }
 
-  // Only return if within threshold (20px)
-  if (minDistance <= 20) {
+  // Only return if within threshold
+  if (minDistance <= BOUNDARY_THRESHOLD_PX) {
     return closest;
   }
 
@@ -627,14 +630,17 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
       };
 
       // Use both mousedown and click for cross-browser compatibility
-      rowHandle.addEventListener("mousedown", handleRowHandleClick);
-      rowHandle.addEventListener("click", (e) => {
+      // Store click handler references for proper cleanup
+      const handleRowClick = (e: MouseEvent) => {
         // Prevent duplicate handling if mousedown already succeeded
         if (activeMenu) {
           e.preventDefault();
           e.stopPropagation();
         }
-      });
+      };
+
+      rowHandle.addEventListener("mousedown", handleRowHandleClick);
+      rowHandle.addEventListener("click", handleRowClick);
 
       // Column handle click handler
       const handleColumnHandleClick = (e: MouseEvent) => {
@@ -662,14 +668,17 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
       };
 
       // Use both mousedown and click for cross-browser compatibility
-      columnHandle.addEventListener("mousedown", handleColumnHandleClick);
-      columnHandle.addEventListener("click", (e) => {
+      // Store click handler references for proper cleanup
+      const handleColumnClick = (e: MouseEvent) => {
         // Prevent duplicate handling if mousedown already succeeded
         if (activeMenu) {
           e.preventDefault();
           e.stopPropagation();
         }
-      });
+      };
+
+      columnHandle.addEventListener("mousedown", handleColumnHandleClick);
+      columnHandle.addEventListener("click", handleColumnClick);
 
       // Mouse move handler for showing/hiding controls
       // Note: We process synchronously instead of using RAF because React may re-render
@@ -831,6 +840,12 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
           wrapper.removeEventListener("mousemove", handleMouseMove);
           wrapper.removeEventListener("mouseleave", handleMouseLeave);
           table.removeEventListener("contextmenu", handleContextMenu);
+          columnInsertBtn.removeEventListener("mousedown", handleColumnInsert);
+          rowInsertBtn.removeEventListener("mousedown", handleRowInsert);
+          rowHandle.removeEventListener("mousedown", handleRowHandleClick);
+          rowHandle.removeEventListener("click", handleRowClick);
+          columnHandle.removeEventListener("mousedown", handleColumnHandleClick);
+          columnHandle.removeEventListener("click", handleColumnClick);
           closeMenu();
         },
       };
