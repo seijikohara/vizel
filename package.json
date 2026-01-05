@@ -6,7 +6,6 @@
     "apps/demo/*"
   ],
   "scripts": {
-    "dev": "bun run dev:react",
     "dev:react": "bun run --cwd apps/demo/react dev",
     "dev:vue": "bun run --cwd apps/demo/vue dev",
     "dev:svelte": "bun run --cwd apps/demo/svelte dev",
