@@ -1,0 +1,192 @@
+/**
+ * Diagram Styles
+ *
+ * Styles for Mermaid diagram blocks.
+ */
+
+/* Base diagram styles */
+.vizel-diagram {
+  position: relative;
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: var(--vizel-radius-lg);
+  background-color: var(--vizel-diagram-bg, var(--vizel-background-secondary));
+  border: 1px solid var(--vizel-diagram-border, var(--vizel-border));
+  cursor: pointer;
+  transition:
+    background-color var(--vizel-transition-normal) ease,
+    border-color var(--vizel-transition-normal) ease,
+    box-shadow var(--vizel-transition-normal) ease;
+}
+
+.vizel-diagram:hover {
+  background-color: var(--vizel-diagram-hover-bg, var(--vizel-background-tertiary));
+  border-color: var(--vizel-border-hover);
+}
+
+.vizel-diagram.vizel-diagram-selected {
+  background-color: var(--vizel-diagram-selected-bg, var(--vizel-primary-bg));
+  border-color: var(--vizel-primary);
+  outline: 2px solid var(--vizel-primary);
+  outline-offset: 2px;
+}
+
+/* Type indicator */
+.vizel-diagram-type {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  font-size: var(--vizel-font-size-xs);
+  font-weight: var(--vizel-font-weight-medium);
+  color: var(--vizel-foreground-muted);
+  background-color: var(--vizel-muted);
+  border-radius: var(--vizel-radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Render container */
+.vizel-diagram-render {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 4rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+}
+
+.vizel-diagram-render svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Placeholder when empty */
+.vizel-diagram-placeholder {
+  color: var(--vizel-foreground-muted);
+  font-size: var(--vizel-font-size-sm);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Error display in render */
+.vizel-diagram-error-display {
+  color: var(--vizel-error);
+  font-size: var(--vizel-font-size-sm);
+  font-family: var(--vizel-font-mono);
+  padding: 1rem;
+  background-color: var(--vizel-destructive-bg);
+  border-radius: var(--vizel-radius-md);
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-align: left;
+  max-height: 10rem;
+  overflow-y: auto;
+}
+
+/* Editing state */
+.vizel-diagram.vizel-diagram-editing {
+  background-color: var(--vizel-diagram-editing-bg, var(--vizel-background-tertiary));
+  cursor: default;
+}
+
+/* Edit container */
+.vizel-diagram-edit-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.vizel-diagram-textarea {
+  font-family: var(--vizel-font-mono);
+  font-size: var(--vizel-font-size-sm);
+  line-height: var(--vizel-line-height-relaxed);
+  padding: 0.75rem;
+  border: 1px solid var(--vizel-border);
+  border-radius: var(--vizel-radius-md);
+  background: var(--vizel-background);
+  color: var(--vizel-foreground);
+  resize: vertical;
+  min-height: 8rem;
+  width: 100%;
+  outline: none;
+}
+
+.vizel-diagram-textarea:focus {
+  border-color: var(--vizel-primary);
+  box-shadow: 0 0 0 2px var(--vizel-primary-bg);
+}
+
+.vizel-diagram-textarea::placeholder {
+  color: var(--vizel-muted-foreground);
+}
+
+/* Preview container during editing */
+.vizel-diagram-preview {
+  padding: 1rem;
+  border-radius: var(--vizel-radius-md);
+  background: var(--vizel-background);
+  border: 1px dashed var(--vizel-border);
+  min-height: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.vizel-diagram-preview svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Error container */
+.vizel-diagram-error {
+  color: var(--vizel-error);
+  font-size: var(--vizel-font-size-xs);
+  font-family: var(--vizel-font-mono);
+  padding: 0.5rem;
+  background-color: var(--vizel-destructive-bg);
+  border-radius: var(--vizel-radius-sm);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Mermaid SVG styles - ensure diagrams look good */
+.vizel-diagram .mermaid {
+  display: flex;
+  justify-content: center;
+}
+
+/* Override Mermaid default font */
+.vizel-diagram svg text {
+  font-family: var(--vizel-font-sans) !important;
+}
+
+.vizel-diagram svg .node text,
+.vizel-diagram svg .nodeLabel {
+  font-size: 0.875rem;
+}
+
+/* Dark theme support */
+.dark .vizel-diagram,
+[data-theme="dark"] .vizel-diagram,
+[data-vizel-theme="dark"] .vizel-diagram {
+  --vizel-diagram-bg: var(--vizel-background-secondary);
+  --vizel-diagram-hover-bg: var(--vizel-background-tertiary);
+  --vizel-diagram-selected-bg: var(--vizel-primary-bg);
+  --vizel-diagram-editing-bg: var(--vizel-background-tertiary);
+}
+
+/* System preference fallback */
+@media (prefers-color-scheme: dark) {
+  .vizel-diagram {
+    --vizel-diagram-bg: var(--vizel-background-secondary);
+    --vizel-diagram-hover-bg: var(--vizel-background-tertiary);
+    --vizel-diagram-selected-bg: var(--vizel-primary-bg);
+    --vizel-diagram-editing-bg: var(--vizel-background-tertiary);
+  }
+}

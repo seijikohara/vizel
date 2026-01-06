@@ -6,7 +6,15 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/dist", "!**/.svelte-kit", "!playwright-report", "!**/.cache"]
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/.svelte-kit",
+      "!playwright-report",
+      "!**/.cache",
+      "!**/node_modules",
+      "!**/.bun"
+    ]
   },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "formatter": {

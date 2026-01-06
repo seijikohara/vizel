@@ -28,6 +28,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@hpcc-js/wasm-graphviz": "^1.18.0",
     "@tiptap/core": "^3.14.0",
     "@tiptap/extension-blockquote": "^3.14.0",
     "@tiptap/extension-bold": "^3.14.0",
@@ -72,7 +73,8 @@
     "fuse.js": "^7.1.0",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.27",
-    "lowlight": "^3.3.0"
+    "lowlight": "^3.3.0",
+    "mermaid": "^11.12.2"
   },
   "devDependencies": {
     "vite": "^7",

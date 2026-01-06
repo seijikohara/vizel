@@ -1,5 +1,6 @@
 import {
   BubbleMenu,
+  convertCodeBlocksToDiagrams,
   EditorContent,
   getEditorState,
   type JSONContent,
@@ -58,6 +59,7 @@ function AppContent() {
       mathematics: true,
       embed: true,
       details: true,
+      diagram: true,
       image: {
         onUpload: mockUploadImage,
         maxFileSize: 10 * 1024 * 1024, // 10MB
@@ -93,6 +95,8 @@ function AppContent() {
   const handleImportMarkdown = () => {
     if (editor && markdownInput.trim()) {
       editor.commands.setContent(markdownInput, { contentType: "markdown" });
+      // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
+      convertCodeBlocksToDiagrams(editor);
       setMarkdownInput("");
       setShowMarkdownInput(false);
     }
@@ -167,6 +171,10 @@ function AppContent() {
           <div className="feature-tag">
             <span className="feature-icon">▸</span>
             <span>Details</span>
+          </div>
+          <div className="feature-tag">
+            <span className="feature-icon">📊</span>
+            <span>Diagrams</span>
           </div>
           <div className="feature-tag">
             <span className="feature-icon">🌓</span>

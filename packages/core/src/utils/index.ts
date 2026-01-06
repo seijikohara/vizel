@@ -1,12 +1,17 @@
 // Editor helpers
 export {
+  type ContentNode,
   type CreateUploadEventHandlerOptions,
+  convertCodeBlocksToDiagrams,
+  convertMermaidCodeBlocksToDiagrams,
   createUploadEventHandler,
   defaultEditorProps,
   getEditorState,
   type ResolveFeaturesOptions,
   registerUploadEventHandler,
   resolveFeatures,
+  transformDiagramCodeBlocks,
+  transformMermaidToDiagram,
   VIZEL_UPLOAD_IMAGE_EVENT,
 } from "./editorHelpers.ts";
 
