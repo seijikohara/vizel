@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@iconify/svelte": "^4",
+    "@iconify/utils": "^3.1.0",
     "@tiptap/core": "^3.14.0",
     "@tiptap/suggestion": "^3.14.0",
     "@vizel/core": "workspace:*"
@@ -42,7 +43,6 @@
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.82",
-    "@iconify/utils": "^3.1.0",
     "@sveltejs/package": "^2",
     "@sveltejs/vite-plugin-svelte": "^5",
     "svelte-check": "^4"
