@@ -25,6 +25,7 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
+        // Tiptap core and extensions
         "@tiptap/core",
         "@tiptap/extension-blockquote",
         "@tiptap/extension-bold",
@@ -56,6 +57,13 @@ export default defineConfig({
         "@tiptap/extension-text",
         "@tiptap/pm",
         "@tiptap/suggestion",
+        // Large dependencies - externalized to reduce bundle size
+        "@hpcc-js/wasm-graphviz",
+        "mermaid",
+        "katex",
+        "highlight.js",
+        "lowlight",
+        "fuse.js",
       ],
       output: {
         preserveModules: true,
