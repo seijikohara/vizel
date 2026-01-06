@@ -8,7 +8,9 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
-    }
+    },
+    "./styles.css": "./src/styles/index.scss",
+    "./components.css": "./src/styles/components.scss"
   },
   "publishConfig": {
     "main": "./dist/index.js",
@@ -17,14 +19,19 @@
       ".": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js"
-      }
+      },
+      "./styles.css": "./dist/styles.css",
+      "./components.css": "./dist/components.css"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && bun run build:css",
+    "build:css": "bun run build:css:styles && bun run build:css:components",
+    "build:css:styles": "sass --load-path=src/styles --load-path=node_modules src/styles/index.scss dist/styles.css --style=compressed",
+    "build:css:components": "sass --load-path=src/styles --load-path=node_modules src/styles/components.scss dist/components.css --style=compressed",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

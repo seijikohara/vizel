@@ -1,0 +1,103 @@
+/**
+ * Vizel Editor Styles
+ *
+ * Base styles for the Vizel editor.
+ */
+
+@use "tokens" as *;
+
+.vizel-editor-container {
+  background: v("background");
+  border-radius: v("radius-xl");
+  box-shadow: v("shadow-md");
+  border: 1px solid v("border");
+  overflow: hidden;
+}
+
+.vizel-editor {
+  outline: none;
+  min-height: v("editor-min-height");
+  padding: v("editor-padding");
+
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+  h1 {
+    font-size: 2em;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.5em;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 1.25em;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  p {
+    line-height: 1.7;
+  }
+
+  ul,
+  ol {
+    padding-left: 1.5em;
+  }
+
+  li {
+    margin: 0.25em 0;
+  }
+
+  blockquote {
+    border-left: 3px solid v("primary");
+    padding-left: 1em;
+    color: v("foreground-secondary");
+    font-style: italic;
+  }
+
+  code {
+    background-color: v("primary-bg");
+    padding: 0.2em 0.4em;
+    border-radius: v("radius-sm");
+    font-family: v("font-mono");
+    font-size: 0.9em;
+    color: v("primary-hover");
+  }
+
+  pre {
+    background-color: v("code-block-bg");
+    color: v("code-block-text");
+    padding: 1em;
+    border-radius: v("radius-lg");
+    overflow-x: auto;
+
+    code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 2px solid v("border");
+    margin: 1.5em 0;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+
+    &:hover {
+      border-top-color: v("primary-bg");
+    }
+
+    &.ProseMirror-selectednode {
+      border-top-color: v("primary");
+      outline: none;
+    }
+  }
+}

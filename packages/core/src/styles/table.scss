@@ -1,0 +1,47 @@
+/**
+ * Vizel Table Styles
+ *
+ * Styles for tables and table cells.
+ */
+
+@use "tokens" as *;
+
+.vizel-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  table-layout: fixed;
+
+  &-cell,
+  &-header {
+    border: 1px solid v("border");
+    padding: 0.5em 0.75em;
+    min-width: 100px;
+    vertical-align: top;
+    position: relative;
+
+    p {
+      margin: 0;
+      text-align: inherit;
+    }
+
+    &.selectedCell {
+      background: v("primary-bg-hover");
+    }
+  }
+
+  &-header {
+    background: v("primary-bg");
+    font-weight: 600;
+    text-align: left;
+  }
+
+  &-wrapper {
+    overflow-x: auto;
+    margin: 1em 0;
+  }
+}
+
+.vizel-resize-cursor {
+  cursor: col-resize;
+}

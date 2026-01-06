@@ -1,5 +1,5 @@
 /* Import Vizel core styles */
-@import "../../../../packages/core/src/styles/index.css";
+@import "../../../../packages/core/src/styles/index.scss";
 
 /* Base Styles */
 * {

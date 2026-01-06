@@ -1,0 +1,62 @@
+/**
+ * Vizel Link Styles
+ */
+
+@use "tokens" as *;
+
+.vizel-link {
+  color: v("primary");
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: v("primary-hover");
+  }
+
+  &-editor {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  &-input {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid v("border");
+    border-radius: v("radius-sm");
+    font-size: 0.875rem;
+    width: 200px;
+    outline: none;
+
+    &:focus {
+      border-color: v("primary");
+      box-shadow: 0 0 0 2px v("primary-bg");
+    }
+  }
+
+  &-button {
+    padding: 0.25rem 0.5rem;
+    background: v("primary-bg");
+    border: 1px solid v("primary");
+    border-radius: v("radius-sm");
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: v("primary-hover");
+
+    &:hover {
+      background: v("primary");
+      color: v("primary-foreground");
+    }
+  }
+
+  &-remove {
+    background: v("destructive-bg");
+    border-color: v("destructive");
+    color: v("destructive");
+
+    &:hover {
+      background: v("destructive");
+      color: v("destructive-foreground");
+    }
+  }
+}

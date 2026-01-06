@@ -1,0 +1,122 @@
+/**
+ * Vizel Image Resize Styles
+ */
+
+@use "tokens" as *;
+
+.vizel-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: v("image-border-radius");
+
+  &-placeholder {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+    margin: 0.5em 0;
+    border-radius: v("image-border-radius");
+    overflow: hidden;
+    background: v("background-tertiary");
+  }
+
+  &-uploading {
+    max-width: 100%;
+    height: auto;
+    filter: blur(2px);
+    opacity: 0.7;
+  }
+
+  &-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid v("border");
+    border-top-color: v("resize-handle-color");
+    border-radius: 50%;
+    animation: vizel-spin 0.8s linear infinite;
+  }
+}
+
+.ProseMirror-selectednode {
+  .vizel-image,
+  [data-resize-wrapper] img {
+    outline: v("image-outline-width") solid v("image-outline-color");
+    outline-offset: 3px;
+    border-radius: v("image-border-radius");
+  }
+
+  [data-resize-handle] {
+    opacity: 1;
+  }
+}
+
+[data-resize-wrapper] {
+  position: relative;
+  display: inline-block;
+
+  &:hover [data-resize-handle] {
+    opacity: 1;
+  }
+}
+
+[data-resize-handle] {
+  width: v("resize-handle-width") !important;
+  height: v("resize-handle-height") !important;
+  max-height: 60% !important;
+  top: 50% !important;
+  bottom: auto !important;
+  background-color: v("resize-handle-color") !important;
+  border-radius: calc(v("resize-handle-width") / 2);
+  box-shadow: 0 1px 3px oklch(0 0 0 / 0.12), 0 1px 2px oklch(0 0 0 / 0.24);
+  opacity: 0;
+  cursor: ew-resize !important;
+  transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  z-index: 10;
+  transform: translateY(-50%);
+
+  &:hover {
+    background-color: v("resize-handle-color-hover") !important;
+    transform: translateY(-50%) scaleX(1.5);
+    box-shadow: 0 3px 6px oklch(0 0 0 / 0.16), 0 3px 6px oklch(0 0 0 / 0.23);
+  }
+
+  &:active {
+    background-color: v("resize-handle-color-hover") !important;
+    transform: translateY(-50%) scaleX(2);
+    box-shadow: 0 10px 20px oklch(0 0 0 / 0.19), 0 6px 6px oklch(0 0 0 / 0.23);
+  }
+
+  &[data-resize-handle="left"] {
+    margin-left: calc(v("resize-handle-width") / -2);
+  }
+
+  &[data-resize-handle="right"] {
+    margin-right: calc(v("resize-handle-width") / -2);
+  }
+}
+
+[data-resize-tooltip] {
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: v("resize-tooltip-bg");
+  color: v("resize-tooltip-color");
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.15);
+  z-index: 20;
+}
+
+@keyframes vizel-spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}

@@ -1,0 +1,363 @@
+////
+/// Vizel Design Tokens
+///
+/// Single source of truth for all CSS custom properties.
+/// Using SCSS maps ensures compile-time validation of variable references.
+///
+/// @group tokens
+////
+
+@use "sass:map";
+@use "sass:string";
+
+// ============================================
+// Token Definitions
+// ============================================
+
+/// Light theme color tokens
+/// @type Map
+$light-colors: (
+  // Primary - Blue
+  "primary": oklch(0.623 0.214 259.815),
+  "primary-hover": oklch(0.546 0.245 262.881),
+  "primary-active": oklch(0.488 0.243 264.376),
+  "primary-foreground": oklch(1 0 0),
+  "primary-bg": oklch(0.623 0.214 259.815 / 0.1),
+  "primary-bg-hover": oklch(0.623 0.214 259.815 / 0.15),
+
+  // Secondary - Slate
+  "secondary": oklch(0.554 0.046 257.417),
+  "secondary-hover": oklch(0.446 0.043 257.281),
+  "secondary-foreground": oklch(1 0 0),
+
+  // Background
+  "background": oklch(1 0 0),
+  "background-secondary": oklch(0.985 0 0),
+  "background-tertiary": oklch(0.967 0 0),
+
+  // Foreground (Text)
+  "foreground": oklch(0.21 0.006 285.885),
+  "foreground-secondary": oklch(0.556 0 0),
+  "foreground-muted": oklch(0.708 0 0),
+
+  // Muted
+  "muted": oklch(0.967 0 0),
+  "muted-foreground": oklch(0.556 0 0),
+
+  // Accent
+  "accent": oklch(0.967 0 0),
+  "accent-foreground": oklch(0.21 0.006 285.885),
+
+  // Border
+  "border": oklch(0.922 0 0),
+  "border-hover": oklch(0.869 0.005 56.366),
+
+  // Hover/Active States
+  "hover-bg": oklch(0 0 0 / 0.05),
+  "active-bg": oklch(0 0 0 / 0.1),
+
+  // Status Colors
+  "success": oklch(0.723 0.219 149.579),
+  "success-foreground": oklch(1 0 0),
+  "warning": oklch(0.769 0.188 70.08),
+  "warning-foreground": oklch(1 0 0),
+  "error": oklch(0.637 0.237 25.331),
+  "error-foreground": oklch(1 0 0),
+  "destructive": oklch(0.577 0.245 27.325),
+  "destructive-foreground": oklch(1 0 0),
+  "destructive-bg": oklch(0.577 0.245 27.325 / 0.1),
+  "destructive-border": oklch(0.885 0.062 18.334),
+
+  // Code Block
+  "code-block-bg": oklch(0.205 0 0),
+  "code-block-text": oklch(0.869 0.005 56.366),
+  "code-block-toolbar-bg": oklch(0.269 0 0),
+  "code-block-gutter-bg": oklch(0.216 0.006 56.043),
+  "code-block-line-number-color": oklch(0.553 0.013 58.071),
+  "code-block-language-color": oklch(0.828 0.111 230.318),
+  "code-block-placeholder": oklch(0.556 0 0),
+  "code-block-button-color": oklch(0.869 0 0),
+  "code-block-button-border": oklch(0.371 0 0),
+  "code-block-button-hover-bg": oklch(0.371 0 0),
+  "code-block-button-hover-color": oklch(1 0 0),
+  "code-block-input-bg": oklch(0.371 0 0),
+  "code-block-input-border": oklch(0.371 0 0),
+  "code-block-input-focus-bg": oklch(0.205 0 0),
+);
+
+/// Dark theme color overrides
+/// @type Map
+$dark-colors: (
+  // Primary
+  "primary": oklch(0.707 0.165 254.624),
+  "primary-hover": oklch(0.623 0.214 259.815),
+  "primary-active": oklch(0.546 0.245 262.881),
+  "primary-foreground": oklch(0.21 0.006 285.885),
+  "primary-bg": oklch(0.707 0.165 254.624 / 0.15),
+  "primary-bg-hover": oklch(0.707 0.165 254.624 / 0.2),
+
+  // Secondary
+  "secondary": oklch(0.704 0.04 256.788),
+  "secondary-hover": oklch(0.869 0.022 252.894),
+  "secondary-foreground": oklch(0.21 0.006 285.885),
+
+  // Background
+  "background": oklch(0.21 0.006 285.885),
+  "background-secondary": oklch(0.145 0 0),
+  "background-tertiary": oklch(0.279 0.041 260.031),
+
+  // Foreground
+  "foreground": oklch(0.985 0 0),
+  "foreground-secondary": oklch(0.869 0.022 252.894),
+  "foreground-muted": oklch(0.708 0 0),
+
+  // Muted
+  "muted": oklch(0.279 0.041 260.031),
+  "muted-foreground": oklch(0.708 0 0),
+
+  // Accent
+  "accent": oklch(0.279 0.041 260.031),
+  "accent-foreground": oklch(0.985 0 0),
+
+  // Border
+  "border": oklch(0.279 0.041 260.031),
+  "border-hover": oklch(0.372 0.044 257.287),
+
+  // Hover/Active States
+  "hover-bg": oklch(1 0 0 / 0.05),
+  "active-bg": oklch(1 0 0 / 0.1),
+
+  // Status Colors
+  "success": oklch(0.696 0.17 162.48),
+  "warning": oklch(0.828 0.189 84.429),
+  "error": oklch(0.704 0.191 22.216),
+  "destructive": oklch(0.704 0.191 22.216),
+  "destructive-bg": oklch(0.704 0.191 22.216 / 0.15),
+  "destructive-border": oklch(0.396 0.141 25.723),
+
+  // Code Block
+  "code-block-bg": oklch(0.205 0 0),
+  "code-block-text": oklch(0.869 0.005 56.366),
+  "code-block-toolbar-bg": oklch(0.216 0.006 56.043),
+  "code-block-gutter-bg": oklch(0.205 0 0),
+);
+
+/// Typography tokens
+/// @type Map
+$typography: (
+  // Font Families
+  "font-sans": (ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif),
+  "font-serif": (ui-serif, Georgia, Cambria, "Times New Roman", Times, serif),
+  "font-mono": (ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace),
+
+  // Font Sizes
+  "font-size-xs": 0.75rem,
+  "font-size-sm": 0.875rem,
+  "font-size-base": 1rem,
+  "font-size-lg": 1.125rem,
+  "font-size-xl": 1.25rem,
+  "font-size-2xl": 1.5rem,
+  "font-size-3xl": 1.875rem,
+  "font-size-4xl": 2.25rem,
+
+  // Line Heights
+  "line-height-tight": 1.25,
+  "line-height-snug": 1.375,
+  "line-height-normal": 1.5,
+  "line-height-relaxed": 1.625,
+  "line-height-loose": 2,
+
+  // Font Weights
+  "font-weight-normal": 400,
+  "font-weight-medium": 500,
+  "font-weight-semibold": 600,
+  "font-weight-bold": 700,
+
+  // Letter Spacing
+  "letter-spacing-tight": -0.025em,
+  "letter-spacing-normal": 0,
+  "letter-spacing-wide": 0.025em,
+);
+
+/// Spacing tokens
+/// @type Map
+$spacing: (
+  "spacing-0": 0,
+  "spacing-1": 0.25rem,
+  "spacing-2": 0.5rem,
+  "spacing-3": 0.75rem,
+  "spacing-4": 1rem,
+  "spacing-5": 1.25rem,
+  "spacing-6": 1.5rem,
+  "spacing-8": 2rem,
+  "spacing-10": 2.5rem,
+  "spacing-12": 3rem,
+);
+
+/// Border radius tokens
+/// @type Map
+$radius: (
+  "radius-none": 0,
+  "radius-sm": 0.25rem,
+  "radius-md": 0.375rem,
+  "radius-lg": 0.5rem,
+  "radius-xl": 0.75rem,
+  "radius-2xl": 1rem,
+  "radius-full": 9999px,
+);
+
+/// Shadow tokens (light theme)
+/// @type Map
+$shadows-light: (
+  "shadow-sm": (0 1px 2px 0 rgb(0 0 0 / 0.05)),
+  "shadow-md": (0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)),
+  "shadow-lg": (0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)),
+  "shadow-xl": (0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)),
+  "shadow-2xl": (0 25px 50px -12px rgb(0 0 0 / 0.25)),
+);
+
+/// Shadow tokens (dark theme)
+/// @type Map
+$shadows-dark: (
+  "shadow-sm": (0 1px 2px 0 rgb(0 0 0 / 0.3)),
+  "shadow-md": (0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3)),
+  "shadow-lg": (0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3)),
+  "shadow-xl": (0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4)),
+  "shadow-2xl": (0 25px 50px -12px rgb(0 0 0 / 0.5)),
+);
+
+/// Transition tokens
+/// @type Map
+$transitions: (
+  "transition-fast": 100ms,
+  "transition-normal": 150ms,
+  "transition-slow": 300ms,
+);
+
+/// Z-index tokens
+/// @type Map
+$z-index: (
+  "z-dropdown": 50,
+  "z-sticky": 60,
+  "z-fixed": 70,
+  "z-modal-backdrop": 80,
+  "z-modal": 90,
+  "z-popover": 100,
+  "z-tooltip": 110,
+);
+
+/// Component-specific tokens
+/// @type Map
+$components: (
+  // Editor
+  "editor-min-height": 350px,
+
+  // Image
+  "image-outline-width": 2px,
+  "resize-handle-width": 8px,
+  "resize-handle-height": 48px,
+
+  // Portal
+  "portal-base-z-index": 9999,
+);
+
+// ============================================
+// All Tokens Combined (for validation)
+// ============================================
+
+/// Complete token registry for compile-time validation
+/// @type Map
+$all-tokens: map.merge(
+  map.merge(
+    map.merge(
+      map.merge(
+        map.merge(
+          map.merge(
+            map.merge($light-colors, $typography),
+            $spacing
+          ),
+          $radius
+        ),
+        $shadows-light
+      ),
+      $transitions
+    ),
+    $z-index
+  ),
+  $components
+);
+
+// Also add dark-only tokens and derived tokens
+$all-tokens: map.merge($all-tokens, (
+  // Derived tokens (referenced via var())
+  "border-focus": true,
+  "ring": true,
+  "ring-offset": true,
+  "transition-colors": true,
+  "editor-padding": true,
+  "editor-font-family": true,
+  "editor-font-size": true,
+  "editor-line-height": true,
+  "image-border-radius": true,
+  "image-outline-color": true,
+  "resize-handle-color": true,
+  "resize-handle-color-hover": true,
+  "resize-tooltip-bg": true,
+  "resize-tooltip-color": true,
+  "code-block-border": true,
+  "math-block-bg": true,
+  "math-block-hover-bg": true,
+  "math-block-selected-bg": true,
+  "math-inline-bg": true,
+  "math-inline-hover-bg": true,
+  "math-inline-selected-bg": true,
+  "math-editing-bg": true,
+  "math-preview-bg": true,
+));
+
+// ============================================
+// Token Access Function
+// ============================================
+
+/// Get a CSS custom property reference with compile-time validation.
+/// Throws an error if the token name is not defined.
+///
+/// @param {String} $name - Token name without the "vizel-" prefix
+/// @return {String} - CSS var() function call
+/// @throws Error if token is not defined
+///
+/// @example scss
+///   .button {
+///     background: v("primary");        // -> var(--vizel-primary)
+///     border: 1px solid v("border");   // -> var(--vizel-border)
+///   }
+///
+/// @example scss - Error case
+///   .button {
+///     color: v("undefined-token");     // -> Compile error!
+///   }
+@function v($name) {
+  @if not map.has-key($all-tokens, $name) {
+    @error "Unknown Vizel token: '#{$name}'. Available tokens: #{map.keys($all-tokens)}";
+  }
+  @return var(--vizel-#{$name});
+}
+
+/// Get a raw token value (not as CSS variable reference).
+/// Useful for calculations or SCSS operations.
+///
+/// @param {String} $name - Token name
+/// @param {String} $theme - Theme name ("light" or "dark")
+/// @return {*} - Raw token value
+@function token($name, $theme: "light") {
+  @if $theme == "dark" and map.has-key($dark-colors, $name) {
+    @return map.get($dark-colors, $name);
+  }
+  @if map.has-key($light-colors, $name) {
+    @return map.get($light-colors, $name);
+  }
+  @if map.has-key($all-tokens, $name) {
+    @return map.get($all-tokens, $name);
+  }
+  @error "Unknown Vizel token: '#{$name}'";
+}

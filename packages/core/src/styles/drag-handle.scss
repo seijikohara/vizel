@@ -1,0 +1,99 @@
+/**
+ * Drag Handle Styles
+ */
+
+@use "tokens" as *;
+
+.vizel-drag-handle {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.5rem;
+  padding: 0.125rem;
+  cursor: grab;
+  border-radius: 0.25rem;
+  background-color: transparent;
+  color: v("muted-foreground");
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  user-select: none;
+  touch-action: none;
+
+  &:hover {
+    background-color: v("hover-bg");
+    color: v("foreground");
+  }
+
+  &:active {
+    cursor: grabbing;
+    background-color: v("active-bg");
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid v("primary");
+    outline-offset: 1px;
+  }
+
+  &.is-visible,
+  &:hover,
+  &.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &[data-dragging="true"] {
+    cursor: grabbing;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &-grip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.vizel-drop-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: v("primary");
+  pointer-events: none;
+  z-index: 50;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: v("primary");
+    transform: translateY(-50%);
+  }
+
+  &::before {
+    left: -3px;
+  }
+
+  &::after {
+    right: -3px;
+  }
+}

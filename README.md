@@ -23,57 +23,43 @@ A block-based visual editor for Markdown built with [Tiptap](https://tiptap.dev/
 
 | Package | Description |
 |---------|-------------|
-| `@vizel/core` | Framework-agnostic core with Tiptap extensions |
+| `@vizel/core` | Framework-agnostic core with Tiptap extensions and styles |
 | `@vizel/react` | React 18/19 components and hooks |
 | `@vizel/vue` | Vue 3 components and composables |
 | `@vizel/svelte` | Svelte 5 components and runes |
-| `@vizel/styles` | Pre-built CSS for non-Tailwind projects (optional) |
-| `@vizel/tailwind` | Tailwind CSS v4 theme (optional) |
 
 ## Installation
 
-### Basic Installation
-
-Vizel works out of the box without Tailwind CSS or shadcn/ui.
-
 ```bash
 # React
-bun add @vizel/react @vizel/styles
+bun add @vizel/react
 
 # Vue
-bun add @vizel/vue @vizel/styles
+bun add @vizel/vue
 
 # Svelte
-bun add @vizel/svelte @vizel/styles
+bun add @vizel/svelte
 ```
-
-### With Tailwind CSS v4 (Optional)
-
-If your project uses Tailwind CSS v4, you can import the optional theme for Vizel utilities:
-
-```bash
-bun add @vizel/tailwind
-```
-
-```css
-/* In your CSS file */
-@import "tailwindcss";
-@import "@vizel/tailwind";
-```
-
-This enables Tailwind utility classes like `bg-vizel-primary`, `text-vizel-foreground`, `rounded-vizel-lg`, etc.
 
 ### With shadcn/ui (Optional)
 
-For seamless integration with shadcn/ui projects, import the shadcn-compatible CSS variables:
+Vizel uses OKLCH color values by default, which are compatible with shadcn/ui's theming system. For shadcn/ui projects, import `components.css` (without CSS variable definitions) and map your theme colors:
 
 ```typescript
-// Import after your base styles
-import '@vizel/core/styles';
-import '@vizel/styles/shadcn'; // Maps shadcn variables to Vizel
+import '@vizel/core/components.css';
 ```
 
-This maps shadcn/ui's OKLCH variables (`--primary`, `--background`, etc.) to Vizel's theming system.
+```css
+:root {
+  /* Map your shadcn colors to Vizel */
+  --vizel-primary: var(--primary);
+  --vizel-background: var(--background);
+  --vizel-foreground: var(--foreground);
+  --vizel-border: var(--border);
+  --vizel-muted: var(--muted);
+  --vizel-accent: var(--accent);
+}
+```
 
 ## Usage
 
@@ -81,7 +67,7 @@ This maps shadcn/ui's OKLCH variables (`--primary`, `--background`, etc.) to Viz
 
 ```tsx
 import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/react';
-import '@vizel/styles';
+import '@vizel/core/styles.css';
 
 function Editor() {
   const editor = useVizelEditor({
@@ -115,7 +101,7 @@ function Editor() {
 ```vue
 <script setup lang="ts">
 import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/vue';
-import '@vizel/styles';
+import '@vizel/core/styles.css';
 
 const editor = useVizelEditor({
   placeholder: "Type '/' for commands...",
@@ -139,7 +125,7 @@ const editor = useVizelEditor({
 ```svelte
 <script lang="ts">
 import { EditorContent, BubbleMenu, createVizelEditor } from '@vizel/svelte';
-import '@vizel/styles';
+import '@vizel/core/styles.css';
 
 const editor = createVizelEditor({
   placeholder: "Type '/' for commands...",
@@ -285,23 +271,17 @@ function ThemeToggle() {
 
 ### Default Styles
 
-Import the pre-built stylesheet:
+Import the pre-built stylesheet (includes CSS variables + component styles):
 
 ```typescript
-import '@vizel/styles';
+import '@vizel/core/styles.css';
 ```
 
-### shadcn/ui Integration
-
-Vizel provides CSS variables compatible with [shadcn/ui](https://ui.shadcn.com/) theming:
+For shadcn/ui projects, use components-only styles (without CSS variable definitions):
 
 ```typescript
-// Import shadcn-compatible variables first, then main styles
-import '@vizel/styles/shadcn';
-import '@vizel/styles';
+import '@vizel/core/components.css';
 ```
-
-This maps shadcn/ui's CSS variables (like `--primary`, `--background`, `--border`) to Vizel's internal variables, ensuring consistent theming across your application.
 
 ### Custom Theming
 
@@ -324,7 +304,20 @@ Override CSS variables to customize the appearance:
 }
 ```
 
-See [variables.css](packages/core/src/styles/variables.css) for the full list of available CSS variables.
+#### Available CSS Variables
+
+| Category | Variables |
+|----------|-----------|
+| **Colors** | `--vizel-primary`, `--vizel-primary-hover`, `--vizel-background`, `--vizel-foreground`, `--vizel-border`, `--vizel-muted`, `--vizel-accent`, `--vizel-success`, `--vizel-warning`, `--vizel-error` |
+| **Typography** | `--vizel-font-sans`, `--vizel-font-mono`, `--vizel-font-size-sm`, `--vizel-font-size-base`, `--vizel-line-height-normal` |
+| **Spacing** | `--vizel-spacing-1` through `--vizel-spacing-12` |
+| **Border Radius** | `--vizel-radius-sm`, `--vizel-radius-md`, `--vizel-radius-lg`, `--vizel-radius-full` |
+| **Shadows** | `--vizel-shadow-sm`, `--vizel-shadow-md`, `--vizel-shadow-lg` |
+| **Transitions** | `--vizel-transition-fast`, `--vizel-transition-normal`, `--vizel-transition-slow` |
+| **Editor** | `--vizel-editor-min-height`, `--vizel-editor-padding`, `--vizel-editor-font-family` |
+| **Code Block** | `--vizel-code-block-bg`, `--vizel-code-block-text`, `--vizel-code-block-border` |
+
+See [_tokens.scss](packages/core/src/styles/_tokens.scss) for all available design tokens and [_variables.scss](packages/core/src/styles/_variables.scss) for how they're output as CSS variables.
 
 ## Development
 

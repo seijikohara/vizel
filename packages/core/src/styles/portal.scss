@@ -1,0 +1,31 @@
+/**
+ * Portal Container Styles
+ */
+
+@use "tokens" as *;
+
+#vizel-portal-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: v("portal-base-z-index");
+}
+
+[data-vizel-portal-layer] {
+  pointer-events: auto;
+
+  &[data-vizel-portal-layer="dropdown"] {
+    z-index: var(--vizel-portal-dropdown-z-index, 50);
+  }
+
+  &[data-vizel-portal-layer="modal"] {
+    z-index: var(--vizel-portal-modal-z-index, 100);
+  }
+
+  &[data-vizel-portal-layer="tooltip"] {
+    z-index: var(--vizel-portal-tooltip-z-index, 150);
+  }
+}
