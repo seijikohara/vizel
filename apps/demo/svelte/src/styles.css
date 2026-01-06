@@ -1,16 +1,16 @@
 /* Import shared styles */
 @import "../../shared/styles/base.css";
 
-/* Svelte Theme - Orange #FF3E00 */
+/* Svelte Theme - Orange */
 :root {
-  --vizel-primary-color: #ff3e00;
-  --vizel-primary-color-dark: #d63600;
-  --vizel-primary-bg: rgba(255, 62, 0, 0.1);
-  --vizel-primary-bg-hover: rgba(255, 62, 0, 0.15);
+  --vizel-primary: oklch(0.646 0.222 31.295);
+  --vizel-primary-hover: oklch(0.577 0.203 28.717);
+  --vizel-primary-bg: oklch(0.646 0.222 31.295 / 0.1);
+  --vizel-primary-bg-hover: oklch(0.646 0.222 31.295 / 0.15);
 
   /* Framework-specific aliases for demo UI */
-  --framework-color: var(--vizel-primary-color);
-  --framework-color-dark: var(--vizel-primary-color-dark);
+  --framework-color: var(--vizel-primary);
+  --framework-color-dark: var(--vizel-primary-hover);
   --framework-bg: var(--vizel-primary-bg);
   --framework-bg-hover: var(--vizel-primary-bg-hover);
 }

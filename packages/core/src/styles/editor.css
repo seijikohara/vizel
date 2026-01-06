@@ -80,8 +80,8 @@
 
 /* Code block */
 .vizel-editor pre {
-  background-color: var(--vizel-bg-color-dark);
-  color: #f9fafb;
+  background-color: var(--vizel-code-block-bg);
+  color: var(--vizel-code-block-text);
   padding: 1em;
   border-radius: var(--vizel-radius-lg);
   overflow-x: auto;

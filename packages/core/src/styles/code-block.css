@@ -9,7 +9,7 @@
   position: relative;
   margin: 1rem 0;
   border-radius: 0.5rem;
-  background-color: var(--vizel-code-block-bg, #1e1e1e);
+  background-color: var(--vizel-code-block-bg);
   overflow: hidden;
 }
 
@@ -19,8 +19,8 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background-color: var(--vizel-code-block-toolbar-bg, rgba(255, 255, 255, 0.05));
-  border-bottom: 1px solid var(--vizel-code-block-border, rgba(255, 255, 255, 0.1));
+  background-color: var(--vizel-code-block-toolbar-bg);
+  border-bottom: 1px solid var(--vizel-code-block-border);
   user-select: none;
 }
 
@@ -31,18 +31,10 @@
   max-width: 150px;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
-  font-family: var(
-    --vizel-font-mono,
-    ui-monospace,
-    SFMono-Regular,
-    "SF Mono",
-    Menlo,
-    Consolas,
-    monospace
-  );
-  color: var(--vizel-code-block-language-color, #9ca3af);
-  background-color: var(--vizel-code-block-input-bg, rgba(255, 255, 255, 0.05));
-  border: 1px solid var(--vizel-code-block-input-border, rgba(255, 255, 255, 0.1));
+  font-family: var(--vizel-font-mono);
+  color: var(--vizel-code-block-language-color);
+  background-color: var(--vizel-code-block-input-bg);
+  border: 1px solid var(--vizel-code-block-input-border);
   border-radius: 0.25rem;
   outline: none;
   transition:
@@ -51,12 +43,12 @@
 }
 
 .vizel-code-block-language-input:focus {
-  border-color: var(--vizel-primary-color, #3b82f6);
-  background-color: var(--vizel-code-block-input-focus-bg, rgba(255, 255, 255, 0.1));
+  border-color: var(--vizel-primary);
+  background-color: var(--vizel-code-block-input-focus-bg);
 }
 
 .vizel-code-block-language-input::placeholder {
-  color: var(--vizel-code-block-placeholder, rgba(156, 163, 175, 0.5));
+  color: var(--vizel-code-block-placeholder);
 }
 
 /* Line numbers toggle button */
@@ -68,7 +60,7 @@
   height: 1.75rem;
   padding: 0;
   background-color: transparent;
-  border: 1px solid var(--vizel-code-block-button-border, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--vizel-code-block-button-border);
   border-radius: 0.25rem;
   cursor: pointer;
   transition:
@@ -81,7 +73,7 @@
   display: block;
   width: 0.875rem;
   height: 0.875rem;
-  background-color: var(--vizel-code-block-button-color, #9ca3af);
+  background-color: var(--vizel-code-block-button-color);
   mask-image: var(
     --vizel-code-block-line-numbers-icon,
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='3' y1='6' x2='5' y2='6'/%3E%3Cline x1='8' y1='6' x2='21' y2='6'/%3E%3Cline x1='3' y1='12' x2='5' y2='12'/%3E%3Cline x1='8' y1='12' x2='21' y2='12'/%3E%3Cline x1='3' y1='18' x2='5' y2='18'/%3E%3Cline x1='8' y1='18' x2='21' y2='18'/%3E%3C/svg%3E")
@@ -93,19 +85,19 @@
 }
 
 .vizel-code-block-line-numbers-toggle:hover {
-  background-color: var(--vizel-code-block-button-hover-bg, rgba(255, 255, 255, 0.1));
+  background-color: var(--vizel-code-block-button-hover-bg);
 }
 
 .vizel-code-block-line-numbers-toggle:hover::before {
-  background-color: var(--vizel-code-block-button-hover-color, #d1d5db);
+  background-color: var(--vizel-code-block-button-hover-color);
 }
 
 .vizel-code-block-line-numbers-toggle.active {
-  border-color: var(--vizel-primary-color, #3b82f6);
+  border-color: var(--vizel-primary);
 }
 
 .vizel-code-block-line-numbers-toggle.active::before {
-  background-color: var(--vizel-primary-color, #3b82f6);
+  background-color: var(--vizel-primary);
 }
 
 /* Code container (gutter + pre) */
@@ -123,8 +115,8 @@
   padding-left: 1rem;
   text-align: right;
   user-select: none;
-  border-right: 1px solid var(--vizel-code-block-border, rgba(255, 255, 255, 0.1));
-  background-color: var(--vizel-code-block-gutter-bg, rgba(0, 0, 0, 0.1));
+  border-right: 1px solid var(--vizel-code-block-border);
+  background-color: var(--vizel-code-block-gutter-bg);
 }
 
 .vizel-code-block-line-numbers .vizel-code-block-gutter {
@@ -132,18 +124,10 @@
 }
 
 .vizel-code-block-line-number {
-  font-family: var(
-    --vizel-font-mono,
-    ui-monospace,
-    SFMono-Regular,
-    "SF Mono",
-    Menlo,
-    Consolas,
-    monospace
-  );
+  font-family: var(--vizel-font-mono);
   font-size: 0.875rem;
   line-height: 1.625;
-  color: var(--vizel-code-block-line-number-color, rgba(156, 163, 175, 0.5));
+  color: var(--vizel-code-block-line-number-color);
   min-width: 1.5rem;
 }
 
@@ -153,18 +137,10 @@
   margin: 0;
   padding: 1rem;
   overflow-x: auto;
-  font-family: var(
-    --vizel-font-mono,
-    ui-monospace,
-    SFMono-Regular,
-    "SF Mono",
-    Menlo,
-    Consolas,
-    monospace
-  );
+  font-family: var(--vizel-font-mono);
   font-size: 0.875rem;
   line-height: 1.625;
-  color: var(--vizel-code-block-text, #d4d4d4);
+  color: var(--vizel-code-block-text);
   background: transparent;
 }
 
@@ -175,12 +151,13 @@
 
 /* ============================================
    Syntax Highlighting Theme (One Dark / VS Code-like)
+   Using OKLCH color format for better uniformity
    ============================================ */
 
 /* Comments */
 .hljs-comment,
 .hljs-quote {
-  color: #6a9955;
+  color: oklch(0.627 0.094 142.495);
   font-style: italic;
 }
 
@@ -188,7 +165,7 @@
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-addition {
-  color: #569cd6;
+  color: oklch(0.659 0.127 241.161);
 }
 
 /* Strings */
@@ -196,7 +173,7 @@
 .hljs-meta .hljs-string,
 .hljs-template-tag,
 .hljs-template-variable {
-  color: #ce9178;
+  color: oklch(0.716 0.099 46.259);
 }
 
 /* Numbers */
@@ -204,7 +181,7 @@
 .hljs-literal,
 .hljs-variable,
 .hljs-link {
-  color: #b5cea8;
+  color: oklch(0.831 0.076 129.524);
 }
 
 /* Types & Classes */
@@ -212,72 +189,72 @@
 .hljs-class .hljs-title,
 .hljs-title.class_,
 .hljs-title.class_.inherited__ {
-  color: #4ec9b0;
+  color: oklch(0.783 0.115 181.214);
 }
 
 /* Functions */
 .hljs-function .hljs-title,
 .hljs-title.function_,
 .hljs-title.function_.invoke__ {
-  color: #dcdcaa;
+  color: oklch(0.879 0.067 95.642);
 }
 
 /* Variables & Parameters */
 .hljs-params,
 .hljs-attr,
 .hljs-attribute {
-  color: #9cdcfe;
+  color: oklch(0.854 0.103 228.265);
 }
 
 /* Built-ins */
 .hljs-built_in,
 .hljs-builtin-name {
-  color: #4fc1ff;
+  color: oklch(0.786 0.138 224.127);
 }
 
 /* Tags (HTML/XML) */
 .hljs-tag {
-  color: #808080;
+  color: oklch(0.598 0 0);
 }
 
 .hljs-name,
 .hljs-selector-id,
 .hljs-selector-class {
-  color: #569cd6;
+  color: oklch(0.659 0.127 241.161);
 }
 
 /* Operators & Punctuation */
 .hljs-operator,
 .hljs-punctuation {
-  color: #d4d4d4;
+  color: oklch(0.869 0.005 56.366);
 }
 
 /* Meta & Preprocessor */
 .hljs-meta,
 .hljs-preprocessor {
-  color: #c586c0;
+  color: oklch(0.675 0.152 325.018);
 }
 
 /* Regex */
 .hljs-regexp {
-  color: #d16969;
+  color: oklch(0.596 0.132 23.561);
 }
 
 /* Symbols */
 .hljs-symbol {
-  color: #b5cea8;
+  color: oklch(0.831 0.076 129.524);
 }
 
 /* Deletion (diff) */
 .hljs-deletion {
-  color: #f44747;
-  background-color: rgba(244, 71, 71, 0.1);
+  color: oklch(0.628 0.258 29.234);
+  background-color: oklch(0.628 0.258 29.234 / 0.1);
 }
 
 /* Addition (diff) */
 .hljs-addition {
-  color: #89d185;
-  background-color: rgba(137, 209, 133, 0.1);
+  color: oklch(0.818 0.15 145.964);
+  background-color: oklch(0.818 0.15 145.964 / 0.1);
 }
 
 /* Emphasis */
@@ -293,14 +270,14 @@
 /* Section headings */
 .hljs-section,
 .hljs-title {
-  color: #569cd6;
+  color: oklch(0.659 0.127 241.161);
   font-weight: bold;
 }
 
 /* Bullets & Selectors */
 .hljs-bullet,
 .hljs-selector-pseudo {
-  color: #d7ba7d;
+  color: oklch(0.801 0.088 80.173);
 }
 
 /* ============================================
@@ -309,56 +286,56 @@
 
 :root[data-theme="light"] .vizel-code-block,
 .vizel-code-block[data-theme="light"] {
-  --vizel-code-block-bg: #f5f5f5;
-  --vizel-code-block-toolbar-bg: rgba(0, 0, 0, 0.03);
-  --vizel-code-block-border: rgba(0, 0, 0, 0.1);
-  --vizel-code-block-text: #1f1f1f;
-  --vizel-code-block-language-color: #6b7280;
-  --vizel-code-block-input-bg: rgba(0, 0, 0, 0.03);
-  --vizel-code-block-input-border: rgba(0, 0, 0, 0.1);
-  --vizel-code-block-input-focus-bg: rgba(0, 0, 0, 0.05);
-  --vizel-code-block-button-color: #6b7280;
-  --vizel-code-block-button-border: rgba(0, 0, 0, 0.1);
-  --vizel-code-block-button-hover-color: #374151;
-  --vizel-code-block-button-hover-bg: rgba(0, 0, 0, 0.05);
-  --vizel-code-block-line-number-color: rgba(107, 114, 128, 0.5);
-  --vizel-code-block-gutter-bg: rgba(0, 0, 0, 0.03);
+  --vizel-code-block-bg: oklch(0.968 0 0);
+  --vizel-code-block-toolbar-bg: oklch(0 0 0 / 0.03);
+  --vizel-code-block-border: oklch(0 0 0 / 0.1);
+  --vizel-code-block-text: oklch(0.216 0.006 285.885);
+  --vizel-code-block-language-color: oklch(0.556 0.018 247.897);
+  --vizel-code-block-input-bg: oklch(0 0 0 / 0.03);
+  --vizel-code-block-input-border: oklch(0 0 0 / 0.1);
+  --vizel-code-block-input-focus-bg: oklch(0 0 0 / 0.05);
+  --vizel-code-block-button-color: oklch(0.556 0.018 247.897);
+  --vizel-code-block-button-border: oklch(0 0 0 / 0.1);
+  --vizel-code-block-button-hover-color: oklch(0.391 0.018 249.879);
+  --vizel-code-block-button-hover-bg: oklch(0 0 0 / 0.05);
+  --vizel-code-block-line-number-color: oklch(0.556 0.018 247.897 / 0.5);
+  --vizel-code-block-gutter-bg: oklch(0 0 0 / 0.03);
 }
 
 :root[data-theme="light"] .hljs-comment,
 :root[data-theme="light"] .hljs-quote,
 .vizel-code-block[data-theme="light"] .hljs-comment,
 .vizel-code-block[data-theme="light"] .hljs-quote {
-  color: #008000;
+  color: oklch(0.519 0.176 142.495);
 }
 
 :root[data-theme="light"] .hljs-keyword,
 :root[data-theme="light"] .hljs-selector-tag,
 .vizel-code-block[data-theme="light"] .hljs-keyword,
 .vizel-code-block[data-theme="light"] .hljs-selector-tag {
-  color: #0000ff;
+  color: oklch(0.452 0.313 264.052);
 }
 
 :root[data-theme="light"] .hljs-string,
 .vizel-code-block[data-theme="light"] .hljs-string {
-  color: #a31515;
+  color: oklch(0.441 0.157 23.198);
 }
 
 :root[data-theme="light"] .hljs-number,
 .vizel-code-block[data-theme="light"] .hljs-number {
-  color: #098658;
+  color: oklch(0.544 0.118 160.255);
 }
 
 :root[data-theme="light"] .hljs-type,
 :root[data-theme="light"] .hljs-class .hljs-title,
 .vizel-code-block[data-theme="light"] .hljs-type,
 .vizel-code-block[data-theme="light"] .hljs-class .hljs-title {
-  color: #267f99;
+  color: oklch(0.54 0.106 199.769);
 }
 
 :root[data-theme="light"] .hljs-function .hljs-title,
 :root[data-theme="light"] .hljs-title.function_,
 .vizel-code-block[data-theme="light"] .hljs-function .hljs-title,
 .vizel-code-block[data-theme="light"] .hljs-title.function_ {
-  color: #795e26;
+  color: oklch(0.498 0.088 60.847);
 }

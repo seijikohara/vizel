@@ -27,9 +27,14 @@ A block-based visual editor for Markdown built with [Tiptap](https://tiptap.dev/
 | `@vizel/react` | React 18/19 components and hooks |
 | `@vizel/vue` | Vue 3 components and composables |
 | `@vizel/svelte` | Svelte 5 components and runes |
-| `@vizel/styles` | Pre-built CSS styles (optional) |
+| `@vizel/styles` | Pre-built CSS for non-Tailwind projects (optional) |
+| `@vizel/tailwind` | Tailwind CSS v4 theme (optional) |
 
 ## Installation
+
+### Basic Installation
+
+Vizel works out of the box without Tailwind CSS or shadcn/ui.
 
 ```bash
 # React
@@ -42,7 +47,33 @@ bun add @vizel/vue @vizel/styles
 bun add @vizel/svelte @vizel/styles
 ```
 
-> **Note**: `@vizel/styles` is optional. Each framework package includes the core styles, but `@vizel/styles` provides a pre-built CSS bundle for convenience.
+### With Tailwind CSS v4 (Optional)
+
+If your project uses Tailwind CSS v4, you can import the optional theme for Vizel utilities:
+
+```bash
+bun add @vizel/tailwind
+```
+
+```css
+/* In your CSS file */
+@import "tailwindcss";
+@import "@vizel/tailwind";
+```
+
+This enables Tailwind utility classes like `bg-vizel-primary`, `text-vizel-foreground`, `rounded-vizel-lg`, etc.
+
+### With shadcn/ui (Optional)
+
+For seamless integration with shadcn/ui projects, import the shadcn-compatible CSS variables:
+
+```typescript
+// Import after your base styles
+import '@vizel/core/styles';
+import '@vizel/styles/shadcn'; // Maps shadcn variables to Vizel
+```
+
+This maps shadcn/ui's OKLCH variables (`--primary`, `--background`, etc.) to Vizel's theming system.
 
 ## Usage
 

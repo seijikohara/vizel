@@ -15,10 +15,18 @@
  * @see https://ui.shadcn.com/docs/theming
  */
 
+/* ============================================
+ * Light Theme (Default)
+ * ============================================ */
+
 :root,
 .light,
-[data-theme="light"] {
-  /* shadcn/ui core variables */
+[data-theme="light"],
+[data-vizel-theme="light"] {
+  /* ----------------------------------------
+   * shadcn/ui Core Variables
+   * ---------------------------------------- */
+
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
 
@@ -49,53 +57,275 @@
 
   --radius: 0.5rem;
 
-  /* Map Vizel variables to shadcn variables */
+  /* ----------------------------------------
+   * Vizel Color Tokens (mapped from shadcn)
+   * ---------------------------------------- */
+
+  /* Primary */
   --vizel-primary: hsl(var(--primary));
   --vizel-primary-hover: hsl(221.2 83.2% 43.3%);
+  --vizel-primary-active: hsl(221.2 83.2% 33.3%);
   --vizel-primary-foreground: hsl(var(--primary-foreground));
+  --vizel-primary-bg: hsl(221.2 83.2% 53.3% / 0.1);
+  --vizel-primary-bg-hover: hsl(221.2 83.2% 53.3% / 0.15);
 
+  /* Secondary */
   --vizel-secondary: hsl(var(--secondary));
+  --vizel-secondary-hover: hsl(210 40% 90%);
   --vizel-secondary-foreground: hsl(var(--secondary-foreground));
 
+  /* Background */
   --vizel-background: hsl(var(--background));
   --vizel-background-secondary: hsl(var(--card));
   --vizel-background-tertiary: hsl(var(--muted));
 
+  /* Foreground (Text) */
   --vizel-foreground: hsl(var(--foreground));
   --vizel-foreground-secondary: hsl(var(--muted-foreground));
   --vizel-foreground-muted: hsl(215.4 16.3% 56.9%);
 
+  /* Muted */
   --vizel-muted: hsl(var(--muted));
   --vizel-muted-foreground: hsl(var(--muted-foreground));
 
+  /* Accent */
   --vizel-accent: hsl(var(--accent));
   --vizel-accent-foreground: hsl(var(--accent-foreground));
 
+  /* Border */
   --vizel-border: hsl(var(--border));
   --vizel-border-hover: hsl(214.3 31.8% 81.4%);
   --vizel-border-focus: hsl(var(--ring));
 
+  /* Ring (Focus) */
   --vizel-ring: hsl(var(--ring));
   --vizel-ring-offset: hsl(var(--background));
 
+  /* Hover/Active States */
+  --vizel-hover-bg: hsl(0 0% 0% / 0.05);
+  --vizel-active-bg: hsl(0 0% 0% / 0.1);
+
+  /* Status Colors */
+  --vizel-success: hsl(142.1 76.2% 36.3%);
+  --vizel-success-foreground: hsl(0 0% 100%);
+  --vizel-warning: hsl(38 92% 50%);
+  --vizel-warning-foreground: hsl(0 0% 100%);
+  --vizel-error: hsl(var(--destructive));
+  --vizel-error-foreground: hsl(var(--destructive-foreground));
   --vizel-destructive: hsl(var(--destructive));
   --vizel-destructive-foreground: hsl(var(--destructive-foreground));
   --vizel-destructive-bg: hsl(0 84.2% 60.2% / 0.1);
+  --vizel-destructive-border: hsl(0 84.2% 85%);
 
-  --vizel-success: hsl(142.1 76.2% 36.3%);
-  --vizel-warning: hsl(38 92% 50%);
-  --vizel-error: hsl(var(--destructive));
+  /* ----------------------------------------
+   * Typography Tokens
+   * ---------------------------------------- */
 
-  /* Use shadcn radius */
+  /* Font Families */
+  --vizel-font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --vizel-font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --vizel-font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+
+  /* Font Sizes */
+  --vizel-font-size-xs: 0.75rem;
+  --vizel-font-size-sm: 0.875rem;
+  --vizel-font-size-base: 1rem;
+  --vizel-font-size-lg: 1.125rem;
+  --vizel-font-size-xl: 1.25rem;
+  --vizel-font-size-2xl: 1.5rem;
+  --vizel-font-size-3xl: 1.875rem;
+  --vizel-font-size-4xl: 2.25rem;
+
+  /* Line Heights */
+  --vizel-line-height-tight: 1.25;
+  --vizel-line-height-snug: 1.375;
+  --vizel-line-height-normal: 1.5;
+  --vizel-line-height-relaxed: 1.625;
+  --vizel-line-height-loose: 2;
+
+  /* Font Weights */
+  --vizel-font-weight-normal: 400;
+  --vizel-font-weight-medium: 500;
+  --vizel-font-weight-semibold: 600;
+  --vizel-font-weight-bold: 700;
+
+  /* Letter Spacing */
+  --vizel-letter-spacing-tight: -0.025em;
+  --vizel-letter-spacing-normal: 0;
+  --vizel-letter-spacing-wide: 0.025em;
+
+  /* ----------------------------------------
+   * Spacing Tokens
+   * ---------------------------------------- */
+
+  --vizel-spacing-0: 0;
+  --vizel-spacing-1: 0.25rem;
+  --vizel-spacing-2: 0.5rem;
+  --vizel-spacing-3: 0.75rem;
+  --vizel-spacing-4: 1rem;
+  --vizel-spacing-5: 1.25rem;
+  --vizel-spacing-6: 1.5rem;
+  --vizel-spacing-8: 2rem;
+  --vizel-spacing-10: 2.5rem;
+  --vizel-spacing-12: 3rem;
+
+  /* ----------------------------------------
+   * Border Radius (using shadcn --radius)
+   * ---------------------------------------- */
+
+  --vizel-radius-none: 0;
   --vizel-radius-sm: calc(var(--radius) - 4px);
   --vizel-radius-md: calc(var(--radius) - 2px);
   --vizel-radius-lg: var(--radius);
   --vizel-radius-xl: calc(var(--radius) + 4px);
   --vizel-radius-2xl: calc(var(--radius) + 8px);
+  --vizel-radius-full: 9999px;
+
+  /* ----------------------------------------
+   * Shadow Tokens
+   * ---------------------------------------- */
+
+  --vizel-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --vizel-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --vizel-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --vizel-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* ----------------------------------------
+   * Transition Tokens
+   * ---------------------------------------- */
+
+  --vizel-transition-fast: 100ms;
+  --vizel-transition-normal: 150ms;
+  --vizel-transition-slow: 300ms;
+  --vizel-transition-colors:
+    color var(--vizel-transition-normal) ease, background-color var(--vizel-transition-normal) ease,
+    border-color var(--vizel-transition-normal) ease;
+
+  /* ----------------------------------------
+   * Z-Index Tokens
+   * ---------------------------------------- */
+
+  --vizel-z-dropdown: 50;
+  --vizel-z-sticky: 60;
+  --vizel-z-fixed: 70;
+  --vizel-z-modal-backdrop: 80;
+  --vizel-z-modal: 90;
+  --vizel-z-popover: 100;
+  --vizel-z-tooltip: 110;
+
+  /* ----------------------------------------
+   * Editor Component Tokens
+   * ---------------------------------------- */
+
+  --vizel-editor-min-height: 350px;
+  --vizel-editor-padding: var(--vizel-spacing-6);
+  --vizel-editor-font-family: var(--vizel-font-sans);
+  --vizel-editor-font-size: var(--vizel-font-size-base);
+  --vizel-editor-line-height: var(--vizel-line-height-relaxed);
+
+  /* ----------------------------------------
+   * Image Component Tokens
+   * ---------------------------------------- */
+
+  --vizel-image-border-radius: var(--vizel-radius-lg);
+  --vizel-image-outline-color: var(--vizel-primary);
+  --vizel-image-outline-width: 2px;
+  --vizel-resize-handle-color: var(--vizel-primary);
+  --vizel-resize-handle-color-hover: var(--vizel-primary-hover);
+  --vizel-resize-handle-width: 8px;
+  --vizel-resize-handle-height: 48px;
+  --vizel-resize-tooltip-bg: var(--vizel-foreground);
+  --vizel-resize-tooltip-color: var(--vizel-background);
+
+  /* ----------------------------------------
+   * Code Block Component Tokens
+   * ---------------------------------------- */
+
+  --vizel-code-block-bg: #1e1e1e;
+  --vizel-code-block-text: #d4d4d4;
+  --vizel-code-block-border: var(--vizel-border);
+  --vizel-code-block-toolbar-bg: #2d2d2d;
+  --vizel-code-block-gutter-bg: #252526;
+  --vizel-code-block-line-number-color: #858585;
+  --vizel-code-block-language-color: #9cdcfe;
+  --vizel-code-block-placeholder: #6b7280;
+  --vizel-code-block-button-color: #cccccc;
+  --vizel-code-block-button-border: #3c3c3c;
+  --vizel-code-block-button-hover-bg: #3c3c3c;
+  --vizel-code-block-button-hover-color: #ffffff;
+  --vizel-code-block-input-bg: #3c3c3c;
+  --vizel-code-block-input-border: #3c3c3c;
+  --vizel-code-block-input-focus-bg: #1e1e1e;
+
+  /* ----------------------------------------
+   * Mathematics Component Tokens
+   * ---------------------------------------- */
+
+  --vizel-math-block-bg: var(--vizel-background-secondary);
+  --vizel-math-block-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-block-selected-bg: var(--vizel-primary-bg);
+  --vizel-math-inline-bg: transparent;
+  --vizel-math-inline-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-inline-selected-bg: var(--vizel-primary-bg);
+  --vizel-math-editing-bg: var(--vizel-background-tertiary);
+  --vizel-math-preview-bg: var(--vizel-background);
+
+  /* ----------------------------------------
+   * Portal Component Tokens
+   * ---------------------------------------- */
+
+  --vizel-portal-base-z-index: 9999;
+  --vizel-portal-dropdown-z-index: var(--vizel-z-dropdown);
+  --vizel-portal-modal-z-index: var(--vizel-z-modal);
+  --vizel-portal-tooltip-z-index: var(--vizel-z-tooltip);
+
+  /* ----------------------------------------
+   * Legacy Aliases (for backward compatibility)
+   * ---------------------------------------- */
+
+  --vizel-primary-color: var(--vizel-primary);
+  --vizel-primary-color-hover: var(--vizel-primary-hover);
+  --vizel-primary-color-dark: var(--vizel-primary-hover);
+  --vizel-primary-color-light: var(--vizel-primary-bg);
+  --vizel-text-color: var(--vizel-foreground);
+  --vizel-text-color-secondary: var(--vizel-foreground-secondary);
+  --vizel-text-color-muted: var(--vizel-foreground-muted);
+  --vizel-text-muted: var(--vizel-foreground-muted);
+  --vizel-border-color: var(--vizel-border);
+  --vizel-border-color-hover: var(--vizel-border-hover);
+  --vizel-border-color-light: var(--vizel-border);
+  --vizel-bg-color: var(--vizel-background);
+  --vizel-bg-color-secondary: var(--vizel-background-secondary);
+  --vizel-bg-color-tertiary: var(--vizel-background-tertiary);
+  --vizel-bg-hover: var(--vizel-hover-bg);
+  --vizel-bg-muted: var(--vizel-muted);
+  --vizel-success-color: var(--vizel-success);
+  --vizel-warning-color: var(--vizel-warning);
+  --vizel-error-color: var(--vizel-error);
+  --vizel-danger-color: var(--vizel-destructive);
+  --vizel-danger-bg: var(--vizel-destructive-bg);
+  --vizel-destructive-color: var(--vizel-destructive);
+  --vizel-font-family: var(--vizel-font-sans);
+  --vizel-font-family-mono: var(--vizel-font-mono);
+  --vizel-theme-transition: var(--vizel-transition-colors);
 }
 
+/* ============================================
+ * Dark Theme
+ * ============================================ */
+
 .dark,
-[data-theme="dark"] {
+[data-theme="dark"],
+[data-vizel-theme="dark"] {
+  /* ----------------------------------------
+   * shadcn/ui Core Variables (Dark)
+   * ---------------------------------------- */
+
   --background: 222.2 84% 4.9%;
   --foreground: 210 40% 98%;
 
@@ -124,52 +354,101 @@
   --input: 217.2 32.6% 17.5%;
   --ring: 224.3 76.3% 48%;
 
-  /* Map Vizel variables to shadcn variables */
+  /* ----------------------------------------
+   * Vizel Color Tokens (Dark)
+   * ---------------------------------------- */
+
+  /* Primary */
   --vizel-primary: hsl(var(--primary));
   --vizel-primary-hover: hsl(217.2 91.2% 49.8%);
+  --vizel-primary-active: hsl(217.2 91.2% 39.8%);
   --vizel-primary-foreground: hsl(var(--primary-foreground));
+  --vizel-primary-bg: hsl(217.2 91.2% 59.8% / 0.15);
+  --vizel-primary-bg-hover: hsl(217.2 91.2% 59.8% / 0.2);
 
+  /* Secondary */
   --vizel-secondary: hsl(var(--secondary));
+  --vizel-secondary-hover: hsl(217.2 32.6% 27.5%);
   --vizel-secondary-foreground: hsl(var(--secondary-foreground));
 
+  /* Background */
   --vizel-background: hsl(var(--background));
   --vizel-background-secondary: hsl(var(--card));
   --vizel-background-tertiary: hsl(var(--muted));
 
+  /* Foreground (Text) */
   --vizel-foreground: hsl(var(--foreground));
   --vizel-foreground-secondary: hsl(var(--muted-foreground));
   --vizel-foreground-muted: hsl(215 20.2% 55.1%);
 
+  /* Muted */
   --vizel-muted: hsl(var(--muted));
   --vizel-muted-foreground: hsl(var(--muted-foreground));
 
+  /* Accent */
   --vizel-accent: hsl(var(--accent));
   --vizel-accent-foreground: hsl(var(--accent-foreground));
 
+  /* Border */
   --vizel-border: hsl(var(--border));
   --vizel-border-hover: hsl(217.2 32.6% 27.5%);
   --vizel-border-focus: hsl(var(--ring));
 
+  /* Ring (Focus) */
   --vizel-ring: hsl(var(--ring));
   --vizel-ring-offset: hsl(var(--background));
 
+  /* Hover/Active States */
+  --vizel-hover-bg: hsl(0 0% 100% / 0.05);
+  --vizel-active-bg: hsl(0 0% 100% / 0.1);
+
+  /* Status Colors */
+  --vizel-success: hsl(142.1 70.6% 45.3%);
+  --vizel-success-foreground: hsl(222.2 47.4% 11.2%);
+  --vizel-warning: hsl(48 96% 53%);
+  --vizel-warning-foreground: hsl(222.2 47.4% 11.2%);
+  --vizel-error: hsl(var(--destructive));
+  --vizel-error-foreground: hsl(var(--destructive-foreground));
   --vizel-destructive: hsl(var(--destructive));
   --vizel-destructive-foreground: hsl(var(--destructive-foreground));
   --vizel-destructive-bg: hsl(0 62.8% 50.6% / 0.15);
+  --vizel-destructive-border: hsl(0 62.8% 20%);
 
-  --vizel-success: hsl(142.1 70.6% 45.3%);
-  --vizel-warning: hsl(48 96% 53%);
-  --vizel-error: hsl(var(--destructive));
-
-  /* Shadows for dark mode */
+  /* Shadows (darker for dark mode) */
   --vizel-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
   --vizel-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
   --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  --vizel-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+  --vizel-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+
+  /* Code Block (same as light - dark by default) */
+  --vizel-code-block-bg: #1e1e1e;
+  --vizel-code-block-text: #d4d4d4;
+  --vizel-code-block-toolbar-bg: #252526;
+  --vizel-code-block-gutter-bg: #1e1e1e;
+
+  /* Mathematics */
+  --vizel-math-block-bg: var(--vizel-background-secondary);
+  --vizel-math-block-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-block-selected-bg: var(--vizel-primary-bg);
+
+  /* Legacy dark-specific aliases */
+  --vizel-text-color-dark: var(--vizel-foreground);
+  --vizel-bg-color-dark: var(--vizel-background);
+  --vizel-hover-bg-dark: var(--vizel-hover-bg);
+  --vizel-active-bg-dark: var(--vizel-active-bg);
+  --vizel-text-muted-dark: var(--vizel-foreground-muted);
 }
 
-/* System preference fallback for shadcn compatibility */
+/* ============================================
+ * System Preference Fallback
+ * ============================================ */
+
 @media (prefers-color-scheme: dark) {
-  :root:not(.light):not([data-theme="light"]) {
+  :root:not(.light):not([data-theme="light"]):not([data-vizel-theme="light"]):not(
+      [data-vizel-theme]
+    ) {
+    /* shadcn/ui Core Variables */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -198,10 +477,17 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
 
-    /* Map Vizel variables */
+    /* Vizel Color Tokens */
     --vizel-primary: hsl(var(--primary));
     --vizel-primary-hover: hsl(217.2 91.2% 49.8%);
+    --vizel-primary-active: hsl(217.2 91.2% 39.8%);
     --vizel-primary-foreground: hsl(var(--primary-foreground));
+    --vizel-primary-bg: hsl(217.2 91.2% 59.8% / 0.15);
+    --vizel-primary-bg-hover: hsl(217.2 91.2% 59.8% / 0.2);
+
+    --vizel-secondary: hsl(var(--secondary));
+    --vizel-secondary-hover: hsl(217.2 32.6% 27.5%);
+    --vizel-secondary-foreground: hsl(var(--secondary-foreground));
 
     --vizel-background: hsl(var(--background));
     --vizel-background-secondary: hsl(var(--card));
@@ -211,18 +497,42 @@
     --vizel-foreground-secondary: hsl(var(--muted-foreground));
     --vizel-foreground-muted: hsl(215 20.2% 55.1%);
 
+    --vizel-muted: hsl(var(--muted));
+    --vizel-muted-foreground: hsl(var(--muted-foreground));
+
+    --vizel-accent: hsl(var(--accent));
+    --vizel-accent-foreground: hsl(var(--accent-foreground));
+
     --vizel-border: hsl(var(--border));
     --vizel-border-hover: hsl(217.2 32.6% 27.5%);
+    --vizel-border-focus: hsl(var(--ring));
 
-    --vizel-destructive: hsl(var(--destructive));
-    --vizel-destructive-bg: hsl(0 62.8% 50.6% / 0.15);
+    --vizel-ring: hsl(var(--ring));
+    --vizel-ring-offset: hsl(var(--background));
 
+    /* Hover/Active States */
+    --vizel-hover-bg: hsl(0 0% 100% / 0.05);
+    --vizel-active-bg: hsl(0 0% 100% / 0.1);
+
+    /* Status Colors */
     --vizel-success: hsl(142.1 70.6% 45.3%);
     --vizel-warning: hsl(48 96% 53%);
     --vizel-error: hsl(var(--destructive));
+    --vizel-destructive: hsl(var(--destructive));
+    --vizel-destructive-bg: hsl(0 62.8% 50.6% / 0.15);
 
+    /* Shadows */
     --vizel-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
     --vizel-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
     --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --vizel-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+    --vizel-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+
+    /* Legacy dark-specific aliases */
+    --vizel-text-color-dark: var(--vizel-foreground);
+    --vizel-bg-color-dark: var(--vizel-background);
+    --vizel-hover-bg-dark: var(--vizel-hover-bg);
+    --vizel-active-bg-dark: var(--vizel-active-bg);
+    --vizel-text-muted-dark: var(--vizel-foreground-muted);
   }
 }

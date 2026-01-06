@@ -106,8 +106,8 @@
 
 /* Fuzzy search highlight */
 .vizel-slash-menu-highlight {
-  background: var(--vizel-primary-bg-hover, rgba(59, 130, 246, 0.2));
-  color: var(--vizel-primary-color);
+  background: var(--vizel-primary-bg-hover);
+  color: var(--vizel-primary);
   padding: 0;
   border-radius: 2px;
 }

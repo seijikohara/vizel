@@ -4,79 +4,113 @@
  * These variables provide theming capabilities for Vizel components.
  * Override these in your application's CSS to customize the appearance.
  *
- * Theme is controlled via the data-vizel-theme attribute:
- * - data-vizel-theme="light" - Light theme
- * - data-vizel-theme="dark" - Dark theme
+ * ## Theme Selectors (Priority Order)
+ *
+ * Vizel supports multiple theme selector patterns for compatibility:
+ *
+ * 1. `[data-vizel-theme="light|dark"]` - Vizel's native selector (recommended)
+ * 2. `[data-theme="light|dark"]` - shadcn/ui compatibility
+ * 3. `.light` / `.dark` - Tailwind CSS compatibility
+ * 4. `prefers-color-scheme` media query - System preference fallback
+ *
+ * When using Vizel's ThemeProvider, `data-vizel-theme` is automatically set.
+ * For integration with existing theming systems (Tailwind, shadcn/ui),
+ * the other selectors are also supported.
+ *
+ * ## Color Format
+ *
+ * This file uses OKLCH color values for better color uniformity and
+ * wide-gamut display support. OKLCH provides perceptually uniform colors
+ * and is the modern standard used by Tailwind CSS v4 and shadcn/ui.
+ *
+ * @example
+ * ```html
+ * <!-- Recommended: Use Vizel's native attribute -->
+ * <html data-vizel-theme="dark">
+ *
+ * <!-- Also supported: shadcn/ui style -->
+ * <html data-theme="dark">
+ *
+ * <!-- Also supported: Tailwind style -->
+ * <html class="dark">
+ * ```
  *
  * @example
  * ```css
  * :root {
- *   --vizel-primary: #3b82f6;
+ *   --vizel-primary: oklch(0.6 0.2 250);
  *   --vizel-font-size-base: 1rem;
  * }
  * ```
  */
 
 /* ============================================
- * Base Tokens
+ * Light Theme (Default)
  * ============================================ */
 
 :root,
+.light,
+[data-theme="light"],
 [data-vizel-theme="light"] {
   /* ----------------------------------------
-   * Color Tokens
+   * Color Tokens (OKLCH)
    * ---------------------------------------- */
 
-  /* Primary */
-  --vizel-primary: #3b82f6;
-  --vizel-primary-hover: #2563eb;
-  --vizel-primary-active: #1d4ed8;
-  --vizel-primary-foreground: #ffffff;
-  --vizel-primary-bg: rgba(59, 130, 246, 0.1);
-  --vizel-primary-bg-hover: rgba(59, 130, 246, 0.15);
+  /* Primary - Blue */
+  --vizel-primary: oklch(0.623 0.214 259.815);
+  --vizel-primary-hover: oklch(0.546 0.245 262.881);
+  --vizel-primary-active: oklch(0.488 0.243 264.376);
+  --vizel-primary-foreground: oklch(1 0 0);
+  --vizel-primary-bg: oklch(0.623 0.214 259.815 / 0.1);
+  --vizel-primary-bg-hover: oklch(0.623 0.214 259.815 / 0.15);
 
-  /* Secondary */
-  --vizel-secondary: #64748b;
-  --vizel-secondary-hover: #475569;
-  --vizel-secondary-foreground: #ffffff;
+  /* Secondary - Slate */
+  --vizel-secondary: oklch(0.554 0.046 257.417);
+  --vizel-secondary-hover: oklch(0.446 0.043 257.281);
+  --vizel-secondary-foreground: oklch(1 0 0);
 
   /* Background */
-  --vizel-background: #ffffff;
-  --vizel-background-secondary: #f9fafb;
-  --vizel-background-tertiary: #f3f4f6;
+  --vizel-background: oklch(1 0 0);
+  --vizel-background-secondary: oklch(0.985 0 0);
+  --vizel-background-tertiary: oklch(0.967 0 0);
 
   /* Foreground (Text) */
-  --vizel-foreground: #111827;
-  --vizel-foreground-secondary: #6b7280;
-  --vizel-foreground-muted: #9ca3af;
+  --vizel-foreground: oklch(0.21 0.006 285.885);
+  --vizel-foreground-secondary: oklch(0.556 0 0);
+  --vizel-foreground-muted: oklch(0.708 0 0);
 
   /* Muted */
-  --vizel-muted: #f3f4f6;
-  --vizel-muted-foreground: #6b7280;
+  --vizel-muted: oklch(0.967 0 0);
+  --vizel-muted-foreground: oklch(0.556 0 0);
 
   /* Accent */
-  --vizel-accent: #f3f4f6;
-  --vizel-accent-foreground: #111827;
+  --vizel-accent: oklch(0.967 0 0);
+  --vizel-accent-foreground: oklch(0.21 0.006 285.885);
 
   /* Border */
-  --vizel-border: #e5e7eb;
-  --vizel-border-hover: #d1d5db;
+  --vizel-border: oklch(0.922 0 0);
+  --vizel-border-hover: oklch(0.869 0.005 56.366);
   --vizel-border-focus: var(--vizel-primary);
 
   /* Ring (Focus) */
   --vizel-ring: var(--vizel-primary);
   --vizel-ring-offset: var(--vizel-background);
 
+  /* Hover/Active States */
+  --vizel-hover-bg: oklch(0 0 0 / 0.05);
+  --vizel-active-bg: oklch(0 0 0 / 0.1);
+
   /* Status Colors */
-  --vizel-success: #10b981;
-  --vizel-success-foreground: #ffffff;
-  --vizel-warning: #f59e0b;
-  --vizel-warning-foreground: #ffffff;
-  --vizel-error: #ef4444;
-  --vizel-error-foreground: #ffffff;
-  --vizel-destructive: #dc2626;
-  --vizel-destructive-foreground: #ffffff;
-  --vizel-destructive-bg: rgba(220, 38, 38, 0.1);
+  --vizel-success: oklch(0.723 0.219 149.579);
+  --vizel-success-foreground: oklch(1 0 0);
+  --vizel-warning: oklch(0.769 0.188 70.08);
+  --vizel-warning-foreground: oklch(1 0 0);
+  --vizel-error: oklch(0.637 0.237 25.331);
+  --vizel-error-foreground: oklch(1 0 0);
+  --vizel-destructive: oklch(0.577 0.245 27.325);
+  --vizel-destructive-foreground: oklch(1 0 0);
+  --vizel-destructive-bg: oklch(0.577 0.245 27.325 / 0.1);
+  --vizel-destructive-border: oklch(0.885 0.062 18.334);
 
   /* ----------------------------------------
    * Typography Tokens
@@ -180,94 +214,118 @@
   --vizel-z-tooltip: 110;
 
   /* ----------------------------------------
-   * Component-Specific Tokens
+   * Editor Component Tokens
    * ---------------------------------------- */
 
-  /* Editor */
   --vizel-editor-min-height: 350px;
   --vizel-editor-padding: var(--vizel-spacing-6);
   --vizel-editor-font-family: var(--vizel-font-sans);
   --vizel-editor-font-size: var(--vizel-font-size-base);
   --vizel-editor-line-height: var(--vizel-line-height-relaxed);
 
-  /* Image */
-  --vizel-image-border-radius: var(--vizel-radius-lg);
-  --vizel-resize-handle-color: var(--vizel-primary);
-  --vizel-resize-handle-color-hover: var(--vizel-primary-hover);
-  --vizel-image-outline-color: var(--vizel-primary);
-
-  /* Portal */
-  --vizel-portal-base-z-index: 9999;
-  --vizel-portal-dropdown-z-index: var(--vizel-z-dropdown);
-  --vizel-portal-modal-z-index: var(--vizel-z-modal);
-  --vizel-portal-tooltip-z-index: var(--vizel-z-tooltip);
-
   /* ----------------------------------------
-   * Legacy Aliases (for backward compatibility)
+   * Image Component Tokens
    * ---------------------------------------- */
 
-  --vizel-primary-color: var(--vizel-primary);
-  --vizel-primary-color-dark: var(--vizel-primary-hover);
-  --vizel-text-color: var(--vizel-foreground);
-  --vizel-text-color-secondary: var(--vizel-foreground-secondary);
-  --vizel-text-color-muted: var(--vizel-foreground-muted);
-  --vizel-border-color: var(--vizel-border);
-  --vizel-border-color-hover: var(--vizel-border-hover);
-  --vizel-bg-color: var(--vizel-background);
-  --vizel-bg-color-secondary: var(--vizel-background-secondary);
-  --vizel-bg-color-tertiary: var(--vizel-background-tertiary);
-  --vizel-success-color: var(--vizel-success);
-  --vizel-warning-color: var(--vizel-warning);
-  --vizel-error-color: var(--vizel-error);
-  --vizel-danger-color: var(--vizel-destructive);
-  --vizel-danger-bg: var(--vizel-destructive-bg);
-  --vizel-font-family: var(--vizel-font-sans);
-  --vizel-font-family-mono: var(--vizel-font-mono);
-  --vizel-theme-transition: var(--vizel-transition-colors);
+  --vizel-image-border-radius: var(--vizel-radius-lg);
+  --vizel-image-outline-color: var(--vizel-primary);
+  --vizel-image-outline-width: 2px;
+  --vizel-resize-handle-color: var(--vizel-primary);
+  --vizel-resize-handle-color-hover: var(--vizel-primary-hover);
+  --vizel-resize-handle-width: 8px;
+  --vizel-resize-handle-height: 48px;
+  --vizel-resize-tooltip-bg: var(--vizel-foreground);
+  --vizel-resize-tooltip-color: var(--vizel-background);
+
+  /* ----------------------------------------
+   * Code Block Component Tokens
+   * ---------------------------------------- */
+
+  --vizel-code-block-bg: oklch(0.205 0 0);
+  --vizel-code-block-text: oklch(0.869 0.005 56.366);
+  --vizel-code-block-border: var(--vizel-border);
+  --vizel-code-block-toolbar-bg: oklch(0.269 0 0);
+  --vizel-code-block-gutter-bg: oklch(0.216 0.006 56.043);
+  --vizel-code-block-line-number-color: oklch(0.553 0.013 58.071);
+  --vizel-code-block-language-color: oklch(0.828 0.111 230.318);
+  --vizel-code-block-placeholder: oklch(0.556 0 0);
+  --vizel-code-block-button-color: oklch(0.869 0 0);
+  --vizel-code-block-button-border: oklch(0.371 0 0);
+  --vizel-code-block-button-hover-bg: oklch(0.371 0 0);
+  --vizel-code-block-button-hover-color: oklch(1 0 0);
+  --vizel-code-block-input-bg: oklch(0.371 0 0);
+  --vizel-code-block-input-border: oklch(0.371 0 0);
+  --vizel-code-block-input-focus-bg: oklch(0.205 0 0);
+
+  /* ----------------------------------------
+   * Mathematics Component Tokens
+   * ---------------------------------------- */
+
+  --vizel-math-block-bg: var(--vizel-background-secondary);
+  --vizel-math-block-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-block-selected-bg: var(--vizel-primary-bg);
+  --vizel-math-inline-bg: transparent;
+  --vizel-math-inline-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-inline-selected-bg: var(--vizel-primary-bg);
+  --vizel-math-editing-bg: var(--vizel-background-tertiary);
+  --vizel-math-preview-bg: var(--vizel-background);
+
+  /* ----------------------------------------
+   * Portal Component Tokens
+   * ---------------------------------------- */
+
+  --vizel-portal-base-z-index: 9999;
 }
 
 /* ============================================
  * Dark Theme
  * ============================================ */
 
+.dark,
+[data-theme="dark"],
 [data-vizel-theme="dark"] {
-  /* Color Tokens */
-  --vizel-primary: #60a5fa;
-  --vizel-primary-hover: #3b82f6;
-  --vizel-primary-active: #2563eb;
-  --vizel-primary-foreground: #111827;
-  --vizel-primary-bg: rgba(96, 165, 250, 0.15);
-  --vizel-primary-bg-hover: rgba(96, 165, 250, 0.2);
+  /* Color Tokens (OKLCH) */
+  --vizel-primary: oklch(0.707 0.165 254.624);
+  --vizel-primary-hover: oklch(0.623 0.214 259.815);
+  --vizel-primary-active: oklch(0.546 0.245 262.881);
+  --vizel-primary-foreground: oklch(0.21 0.006 285.885);
+  --vizel-primary-bg: oklch(0.707 0.165 254.624 / 0.15);
+  --vizel-primary-bg-hover: oklch(0.707 0.165 254.624 / 0.2);
 
-  --vizel-secondary: #94a3b8;
-  --vizel-secondary-hover: #cbd5e1;
-  --vizel-secondary-foreground: #111827;
+  --vizel-secondary: oklch(0.704 0.04 256.788);
+  --vizel-secondary-hover: oklch(0.869 0.022 252.894);
+  --vizel-secondary-foreground: oklch(0.21 0.006 285.885);
 
-  --vizel-background: #1f2937;
-  --vizel-background-secondary: #111827;
-  --vizel-background-tertiary: #374151;
+  --vizel-background: oklch(0.21 0.006 285.885);
+  --vizel-background-secondary: oklch(0.145 0 0);
+  --vizel-background-tertiary: oklch(0.279 0.041 260.031);
 
-  --vizel-foreground: #f9fafb;
-  --vizel-foreground-secondary: #d1d5db;
-  --vizel-foreground-muted: #9ca3af;
+  --vizel-foreground: oklch(0.985 0 0);
+  --vizel-foreground-secondary: oklch(0.869 0.022 252.894);
+  --vizel-foreground-muted: oklch(0.708 0 0);
 
-  --vizel-muted: #374151;
-  --vizel-muted-foreground: #9ca3af;
+  --vizel-muted: oklch(0.279 0.041 260.031);
+  --vizel-muted-foreground: oklch(0.708 0 0);
 
-  --vizel-accent: #374151;
-  --vizel-accent-foreground: #f9fafb;
+  --vizel-accent: oklch(0.279 0.041 260.031);
+  --vizel-accent-foreground: oklch(0.985 0 0);
 
-  --vizel-border: #374151;
-  --vizel-border-hover: #4b5563;
+  --vizel-border: oklch(0.279 0.041 260.031);
+  --vizel-border-hover: oklch(0.372 0.044 257.287);
 
   --vizel-ring-offset: var(--vizel-background);
 
+  /* Hover/Active States */
+  --vizel-hover-bg: oklch(1 0 0 / 0.05);
+  --vizel-active-bg: oklch(1 0 0 / 0.1);
+
   /* Status Colors */
-  --vizel-success: #34d399;
-  --vizel-warning: #fbbf24;
-  --vizel-error: #f87171;
-  --vizel-destructive: #f87171;
-  --vizel-destructive-bg: rgba(248, 113, 113, 0.15);
+  --vizel-success: oklch(0.696 0.17 162.48);
+  --vizel-warning: oklch(0.828 0.189 84.429);
+  --vizel-error: oklch(0.704 0.191 22.216);
+  --vizel-destructive: oklch(0.704 0.191 22.216);
+  --vizel-destructive-bg: oklch(0.704 0.191 22.216 / 0.15);
+  --vizel-destructive-border: oklch(0.396 0.141 25.723);
 
   /* Shadows (darker for dark mode) */
   --vizel-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -275,6 +333,17 @@
   --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
   --vizel-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
   --vizel-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+
+  /* Code Block (darker gutter in dark mode) */
+  --vizel-code-block-bg: oklch(0.205 0 0);
+  --vizel-code-block-text: oklch(0.869 0.005 56.366);
+  --vizel-code-block-toolbar-bg: oklch(0.216 0.006 56.043);
+  --vizel-code-block-gutter-bg: oklch(0.205 0 0);
+
+  /* Mathematics */
+  --vizel-math-block-bg: var(--vizel-background-secondary);
+  --vizel-math-block-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-block-selected-bg: var(--vizel-primary-bg);
 }
 
 /* ============================================
@@ -282,44 +351,50 @@
  * ============================================ */
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-vizel-theme]) {
-    /* Color Tokens */
-    --vizel-primary: #60a5fa;
-    --vizel-primary-hover: #3b82f6;
-    --vizel-primary-active: #2563eb;
-    --vizel-primary-foreground: #111827;
-    --vizel-primary-bg: rgba(96, 165, 250, 0.15);
-    --vizel-primary-bg-hover: rgba(96, 165, 250, 0.2);
+  :root:not(.light):not([data-theme="light"]):not([data-vizel-theme="light"]):not(
+      [data-vizel-theme]
+    ) {
+    /* Color Tokens (OKLCH) */
+    --vizel-primary: oklch(0.707 0.165 254.624);
+    --vizel-primary-hover: oklch(0.623 0.214 259.815);
+    --vizel-primary-active: oklch(0.546 0.245 262.881);
+    --vizel-primary-foreground: oklch(0.21 0.006 285.885);
+    --vizel-primary-bg: oklch(0.707 0.165 254.624 / 0.15);
+    --vizel-primary-bg-hover: oklch(0.707 0.165 254.624 / 0.2);
 
-    --vizel-secondary: #94a3b8;
-    --vizel-secondary-hover: #cbd5e1;
-    --vizel-secondary-foreground: #111827;
+    --vizel-secondary: oklch(0.704 0.04 256.788);
+    --vizel-secondary-hover: oklch(0.869 0.022 252.894);
+    --vizel-secondary-foreground: oklch(0.21 0.006 285.885);
 
-    --vizel-background: #1f2937;
-    --vizel-background-secondary: #111827;
-    --vizel-background-tertiary: #374151;
+    --vizel-background: oklch(0.21 0.006 285.885);
+    --vizel-background-secondary: oklch(0.145 0 0);
+    --vizel-background-tertiary: oklch(0.279 0.041 260.031);
 
-    --vizel-foreground: #f9fafb;
-    --vizel-foreground-secondary: #d1d5db;
-    --vizel-foreground-muted: #9ca3af;
+    --vizel-foreground: oklch(0.985 0 0);
+    --vizel-foreground-secondary: oklch(0.869 0.022 252.894);
+    --vizel-foreground-muted: oklch(0.708 0 0);
 
-    --vizel-muted: #374151;
-    --vizel-muted-foreground: #9ca3af;
+    --vizel-muted: oklch(0.279 0.041 260.031);
+    --vizel-muted-foreground: oklch(0.708 0 0);
 
-    --vizel-accent: #374151;
-    --vizel-accent-foreground: #f9fafb;
+    --vizel-accent: oklch(0.279 0.041 260.031);
+    --vizel-accent-foreground: oklch(0.985 0 0);
 
-    --vizel-border: #374151;
-    --vizel-border-hover: #4b5563;
+    --vizel-border: oklch(0.279 0.041 260.031);
+    --vizel-border-hover: oklch(0.372 0.044 257.287);
 
     --vizel-ring-offset: var(--vizel-background);
 
+    /* Hover/Active States */
+    --vizel-hover-bg: oklch(1 0 0 / 0.05);
+    --vizel-active-bg: oklch(1 0 0 / 0.1);
+
     /* Status Colors */
-    --vizel-success: #34d399;
-    --vizel-warning: #fbbf24;
-    --vizel-error: #f87171;
-    --vizel-destructive: #f87171;
-    --vizel-destructive-bg: rgba(248, 113, 113, 0.15);
+    --vizel-success: oklch(0.696 0.17 162.48);
+    --vizel-warning: oklch(0.828 0.189 84.429);
+    --vizel-error: oklch(0.704 0.191 22.216);
+    --vizel-destructive: oklch(0.704 0.191 22.216);
+    --vizel-destructive-bg: oklch(0.704 0.191 22.216 / 0.15);
 
     /* Shadows */
     --vizel-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);

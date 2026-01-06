@@ -1,39 +1,24 @@
 {
   "name": "@vizel/tailwind",
   "version": "0.1.0",
-  "description": "Tailwind CSS plugin for Vizel editor",
+  "description": "Tailwind CSS v4 theme for Vizel editor",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/vizel.css",
+  "style": "./src/vizel.css",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./preset": {
-      "types": "./dist/preset.d.ts",
-      "import": "./dist/preset.js"
-    }
+    ".": "./src/vizel.css",
+    "./vizel.css": "./src/vizel.css"
   },
   "files": [
-    "dist"
+    "src"
   ],
-  "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit"
-  },
   "peerDependencies": {
-    "tailwindcss": ">=3.0.0"
-  },
-  "devDependencies": {
-    "tailwindcss": "^4.0.0",
-    "typescript": "^5.9.3"
+    "tailwindcss": "^4.0.0"
   },
   "keywords": [
     "vizel",
     "tailwindcss",
-    "plugin",
+    "theme",
     "editor",
     "rich-text"
   ],

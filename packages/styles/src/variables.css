@@ -4,9 +4,10 @@
  * These variables provide theming capabilities for Vizel components.
  * Override these in your application's CSS to customize the appearance.
  *
- * Theme is controlled via the data-vizel-theme attribute:
- * - data-vizel-theme="light" - Light theme
- * - data-vizel-theme="dark" - Dark theme
+ * Theme is controlled via:
+ * - data-vizel-theme="light" or data-vizel-theme="dark"
+ * - .light or .dark class (for Tailwind/shadcn compatibility)
+ * - data-theme="light" or data-theme="dark" (for shadcn compatibility)
  *
  * @example
  * ```css
@@ -18,10 +19,12 @@
  */
 
 /* ============================================
- * Base Tokens
+ * Light Theme (Default)
  * ============================================ */
 
 :root,
+.light,
+[data-theme="light"],
 [data-vizel-theme="light"] {
   /* ----------------------------------------
    * Color Tokens
@@ -67,6 +70,10 @@
   --vizel-ring: var(--vizel-primary);
   --vizel-ring-offset: var(--vizel-background);
 
+  /* Hover/Active States */
+  --vizel-hover-bg: rgba(0, 0, 0, 0.05);
+  --vizel-active-bg: rgba(0, 0, 0, 0.1);
+
   /* Status Colors */
   --vizel-success: #10b981;
   --vizel-success-foreground: #ffffff;
@@ -77,6 +84,7 @@
   --vizel-destructive: #dc2626;
   --vizel-destructive-foreground: #ffffff;
   --vizel-destructive-bg: rgba(220, 38, 38, 0.1);
+  --vizel-destructive-border: #fecaca;
 
   /* ----------------------------------------
    * Typography Tokens
@@ -180,23 +188,66 @@
   --vizel-z-tooltip: 110;
 
   /* ----------------------------------------
-   * Component-Specific Tokens
+   * Editor Component Tokens
    * ---------------------------------------- */
 
-  /* Editor */
   --vizel-editor-min-height: 350px;
   --vizel-editor-padding: var(--vizel-spacing-6);
   --vizel-editor-font-family: var(--vizel-font-sans);
   --vizel-editor-font-size: var(--vizel-font-size-base);
   --vizel-editor-line-height: var(--vizel-line-height-relaxed);
 
-  /* Image */
+  /* ----------------------------------------
+   * Image Component Tokens
+   * ---------------------------------------- */
+
   --vizel-image-border-radius: var(--vizel-radius-lg);
+  --vizel-image-outline-color: var(--vizel-primary);
+  --vizel-image-outline-width: 2px;
   --vizel-resize-handle-color: var(--vizel-primary);
   --vizel-resize-handle-color-hover: var(--vizel-primary-hover);
-  --vizel-image-outline-color: var(--vizel-primary);
+  --vizel-resize-handle-width: 8px;
+  --vizel-resize-handle-height: 48px;
+  --vizel-resize-tooltip-bg: var(--vizel-foreground);
+  --vizel-resize-tooltip-color: var(--vizel-background);
 
-  /* Portal */
+  /* ----------------------------------------
+   * Code Block Component Tokens
+   * ---------------------------------------- */
+
+  --vizel-code-block-bg: #1e1e1e;
+  --vizel-code-block-text: #d4d4d4;
+  --vizel-code-block-border: var(--vizel-border);
+  --vizel-code-block-toolbar-bg: #2d2d2d;
+  --vizel-code-block-gutter-bg: #252526;
+  --vizel-code-block-line-number-color: #858585;
+  --vizel-code-block-language-color: #9cdcfe;
+  --vizel-code-block-placeholder: #6b7280;
+  --vizel-code-block-button-color: #cccccc;
+  --vizel-code-block-button-border: #3c3c3c;
+  --vizel-code-block-button-hover-bg: #3c3c3c;
+  --vizel-code-block-button-hover-color: #ffffff;
+  --vizel-code-block-input-bg: #3c3c3c;
+  --vizel-code-block-input-border: #3c3c3c;
+  --vizel-code-block-input-focus-bg: #1e1e1e;
+
+  /* ----------------------------------------
+   * Mathematics Component Tokens
+   * ---------------------------------------- */
+
+  --vizel-math-block-bg: var(--vizel-background-secondary);
+  --vizel-math-block-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-block-selected-bg: var(--vizel-primary-bg);
+  --vizel-math-inline-bg: transparent;
+  --vizel-math-inline-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-inline-selected-bg: var(--vizel-primary-bg);
+  --vizel-math-editing-bg: var(--vizel-background-tertiary);
+  --vizel-math-preview-bg: var(--vizel-background);
+
+  /* ----------------------------------------
+   * Portal Component Tokens
+   * ---------------------------------------- */
+
   --vizel-portal-base-z-index: 9999;
   --vizel-portal-dropdown-z-index: var(--vizel-z-dropdown);
   --vizel-portal-modal-z-index: var(--vizel-z-modal);
@@ -207,20 +258,27 @@
    * ---------------------------------------- */
 
   --vizel-primary-color: var(--vizel-primary);
+  --vizel-primary-color-hover: var(--vizel-primary-hover);
   --vizel-primary-color-dark: var(--vizel-primary-hover);
+  --vizel-primary-color-light: var(--vizel-primary-bg);
   --vizel-text-color: var(--vizel-foreground);
   --vizel-text-color-secondary: var(--vizel-foreground-secondary);
   --vizel-text-color-muted: var(--vizel-foreground-muted);
+  --vizel-text-muted: var(--vizel-foreground-muted);
   --vizel-border-color: var(--vizel-border);
   --vizel-border-color-hover: var(--vizel-border-hover);
+  --vizel-border-color-light: var(--vizel-border);
   --vizel-bg-color: var(--vizel-background);
   --vizel-bg-color-secondary: var(--vizel-background-secondary);
   --vizel-bg-color-tertiary: var(--vizel-background-tertiary);
+  --vizel-bg-hover: var(--vizel-hover-bg);
+  --vizel-bg-muted: var(--vizel-muted);
   --vizel-success-color: var(--vizel-success);
   --vizel-warning-color: var(--vizel-warning);
   --vizel-error-color: var(--vizel-error);
   --vizel-danger-color: var(--vizel-destructive);
   --vizel-danger-bg: var(--vizel-destructive-bg);
+  --vizel-destructive-color: var(--vizel-destructive);
   --vizel-font-family: var(--vizel-font-sans);
   --vizel-font-family-mono: var(--vizel-font-mono);
   --vizel-theme-transition: var(--vizel-transition-colors);
@@ -230,6 +288,8 @@
  * Dark Theme
  * ============================================ */
 
+.dark,
+[data-theme="dark"],
 [data-vizel-theme="dark"] {
   /* Color Tokens */
   --vizel-primary: #60a5fa;
@@ -262,12 +322,17 @@
 
   --vizel-ring-offset: var(--vizel-background);
 
+  /* Hover/Active States */
+  --vizel-hover-bg: rgba(255, 255, 255, 0.05);
+  --vizel-active-bg: rgba(255, 255, 255, 0.1);
+
   /* Status Colors */
   --vizel-success: #34d399;
   --vizel-warning: #fbbf24;
   --vizel-error: #f87171;
   --vizel-destructive: #f87171;
   --vizel-destructive-bg: rgba(248, 113, 113, 0.15);
+  --vizel-destructive-border: #7f1d1d;
 
   /* Shadows (darker for dark mode) */
   --vizel-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -275,6 +340,24 @@
   --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
   --vizel-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
   --vizel-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+
+  /* Code Block (same as light - dark by default) */
+  --vizel-code-block-bg: #1e1e1e;
+  --vizel-code-block-text: #d4d4d4;
+  --vizel-code-block-toolbar-bg: #252526;
+  --vizel-code-block-gutter-bg: #1e1e1e;
+
+  /* Mathematics */
+  --vizel-math-block-bg: var(--vizel-background-secondary);
+  --vizel-math-block-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-block-selected-bg: var(--vizel-primary-bg);
+
+  /* Legacy dark-specific aliases */
+  --vizel-text-color-dark: var(--vizel-foreground);
+  --vizel-bg-color-dark: var(--vizel-background);
+  --vizel-hover-bg-dark: var(--vizel-hover-bg);
+  --vizel-active-bg-dark: var(--vizel-active-bg);
+  --vizel-text-muted-dark: var(--vizel-foreground-muted);
 }
 
 /* ============================================
@@ -282,7 +365,9 @@
  * ============================================ */
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-vizel-theme]) {
+  :root:not(.light):not([data-theme="light"]):not([data-vizel-theme="light"]):not(
+      [data-vizel-theme]
+    ) {
     /* Color Tokens */
     --vizel-primary: #60a5fa;
     --vizel-primary-hover: #3b82f6;
@@ -314,12 +399,17 @@
 
     --vizel-ring-offset: var(--vizel-background);
 
+    /* Hover/Active States */
+    --vizel-hover-bg: rgba(255, 255, 255, 0.05);
+    --vizel-active-bg: rgba(255, 255, 255, 0.1);
+
     /* Status Colors */
     --vizel-success: #34d399;
     --vizel-warning: #fbbf24;
     --vizel-error: #f87171;
     --vizel-destructive: #f87171;
     --vizel-destructive-bg: rgba(248, 113, 113, 0.15);
+    --vizel-destructive-border: #7f1d1d;
 
     /* Shadows */
     --vizel-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -327,5 +417,12 @@
     --vizel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
     --vizel-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
     --vizel-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+
+    /* Legacy dark-specific aliases */
+    --vizel-text-color-dark: var(--vizel-foreground);
+    --vizel-bg-color-dark: var(--vizel-background);
+    --vizel-hover-bg-dark: var(--vizel-hover-bg);
+    --vizel-active-bg-dark: var(--vizel-active-bg);
+    --vizel-text-muted-dark: var(--vizel-foreground-muted);
   }
 }

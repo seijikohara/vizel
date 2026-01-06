@@ -8,10 +8,10 @@
 /* Details container */
 .vizel-details {
   position: relative;
-  border: 1px solid var(--vizel-border-color, #e0e0e0);
-  border-radius: var(--vizel-radius-md, 0.375rem);
+  border: 1px solid var(--vizel-border);
+  border-radius: var(--vizel-radius-md);
   margin: 0.75rem 0;
-  background: var(--vizel-bg-color, #fff);
+  background: var(--vizel-background);
   overflow: hidden;
 }
 
@@ -26,7 +26,7 @@
 /* Nested details */
 .vizel-details .vizel-details {
   margin: 0.5rem 0;
-  border-color: var(--vizel-border-color-light, #eaeaea);
+  border-color: var(--vizel-border);
 }
 
 /* Toggle button (tiptap uses button element for toggle) */
@@ -51,8 +51,8 @@
   display: block;
   width: 0.5rem;
   height: 0.5rem;
-  border-right: 2px solid var(--vizel-text-color, #1a1a1a);
-  border-bottom: 2px solid var(--vizel-text-color, #1a1a1a);
+  border-right: 2px solid var(--vizel-foreground);
+  border-bottom: 2px solid var(--vizel-foreground);
   transform: rotate(-45deg);
   transition: transform 0.2s ease;
   opacity: 0.6;
@@ -74,8 +74,8 @@
   display: flex;
   align-items: center;
   font-weight: 500;
-  color: var(--vizel-text-color, #1a1a1a);
-  background: var(--vizel-bg-muted, #f8f9fa);
+  color: var(--vizel-foreground);
+  background: var(--vizel-muted);
   border-bottom: 1px solid transparent;
   transition:
     background-color 0.15s,
@@ -88,13 +88,13 @@
 .vizel-details-summary:empty::before,
 .vizel-details-summary:has(> br:only-child)::before {
   content: "Click to add title...";
-  color: var(--vizel-text-muted, #999);
+  color: var(--vizel-muted-foreground);
   font-weight: 400;
   font-style: italic;
 }
 
 .vizel-details-summary:hover {
-  background: var(--vizel-bg-hover, #f0f1f2);
+  background: var(--vizel-hover-bg);
 }
 
 .vizel-details-summary:focus {
@@ -110,7 +110,7 @@
 
 /* Open state */
 .vizel-details.is-open > div > .vizel-details-summary {
-  border-bottom-color: var(--vizel-border-color, #e0e0e0);
+  border-bottom-color: var(--vizel-border);
 }
 
 /* Content area */
@@ -129,7 +129,7 @@
 /* Empty summary placeholder */
 .vizel-details-summary.is-empty::after {
   content: "Click to add summary...";
-  color: var(--vizel-text-muted, #999);
+  color: var(--vizel-muted-foreground);
   font-weight: 400;
   font-style: italic;
 }
@@ -137,54 +137,27 @@
 /* Empty content placeholder */
 .vizel-details-content.is-empty::before {
   content: "Add content here...";
-  color: var(--vizel-text-muted, #999);
+  color: var(--vizel-muted-foreground);
   font-style: italic;
 }
 
 /* Selected state */
 .vizel-details.ProseMirror-selectednode {
-  outline: 2px solid var(--vizel-primary-color, #3b82f6);
+  outline: 2px solid var(--vizel-primary);
   outline-offset: 2px;
 }
 
 /* Focus within */
 .vizel-details:focus-within {
-  border-color: var(--vizel-primary-color, #3b82f6);
+  border-color: var(--vizel-primary);
 }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .vizel-details {
-    background: var(--vizel-bg-color, #1a1a1a);
-    border-color: var(--vizel-border-color, #333);
-  }
-
-  .vizel-details > button::before {
-    border-color: var(--vizel-text-color, #e5e5e5);
-  }
-
-  .vizel-details-summary {
-    background: var(--vizel-bg-muted, #252525);
-    color: var(--vizel-text-color, #e5e5e5);
-  }
-
-  .vizel-details-summary:hover {
-    background: var(--vizel-bg-hover, #2a2a2a);
-  }
-
-  .vizel-details.is-open > div > .vizel-details-summary {
-    border-bottom-color: var(--vizel-border-color, #333);
-  }
-
-  .vizel-details .vizel-details {
-    border-color: var(--vizel-border-color-light, #3a3a3a);
-  }
-}
+/* Dark mode - handled via CSS variables in variables.css */
 
 /* Print styles */
 @media print {
   .vizel-details {
-    border: 1px solid #ccc;
+    border: 1px solid oklch(0.827 0 0);
   }
 
   .vizel-details.is-open {

@@ -29,9 +29,9 @@
   width: 1.125rem;
   height: 1.125rem;
   min-width: 1.125rem;
-  border: 2px solid var(--vizel-border-color, #d1d5db);
+  border: 2px solid var(--vizel-border);
   border-radius: 4px;
-  background: var(--vizel-bg-color, #ffffff);
+  background: var(--vizel-background);
   cursor: pointer;
   margin-top: 0.3rem;
   transition: all 0.15s ease;
@@ -39,13 +39,13 @@
 }
 
 .vizel-task-item > label > input[type="checkbox"]:hover {
-  border-color: var(--vizel-primary-color, #3b82f6);
-  background: var(--vizel-primary-bg, rgba(59, 130, 246, 0.1));
+  border-color: var(--vizel-primary);
+  background: var(--vizel-primary-bg);
 }
 
 .vizel-task-item > label > input[type="checkbox"]:checked {
-  background: var(--vizel-primary-color, #3b82f6);
-  border-color: var(--vizel-primary-color, #3b82f6);
+  background: var(--vizel-primary);
+  border-color: var(--vizel-primary);
 }
 
 .vizel-task-item > label > input[type="checkbox"]:checked::after {
@@ -55,13 +55,13 @@
   top: 1px;
   width: 5px;
   height: 9px;
-  border: solid white;
+  border: solid var(--vizel-primary-foreground);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
 .vizel-task-item > label > input[type="checkbox"]:focus-visible {
-  outline: 2px solid var(--vizel-primary-color, #3b82f6);
+  outline: 2px solid var(--vizel-primary);
   outline-offset: 2px;
 }
 
@@ -74,7 +74,7 @@
 /* Checked state text styling */
 .vizel-task-item[data-checked="true"] > div {
   text-decoration: line-through;
-  color: var(--vizel-text-muted, #9ca3af);
+  color: var(--vizel-muted-foreground);
 }
 
 /* Nested task list indentation */

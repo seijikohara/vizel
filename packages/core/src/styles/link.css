@@ -6,13 +6,13 @@
 
 /* Link in content */
 .vizel-link {
-  color: var(--vizel-primary-color);
+  color: var(--vizel-primary);
   text-decoration: underline;
   cursor: pointer;
 }
 
 .vizel-link:hover {
-  color: var(--vizel-primary-color-dark);
+  color: var(--vizel-primary-hover);
 }
 
 /* Link editor popup */
@@ -25,7 +25,7 @@
 
 .vizel-link-input {
   padding: 0.25rem 0.5rem;
-  border: 1px solid var(--vizel-border-color);
+  border: 1px solid var(--vizel-border);
   border-radius: var(--vizel-radius-sm);
   font-size: 0.875rem;
   width: 200px;
@@ -33,32 +33,32 @@
 }
 
 .vizel-link-input:focus {
-  border-color: var(--vizel-primary-color);
+  border-color: var(--vizel-primary);
   box-shadow: 0 0 0 2px var(--vizel-primary-bg);
 }
 
 .vizel-link-button {
   padding: 0.25rem 0.5rem;
   background: var(--vizel-primary-bg);
-  border: 1px solid var(--vizel-primary-color);
+  border: 1px solid var(--vizel-primary);
   border-radius: var(--vizel-radius-sm);
   font-size: 0.75rem;
   cursor: pointer;
-  color: var(--vizel-primary-color-dark);
+  color: var(--vizel-primary-hover);
 }
 
 .vizel-link-button:hover {
-  background: var(--vizel-primary-color);
-  color: var(--vizel-bg-color);
+  background: var(--vizel-primary);
+  color: var(--vizel-primary-foreground);
 }
 
 .vizel-link-remove {
-  background: var(--vizel-danger-bg);
-  border-color: var(--vizel-danger-color);
-  color: var(--vizel-danger-color);
+  background: var(--vizel-destructive-bg);
+  border-color: var(--vizel-destructive);
+  color: var(--vizel-destructive);
 }
 
 .vizel-link-remove:hover {
-  background: var(--vizel-danger-color);
-  color: var(--vizel-bg-color);
+  background: var(--vizel-destructive);
+  color: var(--vizel-destructive-foreground);
 }
