@@ -1,1 +1,1 @@
-import "@vizel/core/styles/index.css";
+import "@vizel/core/styles/index.scss";
