@@ -8,10 +8,10 @@
 
 /* Editor container - the outer wrapper */
 .vizel-editor-container {
-  background: var(--vizel-bg-color);
+  background: var(--vizel-background);
   border-radius: var(--vizel-radius-xl);
   box-shadow: var(--vizel-shadow-md);
-  border: 1px solid var(--vizel-border-color);
+  border: 1px solid var(--vizel-border);
   overflow: hidden;
 }
 
@@ -62,9 +62,9 @@
 
 /* Blockquote */
 .vizel-editor blockquote {
-  border-left: 3px solid var(--vizel-primary-color);
+  border-left: 3px solid var(--vizel-primary);
   padding-left: 1em;
-  color: var(--vizel-text-color-secondary);
+  color: var(--vizel-foreground-secondary);
   font-style: italic;
 }
 
@@ -73,9 +73,9 @@
   background-color: var(--vizel-primary-bg);
   padding: 0.2em 0.4em;
   border-radius: var(--vizel-radius-sm);
-  font-family: var(--vizel-font-family-mono);
+  font-family: var(--vizel-font-mono);
   font-size: 0.9em;
-  color: var(--vizel-primary-color-dark);
+  color: var(--vizel-primary-hover);
 }
 
 /* Code block */
@@ -96,17 +96,17 @@
 /* Horizontal rule */
 .vizel-editor hr {
   border: none;
-  border-top: 2px solid var(--vizel-border-color);
+  border-top: 2px solid var(--vizel-border);
   margin: 1.5em 0;
   cursor: pointer;
   transition: border-color 0.15s ease;
 }
 
 .vizel-editor hr:hover {
-  border-top-color: var(--vizel-primary-color-light);
+  border-top-color: var(--vizel-primary-bg);
 }
 
 .vizel-editor hr.ProseMirror-selectednode {
-  border-top-color: var(--vizel-primary-color);
+  border-top-color: var(--vizel-primary);
   outline: none;
 }
