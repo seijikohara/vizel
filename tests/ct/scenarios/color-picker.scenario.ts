@@ -271,6 +271,8 @@ export async function testNoneValueDisplay(_component: Locator, page: Page): Pro
   const noneSwatch = page.locator('.vizel-color-picker-swatch[data-color="transparent"]');
   await expect(noneSwatch).toBeVisible();
 
+  // None indicator should contain an icon (SVG)
   const noneIndicator = noneSwatch.locator(".vizel-color-picker-none");
-  await expect(noneIndicator).toHaveText("×");
+  await expect(noneIndicator).toBeVisible();
+  await expect(noneIndicator.locator("svg")).toBeVisible();
 }

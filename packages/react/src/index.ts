@@ -4,6 +4,9 @@
  * React components and hooks for the Vizel visual editor.
  */
 
+// Initialize icon renderer (auto-registers with core)
+import "./iconRenderer.ts";
+
 // Re-export core types for convenience
 // Re-export auto-save types from core
 export type {
@@ -133,10 +136,16 @@ export {
   type BubbleMenuToolbarProps,
   ColorPicker,
   type ColorPickerProps,
+  type CustomIconMap,
   EditorContent,
   type EditorContentProps,
   EditorRoot,
   type EditorRootProps,
+  Icon,
+  type IconContextValue,
+  type IconProps,
+  IconProvider,
+  type IconProviderProps,
   Portal,
   type PortalProps,
   SaveIndicator,
@@ -152,6 +161,7 @@ export {
   type ThemeProviderProps,
   useEditorContext,
   useEditorContextSafe,
+  useIconContext,
   useTheme,
   useThemeSafe,
 } from "./components/index.ts";

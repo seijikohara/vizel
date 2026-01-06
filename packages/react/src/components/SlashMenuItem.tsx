@@ -1,4 +1,5 @@
 import type { SlashCommandItem } from "@vizel/core";
+import { Icon } from "./Icon.tsx";
 
 export interface SlashMenuItemProps {
   item: SlashCommandItem;
@@ -69,7 +70,9 @@ export function SlashMenuItem({
       onClick={onClick}
       data-selected={isSelected || undefined}
     >
-      <span className="vizel-slash-menu-icon">{item.icon}</span>
+      <span className="vizel-slash-menu-icon">
+        <Icon name={item.icon} />
+      </span>
       <div className="vizel-slash-menu-text">
         <span className="vizel-slash-menu-title">{highlightMatches(item.title, titleMatches)}</span>
         <span className="vizel-slash-menu-description">{item.description}</span>

@@ -167,6 +167,23 @@ export {
   type VizelTextColorOptions,
   validateImageFile,
 } from "./extensions/index.ts";
+// Icons
+export {
+  type BubbleMenuIconName,
+  defaultIconIds,
+  getIconId,
+  type IconName,
+  type IconRenderer,
+  type IconRendererOptions,
+  type IconRendererWithOptions,
+  type InternalIconName,
+  type NodeTypeIconName,
+  renderIcon,
+  type SlashCommandIconName,
+  setIconRenderer,
+  type TableIconName,
+  type UIIconName,
+} from "./icons/index.ts";
 // Theme
 export {
   applyTheme,

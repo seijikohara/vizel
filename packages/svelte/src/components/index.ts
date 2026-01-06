@@ -28,7 +28,6 @@ export {
   type ColorPickerProps,
   default as ColorPicker,
 } from "./ColorPicker.svelte";
-
 // Editor components
 export {
   default as EditorContent,
@@ -36,12 +35,19 @@ export {
 } from "./EditorContent.svelte";
 export { getEditorContext, getEditorContextSafe } from "./EditorContext.ts";
 export { default as EditorRoot, type EditorRootProps } from "./EditorRoot.svelte";
-
 // EmbedView component
 export {
   default as EmbedView,
   type EmbedViewProps,
 } from "./EmbedView.svelte";
+// Icon component
+export { default as Icon } from "./Icon.svelte";
+export {
+  type CustomIconMap,
+  getIconContext,
+  type IconContextValue,
+  setIconContext,
+} from "./IconContext.ts";
 
 // NodeSelector component
 export {

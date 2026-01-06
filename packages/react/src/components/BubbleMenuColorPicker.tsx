@@ -8,6 +8,7 @@ import {
 } from "@vizel/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ColorPicker } from "./ColorPicker";
+import { Icon } from "./Icon.tsx";
 
 export interface BubbleMenuColorPickerProps {
   editor: Editor;
@@ -96,13 +97,7 @@ export function BubbleMenuColorPicker({
   }, [isOpen]);
 
   const isTextColor = type === "textColor";
-  const icon = isTextColor ? (
-    "A"
-  ) : (
-    <span className="vizel-color-picker-highlight-icon">
-      <span className="vizel-color-picker-highlight-bar" />
-    </span>
-  );
+  const icon = isTextColor ? <Icon name="textColor" /> : <Icon name="highlighter" />;
 
   return (
     <div ref={containerRef} className={`vizel-color-picker ${className ?? ""}`} data-type={type}>

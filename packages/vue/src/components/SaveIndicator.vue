@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { formatRelativeTime, type SaveStatus } from "@vizel/core";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import Icon from "./Icon.vue";
 
 export interface SaveIndicatorProps {
   /** Current save status */
@@ -74,12 +75,20 @@ const shouldShowTimestamp = computed(() => {
     data-vizel-save-indicator
   >
     <span class="vizel-save-indicator-icon" aria-hidden="true">
-      <template v-if="props.status === 'saved'">✓</template>
-      <template v-else-if="props.status === 'saving'">
-        <span class="vizel-save-indicator-spinner" aria-hidden="true">⟳</span>
+      <template v-if="props.status === 'saved'">
+        <Icon name="check" />
       </template>
-      <template v-else-if="props.status === 'unsaved'">•</template>
-      <template v-else-if="props.status === 'error'">⚠</template>
+      <template v-else-if="props.status === 'saving'">
+        <span class="vizel-save-indicator-spinner" aria-hidden="true">
+          <Icon name="loader" />
+        </span>
+      </template>
+      <template v-else-if="props.status === 'unsaved'">
+        <Icon name="circle" />
+      </template>
+      <template v-else-if="props.status === 'error'">
+        <Icon name="warning" />
+      </template>
     </span>
     <span class="vizel-save-indicator-text">{{ statusText }}</span>
     <span v-if="shouldShowTimestamp" class="vizel-save-indicator-timestamp">{{ relativeTime }}</span>

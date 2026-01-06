@@ -1,5 +1,6 @@
 import { detectProvider, type Editor } from "@vizel/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Icon } from "./Icon.tsx";
 
 export interface BubbleMenuLinkEditorProps {
   editor: Editor;
@@ -132,7 +133,7 @@ export function BubbleMenuLinkEditor({
           className="vizel-link-input"
         />
         <button type="submit" className="vizel-link-button" title="Apply">
-          OK
+          <Icon name="check" />
         </button>
         {currentHref && (
           <button
@@ -141,7 +142,7 @@ export function BubbleMenuLinkEditor({
             className="vizel-link-button vizel-link-remove"
             title="Remove link"
           >
-            X
+            <Icon name="x" />
           </button>
         )}
       </div>

@@ -22,14 +22,21 @@ export {
 } from "./BubbleMenuToolbar.tsx";
 // ColorPicker component
 export { ColorPicker, type ColorPickerProps } from "./ColorPicker.tsx";
-
 // Editor components
 export { EditorContent, type EditorContentProps } from "./EditorContent.tsx";
 export { useEditorContext, useEditorContextSafe } from "./EditorContext.tsx";
 export { EditorRoot, type EditorRootProps } from "./EditorRoot.tsx";
-
 // EmbedView component
 export { EmbedView, type EmbedViewProps } from "./EmbedView.tsx";
+// Icon component
+export { Icon, type IconProps } from "./Icon.tsx";
+export {
+  type CustomIconMap,
+  type IconContextValue,
+  IconProvider,
+  type IconProviderProps,
+  useIconContext,
+} from "./IconContext.tsx";
 
 // NodeSelector component
 export { NodeSelector, type NodeSelectorProps } from "./NodeSelector.tsx";

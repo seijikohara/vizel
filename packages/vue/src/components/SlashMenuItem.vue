@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SlashCommandItem } from "@vizel/core";
+import Icon from "./Icon.vue";
 
 export interface SlashMenuItemProps {
   /** The slash command item to display */
@@ -62,7 +63,9 @@ function highlightMatches(
     :data-selected="isSelected || undefined"
     @click="emit('click')"
   >
-    <span class="vizel-slash-menu-icon">{{ item.icon }}</span>
+    <span class="vizel-slash-menu-icon">
+      <Icon :name="item.icon" />
+    </span>
     <div class="vizel-slash-menu-text">
       <span class="vizel-slash-menu-title">
         <template v-for="(part, idx) in highlightMatches(item.title, titleMatches)" :key="idx">

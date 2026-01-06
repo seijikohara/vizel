@@ -16,6 +16,7 @@ export interface SaveIndicatorProps {
 <script lang="ts">
 import { formatRelativeTime } from "@vizel/core";
 import { onMount } from "svelte";
+import Icon from "./Icon.svelte";
 
 let {
   status,
@@ -76,13 +77,15 @@ const shouldShowTimestamp = $derived(showTimestamp && lastSaved && relativeTime 
 >
   <span class="vizel-save-indicator-icon" aria-hidden="true">
     {#if status === "saved"}
-      ✓
+      <Icon name="check" />
     {:else if status === "saving"}
-      <span class="vizel-save-indicator-spinner" aria-hidden="true">⟳</span>
+      <span class="vizel-save-indicator-spinner" aria-hidden="true">
+        <Icon name="loader" />
+      </span>
     {:else if status === "unsaved"}
-      •
+      <Icon name="circle" />
     {:else if status === "error"}
-      ⚠
+      <Icon name="warning" />
     {/if}
   </span>
   <span class="vizel-save-indicator-text">{statusText}</span>

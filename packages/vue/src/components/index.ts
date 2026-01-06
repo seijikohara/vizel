@@ -25,14 +25,21 @@ export {
   type ColorPickerProps,
   default as ColorPicker,
 } from "./ColorPicker.vue";
-
 // Editor components
 export { default as EditorContent, type EditorContentProps } from "./EditorContent.vue";
 export { useEditorContext, useEditorContextSafe } from "./EditorContext.ts";
 export { default as EditorRoot, type EditorRootProps } from "./EditorRoot.vue";
-
 // EmbedView component
 export { default as EmbedView, type EmbedViewProps } from "./EmbedView.vue";
+// Icon component
+export { default as Icon, type IconProps } from "./Icon.vue";
+export {
+  type CustomIconMap,
+  IconContextKey,
+  type IconContextValue,
+  provideIconContext,
+  useIconContext,
+} from "./IconContext.ts";
 
 // NodeSelector component
 export {

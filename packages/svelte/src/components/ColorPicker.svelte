@@ -26,6 +26,7 @@ export interface ColorPickerProps {
 <script lang="ts">
 import { isValidHexColor, normalizeHexColor } from "@vizel/core";
 import { onMount } from "svelte";
+import Icon from "./Icon.svelte";
 
 const GRID_COLUMNS = 4;
 
@@ -201,7 +202,7 @@ const previewColor = $derived(isInputValid ? normalizeHexColor(inputValue) : und
             onkeydown={(e) => handleKeyDown(e, idx)}
           >
             {#if isNoneValue(color)}
-              <span class="vizel-color-picker-none">×</span>
+              <span class="vizel-color-picker-none"><Icon name="x" /></span>
             {/if}
           </button>
         {/each}
@@ -228,7 +229,7 @@ const previewColor = $derived(isInputValid ? normalizeHexColor(inputValue) : und
           onkeydown={(e) => handleKeyDown(e, idx)}
         >
           {#if isNoneValue(colorDef.color)}
-            <span class="vizel-color-picker-none">×</span>
+            <span class="vizel-color-picker-none"><Icon name="x" /></span>
           {/if}
         </button>
       {/each}
@@ -262,7 +263,7 @@ const previewColor = $derived(isInputValid ? normalizeHexColor(inputValue) : und
         aria-label="Apply custom color"
         onclick={handleInputSubmit}
       >
-        ✓
+        <Icon name="check" />
       </button>
     </div>
   {/if}

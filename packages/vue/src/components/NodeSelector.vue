@@ -2,6 +2,7 @@
 import { defaultNodeTypes, type Editor, getActiveNodeType, type NodeTypeOption } from "@vizel/core";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useEditorState } from "../composables/useEditorState.ts";
+import Icon from "./Icon.vue";
 
 export interface NodeSelectorProps {
   /** The editor instance */
@@ -30,7 +31,7 @@ const activeNodeType = computed(() => {
 });
 
 const currentLabel = computed(() => activeNodeType.value?.label ?? "Text");
-const currentIcon = computed(() => activeNodeType.value?.icon ?? "¶");
+const currentIcon = computed(() => activeNodeType.value?.icon ?? "paragraph");
 
 // Close dropdown when clicking outside
 function handleClickOutside(event: MouseEvent) {
@@ -130,9 +131,13 @@ function isNodeTypeActive(nodeType: NodeTypeOption): boolean {
       @click="isOpen = !isOpen"
       @keydown="handleKeyDown"
     >
-      <span class="vizel-node-selector-icon">{{ currentIcon }}</span>
+      <span class="vizel-node-selector-icon">
+        <Icon :name="currentIcon" />
+      </span>
       <span class="vizel-node-selector-label">{{ currentLabel }}</span>
-      <span class="vizel-node-selector-chevron" aria-hidden="true">▼</span>
+      <span class="vizel-node-selector-chevron" aria-hidden="true">
+        <Icon name="chevronDown" />
+      </span>
     </button>
 
     <div
@@ -160,14 +165,16 @@ function isNodeTypeActive(nodeType: NodeTypeOption): boolean {
         @click="handleSelectNodeType(nodeType)"
         @mouseenter="focusedIndex = index"
       >
-        <span class="vizel-node-selector-option-icon">{{ nodeType.icon }}</span>
+        <span class="vizel-node-selector-option-icon">
+          <Icon :name="nodeType.icon" />
+        </span>
         <span class="vizel-node-selector-option-label">{{ nodeType.label }}</span>
         <span
           v-if="isNodeTypeActive(nodeType)"
           class="vizel-node-selector-check"
           aria-hidden="true"
         >
-          ✓
+          <Icon name="check" />
         </span>
       </button>
     </div>

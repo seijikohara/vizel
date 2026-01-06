@@ -1,5 +1,6 @@
 import { Extension } from "@tiptap/core";
 import DragHandle, { type DragHandleOptions } from "@tiptap/extension-drag-handle";
+import { renderIcon } from "../icons/types.ts";
 
 export { DragHandle };
 export type { DragHandleOptions };
@@ -38,16 +39,7 @@ export function createDragHandleExtension(options: VizelDragHandleOptions = {}):
       // Create grip icon (6 dots pattern)
       const grip = document.createElement("div");
       grip.classList.add("vizel-drag-handle-grip");
-      grip.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <circle cx="9" cy="5" r="2"/>
-          <circle cx="15" cy="5" r="2"/>
-          <circle cx="9" cy="12" r="2"/>
-          <circle cx="15" cy="12" r="2"/>
-          <circle cx="9" cy="19" r="2"/>
-          <circle cx="15" cy="19" r="2"/>
-        </svg>
-      `;
+      grip.innerHTML = renderIcon("grip", { width: 14, height: 14 });
       element.appendChild(grip);
 
       // Store reference for onNodeChange callback

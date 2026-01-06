@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import type { TableOptions } from "@tiptap/extension-table";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
+import { type InternalIconName, renderIcon, type TableIconName } from "../icons/types.ts";
 import { VizelTable } from "./table-base";
 
 /**
@@ -33,7 +34,7 @@ export type TableControlsOptions = Partial<TableOptions> & TableControlsUIOption
 
 interface TableMenuItem {
   label: string;
-  icon?: string;
+  icon?: TableIconName;
   command: string | ((editor: Editor) => void);
   destructive?: boolean;
   divider?: boolean;
@@ -41,8 +42,8 @@ interface TableMenuItem {
 
 /** Row-specific menu items (shown from row handle) */
 const ROW_MENU_ITEMS: TableMenuItem[] = [
-  { label: "Add row above", icon: "↑", command: "addRowBefore" },
-  { label: "Add row below", icon: "↓", command: "addRowAfter" },
+  { label: "Add row above", icon: "arrowUp", command: "addRowBefore" },
+  { label: "Add row below", icon: "arrowDown", command: "addRowAfter" },
   { label: "Delete row", command: "deleteRow", destructive: true },
   { divider: true, label: "", command: "" },
   { label: "Toggle header row", command: "toggleHeaderRow" },
@@ -52,8 +53,8 @@ const ROW_MENU_ITEMS: TableMenuItem[] = [
 
 /** Base column menu items (without alignment - those are added dynamically) */
 const COLUMN_MENU_ITEMS_BASE: TableMenuItem[] = [
-  { label: "Add column left", icon: "←", command: "addColumnBefore" },
-  { label: "Add column right", icon: "→", command: "addColumnAfter" },
+  { label: "Add column left", icon: "arrowLeft", command: "addColumnBefore" },
+  { label: "Add column right", icon: "arrowRight", command: "addColumnAfter" },
   { label: "Delete column", command: "deleteColumn", destructive: true },
   { divider: true, label: "", command: "" },
   { label: "Toggle header column", command: "toggleHeaderColumn" },
@@ -69,17 +70,17 @@ function createColumnMenuItems(tablePos: number, colIndex: number): TableMenuIte
     // Column-wide alignment (Markdown compatible)
     {
       label: "Align left",
-      icon: "⫷",
+      icon: "alignLeft",
       command: (editor) => setColumnAlignment(editor, tablePos, colIndex, "left"),
     },
     {
       label: "Align center",
-      icon: "⫶",
+      icon: "alignCenter",
       command: (editor) => setColumnAlignment(editor, tablePos, colIndex, "center"),
     },
     {
       label: "Align right",
-      icon: "⫸",
+      icon: "alignRight",
       command: (editor) => setColumnAlignment(editor, tablePos, colIndex, "right"),
     },
     { divider: true, label: "", command: "" },
@@ -416,7 +417,8 @@ function createTableMenu(
     if (item.icon) {
       const icon = document.createElement("span");
       icon.className = "vizel-table-menu-item-icon";
-      icon.textContent = item.icon;
+      // Render SVG icon instead of text
+      icon.innerHTML = renderIcon(item.icon as InternalIconName, { width: 16, height: 16 });
       button.appendChild(icon);
     }
 
@@ -506,7 +508,7 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
       const columnInsertBtn = document.createElement("button");
       columnInsertBtn.className = "vizel-table-insert-button vizel-table-column-insert";
       columnInsertBtn.type = "button";
-      columnInsertBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 0v12M0 6h12" stroke="currentColor" stroke-width="2" fill="none"/></svg>`;
+      columnInsertBtn.innerHTML = renderIcon("plusSmall", { width: 12, height: 12 });
       columnInsertBtn.setAttribute("aria-label", "Insert column");
       columnInsertBtn.title = "Insert column";
       // Initial position at first column boundary (CSS translateX(-50%) centers it)
@@ -518,7 +520,7 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
       const rowInsertBtn = document.createElement("button");
       rowInsertBtn.className = "vizel-table-insert-button vizel-table-row-insert";
       rowInsertBtn.type = "button";
-      rowInsertBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 0v12M0 6h12" stroke="currentColor" stroke-width="2" fill="none"/></svg>`;
+      rowInsertBtn.innerHTML = renderIcon("plusSmall", { width: 12, height: 12 });
       rowInsertBtn.setAttribute("aria-label", "Insert row");
       rowInsertBtn.title = "Insert row";
       // Initial position at first row boundary (CSS translateY(-50%) centers it)
@@ -530,7 +532,7 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
       const rowHandle = document.createElement("button");
       rowHandle.className = "vizel-table-row-handle";
       rowHandle.type = "button";
-      rowHandle.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="9" cy="19" r="2"/><circle cx="15" cy="19" r="2"/></svg>`;
+      rowHandle.innerHTML = renderIcon("grip", { width: 12, height: 12 });
       rowHandle.setAttribute("aria-label", "Table row options");
       rowHandle.title = "Row options (delete, align, etc.)";
       // Initial position at first row (in padding area)
@@ -542,7 +544,7 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
       const columnHandle = document.createElement("button");
       columnHandle.className = "vizel-table-column-handle";
       columnHandle.type = "button";
-      columnHandle.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="9" r="2"/><circle cx="5" cy="15" r="2"/><circle cx="12" cy="9" r="2"/><circle cx="12" cy="15" r="2"/><circle cx="19" cy="9" r="2"/><circle cx="19" cy="15" r="2"/></svg>`;
+      columnHandle.innerHTML = renderIcon("gripHorizontal", { width: 12, height: 12 });
       columnHandle.setAttribute("aria-label", "Table column options");
       columnHandle.title = "Column options (delete, align, etc.)";
       // Initial position at first column (in padding area)

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { detectProvider, type Editor } from "@vizel/core";
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import Icon from "./Icon.vue";
 
 export interface BubbleMenuLinkEditorProps {
   /** The editor instance */
@@ -111,7 +112,7 @@ function handleRemove() {
         class="vizel-link-input"
       />
       <button type="submit" class="vizel-link-button" title="Apply">
-        OK
+        <Icon name="check" />
       </button>
       <button
         v-if="currentHref"
@@ -120,7 +121,7 @@ function handleRemove() {
         title="Remove link"
         @click="handleRemove"
       >
-        X
+        <Icon name="x" />
       </button>
     </div>
     <div v-if="canEmbed && isEmbedProvider" class="vizel-link-editor-embed-toggle">

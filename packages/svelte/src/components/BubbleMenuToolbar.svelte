@@ -16,6 +16,7 @@ import { createEditorState } from "../runes/createEditorState.svelte.ts";
 import BubbleMenuButton from "./BubbleMenuButton.svelte";
 import BubbleMenuColorPicker from "./BubbleMenuColorPicker.svelte";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.svelte";
+import Icon from "./Icon.svelte";
 import NodeSelector from "./NodeSelector.svelte";
 
 let { editor, class: className, enableEmbed }: BubbleMenuToolbarProps = $props();
@@ -62,7 +63,7 @@ const isLinkActive = $derived.by(() => {
       title="Bold (Cmd+B)"
       onclick={() => editor.chain().focus().toggleBold().run()}
     >
-      <strong>B</strong>
+      <Icon name="bold" />
     </BubbleMenuButton>
     <BubbleMenuButton
       action="italic"
@@ -70,7 +71,7 @@ const isLinkActive = $derived.by(() => {
       title="Italic (Cmd+I)"
       onclick={() => editor.chain().focus().toggleItalic().run()}
     >
-      <em>I</em>
+      <Icon name="italic" />
     </BubbleMenuButton>
     <BubbleMenuButton
       action="strike"
@@ -78,7 +79,7 @@ const isLinkActive = $derived.by(() => {
       title="Strikethrough"
       onclick={() => editor.chain().focus().toggleStrike().run()}
     >
-      <s>S</s>
+      <Icon name="strikethrough" />
     </BubbleMenuButton>
     <BubbleMenuButton
       action="underline"
@@ -86,7 +87,7 @@ const isLinkActive = $derived.by(() => {
       title="Underline (Cmd+U)"
       onclick={() => editor.chain().focus().toggleUnderline().run()}
     >
-      <u>U</u>
+      <Icon name="underline" />
     </BubbleMenuButton>
     <BubbleMenuButton
       action="code"
@@ -94,7 +95,7 @@ const isLinkActive = $derived.by(() => {
       title="Code (Cmd+E)"
       onclick={() => editor.chain().focus().toggleCode().run()}
     >
-      <code>&lt;/&gt;</code>
+      <Icon name="code" />
     </BubbleMenuButton>
     <BubbleMenuButton
       action="link"
@@ -102,7 +103,7 @@ const isLinkActive = $derived.by(() => {
       title="Link (Cmd+K)"
       onclick={() => (showLinkEditor = true)}
     >
-      <span>L</span>
+      <Icon name="link" />
     </BubbleMenuButton>
     <BubbleMenuColorPicker {editor} type="textColor" />
     <BubbleMenuColorPicker {editor} type="highlight" />

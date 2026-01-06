@@ -80,8 +80,8 @@
 .vizel-table-row-handle,
 .vizel-table-column-handle {
   position: absolute;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 4px;
   background-color: v("muted");
   color: v("muted-foreground");
@@ -109,8 +109,8 @@
   }
 
   svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
   }
 }
 

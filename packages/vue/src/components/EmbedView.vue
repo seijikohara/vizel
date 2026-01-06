@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { EmbedData, EmbedType } from "@vizel/core";
 import { computed, onMounted, ref, watch } from "vue";
+import Icon from "./Icon.vue";
 
 export interface EmbedViewProps {
   /** Embed data */
@@ -135,7 +136,7 @@ watch(() => [props.data.type, props.data.html], loadScripts);
     :data-embed-provider="data.provider"
   >
     <a :href="data.url" target="_blank" rel="noopener noreferrer" class="vizel-embed-link">
-      <span class="vizel-embed-link-icon">🔗</span>
+      <span class="vizel-embed-link-icon"><Icon name="link" /></span>
       <span class="vizel-embed-link-text">{{ data.title }}</span>
     </a>
   </div>
@@ -148,7 +149,7 @@ watch(() => [props.data.type, props.data.html], loadScripts);
     :data-embed-provider="data.provider"
   >
     <a :href="data.url" target="_blank" rel="noopener noreferrer" class="vizel-embed-link">
-      <span class="vizel-embed-link-icon">🔗</span>
+      <span class="vizel-embed-link-icon"><Icon name="link" /></span>
       <span class="vizel-embed-link-text">{{ data.url }}</span>
     </a>
   </div>

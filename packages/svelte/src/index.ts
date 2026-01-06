@@ -4,6 +4,9 @@
  * Svelte 5 components and runes for the Vizel visual editor.
  */
 
+// Initialize icon renderer (auto-registers with core)
+import "./iconRenderer.ts";
+
 // Re-export core types for convenience
 // Re-export auto-save types from core
 export type {
@@ -133,12 +136,16 @@ export {
   type BubbleMenuToolbarProps,
   ColorPicker,
   type ColorPickerProps,
+  type CustomIconMap,
   EditorContent,
   type EditorContentProps,
   EditorRoot,
   type EditorRootProps,
   getEditorContext,
   getEditorContextSafe,
+  getIconContext,
+  Icon,
+  type IconContextValue,
   Portal,
   type PortalProps,
   SaveIndicator,
@@ -150,6 +157,7 @@ export {
   type SlashMenuItemProps,
   type SlashMenuProps,
   type SlashMenuRef,
+  setIconContext,
   THEME_CONTEXT_KEY,
   ThemeProvider,
 } from "./components/index.ts";

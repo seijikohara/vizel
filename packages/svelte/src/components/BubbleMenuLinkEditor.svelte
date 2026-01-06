@@ -16,6 +16,7 @@ export interface BubbleMenuLinkEditorProps {
 <script lang="ts">
 import { detectProvider } from "@vizel/core";
 import { onMount, untrack } from "svelte";
+import Icon from "./Icon.svelte";
 
 let {
   editor,
@@ -116,7 +117,7 @@ function handleRemove() {
       class="vizel-link-input"
     />
     <button type="submit" class="vizel-link-button" title="Apply">
-      OK
+      <Icon name="check" />
     </button>
     {#if currentHref}
       <button
@@ -125,7 +126,7 @@ function handleRemove() {
         title="Remove link"
         onclick={handleRemove}
       >
-        X
+        <Icon name="x" />
       </button>
     {/if}
   </div>
