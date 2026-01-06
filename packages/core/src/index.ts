@@ -197,7 +197,10 @@ export type {
 // Utilities
 // Portal utilities
 export {
+  type ContentNode,
   type CreateUploadEventHandlerOptions,
+  convertCodeBlocksToDiagrams,
+  convertMermaidCodeBlocksToDiagrams,
   createPortalElement,
   createUploadEventHandler,
   defaultEditorProps,
@@ -212,6 +215,8 @@ export {
   registerUploadEventHandler,
   removePortalContainer,
   resolveFeatures,
+  transformDiagramCodeBlocks,
+  transformMermaidToDiagram,
   unmountFromPortal,
   VIZEL_PORTAL_ID,
   VIZEL_UPLOAD_IMAGE_EVENT,

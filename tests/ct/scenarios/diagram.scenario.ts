@@ -2,7 +2,7 @@ import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
 /**
- * Shared test scenarios for Diagram (Mermaid) support.
+ * Shared test scenarios for Diagram (Mermaid and GraphViz) support.
  * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
  */
 
@@ -246,6 +246,154 @@ export async function testDiagramCtrlEnterToSave(component: Locator, page: Page)
   await expect(textarea).not.toBeVisible();
 
   // SVG should be rendered in main view
+  const svg = diagram.locator(".vizel-diagram-render svg");
+  await expect(svg).toBeVisible({ timeout: 10000 });
+}
+
+// ============================================
+// GraphViz Tests
+// ============================================
+
+/** Helper to insert a GraphViz diagram via slash command */
+async function insertGraphVizDiagram(component: Locator, page: Page): Promise<void> {
+  await clickEditorStart(component, page);
+  await page.keyboard.type("/graphviz");
+  // Wait for slash menu to appear
+  await expect(page.locator(".vizel-slash-menu")).toBeVisible();
+  await page.keyboard.press("Enter");
+  // Wait for diagram to be inserted
+  await expect(component.locator(DIAGRAM_SELECTOR)).toBeVisible();
+}
+
+/** Verify GraphViz diagram can be inserted via slash command */
+export async function testGraphVizDiagramInsert(component: Locator, page: Page): Promise<void> {
+  await insertGraphVizDiagram(component, page);
+
+  const diagram = component.locator(DIAGRAM_SELECTOR);
+  await expect(diagram).toBeVisible();
+
+  // Should have type indicator showing GraphViz
+  const typeIndicator = diagram.locator(".vizel-diagram-type");
+  await expect(typeIndicator).toContainText("GraphViz");
+}
+
+/** Verify GraphViz diagram shows default content when inserted */
+export async function testGraphVizDiagramDefaultContent(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  await insertGraphVizDiagram(component, page);
+
+  const diagram = component.locator(DIAGRAM_SELECTOR);
+  await expect(diagram).toBeVisible();
+
+  // Wait for GraphViz to render (SVG should appear)
+  const svg = diagram.locator(".vizel-diagram-render svg");
+  await expect(svg).toBeVisible({ timeout: 10000 });
+}
+
+/** Verify GraphViz DOT code can be typed in diagram */
+export async function testGraphVizDiagramTyping(component: Locator, page: Page): Promise<void> {
+  await insertGraphVizDiagram(component, page);
+
+  const diagram = component.locator(DIAGRAM_SELECTOR);
+  // Click the render container to start editing
+  const renderContainer = diagram.locator(".vizel-diagram-render");
+  await renderContainer.click();
+
+  const textarea = diagram.locator("textarea");
+  await expect(textarea).toBeVisible();
+
+  // Clear and type new DOT code
+  const dotCode = `digraph G {
+    A -> B -> C
+    B -> D
+  }`;
+
+  await textarea.evaluate((el: HTMLTextAreaElement, code: string) => {
+    el.focus();
+    el.value = code;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  }, dotCode);
+
+  // Wait for live preview to render
+  const preview = diagram.locator(".vizel-diagram-preview svg");
+  await expect(preview).toBeVisible({ timeout: 10000 });
+
+  // Blur the textarea to save content
+  await textarea.evaluate((el: HTMLTextAreaElement) => {
+    el.blur();
+  });
+
+  // Verify the diagram is rendered in main view
+  const svg = diagram.locator(".vizel-diagram-render svg");
+  await expect(svg).toBeVisible({ timeout: 10000 });
+}
+
+/** Verify GraphViz diagram shows error for invalid syntax */
+export async function testGraphVizDiagramErrorHandling(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  await insertGraphVizDiagram(component, page);
+
+  const diagram = component.locator(DIAGRAM_SELECTOR);
+  // Click the render container to start editing
+  const renderContainer = diagram.locator(".vizel-diagram-render");
+  await renderContainer.click();
+
+  const textarea = diagram.locator("textarea");
+  await expect(textarea).toBeVisible();
+
+  // Type invalid DOT code
+  await textarea.evaluate((el: HTMLTextAreaElement) => {
+    el.focus();
+    el.value = "digraph { invalid syntax {{{{";
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+
+  // Wait for error to appear in preview
+  const errorDisplay = diagram.locator(".vizel-diagram-preview .vizel-diagram-error-display");
+  await expect(errorDisplay).toBeVisible({ timeout: 10000 });
+}
+
+/** Verify GraphViz can render different graph layouts */
+export async function testGraphVizDiagramLayout(component: Locator, page: Page): Promise<void> {
+  await insertGraphVizDiagram(component, page);
+
+  const diagram = component.locator(DIAGRAM_SELECTOR);
+  const renderContainer = diagram.locator(".vizel-diagram-render");
+  await renderContainer.click();
+
+  const textarea = diagram.locator("textarea");
+  await expect(textarea).toBeVisible();
+
+  // Type a graph with left-to-right layout
+  const dotCode = `digraph G {
+    rankdir=LR
+    node [shape=box]
+    A [label="Start"]
+    B [label="Process"]
+    C [label="End"]
+    A -> B -> C
+  }`;
+
+  await textarea.evaluate((el: HTMLTextAreaElement, code: string) => {
+    el.focus();
+    el.value = code;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  }, dotCode);
+
+  // Wait for preview to render
+  const preview = diagram.locator(".vizel-diagram-preview svg");
+  await expect(preview).toBeVisible({ timeout: 10000 });
+
+  // Blur to save
+  await textarea.evaluate((el: HTMLTextAreaElement) => {
+    el.blur();
+  });
+
+  // Verify the diagram is rendered
   const svg = diagram.locator(".vizel-diagram-render svg");
   await expect(svg).toBeVisible({ timeout: 10000 });
 }

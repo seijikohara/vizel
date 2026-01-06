@@ -1,16 +1,20 @@
 /**
  * Diagram Extension
  *
- * Provides diagram rendering support using Mermaid.
- * Supports flowcharts, sequence diagrams, class diagrams, and more.
+ * Provides diagram rendering support using Mermaid and GraphViz.
+ * Supports flowcharts, sequence diagrams, class diagrams, DOT graphs, and more.
  *
  * ## Markdown Support (GitHub Compatible)
  *
  * - Mermaid: ```mermaid ... ```
+ * - GraphViz: ```dot ... ``` or ```graphviz ... ```
  *
  * @see https://mermaid.js.org/
+ * @see https://graphviz.org/
  * @see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams
  */
+
+import { Graphviz } from "@hpcc-js/wasm-graphviz";
 import type { JSONContent, MarkdownToken, MarkdownTokenizer } from "@tiptap/core";
 import { mergeAttributes, Node } from "@tiptap/core";
 import type { MermaidConfig } from "mermaid";
@@ -19,7 +23,12 @@ import mermaid from "mermaid";
 /**
  * Supported diagram types
  */
-export type DiagramType = "mermaid";
+export type DiagramType = "mermaid" | "graphviz";
+
+/**
+ * GraphViz layout engine options
+ */
+export type GraphvizEngine = "dot" | "neato" | "fdp" | "sfdp" | "twopi" | "circo";
 
 /**
  * Options for the Diagram extension
@@ -31,15 +40,25 @@ export interface VizelDiagramOptions {
    */
   mermaidConfig?: MermaidConfig;
   /**
+   * Default GraphViz layout engine
+   * @default "dot"
+   */
+  graphvizEngine?: GraphvizEngine;
+  /**
    * Default diagram type when creating new diagrams
    * @default "mermaid"
    */
   defaultType?: DiagramType;
   /**
-   * Default diagram code for new diagrams
+   * Default diagram code for new diagrams (for mermaid)
    * @default "flowchart TD\n  A[Start] --> B[End]"
    */
   defaultCode?: string;
+  /**
+   * Default diagram code for new GraphViz diagrams
+   * @default "digraph G {\n  A -> B\n}"
+   */
+  defaultGraphvizCode?: string;
 }
 
 declare module "@tiptap/core" {
@@ -54,12 +73,12 @@ declare module "@tiptap/core" {
 }
 
 /**
- * Unique counter for generating Mermaid diagram IDs
+ * Unique counter for generating diagram IDs
  */
 let diagramIdCounter = 0;
 
 /**
- * Generate a unique ID for Mermaid rendering
+ * Generate a unique ID for diagram rendering
  */
 function generateDiagramId(): string {
   return `vizel-diagram-${Date.now()}-${++diagramIdCounter}`;
@@ -88,6 +107,36 @@ const mermaidTokenizer: MarkdownTokenizer = {
 };
 
 /**
+ * Markdown tokenizer for GraphViz diagrams: ```dot ... ``` or ```graphviz ... ```
+ */
+const graphvizTokenizer: MarkdownTokenizer = {
+  name: "diagram-graphviz",
+  start: "```dot",
+  tokenize(src: string): MarkdownToken | undefined {
+    // Match ```dot ... ``` or ```graphviz ... ```
+    const dotMatch = src.match(/^```dot\n([\s\S]*?)```/);
+    if (dotMatch?.[1] !== undefined) {
+      return {
+        type: "diagram",
+        raw: dotMatch[0],
+        code: dotMatch[1].trim(),
+        diagramType: "graphviz",
+      };
+    }
+    const graphvizMatch = src.match(/^```graphviz\n([\s\S]*?)```/);
+    if (graphvizMatch?.[1] !== undefined) {
+      return {
+        type: "diagram",
+        raw: graphvizMatch[0],
+        code: graphvizMatch[1].trim(),
+        diagramType: "graphviz",
+      };
+    }
+    return undefined;
+  },
+};
+
+/**
  * Initialize Mermaid with the provided configuration
  */
 let mermaidInitialized = false;
@@ -107,6 +156,33 @@ function initializeMermaid(config?: MermaidConfig): void {
 }
 
 /**
+ * GraphViz instance (lazy loaded)
+ */
+let graphvizInstance: Graphviz | null = null;
+let graphvizInitializing = false;
+let graphvizInitPromise: Promise<Graphviz> | null = null;
+
+/**
+ * Initialize GraphViz WASM
+ */
+function initializeGraphviz(): Promise<Graphviz> {
+  if (graphvizInstance) return Promise.resolve(graphvizInstance);
+
+  if (graphvizInitializing && graphvizInitPromise) {
+    return graphvizInitPromise;
+  }
+
+  graphvizInitializing = true;
+  graphvizInitPromise = Graphviz.load().then((instance) => {
+    graphvizInstance = instance;
+    graphvizInitializing = false;
+    return instance;
+  });
+
+  return graphvizInitPromise;
+}
+
+/**
  * Render a Mermaid diagram to SVG
  */
 async function renderMermaid(code: string): Promise<{ svg: string; error: string | null }> {
@@ -119,7 +195,7 @@ async function renderMermaid(code: string): Promise<{ svg: string; error: string
     const { svg } = await mermaid.render(id, code);
     return { svg, error: null };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Invalid diagram syntax";
+    const errorMessage = error instanceof Error ? error.message : "Invalid Mermaid syntax";
     return {
       svg: "",
       error: errorMessage,
@@ -128,14 +204,66 @@ async function renderMermaid(code: string): Promise<{ svg: string; error: string
 }
 
 /**
- * Default diagram code for new diagrams
+ * Render a GraphViz diagram to SVG
  */
-const DEFAULT_DIAGRAM_CODE = `flowchart TD
+async function renderGraphviz(
+  code: string,
+  engine: GraphvizEngine = "dot"
+): Promise<{ svg: string; error: string | null }> {
+  if (!code.trim()) {
+    return { svg: "", error: null };
+  }
+
+  try {
+    const graphviz = await initializeGraphviz();
+    const svg = graphviz.layout(code, "svg", engine);
+    return { svg, error: null };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Invalid DOT syntax";
+    return {
+      svg: "",
+      error: errorMessage,
+    };
+  }
+}
+
+/**
+ * Default diagram code for new Mermaid diagrams
+ */
+const DEFAULT_MERMAID_CODE = `flowchart TD
     A[Start] --> B{Decision}
     B -->|Yes| C[Action 1]
     B -->|No| D[Action 2]
     C --> E[End]
     D --> E`;
+
+/**
+ * Default diagram code for new GraphViz diagrams
+ */
+const DEFAULT_GRAPHVIZ_CODE = `digraph G {
+    rankdir=LR
+    node [shape=box, style=rounded]
+    
+    A [label="Start"]
+    B [label="Process"]
+    C [label="End"]
+    
+    A -> B -> C
+}`;
+
+/**
+ * Get display name for diagram type
+ */
+function getDiagramTypeName(type: DiagramType): string {
+  switch (type) {
+    case "mermaid":
+      return "Mermaid";
+    case "graphviz":
+      return "GraphViz";
+    default:
+      return "Diagram";
+  }
+}
 
 /**
  * Diagram extension for block diagrams
@@ -150,8 +278,10 @@ export const Diagram = Node.create<VizelDiagramOptions>({
   addOptions() {
     return {
       mermaidConfig: {},
+      graphvizEngine: "dot",
       defaultType: "mermaid",
-      defaultCode: DEFAULT_DIAGRAM_CODE,
+      defaultCode: DEFAULT_MERMAID_CODE,
+      defaultGraphvizCode: DEFAULT_GRAPHVIZ_CODE,
     };
   },
 
@@ -208,7 +338,7 @@ export const Diagram = Node.create<VizelDiagramOptions>({
       // Type indicator
       const typeIndicator = document.createElement("div");
       typeIndicator.classList.add("vizel-diagram-type");
-      typeIndicator.textContent = node.attrs.type === "mermaid" ? "Mermaid" : "Diagram";
+      typeIndicator.textContent = getDiagramTypeName(node.attrs.type);
       dom.appendChild(typeIndicator);
 
       // Render container
@@ -243,19 +373,31 @@ export const Diagram = Node.create<VizelDiagramOptions>({
 
       let isEditing = false;
       let currentCode = node.attrs.code;
+      let currentType: DiagramType = node.attrs.type;
 
-      const renderDiagram = async (code: string, container: HTMLElement) => {
+      const renderDiagram = async (
+        code: string,
+        type: DiagramType,
+        container: HTMLElement
+      ): Promise<void> => {
         if (!code.trim()) {
           container.innerHTML =
             '<div class="vizel-diagram-placeholder">Click to add diagram code</div>';
           return;
         }
 
-        const { svg, error } = await renderMermaid(code);
-        if (error) {
-          container.innerHTML = `<div class="vizel-diagram-error-display">${error}</div>`;
+        let result: { svg: string; error: string | null };
+
+        if (type === "graphviz") {
+          result = await renderGraphviz(code, this.options.graphvizEngine);
         } else {
-          container.innerHTML = svg;
+          result = await renderMermaid(code);
+        }
+
+        if (result.error) {
+          container.innerHTML = `<div class="vizel-diagram-error-display">${result.error}</div>`;
+        } else {
+          container.innerHTML = result.svg;
         }
       };
 
@@ -267,7 +409,7 @@ export const Diagram = Node.create<VizelDiagramOptions>({
         typeIndicator.style.display = "none";
         editContainer.style.display = "";
         editTextarea.value = currentCode;
-        void renderDiagram(currentCode, previewContainer);
+        void renderDiagram(currentCode, currentType, previewContainer);
         editTextarea.focus();
       };
 
@@ -341,7 +483,7 @@ export const Diagram = Node.create<VizelDiagramOptions>({
           clearTimeout(previewTimeout);
         }
         previewTimeout = setTimeout(() => {
-          void renderDiagram(editTextarea.value, previewContainer);
+          void renderDiagram(editTextarea.value, currentType, previewContainer);
         }, 300);
       };
 
@@ -352,7 +494,7 @@ export const Diagram = Node.create<VizelDiagramOptions>({
       editTextarea.addEventListener("input", handleTextareaInput);
 
       // Initial render
-      void renderDiagram(currentCode, renderContainer);
+      void renderDiagram(currentCode, currentType, renderContainer);
 
       return {
         dom,
@@ -360,12 +502,19 @@ export const Diagram = Node.create<VizelDiagramOptions>({
           if (updatedNode.type.name !== "diagram") {
             return false;
           }
-          if (!isEditing && updatedNode.attrs.code !== currentCode) {
-            currentCode = updatedNode.attrs.code;
-            void renderDiagram(currentCode, renderContainer);
+          const typeChanged = updatedNode.attrs.type !== currentType;
+          const codeChanged = updatedNode.attrs.code !== currentCode;
+
+          if (typeChanged) {
+            currentType = updatedNode.attrs.type;
+            typeIndicator.textContent = getDiagramTypeName(currentType);
           }
-          // Update type indicator
-          typeIndicator.textContent = updatedNode.attrs.type === "mermaid" ? "Mermaid" : "Diagram";
+
+          if (!isEditing && (codeChanged || typeChanged)) {
+            currentCode = updatedNode.attrs.code;
+            void renderDiagram(currentCode, currentType, renderContainer);
+          }
+
           return true;
         },
         selectNode() {
@@ -393,10 +542,12 @@ export const Diagram = Node.create<VizelDiagramOptions>({
       insertDiagram:
         ({ code, type = "mermaid" }) =>
         ({ commands }) => {
+          const defaultCode =
+            type === "graphviz" ? this.options.defaultGraphvizCode : this.options.defaultCode;
           return commands.insertContent({
             type: this.name,
             attrs: {
-              code: code || this.options.defaultCode,
+              code: code || defaultCode,
               type,
             },
           });
@@ -422,6 +573,8 @@ export const Diagram = Node.create<VizelDiagramOptions>({
   },
 
   // Markdown support (GitHub compatible)
+  // Note: Only mermaidTokenizer is used as the primary tokenizer.
+  // GraphViz tokenizer is registered separately in the extension.
   markdownTokenizer: mermaidTokenizer,
 
   parseMarkdown(token: MarkdownToken): JSONContent {
@@ -440,6 +593,10 @@ export const Diagram = Node.create<VizelDiagramOptions>({
 
     if (type === "mermaid") {
       return `\`\`\`mermaid\n${code}\n\`\`\``;
+    }
+
+    if (type === "graphviz") {
+      return `\`\`\`dot\n${code}\n\`\`\``;
     }
 
     return `\`\`\`${type}\n${code}\n\`\`\``;
@@ -466,6 +623,15 @@ export const Diagram = Node.create<VizelDiagramOptions>({
  *   }),
  * ];
  * ```
+ *
+ * @example With custom GraphViz engine
+ * ```ts
+ * const extensions = [
+ *   createDiagramExtension({
+ *     graphvizEngine: 'neato',
+ *   }),
+ * ];
+ * ```
  */
 export function createDiagramExtension(
   options: VizelDiagramOptions = {}
@@ -473,5 +639,5 @@ export function createDiagramExtension(
   return Diagram.configure(options);
 }
 
-// Export mermaid for advanced usage
-export { mermaid };
+// Export for advanced usage
+export { mermaid, graphvizTokenizer, mermaidTokenizer };

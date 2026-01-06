@@ -8,6 +8,11 @@ import {
   testDiagramSelection,
   testDiagramSequence,
   testDiagramTyping,
+  testGraphVizDiagramDefaultContent,
+  testGraphVizDiagramErrorHandling,
+  testGraphVizDiagramInsert,
+  testGraphVizDiagramLayout,
+  testGraphVizDiagramTyping,
 } from "../../scenarios/diagram.scenario";
 import DiagramFixture from "./DiagramFixture.svelte";
 
@@ -50,5 +55,32 @@ test.describe("Diagram - Svelte", () => {
   test("Ctrl/Cmd + Enter saves diagram", async ({ mount, page }) => {
     const component = await mount(DiagramFixture);
     await testDiagramCtrlEnterToSave(component, page);
+  });
+});
+
+test.describe("GraphViz Diagram - Svelte", () => {
+  test("GraphViz diagram can be inserted via slash command", async ({ mount, page }) => {
+    const component = await mount(DiagramFixture);
+    await testGraphVizDiagramInsert(component, page);
+  });
+
+  test("GraphViz diagram shows default content when inserted", async ({ mount, page }) => {
+    const component = await mount(DiagramFixture);
+    await testGraphVizDiagramDefaultContent(component, page);
+  });
+
+  test("GraphViz DOT code can be typed in diagram", async ({ mount, page }) => {
+    const component = await mount(DiagramFixture);
+    await testGraphVizDiagramTyping(component, page);
+  });
+
+  test("GraphViz diagram shows error for invalid syntax", async ({ mount, page }) => {
+    const component = await mount(DiagramFixture);
+    await testGraphVizDiagramErrorHandling(component, page);
+  });
+
+  test("GraphViz can render different graph layouts", async ({ mount, page }) => {
+    const component = await mount(DiagramFixture);
+    await testGraphVizDiagramLayout(component, page);
   });
 });

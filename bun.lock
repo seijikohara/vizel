@@ -70,6 +70,7 @@
       "name": "@vizel/core",
       "version": "0.0.1",
       "dependencies": {
+        "@hpcc-js/wasm-graphviz": "^1.18.0",
         "@tiptap/core": "^3.14.0",
         "@tiptap/extension-blockquote": "^3.14.0",
         "@tiptap/extension-bold": "^3.14.0",
@@ -322,6 +323,8 @@
     "@floating-ui/dom": ["@floating-ui/dom@1.7.4", "", { "dependencies": { "@floating-ui/core": "^1.7.3", "@floating-ui/utils": "^0.2.10" } }, "sha512-OOchDgh4F2CchOX94cRVqhvy7b3AFb+/rQXyswmzmGakRfkMgoWVjfnLWkRirfLEfuD4ysVW16eXzwt3jHIzKA=="],
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
+
+    "@hpcc-js/wasm-graphviz": ["@hpcc-js/wasm-graphviz@1.18.0", "", {}, "sha512-qfd3gTqtVQG+dWrNy6uwRH7czKw/RiJ9EwDB4F+pYTEfFW+E9kIZXQnLYtgxbGt1nNN2bowHBcOJ9F78PJ5IAQ=="],
 
     "@iconify/types": ["@iconify/types@2.0.0", "", {}, "sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg=="],
 

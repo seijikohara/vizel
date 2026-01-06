@@ -294,7 +294,21 @@ export const defaultSlashCommands: SlashCommandItem[] = [
       if (!editor.can().insertDiagram?.({ code: "" })) {
         return;
       }
-      editor.chain().focus().deleteRange(range).insertDiagram({ code: "" }).run();
+      editor.chain().focus().deleteRange(range).insertDiagram({ code: "", type: "mermaid" }).run();
+    },
+  },
+  {
+    title: "GraphViz Diagram",
+    description: "Insert a GraphViz (DOT) diagram",
+    icon: "🔵",
+    group: "Advanced",
+    keywords: ["diagram", "graphviz", "dot", "graph", "network", "nodes", "edges"],
+    command: ({ editor, range }) => {
+      // Check if diagram extension is available
+      if (!editor.can().insertDiagram?.({ code: "" })) {
+        return;
+      }
+      editor.chain().focus().deleteRange(range).insertDiagram({ code: "", type: "graphviz" }).run();
     },
   },
 ];

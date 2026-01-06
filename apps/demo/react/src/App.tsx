@@ -1,5 +1,6 @@
 import {
   BubbleMenu,
+  convertCodeBlocksToDiagrams,
   EditorContent,
   getEditorState,
   type JSONContent,
@@ -94,6 +95,8 @@ function AppContent() {
   const handleImportMarkdown = () => {
     if (editor && markdownInput.trim()) {
       editor.commands.setContent(markdownInput, { contentType: "markdown" });
+      // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
+      convertCodeBlocksToDiagrams(editor);
       setMarkdownInput("");
       setShowMarkdownInput(false);
     }

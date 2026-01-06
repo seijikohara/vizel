@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   BubbleMenu,
+  convertCodeBlocksToDiagrams,
   EditorContent,
   getEditorState,
   type JSONContent,
@@ -69,6 +70,8 @@ const { status, lastSaved } = useAutoSave(() => editor.value, {
 function handleImportMarkdown() {
   if (editor.value && markdownInput.value.trim()) {
     editor.value.commands.setContent(markdownInput.value, { contentType: "markdown" });
+    // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
+    convertCodeBlocksToDiagrams(editor.value);
     markdownInput.value = "";
     showMarkdownInput.value = false;
   }

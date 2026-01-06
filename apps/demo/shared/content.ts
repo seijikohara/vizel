@@ -442,6 +442,38 @@ export const initialContent = {
       },
     },
     {
+      type: "heading",
+      attrs: { level: 2 },
+      content: [{ type: "text", text: "Diagrams (GraphViz)" }],
+    },
+    {
+      type: "paragraph",
+      content: [
+        { type: "text", text: "Type " },
+        { type: "text", marks: [{ type: "code" }], text: '"/graphviz"' },
+        {
+          type: "text",
+          text: " to insert a GraphViz diagram using DOT language. GraphViz excels at network and graph visualizations.",
+        },
+      ],
+    },
+    {
+      type: "diagram",
+      attrs: {
+        code: 'digraph G {\n    rankdir=LR\n    node [shape=box, style="rounded,filled", fillcolor="#e8f4f8"]\n    edge [color="#666666"]\n    \n    Start [label="Input"]\n    Process [label="Process Data"]\n    Decision [shape=diamond, label="Valid?"]\n    Output [label="Output"]\n    Error [label="Handle Error", fillcolor="#ffe0e0"]\n    \n    Start -> Process\n    Process -> Decision\n    Decision -> Output [label="Yes"]\n    Decision -> Error [label="No"]\n    Error -> Process [style=dashed]\n}',
+        type: "graphviz",
+      },
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "GraphViz supports various layout engines: dot (hierarchical), neato (spring model), circo (circular), and more.",
+        },
+      ],
+    },
+    {
       type: "blockquote",
       content: [
         {

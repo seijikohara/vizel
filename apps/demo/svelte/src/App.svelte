@@ -1,6 +1,7 @@
 <script lang="ts">
 import {
   BubbleMenu,
+  convertCodeBlocksToDiagrams,
   createAutoSave,
   createEditorState,
   createVizelEditor,
@@ -68,6 +69,8 @@ const autoSave = createAutoSave(() => editor.current, {
 function handleImportMarkdown() {
   if (editor.current && markdownInput.trim()) {
     editor.current.commands.setContent(markdownInput, { contentType: "markdown" });
+    // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
+    convertCodeBlocksToDiagrams(editor.current);
     markdownInput = "";
     showMarkdownInput = false;
   }

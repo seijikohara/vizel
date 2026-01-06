@@ -28,6 +28,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@hpcc-js/wasm-graphviz": "^1.18.0",
     "@tiptap/core": "^3.14.0",
     "@tiptap/extension-blockquote": "^3.14.0",
     "@tiptap/extension-bold": "^3.14.0",
