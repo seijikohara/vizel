@@ -58,6 +58,7 @@ function AppContent() {
       mathematics: true,
       embed: true,
       details: true,
+      diagram: true,
       image: {
         onUpload: mockUploadImage,
         maxFileSize: 10 * 1024 * 1024, // 10MB
@@ -167,6 +168,10 @@ function AppContent() {
           <div className="feature-tag">
             <span className="feature-icon">▸</span>
             <span>Details</span>
+          </div>
+          <div className="feature-tag">
+            <span className="feature-icon">📊</span>
+            <span>Diagrams</span>
           </div>
           <div className="feature-tag">
             <span className="feature-icon">🌓</span>

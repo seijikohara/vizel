@@ -283,6 +283,20 @@ export const defaultSlashCommands: SlashCommandItem[] = [
       editor.chain().focus().deleteRange(range).insertMath({ latex: "" }).run();
     },
   },
+  {
+    title: "Mermaid Diagram",
+    description: "Insert a Mermaid diagram",
+    icon: "📊",
+    group: "Advanced",
+    keywords: ["diagram", "chart", "flowchart", "mermaid", "sequence", "graph", "uml"],
+    command: ({ editor, range }) => {
+      // Check if diagram extension is available
+      if (!editor.can().insertDiagram?.({ code: "" })) {
+        return;
+      }
+      editor.chain().focus().deleteRange(range).insertDiagram({ code: "" }).run();
+    },
+  },
 ];
 
 /**

@@ -2,6 +2,7 @@ import type { Editor, JSONContent } from "@tiptap/core";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelCodeBlockOptions } from "./extensions/code-block-lowlight.ts";
 import type { VizelDetailsOptions } from "./extensions/details.ts";
+import type { VizelDiagramOptions } from "./extensions/diagram.ts";
 import type { VizelDragHandleOptions } from "./extensions/drag-handle.ts";
 import type { VizelEmbedOptions } from "./extensions/embed.ts";
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
@@ -61,6 +62,8 @@ export interface VizelFeatureOptions {
   embed?: VizelEmbedOptions | boolean;
   /** Collapsible content blocks (accordion) */
   details?: VizelDetailsOptions | boolean;
+  /** Diagram support (Mermaid) */
+  diagram?: VizelDiagramOptions | boolean;
 }
 
 /**

@@ -50,6 +50,13 @@ export {
   type VizelDetailsOptions,
 } from "./details.ts";
 export {
+  createDiagramExtension,
+  Diagram,
+  type DiagramType,
+  mermaid,
+  type VizelDiagramOptions,
+} from "./diagram.ts";
+export {
   BlockMoveKeymap,
   createDragHandleExtension,
   createDragHandleExtensions,
