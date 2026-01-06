@@ -28,7 +28,7 @@
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
     font-family: v("font-mono");
-    color: v("code-block-language-color");
+    color: v("primary");
     background-color: v("code-block-input-bg");
     border: 1px solid v("code-block-input-border");
     border-radius: 0.25rem;
@@ -57,37 +57,22 @@
     border-radius: 0.25rem;
     cursor: pointer;
     transition: background-color 0.15s ease, border-color 0.15s ease;
+    color: v("code-block-button-color");
 
-    &::before {
-      content: "";
-      display: block;
+    svg {
       width: 0.875rem;
       height: 0.875rem;
-      background-color: v("code-block-button-color");
-      mask-image: var(
-        --vizel-code-block-line-numbers-icon,
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='3' y1='6' x2='5' y2='6'/%3E%3Cline x1='8' y1='6' x2='21' y2='6'/%3E%3Cline x1='3' y1='12' x2='5' y2='12'/%3E%3Cline x1='8' y1='12' x2='21' y2='12'/%3E%3Cline x1='3' y1='18' x2='5' y2='18'/%3E%3Cline x1='8' y1='18' x2='21' y2='18'/%3E%3C/svg%3E")
-      );
-      mask-size: contain;
-      mask-repeat: no-repeat;
-      mask-position: center;
-      transition: background-color 0.15s ease;
+      transition: color 0.15s ease;
     }
 
     &:hover {
       background-color: v("code-block-button-hover-bg");
-
-      &::before {
-        background-color: v("code-block-button-hover-color");
-      }
+      color: v("code-block-button-hover-color");
     }
 
     &.active {
       border-color: v("primary");
-
-      &::before {
-        background-color: v("primary");
-      }
+      color: v("primary");
     }
   }
 

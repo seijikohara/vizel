@@ -9,6 +9,7 @@ import {
 } from "@vizel/core";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import ColorPicker from "./ColorPicker.vue";
+import Icon from "./Icon.vue";
 
 export interface BubbleMenuColorPickerProps {
   /** The editor instance */
@@ -109,10 +110,8 @@ function getTriggerStyle() {
       :style="getTriggerStyle()"
       @click="isOpen = !isOpen"
     >
-      <template v-if="isTextColor">A</template>
-      <span v-else class="vizel-color-picker-highlight-icon">
-        <span class="vizel-color-picker-highlight-bar" />
-      </span>
+      <Icon v-if="isTextColor" name="textColor" />
+      <Icon v-else name="highlighter" />
     </button>
 
     <div v-if="isOpen" class="vizel-color-picker-dropdown">

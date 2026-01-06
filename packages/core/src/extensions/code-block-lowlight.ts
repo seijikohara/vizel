@@ -8,6 +8,7 @@ import CodeBlockLowlight, {
   type CodeBlockLowlightOptions,
 } from "@tiptap/extension-code-block-lowlight";
 import { all, createLowlight } from "lowlight";
+import { renderIcon } from "../icons/types.ts";
 
 /**
  * Language definition for the code block language selector
@@ -195,6 +196,7 @@ export function createCodeBlockLowlightExtension(
         const lineNumbersBtn = document.createElement("button");
         lineNumbersBtn.type = "button";
         lineNumbersBtn.classList.add("vizel-code-block-line-numbers-toggle");
+        lineNumbersBtn.innerHTML = renderIcon("listOrdered", { width: 16, height: 16 });
         if (node.attrs.lineNumbers) {
           lineNumbersBtn.classList.add("active");
         }

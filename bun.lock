@@ -128,10 +128,13 @@
       "name": "@vizel/react",
       "version": "0.0.1",
       "dependencies": {
+        "@iconify/react": "^5",
         "@tiptap/suggestion": "^3.14.0",
         "@vizel/core": "workspace:*",
       },
       "devDependencies": {
+        "@iconify-json/lucide": "^1.2.82",
+        "@iconify/utils": "^3.1.0",
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "@vitejs/plugin-react": "^4",
@@ -147,11 +150,14 @@
       "name": "@vizel/svelte",
       "version": "0.0.1",
       "dependencies": {
+        "@iconify/svelte": "^4",
         "@tiptap/core": "^3.14.0",
         "@tiptap/suggestion": "^3.14.0",
         "@vizel/core": "workspace:*",
       },
       "devDependencies": {
+        "@iconify-json/lucide": "^1.2.82",
+        "@iconify/utils": "^3.1.0",
         "@sveltejs/package": "^2",
         "@sveltejs/vite-plugin-svelte": "^5",
         "svelte-check": "^4",
@@ -164,10 +170,13 @@
       "name": "@vizel/vue",
       "version": "0.0.1",
       "dependencies": {
+        "@iconify/vue": "^5",
         "@tiptap/suggestion": "^3.14.0",
         "@vizel/core": "workspace:*",
       },
       "devDependencies": {
+        "@iconify-json/lucide": "^1.2.82",
+        "@iconify/utils": "^3.1.0",
         "@vitejs/plugin-vue": "^5",
         "vite": "^7",
         "vite-plugin-dts": "^4",
@@ -309,9 +318,17 @@
 
     "@hpcc-js/wasm-graphviz": ["@hpcc-js/wasm-graphviz@1.18.0", "", {}, "sha512-qfd3gTqtVQG+dWrNy6uwRH7czKw/RiJ9EwDB4F+pYTEfFW+E9kIZXQnLYtgxbGt1nNN2bowHBcOJ9F78PJ5IAQ=="],
 
+    "@iconify-json/lucide": ["@iconify-json/lucide@1.2.82", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-fHZWegspOZonl5GNTvOkHsjnTMdSslFh3EzpzUtRyLxO8bOonqk2OTU3hCl0k4VXzViMjqpRK3X1sotnuBXkFA=="],
+
+    "@iconify/react": ["@iconify/react@5.2.1", "", { "dependencies": { "@iconify/types": "^2.0.0" }, "peerDependencies": { "react": ">=16" } }, "sha512-37GDR3fYDZmnmUn9RagyaX+zca24jfVOMY8E1IXTqJuE8pxNtN51KWPQe3VODOWvuUurq7q9uUu3CFrpqj5Iqg=="],
+
+    "@iconify/svelte": ["@iconify/svelte@4.2.0", "", { "dependencies": { "@iconify/types": "^2.0.0" }, "peerDependencies": { "svelte": ">4.0.0" } }, "sha512-fEl0T7SAPonK7xk6xUlRPDmFDZVDe2Z7ZstlqeDS/sS8ve2uyU+Qa8rTWbIqzZJlRvONkK5kVXiUf9nIc+6OOQ=="],
+
     "@iconify/types": ["@iconify/types@2.0.0", "", {}, "sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg=="],
 
     "@iconify/utils": ["@iconify/utils@3.1.0", "", { "dependencies": { "@antfu/install-pkg": "^1.1.0", "@iconify/types": "^2.0.0", "mlly": "^1.8.0" } }, "sha512-Zlzem1ZXhI1iHeeERabLNzBHdOa4VhQbqAcOQaMKuTuyZCpwKbC2R4Dd0Zo3g9EAc+Y4fiarO8HIHRAth7+skw=="],
+
+    "@iconify/vue": ["@iconify/vue@5.0.0", "", { "dependencies": { "@iconify/types": "^2.0.0" }, "peerDependencies": { "vue": ">=3" } }, "sha512-C+KuEWIF5nSBrobFJhT//JS87OZ++QDORB6f2q2Wm6fl2mueSTpFBeBsveK0KW9hWiZ4mNiPjsh6Zs4jjdROSg=="],
 
     "@isaacs/balanced-match": ["@isaacs/balanced-match@4.0.1", "", {}, "sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ=="],
 

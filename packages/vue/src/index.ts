@@ -4,6 +4,9 @@
  * Vue 3 components and composables for the Vizel visual editor.
  */
 
+// Initialize icon renderer (auto-registers with core)
+import "./iconRenderer.ts";
+
 // Re-export core types for convenience
 // Re-export auto-save types from core
 export type {
@@ -133,12 +136,18 @@ export {
   type BubbleMenuToolbarProps,
   ColorPicker,
   type ColorPickerProps,
+  type CustomIconMap,
   EditorContent,
   type EditorContentProps,
   EditorRoot,
   type EditorRootProps,
+  Icon,
+  IconContextKey,
+  type IconContextValue,
+  type IconProps,
   Portal,
   type PortalProps,
+  provideIconContext,
   SaveIndicator,
   type SaveIndicatorProps,
   SlashMenu,
@@ -153,6 +162,7 @@ export {
   type ThemeProviderProps,
   useEditorContext,
   useEditorContextSafe,
+  useIconContext,
 } from "./components/index.ts";
 // Composables
 export {

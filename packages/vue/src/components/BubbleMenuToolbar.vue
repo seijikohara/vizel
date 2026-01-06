@@ -5,6 +5,7 @@ import { useEditorState } from "../composables/useEditorState.ts";
 import BubbleMenuButton from "./BubbleMenuButton.vue";
 import BubbleMenuColorPicker from "./BubbleMenuColorPicker.vue";
 import BubbleMenuLinkEditor from "./BubbleMenuLinkEditor.vue";
+import Icon from "./Icon.vue";
 import NodeSelector from "./NodeSelector.vue";
 
 export interface BubbleMenuToolbarProps {
@@ -65,7 +66,7 @@ const showLinkEditor = ref(false);
       title="Bold (Cmd+B)"
       @click="props.editor.chain().focus().toggleBold().run()"
     >
-      <strong>B</strong>
+      <Icon name="bold" />
     </BubbleMenuButton>
     <BubbleMenuButton
       action="italic"
@@ -73,7 +74,7 @@ const showLinkEditor = ref(false);
       title="Italic (Cmd+I)"
       @click="props.editor.chain().focus().toggleItalic().run()"
     >
-      <em>I</em>
+      <Icon name="italic" />
     </BubbleMenuButton>
     <BubbleMenuButton
       action="strike"
@@ -81,7 +82,7 @@ const showLinkEditor = ref(false);
       title="Strikethrough"
       @click="props.editor.chain().focus().toggleStrike().run()"
     >
-      <s>S</s>
+      <Icon name="strikethrough" />
     </BubbleMenuButton>
     <BubbleMenuButton
       action="underline"
@@ -89,7 +90,7 @@ const showLinkEditor = ref(false);
       title="Underline (Cmd+U)"
       @click="props.editor.chain().focus().toggleUnderline().run()"
     >
-      <u>U</u>
+      <Icon name="underline" />
     </BubbleMenuButton>
     <BubbleMenuButton
       action="code"
@@ -97,7 +98,7 @@ const showLinkEditor = ref(false);
       title="Code (Cmd+E)"
       @click="props.editor.chain().focus().toggleCode().run()"
     >
-      <code>&lt;/&gt;</code>
+      <Icon name="code" />
     </BubbleMenuButton>
     <BubbleMenuButton
       action="link"
@@ -105,7 +106,7 @@ const showLinkEditor = ref(false);
       title="Link (Cmd+K)"
       @click="showLinkEditor = true"
     >
-      <span>L</span>
+      <Icon name="link" />
     </BubbleMenuButton>
     <BubbleMenuColorPicker :editor="props.editor" type="textColor" />
     <BubbleMenuColorPicker :editor="props.editor" type="highlight" />

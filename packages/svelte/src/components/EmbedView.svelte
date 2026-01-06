@@ -13,6 +13,7 @@ export interface EmbedViewProps {
 
 <script lang="ts">
 import { onMount } from "svelte";
+import Icon from "./Icon.svelte";
 
 let { data, class: className, selected = false }: EmbedViewProps = $props();
 
@@ -146,7 +147,7 @@ onMount(loadScripts);
     data-embed-provider={data.provider}
   >
     <a href={data.url} target="_blank" rel="noopener noreferrer" class="vizel-embed-link">
-      <span class="vizel-embed-link-icon">🔗</span>
+      <span class="vizel-embed-link-icon"><Icon name="link" /></span>
       <span class="vizel-embed-link-text">{data.title}</span>
     </a>
   </div>
@@ -158,7 +159,7 @@ onMount(loadScripts);
     data-embed-provider={data.provider}
   >
     <a href={data.url} target="_blank" rel="noopener noreferrer" class="vizel-embed-link">
-      <span class="vizel-embed-link-icon">🔗</span>
+      <span class="vizel-embed-link-icon"><Icon name="link" /></span>
       <span class="vizel-embed-link-text">{data.url}</span>
     </a>
   </div>

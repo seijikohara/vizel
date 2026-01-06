@@ -59,19 +59,6 @@
     }
   }
 
-  &-highlight-icon {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.875rem;
-    font-weight: 700;
-
-    &::before {
-      content: "A";
-    }
-  }
-
   &-highlight-bar {
     position: absolute;
     bottom: 0;

@@ -1,6 +1,7 @@
 import { defaultNodeTypes, type Editor, getActiveNodeType, type NodeTypeOption } from "@vizel/core";
 import { useEffect, useRef, useState } from "react";
 import { useEditorState } from "../hooks/useEditorState.ts";
+import { Icon } from "./Icon.tsx";
 
 export interface NodeSelectorProps {
   /** The editor instance */
@@ -35,7 +36,7 @@ export function NodeSelector({
 
   const activeNodeType = getActiveNodeType(editor, nodeTypes);
   const currentLabel = activeNodeType?.label ?? "Text";
-  const currentIcon = activeNodeType?.icon ?? "¶";
+  const currentIcon = activeNodeType?.icon ?? "paragraph";
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -126,10 +127,12 @@ export function NodeSelector({
         aria-label={`Current block type: ${currentLabel}`}
         title="Change block type"
       >
-        <span className="vizel-node-selector-icon">{currentIcon}</span>
+        <span className="vizel-node-selector-icon">
+          <Icon name={currentIcon} />
+        </span>
         <span className="vizel-node-selector-label">{currentLabel}</span>
         <span className="vizel-node-selector-chevron" aria-hidden="true">
-          ▼
+          <Icon name="chevronDown" />
         </span>
       </button>
 
@@ -158,11 +161,13 @@ export function NodeSelector({
                 onMouseEnter={() => setFocusedIndex(index)}
                 tabIndex={isFocused ? 0 : -1}
               >
-                <span className="vizel-node-selector-option-icon">{nodeType.icon}</span>
+                <span className="vizel-node-selector-option-icon">
+                  <Icon name={nodeType.icon} />
+                </span>
                 <span className="vizel-node-selector-option-label">{nodeType.label}</span>
                 {isActive && (
                   <span className="vizel-node-selector-check" aria-hidden="true">
-                    ✓
+                    <Icon name="check" />
                   </span>
                 )}
               </button>

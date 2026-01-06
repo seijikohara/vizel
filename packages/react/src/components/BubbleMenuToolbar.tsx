@@ -4,6 +4,7 @@ import { useEditorState } from "../hooks/useEditorState.ts";
 import { BubbleMenuButton } from "./BubbleMenuButton.tsx";
 import { BubbleMenuColorPicker } from "./BubbleMenuColorPicker.tsx";
 import { BubbleMenuLinkEditor } from "./BubbleMenuLinkEditor.tsx";
+import { Icon } from "./Icon.tsx";
 import { NodeSelector } from "./NodeSelector.tsx";
 
 export interface BubbleMenuToolbarProps {
@@ -48,7 +49,7 @@ export function BubbleMenuToolbar({ editor, className, enableEmbed }: BubbleMenu
         isActive={editor.isActive("bold")}
         title="Bold (Cmd+B)"
       >
-        <strong>B</strong>
+        <Icon name="bold" />
       </BubbleMenuButton>
       <BubbleMenuButton
         action="italic"
@@ -56,7 +57,7 @@ export function BubbleMenuToolbar({ editor, className, enableEmbed }: BubbleMenu
         isActive={editor.isActive("italic")}
         title="Italic (Cmd+I)"
       >
-        <em>I</em>
+        <Icon name="italic" />
       </BubbleMenuButton>
       <BubbleMenuButton
         action="strike"
@@ -64,7 +65,7 @@ export function BubbleMenuToolbar({ editor, className, enableEmbed }: BubbleMenu
         isActive={editor.isActive("strike")}
         title="Strikethrough"
       >
-        <s>S</s>
+        <Icon name="strikethrough" />
       </BubbleMenuButton>
       <BubbleMenuButton
         action="underline"
@@ -72,7 +73,7 @@ export function BubbleMenuToolbar({ editor, className, enableEmbed }: BubbleMenu
         isActive={editor.isActive("underline")}
         title="Underline (Cmd+U)"
       >
-        <u>U</u>
+        <Icon name="underline" />
       </BubbleMenuButton>
       <BubbleMenuButton
         action="code"
@@ -80,7 +81,7 @@ export function BubbleMenuToolbar({ editor, className, enableEmbed }: BubbleMenu
         isActive={editor.isActive("code")}
         title="Code (Cmd+E)"
       >
-        <code>&lt;/&gt;</code>
+        <Icon name="code" />
       </BubbleMenuButton>
       <BubbleMenuButton
         action="link"
@@ -88,7 +89,7 @@ export function BubbleMenuToolbar({ editor, className, enableEmbed }: BubbleMenu
         isActive={editor.isActive("link")}
         title="Link (Cmd+K)"
       >
-        <span>L</span>
+        <Icon name="link" />
       </BubbleMenuButton>
       <BubbleMenuColorPicker editor={editor} type="textColor" />
       <BubbleMenuColorPicker editor={editor} type="highlight" />

@@ -1,6 +1,7 @@
 import type { EmbedData, EmbedType } from "@vizel/core";
 import type React from "react";
 import { useEffect, useRef } from "react";
+import { Icon } from "./Icon.tsx";
 
 export interface EmbedViewProps {
   /** Embed data */
@@ -93,11 +94,15 @@ function renderOGPCard(baseClass: string, data: EmbedData): React.JSX.Element {
 }
 
 /** Render title link */
-function renderTitleLink(baseClass: string, data: EmbedData): React.JSX.Element {
+function renderTitleLink(
+  baseClass: string,
+  data: EmbedData,
+  LinkIcon: React.JSX.Element
+): React.JSX.Element {
   return (
     <div className={baseClass} data-embed-type="title" data-embed-provider={data.provider}>
       <a href={data.url} target="_blank" rel="noopener noreferrer" className="vizel-embed-link">
-        <span className="vizel-embed-link-icon">🔗</span>
+        <span className="vizel-embed-link-icon">{LinkIcon}</span>
         <span className="vizel-embed-link-text">{data.title}</span>
       </a>
     </div>
@@ -105,11 +110,15 @@ function renderTitleLink(baseClass: string, data: EmbedData): React.JSX.Element 
 }
 
 /** Render plain link (fallback) */
-function renderPlainLink(baseClass: string, data: EmbedData): React.JSX.Element {
+function renderPlainLink(
+  baseClass: string,
+  data: EmbedData,
+  LinkIcon: React.JSX.Element
+): React.JSX.Element {
   return (
     <div className={baseClass} data-embed-type="link" data-embed-provider={data.provider}>
       <a href={data.url} target="_blank" rel="noopener noreferrer" className="vizel-embed-link">
-        <span className="vizel-embed-link-icon">🔗</span>
+        <span className="vizel-embed-link-icon">{LinkIcon}</span>
         <span className="vizel-embed-link-text">{data.url}</span>
       </a>
     </div>
@@ -162,13 +171,15 @@ export function EmbedView({ data, className, selected }: EmbedViewProps) {
     return renderOGPCard(baseClass, data);
   }
 
+  const linkIcon = <Icon name="link" />;
+
   // Title link
   if (data.type === "title" && data.title) {
-    return renderTitleLink(baseClass, data);
+    return renderTitleLink(baseClass, data, linkIcon);
   }
 
   // Plain link (fallback)
-  return renderPlainLink(baseClass, data);
+  return renderPlainLink(baseClass, data, linkIcon);
 }
 
 /**

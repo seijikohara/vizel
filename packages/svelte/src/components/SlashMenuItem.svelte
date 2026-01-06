@@ -48,6 +48,8 @@ export function highlightMatches(
 </script>
 
 <script lang="ts">
+import Icon from "./Icon.svelte";
+
 let {
   item,
   isSelected = false,
@@ -65,7 +67,9 @@ const parts = $derived(highlightMatches(item.title, titleMatches));
   data-selected={isSelected || undefined}
   {onclick}
 >
-  <span class="vizel-slash-menu-icon">{item.icon}</span>
+  <span class="vizel-slash-menu-icon">
+    <Icon name={item.icon} />
+  </span>
   <div class="vizel-slash-menu-text">
     <span class="vizel-slash-menu-title">
       {#each parts as part}

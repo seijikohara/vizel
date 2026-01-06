@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type ColorDefinition, isValidHexColor, normalizeHexColor } from "@vizel/core";
 import { computed, onMounted, ref, watch } from "vue";
+import Icon from "./Icon.vue";
 
 export interface ColorPickerProps {
   /** Color palette to display */
@@ -206,7 +207,7 @@ const previewColor = computed(() =>
           @click="handleSelect(color)"
           @keydown="handleKeyDown($event, idx)"
         >
-          <span v-if="isNoneValue(color)" class="vizel-color-picker-none">×</span>
+          <span v-if="isNoneValue(color)" class="vizel-color-picker-none"><Icon name="x" /></span>
         </button>
       </div>
     </div>
@@ -229,7 +230,7 @@ const previewColor = computed(() =>
           @click="handleSelect(colorDef.color)"
           @keydown="handleKeyDown($event, paletteOffset + i)"
         >
-          <span v-if="isNoneValue(colorDef.color)" class="vizel-color-picker-none">×</span>
+          <span v-if="isNoneValue(colorDef.color)" class="vizel-color-picker-none"><Icon name="x" /></span>
         </button>
       </div>
     </div>
@@ -260,7 +261,7 @@ const previewColor = computed(() =>
         aria-label="Apply custom color"
         @click="handleInputSubmit"
       >
-        ✓
+        <Icon name="check" />
       </button>
     </div>
   </div>

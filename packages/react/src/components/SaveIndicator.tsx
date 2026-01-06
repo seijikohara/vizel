@@ -1,5 +1,6 @@
 import { formatRelativeTime, type SaveStatus } from "@vizel/core";
 import { useEffect, useState } from "react";
+import { Icon } from "./Icon.tsx";
 
 export interface SaveIndicatorProps {
   /** Current save status */
@@ -52,17 +53,17 @@ export function SaveIndicator({
   const getStatusIcon = () => {
     switch (status) {
       case "saved":
-        return "✓";
+        return <Icon name="check" />;
       case "saving":
         return (
           <span className="vizel-save-indicator-spinner" aria-hidden="true">
-            ⟳
+            <Icon name="loader" />
           </span>
         );
       case "unsaved":
-        return "•";
+        return <Icon name="circle" />;
       case "error":
-        return "⚠";
+        return <Icon name="warning" />;
       default:
         return null;
     }

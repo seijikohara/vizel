@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+import type { NodeTypeIconName } from "../icons/types.ts";
 
 /**
  * Node type option for the node selector dropdown
@@ -8,8 +9,8 @@ export interface NodeTypeOption {
   name: string;
   /** Display label */
   label: string;
-  /** Icon character or symbol */
-  icon: string;
+  /** Icon name (semantic name, rendered by framework packages) */
+  icon: NodeTypeIconName;
   /** Check if this node type is currently active */
   isActive: (editor: Editor) => boolean;
   /** Command to transform the current block to this node type */
@@ -23,7 +24,7 @@ export const defaultNodeTypes = [
   {
     name: "paragraph",
     label: "Text",
-    icon: "¶",
+    icon: "paragraph",
     isActive: (editor) =>
       editor.isActive("paragraph") &&
       !editor.isActive("bulletList") &&
@@ -34,56 +35,56 @@ export const defaultNodeTypes = [
   {
     name: "heading1",
     label: "Heading 1",
-    icon: "H1",
+    icon: "heading1",
     isActive: (editor) => editor.isActive("heading", { level: 1 }),
     command: (editor) => editor.chain().focus().setHeading({ level: 1 }).run(),
   },
   {
     name: "heading2",
     label: "Heading 2",
-    icon: "H2",
+    icon: "heading2",
     isActive: (editor) => editor.isActive("heading", { level: 2 }),
     command: (editor) => editor.chain().focus().setHeading({ level: 2 }).run(),
   },
   {
     name: "heading3",
     label: "Heading 3",
-    icon: "H3",
+    icon: "heading3",
     isActive: (editor) => editor.isActive("heading", { level: 3 }),
     command: (editor) => editor.chain().focus().setHeading({ level: 3 }).run(),
   },
   {
     name: "bulletList",
     label: "Bullet List",
-    icon: "•",
+    icon: "bulletList",
     isActive: (editor) => editor.isActive("bulletList"),
     command: (editor) => editor.chain().focus().toggleBulletList().run(),
   },
   {
     name: "orderedList",
     label: "Numbered List",
-    icon: "1.",
+    icon: "orderedList",
     isActive: (editor) => editor.isActive("orderedList"),
     command: (editor) => editor.chain().focus().toggleOrderedList().run(),
   },
   {
     name: "taskList",
     label: "Task List",
-    icon: "☑",
+    icon: "taskList",
     isActive: (editor) => editor.isActive("taskList"),
     command: (editor) => editor.chain().focus().toggleTaskList().run(),
   },
   {
     name: "blockquote",
     label: "Quote",
-    icon: '"',
+    icon: "blockquote",
     isActive: (editor) => editor.isActive("blockquote"),
     command: (editor) => editor.chain().focus().toggleBlockquote().run(),
   },
   {
     name: "codeBlock",
     label: "Code",
-    icon: "</>",
+    icon: "codeBlock",
     isActive: (editor) => editor.isActive("codeBlock"),
     command: (editor) => editor.chain().focus().toggleCodeBlock().run(),
   },

@@ -26,6 +26,7 @@ import {
 } from "@vizel/core";
 import { onMount, onDestroy } from "svelte";
 import ColorPicker from "./ColorPicker.svelte";
+import Icon from "./Icon.svelte";
 
 let {
   editor,
@@ -113,11 +114,9 @@ function getTriggerStyle(): string {
     onclick={() => (isOpen = !isOpen)}
   >
     {#if isTextColor}
-      A
+      <Icon name="textColor" />
     {:else}
-      <span class="vizel-color-picker-highlight-icon">
-        <span class="vizel-color-picker-highlight-bar"></span>
-      </span>
+      <Icon name="highlighter" />
     {/if}
   </button>
 

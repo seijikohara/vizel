@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
+import type { SlashCommandIconName } from "../icons/types.ts";
 
 /**
  * Range for slash command execution
@@ -18,8 +19,8 @@ export interface SlashCommandItem {
   title: string;
   /** Description of the command */
   description: string;
-  /** Icon to display (text/emoji) */
-  icon: string;
+  /** Icon name (semantic name, rendered by framework packages) */
+  icon: SlashCommandIconName;
   /** Command to execute */
   command: (props: { editor: Editor; range: SlashCommandRange }) => void;
   /** Keyboard shortcut hint (e.g., "⌘B") */
@@ -60,7 +61,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Heading 1",
     description: "Large section heading",
-    icon: "H1",
+    icon: "heading1",
     group: "Text",
     keywords: ["h1", "title", "header", "big"],
     shortcut: "⌘⌥1",
@@ -71,7 +72,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Heading 2",
     description: "Medium section heading",
-    icon: "H2",
+    icon: "heading2",
     group: "Text",
     keywords: ["h2", "subtitle", "header"],
     shortcut: "⌘⌥2",
@@ -82,7 +83,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Heading 3",
     description: "Small section heading",
-    icon: "H3",
+    icon: "heading3",
     group: "Text",
     keywords: ["h3", "header", "section"],
     shortcut: "⌘⌥3",
@@ -94,7 +95,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Bullet List",
     description: "Create a simple bullet list",
-    icon: "•",
+    icon: "bulletList",
     group: "Lists",
     keywords: ["ul", "unordered", "bullets", "points"],
     shortcut: "⌘⇧8",
@@ -105,7 +106,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Numbered List",
     description: "Create a numbered list",
-    icon: "1.",
+    icon: "orderedList",
     group: "Lists",
     keywords: ["ol", "ordered", "numbers", "steps"],
     shortcut: "⌘⇧7",
@@ -116,7 +117,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Task List",
     description: "Create a task list with checkboxes",
-    icon: "☑",
+    icon: "taskList",
     group: "Lists",
     keywords: ["todo", "checkbox", "checklist", "tasks"],
     command: ({ editor, range }) => {
@@ -127,7 +128,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Quote",
     description: "Capture a quote",
-    icon: '"',
+    icon: "blockquote",
     group: "Blocks",
     keywords: ["blockquote", "citation", "cite"],
     shortcut: "⌘⇧B",
@@ -138,7 +139,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Divider",
     description: "Insert a horizontal divider",
-    icon: "―",
+    icon: "horizontalRule",
     group: "Blocks",
     keywords: ["hr", "horizontal", "line", "separator", "break"],
     command: ({ editor, range }) => {
@@ -148,7 +149,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Details",
     description: "Collapsible content block",
-    icon: "▸",
+    icon: "details",
     group: "Blocks",
     keywords: ["accordion", "toggle", "collapse", "expand", "summary", "details"],
     command: ({ editor, range }) => {
@@ -162,7 +163,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Code Block",
     description: "Insert a code snippet",
-    icon: "</>",
+    icon: "codeBlock",
     group: "Blocks",
     keywords: ["pre", "code", "programming", "syntax", "snippet"],
     shortcut: "⌘⌥C",
@@ -173,7 +174,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Table",
     description: "Insert a table",
-    icon: "⊞",
+    icon: "table",
     group: "Blocks",
     keywords: ["grid", "spreadsheet", "columns", "rows"],
     command: ({ editor, range }) => {
@@ -189,7 +190,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Image",
     description: "Insert an image from URL",
-    icon: "🖼",
+    icon: "image",
     group: "Media",
     keywords: ["picture", "photo", "img", "url"],
     command: ({ editor, range }) => {
@@ -202,7 +203,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Upload Image",
     description: "Upload an image from your device",
-    icon: "📤",
+    icon: "imageUpload",
     group: "Media",
     keywords: ["picture", "photo", "upload", "file"],
     command: ({ editor, range }) => {
@@ -233,7 +234,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Embed",
     description: "Embed a URL (YouTube, Twitter, etc.)",
-    icon: "🔗",
+    icon: "embed",
     group: "Media",
     keywords: ["link", "url", "youtube", "video", "twitter", "embed", "iframe", "oembed"],
     command: ({ editor, range }) => {
@@ -258,7 +259,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Math Equation",
     description: "Insert a mathematical expression",
-    icon: "∑",
+    icon: "mathBlock",
     group: "Advanced",
     keywords: ["latex", "formula", "equation", "katex", "math"],
     command: ({ editor, range }) => {
@@ -272,7 +273,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Inline Math",
     description: "Insert an inline math expression",
-    icon: "x²",
+    icon: "mathInline",
     group: "Advanced",
     keywords: ["latex", "formula", "inline", "katex", "math"],
     command: ({ editor, range }) => {
@@ -286,7 +287,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "Mermaid Diagram",
     description: "Insert a Mermaid diagram",
-    icon: "📊",
+    icon: "mermaid",
     group: "Advanced",
     keywords: ["diagram", "chart", "flowchart", "mermaid", "sequence", "graph", "uml"],
     command: ({ editor, range }) => {
@@ -300,7 +301,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   {
     title: "GraphViz Diagram",
     description: "Insert a GraphViz (DOT) diagram",
-    icon: "🔵",
+    icon: "graphviz",
     group: "Advanced",
     keywords: ["diagram", "graphviz", "dot", "graph", "network", "nodes", "edges"],
     command: ({ editor, range }) => {

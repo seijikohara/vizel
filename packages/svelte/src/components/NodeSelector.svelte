@@ -15,6 +15,7 @@ export interface NodeSelectorProps {
 import { defaultNodeTypes, getActiveNodeType } from "@vizel/core";
 import { onMount } from "svelte";
 import { createEditorState } from "../runes/createEditorState.svelte.ts";
+import Icon from "./Icon.svelte";
 
 let { editor, nodeTypes = defaultNodeTypes, class: className }: NodeSelectorProps = $props();
 
@@ -32,7 +33,7 @@ const activeNodeType = $derived.by(() => {
 });
 
 const currentLabel = $derived(activeNodeType?.label ?? "Text");
-const currentIcon = $derived(activeNodeType?.icon ?? "¶");
+const currentIcon = $derived(activeNodeType?.icon ?? "paragraph");
 
 // Close dropdown when clicking outside
 function handleClickOutside(event: MouseEvent) {
@@ -125,9 +126,13 @@ function isNodeTypeActive(nodeType: NodeTypeOption): boolean {
     onclick={() => (isOpen = !isOpen)}
     onkeydown={handleKeyDown}
   >
-    <span class="vizel-node-selector-icon">{currentIcon}</span>
+    <span class="vizel-node-selector-icon">
+      <Icon name={currentIcon} />
+    </span>
     <span class="vizel-node-selector-label">{currentLabel}</span>
-    <span class="vizel-node-selector-chevron" aria-hidden="true">▼</span>
+    <span class="vizel-node-selector-chevron" aria-hidden="true">
+      <Icon name="chevronDown" />
+    </span>
   </button>
 
   {#if isOpen}
@@ -152,10 +157,14 @@ function isNodeTypeActive(nodeType: NodeTypeOption): boolean {
           onclick={() => handleSelectNodeType(nodeType)}
           onmouseenter={() => (focusedIndex = index)}
         >
-          <span class="vizel-node-selector-option-icon">{nodeType.icon}</span>
+          <span class="vizel-node-selector-option-icon">
+            <Icon name={nodeType.icon} />
+          </span>
           <span class="vizel-node-selector-option-label">{nodeType.label}</span>
           {#if active}
-            <span class="vizel-node-selector-check" aria-hidden="true">✓</span>
+            <span class="vizel-node-selector-check" aria-hidden="true">
+              <Icon name="check" />
+            </span>
           {/if}
         </button>
       {/each}

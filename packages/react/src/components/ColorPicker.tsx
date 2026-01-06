@@ -1,5 +1,6 @@
 import { type ColorDefinition, isValidHexColor, normalizeHexColor } from "@vizel/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Icon } from "./Icon.tsx";
 
 export interface ColorPickerProps {
   /** Color palette to display */
@@ -202,7 +203,11 @@ export function ColorPicker({
                 }}
                 data-color={color}
               >
-                {isNoneValue(color) ? <span className="vizel-color-picker-none">×</span> : null}
+                {isNoneValue(color) ? (
+                  <span className="vizel-color-picker-none">
+                    <Icon name="x" />
+                  </span>
+                ) : null}
               </button>
             ))}
           </div>
@@ -234,7 +239,9 @@ export function ColorPicker({
                 data-color={colorDef.color}
               >
                 {isNoneValue(colorDef.color) ? (
-                  <span className="vizel-color-picker-none">×</span>
+                  <span className="vizel-color-picker-none">
+                    <Icon name="x" />
+                  </span>
                 ) : null}
               </button>
             );
@@ -269,7 +276,7 @@ export function ColorPicker({
             title="Apply"
             aria-label="Apply custom color"
           >
-            ✓
+            <Icon name="check" />
           </button>
         </div>
       )}
