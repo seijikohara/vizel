@@ -28,7 +28,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@iconify/react": "^5",
+    "@iconify/react": "^6",
     "@tiptap/suggestion": "^3.14.0",
     "@vizel/core": "workspace:*"
   },
