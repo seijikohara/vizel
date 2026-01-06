@@ -85,8 +85,6 @@ export async function testThemeProviderLightCSS(page: Page): Promise<void> {
       foreground: style.getPropertyValue("--vizel-foreground").trim(),
       primary: style.getPropertyValue("--vizel-primary").trim(),
       border: style.getPropertyValue("--vizel-border").trim(),
-      // Legacy alias for backward compatibility
-      bgColor: style.getPropertyValue("--vizel-bg-color").trim(),
     };
   });
 
@@ -95,7 +93,6 @@ export async function testThemeProviderLightCSS(page: Page): Promise<void> {
   expect(variables.foreground).toBeTruthy();
   expect(variables.primary).toBeTruthy();
   expect(variables.border).toBeTruthy();
-  expect(variables.bgColor).toBeTruthy();
 }
 
 /**
@@ -115,8 +112,6 @@ export async function testThemeProviderDarkCSS(page: Page): Promise<void> {
       foreground: style.getPropertyValue("--vizel-foreground").trim(),
       primary: style.getPropertyValue("--vizel-primary").trim(),
       border: style.getPropertyValue("--vizel-border").trim(),
-      // Legacy alias for backward compatibility
-      bgColor: style.getPropertyValue("--vizel-bg-color").trim(),
     };
   });
 
@@ -125,7 +120,6 @@ export async function testThemeProviderDarkCSS(page: Page): Promise<void> {
   expect(variables.foreground).toBeTruthy();
   expect(variables.primary).toBeTruthy();
   expect(variables.border).toBeTruthy();
-  expect(variables.bgColor).toBeTruthy();
 }
 
 /**
