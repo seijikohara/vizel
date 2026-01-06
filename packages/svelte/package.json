@@ -32,10 +32,10 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@iconify/svelte": "^4",
+    "@iconify/svelte": "^5",
     "@iconify/utils": "^3.1.0",
-    "@tiptap/core": "^3.14.0",
-    "@tiptap/suggestion": "^3.14.0",
+    "@tiptap/core": "^3.15.1",
+    "@tiptap/suggestion": "^3.15.1",
     "@vizel/core": "workspace:*"
   },
   "peerDependencies": {
@@ -44,7 +44,7 @@
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.82",
     "@sveltejs/package": "^2",
-    "@sveltejs/vite-plugin-svelte": "^5",
+    "@sveltejs/vite-plugin-svelte": "^6",
     "svelte-check": "^4"
   }
 }
