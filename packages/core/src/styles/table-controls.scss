@@ -1,0 +1,179 @@
+/**
+ * Vizel Table Controls Styles
+ *
+ * Styles for interactive table controls.
+ */
+
+@use "tokens" as *;
+
+.vizel-table-controls-wrapper {
+  position: relative;
+  margin: 1.5em 0;
+  padding-left: 32px;
+  padding-top: 32px;
+
+  .vizel-table {
+    margin: 0;
+  }
+
+  &:hover,
+  &:focus-within {
+    .vizel-table-insert-button,
+    .vizel-table-row-handle,
+    .vizel-table-column-handle {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+}
+
+.vizel-table-insert-button {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: v("primary");
+  color: v("primary-foreground");
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+  z-index: 10;
+  padding: 0;
+
+  &:hover {
+    background-color: v("primary-hover");
+    transform: scale(1.1);
+  }
+
+  &[style*="display: flex"] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.vizel-table-column-insert {
+  transform: translateX(-50%);
+
+  &:hover {
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+.vizel-table-row-insert {
+  transform: translateY(-50%);
+
+  &:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
+}
+
+.vizel-table-row-handle,
+.vizel-table-column-handle {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: v("muted");
+  color: v("muted-foreground");
+  border: 1px solid v("border");
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  z-index: 10;
+  padding: 0;
+
+  &[style*="display: flex"] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &:hover {
+    background-color: v("primary");
+    color: v("primary-foreground");
+    border-color: v("primary");
+    transform: scale(1.1);
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.vizel-table-column-handle {
+  transform: translateX(-50%);
+
+  &:hover {
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+.vizel-table-menu {
+  background-color: v("background");
+  border: 1px solid v("border");
+  border-radius: 8px;
+  box-shadow: v("shadow-lg");
+  min-width: 180px;
+  padding: 4px;
+  z-index: 1000;
+  overflow: hidden;
+
+  &-divider {
+    height: 1px;
+    background-color: v("border");
+    margin: 4px 0;
+  }
+
+  &-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: v("foreground");
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.1s ease;
+    gap: 8px;
+
+    &:hover {
+      background-color: v("primary-bg-hover");
+    }
+
+    &.is-destructive {
+      color: v("destructive");
+
+      &:hover {
+        background-color: v("destructive-bg");
+      }
+    }
+
+    &-icon {
+      width: 16px;
+      text-align: center;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    &-label {
+      flex: 1;
+    }
+  }
+}

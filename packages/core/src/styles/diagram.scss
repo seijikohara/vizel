@@ -1,0 +1,179 @@
+/**
+ * Diagram Styles
+ */
+
+@use "tokens" as *;
+
+.vizel-diagram {
+  position: relative;
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: v("radius-lg");
+  background-color: var(--vizel-diagram-bg, v("background-secondary"));
+  border: 1px solid var(--vizel-diagram-border, v("border"));
+  cursor: pointer;
+  transition:
+    background-color v("transition-normal") ease,
+    border-color v("transition-normal") ease,
+    box-shadow v("transition-normal") ease;
+
+  &:hover {
+    background-color: var(--vizel-diagram-hover-bg, v("background-tertiary"));
+    border-color: v("border-hover");
+  }
+
+  &-selected {
+    background-color: var(--vizel-diagram-selected-bg, v("primary-bg"));
+    border-color: v("primary");
+    outline: 2px solid v("primary");
+    outline-offset: 2px;
+  }
+
+  &-editing {
+    background-color: var(--vizel-diagram-editing-bg, v("background-tertiary"));
+    cursor: default;
+  }
+
+  &-type {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    font-size: v("font-size-xs");
+    font-weight: v("font-weight-medium");
+    color: v("foreground-muted");
+    background-color: v("muted");
+    border-radius: v("radius-sm");
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  &-render {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 4rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.5rem 0;
+
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  &-placeholder {
+    color: v("foreground-muted");
+    font-size: v("font-size-sm");
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  &-error-display {
+    color: v("error");
+    font-size: v("font-size-sm");
+    font-family: v("font-mono");
+    padding: 1rem;
+    background-color: v("destructive-bg");
+    border-radius: v("radius-md");
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-align: left;
+    max-height: 10rem;
+    overflow-y: auto;
+  }
+
+  &-edit-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &-textarea {
+    font-family: v("font-mono");
+    font-size: v("font-size-sm");
+    line-height: v("line-height-relaxed");
+    padding: 0.75rem;
+    border: 1px solid v("border");
+    border-radius: v("radius-md");
+    background: v("background");
+    color: v("foreground");
+    resize: vertical;
+    min-height: 8rem;
+    width: 100%;
+    outline: none;
+
+    &:focus {
+      border-color: v("primary");
+      box-shadow: 0 0 0 2px v("primary-bg");
+    }
+
+    &::placeholder {
+      color: v("muted-foreground");
+    }
+  }
+
+  &-preview {
+    padding: 1rem;
+    border-radius: v("radius-md");
+    background: v("background");
+    border: 1px dashed v("border");
+    min-height: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: auto;
+
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  &-error {
+    color: v("error");
+    font-size: v("font-size-xs");
+    font-family: v("font-mono");
+    padding: 0.5rem;
+    background-color: v("destructive-bg");
+    border-radius: v("radius-sm");
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+
+  svg text {
+    font-family: v("font-sans") !important;
+  }
+
+  svg .node text,
+  svg .nodeLabel {
+    font-size: 0.875rem;
+  }
+}
+
+.dark .vizel-diagram,
+[data-theme="dark"] .vizel-diagram,
+[data-vizel-theme="dark"] .vizel-diagram {
+  --vizel-diagram-bg: v("background-secondary");
+  --vizel-diagram-hover-bg: v("background-tertiary");
+  --vizel-diagram-selected-bg: v("primary-bg");
+  --vizel-diagram-editing-bg: v("background-tertiary");
+}
+
+@media (prefers-color-scheme: dark) {
+  .vizel-diagram {
+    --vizel-diagram-bg: v("background-secondary");
+    --vizel-diagram-hover-bg: v("background-tertiary");
+    --vizel-diagram-selected-bg: v("primary-bg");
+    --vizel-diagram-editing-bg: v("background-tertiary");
+  }
+}

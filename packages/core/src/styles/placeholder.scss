@@ -1,0 +1,22 @@
+/**
+ * Vizel Placeholder Styles
+ */
+
+@use "tokens" as *;
+
+.vizel-editor {
+  p.vizel-node-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: v("foreground-muted");
+    pointer-events: none;
+    float: left;
+    height: 0;
+  }
+
+  &.vizel-editor-empty::before {
+    content: attr(data-placeholder);
+    color: v("foreground-muted");
+    pointer-events: none;
+    position: absolute;
+  }
+}

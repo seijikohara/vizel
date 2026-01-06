@@ -1,0 +1,42 @@
+/**
+ * Vizel Core Styles
+ *
+ * Import this file to include all Vizel editor styles.
+ *
+ * @example
+ * ```ts
+ * import '@vizel/core/styles';
+ * ```
+ *
+ * Or import individual style modules:
+ * ```ts
+ * import '@vizel/core/styles/image.css';
+ * ```
+ */
+
+/* CSS Variables (must be first - using @use) */
+@use "variables";
+
+/* Portal system */
+@use "portal";
+
+/* Component styles */
+@use "editor";
+@use "placeholder";
+@use "bubble-menu";
+@use "slash-menu";
+@use "link";
+@use "table";
+@use "table-controls";
+@use "image";
+@use "task-list";
+@use "code-block";
+@use "mathematics";
+@use "drag-handle";
+@use "details";
+@use "embed";
+@use "save-indicator";
+@use "diagram";
+
+/* External dependencies (must be after @use rules) */
+@import "katex/dist/katex.min.css";

@@ -1,0 +1,151 @@
+/**
+ * Vizel Details/Accordion Styles
+ */
+
+@use "tokens" as *;
+
+.vizel-details {
+  position: relative;
+  border: 1px solid v("border");
+  border-radius: v("radius-md");
+  margin: 0.75rem 0;
+  background: v("background");
+  overflow: hidden;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .vizel-details {
+    margin: 0.5rem 0;
+    border-color: v("border");
+  }
+
+  > button {
+    position: absolute;
+    left: 0.75rem;
+    top: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+
+    &::before {
+      content: "";
+      display: block;
+      width: 0.5rem;
+      height: 0.5rem;
+      border-right: 2px solid v("foreground");
+      border-bottom: 2px solid v("foreground");
+      transform: rotate(-45deg);
+      transition: transform 0.2s ease;
+      opacity: 0.6;
+    }
+
+    &:hover::before {
+      opacity: 1;
+    }
+  }
+
+  &.is-open > button::before {
+    transform: rotate(45deg);
+  }
+
+  &.ProseMirror-selectednode {
+    outline: 2px solid v("primary");
+    outline-offset: 2px;
+  }
+
+  &:focus-within {
+    border-color: v("primary");
+  }
+
+  &-summary {
+    padding: 0.625rem 1rem 0.625rem 2.25rem;
+    cursor: text;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    color: v("foreground");
+    background: v("muted");
+    border-bottom: 1px solid transparent;
+    transition: background-color 0.15s, border-color 0.15s;
+    min-height: 2.5rem;
+    line-height: 1.25rem;
+
+    &:empty::before,
+    &:has(> br:only-child)::before {
+      content: "Click to add title...";
+      color: v("muted-foreground");
+      font-weight: 400;
+      font-style: italic;
+    }
+
+    &:hover {
+      background: v("hover-bg");
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &::-webkit-details-marker,
+    &::marker {
+      display: none;
+      content: "";
+    }
+
+    &.is-empty::after {
+      content: "Click to add summary...";
+      color: v("muted-foreground");
+      font-weight: 400;
+      font-style: italic;
+    }
+  }
+
+  &.is-open > div > .vizel-details-summary {
+    border-bottom-color: v("border");
+  }
+
+  &-content {
+    padding: 0.75rem 1rem;
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+
+    &.is-empty::before {
+      content: "Add content here...";
+      color: v("muted-foreground");
+      font-style: italic;
+    }
+  }
+}
+
+@media print {
+  .vizel-details {
+    border: 1px solid oklch(0.827 0 0);
+
+    &.is-open {
+      break-inside: avoid;
+    }
+
+    > button {
+      display: none;
+    }
+  }
+}

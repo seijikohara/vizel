@@ -1,0 +1,138 @@
+////
+/// Vizel CSS Custom Properties Output
+///
+/// Generates CSS custom properties from SCSS token maps.
+/// This file outputs the actual CSS variables for runtime theming.
+///
+/// @group variables
+////
+
+@use "sass:map";
+@use "tokens" as *;
+
+// ============================================
+// Helper Mixin for CSS Variable Output
+// ============================================
+
+/// Output CSS custom properties from a map
+/// @param {Map} $map - Token map
+/// @param {String} $prefix - Variable prefix (default: "vizel")
+@mixin output-vars($map, $prefix: "vizel") {
+  @each $name, $value in $map {
+    --#{$prefix}-#{$name}: #{$value};
+  }
+}
+
+// ============================================
+// Light Theme (Default)
+// ============================================
+
+:root,
+.light,
+[data-theme="light"],
+[data-vizel-theme="light"] {
+  // Color Tokens
+  @include output-vars($light-colors);
+
+  // Typography Tokens
+  @include output-vars($typography);
+
+  // Spacing Tokens
+  @include output-vars($spacing);
+
+  // Border Radius Tokens
+  @include output-vars($radius);
+
+  // Shadow Tokens
+  @include output-vars($shadows-light);
+
+  // Transition Tokens
+  @include output-vars($transitions);
+
+  // Z-Index Tokens
+  @include output-vars($z-index);
+
+  // Derived Tokens (referencing other CSS variables)
+  --vizel-border-focus: var(--vizel-primary);
+  --vizel-ring: var(--vizel-primary);
+  --vizel-ring-offset: var(--vizel-background);
+
+  // Transition Colors (composite)
+  --vizel-transition-colors:
+    color var(--vizel-transition-normal) ease,
+    background-color var(--vizel-transition-normal) ease,
+    border-color var(--vizel-transition-normal) ease;
+
+  // Editor Component Tokens
+  --vizel-editor-min-height: #{map.get($components, "editor-min-height")};
+  --vizel-editor-padding: var(--vizel-spacing-6);
+  --vizel-editor-font-family: var(--vizel-font-sans);
+  --vizel-editor-font-size: var(--vizel-font-size-base);
+  --vizel-editor-line-height: var(--vizel-line-height-relaxed);
+
+  // Image Component Tokens
+  --vizel-image-border-radius: var(--vizel-radius-lg);
+  --vizel-image-outline-color: var(--vizel-primary);
+  --vizel-image-outline-width: #{map.get($components, "image-outline-width")};
+  --vizel-resize-handle-color: var(--vizel-primary);
+  --vizel-resize-handle-color-hover: var(--vizel-primary-hover);
+  --vizel-resize-handle-width: #{map.get($components, "resize-handle-width")};
+  --vizel-resize-handle-height: #{map.get($components, "resize-handle-height")};
+  --vizel-resize-tooltip-bg: var(--vizel-foreground);
+  --vizel-resize-tooltip-color: var(--vizel-background);
+
+  // Code Block Tokens (border reference)
+  --vizel-code-block-border: var(--vizel-border);
+
+  // Mathematics Component Tokens
+  --vizel-math-block-bg: var(--vizel-background-secondary);
+  --vizel-math-block-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-block-selected-bg: var(--vizel-primary-bg);
+  --vizel-math-inline-bg: transparent;
+  --vizel-math-inline-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-inline-selected-bg: var(--vizel-primary-bg);
+  --vizel-math-editing-bg: var(--vizel-background-tertiary);
+  --vizel-math-preview-bg: var(--vizel-background);
+
+  // Portal Component Tokens
+  --vizel-portal-base-z-index: #{map.get($components, "portal-base-z-index")};
+}
+
+// ============================================
+// Dark Theme
+// ============================================
+
+.dark,
+[data-theme="dark"],
+[data-vizel-theme="dark"] {
+  // Color Overrides
+  @include output-vars($dark-colors);
+
+  // Shadow Overrides
+  @include output-vars($shadows-dark);
+
+  // Ring offset override
+  --vizel-ring-offset: var(--vizel-background);
+
+  // Mathematics (same as light, uses CSS var references)
+  --vizel-math-block-bg: var(--vizel-background-secondary);
+  --vizel-math-block-hover-bg: var(--vizel-background-tertiary);
+  --vizel-math-block-selected-bg: var(--vizel-primary-bg);
+}
+
+// ============================================
+// System Preference Fallback
+// ============================================
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not([data-theme="light"]):not([data-vizel-theme="light"]):not([data-vizel-theme]) {
+    // Color Overrides
+    @include output-vars($dark-colors);
+
+    // Shadow Overrides
+    @include output-vars($shadows-dark);
+
+    // Ring offset override
+    --vizel-ring-offset: var(--vizel-background);
+  }
+}

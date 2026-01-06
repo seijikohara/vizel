@@ -1,0 +1,98 @@
+/**
+ * Task List Styles
+ */
+
+@use "tokens" as *;
+
+.vizel-task-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.5rem 0;
+
+  .vizel-task-list {
+    margin: 0.25rem 0 0.25rem 1.5rem;
+  }
+}
+
+.vizel-task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.25rem 0;
+
+  > label {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    cursor: pointer;
+
+    > input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1.125rem;
+      height: 1.125rem;
+      min-width: 1.125rem;
+      border: 2px solid v("border");
+      border-radius: 4px;
+      background: v("background");
+      cursor: pointer;
+      margin-top: 0.3rem;
+      transition: all 0.15s ease;
+      position: relative;
+
+      &:hover {
+        border-color: v("primary");
+        background: v("primary-bg");
+      }
+
+      &:checked {
+        background: v("primary");
+        border-color: v("primary");
+
+        &::after {
+          content: "";
+          position: absolute;
+          left: 4px;
+          top: 1px;
+          width: 5px;
+          height: 9px;
+          border: solid v("primary-foreground");
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+        }
+      }
+
+      &:focus-visible {
+        outline: 2px solid v("primary");
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &[data-checked="true"] > div {
+    text-decoration: line-through;
+    color: v("muted-foreground");
+  }
+
+  .vizel-task-list {
+    margin-left: 0;
+    padding-left: 0;
+  }
+}
+
+.vizel-editor {
+  ul[data-type="taskList"] {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  li[data-type="taskItem"] {
+    display: flex;
+    align-items: flex-start;
+  }
+}

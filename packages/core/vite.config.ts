@@ -10,6 +10,13 @@ export default defineConfig({
       rollupTypes: true,
     }),
   ],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        loadPaths: [resolve(__dirname, "src/styles")],
+      },
+    },
+  },
   build: {
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
