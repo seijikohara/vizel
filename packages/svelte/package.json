@@ -32,7 +32,7 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@iconify/svelte": "^4",
+    "@iconify/svelte": "^5",
     "@tiptap/core": "^3.14.0",
     "@tiptap/suggestion": "^3.14.0",
     "@vizel/core": "workspace:*"
