@@ -28,8 +28,9 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@iconify/utils": "^3.1.0",
     "@iconify/vue": "^5",
-    "@tiptap/suggestion": "^3.14.0",
+    "@tiptap/suggestion": "^3.15.1",
     "@vizel/core": "workspace:*"
   },
   "peerDependencies": {
@@ -37,8 +38,7 @@
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.82",
-    "@iconify/utils": "^3.1.0",
-    "@vitejs/plugin-vue": "^5",
+    "@vitejs/plugin-vue": "^6",
     "vite": "^7",
     "vite-plugin-dts": "^4",
     "vue-tsc": "^3"

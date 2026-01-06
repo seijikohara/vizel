@@ -26,6 +26,9 @@ export default defineConfig({
         "@tiptap/suggestion",
         "@tiptap/vue-3",
         "@vizel/core",
+        // Large dependencies - externalized to reduce bundle size
+        "@iconify/vue",
+        "@iconify/utils",
       ],
       output: {
         preserveModules: true,

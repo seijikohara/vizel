@@ -28,8 +28,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@iconify/react": "^5",
-    "@tiptap/suggestion": "^3.14.0",
+    "@iconify/react": "^6",
+    "@iconify/utils": "^3.1.0",
+    "@tiptap/suggestion": "^3.15.1",
     "@vizel/core": "workspace:*"
   },
   "peerDependencies": {
@@ -38,10 +39,9 @@
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.82",
-    "@iconify/utils": "^3.1.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^4",
+    "@vitejs/plugin-react": "^5",
     "vite": "^7",
     "vite-plugin-dts": "^4"
   }

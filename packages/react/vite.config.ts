@@ -28,6 +28,9 @@ export default defineConfig({
         "@tiptap/react",
         "@tiptap/suggestion",
         "@vizel/core",
+        // Large dependencies - externalized to reduce bundle size
+        "@iconify/react",
+        "@iconify/utils",
       ],
       output: {
         preserveModules: true,
