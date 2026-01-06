@@ -1,16 +1,16 @@
 /* Import shared styles */
 @import "../../shared/styles/base.css";
 
-/* React Theme - Cyan #61DAFB */
+/* React Theme - Cyan */
 :root {
-  --vizel-primary-color: #61dafb;
-  --vizel-primary-color-dark: #21a1c4;
-  --vizel-primary-bg: rgba(97, 218, 251, 0.1);
-  --vizel-primary-bg-hover: rgba(97, 218, 251, 0.15);
+  --vizel-primary: oklch(0.826 0.112 207.653);
+  --vizel-primary-hover: oklch(0.674 0.12 207.653);
+  --vizel-primary-bg: oklch(0.826 0.112 207.653 / 0.1);
+  --vizel-primary-bg-hover: oklch(0.826 0.112 207.653 / 0.15);
 
   /* Framework-specific aliases for demo UI */
-  --framework-color: var(--vizel-primary-color);
-  --framework-color-dark: var(--vizel-primary-color-dark);
+  --framework-color: var(--vizel-primary);
+  --framework-color-dark: var(--vizel-primary-hover);
   --framework-bg: var(--vizel-primary-bg);
   --framework-bg-hover: var(--vizel-primary-bg-hover);
 }

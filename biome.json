@@ -24,6 +24,11 @@
       "arrowParentheses": "always"
     }
   },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
   "linter": {
     "enabled": true,
     "rules": {
@@ -283,6 +288,14 @@
           "complexity": {
             "noImportantStyles": "off"
           }
+        }
+      }
+    },
+    {
+      "includes": ["packages/tailwind/src/**/*.css"],
+      "css": {
+        "parser": {
+          "cssModules": false
         }
       }
     },

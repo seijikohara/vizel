@@ -15,7 +15,7 @@
   cursor: grab;
   border-radius: 0.25rem;
   background-color: transparent;
-  color: var(--vizel-text-muted, #9ca3af);
+  color: var(--vizel-muted-foreground);
   opacity: 0;
   pointer-events: none;
   transition:
@@ -27,13 +27,13 @@
 }
 
 .vizel-drag-handle:hover {
-  background-color: var(--vizel-hover-bg, #f3f4f6);
-  color: var(--vizel-text-color, #374151);
+  background-color: var(--vizel-hover-bg);
+  color: var(--vizel-foreground);
 }
 
 .vizel-drag-handle:active {
   cursor: grabbing;
-  background-color: var(--vizel-active-bg, #e5e7eb);
+  background-color: var(--vizel-active-bg);
 }
 
 .vizel-drag-handle:focus {
@@ -41,7 +41,7 @@
 }
 
 .vizel-drag-handle:focus-visible {
-  outline: 2px solid var(--vizel-primary-color, #3b82f6);
+  outline: 2px solid var(--vizel-primary);
   outline-offset: 1px;
 }
 
@@ -69,21 +69,7 @@
   pointer-events: auto;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .vizel-drag-handle {
-    color: var(--vizel-text-muted-dark, #6b7280);
-  }
-
-  .vizel-drag-handle:hover {
-    background-color: var(--vizel-hover-bg-dark, #374151);
-    color: var(--vizel-text-color-dark, #e5e7eb);
-  }
-
-  .vizel-drag-handle:active {
-    background-color: var(--vizel-active-bg-dark, #4b5563);
-  }
-}
+/* Dark mode support - handled via CSS variables in variables.css */
 
 /* Dragging state */
 .vizel-drag-handle[data-dragging="true"] {
@@ -98,7 +84,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background-color: var(--vizel-primary-color, #3b82f6);
+  background-color: var(--vizel-primary);
   pointer-events: none;
   z-index: 50;
 }
@@ -111,7 +97,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: var(--vizel-primary-color, #3b82f6);
+  background-color: var(--vizel-primary);
   transform: translateY(-50%);
 }
 

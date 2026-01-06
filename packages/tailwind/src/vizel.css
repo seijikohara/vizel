@@ -1,0 +1,211 @@
+/**
+ * Vizel Tailwind CSS Theme
+ *
+ * This file provides Tailwind CSS v4 theme integration for Vizel editor.
+ * Import this file in your CSS to enable Vizel's design tokens as Tailwind utilities.
+ *
+ * @example
+ * ```css
+ * @import "tailwindcss";
+ * @import "@vizel/tailwind/vizel.css";
+ * ```
+ *
+ * After importing, you can use utilities like:
+ * - `bg-vizel-primary`, `text-vizel-foreground`
+ * - `rounded-vizel-lg`, `shadow-vizel-md`
+ * - `font-vizel-sans`, `text-vizel-base`
+ */
+
+@theme {
+  /* ============================================
+   * Colors
+   * ============================================ */
+
+  /* Primary */
+  --color-vizel-primary: var(--vizel-primary);
+  --color-vizel-primary-hover: var(--vizel-primary-hover);
+  --color-vizel-primary-active: var(--vizel-primary-active);
+  --color-vizel-primary-foreground: var(--vizel-primary-foreground);
+  --color-vizel-primary-bg: var(--vizel-primary-bg);
+  --color-vizel-primary-bg-hover: var(--vizel-primary-bg-hover);
+
+  /* Secondary */
+  --color-vizel-secondary: var(--vizel-secondary);
+  --color-vizel-secondary-hover: var(--vizel-secondary-hover);
+  --color-vizel-secondary-foreground: var(--vizel-secondary-foreground);
+
+  /* Background */
+  --color-vizel-background: var(--vizel-background);
+  --color-vizel-background-secondary: var(--vizel-background-secondary);
+  --color-vizel-background-tertiary: var(--vizel-background-tertiary);
+
+  /* Foreground (Text) */
+  --color-vizel-foreground: var(--vizel-foreground);
+  --color-vizel-foreground-secondary: var(--vizel-foreground-secondary);
+  --color-vizel-foreground-muted: var(--vizel-foreground-muted);
+
+  /* Muted */
+  --color-vizel-muted: var(--vizel-muted);
+  --color-vizel-muted-foreground: var(--vizel-muted-foreground);
+
+  /* Accent */
+  --color-vizel-accent: var(--vizel-accent);
+  --color-vizel-accent-foreground: var(--vizel-accent-foreground);
+
+  /* Border */
+  --color-vizel-border: var(--vizel-border);
+  --color-vizel-border-hover: var(--vizel-border-hover);
+  --color-vizel-border-focus: var(--vizel-border-focus);
+
+  /* Ring (Focus) */
+  --color-vizel-ring: var(--vizel-ring);
+  --color-vizel-ring-offset: var(--vizel-ring-offset);
+
+  /* Hover/Active States */
+  --color-vizel-hover-bg: var(--vizel-hover-bg);
+  --color-vizel-active-bg: var(--vizel-active-bg);
+
+  /* Status Colors */
+  --color-vizel-success: var(--vizel-success);
+  --color-vizel-success-foreground: var(--vizel-success-foreground);
+  --color-vizel-warning: var(--vizel-warning);
+  --color-vizel-warning-foreground: var(--vizel-warning-foreground);
+  --color-vizel-error: var(--vizel-error);
+  --color-vizel-error-foreground: var(--vizel-error-foreground);
+  --color-vizel-destructive: var(--vizel-destructive);
+  --color-vizel-destructive-foreground: var(--vizel-destructive-foreground);
+  --color-vizel-destructive-bg: var(--vizel-destructive-bg);
+  --color-vizel-destructive-border: var(--vizel-destructive-border);
+
+  /* Code Block */
+  --color-vizel-code-block-bg: var(--vizel-code-block-bg);
+  --color-vizel-code-block-text: var(--vizel-code-block-text);
+  --color-vizel-code-block-border: var(--vizel-code-block-border);
+  --color-vizel-code-block-toolbar-bg: var(--vizel-code-block-toolbar-bg);
+  --color-vizel-code-block-gutter-bg: var(--vizel-code-block-gutter-bg);
+  --color-vizel-code-block-line-number: var(--vizel-code-block-line-number-color);
+  --color-vizel-code-block-button: var(--vizel-code-block-button-color);
+  --color-vizel-code-block-button-border: var(--vizel-code-block-button-border);
+  --color-vizel-code-block-button-hover-bg: var(--vizel-code-block-button-hover-bg);
+  --color-vizel-code-block-button-hover: var(--vizel-code-block-button-hover-color);
+
+  /* Mathematics */
+  --color-vizel-math-block-bg: var(--vizel-math-block-bg);
+  --color-vizel-math-block-hover-bg: var(--vizel-math-block-hover-bg);
+  --color-vizel-math-block-selected-bg: var(--vizel-math-block-selected-bg);
+  --color-vizel-math-inline-bg: var(--vizel-math-inline-bg);
+  --color-vizel-math-inline-hover-bg: var(--vizel-math-inline-hover-bg);
+  --color-vizel-math-inline-selected-bg: var(--vizel-math-inline-selected-bg);
+  --color-vizel-math-editing-bg: var(--vizel-math-editing-bg);
+  --color-vizel-math-preview-bg: var(--vizel-math-preview-bg);
+
+  /* Image/Resize */
+  --color-vizel-resize-handle: var(--vizel-resize-handle-color);
+  --color-vizel-resize-handle-hover: var(--vizel-resize-handle-color-hover);
+  --color-vizel-resize-tooltip-bg: var(--vizel-resize-tooltip-bg);
+  --color-vizel-resize-tooltip: var(--vizel-resize-tooltip-color);
+  --color-vizel-image-outline: var(--vizel-image-outline-color);
+
+  /* ============================================
+   * Border Radius
+   * ============================================ */
+
+  --radius-vizel-none: var(--vizel-radius-none);
+  --radius-vizel-sm: var(--vizel-radius-sm);
+  --radius-vizel: var(--vizel-radius-md);
+  --radius-vizel-md: var(--vizel-radius-md);
+  --radius-vizel-lg: var(--vizel-radius-lg);
+  --radius-vizel-xl: var(--vizel-radius-xl);
+  --radius-vizel-2xl: var(--vizel-radius-2xl);
+  --radius-vizel-full: var(--vizel-radius-full);
+
+  /* ============================================
+   * Shadows
+   * ============================================ */
+
+  --shadow-vizel-sm: var(--vizel-shadow-sm);
+  --shadow-vizel: var(--vizel-shadow-md);
+  --shadow-vizel-md: var(--vizel-shadow-md);
+  --shadow-vizel-lg: var(--vizel-shadow-lg);
+  --shadow-vizel-xl: var(--vizel-shadow-xl);
+  --shadow-vizel-2xl: var(--vizel-shadow-2xl);
+
+  /* ============================================
+   * Font Families
+   * ============================================ */
+
+  --font-vizel-sans: var(--vizel-font-sans);
+  --font-vizel-serif: var(--vizel-font-serif);
+  --font-vizel-mono: var(--vizel-font-mono);
+
+  /* ============================================
+   * Font Sizes
+   * ============================================ */
+
+  --text-vizel-xs: var(--vizel-font-size-xs);
+  --text-vizel-sm: var(--vizel-font-size-sm);
+  --text-vizel-base: var(--vizel-font-size-base);
+  --text-vizel-lg: var(--vizel-font-size-lg);
+  --text-vizel-xl: var(--vizel-font-size-xl);
+  --text-vizel-2xl: var(--vizel-font-size-2xl);
+  --text-vizel-3xl: var(--vizel-font-size-3xl);
+  --text-vizel-4xl: var(--vizel-font-size-4xl);
+
+  /* ============================================
+   * Font Weights
+   * ============================================ */
+
+  --font-weight-vizel-normal: var(--vizel-font-weight-normal);
+  --font-weight-vizel-medium: var(--vizel-font-weight-medium);
+  --font-weight-vizel-semibold: var(--vizel-font-weight-semibold);
+  --font-weight-vizel-bold: var(--vizel-font-weight-bold);
+
+  /* ============================================
+   * Line Heights
+   * ============================================ */
+
+  --leading-vizel-tight: var(--vizel-line-height-tight);
+  --leading-vizel-snug: var(--vizel-line-height-snug);
+  --leading-vizel-normal: var(--vizel-line-height-normal);
+  --leading-vizel-relaxed: var(--vizel-line-height-relaxed);
+  --leading-vizel-loose: var(--vizel-line-height-loose);
+
+  /* ============================================
+   * Letter Spacing
+   * ============================================ */
+
+  --tracking-vizel-tight: var(--vizel-letter-spacing-tight);
+  --tracking-vizel-normal: var(--vizel-letter-spacing-normal);
+  --tracking-vizel-wide: var(--vizel-letter-spacing-wide);
+
+  /* ============================================
+   * Spacing
+   * ============================================ */
+
+  --spacing-vizel-0: var(--vizel-spacing-0);
+  --spacing-vizel-1: var(--vizel-spacing-1);
+  --spacing-vizel-2: var(--vizel-spacing-2);
+  --spacing-vizel-3: var(--vizel-spacing-3);
+  --spacing-vizel-4: var(--vizel-spacing-4);
+  --spacing-vizel-5: var(--vizel-spacing-5);
+  --spacing-vizel-6: var(--vizel-spacing-6);
+  --spacing-vizel-8: var(--vizel-spacing-8);
+  --spacing-vizel-10: var(--vizel-spacing-10);
+  --spacing-vizel-12: var(--vizel-spacing-12);
+
+  /* ============================================
+   * Transition Durations
+   * ============================================ */
+
+  --duration-vizel-fast: var(--vizel-transition-fast);
+  --duration-vizel-normal: var(--vizel-transition-normal);
+  --duration-vizel-slow: var(--vizel-transition-slow);
+
+  /* ============================================
+   * Easing Functions
+   * ============================================ */
+
+  --ease-vizel-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-vizel-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-vizel-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
