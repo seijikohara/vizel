@@ -1,6 +1,24 @@
-# Vizel
+<p align="center">
+  <img src="docs/public/logo.svg" width="100" height="100" alt="Vizel Logo">
+</p>
 
-A block-based visual editor for Markdown built with [Tiptap](https://tiptap.dev/), supporting React, Vue, and Svelte.
+<h1 align="center">Vizel</h1>
+
+<p align="center">
+  A block-based visual editor for Markdown built with <a href="https://tiptap.dev/">Tiptap</a>, supporting React, Vue, and Svelte.
+</p>
+
+<p align="center">
+  <a href="https://github.com/seijikohara/vizel/actions/workflows/ci.yml"><img src="https://github.com/seijikohara/vizel/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/seijikohara/vizel/blob/main/LICENSE"><img src="https://img.shields.io/github/license/seijikohara/vizel" alt="License"></a>
+  <a href="https://seijikohara.github.io/vizel/"><img src="https://img.shields.io/badge/Docs-GitHub%20Pages-blue?logo=github" alt="Documentation"></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" alt="React">
+  <img src="https://img.shields.io/badge/Vue-3-4FC08D?logo=vuedotjs&logoColor=white" alt="Vue">
+  <img src="https://img.shields.io/badge/Svelte-5-FF3E00?logo=svelte&logoColor=white" alt="Svelte">
+</p>
 
 ## Features
 
@@ -24,7 +42,7 @@ A block-based visual editor for Markdown built with [Tiptap](https://tiptap.dev/
 | Package | Description |
 |---------|-------------|
 | `@vizel/core` | Framework-agnostic core with Tiptap extensions and styles |
-| `@vizel/react` | React 18/19 components and hooks |
+| `@vizel/react` | React 19 components and hooks |
 | `@vizel/vue` | Vue 3 components and composables |
 | `@vizel/svelte` | Svelte 5 components and runes |
 

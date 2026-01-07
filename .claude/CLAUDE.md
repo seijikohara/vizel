@@ -7,7 +7,7 @@ A block-based visual editor for Markdown built with Tiptap, supporting React, Vu
 ```
 packages/
 ├── core/     # Framework-agnostic core (Tiptap extensions)
-├── react/    # React 18/19 components and hooks
+├── react/    # React 19 components and hooks
 ├── vue/      # Vue 3 components and composables
 └── svelte/   # Svelte 5 components and runes
 apps/

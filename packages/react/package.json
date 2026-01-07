@@ -34,8 +34,8 @@
     "@vizel/core": "workspace:*"
   },
   "peerDependencies": {
-    "react": "^18 || ^19",
-    "react-dom": "^18 || ^19"
+    "react": "^19",
+    "react-dom": "^19"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.82",
