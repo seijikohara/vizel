@@ -1,12 +1,12 @@
-import { Markdown } from "@vizel/core";
-import { EditorContent, EditorRoot, useVizelEditor } from "@vizel/react";
+import { VizelMarkdown } from "@vizel/core";
+import { useVizelEditor, VizelEditor, VizelProvider } from "@vizel/react";
 import { useState } from "react";
 
 export function MarkdownFixture() {
   const [markdownOutput, setMarkdownOutput] = useState("");
 
   const editor = useVizelEditor({
-    extensions: [Markdown],
+    extensions: [VizelMarkdown],
   });
 
   const handleExport = () => {
@@ -97,7 +97,7 @@ export function MarkdownFixture() {
   };
 
   return (
-    <EditorRoot editor={editor}>
+    <VizelProvider editor={editor}>
       <div className="toolbar">
         <button type="button" data-testid="export-button" onClick={handleExport}>
           Export
@@ -149,8 +149,8 @@ export function MarkdownFixture() {
           Import Table
         </button>
       </div>
-      <EditorContent />
+      <VizelEditor />
       <pre data-testid="markdown-output">{markdownOutput}</pre>
-    </EditorRoot>
+    </VizelProvider>
   );
 }

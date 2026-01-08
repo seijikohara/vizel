@@ -3,7 +3,7 @@ import type { Editor, JSONContent } from "@tiptap/core";
 /**
  * Storage backend type for auto-save
  */
-export type StorageBackend =
+export type VizelStorageBackend =
   | "localStorage"
   | "sessionStorage"
   | {
@@ -14,13 +14,13 @@ export type StorageBackend =
 /**
  * Auto-save configuration options
  */
-export interface AutoSaveOptions {
+export interface VizelAutoSaveOptions {
   /** Enable auto-save (default: true) */
   enabled?: boolean;
   /** Debounce delay in milliseconds (default: 1000) */
   debounceMs?: number;
   /** Storage backend (default: 'localStorage') */
-  storage?: StorageBackend;
+  storage?: VizelStorageBackend;
   /** Storage key for localStorage/sessionStorage (default: 'vizel-content') */
   key?: string;
   /** Callback when content is saved */
@@ -34,14 +34,14 @@ export interface AutoSaveOptions {
 /**
  * Save status type
  */
-export type SaveStatus = "saved" | "saving" | "unsaved" | "error";
+export type VizelSaveStatus = "saved" | "saving" | "unsaved" | "error";
 
 /**
  * Auto-save state
  */
-export interface AutoSaveState {
+export interface VizelAutoSaveState {
   /** Current save status */
-  status: SaveStatus;
+  status: VizelSaveStatus;
   /** Whether there are unsaved changes */
   hasUnsavedChanges: boolean;
   /** Timestamp of last successful save */
@@ -53,17 +53,17 @@ export interface AutoSaveState {
 /**
  * Default auto-save options
  */
-export const DEFAULT_AUTO_SAVE_OPTIONS = {
+export const VIZEL_DEFAULT_AUTO_SAVE_OPTIONS = {
   enabled: true,
   debounceMs: 1000,
   storage: "localStorage" as const,
   key: "vizel-content",
-} satisfies AutoSaveOptions;
+} satisfies VizelAutoSaveOptions;
 
 /**
- * Creates a debounced function
+ * Creates a debounced function (internal utility)
  */
-export function debounce<T extends (...args: Parameters<T>) => void>(
+function debounce<T extends (...args: Parameters<T>) => void>(
   fn: T,
   ms: number
 ): { (...args: Parameters<T>): void; cancel: () => void } {
@@ -92,8 +92,8 @@ export function debounce<T extends (...args: Parameters<T>) => void>(
 /**
  * Gets the storage object based on backend type
  */
-export function getStorageBackend(
-  storage: StorageBackend,
+export function getVizelStorageBackend(
+  storage: VizelStorageBackend,
   key: string
 ): {
   save: (content: JSONContent) => Promise<void>;
@@ -137,10 +137,10 @@ export function getStorageBackend(
 /**
  * Creates auto-save handlers for an editor
  */
-export function createAutoSaveHandlers(
+export function createVizelAutoSaveHandlers(
   getEditor: () => Editor | null | undefined,
-  options: AutoSaveOptions,
-  onStateChange: (state: Partial<AutoSaveState>) => void
+  options: VizelAutoSaveOptions,
+  onStateChange: (state: Partial<VizelAutoSaveState>) => void
 ): {
   /** Trigger a debounced save */
   save: () => void;
@@ -153,8 +153,8 @@ export function createAutoSaveHandlers(
   /** Cancel any pending debounced save */
   cancel: () => void;
 } {
-  const opts = { ...DEFAULT_AUTO_SAVE_OPTIONS, ...options };
-  const storageBackend = getStorageBackend(opts.storage, opts.key);
+  const opts = { ...VIZEL_DEFAULT_AUTO_SAVE_OPTIONS, ...options };
+  const storageBackend = getVizelStorageBackend(opts.storage, opts.key);
 
   const saveContent = async () => {
     const editor = getEditor();
@@ -220,7 +220,7 @@ export function createAutoSaveHandlers(
 /**
  * Format relative time for display
  */
-export function formatRelativeTime(date: Date): string {
+export function formatVizelRelativeTime(date: Date): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffSec = Math.floor(diffMs / 1000);

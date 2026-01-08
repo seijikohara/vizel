@@ -4,9 +4,11 @@ Vizel provides a modular feature system. Each feature can be enabled, disabled, 
 
 ## Feature Overview
 
+All features are enabled by default. Set any feature to `false` to disable it.
+
 ```mermaid
 graph TB
-    subgraph default["Enabled by Default"]
+    subgraph default["All Features (Enabled by Default)"]
         SlashCommand["Slash Commands"]
         Table["Tables"]
         Image["Images"]
@@ -16,9 +18,6 @@ graph TB
         TextColor["Text Color"]
         TaskList["Task Lists"]
         Link["Links"]
-    end
-
-    subgraph optional["Opt-in Features"]
         Markdown["Markdown"]
         Math["Mathematics"]
         Embed["Embeds"]
@@ -27,22 +26,22 @@ graph TB
     end
 ```
 
-| Feature | Default | Description |
-|---------|:-------:|-------------|
-| `slashCommand` | :white_check_mark: | Slash command menu (type `/` to open) |
-| `table` | :white_check_mark: | Table editing support |
-| `image` | :white_check_mark: | Image upload and resize |
-| `codeBlock` | :white_check_mark: | Code blocks with syntax highlighting |
-| `dragHandle` | :white_check_mark: | Drag handle for block reordering |
-| `characterCount` | :white_check_mark: | Character and word counting |
-| `textColor` | :white_check_mark: | Text color and highlight |
-| `taskList` | :white_check_mark: | Checkbox task lists |
-| `link` | :white_check_mark: | Link editing |
-| `markdown` | :x: | Markdown import/export |
-| `mathematics` | :x: | LaTeX math equations |
-| `embed` | :x: | URL embeds (YouTube, etc.) |
-| `details` | :x: | Collapsible content blocks |
-| `diagram` | :x: | Mermaid/GraphViz diagrams |
+| Feature | Description |
+|---------|-------------|
+| `slashCommand` | Slash command menu (type `/` to open) |
+| `table` | Table editing support |
+| `image` | Image upload and resize |
+| `codeBlock` | Code blocks with syntax highlighting |
+| `dragHandle` | Drag handle for block reordering |
+| `characterCount` | Character and word counting |
+| `textColor` | Text color and highlight |
+| `taskList` | Checkbox task lists |
+| `link` | Link editing |
+| `markdown` | Markdown import/export |
+| `mathematics` | LaTeX math equations |
+| `embed` | URL embeds (YouTube, etc.) |
+| `details` | Collapsible content blocks |
+| `diagram` | Mermaid/GraphViz diagrams |
 
 ## Disabling Features
 
@@ -108,9 +107,7 @@ const editor = useVizelEditor({
 | Text | Paragraph, Heading 1-3, Quote, Code |
 | Lists | Bullet List, Numbered List, Task List |
 | Media | Image, Horizontal Rule |
-| Advanced | Details*, Embed*, Diagram*, Math Block* |
-
-*Only shown when the feature is enabled.
+| Advanced | Details, Embed, Diagram, Math Block |
 
 ---
 

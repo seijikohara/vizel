@@ -2,11 +2,62 @@
 
 React 19 components and hooks for Vizel editor.
 
+::: tip Looking for a guide?
+See the [React Guide](/guide/react) for step-by-step tutorials and common patterns.
+:::
+
 ## Installation
 
 ```bash
 npm install @vizel/react
 ```
+
+## Components
+
+### Vizel
+
+All-in-one editor component with built-in toolbar. This is the recommended way to get started.
+
+```tsx
+import { Vizel } from '@vizel/react';
+import '@vizel/core/styles.css';
+
+<Vizel
+  initialContent={{ type: 'doc', content: [] }}
+  placeholder="Start writing..."
+  editable={true}
+  autofocus="end"
+  showToolbar={true}
+  enableEmbed={true}
+  className="my-editor"
+  features={{ markdown: true }}
+  onUpdate={({ editor }) => {}}
+  onCreate={({ editor }) => {}}
+  onFocus={({ editor }) => {}}
+  onBlur={({ editor }) => {}}
+/>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `initialContent` | `JSONContent` | - | Initial editor content |
+| `placeholder` | `string` | - | Placeholder text |
+| `editable` | `boolean` | `true` | Editable state |
+| `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus behavior |
+| `features` | `VizelFeatureOptions` | - | Feature configuration |
+| `className` | `string` | - | CSS class name |
+| `showToolbar` | `boolean` | `true` | Show toolbar on selection |
+| `enableEmbed` | `boolean` | - | Enable embed in link editor |
+| `onUpdate` | `({ editor }) => void` | - | Update callback |
+| `onCreate` | `({ editor }) => void` | - | Create callback |
+| `onDestroy` | `() => void` | - | Destroy callback |
+| `onSelectionUpdate` | `({ editor }) => void` | - | Selection change callback |
+| `onFocus` | `({ editor }) => void` | - | Focus callback |
+| `onBlur` | `({ editor }) => void` | - | Blur callback |
+
+---
 
 ## Hooks
 
@@ -22,28 +73,28 @@ const editor = useVizelEditor(options?: VizelEditorOptions);
 
 **Returns:** `Editor | null`
 
-### useEditorState
+### useVizelState
 
 Forces re-render on editor state changes.
 
 ```tsx
-import { useEditorState } from '@vizel/react';
+import { useVizelState } from '@vizel/react';
 
-const updateCount = useEditorState(editor: Editor | null);
+const updateCount = useVizelState(editor: Editor | null);
 ```
 
 **Returns:** `number` (update count)
 
-### useAutoSave
+### useVizelAutoSave
 
 Auto-saves editor content with debouncing.
 
 ```tsx
-import { useAutoSave } from '@vizel/react';
+import { useVizelAutoSave } from '@vizel/react';
 
-const result = useAutoSave(
+const result = useVizelAutoSave(
   editor: Editor | null,
-  options?: AutoSaveOptions
+  options?: VizelAutoSaveOptions
 );
 ```
 
@@ -51,52 +102,54 @@ const result = useAutoSave(
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `status` | `SaveStatus` | Current save status |
+| `status` | `VizelSaveStatus` | Current save status |
 | `hasUnsavedChanges` | `boolean` | Whether there are unsaved changes |
 | `lastSaved` | `Date \| null` | Last save timestamp |
 | `error` | `Error \| null` | Last error |
 | `save` | `() => Promise<void>` | Manual save function |
 | `restore` | `() => Promise<JSONContent \| null>` | Manual restore function |
 
-### useTheme
+### useVizelTheme
 
-Access theme state within ThemeProvider.
+Access theme state within VizelThemeProvider.
 
 ```tsx
-import { useTheme } from '@vizel/react';
+import { useVizelTheme } from '@vizel/react';
 
-const { theme, resolvedTheme, systemTheme, setTheme } = useTheme();
+const { theme, resolvedTheme, systemTheme, setTheme } = useVizelTheme();
 ```
 
 **Returns:**
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `theme` | `Theme` | Current theme setting |
-| `resolvedTheme` | `ResolvedTheme` | Resolved theme |
-| `systemTheme` | `ResolvedTheme` | System preference |
-| `setTheme` | `(theme: Theme) => void` | Set theme function |
+| `theme` | `VizelTheme` | Current theme setting |
+| `resolvedTheme` | `VizelResolvedTheme` | Resolved theme |
+| `systemTheme` | `VizelResolvedTheme` | System preference |
+| `setTheme` | `(theme: VizelTheme) => void` | Set theme function |
 
-### useEditorContext
+### useVizelContext
 
-Access editor from EditorRoot context.
+Access editor from VizelProvider context.
 
 ```tsx
-import { useEditorContext } from '@vizel/react';
+import { useVizelContext } from '@vizel/react';
 
-const { editor } = useEditorContext();
+const { editor } = useVizelContext();
 ```
 
 ---
 
 ## Components
 
-### EditorContent
+### VizelEditor
 
 Renders the editor content area.
 
 ```tsx
-<EditorContent editor={editor} className="my-editor" />
+import { VizelEditor } from '@vizel/react';
+
+<VizelEditor editor={editor} className="my-editor" />
 ```
 
 **Props:**
@@ -106,16 +159,16 @@ Renders the editor content area.
 | `editor` | `Editor \| null` | - | Editor instance |
 | `className` | `string` | - | CSS class name |
 
-### BubbleMenu
+### VizelToolbar
 
 Floating formatting toolbar.
 
 ```tsx
-<BubbleMenu 
+import { VizelToolbar } from '@vizel/react';
+
+<VizelToolbar 
   editor={editor}
-  showDefaultToolbar={true}
-  updateDelay={100}
-  enableEmbed={false}
+  className="my-toolbar"
 />
 ```
 
@@ -126,58 +179,103 @@ Floating formatting toolbar.
 | `editor` | `Editor \| null` | - | Editor instance |
 | `className` | `string` | - | CSS class name |
 | `children` | `ReactNode` | - | Custom content |
-| `showDefaultToolbar` | `boolean` | `true` | Show default toolbar |
-| `pluginKey` | `string` | `"vizelBubbleMenu"` | Plugin key |
-| `updateDelay` | `number` | `100` | Update delay (ms) |
-| `shouldShow` | `Function` | - | Custom visibility |
-| `enableEmbed` | `boolean` | `false` | Enable embed in links |
 
-### ThemeProvider
+### VizelToolbarDefault
 
-Provides theme context.
+Default toolbar with all formatting buttons.
 
 ```tsx
-<ThemeProvider
-  defaultTheme="system"
-  storageKey="vizel-theme"
-  disableTransitionOnChange={false}
->
-  {children}
-</ThemeProvider>
+import { VizelToolbarDefault } from '@vizel/react';
+
+<VizelToolbarDefault 
+  editor={editor}
+  enableEmbed={false}
+/>
 ```
 
 **Props:**
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `defaultTheme` | `Theme` | `"system"` | Default theme |
+| `editor` | `Editor \| null` | - | Editor instance |
+| `enableEmbed` | `boolean` | `false` | Enable embed in links |
+
+### VizelToolbarButton
+
+Individual toolbar button.
+
+```tsx
+import { VizelToolbarButton } from '@vizel/react';
+
+<VizelToolbarButton
+  icon="lucide:bold"
+  isActive={editor.isActive('bold')}
+  onClick={() => editor.chain().focus().toggleBold().run()}
+/>
+```
+
+### VizelToolbarDivider
+
+Toolbar divider.
+
+```tsx
+import { VizelToolbarDivider } from '@vizel/react';
+
+<VizelToolbarDivider />
+```
+
+### VizelThemeProvider
+
+Provides theme context.
+
+```tsx
+import { VizelThemeProvider } from '@vizel/react';
+
+<VizelThemeProvider
+  defaultTheme="system"
+  storageKey="vizel-theme"
+  disableTransitionOnChange={false}
+>
+  {children}
+</VizelThemeProvider>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `defaultTheme` | `VizelTheme` | `"system"` | Default theme |
 | `storageKey` | `string` | `"vizel-theme"` | Storage key |
 | `targetSelector` | `string` | - | Theme target |
 | `disableTransitionOnChange` | `boolean` | `false` | Disable transitions |
 | `children` | `ReactNode` | - | Children |
 
-### SaveIndicator
+### VizelSaveIndicator
 
 Displays save status.
 
 ```tsx
-<SaveIndicator status={status} lastSaved={lastSaved} />
+import { VizelSaveIndicator } from '@vizel/react';
+
+<VizelSaveIndicator status={status} lastSaved={lastSaved} />
 ```
 
 **Props:**
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `status` | `SaveStatus` | Save status |
+| `status` | `VizelSaveStatus` | Save status |
 | `lastSaved` | `Date \| null` | Last save time |
 | `className` | `string` | CSS class name |
 
-### Portal
+### VizelPortal
 
 Renders content in a portal.
 
 ```tsx
-<Portal container={document.body}>{children}</Portal>
+import { VizelPortal } from '@vizel/react';
+
+<VizelPortal container={document.body}>{children}</VizelPortal>
 ```
 
 **Props:**
@@ -187,12 +285,14 @@ Renders content in a portal.
 | `children` | `ReactNode` | Content to render |
 | `container` | `HTMLElement` | Portal target |
 
-### ColorPicker
+### VizelColorPicker
 
 Color selection component.
 
 ```tsx
-<ColorPicker
+import { VizelColorPicker } from '@vizel/react';
+
+<VizelColorPicker
   colors={colors}
   value={currentColor}
   onChange={setColor}
@@ -200,12 +300,14 @@ Color selection component.
 />
 ```
 
-### SlashMenu
+### VizelSlashMenu
 
 Slash command menu component.
 
 ```tsx
-<SlashMenu
+import { VizelSlashMenu } from '@vizel/react';
+
+<VizelSlashMenu
   items={items}
   command={handleCommand}
   className="my-menu"
@@ -216,14 +318,14 @@ Slash command menu component.
 
 ## Utilities
 
-### createSlashMenuRenderer
+### createVizelSlashMenuRenderer
 
 Creates slash menu renderer for the SlashCommand extension.
 
 ```tsx
-import { createSlashMenuRenderer } from '@vizel/react';
+import { createVizelSlashMenuRenderer } from '@vizel/react';
 
-const suggestion = createSlashMenuRenderer();
+const suggestion = createVizelSlashMenuRenderer();
 
 const editor = useVizelEditor({
   features: {
@@ -236,21 +338,26 @@ const editor = useVizelEditor({
 
 ---
 
-## Re-exports
+## Importing from @vizel/core and @tiptap/core
 
-All exports from `@vizel/core` are re-exported:
+Framework packages do not re-export from `@vizel/core`. Import directly:
 
 ```tsx
+// Framework-specific components and hooks
 import { 
-  // Types
-  type JSONContent,
-  type VizelEditorOptions,
-  type SaveStatus,
-  // Utilities
-  getEditorState,
-  formatRelativeTime,
-  // Constants
-  TEXT_COLORS,
-  HIGHLIGHT_COLORS,
+  Vizel, 
+  VizelEditor, 
+  VizelToolbar, 
+  VizelThemeProvider,
+  useVizelEditor, 
+  useVizelAutoSave,
 } from '@vizel/react';
+
+// Vizel types and utilities from @vizel/core
+import { getVizelEditorState, VIZEL_TEXT_COLORS } from '@vizel/core';
+import type { VizelEditorOptions, VizelSaveStatus } from '@vizel/core';
+
+// Tiptap types from @tiptap/core
+import { Editor } from '@tiptap/core';
+import type { JSONContent } from '@tiptap/core';
 ```

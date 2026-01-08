@@ -1,17 +1,14 @@
 <script setup lang="ts">
+import type { Editor, JSONContent } from "@tiptap/core";
+import { convertVizelCodeBlocksToDiagrams, getVizelEditorState } from "@vizel/core";
 import {
-  BubbleMenu,
-  convertCodeBlocksToDiagrams,
-  EditorContent,
-  getEditorState,
-  type JSONContent,
-  SaveIndicator,
-  ThemeProvider,
-  useAutoSave,
-  useEditorState,
-  useVizelEditor,
+  useVizelAutoSave,
+  useVizelState,
+  Vizel,
+  VizelSaveIndicator,
+  VizelThemeProvider,
 } from "@vizel/vue";
-import { computed, ref } from "vue";
+import { computed, ref, shallowRef } from "vue";
 import { initialContent } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
 import ThemeToggle from "./ThemeToggle.vue";
@@ -23,55 +20,39 @@ const showMarkdown = ref(false);
 const markdownInput = ref("");
 const showMarkdownInput = ref(false);
 
-const editor = useVizelEditor({
-  initialContent,
-  autofocus: "end",
-  features: {
-    markdown: true,
-    mathematics: true,
-    embed: true,
-    details: true,
-    diagram: true,
-    image: {
-      onUpload: mockUploadImage,
-      maxFileSize: 10 * 1024 * 1024, // 10MB
-      onValidationError: (error) => {
-        alert(`Validation error: ${error.message}`);
-      },
-      onUploadError: (error) => {
-        alert(`Upload failed: ${error.message}`);
-      },
-    },
-  },
-  onUpdate: ({ editor: e }) => {
-    output.value = e.getJSON();
-    markdownOutput.value = e.getMarkdown();
-  },
-  onCreate: ({ editor: e }) => {
-    output.value = e.getJSON();
-    markdownOutput.value = e.getMarkdown();
-  },
-});
+// Store editor reference from Vizel component
+const editorRef = shallowRef<Editor | null>(null);
 
 // Track editor state for character/word count
-const updateCount = useEditorState(() => editor.value);
+const updateCount = useVizelState(() => editorRef.value);
 const editorState = computed(() => {
   void updateCount.value;
-  return getEditorState(editor.value);
+  return getVizelEditorState(editorRef.value);
 });
 
 // Auto-save functionality
-const { status, lastSaved } = useAutoSave(() => editor.value, {
+const { status, lastSaved } = useVizelAutoSave(() => editorRef.value, {
   debounceMs: 2000,
   storage: "localStorage",
   key: "vizel-demo-vue",
 });
 
+function handleCreate({ editor }: { editor: Editor }) {
+  editorRef.value = editor;
+  output.value = editor.getJSON();
+  markdownOutput.value = editor.getMarkdown();
+}
+
+function handleUpdate({ editor }: { editor: Editor }) {
+  output.value = editor.getJSON();
+  markdownOutput.value = editor.getMarkdown();
+}
+
 function handleImportMarkdown() {
-  if (editor.value && markdownInput.value.trim()) {
-    editor.value.commands.setContent(markdownInput.value, { contentType: "markdown" });
+  if (editorRef.value && markdownInput.value.trim()) {
+    editorRef.value.commands.setContent(markdownInput.value, { contentType: "markdown" });
     // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
-    convertCodeBlocksToDiagrams(editor.value);
+    convertVizelCodeBlocksToDiagrams(editorRef.value);
     markdownInput.value = "";
     showMarkdownInput.value = false;
   }
@@ -79,7 +60,7 @@ function handleImportMarkdown() {
 </script>
 
 <template>
-  <ThemeProvider defaultTheme="system" storageKey="vizel-theme">
+  <VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
     <div class="app">
       <header class="header">
         <div class="header-content">
@@ -163,12 +144,29 @@ function handleImportMarkdown() {
         </div>
 
         <div class="editor-container">
-          <div class="editor-root">
-            <EditorContent :editor="editor" class="editor-content" />
-            <BubbleMenu v-if="editor" :editor="editor" enable-embed />
-          </div>
+          <Vizel
+            :initial-content="initialContent"
+            autofocus="end"
+            class="editor-content"
+            enable-embed
+            :features="{
+              markdown: true,
+              mathematics: true,
+              embed: true,
+              details: true,
+              diagram: true,
+              image: {
+                onUpload: mockUploadImage,
+                maxFileSize: 10 * 1024 * 1024,
+                onValidationError: (error) => alert(`Validation error: ${error.message}`),
+                onUploadError: (error) => alert(`Upload failed: ${error.message}`),
+              },
+            }"
+            @create="handleCreate"
+            @update="handleUpdate"
+          />
           <div class="status-bar">
-            <SaveIndicator :status="status" :lastSaved="lastSaved" />
+            <VizelSaveIndicator :status="status" :lastSaved="lastSaved" />
             <span class="status-divider">·</span>
             <span class="status-item">{{ editorState.characterCount }} characters</span>
             <span class="status-divider">·</span>
@@ -229,5 +227,5 @@ function handleImportMarkdown() {
         </p>
       </footer>
     </div>
-  </ThemeProvider>
+  </VizelThemeProvider>
 </template>

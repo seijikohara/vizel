@@ -105,7 +105,7 @@ const extensions = createVizelExtensions({
 import type { VizelEditorOptions } from '@vizel/core';
 ```
 
-See [Type Definitions](/api/types#vizelEditorOptions) for full interface.
+See [Type Definitions](/api/types/editor) for full interface.
 
 ### VizelFeatureOptions
 
@@ -113,14 +113,14 @@ See [Type Definitions](/api/types#vizelEditorOptions) for full interface.
 import type { VizelFeatureOptions } from '@vizel/core';
 ```
 
-See [Type Definitions](/api/types#vizelFeatureOptions) for full interface.
+See [Type Definitions](/api/types/features) for full interface.
 
 ### JSONContent
 
-Tiptap's JSON content format.
+Tiptap's JSON content format. Import directly from `@tiptap/core`:
 
 ```typescript
-import type { JSONContent } from '@vizel/core';
+import type { JSONContent } from '@tiptap/core';
 
 const content: JSONContent = {
   type: 'doc',
@@ -130,48 +130,48 @@ const content: JSONContent = {
 };
 ```
 
-### SaveStatus
+### VizelSaveStatus
 
 ```typescript
-import type { SaveStatus } from '@vizel/core';
+import type { VizelSaveStatus } from '@vizel/core';
 
-type SaveStatus = 'saved' | 'saving' | 'unsaved' | 'error';
+type VizelSaveStatus = 'saved' | 'saving' | 'unsaved' | 'error';
 ```
 
 ### Theme Types
 
 ```typescript
-import type { Theme, ResolvedTheme } from '@vizel/core';
+import type { VizelTheme, VizelResolvedTheme } from '@vizel/core';
 
-type Theme = 'light' | 'dark' | 'system';
-type ResolvedTheme = 'light' | 'dark';
+type VizelTheme = 'light' | 'dark' | 'system';
+type VizelResolvedTheme = 'light' | 'dark';
 ```
 
 ---
 
 ## Utilities
 
-### resolveFeatures
+### resolveVizelFeatures
 
 Resolves feature options to extension configuration.
 
 ```typescript
-import { resolveFeatures } from '@vizel/core';
+import { resolveVizelFeatures } from '@vizel/core';
 
-const resolved = resolveFeatures({
+const resolved = resolveVizelFeatures({
   markdown: true,
   mathematics: { katexOptions: { strict: false } },
 });
 ```
 
-### getEditorState
+### getVizelEditorState
 
 Gets the current editor state.
 
 ```typescript
-import { getEditorState } from '@vizel/core';
+import { getVizelEditorState } from '@vizel/core';
 
-const state = getEditorState(editor);
+const state = getVizelEditorState(editor);
 // {
 //   isFocused: boolean,
 //   isEmpty: boolean,
@@ -182,14 +182,14 @@ const state = getEditorState(editor);
 // }
 ```
 
-### formatRelativeTime
+### formatVizelRelativeTime
 
 Formats a date as relative time.
 
 ```typescript
-import { formatRelativeTime } from '@vizel/core';
+import { formatVizelRelativeTime } from '@vizel/core';
 
-formatRelativeTime(new Date(Date.now() - 60000));
+formatVizelRelativeTime(new Date(Date.now() - 60000));
 // "1 minute ago"
 ```
 
@@ -197,46 +197,46 @@ formatRelativeTime(new Date(Date.now() - 60000));
 
 ## Theme Utilities
 
-### getSystemTheme
+### getVizelSystemTheme
 
 Gets the system color scheme preference.
 
 ```typescript
-import { getSystemTheme } from '@vizel/core';
+import { getVizelSystemTheme } from '@vizel/core';
 
-const theme = getSystemTheme();
+const theme = getVizelSystemTheme();
 // 'light' | 'dark'
 ```
 
-### resolveTheme
+### resolveVizelTheme
 
 Resolves theme setting to actual theme.
 
 ```typescript
-import { resolveTheme } from '@vizel/core';
+import { resolveVizelTheme } from '@vizel/core';
 
-resolveTheme('system', 'dark');
+resolveVizelTheme('system', 'dark');
 // 'dark'
 ```
 
-### applyTheme
+### applyVizelTheme
 
 Applies theme to the DOM.
 
 ```typescript
-import { applyTheme } from '@vizel/core';
+import { applyVizelTheme } from '@vizel/core';
 
-applyTheme('dark', document.documentElement);
+applyVizelTheme('dark', document.documentElement);
 ```
 
-### getThemeInitScript
+### getVizelThemeInitScript
 
 Gets inline script for preventing flash of unstyled content.
 
 ```typescript
-import { getThemeInitScript } from '@vizel/core';
+import { getVizelThemeInitScript } from '@vizel/core';
 
-const script = getThemeInitScript('my-theme-key');
+const script = getVizelThemeInitScript('my-theme-key');
 // Include in <head>
 ```
 
@@ -244,14 +244,14 @@ const script = getThemeInitScript('my-theme-key');
 
 ## Image Utilities
 
-### createImageUploader
+### createVizelImageUploader
 
 Creates an image upload function.
 
 ```typescript
-import { createImageUploader } from '@vizel/core';
+import { createVizelImageUploader } from '@vizel/core';
 
-const upload = createImageUploader({
+const upload = createVizelImageUploader({
   onUpload: async (file) => {
     // Upload file
     return 'https://example.com/image.png';
@@ -261,14 +261,14 @@ const upload = createImageUploader({
 });
 ```
 
-### validateImageFile
+### validateVizelImageFile
 
 Validates an image file.
 
 ```typescript
-import { validateImageFile } from '@vizel/core';
+import { validateVizelImageFile } from '@vizel/core';
 
-const result = validateImageFile(file, {
+const result = validateVizelImageFile(file, {
   maxFileSize: 5 * 1024 * 1024,
   allowedTypes: ['image/jpeg', 'image/png'],
 });
@@ -282,113 +282,117 @@ if (!result.valid) {
 
 ## Color Utilities
 
-### getRecentColors
+### getVizelRecentColors
 
 Gets recent colors from localStorage.
 
 ```typescript
-import { getRecentColors } from '@vizel/core';
+import { getVizelRecentColors } from '@vizel/core';
 
-const colors = getRecentColors('text');
+const colors = getVizelRecentColors('text');
 // ['#ff0000', '#00ff00', ...]
 ```
 
-### addRecentColor
+### addVizelRecentColor
 
 Adds a color to recent colors.
 
 ```typescript
-import { addRecentColor } from '@vizel/core';
+import { addVizelRecentColor } from '@vizel/core';
 
-addRecentColor('text', '#ff0000');
+addVizelRecentColor('text', '#ff0000');
 ```
 
-### isValidHexColor
+### isVizelValidHexColor
 
 Validates a hex color string.
 
 ```typescript
-import { isValidHexColor } from '@vizel/core';
+import { isVizelValidHexColor } from '@vizel/core';
 
-isValidHexColor('#ff0000'); // true
-isValidHexColor('red');     // false
+isVizelValidHexColor('#ff0000'); // true
+isVizelValidHexColor('red');     // false
 ```
 
 ---
 
 ## Embed Utilities
 
-### detectProvider
+### detectVizelEmbedProvider
 
 Detects oEmbed provider from URL.
 
 ```typescript
-import { detectProvider } from '@vizel/core';
+import { detectVizelEmbedProvider } from '@vizel/core';
 
-const provider = detectProvider('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+const provider = detectVizelEmbedProvider('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 // { name: 'YouTube', ... }
 ```
 
-### isValidUrl
+### isVizelValidUrl
 
 Checks if a string is a valid URL.
 
 ```typescript
-import { isValidUrl } from '@vizel/core';
+import { isVizelValidUrl } from '@vizel/core';
 
-isValidUrl('https://example.com'); // true
-isValidUrl('not a url');           // false
+isVizelValidUrl('https://example.com'); // true
+isVizelValidUrl('not a url');           // false
 ```
 
 ---
 
 ## Constants
 
-### TEXT_COLORS
+### VIZEL_TEXT_COLORS
 
 Default text color palette.
 
 ```typescript
-import { TEXT_COLORS } from '@vizel/core';
+import { VIZEL_TEXT_COLORS } from '@vizel/core';
 // Array of { name: string, color: string }
 ```
 
-### HIGHLIGHT_COLORS
+### VIZEL_HIGHLIGHT_COLORS
 
 Default highlight color palette.
 
 ```typescript
-import { HIGHLIGHT_COLORS } from '@vizel/core';
+import { VIZEL_HIGHLIGHT_COLORS } from '@vizel/core';
 // Array of { name: string, color: string }
 ```
 
-### defaultEmbedProviders
+### VIZEL_DEFAULT_EMBED_PROVIDERS
 
 Default oEmbed providers.
 
 ```typescript
-import { defaultEmbedProviders } from '@vizel/core';
+import { VIZEL_DEFAULT_EMBED_PROVIDERS } from '@vizel/core';
 // YouTube, Vimeo, Twitter, etc.
 ```
 
 ---
 
-## Re-exports
+## Importing from Tiptap
 
-The core package re-exports from Tiptap:
+Vizel does not re-export Tiptap types and classes. Import them directly from `@tiptap/core`:
 
 ```typescript
-// From @tiptap/core
-export { Editor, Extension, Mark, Node } from '@tiptap/core';
-export type { Extensions, Content } from '@tiptap/core';
+// Import Vizel types/utilities from @vizel/core
+import { createVizelExtensions, getVizelEditorState } from '@vizel/core';
+import type { VizelEditorOptions, VizelFeatureOptions } from '@vizel/core';
+
+// Import Tiptap types/classes directly from @tiptap/core
+import { Editor } from '@tiptap/core';
+import type { JSONContent, Extensions } from '@tiptap/core';
 ```
 
 ---
 
 ## Next Steps
 
-- [CSS Variables](/api/css-variables) - Complete CSS variable reference
-- [Type Definitions](/api/types) - Full TypeScript types
+- [CSS Variables](/api/css-variables/) - Complete CSS variable reference
+- [Type Definitions](/api/types/) - Full TypeScript types
 - [React API](/api/react) - React-specific APIs
 - [Vue API](/api/vue) - Vue-specific APIs
 - [Svelte API](/api/svelte) - Svelte-specific APIs

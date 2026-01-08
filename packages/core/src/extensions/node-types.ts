@@ -1,16 +1,16 @@
 import type { Editor } from "@tiptap/core";
-import type { NodeTypeIconName } from "../icons/types.ts";
+import type { VizelNodeTypeIconName } from "../icons/types.ts";
 
 /**
  * Node type option for the node selector dropdown
  */
-export interface NodeTypeOption {
+export interface VizelNodeTypeOption {
   /** Internal node name */
   name: string;
   /** Display label */
   label: string;
   /** Icon name (semantic name, rendered by framework packages) */
-  icon: NodeTypeIconName;
+  icon: VizelNodeTypeIconName;
   /** Check if this node type is currently active */
   isActive: (editor: Editor) => boolean;
   /** Command to transform the current block to this node type */
@@ -20,7 +20,7 @@ export interface NodeTypeOption {
 /**
  * Default node types available in the node selector
  */
-export const defaultNodeTypes = [
+export const vizelDefaultNodeTypes = [
   {
     name: "paragraph",
     label: "Text",
@@ -88,14 +88,14 @@ export const defaultNodeTypes = [
     isActive: (editor) => editor.isActive("codeBlock"),
     command: (editor) => editor.chain().focus().toggleCodeBlock().run(),
   },
-] satisfies NodeTypeOption[];
+] satisfies VizelNodeTypeOption[];
 
 /**
  * Get the currently active node type
  */
-export function getActiveNodeType(
+export function getVizelActiveNodeType(
   editor: Editor,
-  nodeTypes: NodeTypeOption[] = defaultNodeTypes
-): NodeTypeOption | undefined {
+  nodeTypes: VizelNodeTypeOption[] = vizelDefaultNodeTypes
+): VizelNodeTypeOption | undefined {
   return nodeTypes.find((type) => type.isActive(editor));
 }

@@ -1,13 +1,17 @@
 import type { Editor } from "@tiptap/core";
 import type { TableOptions } from "@tiptap/extension-table";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
-import { type InternalIconName, renderIcon, type TableIconName } from "../icons/types.ts";
+import {
+  renderVizelIcon,
+  type VizelInternalIconName,
+  type VizelTableIconName,
+} from "../icons/types.ts";
 import { VizelTable } from "./table-base";
 
 /**
  * Options for table controls UI (column/row insert buttons, row handle menu).
  */
-export interface TableControlsUIOptions {
+export interface VizelTableControlsUIOptions {
   /**
    * Show column insert buttons on vertical border hover
    * @default true
@@ -30,18 +34,18 @@ export interface TableControlsUIOptions {
 /**
  * Combined options for table with controls - extends Table's options with UI controls.
  */
-export type TableControlsOptions = Partial<TableOptions> & TableControlsUIOptions;
+export type VizelTableControlsOptions = Partial<TableOptions> & VizelTableControlsUIOptions;
 
-interface TableMenuItem {
+interface VizelTableMenuItem {
   label: string;
-  icon?: TableIconName;
+  icon?: VizelTableIconName;
   command: string | ((editor: Editor) => void);
   destructive?: boolean;
   divider?: boolean;
 }
 
 /** Row-specific menu items (shown from row handle) */
-const ROW_MENU_ITEMS: TableMenuItem[] = [
+const ROW_MENU_ITEMS: VizelTableMenuItem[] = [
   { label: "Add row above", icon: "arrowUp", command: "addRowBefore" },
   { label: "Add row below", icon: "arrowDown", command: "addRowAfter" },
   { label: "Delete row", command: "deleteRow", destructive: true },
@@ -52,7 +56,7 @@ const ROW_MENU_ITEMS: TableMenuItem[] = [
 ];
 
 /** Base column menu items (without alignment - those are added dynamically) */
-const COLUMN_MENU_ITEMS_BASE: TableMenuItem[] = [
+const COLUMN_MENU_ITEMS_BASE: VizelTableMenuItem[] = [
   { label: "Add column left", icon: "arrowLeft", command: "addColumnBefore" },
   { label: "Add column right", icon: "arrowRight", command: "addColumnAfter" },
   { label: "Delete column", command: "deleteColumn", destructive: true },
@@ -63,7 +67,7 @@ const COLUMN_MENU_ITEMS_BASE: TableMenuItem[] = [
 /**
  * Create column menu items with alignment options bound to specific column
  */
-function createColumnMenuItems(tablePos: number, colIndex: number): TableMenuItem[] {
+function createColumnMenuItems(tablePos: number, colIndex: number): VizelTableMenuItem[] {
   return [
     ...COLUMN_MENU_ITEMS_BASE,
     { divider: true, label: "", command: "" },
@@ -89,7 +93,7 @@ function createColumnMenuItems(tablePos: number, colIndex: number): TableMenuIte
 }
 
 /** Cell-specific menu items (shown from cell context menu) */
-const CELL_MENU_ITEMS: TableMenuItem[] = [
+const CELL_MENU_ITEMS: VizelTableMenuItem[] = [
   // Cell operations only (alignment is now column-based for Markdown compatibility)
   { label: "Merge cells", command: "mergeCells" },
   { label: "Split cell", command: "splitCell" },
@@ -99,7 +103,7 @@ const CELL_MENU_ITEMS: TableMenuItem[] = [
 const BOUNDARY_THRESHOLD_PX = 20;
 
 /** Combined menu items (legacy, for reference) */
-const TABLE_MENU_ITEMS: TableMenuItem[] = [
+const VIZEL_TABLE_MENU_ITEMS: VizelTableMenuItem[] = [
   ...ROW_MENU_ITEMS.slice(0, 3),
   { divider: true, label: "", command: "" },
   ...COLUMN_MENU_ITEMS_BASE.slice(0, 3),
@@ -393,7 +397,7 @@ function setColumnAlignment(
 function createTableMenu(
   editor: Editor,
   onClose: () => void,
-  menuItems: TableMenuItem[] = TABLE_MENU_ITEMS
+  menuItems: VizelTableMenuItem[] = VIZEL_TABLE_MENU_ITEMS
 ): HTMLElement {
   const menu = document.createElement("div");
   menu.className = "vizel-table-menu";
@@ -418,7 +422,10 @@ function createTableMenu(
       const icon = document.createElement("span");
       icon.className = "vizel-table-menu-item-icon";
       // Render SVG icon instead of text
-      icon.innerHTML = renderIcon(item.icon as InternalIconName, { width: 16, height: 16 });
+      icon.innerHTML = renderVizelIcon(item.icon as VizelInternalIconName, {
+        width: 16,
+        height: 16,
+      });
       button.appendChild(icon);
     }
 
@@ -474,7 +481,7 @@ function createTableMenu(
 /**
  * VizelTableWithControls - Table extension with interactive controls
  */
-export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
+export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOptions>({
   name: "table",
 
   addOptions() {
@@ -508,7 +515,7 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
       const columnInsertBtn = document.createElement("button");
       columnInsertBtn.className = "vizel-table-insert-button vizel-table-column-insert";
       columnInsertBtn.type = "button";
-      columnInsertBtn.innerHTML = renderIcon("plusSmall", { width: 12, height: 12 });
+      columnInsertBtn.innerHTML = renderVizelIcon("plusSmall", { width: 12, height: 12 });
       columnInsertBtn.setAttribute("aria-label", "Insert column");
       columnInsertBtn.title = "Insert column";
       // Initial position at first column boundary (CSS translateX(-50%) centers it)
@@ -520,7 +527,7 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
       const rowInsertBtn = document.createElement("button");
       rowInsertBtn.className = "vizel-table-insert-button vizel-table-row-insert";
       rowInsertBtn.type = "button";
-      rowInsertBtn.innerHTML = renderIcon("plusSmall", { width: 12, height: 12 });
+      rowInsertBtn.innerHTML = renderVizelIcon("plusSmall", { width: 12, height: 12 });
       rowInsertBtn.setAttribute("aria-label", "Insert row");
       rowInsertBtn.title = "Insert row";
       // Initial position at first row boundary (CSS translateY(-50%) centers it)
@@ -532,7 +539,7 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
       const rowHandle = document.createElement("button");
       rowHandle.className = "vizel-table-row-handle";
       rowHandle.type = "button";
-      rowHandle.innerHTML = renderIcon("grip", { width: 12, height: 12 });
+      rowHandle.innerHTML = renderVizelIcon("grip", { width: 12, height: 12 });
       rowHandle.setAttribute("aria-label", "Table row options");
       rowHandle.title = "Row options (delete, align, etc.)";
       // Initial position at first row (in padding area)
@@ -544,7 +551,7 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
       const columnHandle = document.createElement("button");
       columnHandle.className = "vizel-table-column-handle";
       columnHandle.type = "button";
-      columnHandle.innerHTML = renderIcon("gripHorizontal", { width: 12, height: 12 });
+      columnHandle.innerHTML = renderVizelIcon("gripHorizontal", { width: 12, height: 12 });
       columnHandle.setAttribute("aria-label", "Table column options");
       columnHandle.title = "Column options (delete, align, etc.)";
       // Initial position at first column (in padding area)
@@ -856,10 +863,10 @@ export const VizelTableWithControls = VizelTable.extend<TableControlsOptions>({
 });
 
 export {
-  TABLE_MENU_ITEMS,
+  VIZEL_TABLE_MENU_ITEMS,
   ROW_MENU_ITEMS,
   COLUMN_MENU_ITEMS_BASE,
   CELL_MENU_ITEMS,
   createColumnMenuItems,
 };
-export type { TableMenuItem };
+export type { VizelTableMenuItem };

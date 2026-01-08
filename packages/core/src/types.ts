@@ -7,8 +7,8 @@ import type { VizelDragHandleOptions } from "./extensions/drag-handle.ts";
 import type { VizelEmbedOptions } from "./extensions/embed.ts";
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
-import type { SlashCommandItem } from "./extensions/slash-command.ts";
-import type { VizelTaskListOptions } from "./extensions/task-list.ts";
+import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
+import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
 import type { ImageUploadOptions } from "./plugins/image-upload.ts";
 
@@ -17,7 +17,7 @@ import type { ImageUploadOptions } from "./plugins/image-upload.ts";
  */
 export interface VizelSlashCommandOptions {
   /** Custom slash command items */
-  items?: SlashCommandItem[];
+  items?: VizelSlashCommandItem[];
   /** Suggestion options (framework-specific renderer) */
   suggestion?: Record<string, unknown>;
 }
@@ -47,7 +47,7 @@ export interface VizelFeatureOptions {
   /** Markdown import/export support */
   markdown?: VizelMarkdownOptions | boolean;
   /** Task list (checkbox) support */
-  taskList?: VizelTaskListOptions | boolean;
+  taskList?: VizelTaskListExtensionsOptions | boolean;
   /** Character and word count tracking */
   characterCount?: VizelCharacterCountOptions | boolean;
   /** Text color and highlight support */
@@ -111,8 +111,3 @@ export interface VizelEditorState {
   /** Word count */
   wordCount: number;
 }
-
-/**
- * Re-export Tiptap types for convenience
- */
-export type { Extensions, JSONContent } from "@tiptap/core";

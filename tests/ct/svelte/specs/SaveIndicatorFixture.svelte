@@ -1,5 +1,5 @@
 <script lang="ts">
-import { SaveIndicator, type SaveStatus } from "@vizel/svelte";
+import { type SaveStatus, VizelSaveIndicator } from "@vizel/svelte";
 
 interface Props {
   status: SaveStatus;
@@ -11,7 +11,7 @@ interface Props {
 let { status, lastSaved, showTimestamp, class: className }: Props = $props();
 </script>
 
-<SaveIndicator
+<VizelSaveIndicator
   {status}
   {lastSaved}
   {showTimestamp}

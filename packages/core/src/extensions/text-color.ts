@@ -6,7 +6,7 @@ import { TextStyle } from "@tiptap/extension-text-style";
 /**
  * Color definition for text color and highlight
  */
-export interface ColorDefinition {
+export interface VizelColorDefinition {
   /** Display name for the color */
   name: string;
   /** CSS color value */
@@ -16,7 +16,7 @@ export interface ColorDefinition {
 /**
  * Extended text color palette with gradient-like arrangement
  */
-export const TEXT_COLORS: ColorDefinition[] = [
+export const VIZEL_TEXT_COLORS: VizelColorDefinition[] = [
   // Row 1: Grayscale
   { name: "Default", color: "inherit" },
   { name: "Dark Gray", color: "#374151" },
@@ -47,7 +47,7 @@ export const TEXT_COLORS: ColorDefinition[] = [
 /**
  * Extended highlight color palette (lighter/pastel colors)
  */
-export const HIGHLIGHT_COLORS: ColorDefinition[] = [
+export const VIZEL_HIGHLIGHT_COLORS: VizelColorDefinition[] = [
   // Row 1: Basics
   { name: "None", color: "transparent" },
   { name: "Light Gray", color: "#e5e7eb" },
@@ -84,7 +84,7 @@ const MAX_RECENT_COLORS = 8;
 /**
  * Get recent colors from localStorage
  */
-export function getRecentColors(type: "textColor" | "highlight"): string[] {
+export function getVizelRecentColors(type: "textColor" | "highlight"): string[] {
   if (typeof window === "undefined") return [];
   try {
     const stored = localStorage.getItem(`${RECENT_COLORS_KEY}-${type}`);
@@ -97,12 +97,12 @@ export function getRecentColors(type: "textColor" | "highlight"): string[] {
 /**
  * Add a color to recent colors
  */
-export function addRecentColor(type: "textColor" | "highlight", color: string): void {
+export function addVizelRecentColor(type: "textColor" | "highlight", color: string): void {
   if (typeof window === "undefined") return;
   if (color === "inherit" || color === "transparent") return;
 
   try {
-    const recent = getRecentColors(type);
+    const recent = getVizelRecentColors(type);
     const filtered = recent.filter((c) => c !== color);
     const updated = [color, ...filtered].slice(0, MAX_RECENT_COLORS);
     localStorage.setItem(`${RECENT_COLORS_KEY}-${type}`, JSON.stringify(updated));
@@ -112,32 +112,13 @@ export function addRecentColor(type: "textColor" | "highlight", color: string): 
 }
 
 /**
- * Validate if a string is a valid hex color
- */
-export function isValidHexColor(color: string): boolean {
-  return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(color);
-}
-
-/**
- * Normalize hex color to 6-digit format
- */
-export function normalizeHexColor(color: string): string {
-  if (!isValidHexColor(color)) return color;
-  if (color.length === 4) {
-    // Convert #RGB to #RRGGBB
-    return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`;
-  }
-  return color.toLowerCase();
-}
-
-/**
  * Options for text color extensions
  */
 export interface VizelTextColorOptions {
   /** Custom text color palette */
-  textColors?: ColorDefinition[];
+  textColors?: VizelColorDefinition[];
   /** Custom highlight color palette */
-  highlightColors?: ColorDefinition[];
+  highlightColors?: VizelColorDefinition[];
   /** Enable multicolor highlights (allows any color) */
   multicolor?: boolean;
 }
@@ -145,7 +126,7 @@ export interface VizelTextColorOptions {
 /**
  * Create text color and highlight extensions
  */
-export function createTextColorExtensions(options: VizelTextColorOptions = {}): Extensions {
+export function createVizelTextColorExtensions(options: VizelTextColorOptions = {}): Extensions {
   const { multicolor = true } = options;
 
   return [
@@ -156,6 +137,3 @@ export function createTextColorExtensions(options: VizelTextColorOptions = {}): 
     }),
   ];
 }
-
-// Re-export individual extensions for advanced usage
-export { Color, Highlight, TextStyle };

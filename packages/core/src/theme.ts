@@ -7,34 +7,34 @@
 /**
  * Available theme options
  */
-export type Theme = "light" | "dark" | "system";
+export type VizelTheme = "light" | "dark" | "system";
 
 /**
  * Resolved theme (actual applied theme)
  */
-export type ResolvedTheme = "light" | "dark";
+export type VizelResolvedTheme = "light" | "dark";
 
 /**
  * Default theme configuration
  */
-export const DEFAULT_THEME: Theme = "system";
+export const VIZEL_DEFAULT_THEME: VizelTheme = "system";
 
 /**
  * Default storage key for persisting theme preference
  */
-export const DEFAULT_THEME_STORAGE_KEY = "vizel-theme";
+export const VIZEL_DEFAULT_THEME_STORAGE_KEY = "vizel-theme";
 
 /**
  * Data attribute used for theme application
  */
-export const THEME_DATA_ATTRIBUTE = "data-vizel-theme";
+export const VIZEL_THEME_DATA_ATTRIBUTE = "data-vizel-theme";
 
 /**
  * Theme provider options
  */
-export interface ThemeProviderOptions {
+export interface VizelThemeProviderOptions {
   /** Default theme (default: "system") */
-  defaultTheme?: Theme;
+  defaultTheme?: VizelTheme;
   /** Storage key for persisting theme (default: "vizel-theme") */
   storageKey?: string;
   /** Target element to apply theme attribute (default: document.documentElement) */
@@ -46,21 +46,21 @@ export interface ThemeProviderOptions {
 /**
  * Theme state returned by useTheme hooks
  */
-export interface ThemeState {
+export interface VizelThemeState {
   /** Current theme setting */
-  theme: Theme;
+  theme: VizelTheme;
   /** Resolved theme (actual applied theme) */
-  resolvedTheme: ResolvedTheme;
+  resolvedTheme: VizelResolvedTheme;
   /** System theme preference */
-  systemTheme: ResolvedTheme;
+  systemTheme: VizelResolvedTheme;
   /** Set theme */
-  setTheme: (theme: Theme) => void;
+  setTheme: (theme: VizelTheme) => void;
 }
 
 /**
  * Get the system theme preference
  */
-export function getSystemTheme(): ResolvedTheme {
+export function getVizelSystemTheme(): VizelResolvedTheme {
   if (typeof window === "undefined") {
     return "light";
   }
@@ -70,7 +70,10 @@ export function getSystemTheme(): ResolvedTheme {
 /**
  * Resolve theme to actual applied theme
  */
-export function resolveTheme(theme: Theme, systemTheme: ResolvedTheme): ResolvedTheme {
+export function resolveVizelTheme(
+  theme: VizelTheme,
+  systemTheme: VizelResolvedTheme
+): VizelResolvedTheme {
   if (theme === "system") {
     return systemTheme;
   }
@@ -80,7 +83,7 @@ export function resolveTheme(theme: Theme, systemTheme: ResolvedTheme): Resolved
 /**
  * Get stored theme from storage
  */
-export function getStoredTheme(storageKey: string): Theme | null {
+export function getStoredVizelTheme(storageKey: string): VizelTheme | null {
   if (typeof window === "undefined") {
     return null;
   }
@@ -98,7 +101,7 @@ export function getStoredTheme(storageKey: string): Theme | null {
 /**
  * Store theme to storage
  */
-export function storeTheme(storageKey: string, theme: Theme): void {
+export function storeVizelTheme(storageKey: string, theme: VizelTheme): void {
   if (typeof window === "undefined") {
     return;
   }
@@ -112,8 +115,8 @@ export function storeTheme(storageKey: string, theme: Theme): void {
 /**
  * Apply theme to target element
  */
-export function applyTheme(
-  resolvedTheme: ResolvedTheme,
+export function applyVizelTheme(
+  resolvedTheme: VizelResolvedTheme,
   targetSelector?: string,
   disableTransition?: boolean
 ): void {
@@ -146,13 +149,15 @@ export function applyTheme(
     }, 1);
   }
 
-  target.setAttribute(THEME_DATA_ATTRIBUTE, resolvedTheme);
+  target.setAttribute(VIZEL_THEME_DATA_ATTRIBUTE, resolvedTheme);
 }
 
 /**
  * Create a media query listener for system theme changes
  */
-export function createSystemThemeListener(callback: (theme: ResolvedTheme) => void): () => void {
+export function createVizelSystemThemeListener(
+  callback: (theme: VizelResolvedTheme) => void
+): () => void {
   if (typeof window === "undefined") {
     // SSR: return no-op cleanup function
     return () => {
@@ -193,6 +198,8 @@ export function createSystemThemeListener(callback: (theme: ResolvedTheme) => vo
  * </script>
  * ```
  */
-export function getThemeInitScript(storageKey: string = DEFAULT_THEME_STORAGE_KEY): string {
-  return `(function(){try{var s=localStorage.getItem('${storageKey}');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var t=s==='dark'?'dark':s==='light'?'light':d?'dark':'light';document.documentElement.setAttribute('${THEME_DATA_ATTRIBUTE}',t)}catch(e){}})()`;
+export function getVizelThemeInitScript(
+  storageKey: string = VIZEL_DEFAULT_THEME_STORAGE_KEY
+): string {
+  return `(function(){try{var s=localStorage.getItem('${storageKey}');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var t=s==='dark'?'dark':s==='light'?'light':d?'dark':'light';document.documentElement.setAttribute('${VIZEL_THEME_DATA_ATTRIBUTE}',t)}catch(e){}})()`;
 }

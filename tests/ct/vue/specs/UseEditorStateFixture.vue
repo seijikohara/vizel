@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import {
-  EditorContent,
-  EditorRoot,
-  getEditorState,
-  useEditorState,
-  useVizelEditor,
-} from "@vizel/vue";
+import { getVizelEditorState } from "@vizel/core";
+import { useVizelEditor, useVizelState, VizelEditor, VizelProvider } from "@vizel/vue";
 import { computed } from "vue";
 
 const props = defineProps<{
@@ -17,7 +12,7 @@ const editor = useVizelEditor({
 });
 
 const actualEditor = computed(() => (props.nullEditor ? null : editor.value));
-const updateCount = useEditorState(() => actualEditor.value);
+const updateCount = useVizelState(() => actualEditor.value);
 
 // Depend on updateCount to trigger re-evaluation when editor state changes
 const isBoldActive = computed(() => {
@@ -29,15 +24,15 @@ const isItalicActive = computed(() => {
   return actualEditor.value?.isActive("italic") ?? false;
 });
 
-// Use getEditorState to get full state including character/word counts
+// Use getVizelEditorState to get full state including character/word counts
 const editorState = computed(() => {
   void updateCount.value;
-  return getEditorState(actualEditor.value);
+  return getVizelEditorState(actualEditor.value);
 });
 </script>
 
 <template>
-  <EditorRoot :editor="actualEditor">
+  <VizelProvider :editor="actualEditor">
     <div data-testid="update-count">{{ updateCount }}</div>
     <div data-testid="bold-active">{{ String(isBoldActive) }}</div>
     <div data-testid="italic-active">{{ String(isItalicActive) }}</div>
@@ -45,6 +40,6 @@ const editorState = computed(() => {
     <div data-testid="word-count">{{ editorState.wordCount }}</div>
     <div data-testid="is-empty">{{ String(editorState.isEmpty) }}</div>
     <div data-testid="is-focused">{{ String(editorState.isFocused) }}</div>
-    <EditorContent />
-  </EditorRoot>
+    <VizelEditor />
+  </VizelProvider>
 </template>

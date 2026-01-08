@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { type ColorDefinition, HIGHLIGHT_COLORS, TEXT_COLORS } from "@vizel/core";
-import { ColorPicker } from "@vizel/vue";
+import { VIZEL_HIGHLIGHT_COLORS, VIZEL_TEXT_COLORS, type VizelColorDefinition } from "@vizel/core";
+import { VizelColorPicker } from "@vizel/vue";
 import { computed, ref } from "vue";
 
 const props = withDefaults(
   defineProps<{
-    colors?: ColorDefinition[];
+    colors?: VizelColorDefinition[];
     value?: string;
     label?: string;
     class?: string;
@@ -26,7 +26,7 @@ const props = withDefaults(
 const selectedColor = ref(props.value ?? "");
 
 const colorPalette = computed(() => {
-  return props.colors ?? (props.useHighlightColors ? HIGHLIGHT_COLORS : TEXT_COLORS);
+  return props.colors ?? (props.useHighlightColors ? VIZEL_HIGHLIGHT_COLORS : VIZEL_TEXT_COLORS);
 });
 
 function handleChange(color: string) {
@@ -36,7 +36,7 @@ function handleChange(color: string) {
 
 <template>
   <div>
-    <ColorPicker
+    <VizelColorPicker
       :colors="colorPalette"
       :value="selectedColor"
       :label="props.label"

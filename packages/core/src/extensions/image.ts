@@ -3,14 +3,14 @@ import { FileHandler } from "@tiptap/extension-file-handler";
 import Image from "@tiptap/extension-image";
 import { Plugin } from "@tiptap/pm/state";
 import {
-  createImageUploader,
-  createImageUploadPlugin,
-  handleImageDrop,
-  handleImagePaste,
+  createVizelImageUploader,
+  createVizelImageUploadPlugin,
+  handleVizelImageDrop,
+  handleVizelImagePaste,
   type ImageUploadOptions,
-  validateImageFile,
+  validateVizelImageFile,
 } from "../plugins/image-upload.ts";
-import { ResizableImage } from "./image-resize.ts";
+import { VizelResizableImage } from "./image-resize.ts";
 
 /**
  * Options for image resize functionality
@@ -39,7 +39,7 @@ export const defaultImageResizeOptions = {
  * Default base64 image uploader (converts file to data URL).
  * Use this as the default onUpload handler when no custom uploader is provided.
  */
-export function defaultBase64Upload(file: File): Promise<string> {
+export function vizelDefaultBase64Upload(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -72,7 +72,7 @@ export interface VizelImageOptions {
  * ];
  * ```
  */
-export function createImageExtension(options: VizelImageOptions = {}) {
+export function createVizelImageExtension(options: VizelImageOptions = {}) {
   return Image.configure({
     inline: options.inline ?? false,
     allowBase64: options.allowBase64 ?? true,
@@ -116,15 +116,15 @@ export interface VizelImageUploadOptions extends VizelImageOptions {
  * ];
  * ```
  */
-export function createImageUploadExtension(options: VizelImageUploadOptions) {
-  const uploadFn = createImageUploader(options.upload);
+export function createVizelImageUploadExtension(options: VizelImageUploadOptions) {
+  const uploadFn = createVizelImageUploader(options.upload);
 
   // Use ResizableImage if resize is enabled, otherwise use standard Image
   const resizeEnabled = options.resize !== false;
   const resizeOptions = typeof options.resize === "object" ? options.resize : {};
 
   const imageExtension = resizeEnabled
-    ? ResizableImage.configure({
+    ? VizelResizableImage.configure({
         inline: options.inline ?? false,
         allowBase64: options.allowBase64 ?? true,
         minWidth: resizeOptions.minWidth ?? 100,
@@ -135,13 +135,13 @@ export function createImageUploadExtension(options: VizelImageUploadOptions) {
           ...options.HTMLAttributes,
         },
       })
-    : createImageExtension(options);
+    : createVizelImageExtension(options);
 
   const uploadExtension = Extension.create({
     name: "imageUpload",
 
     addProseMirrorPlugins() {
-      return [createImageUploadPlugin(options.upload)];
+      return [createVizelImageUploadPlugin(options.upload)];
     },
   });
 
@@ -154,10 +154,10 @@ export function createImageUploadExtension(options: VizelImageUploadOptions) {
         new Plugin({
           props: {
             handlePaste: (view, event) => {
-              return handleImagePaste(view, event, uploadFn);
+              return handleVizelImagePaste(view, event, uploadFn);
             },
             handleDrop: (view, event, _slice, moved) => {
-              return handleImageDrop(view, event, moved, uploadFn);
+              return handleVizelImageDrop(view, event, moved, uploadFn);
             },
           },
         }),
@@ -203,15 +203,17 @@ export interface VizelImageUploadWithFileHandlerOptions extends VizelImageOption
  * ];
  * ```
  */
-export function createImageUploadWithFileHandler(options: VizelImageUploadWithFileHandlerOptions) {
+export function createVizelImageUploadWithFileHandler(
+  options: VizelImageUploadWithFileHandlerOptions
+) {
   const { onUpload, maxFileSize, allowedTypes, onValidationError, onUploadError } = options.upload;
 
-  // Use ResizableImage if resize is enabled, otherwise use standard Image
+  // Use VizelResizableImage if resize is enabled, otherwise use standard Image
   const resizeEnabled = options.resize !== false;
   const resizeOptions = typeof options.resize === "object" ? options.resize : {};
 
   const imageExtension = resizeEnabled
-    ? ResizableImage.configure({
+    ? VizelResizableImage.configure({
         inline: options.inline ?? false,
         allowBase64: options.allowBase64 ?? true,
         minWidth: resizeOptions.minWidth ?? 100,
@@ -222,13 +224,13 @@ export function createImageUploadWithFileHandler(options: VizelImageUploadWithFi
           ...options.HTMLAttributes,
         },
       })
-    : createImageExtension(options);
+    : createVizelImageExtension(options);
 
   const uploadExtension = Extension.create({
     name: "imageUpload",
 
     addProseMirrorPlugins() {
-      return [createImageUploadPlugin(options.upload)];
+      return [createVizelImageUploadPlugin(options.upload)];
     },
   });
 
@@ -248,7 +250,7 @@ export function createImageUploadWithFileHandler(options: VizelImageUploadWithFi
     onPaste: (editor: Editor, files: File[]) => {
       for (const file of files) {
         // Validate file
-        const validationError = validateImageFile(file, {
+        const validationError = validateVizelImageFile(file, {
           ...(maxFileSize !== undefined && { maxFileSize }),
           ...(allowedTypes !== undefined && { allowedTypes }),
         });
@@ -272,7 +274,7 @@ export function createImageUploadWithFileHandler(options: VizelImageUploadWithFi
     onDrop: (editor: Editor, files: File[], pos: number) => {
       for (const file of files) {
         // Validate file
-        const validationError = validateImageFile(file, {
+        const validationError = validateVizelImageFile(file, {
           ...(maxFileSize !== undefined && { maxFileSize }),
           ...(allowedTypes !== undefined && { allowedTypes }),
         });
@@ -302,18 +304,18 @@ export function createImageUploadWithFileHandler(options: VizelImageUploadWithFi
   return [imageExtension, uploadExtension, fileHandlerExtension];
 }
 
-export { Image };
+export { Image as VizelImage };
 
 // Re-export plugin utilities for advanced usage
 export {
-  createImageUploader,
-  createImageUploadPlugin,
-  getImageUploadPluginKey,
-  handleImageDrop,
-  handleImagePaste,
+  createVizelImageUploader,
+  createVizelImageUploadPlugin,
+  getVizelImageUploadPluginKey,
+  handleVizelImageDrop,
+  handleVizelImagePaste,
   type ImageUploadOptions,
-  type ImageValidationError,
-  type ImageValidationErrorType,
-  type UploadImageFn,
-  validateImageFile,
+  type VizelImageValidationError,
+  type VizelImageValidationErrorType,
+  type VizelUploadImageFn,
+  validateVizelImageFile,
 } from "../plugins/image-upload.ts";

@@ -1,15 +1,14 @@
+import { Editor, type Extensions } from "@tiptap/core";
 import {
   createVizelExtensions,
-  defaultEditorProps,
-  Editor,
-  type Extensions,
-  registerUploadEventHandler,
-  resolveFeatures,
+  registerVizelUploadEventHandler,
+  resolveVizelFeatures,
   type VizelEditorOptions,
+  vizelDefaultEditorProps,
 } from "@vizel/core";
 import type { ShallowRef } from "vue";
 import { onBeforeUnmount, onMounted, shallowRef } from "vue";
-import { createSlashMenuRenderer } from "./createSlashMenuRenderer.ts";
+import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.ts";
 
 export interface UseVizelEditorOptions extends VizelEditorOptions {
   /** Additional extensions to include */
@@ -53,9 +52,9 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
     onBlur,
   } = options;
 
-  const resolvedFeatures = resolveFeatures({
+  const resolvedFeatures = resolveVizelFeatures({
     ...(features !== undefined && { features }),
-    createSlashMenuRenderer,
+    createSlashMenuRenderer: createVizelSlashMenuRenderer,
   });
 
   // Store image upload options for event handler
@@ -78,7 +77,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
       ...(initialContent !== undefined && { content: initialContent }),
       editable,
       autofocus,
-      editorProps: defaultEditorProps,
+      editorProps: vizelDefaultEditorProps,
       // Only pass event handlers that are defined to avoid tiptap emit errors
       ...(onUpdate && { onUpdate }),
       ...(onCreate && { onCreate }),
@@ -88,7 +87,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
       ...(onBlur && { onBlur }),
     });
 
-    cleanupHandler = registerUploadEventHandler({
+    cleanupHandler = registerVizelUploadEventHandler({
       getEditor: () => editor.value,
       getImageOptions: () => imageOptions,
     });

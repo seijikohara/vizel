@@ -1,17 +1,15 @@
+import type { JSONContent } from "@tiptap/core";
+import { convertVizelCodeBlocksToDiagrams, getVizelEditorState } from "@vizel/core";
 import {
-  BubbleMenu,
-  convertCodeBlocksToDiagrams,
-  EditorContent,
-  getEditorState,
-  type JSONContent,
-  SaveIndicator,
-  ThemeProvider,
-  useAutoSave,
-  useEditorState,
-  useTheme,
-  useVizelEditor,
+  useVizelAutoSave,
+  useVizelState,
+  useVizelTheme,
+  Vizel,
+  type VizelRef,
+  VizelSaveIndicator,
+  VizelThemeProvider,
 } from "@vizel/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { initialContent } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
 
@@ -29,7 +27,7 @@ function ReactLogo() {
 }
 
 function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useVizelTheme();
 
   return (
     <button
@@ -51,52 +49,26 @@ function AppContent() {
   const [markdownInput, setMarkdownInput] = useState("");
   const [showMarkdownInput, setShowMarkdownInput] = useState(false);
 
-  const editor = useVizelEditor({
-    initialContent,
-    autofocus: "end",
-    features: {
-      markdown: true,
-      mathematics: true,
-      embed: true,
-      details: true,
-      diagram: true,
-      image: {
-        onUpload: mockUploadImage,
-        maxFileSize: 10 * 1024 * 1024, // 10MB
-        onValidationError: (error) => {
-          alert(`Validation error: ${error.message}`);
-        },
-        onUploadError: (error) => {
-          alert(`Upload failed: ${error.message}`);
-        },
-      },
-    },
-    onUpdate: ({ editor: e }) => {
-      setOutput(e.getJSON());
-      setMarkdownOutput(e.getMarkdown());
-    },
-    onCreate: ({ editor: e }) => {
-      setOutput(e.getJSON());
-      setMarkdownOutput(e.getMarkdown());
-    },
-  });
+  // Store editor reference from Vizel component
+  const vizelRef = useRef<VizelRef>(null);
 
   // Track editor state for character/word count
-  useEditorState(editor);
-  const editorState = getEditorState(editor);
+  useVizelState(vizelRef.current?.editor ?? null);
+  const editorState = getVizelEditorState(vizelRef.current?.editor ?? null);
 
   // Auto-save functionality
-  const { status, lastSaved } = useAutoSave(editor, {
+  const { status, lastSaved } = useVizelAutoSave(vizelRef.current?.editor ?? null, {
     debounceMs: 2000,
     storage: "localStorage",
     key: "vizel-demo-react",
   });
 
   const handleImportMarkdown = () => {
+    const editor = vizelRef.current?.editor;
     if (editor && markdownInput.trim()) {
       editor.commands.setContent(markdownInput, { contentType: "markdown" });
       // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
-      convertCodeBlocksToDiagrams(editor);
+      convertVizelCodeBlocksToDiagrams(editor);
       setMarkdownInput("");
       setShowMarkdownInput(false);
     }
@@ -183,12 +155,40 @@ function AppContent() {
         </div>
 
         <div className="editor-container">
-          <div className="editor-root">
-            <EditorContent editor={editor} className="editor-content" />
-            {editor && <BubbleMenu editor={editor} enableEmbed />}
-          </div>
+          <Vizel
+            ref={vizelRef}
+            initialContent={initialContent}
+            autofocus="end"
+            className="editor-content"
+            enableEmbed
+            features={{
+              markdown: true,
+              mathematics: true,
+              embed: true,
+              details: true,
+              diagram: true,
+              image: {
+                onUpload: mockUploadImage,
+                maxFileSize: 10 * 1024 * 1024, // 10MB
+                onValidationError: (error) => {
+                  alert(`Validation error: ${error.message}`);
+                },
+                onUploadError: (error) => {
+                  alert(`Upload failed: ${error.message}`);
+                },
+              },
+            }}
+            onCreate={({ editor }) => {
+              setOutput(editor.getJSON() as JSONContent);
+              setMarkdownOutput(editor.getMarkdown());
+            }}
+            onUpdate={({ editor }) => {
+              setOutput(editor.getJSON() as JSONContent);
+              setMarkdownOutput(editor.getMarkdown());
+            }}
+          />
           <div className="status-bar">
-            <SaveIndicator status={status} lastSaved={lastSaved} />
+            <VizelSaveIndicator status={status} lastSaved={lastSaved} />
             <span className="status-divider">·</span>
             <span className="status-item">{editorState.characterCount} characters</span>
             <span className="status-divider">·</span>
@@ -257,8 +257,8 @@ function AppContent() {
 
 export function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vizel-theme">
+    <VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
       <AppContent />
-    </ThemeProvider>
+    </VizelThemeProvider>
   );
 }

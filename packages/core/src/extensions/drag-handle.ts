@@ -1,8 +1,8 @@
 import { Extension } from "@tiptap/core";
 import DragHandle, { type DragHandleOptions } from "@tiptap/extension-drag-handle";
-import { renderIcon } from "../icons/types.ts";
+import { renderVizelIcon } from "../icons/types.ts";
 
-export { DragHandle };
+export { DragHandle as VizelDragHandle };
 export type { DragHandleOptions };
 
 export interface VizelDragHandleOptions {
@@ -17,7 +17,7 @@ export interface VizelDragHandleOptions {
  * Creates a DragHandle extension with default styling.
  * The drag handle appears on the left side of blocks when hovering.
  */
-export function createDragHandleExtension(options: VizelDragHandleOptions = {}): Extension {
+export function createVizelDragHandleExtension(options: VizelDragHandleOptions = {}): Extension {
   const { enabled = true } = options;
 
   if (!enabled) {
@@ -39,7 +39,7 @@ export function createDragHandleExtension(options: VizelDragHandleOptions = {}):
       // Create grip icon (6 dots pattern)
       const grip = document.createElement("div");
       grip.classList.add("vizel-drag-handle-grip");
-      grip.innerHTML = renderIcon("grip", { width: 14, height: 14 });
+      grip.innerHTML = renderVizelIcon("grip", { width: 14, height: 14 });
       element.appendChild(grip);
 
       // Store reference for onNodeChange callback
@@ -185,7 +185,7 @@ function findNextSiblingInfo(
  * Alt+ArrowUp moves block up, Alt+ArrowDown moves block down.
  * Supports moving list items within their parent list.
  */
-export const BlockMoveKeymap = Extension.create({
+export const VizelBlockMoveKeymap = Extension.create({
   name: "vizelBlockMoveKeymap",
 
   addCommands() {
@@ -254,6 +254,6 @@ export const BlockMoveKeymap = Extension.create({
  * - Visual drag handle on block hover
  * - Keyboard shortcuts for block movement (Alt+Up/Down)
  */
-export function createDragHandleExtensions(options: VizelDragHandleOptions = {}): Extension[] {
-  return [createDragHandleExtension(options), BlockMoveKeymap];
+export function createVizelDragHandleExtensions(options: VizelDragHandleOptions = {}): Extension[] {
+  return [createVizelDragHandleExtension(options), VizelBlockMoveKeymap];
 }

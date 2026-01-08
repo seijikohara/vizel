@@ -1,14 +1,13 @@
-import { Editor } from "@tiptap/core";
+import { Editor, type Extensions } from "@tiptap/core";
 import type { VizelEditorOptions } from "@vizel/core";
 import {
   createVizelExtensions,
-  defaultEditorProps,
-  type Extensions,
-  registerUploadEventHandler,
-  resolveFeatures,
+  registerVizelUploadEventHandler,
+  resolveVizelFeatures,
+  vizelDefaultEditorProps,
 } from "@vizel/core";
 import { onDestroy, onMount } from "svelte";
-import { createSlashMenuRenderer } from "./createSlashMenuRenderer.ts";
+import { createVizelSlashMenuRenderer } from "./createSlashMenuRenderer.ts";
 
 export interface CreateVizelEditorOptions extends VizelEditorOptions {
   /** Additional extensions to include */
@@ -54,9 +53,9 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
     onBlur,
   } = options;
 
-  const resolvedFeatures = resolveFeatures({
+  const resolvedFeatures = resolveVizelFeatures({
     ...(features !== undefined && { features }),
-    createSlashMenuRenderer,
+    createSlashMenuRenderer: createVizelSlashMenuRenderer,
   });
 
   // Store image upload options for event handler
@@ -81,7 +80,7 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
       editable,
       autofocus,
       // Add vizel-editor class for styling
-      editorProps: defaultEditorProps,
+      editorProps: vizelDefaultEditorProps,
       // Only pass event handlers that are defined to avoid tiptap emit errors
       ...(onUpdate && { onUpdate }),
       ...(onCreate && { onCreate }),
@@ -91,7 +90,7 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
       ...(onBlur && { onBlur }),
     });
 
-    cleanupHandler = registerUploadEventHandler({
+    cleanupHandler = registerVizelUploadEventHandler({
       getEditor: () => editor,
       getImageOptions: () => imageOptions,
     });

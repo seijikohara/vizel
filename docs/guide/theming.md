@@ -225,32 +225,34 @@ Vizel uses CSS custom properties (variables) for all visual styling. Override th
 
 ### Example: Custom Colors
 
+Vizel uses the OKLCH color space for all color values. Here's an example of custom color overrides:
+
 ```css
 :root {
-  /* Brand colors */
-  --vizel-primary: #6366f1;
-  --vizel-primary-hover: #4f46e5;
-  --vizel-primary-active: #4338ca;
-  --vizel-primary-foreground: #ffffff;
+  /* Brand colors (using OKLCH) */
+  --vizel-primary: oklch(0.623 0.214 259.815);
+  --vizel-primary-hover: oklch(0.546 0.245 262.881);
+  --vizel-primary-active: oklch(0.488 0.243 264.376);
+  --vizel-primary-foreground: oklch(1 0 0);
   
   /* Background */
-  --vizel-background: #ffffff;
-  --vizel-background-secondary: #f8fafc;
-  --vizel-foreground: #0f172a;
+  --vizel-background: oklch(1 0 0);
+  --vizel-background-secondary: oklch(0.985 0 0);
+  --vizel-foreground: oklch(0.21 0.006 285.885);
   
   /* Borders */
-  --vizel-border: #e2e8f0;
+  --vizel-border: oklch(0.922 0 0);
 }
 
 [data-vizel-theme="dark"] {
-  --vizel-primary: #818cf8;
-  --vizel-primary-hover: #a5b4fc;
+  --vizel-primary: oklch(0.707 0.165 254.624);
+  --vizel-primary-hover: oklch(0.623 0.214 259.815);
   
-  --vizel-background: #0f172a;
-  --vizel-background-secondary: #1e293b;
-  --vizel-foreground: #f8fafc;
+  --vizel-background: oklch(0.21 0.006 285.885);
+  --vizel-background-secondary: oklch(0.145 0 0);
+  --vizel-foreground: oklch(0.985 0 0);
   
-  --vizel-border: #334155;
+  --vizel-border: oklch(0.279 0.041 260.031);
 }
 ```
 
@@ -424,7 +426,7 @@ Vizel uses CSS custom properties (variables) for all visual styling. Override th
 
 ## shadcn/ui Integration
 
-Map shadcn/ui CSS variables to Vizel:
+Map shadcn/ui CSS variables to Vizel. Note that shadcn/ui uses HSL format while Vizel uses OKLCH, but CSS custom properties can reference each other:
 
 ```css
 :root {
@@ -446,6 +448,8 @@ Map shadcn/ui CSS variables to Vizel:
   --vizel-radius-lg: var(--radius);
 }
 ```
+
+For detailed integration instructions, see the [CSS Variables Reference](/api/css-variables/integrations).
 
 ---
 
@@ -480,6 +484,6 @@ Or manually:
 
 ## Next Steps
 
-- [CSS Variables Reference](/api/css-variables) - Complete variable list
+- [CSS Variables Reference](/api/css-variables/) - Complete variable list
 - [Auto-Save](/guide/auto-save) - Persist content automatically
 - [API Reference](/api/) - Complete API documentation

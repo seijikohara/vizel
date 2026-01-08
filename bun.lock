@@ -6,6 +6,7 @@
       "name": "vizel",
       "devDependencies": {
         "@biomejs/biome": "^2.3.11",
+        "@braintree/sanitize-url": "^7.1.1",
         "@playwright/experimental-ct-react": "^1.57.0",
         "@playwright/experimental-ct-svelte": "^1.57.0",
         "@playwright/experimental-ct-vue": "^1.57.0",
@@ -18,6 +19,10 @@
         "@vitejs/plugin-vue": "^6.0.3",
         "@vue/compiler-dom": "^3.5.26",
         "concurrently": "^9.2.1",
+        "cytoscape": "^3.33.1",
+        "cytoscape-cose-bilkent": "^4.1.0",
+        "dayjs": "^1.11.19",
+        "debug": "^4.4.3",
         "lefthook": "^2.0.13",
         "mermaid": "^11.12.2",
         "playwright": "^1.57.0",
@@ -35,6 +40,8 @@
       "name": "@vizel/demo-react",
       "version": "0.0.1",
       "dependencies": {
+        "@tiptap/core": "^2.24.2",
+        "@vizel/core": "workspace:*",
         "@vizel/react": "workspace:*",
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
@@ -50,6 +57,8 @@
       "name": "@vizel/demo-svelte",
       "version": "0.0.1",
       "dependencies": {
+        "@tiptap/core": "^2.24.2",
+        "@vizel/core": "workspace:*",
         "@vizel/svelte": "workspace:*",
         "svelte": "^5.46.1",
       },
@@ -62,6 +71,8 @@
       "name": "@vizel/demo-vue",
       "version": "0.0.1",
       "dependencies": {
+        "@tiptap/core": "^2.24.2",
+        "@vizel/core": "workspace:*",
         "@vizel/vue": "workspace:*",
         "vue": "^3.5.26",
       },
@@ -133,6 +144,8 @@
       "dependencies": {
         "@iconify/react": "^6",
         "@iconify/utils": "^3.1.0",
+        "@tiptap/core": "^3.15.1",
+        "@tiptap/extension-bubble-menu": "^3.15.1",
         "@tiptap/suggestion": "^3.15.1",
         "@vizel/core": "workspace:*",
       },
@@ -156,6 +169,7 @@
         "@iconify/svelte": "^5",
         "@iconify/utils": "^3.1.0",
         "@tiptap/core": "^3.15.1",
+        "@tiptap/extension-bubble-menu": "^3.15.1",
         "@tiptap/suggestion": "^3.15.1",
         "@vizel/core": "workspace:*",
       },
@@ -175,6 +189,8 @@
       "dependencies": {
         "@iconify/utils": "^3.1.0",
         "@iconify/vue": "^5",
+        "@tiptap/core": "^3.15.1",
+        "@tiptap/extension-bubble-menu": "^3.15.1",
         "@tiptap/suggestion": "^3.15.1",
         "@vizel/core": "workspace:*",
       },
@@ -1191,7 +1207,7 @@
 
     "postcss": ["postcss@8.5.6", "", { "dependencies": { "nanoid": "^3.3.11", "picocolors": "^1.1.1", "source-map-js": "^1.2.1" } }, "sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg=="],
 
-    "preact": ["preact@10.28.1", "", {}, "sha512-u1/ixq/lVQI0CakKNvLDEcW5zfCjUQfZdK9qqWuIJtsezuyG6pk9TWj75GMuI/EzRSZB/VAE43sNWWZfiy8psw=="],
+    "preact": ["preact@10.28.2", "", {}, "sha512-lbteaWGzGHdlIuiJ0l2Jq454m6kcpI1zNje6d8MlGAFlYvP2GO4ibnat7P74Esfz4sPTdM6UxtTwh/d3pwM9JA=="],
 
     "property-information": ["property-information@7.1.0", "", {}, "sha512-TwEZ+X+yCJmYfL7TPUOcvBZ4QfoT5YenQiJuX//0th53DE6w0xxLEtfK3iyryQFddXuvkIk51EEgrJQ0WJkOmQ=="],
 
@@ -1444,6 +1460,12 @@
     "@sveltejs/package/chokidar": ["chokidar@5.0.0", "", { "dependencies": { "readdirp": "^5.0.0" } }, "sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw=="],
 
     "@tiptap/markdown/marked": ["marked@15.0.12", "", { "bin": { "marked": "bin/marked.js" } }, "sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA=="],
+
+    "@vizel/demo-react/@tiptap/core": ["@tiptap/core@2.27.2", "", { "peerDependencies": { "@tiptap/pm": "^2.7.0" } }, "sha512-ABL1N6eoxzDzC1bYvkMbvyexHacszsKdVPYqhl5GwHLOvpZcv9VE9QaKwDILTyz5voCA0lGcAAXZp+qnXOk5lQ=="],
+
+    "@vizel/demo-svelte/@tiptap/core": ["@tiptap/core@2.27.2", "", { "peerDependencies": { "@tiptap/pm": "^2.7.0" } }, "sha512-ABL1N6eoxzDzC1bYvkMbvyexHacszsKdVPYqhl5GwHLOvpZcv9VE9QaKwDILTyz5voCA0lGcAAXZp+qnXOk5lQ=="],
+
+    "@vizel/demo-vue/@tiptap/core": ["@tiptap/core@2.27.2", "", { "peerDependencies": { "@tiptap/pm": "^2.7.0" } }, "sha512-ABL1N6eoxzDzC1bYvkMbvyexHacszsKdVPYqhl5GwHLOvpZcv9VE9QaKwDILTyz5voCA0lGcAAXZp+qnXOk5lQ=="],
 
     "@vue/language-core/minimatch": ["minimatch@9.0.5", "", { "dependencies": { "brace-expansion": "^2.0.1" } }, "sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow=="],
 

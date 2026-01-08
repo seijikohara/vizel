@@ -1,11 +1,6 @@
 <script lang="ts">
-import {
-  createEditorState,
-  createVizelEditor,
-  EditorContent,
-  EditorRoot,
-  getEditorState,
-} from "@vizel/svelte";
+import { getVizelEditorState } from "@vizel/core";
+import { createVizelEditor, createVizelState, VizelEditor, VizelProvider } from "@vizel/svelte";
 
 interface Props {
   nullEditor?: boolean;
@@ -18,7 +13,7 @@ const editor = createVizelEditor({
 });
 
 const actualEditor = $derived(nullEditor ? null : editor.current);
-const editorStateRune = createEditorState(() => actualEditor);
+const editorStateRune = createVizelState(() => actualEditor);
 
 // Depend on editorStateRune.current to trigger re-evaluation when editor state changes
 const isBoldActive = $derived.by(() => {
@@ -30,14 +25,14 @@ const isItalicActive = $derived.by(() => {
   return actualEditor?.isActive("italic") ?? false;
 });
 
-// Use getEditorState to get full state including character/word counts
+// Use getVizelEditorState to get full state including character/word counts
 const fullEditorState = $derived.by(() => {
   void editorStateRune.current;
-  return getEditorState(actualEditor);
+  return getVizelEditorState(actualEditor);
 });
 </script>
 
-<EditorRoot editor={actualEditor}>
+<VizelProvider editor={actualEditor}>
   <div data-testid="update-count">{editorStateRune.current}</div>
   <div data-testid="bold-active">{String(isBoldActive)}</div>
   <div data-testid="italic-active">{String(isItalicActive)}</div>
@@ -45,5 +40,5 @@ const fullEditorState = $derived.by(() => {
   <div data-testid="word-count">{fullEditorState.wordCount}</div>
   <div data-testid="is-empty">{String(fullEditorState.isEmpty)}</div>
   <div data-testid="is-focused">{String(fullEditorState.isFocused)}</div>
-  <EditorContent />
-</EditorRoot>
+  <VizelEditor />
+</VizelProvider>

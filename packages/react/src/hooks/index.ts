@@ -1,7 +1,7 @@
 export {
-  createSlashMenuRenderer,
-  type SlashMenuRendererOptions,
+  createVizelSlashMenuRenderer,
+  type VizelSlashMenuRendererOptions,
 } from "./createSlashMenuRenderer.ts";
-export { type UseAutoSaveResult, useAutoSave } from "./useAutoSave.ts";
-export { useEditorState } from "./useEditorState.ts";
+export { type UseVizelAutoSaveResult, useVizelAutoSave } from "./useVizelAutoSave.ts";
 export { type UseVizelEditorOptions, useVizelEditor } from "./useVizelEditor.ts";
+export { useVizelState } from "./useVizelState.ts";

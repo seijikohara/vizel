@@ -9,7 +9,7 @@
 export const VIZEL_PORTAL_ID = "vizel-portal-root";
 
 /** Portal layer z-index values */
-export const PORTAL_Z_INDEX = {
+export const VIZEL_PORTAL_Z_INDEX = {
   /** Base layer for dropdowns and menus */
   dropdown: 50,
   /** Layer for modals and dialogs */
@@ -19,7 +19,7 @@ export const PORTAL_Z_INDEX = {
 } as const;
 
 /** Portal layer type */
-export type PortalLayer = keyof typeof PORTAL_Z_INDEX;
+export type VizelPortalLayer = keyof typeof VIZEL_PORTAL_Z_INDEX;
 
 /**
  * Get or create the portal container element.
@@ -31,11 +31,11 @@ export type PortalLayer = keyof typeof PORTAL_Z_INDEX;
  *
  * @example
  * ```typescript
- * const container = getPortalContainer();
+ * const container = getVizelPortalContainer();
  * container.appendChild(myFloatingElement);
  * ```
  */
-export function getPortalContainer(): HTMLElement {
+export function getVizelPortalContainer(): HTMLElement {
   let container = document.getElementById(VIZEL_PORTAL_ID);
 
   if (!container) {
@@ -53,7 +53,7 @@ export function getPortalContainer(): HTMLElement {
  *
  * @returns true if the portal container exists in the document
  */
-export function hasPortalContainer(): boolean {
+export function hasVizelPortalContainer(): boolean {
   return document.getElementById(VIZEL_PORTAL_ID) !== null;
 }
 
@@ -63,7 +63,7 @@ export function hasPortalContainer(): boolean {
  * This should only be called during cleanup when no more
  * portal content is expected to be rendered.
  */
-export function removePortalContainer(): void {
+export function removeVizelPortalContainer(): void {
   const container = document.getElementById(VIZEL_PORTAL_ID);
   if (container?.parentNode) {
     container.parentNode.removeChild(container);
@@ -81,27 +81,27 @@ export function removePortalContainer(): void {
  *
  * @example
  * ```typescript
- * const element = createPortalElement("dropdown");
+ * const element = createVizelPortalElement("dropdown");
  * element.appendChild(menuContent);
- * getPortalContainer().appendChild(element);
+ * getVizelPortalContainer().appendChild(element);
  * ```
  */
-export function createPortalElement(layer: PortalLayer = "dropdown"): HTMLDivElement {
+export function createVizelPortalElement(layer: VizelPortalLayer = "dropdown"): HTMLDivElement {
   const element = document.createElement("div");
   element.setAttribute("data-vizel-portal-layer", layer);
   element.style.position = "absolute";
   element.style.top = "0";
   element.style.left = "0";
-  element.style.zIndex = String(PORTAL_Z_INDEX[layer]);
+  element.style.zIndex = String(VIZEL_PORTAL_Z_INDEX[layer]);
   return element;
 }
 
 /**
  * Options for mounting portal content.
  */
-export interface MountPortalOptions {
+export interface VizelMountPortalOptions {
   /** The z-index layer for the portal */
-  layer?: PortalLayer;
+  layer?: VizelPortalLayer;
   /** Additional CSS class names */
   className?: string;
 }
@@ -115,24 +115,24 @@ export interface MountPortalOptions {
  *
  * @example
  * ```typescript
- * const wrapper = mountToPortal(menuElement, { layer: "dropdown" });
+ * const wrapper = mountToVizelPortal(menuElement, { layer: "dropdown" });
  * // Later, to unmount:
- * unmountFromPortal(wrapper);
+ * unmountFromVizelPortal(wrapper);
  * ```
  */
-export function mountToPortal(
+export function mountToVizelPortal(
   content: HTMLElement,
-  options: MountPortalOptions = {}
+  options: VizelMountPortalOptions = {}
 ): HTMLDivElement {
   const { layer = "dropdown", className } = options;
-  const wrapper = createPortalElement(layer);
+  const wrapper = createVizelPortalElement(layer);
 
   if (className) {
     wrapper.className = className;
   }
 
   wrapper.appendChild(content);
-  getPortalContainer().appendChild(wrapper);
+  getVizelPortalContainer().appendChild(wrapper);
 
   return wrapper;
 }
@@ -140,9 +140,9 @@ export function mountToPortal(
 /**
  * Unmount an element from the portal container.
  *
- * @param wrapper - The wrapper element returned by mountToPortal
+ * @param wrapper - The wrapper element returned by mountToVizelPortal
  */
-export function unmountFromPortal(wrapper: HTMLElement): void {
+export function unmountFromVizelPortal(wrapper: HTMLElement): void {
   if (wrapper.parentNode) {
     wrapper.parentNode.removeChild(wrapper);
   }

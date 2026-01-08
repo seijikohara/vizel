@@ -1,5 +1,5 @@
 <script lang="ts">
-import { BubbleMenu, createVizelEditor, EditorContent, EditorRoot } from "@vizel/svelte";
+import { createVizelEditor, VizelEditor, VizelProvider, VizelToolbar } from "@vizel/svelte";
 
 interface Props {
   placeholder?: string;
@@ -7,24 +7,20 @@ interface Props {
   showBubbleMenu?: boolean;
 }
 
-let {
-  placeholder = "Type something...",
-  initialContent = undefined,
-  showBubbleMenu = true,
-}: Props = $props();
+const props = $props<Props>();
 
 const editor = createVizelEditor({
-  placeholder,
-  initialContent,
+  placeholder: props.placeholder ?? "Type something...",
+  initialContent: props.initialContent,
   features: {
     mathematics: true,
   },
 });
 </script>
 
-<EditorRoot editor={editor.current}>
-  <EditorContent />
-  {#if showBubbleMenu}
-    <BubbleMenu />
+<VizelProvider editor={editor.current}>
+  <VizelEditor />
+  {#if props.showBubbleMenu ?? true}
+    <VizelToolbar />
   {/if}
-</EditorRoot>
+</VizelProvider>

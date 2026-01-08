@@ -6,20 +6,20 @@ export interface EmbedFixtureProps {
 </script>
 
 <script lang="ts">
-import { BubbleMenu, EditorContent, EditorRoot, createVizelEditor } from "@vizel/svelte";
+import { VizelToolbar, VizelEditor, VizelProvider, createVizelEditor } from "@vizel/svelte";
 
-let { placeholder = "Type something...", initialContent }: EmbedFixtureProps = $props();
+const props = $props<EmbedFixtureProps>();
 
 const editor = createVizelEditor({
-  placeholder,
-  initialContent,
+  placeholder: props.placeholder ?? "Type something...",
+  initialContent: props.initialContent,
   features: {
     embed: true,
   },
 });
 </script>
 
-<EditorRoot editor={editor.current}>
-  <EditorContent />
-  <BubbleMenu enableEmbed />
-</EditorRoot>
+<VizelProvider editor={editor.current}>
+  <VizelEditor />
+  <VizelToolbar enableEmbed />
+</VizelProvider>

@@ -8,12 +8,12 @@ import CodeBlockLowlight, {
   type CodeBlockLowlightOptions,
 } from "@tiptap/extension-code-block-lowlight";
 import { all, createLowlight } from "lowlight";
-import { renderIcon } from "../icons/types.ts";
+import { renderVizelIcon } from "../icons/types.ts";
 
 /**
  * Language definition for the code block language selector
  */
-export interface CodeBlockLanguage {
+export interface VizelCodeBlockLanguage {
   /** Language identifier (e.g., "javascript", "python") */
   id: string;
   /** Display name (e.g., "JavaScript", "Python") */
@@ -46,7 +46,7 @@ const lowlightWithAllLanguages = createLowlight(all);
 /**
  * Get the list of all registered languages (sorted alphabetically)
  */
-export function getRegisteredLanguages(): CodeBlockLanguage[] {
+export function getVizelRegisteredLanguages(): VizelCodeBlockLanguage[] {
   const registeredNames = lowlightWithAllLanguages.listLanguages();
 
   return registeredNames
@@ -61,16 +61,16 @@ export function getRegisteredLanguages(): CodeBlockLanguage[] {
 /**
  * Get all language IDs
  */
-export function getAllLanguageIds(): string[] {
-  return getRegisteredLanguages().map((lang) => lang.id);
+export function getAllVizelLanguageIds(): string[] {
+  return getVizelRegisteredLanguages().map((lang) => lang.id);
 }
 
 /**
  * Find a language by ID
  */
-export function findLanguage(id: string): CodeBlockLanguage | undefined {
+export function findVizelLanguage(id: string): VizelCodeBlockLanguage | undefined {
   const normalized = id.toLowerCase();
-  return getRegisteredLanguages().find((lang) => lang.id === normalized);
+  return getVizelRegisteredLanguages().find((lang) => lang.id === normalized);
 }
 
 /**
@@ -79,21 +79,21 @@ export function findLanguage(id: string): CodeBlockLanguage | undefined {
  * @example Basic usage
  * ```ts
  * const extensions = [
- *   ...createCodeBlockLowlightExtension(),
+ *   ...createVizelCodeBlockExtension(),
  * ];
  * ```
  *
  * @example With options
  * ```ts
  * const extensions = [
- *   ...createCodeBlockLowlightExtension({
+ *   ...createVizelCodeBlockExtension({
  *     defaultLanguage: 'typescript',
  *     lineNumbers: true,
  *   }),
  * ];
  * ```
  */
-export function createCodeBlockLowlightExtension(
+export function createVizelCodeBlockExtension(
   options: VizelCodeBlockOptions = {}
 ): CodeBlockLowlightOptions["lowlight"] extends undefined
   ? never
@@ -156,7 +156,7 @@ export function createCodeBlockLowlightExtension(
         datalist.id = datalistId;
         languageInput.setAttribute("list", datalistId);
 
-        for (const lang of getRegisteredLanguages()) {
+        for (const lang of getVizelRegisteredLanguages()) {
           const option = document.createElement("option");
           option.value = lang.id;
           option.label = lang.name;
@@ -196,7 +196,7 @@ export function createCodeBlockLowlightExtension(
         const lineNumbersBtn = document.createElement("button");
         lineNumbersBtn.type = "button";
         lineNumbersBtn.classList.add("vizel-code-block-line-numbers-toggle");
-        lineNumbersBtn.innerHTML = renderIcon("listOrdered", { width: 16, height: 16 });
+        lineNumbersBtn.innerHTML = renderVizelIcon("listOrdered", { width: 16, height: 16 });
         if (node.attrs.lineNumbers) {
           lineNumbersBtn.classList.add("active");
         }

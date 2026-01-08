@@ -1,4 +1,4 @@
-import { type Theme, ThemeProvider, useTheme } from "@vizel/react";
+import { type Theme, useVizelTheme, VizelThemeProvider } from "@vizel/react";
 
 interface ThemeProviderFixtureProps {
   defaultTheme?: Theme;
@@ -6,7 +6,7 @@ interface ThemeProviderFixtureProps {
 }
 
 function ThemeContent() {
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useVizelTheme();
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
@@ -28,8 +28,8 @@ export function ThemeProviderFixture({
   storageKey = "vizel-theme-test",
 }: ThemeProviderFixtureProps) {
   return (
-    <ThemeProvider defaultTheme={defaultTheme} storageKey={storageKey}>
+    <VizelThemeProvider defaultTheme={defaultTheme} storageKey={storageKey}>
       <ThemeContent />
-    </ThemeProvider>
+    </VizelThemeProvider>
   );
 }

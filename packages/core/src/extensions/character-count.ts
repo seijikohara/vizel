@@ -24,7 +24,7 @@ export interface VizelCharacterCountOptions {
 /**
  * Character count storage interface for accessing count values.
  */
-export interface CharacterCountStorage {
+export interface VizelCharacterCountStorage {
   /**
    * Get the character count.
    * @param options - Optional mode override
@@ -41,9 +41,9 @@ export interface CharacterCountStorage {
  *
  * @example
  * ```typescript
- * import { createCharacterCountExtension } from '@vizel/core'
+ * import { createVizelCharacterCountExtension } from '@vizel/core'
  *
- * const extension = createCharacterCountExtension({
+ * const extension = createVizelCharacterCountExtension({
  *   limit: 1000,
  *   mode: 'textSize'
  * })
@@ -53,7 +53,9 @@ export interface CharacterCountStorage {
  * const words = editor.storage.characterCount.words()
  * ```
  */
-export function createCharacterCountExtension(options: VizelCharacterCountOptions = {}): Extension {
+export function createVizelCharacterCountExtension(
+  options: VizelCharacterCountOptions = {}
+): Extension {
   const { limit = null, mode = "textSize", wordCounter } = options;
 
   return CharacterCount.configure({

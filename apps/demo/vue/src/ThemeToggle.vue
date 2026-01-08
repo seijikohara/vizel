@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useTheme } from "@vizel/vue";
+import { useVizelTheme } from "@vizel/vue";
 
-const themeState = useTheme();
+const themeState = useVizelTheme();
 
 function toggleTheme() {
   themeState.setTheme(themeState.resolvedTheme === "dark" ? "light" : "dark");

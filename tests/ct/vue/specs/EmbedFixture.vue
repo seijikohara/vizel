@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BubbleMenu, EditorContent, EditorRoot, useVizelEditor } from "@vizel/vue";
+import { useVizelEditor, VizelEditor, VizelProvider, VizelToolbar } from "@vizel/vue";
 
 export interface EmbedFixtureProps {
   placeholder?: string;
@@ -20,8 +20,8 @@ const editor = useVizelEditor({
 </script>
 
 <template>
-  <EditorRoot :editor="editor">
-    <EditorContent />
-    <BubbleMenu enable-embed />
-  </EditorRoot>
+  <VizelProvider :editor="editor">
+    <VizelEditor />
+    <VizelToolbar enable-embed />
+  </VizelProvider>
 </template>

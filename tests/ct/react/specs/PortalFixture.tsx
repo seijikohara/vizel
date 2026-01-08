@@ -1,4 +1,4 @@
-import { Portal, type PortalLayer } from "@vizel/react";
+import { type PortalLayer, VizelPortal } from "@vizel/react";
 
 interface PortalFixtureProps {
   layer?: PortalLayer;
@@ -14,11 +14,11 @@ export function PortalFixture({
   withOverflowContainer = false,
 }: PortalFixtureProps) {
   const content = (
-    <Portal layer={layer} disabled={disabled} className={className}>
+    <VizelPortal layer={layer} disabled={disabled} className={className}>
       <div className="test-portal-content" data-testid="portal-content">
         Portal Content
       </div>
-    </Portal>
+    </VizelPortal>
   );
 
   if (withOverflowContainer) {

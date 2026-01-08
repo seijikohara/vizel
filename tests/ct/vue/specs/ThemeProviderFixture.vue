@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Theme, ThemeProvider } from "@vizel/vue";
+import { type Theme, VizelThemeProvider } from "@vizel/vue";
 import ThemeContent from "./ThemeContent.vue";
 
 const props = withDefaults(
@@ -15,7 +15,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <ThemeProvider :defaultTheme="props.defaultTheme" :storageKey="props.storageKey">
+  <VizelThemeProvider :defaultTheme="props.defaultTheme" :storageKey="props.storageKey">
     <ThemeContent />
-  </ThemeProvider>
+  </VizelThemeProvider>
 </template>

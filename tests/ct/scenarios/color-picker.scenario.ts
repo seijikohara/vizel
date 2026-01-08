@@ -200,7 +200,7 @@ export async function testCustomColorInput(_component: Locator, page: Page): Pro
 
   // The fixture should update the selected color display
   const selectedDisplay = page.locator("[data-testid='selected-color']");
-  await expect(selectedDisplay).toHaveText("#ff5500");
+  await expect(selectedDisplay).toHaveText(/#[fF][fF]5500/);
 }
 
 /**

@@ -1,4 +1,4 @@
-import { EditorContent, EditorRoot, useVizelEditor } from "@vizel/react";
+import { useVizelEditor, VizelEditor, VizelProvider } from "@vizel/react";
 
 export interface DetailsFixtureProps {
   placeholder?: string;
@@ -18,8 +18,8 @@ export function DetailsFixture({
   });
 
   return (
-    <EditorRoot editor={editor}>
-      <EditorContent />
-    </EditorRoot>
+    <VizelProvider editor={editor}>
+      <VizelEditor />
+    </VizelProvider>
   );
 }

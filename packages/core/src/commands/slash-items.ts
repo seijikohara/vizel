@@ -1,7 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
-import type { SlashCommandIconName } from "../icons/types.ts";
+import type { VizelSlashCommandIconName } from "../icons/types.ts";
 
 /**
  * Range for slash command execution
@@ -20,7 +20,7 @@ export interface SlashCommandItem {
   /** Description of the command */
   description: string;
   /** Icon name (semantic name, rendered by framework packages) */
-  icon: SlashCommandIconName;
+  icon: VizelSlashCommandIconName;
   /** Command to execute */
   command: (props: { editor: Editor; range: SlashCommandRange }) => void;
   /** Keyboard shortcut hint (e.g., "⌘B") */

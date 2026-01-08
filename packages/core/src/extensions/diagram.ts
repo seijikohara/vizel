@@ -23,7 +23,7 @@ import mermaid from "mermaid";
 /**
  * Supported diagram types
  */
-export type DiagramType = "mermaid" | "graphviz";
+export type VizelDiagramType = "mermaid" | "graphviz";
 
 /**
  * GraphViz layout engine options
@@ -48,7 +48,7 @@ export interface VizelDiagramOptions {
    * Default diagram type when creating new diagrams
    * @default "mermaid"
    */
-  defaultType?: DiagramType;
+  defaultType?: VizelDiagramType;
   /**
    * Default diagram code for new diagrams (for mermaid)
    * @default "flowchart TD\n  A[Start] --> B[End]"
@@ -67,7 +67,7 @@ declare module "@tiptap/core" {
       /**
        * Insert a diagram block
        */
-      insertDiagram: (options: { code: string; type?: DiagramType }) => ReturnType;
+      insertDiagram: (options: { code: string; type?: VizelDiagramType }) => ReturnType;
     };
   }
 }
@@ -254,7 +254,7 @@ const DEFAULT_GRAPHVIZ_CODE = `digraph G {
 /**
  * Get display name for diagram type
  */
-function getDiagramTypeName(type: DiagramType): string {
+function getDiagramTypeName(type: VizelDiagramType): string {
   switch (type) {
     case "mermaid":
       return "Mermaid";
@@ -268,7 +268,7 @@ function getDiagramTypeName(type: DiagramType): string {
 /**
  * Diagram extension for block diagrams
  */
-export const Diagram = Node.create<VizelDiagramOptions>({
+export const VizelDiagram = Node.create<VizelDiagramOptions>({
   name: "diagram",
   group: "block",
   atom: true,
@@ -297,7 +297,7 @@ export const Diagram = Node.create<VizelDiagramOptions>({
       type: {
         default: "mermaid",
         parseHTML: (element) =>
-          (element.getAttribute("data-diagram-type") as DiagramType) || "mermaid",
+          (element.getAttribute("data-diagram-type") as VizelDiagramType) || "mermaid",
         renderHTML: (attributes) => ({
           "data-diagram-type": attributes.type,
         }),
@@ -373,11 +373,11 @@ export const Diagram = Node.create<VizelDiagramOptions>({
 
       let isEditing = false;
       let currentCode = node.attrs.code;
-      let currentType: DiagramType = node.attrs.type;
+      let currentType: VizelDiagramType = node.attrs.type;
 
       const renderDiagram = async (
         code: string,
-        type: DiagramType,
+        type: VizelDiagramType,
         container: HTMLElement
       ): Promise<void> => {
         if (!code.trim()) {
@@ -582,7 +582,7 @@ export const Diagram = Node.create<VizelDiagramOptions>({
       type: "diagram",
       attrs: {
         code: token.code || "",
-        type: (token.diagramType as DiagramType) || "mermaid",
+        type: (token.diagramType as VizelDiagramType) || "mermaid",
       },
     };
   },
@@ -609,14 +609,14 @@ export const Diagram = Node.create<VizelDiagramOptions>({
  * @example Basic usage
  * ```ts
  * const extensions = [
- *   createDiagramExtension(),
+ *   createVizelDiagramExtension(),
  * ];
  * ```
  *
  * @example With custom Mermaid config
  * ```ts
  * const extensions = [
- *   createDiagramExtension({
+ *   createVizelDiagramExtension({
  *     mermaidConfig: {
  *       theme: 'dark',
  *     },
@@ -627,16 +627,16 @@ export const Diagram = Node.create<VizelDiagramOptions>({
  * @example With custom GraphViz engine
  * ```ts
  * const extensions = [
- *   createDiagramExtension({
+ *   createVizelDiagramExtension({
  *     graphvizEngine: 'neato',
  *   }),
  * ];
  * ```
  */
-export function createDiagramExtension(
+export function createVizelDiagramExtension(
   options: VizelDiagramOptions = {}
-): ReturnType<typeof Diagram.configure> {
-  return Diagram.configure(options);
+): ReturnType<typeof VizelDiagram.configure> {
+  return VizelDiagram.configure(options);
 }
 
 // Export for advanced usage

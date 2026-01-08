@@ -1,9 +1,9 @@
-import { BubbleMenuDivider } from "@vizel/react";
+import { VizelToolbarDivider } from "@vizel/react";
 
 interface Props {
   className?: string;
 }
 
 export function BubbleMenuDividerFixture({ className }: Props) {
-  return <BubbleMenuDivider className={className} />;
+  return <VizelToolbarDivider className={className} />;
 }

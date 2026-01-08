@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SaveIndicator, type SaveStatus } from "@vizel/vue";
+import { type SaveStatus, VizelSaveIndicator } from "@vizel/vue";
 
 const props = withDefaults(
   defineProps<{
@@ -15,7 +15,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <SaveIndicator
+  <VizelSaveIndicator
     :status="props.status"
     :lastSaved="props.lastSaved"
     :showTimestamp="props.showTimestamp"

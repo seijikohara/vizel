@@ -1,14 +1,14 @@
 export {
-  type CreateAutoSaveResult,
-  createAutoSave,
-} from "./createAutoSave.svelte.ts";
-export { createEditorState } from "./createEditorState.svelte.ts";
-export {
-  createSlashMenuRenderer,
-  type SlashMenuRendererOptions,
+  createVizelSlashMenuRenderer,
+  type VizelSlashMenuRendererOptions,
 } from "./createSlashMenuRenderer.ts";
+export {
+  type CreateVizelAutoSaveResult,
+  createVizelAutoSave,
+} from "./createVizelAutoSave.svelte.ts";
 export {
   type CreateVizelEditorOptions,
   createVizelEditor,
 } from "./createVizelEditor.svelte.ts";
-export { getTheme, getThemeSafe } from "./getTheme.svelte.ts";
+export { createVizelState } from "./createVizelState.svelte.ts";
+export { getVizelTheme, getVizelThemeSafe } from "./getVizelTheme.svelte.ts";

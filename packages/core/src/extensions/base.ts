@@ -3,7 +3,6 @@ import Blockquote from "@tiptap/extension-blockquote";
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
 import Code from "@tiptap/extension-code";
-import CodeBlock from "@tiptap/extension-code-block";
 import Document from "@tiptap/extension-document";
 import Dropcursor from "@tiptap/extension-dropcursor";
 import Gapcursor from "@tiptap/extension-gapcursor";
@@ -21,24 +20,28 @@ import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
 import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
-import { createCharacterCountExtension } from "./character-count.ts";
-import { createCodeBlockLowlightExtension } from "./code-block-lowlight.ts";
-import { createDetailsExtensions } from "./details.ts";
-import { createDiagramExtension } from "./diagram.ts";
-import { createDragHandleExtensions } from "./drag-handle.ts";
-import { createEmbedExtension } from "./embed.ts";
+import { createVizelCharacterCountExtension } from "./character-count.ts";
+import { createVizelCodeBlockExtension } from "./code-block-lowlight.ts";
+import { createVizelDetailsExtensions } from "./details.ts";
+import { createVizelDiagramExtension } from "./diagram.ts";
+import { createVizelDragHandleExtensions } from "./drag-handle.ts";
+import { createVizelEmbedExtension } from "./embed.ts";
 import {
-  createImageUploadExtension,
-  defaultBase64Upload,
+  createVizelImageUploadExtension,
   defaultImageResizeOptions,
+  vizelDefaultBase64Upload,
 } from "./image.ts";
-import { createLinkExtension } from "./link.ts";
-import { createMarkdownExtension } from "./markdown.ts";
-import { createMathematicsExtensions } from "./mathematics.ts";
-import { defaultSlashCommands, SlashCommand, type SlashCommandItem } from "./slash-command.ts";
-import { createTableExtensions } from "./table.ts";
-import { createTaskListExtensions } from "./task-list.ts";
-import { createTextColorExtensions } from "./text-color.ts";
+import { createVizelLinkExtension } from "./link.ts";
+import { createVizelMarkdownExtension } from "./markdown.ts";
+import { createVizelMathematicsExtensions } from "./mathematics.ts";
+import {
+  VizelSlashCommand,
+  type VizelSlashCommandItem,
+  vizelDefaultSlashCommands,
+} from "./slash-command.ts";
+import { createVizelTableExtensions } from "./table.ts";
+import { createVizelTaskListExtensions } from "./task-list.ts";
+import { createVizelTextColorExtensions } from "./text-color.ts";
 
 export interface VizelExtensionsOptions {
   /** Placeholder text when editor is empty */
@@ -100,10 +103,10 @@ function addSlashCommandExtension(extensions: Extensions, features: VizelFeature
   if (features.slashCommand === false) return;
 
   const slashOptions = typeof features.slashCommand === "object" ? features.slashCommand : {};
-  const items: SlashCommandItem[] = slashOptions.items ?? defaultSlashCommands;
+  const items: VizelSlashCommandItem[] = slashOptions.items ?? vizelDefaultSlashCommands;
 
   extensions.push(
-    SlashCommand.configure({
+    VizelSlashCommand.configure({
       items,
       ...(slashOptions.suggestion !== undefined && {
         suggestion: slashOptions.suggestion as Record<string, unknown>,
@@ -119,11 +122,11 @@ function addImageExtension(extensions: Extensions, features: VizelFeatureOptions
   if (features.image === false) return;
 
   const imageOptions = typeof features.image === "object" ? features.image : {};
-  const onUpload = imageOptions.onUpload ?? defaultBase64Upload;
+  const onUpload = imageOptions.onUpload ?? vizelDefaultBase64Upload;
   const resizeEnabled = imageOptions.resize !== false;
 
   extensions.push(
-    ...createImageUploadExtension({
+    ...createVizelImageUploadExtension({
       upload: {
         onUpload,
         ...(imageOptions.maxFileSize !== undefined && { maxFileSize: imageOptions.maxFileSize }),
@@ -141,13 +144,13 @@ function addImageExtension(extensions: Extensions, features: VizelFeatureOptions
 }
 
 /**
- * Add Markdown extension if enabled
+ * Add Markdown extension if enabled (enabled by default)
  */
 function addMarkdownExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.markdown !== true && typeof features.markdown !== "object") return;
+  if (features.markdown === false) return;
 
   const markdownOptions = typeof features.markdown === "object" ? features.markdown : {};
-  extensions.push(createMarkdownExtension(markdownOptions));
+  extensions.push(createVizelMarkdownExtension(markdownOptions));
 }
 
 /**
@@ -157,7 +160,7 @@ function addTaskListExtension(extensions: Extensions, features: VizelFeatureOpti
   if (features.taskList === false) return;
 
   const taskListOptions = typeof features.taskList === "object" ? features.taskList : {};
-  extensions.push(...createTaskListExtensions(taskListOptions));
+  extensions.push(...createVizelTaskListExtensions(taskListOptions));
 }
 
 /**
@@ -168,7 +171,7 @@ function addCharacterCountExtension(extensions: Extensions, features: VizelFeatu
 
   const characterCountOptions =
     typeof features.characterCount === "object" ? features.characterCount : {};
-  extensions.push(createCharacterCountExtension(characterCountOptions));
+  extensions.push(createVizelCharacterCountExtension(characterCountOptions));
 }
 
 /**
@@ -178,7 +181,7 @@ function addTextColorExtension(extensions: Extensions, features: VizelFeatureOpt
   if (features.textColor === false) return;
 
   const textColorOptions = typeof features.textColor === "object" ? features.textColor : {};
-  extensions.push(...createTextColorExtensions(textColorOptions));
+  extensions.push(...createVizelTextColorExtensions(textColorOptions));
 }
 
 /**
@@ -193,24 +196,21 @@ function addCodeBlockExtension(extensions: Extensions, features: VizelFeatureOpt
   // If codeBlock is enabled (true or options object), use syntax highlighting
   if (features.codeBlock === true || typeof features.codeBlock === "object") {
     const codeBlockOptions = typeof features.codeBlock === "object" ? features.codeBlock : {};
-    extensions.push(...createCodeBlockLowlightExtension(codeBlockOptions));
+    extensions.push(...createVizelCodeBlockExtension(codeBlockOptions));
   } else {
     // Default: use syntax highlighting with default options
-    extensions.push(...createCodeBlockLowlightExtension());
+    extensions.push(...createVizelCodeBlockExtension());
   }
 }
 
 /**
- * Add Mathematics extension if enabled
+ * Add Mathematics extension if enabled (enabled by default)
  */
 function addMathematicsExtension(extensions: Extensions, features: VizelFeatureOptions): void {
   if (features.mathematics === false) return;
 
-  // Mathematics is disabled by default, must be explicitly enabled
-  if (features.mathematics === true || typeof features.mathematics === "object") {
-    const mathOptions = typeof features.mathematics === "object" ? features.mathematics : {};
-    extensions.push(...createMathematicsExtensions(mathOptions));
-  }
+  const mathOptions = typeof features.mathematics === "object" ? features.mathematics : {};
+  extensions.push(...createVizelMathematicsExtensions(mathOptions));
 }
 
 /**
@@ -220,48 +220,44 @@ function addDragHandleExtension(extensions: Extensions, features: VizelFeatureOp
   if (features.dragHandle === false) return;
 
   const dragHandleOptions = typeof features.dragHandle === "object" ? features.dragHandle : {};
-  extensions.push(...createDragHandleExtensions(dragHandleOptions));
+  extensions.push(...createVizelDragHandleExtensions(dragHandleOptions));
 }
 
 /**
- * Add Details extension if enabled
+ * Add Details extension if enabled (enabled by default)
  */
 function addDetailsExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  // Details is disabled by default, must be explicitly enabled
-  if (features.details !== true && typeof features.details !== "object") return;
+  if (features.details === false) return;
 
   const detailsOptions = typeof features.details === "object" ? features.details : {};
-  extensions.push(...createDetailsExtensions(detailsOptions));
+  extensions.push(...createVizelDetailsExtensions(detailsOptions));
 }
 
 /**
- * Add Embed extension if enabled
+ * Add Embed extension if enabled (enabled by default)
  */
 function addEmbedExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  // Embed is disabled by default, must be explicitly enabled
-  if (features.embed !== true && typeof features.embed !== "object") return;
+  if (features.embed === false) return;
 
   const embedOptions = typeof features.embed === "object" ? features.embed : {};
-  extensions.push(createEmbedExtension(embedOptions));
+  extensions.push(createVizelEmbedExtension(embedOptions));
 }
 
 /**
- * Add Diagram extension if enabled
+ * Add Diagram extension if enabled (enabled by default)
  */
 function addDiagramExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  // Diagram is disabled by default, must be explicitly enabled
-  if (features.diagram !== true && typeof features.diagram !== "object") return;
+  if (features.diagram === false) return;
 
   const diagramOptions = typeof features.diagram === "object" ? features.diagram : {};
-  extensions.push(createDiagramExtension(diagramOptions));
+  extensions.push(createVizelDiagramExtension(diagramOptions));
 }
 
 /**
  * Create the default set of extensions for Vizel editor.
- * Most features (SlashCommand, Table, Link, Image) are enabled by default.
- * Markdown support is disabled by default and must be explicitly enabled.
+ * All features are enabled by default. Set any feature to `false` to disable it.
  *
- * @example Basic usage (all default features enabled)
+ * @example Basic usage (all features enabled)
  * ```ts
  * const extensions = createVizelExtensions();
  * ```
@@ -272,17 +268,14 @@ function addDiagramExtension(extensions: Extensions, features: VizelFeatureOptio
  *   features: {
  *     table: false,
  *     slashCommand: false,
+ *     mathematics: false,
  *   },
  * });
  * ```
  *
- * @example Enable Markdown support
+ * @example Using Markdown support (enabled by default)
  * ```ts
- * const extensions = createVizelExtensions({
- *   features: {
- *     markdown: true,
- *   },
- * });
+ * const extensions = createVizelExtensions();
  *
  * // Then use:
  * editor.commands.setContent('# Hello', { contentType: 'markdown' });
@@ -325,11 +318,11 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
   addSlashCommandExtension(extensions, features);
 
   if (features.table !== false) {
-    extensions.push(...createTableExtensions());
+    extensions.push(...createVizelTableExtensions());
   }
 
   if (features.link !== false) {
-    extensions.push(createLinkExtension());
+    extensions.push(createVizelLinkExtension());
   }
 
   addImageExtension(extensions, features);
@@ -346,28 +339,3 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
 
   return extensions;
 }
-
-// Re-export individual extensions for advanced usage
-export {
-  Blockquote,
-  Bold,
-  BulletList,
-  Code,
-  CodeBlock,
-  Document,
-  Dropcursor,
-  Gapcursor,
-  HardBreak,
-  Heading,
-  History,
-  HorizontalRule,
-  Italic,
-  ListItem,
-  ListKeymap,
-  OrderedList,
-  Paragraph,
-  Placeholder,
-  Strike,
-  Text,
-  Underline,
-};

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BubbleMenuDivider } from "@vizel/vue";
+import { VizelToolbarDivider } from "@vizel/vue";
 
 defineProps<{
   class?: string;
@@ -7,5 +7,5 @@ defineProps<{
 </script>
 
 <template>
-  <BubbleMenuDivider :class="$props.class" />
+  <VizelToolbarDivider :class="$props.class" />
 </template>

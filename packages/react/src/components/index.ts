@@ -1,65 +1,63 @@
-// BubbleMenu components
-export { BubbleMenu, type BubbleMenuProps } from "./BubbleMenu.tsx";
-export {
-  BubbleMenuButton,
-  type BubbleMenuButtonProps,
-} from "./BubbleMenuButton.tsx";
-export {
-  BubbleMenuColorPicker,
-  type BubbleMenuColorPickerProps,
-} from "./BubbleMenuColorPicker.tsx";
-export {
-  BubbleMenuDivider,
-  type BubbleMenuDividerProps,
-} from "./BubbleMenuDivider.tsx";
-export {
-  BubbleMenuLinkEditor,
-  type BubbleMenuLinkEditorProps,
-} from "./BubbleMenuLinkEditor.tsx";
-export {
-  BubbleMenuToolbar,
-  type BubbleMenuToolbarProps,
-} from "./BubbleMenuToolbar.tsx";
-// ColorPicker component
-export { ColorPicker, type ColorPickerProps } from "./ColorPicker.tsx";
+// VizelToolbar components
+
+// Vizel all-in-one component
+export { Vizel, type VizelProps, type VizelRef } from "./Vizel.tsx";
+// VizelColorPicker component
+export { VizelColorPicker, type VizelColorPickerProps } from "./VizelColorPicker.tsx";
+export { useVizelContext, useVizelContextSafe } from "./VizelContext.tsx";
 // Editor components
-export { EditorContent, type EditorContentProps } from "./EditorContent.tsx";
-export { useEditorContext, useEditorContextSafe } from "./EditorContext.tsx";
-export { EditorRoot, type EditorRootProps } from "./EditorRoot.tsx";
-// EmbedView component
-export { EmbedView, type EmbedViewProps } from "./EmbedView.tsx";
+export { VizelEditor, type VizelEditorProps } from "./VizelEditor.tsx";
+// VizelEmbedView component
+export { VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.tsx";
 // Icon component
-export { Icon, type IconProps } from "./Icon.tsx";
+export { VizelIcon, type VizelIconProps } from "./VizelIcon.tsx";
 export {
   type CustomIconMap,
-  type IconContextValue,
-  IconProvider,
-  type IconProviderProps,
-  useIconContext,
-} from "./IconContext.tsx";
-
-// NodeSelector component
-export { NodeSelector, type NodeSelectorProps } from "./NodeSelector.tsx";
-
+  useVizelIconContext,
+  type VizelIconContextValue,
+  VizelIconProvider,
+  type VizelIconProviderProps,
+} from "./VizelIconContext.tsx";
+export {
+  VizelLinkEditor,
+  type VizelLinkEditorProps,
+} from "./VizelLinkEditor.tsx";
+// VizelNodeSelector component
+export { VizelNodeSelector, type VizelNodeSelectorProps } from "./VizelNodeSelector.tsx";
 // Portal component
-export { Portal, type PortalProps } from "./Portal.tsx";
-
-// SaveIndicator component
-export { SaveIndicator, type SaveIndicatorProps } from "./SaveIndicator.tsx";
-
-// SlashMenu components
+export { VizelPortal, type VizelPortalProps } from "./VizelPortal.tsx";
+export { VizelProvider, type VizelProviderProps } from "./VizelProvider.tsx";
+// VizelSaveIndicator component
+export { VizelSaveIndicator, type VizelSaveIndicatorProps } from "./VizelSaveIndicator.tsx";
+// VizelSlashMenu components
 export {
-  SlashMenu,
-  type SlashMenuProps,
-  type SlashMenuRef,
-} from "./SlashMenu.tsx";
-export { SlashMenuEmpty, type SlashMenuEmptyProps } from "./SlashMenuEmpty.tsx";
-export { SlashMenuItem, type SlashMenuItemProps } from "./SlashMenuItem.tsx";
-
-// ThemeProvider component
+  VizelSlashMenu,
+  type VizelSlashMenuProps,
+  type VizelSlashMenuRef,
+} from "./VizelSlashMenu.tsx";
+export { VizelSlashMenuEmpty, type VizelSlashMenuEmptyProps } from "./VizelSlashMenuEmpty.tsx";
+export { VizelSlashMenuItem, type VizelSlashMenuItemProps } from "./VizelSlashMenuItem.tsx";
+// VizelThemeProvider component
 export {
-  ThemeProvider,
-  type ThemeProviderProps,
-  useTheme,
-  useThemeSafe,
-} from "./ThemeProvider.tsx";
+  useVizelTheme,
+  useVizelThemeSafe,
+  VizelThemeProvider,
+  type VizelThemeProviderProps,
+} from "./VizelThemeProvider.tsx";
+export { VizelToolbar, type VizelToolbarProps } from "./VizelToolbar.tsx";
+export {
+  VizelToolbarButton,
+  type VizelToolbarButtonProps,
+} from "./VizelToolbarButton.tsx";
+export {
+  VizelToolbarColorPicker,
+  type VizelToolbarColorPickerProps,
+} from "./VizelToolbarColorPicker.tsx";
+export {
+  VizelToolbarDefault,
+  type VizelToolbarDefaultProps,
+} from "./VizelToolbarDefault.tsx";
+export {
+  VizelToolbarDivider,
+  type VizelToolbarDividerProps,
+} from "./VizelToolbarDivider.tsx";

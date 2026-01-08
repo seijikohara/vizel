@@ -12,16 +12,19 @@ All framework-agnostic code belongs in `@vizel/core`:
 
 | Category | Location | Examples |
 |----------|----------|----------|
-| Types | `core/src/types.ts` | `JSONContent`, `VizelEditorOptions` |
-| Constants | `core/src/` | `VIZEL_UPLOAD_IMAGE_EVENT` |
-| Extensions | `core/src/extensions/` | `SlashCommand`, `ImageResize` |
-| Utilities | `core/src/utils/` | `resolveFeatures`, `createImageUploader` |
+| Types | `core/src/types.ts` | `VizelEditorOptions`, `VizelFeatureOptions` |
+| Constants | `core/src/` | `VIZEL_UPLOAD_IMAGE_EVENT`, `VIZEL_TEXT_COLORS` |
+| Extensions | `core/src/extensions/` | `VizelSlashCommand`, `VizelImageResize` |
+| Utilities | `core/src/utils/` | `resolveVizelFeatures`, `createVizelImageUploader` |
 | Styles | `core/src/styles/` | All CSS |
 
 Framework packages only contain:
 - Framework-specific components
 - Framework-specific state management (hooks/composables/runes)
-- Re-exports from core
+
+**No re-exports**: Framework packages do NOT re-export from `@vizel/core`. Users import directly:
+- Vizel types/utilities from `@vizel/core`
+- Tiptap types (`JSONContent`, `Editor`, etc.) from `@tiptap/core`
 
 ## Component Equivalence
 
@@ -29,16 +32,20 @@ Each component must exist in all three frameworks with equivalent functionality:
 
 | Component | React | Vue | Svelte |
 |-----------|-------|-----|--------|
-| EditorContent | `.tsx` | `.vue` | `.svelte` |
-| EditorRoot | `.tsx` | `.vue` | `.svelte` |
-| BubbleMenu | `.tsx` | `.vue` | `.svelte` |
-| BubbleMenuToolbar | `.tsx` | `.vue` | `.svelte` |
-| BubbleMenuButton | `.tsx` | `.vue` | `.svelte` |
-| BubbleMenuDivider | `.tsx` | `.vue` | `.svelte` |
-| BubbleMenuLinkEditor | `.tsx` | `.vue` | `.svelte` |
-| SlashMenu | `.tsx` | `.vue` | `.svelte` |
-| SlashMenuItem | `.tsx` | `.vue` | `.svelte` |
-| SlashMenuEmpty | `.tsx` | `.vue` | `.svelte` |
+| Vizel | `.tsx` | `.vue` | `.svelte` |
+| VizelEditor | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbar | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbarDefault | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbarButton | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbarDivider | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbarLinkEditor | `.tsx` | `.vue` | `.svelte` |
+| VizelSlashMenu | `.tsx` | `.vue` | `.svelte` |
+| VizelSlashMenuItem | `.tsx` | `.vue` | `.svelte` |
+| VizelSlashMenuEmpty | `.tsx` | `.vue` | `.svelte` |
+| VizelThemeProvider | `.tsx` | `.vue` | `.svelte` |
+| VizelSaveIndicator | `.tsx` | `.vue` | `.svelte` |
+| VizelPortal | `.tsx` | `.vue` | `.svelte` |
+| VizelColorPicker | `.tsx` | `.vue` | `.svelte` |
 
 ### Props Interface
 
@@ -46,12 +53,12 @@ Props must be equivalent across frameworks:
 
 ```typescript
 // All frameworks
-interface EditorContentProps {
+interface VizelEditorProps {
   editor?: Editor | null;
   class?: string;  // Vue/Svelte use "class", React uses "className"
 }
 
-interface BubbleMenuProps {
+interface VizelToolbarProps {
   editor?: Editor | null;
   class?: string;
   children?: ...;  // Framework-specific child type
@@ -64,8 +71,10 @@ interface BubbleMenuProps {
 |-------|-----|--------|
 | `hooks/` | `composables/` | `runes/` |
 | `useVizelEditor` | `useVizelEditor` | `createVizelEditor` |
-| `useEditorState` | `useEditorState` | `createEditorState` |
-| `createSlashMenuRenderer` | `createSlashMenuRenderer` | `createSlashMenuRenderer` |
+| `useVizelState` | `useVizelState` | `createVizelState` |
+| `useVizelAutoSave` | `useVizelAutoSave` | `createVizelAutoSave` |
+| `useVizelTheme` | `useVizelTheme` | `getVizelTheme` |
+| `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` |
 
 ### Naming Conventions
 

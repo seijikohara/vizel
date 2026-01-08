@@ -1,15 +1,12 @@
 <script lang="ts">
+import type { Editor, JSONContent } from "@tiptap/core";
+import { convertVizelCodeBlocksToDiagrams, getVizelEditorState } from "@vizel/core";
 import {
-  BubbleMenu,
-  convertCodeBlocksToDiagrams,
-  createAutoSave,
-  createEditorState,
-  createVizelEditor,
-  EditorContent,
-  getEditorState,
-  type JSONContent,
-  SaveIndicator,
-  ThemeProvider,
+  createVizelAutoSave,
+  createVizelState,
+  Vizel,
+  VizelSaveIndicator,
+  VizelThemeProvider,
 } from "@vizel/svelte";
 import { initialContent } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
@@ -22,62 +19,46 @@ let showMarkdown = $state(false);
 let markdownInput = $state("");
 let showMarkdownInput = $state(false);
 
-const editor = createVizelEditor({
-  initialContent,
-  autofocus: "end",
-  features: {
-    markdown: true,
-    mathematics: true,
-    embed: true,
-    details: true,
-    diagram: true,
-    image: {
-      onUpload: mockUploadImage,
-      maxFileSize: 10 * 1024 * 1024, // 10MB
-      onValidationError: (error) => {
-        alert(`Validation error: ${error.message}`);
-      },
-      onUploadError: (error) => {
-        alert(`Upload failed: ${error.message}`);
-      },
-    },
-  },
-  onUpdate: ({ editor: e }) => {
-    output = e.getJSON();
-    markdownOutput = e.getMarkdown();
-  },
-  onCreate: ({ editor: e }) => {
-    output = e.getJSON();
-    markdownOutput = e.getMarkdown();
-  },
-});
+// Store editor reference from Vizel component
+let editorRef: Editor | null = $state(null);
 
 // Track editor state for character/word count
-const updateCount = createEditorState(() => editor.current);
+const updateCount = createVizelState(() => editorRef);
 const editorState = $derived.by(() => {
   void updateCount.current;
-  return getEditorState(editor.current);
+  return getVizelEditorState(editorRef);
 });
 
 // Auto-save functionality
-const autoSave = createAutoSave(() => editor.current, {
+const autoSave = createVizelAutoSave(() => editorRef, {
   debounceMs: 2000,
   storage: "localStorage",
   key: "vizel-demo-svelte",
 });
 
+function handleCreate({ editor }: { editor: Editor }) {
+  editorRef = editor;
+  output = editor.getJSON();
+  markdownOutput = editor.getMarkdown();
+}
+
+function handleUpdate({ editor }: { editor: Editor }) {
+  output = editor.getJSON();
+  markdownOutput = editor.getMarkdown();
+}
+
 function handleImportMarkdown() {
-  if (editor.current && markdownInput.trim()) {
-    editor.current.commands.setContent(markdownInput, { contentType: "markdown" });
+  if (editorRef && markdownInput.trim()) {
+    editorRef.commands.setContent(markdownInput, { contentType: "markdown" });
     // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
-    convertCodeBlocksToDiagrams(editor.current);
+    convertVizelCodeBlocksToDiagrams(editorRef);
     markdownInput = "";
     showMarkdownInput = false;
   }
 }
 </script>
 
-<ThemeProvider defaultTheme="system" storageKey="vizel-theme">
+<VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
 <div class="app">
   <header class="header">
     <div class="header-content">
@@ -161,14 +142,29 @@ function handleImportMarkdown() {
     </div>
 
     <div class="editor-container">
-      <div class="editor-root">
-        <EditorContent editor={editor.current} class="editor-content" />
-        {#if editor.current}
-          <BubbleMenu editor={editor.current} enableEmbed />
-        {/if}
-      </div>
+      <Vizel
+        {initialContent}
+        autofocus="end"
+        class="editor-content"
+        enableEmbed
+        features={{
+          markdown: true,
+          mathematics: true,
+          embed: true,
+          details: true,
+          diagram: true,
+          image: {
+            onUpload: mockUploadImage,
+            maxFileSize: 10 * 1024 * 1024,
+            onValidationError: (error) => alert(`Validation error: ${error.message}`),
+            onUploadError: (error) => alert(`Upload failed: ${error.message}`),
+          },
+        }}
+        onCreate={handleCreate}
+        onUpdate={handleUpdate}
+      />
       <div class="status-bar">
-        <SaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
+        <VizelSaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
         <span class="status-divider">·</span>
         <span class="status-item">{editorState.characterCount} characters</span>
         <span class="status-divider">·</span>
@@ -235,4 +231,4 @@ function handleImportMarkdown() {
     </p>
   </footer>
 </div>
-</ThemeProvider>
+</VizelThemeProvider>

@@ -36,19 +36,19 @@ export interface VizelFileHandlerOptions {
   /**
    * Handler for validation errors (file type not allowed, etc.)
    */
-  onError?: (error: FileHandlerError) => void;
+  onError?: (error: VizelFileHandlerError) => void;
 }
 
 /**
  * File handler error types
  */
-export type FileHandlerErrorType = "invalid_mime_type" | "no_files";
+export type VizelFileHandlerErrorType = "invalid_mime_type" | "no_files";
 
 /**
  * File handler error
  */
-export interface FileHandlerError {
-  type: FileHandlerErrorType;
+export interface VizelFileHandlerError {
+  type: VizelFileHandlerErrorType;
   message: string;
   files?: File[];
 }
@@ -56,7 +56,7 @@ export interface FileHandlerError {
 /**
  * Default allowed MIME types (images only)
  */
-export const DEFAULT_FILE_MIME_TYPES = [
+export const VIZEL_DEFAULT_FILE_MIME_TYPES = [
   "image/jpeg",
   "image/png",
   "image/gif",
@@ -67,7 +67,7 @@ export const DEFAULT_FILE_MIME_TYPES = [
 /**
  * Filter files by allowed MIME types
  */
-export function filterFilesByMimeType(files: File[], allowedMimeTypes: string[]): File[] {
+export function filterVizelFilesByMimeType(files: File[], allowedMimeTypes: string[]): File[] {
   return files.filter((file) => {
     // Check exact match first
     if (allowedMimeTypes.includes(file.type)) {
@@ -97,7 +97,7 @@ export function filterFilesByMimeType(files: File[], allowedMimeTypes: string[])
  * ```ts
  * const extensions = [
  *   ...createVizelExtensions(),
- *   createFileHandlerExtension({
+ *   createVizelFileHandlerExtension({
  *     onDrop: (editor, files, pos) => {
  *       files.forEach(file => {
  *         // Handle dropped file (e.g., upload image)
@@ -120,15 +120,15 @@ export function filterFilesByMimeType(files: File[], allowedMimeTypes: string[])
  *
  * @example With custom MIME types
  * ```ts
- * createFileHandlerExtension({
+ * createVizelFileHandlerExtension({
  *   allowedMimeTypes: ['image/*', 'application/pdf'],
  *   onDrop: (editor, files, pos) => { ... },
  *   onPaste: (editor, files) => { ... },
  * });
  * ```
  */
-export function createFileHandlerExtension(options: VizelFileHandlerOptions = {}) {
-  const { allowedMimeTypes = DEFAULT_FILE_MIME_TYPES, onPaste, onDrop, onError } = options;
+export function createVizelFileHandlerExtension(options: VizelFileHandlerOptions = {}) {
+  const { allowedMimeTypes = VIZEL_DEFAULT_FILE_MIME_TYPES, onPaste, onDrop, onError } = options;
 
   return FileHandler.configure({
     allowedMimeTypes,
@@ -139,7 +139,7 @@ export function createFileHandlerExtension(options: VizelFileHandlerOptions = {}
       }
 
       // Filter files by allowed MIME types
-      const validFiles = filterFilesByMimeType(files, allowedMimeTypes);
+      const validFiles = filterVizelFilesByMimeType(files, allowedMimeTypes);
 
       if (validFiles.length === 0) {
         onError?.({
@@ -159,7 +159,7 @@ export function createFileHandlerExtension(options: VizelFileHandlerOptions = {}
       }
 
       // Filter files by allowed MIME types
-      const validFiles = filterFilesByMimeType(files, allowedMimeTypes);
+      const validFiles = filterVizelFilesByMimeType(files, allowedMimeTypes);
 
       if (validFiles.length === 0) {
         onError?.({
@@ -183,7 +183,7 @@ export function createFileHandlerExtension(options: VizelFileHandlerOptions = {}
  *
  * @example
  * ```ts
- * const { onPaste, onDrop } = createImageFileHandlers({
+ * const { onPaste, onDrop } = createVizelImageFileHandlers({
  *   onUpload: async (file) => {
  *     const formData = new FormData();
  *     formData.append("file", file);
@@ -193,10 +193,10 @@ export function createFileHandlerExtension(options: VizelFileHandlerOptions = {}
  *   onError: (error) => console.error(error),
  * });
  *
- * const extension = createFileHandlerExtension({ onPaste, onDrop });
+ * const extension = createVizelFileHandlerExtension({ onPaste, onDrop });
  * ```
  */
-export interface ImageFileHandlerOptions {
+export interface VizelImageFileHandlerOptions {
   /**
    * Upload function that receives a file and returns a URL
    */
@@ -213,12 +213,14 @@ export interface ImageFileHandlerOptions {
   onUploadProgress?: (progress: number, file: File) => void;
 }
 
-export interface ImageFileHandlers {
+export interface VizelImageFileHandlers {
   onPaste: NonNullable<VizelFileHandlerOptions["onPaste"]>;
   onDrop: NonNullable<VizelFileHandlerOptions["onDrop"]>;
 }
 
-export function createImageFileHandlers(options: ImageFileHandlerOptions): ImageFileHandlers {
+export function createVizelImageFileHandlers(
+  options: VizelImageFileHandlerOptions
+): VizelImageFileHandlers {
   const { onUpload, onUploadError } = options;
 
   const handleFiles = async (editor: Editor, files: File[]): Promise<void> => {

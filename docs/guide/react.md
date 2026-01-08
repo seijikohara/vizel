@@ -17,8 +17,28 @@ bun add @vizel/react
 
 ## Quick Start
 
+The simplest way to get started is with the `Vizel` component:
+
 ```tsx
-import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/react';
+import { Vizel } from '@vizel/react';
+import '@vizel/core/styles.css';
+
+function App() {
+  return (
+    <Vizel
+      placeholder="Type '/' for commands..."
+      onUpdate={({ editor }) => console.log(editor.getJSON())}
+    />
+  );
+}
+```
+
+### Advanced Setup
+
+For more control over the editor, use individual components with hooks:
+
+```tsx
+import { VizelEditor, VizelToolbar, useVizelEditor } from '@vizel/react';
 import '@vizel/core/styles.css';
 
 function Editor() {
@@ -28,12 +48,56 @@ function Editor() {
 
   return (
     <div className="editor-container">
-      <EditorContent editor={editor} />
-      {editor && <BubbleMenu editor={editor} />}
+      <VizelEditor editor={editor} />
+      {editor && <VizelToolbar editor={editor} />}
     </div>
   );
 }
 ```
+
+## Components
+
+### Vizel
+
+All-in-one editor component with built-in bubble menu.
+
+```tsx
+import { Vizel } from '@vizel/react';
+
+<Vizel
+  initialContent={{ type: 'doc', content: [] }}
+  placeholder="Start writing..."
+  editable={true}
+  autofocus="end"
+  showBubbleMenu={true}
+  enableEmbed={true}
+  className="my-editor"
+  features={{
+    image: { onUpload: async (file) => 'url' },
+  }}
+  onUpdate={({ editor }) => {}}
+  onCreate={({ editor }) => {}}
+  onFocus={({ editor }) => {}}
+  onBlur={({ editor }) => {}}
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `initialContent` | `JSONContent` | - | Initial content |
+| `placeholder` | `string` | - | Placeholder text |
+| `editable` | `boolean` | `true` | Editable state |
+| `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus |
+| `features` | `VizelFeatureOptions` | - | Feature options |
+| `className` | `string` | - | CSS class |
+| `showBubbleMenu` | `boolean` | `true` | Show bubble menu |
+| `enableEmbed` | `boolean` | - | Enable embed in links |
+| `onUpdate` | `Function` | - | Update callback |
+| `onCreate` | `Function` | - | Create callback |
+| `onFocus` | `Function` | - | Focus callback |
+| `onBlur` | `Function` | - | Blur callback |
 
 ## Hooks
 
@@ -57,7 +121,7 @@ function Editor() {
     },
   });
 
-  return <EditorContent editor={editor} />;
+  return <VizelEditor editor={editor} />;
 }
 ```
 
@@ -69,16 +133,16 @@ See [Configuration](/guide/configuration) for full options.
 
 Returns `Editor | null`. The editor instance is `null` during SSR and before initialization.
 
-### useEditorState
+### useVizelState
 
 Forces component re-render on editor state changes.
 
 ```tsx
-import { useEditorState } from '@vizel/react';
+import { useVizelState } from '@vizel/react';
 
 function EditorStats({ editor }) {
   // Re-renders when editor state changes
-  useEditorState(editor);
+  useVizelState(editor);
 
   if (!editor) return null;
 
@@ -92,17 +156,17 @@ function EditorStats({ editor }) {
 }
 ```
 
-### useAutoSave
+### useVizelAutoSave
 
 Automatically saves editor content.
 
 ```tsx
-import { useAutoSave } from '@vizel/react';
+import { useVizelAutoSave, VizelEditor, VizelSaveIndicator } from '@vizel/react';
 
 function Editor() {
   const editor = useVizelEditor();
 
-  const { status, lastSaved, save, restore } = useAutoSave(editor, {
+  const { status, lastSaved, save, restore } = useVizelAutoSave(editor, {
     debounceMs: 2000,
     storage: 'localStorage',
     key: 'my-editor-content',
@@ -112,22 +176,22 @@ function Editor() {
 
   return (
     <div>
-      <EditorContent editor={editor} />
-      <SaveIndicator status={status} lastSaved={lastSaved} />
+      <VizelEditor editor={editor} />
+      <VizelSaveIndicator status={status} lastSaved={lastSaved} />
     </div>
   );
 }
 ```
 
-### useTheme
+### useVizelTheme
 
-Access theme state within ThemeProvider.
+Access theme state within VizelThemeProvider.
 
 ```tsx
-import { useTheme, ThemeProvider } from '@vizel/react';
+import { useVizelTheme, VizelThemeProvider } from '@vizel/react';
 
 function ThemeToggle() {
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useVizelTheme();
 
   return (
     <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
@@ -138,22 +202,22 @@ function ThemeToggle() {
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="system">
+    <VizelThemeProvider defaultTheme="system">
       <Editor />
       <ThemeToggle />
-    </ThemeProvider>
+    </VizelThemeProvider>
   );
 }
 ```
 
 ## Components
 
-### EditorContent
+### VizelEditor
 
 Renders the editor content area.
 
 ```tsx
-<EditorContent 
+<VizelEditor 
   editor={editor} 
   className="my-editor"
 />
@@ -166,14 +230,14 @@ Renders the editor content area.
 | `editor` | `Editor \| null` | Editor instance |
 | `className` | `string` | Custom class name |
 
-### BubbleMenu
+### VizelToolbar
 
 Floating toolbar on text selection.
 
 ```tsx
-<BubbleMenu 
+<VizelToolbar 
   editor={editor}
-  className="my-bubble-menu"
+  className="my-toolbar"
   showDefaultToolbar={true}
   updateDelay={100}
 />
@@ -191,18 +255,18 @@ Floating toolbar on text selection.
 | `shouldShow` | `Function` | - | Custom visibility logic |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
 
-### ThemeProvider
+### VizelThemeProvider
 
 Provides theme context.
 
 ```tsx
-<ThemeProvider 
+<VizelThemeProvider 
   defaultTheme="system"
   storageKey="my-theme"
   disableTransitionOnChange={false}
 >
   {children}
-</ThemeProvider>
+</VizelThemeProvider>
 ```
 
 #### Props
@@ -214,26 +278,26 @@ Provides theme context.
 | `targetSelector` | `string` | - | Theme attribute target |
 | `disableTransitionOnChange` | `boolean` | `false` | Disable transitions |
 
-### SaveIndicator
+### VizelSaveIndicator
 
 Displays save status.
 
 ```tsx
-<SaveIndicator 
+<VizelSaveIndicator 
   status={status} 
   lastSaved={lastSaved}
   className="my-indicator"
 />
 ```
 
-### Portal
+### VizelPortal
 
 Renders children in a portal.
 
 ```tsx
-<Portal container={document.body}>
+<VizelPortal container={document.body}>
   <div className="my-overlay">Content</div>
-</Portal>
+</VizelPortal>
 ```
 
 ## Patterns
@@ -254,7 +318,7 @@ function ControlledEditor() {
     },
   });
 
-  return <EditorContent editor={editor} />;
+  return <VizelEditor editor={editor} />;
 }
 ```
 
@@ -274,7 +338,7 @@ function EditorForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <EditorContent editor={editor} />
+      <VizelEditor editor={editor} />
       <button type="submit">Submit</button>
     </form>
   );
@@ -300,7 +364,7 @@ function EditorWithRef() {
   return (
     <div>
       <button onClick={focusEditor}>Focus</button>
-      <EditorContent editor={editor} />
+      <VizelEditor editor={editor} />
     </div>
   );
 }
@@ -355,11 +419,11 @@ Or with a client boundary:
 ```tsx
 'use client';
 
-import { EditorContent, useVizelEditor } from '@vizel/react';
+import { VizelEditor, useVizelEditor } from '@vizel/react';
 
 export function Editor() {
   const editor = useVizelEditor();
-  return <EditorContent editor={editor} />;
+  return <VizelEditor editor={editor} />;
 }
 ```
 

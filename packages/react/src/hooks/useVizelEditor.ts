@@ -1,14 +1,13 @@
+import { Editor, type Extensions } from "@tiptap/core";
 import {
   createVizelExtensions,
-  defaultEditorProps,
-  Editor,
-  type Extensions,
-  registerUploadEventHandler,
-  resolveFeatures,
+  registerVizelUploadEventHandler,
+  resolveVizelFeatures,
   type VizelEditorOptions,
+  vizelDefaultEditorProps,
 } from "@vizel/core";
 import { useEffect, useRef, useState } from "react";
-import { createSlashMenuRenderer } from "./createSlashMenuRenderer.ts";
+import { createVizelSlashMenuRenderer } from "./createSlashMenuRenderer.ts";
 
 export interface UseVizelEditorOptions extends VizelEditorOptions {
   /** Additional extensions to include */
@@ -48,9 +47,9 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
 
   const [editor, setEditor] = useState<Editor | null>(null);
 
-  const resolvedFeatures = resolveFeatures({
+  const resolvedFeatures = resolveVizelFeatures({
     ...(features !== undefined && { features }),
-    createSlashMenuRenderer,
+    createSlashMenuRenderer: createVizelSlashMenuRenderer,
   });
 
   // Store image upload options for event handler
@@ -89,7 +88,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
       ...(opts.initialContent !== undefined && { content: opts.initialContent }),
       editable: opts.editable,
       autofocus: opts.autofocus,
-      editorProps: defaultEditorProps,
+      editorProps: vizelDefaultEditorProps,
       // Only pass event handlers that are defined to avoid tiptap emit errors
       ...(opts.onUpdate && { onUpdate: opts.onUpdate }),
       ...(opts.onCreate && { onCreate: opts.onCreate }),
@@ -110,7 +109,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
   useEffect(() => {
     if (!editor) return;
 
-    return registerUploadEventHandler({
+    return registerVizelUploadEventHandler({
       getEditor: () => editor,
       getImageOptions: () => imageOptionsRef.current,
     });

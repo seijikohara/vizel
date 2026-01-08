@@ -1,4 +1,4 @@
-import { BubbleMenu, EditorContent, EditorRoot, useVizelEditor } from "@vizel/react";
+import { useVizelEditor, VizelEditor, VizelProvider, VizelToolbar } from "@vizel/react";
 
 export interface EmbedFixtureProps {
   placeholder?: string;
@@ -18,9 +18,9 @@ export function EmbedFixture({
   });
 
   return (
-    <EditorRoot editor={editor}>
-      <EditorContent />
-      <BubbleMenu enableEmbed />
-    </EditorRoot>
+    <VizelProvider editor={editor}>
+      <VizelEditor />
+      <VizelToolbar enableEmbed />
+    </VizelProvider>
   );
 }

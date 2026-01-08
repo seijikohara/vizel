@@ -45,6 +45,49 @@ Each framework package has peer dependencies on its respective framework:
 - `@vizel/svelte` requires `svelte@^5`
 :::
 
+## Quick Start
+
+The simplest way to use Vizel is with the `Vizel` component, which includes everything you need:
+
+::: code-group
+
+```tsx [React]
+import { Vizel } from '@vizel/react';
+import '@vizel/core/styles.css';
+
+function App() {
+  return <Vizel placeholder="Type '/' for commands..." />;
+}
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { Vizel } from '@vizel/vue';
+import '@vizel/core/styles.css';
+</script>
+
+<template>
+  <Vizel placeholder="Type '/' for commands..." />
+</template>
+```
+
+```svelte [Svelte]
+<script lang="ts">
+import { Vizel } from '@vizel/svelte';
+import '@vizel/core/styles.css';
+</script>
+
+<Vizel placeholder="Type '/' for commands..." />
+```
+
+:::
+
+The `Vizel` component includes:
+- Editor content area
+- Floating toolbar (text formatting)
+- Slash command menu
+- All default features
+
 ## Import Styles
 
 Import the default stylesheet in your application entry point:
@@ -55,12 +98,14 @@ import '@vizel/core/styles.css';
 
 This includes both CSS variables and component styles. For custom theming, see [Theming](/guide/theming).
 
-## Basic Usage
+## Advanced Usage
+
+For more control, you can use individual components:
 
 ### React
 
 ```tsx
-import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/react';
+import { VizelEditor, VizelToolbar, useVizelEditor } from '@vizel/react';
 import '@vizel/core/styles.css';
 
 function Editor() {
@@ -70,8 +115,8 @@ function Editor() {
 
   return (
     <div className="editor-container">
-      <EditorContent editor={editor} />
-      {editor && <BubbleMenu editor={editor} />}
+      <VizelEditor editor={editor} />
+      {editor && <VizelToolbar editor={editor} />}
     </div>
   );
 }
@@ -83,7 +128,7 @@ export default Editor;
 
 ```vue
 <script setup lang="ts">
-import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/vue';
+import { VizelEditor, VizelToolbar, useVizelEditor } from '@vizel/vue';
 import '@vizel/core/styles.css';
 
 const editor = useVizelEditor({
@@ -93,8 +138,8 @@ const editor = useVizelEditor({
 
 <template>
   <div class="editor-container">
-    <EditorContent :editor="editor" />
-    <BubbleMenu v-if="editor" :editor="editor" />
+    <VizelEditor :editor="editor" />
+    <VizelToolbar v-if="editor" :editor="editor" />
   </div>
 </template>
 ```
@@ -103,7 +148,7 @@ const editor = useVizelEditor({
 
 ```svelte
 <script lang="ts">
-  import { EditorContent, BubbleMenu, createVizelEditor } from '@vizel/svelte';
+  import { VizelEditor, VizelToolbar, createVizelEditor } from '@vizel/svelte';
   import '@vizel/core/styles.css';
 
   const editor = createVizelEditor({
@@ -112,9 +157,9 @@ const editor = useVizelEditor({
 </script>
 
 <div class="editor-container">
-  <EditorContent editor={editor.current} />
+  <VizelEditor editor={editor.current} />
   {#if editor.current}
-    <BubbleMenu editor={editor.current} />
+    <VizelToolbar editor={editor.current} />
   {/if}
 </div>
 ```
@@ -371,24 +416,24 @@ const editor = createVizelEditor({
 
 ## Dark Mode
 
-Vizel supports light and dark themes. Use the `ThemeProvider` component:
+Vizel supports light and dark themes. Use the `VizelThemeProvider` component:
 
 ::: code-group
 
 ```tsx [React]
-import { ThemeProvider, useTheme } from '@vizel/react';
+import { VizelThemeProvider, useVizelTheme } from '@vizel/react';
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="my-theme">
+    <VizelThemeProvider defaultTheme="system" storageKey="my-theme">
       <Editor />
       <ThemeToggle />
-    </ThemeProvider>
+    </VizelThemeProvider>
   );
 }
 
 function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useVizelTheme();
   
   return (
     <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
@@ -400,9 +445,9 @@ function ThemeToggle() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import { ThemeProvider, useTheme } from '@vizel/vue';
+import { VizelThemeProvider, useVizelTheme } from '@vizel/vue';
 
-const { resolvedTheme, setTheme } = useTheme();
+const { resolvedTheme, setTheme } = useVizelTheme();
 
 function toggleTheme() {
   setTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark');
@@ -410,32 +455,32 @@ function toggleTheme() {
 </script>
 
 <template>
-  <ThemeProvider defaultTheme="system" storageKey="my-theme">
+  <VizelThemeProvider defaultTheme="system" storageKey="my-theme">
     <Editor />
     <button @click="toggleTheme">
       {{ resolvedTheme === 'dark' ? '☀️' : '🌙' }}
     </button>
-  </ThemeProvider>
+  </VizelThemeProvider>
 </template>
 ```
 
 ```svelte [Svelte]
 <script lang="ts">
-  import { ThemeProvider, getTheme } from '@vizel/svelte';
+  import { VizelThemeProvider, getVizelTheme } from '@vizel/svelte';
 
-  const theme = getTheme();
+  const theme = getVizelTheme();
 
   function toggleTheme() {
     theme.setTheme(theme.resolvedTheme === 'dark' ? 'light' : 'dark');
   }
 </script>
 
-<ThemeProvider defaultTheme="system" storageKey="my-theme">
+<VizelThemeProvider defaultTheme="system" storageKey="my-theme">
   <Editor />
   <button onclick={toggleTheme}>
     {theme.resolvedTheme === 'dark' ? '☀️' : '🌙'}
   </button>
-</ThemeProvider>
+</VizelThemeProvider>
 ```
 
 :::

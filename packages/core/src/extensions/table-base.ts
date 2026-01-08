@@ -55,7 +55,7 @@ interface MarkdownRenderContext {
 /**
  * Text alignment options for table cells.
  */
-export type TableCellAlignment = "left" | "center" | "right";
+export type VizelTableCellAlignment = "left" | "center" | "right";
 
 /**
  * Parse cell content from marked token into Tiptap JSONContent.

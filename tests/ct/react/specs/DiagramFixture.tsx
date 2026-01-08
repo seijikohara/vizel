@@ -1,4 +1,4 @@
-import { BubbleMenu, EditorContent, EditorRoot, useVizelEditor } from "@vizel/react";
+import { useVizelEditor, VizelEditor, VizelProvider, VizelToolbar } from "@vizel/react";
 
 export interface DiagramFixtureProps {
   placeholder?: string;
@@ -20,9 +20,9 @@ export function DiagramFixture({
   });
 
   return (
-    <EditorRoot editor={editor}>
-      <EditorContent />
-      {showBubbleMenu && <BubbleMenu />}
-    </EditorRoot>
+    <VizelProvider editor={editor}>
+      <VizelEditor />
+      {showBubbleMenu && <VizelToolbar />}
+    </VizelProvider>
   );
 }

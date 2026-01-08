@@ -16,9 +16,29 @@ bun add @vizel/vue
 
 ## Quick Start
 
+The simplest way to get started is with the `Vizel` component:
+
 ```vue
 <script setup lang="ts">
-import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/vue';
+import { Vizel } from '@vizel/vue';
+import '@vizel/core/styles.css';
+</script>
+
+<template>
+  <Vizel
+    placeholder="Type '/' for commands..."
+    @update="({ editor }) => console.log(editor.getJSON())"
+  />
+</template>
+```
+
+### Advanced Setup
+
+For more control over the editor, use individual components with composables:
+
+```vue
+<script setup lang="ts">
+import { VizelEditor, VizelToolbar, useVizelEditor } from '@vizel/vue';
 import '@vizel/core/styles.css';
 
 const editor = useVizelEditor({
@@ -28,11 +48,64 @@ const editor = useVizelEditor({
 
 <template>
   <div class="editor-container">
-    <EditorContent :editor="editor" />
-    <BubbleMenu v-if="editor" :editor="editor" />
+    <VizelEditor :editor="editor" />
+    <VizelToolbar v-if="editor" :editor="editor" />
   </div>
 </template>
 ```
+
+## Components
+
+### Vizel
+
+All-in-one editor component with built-in bubble menu.
+
+```vue
+<script setup lang="ts">
+import { Vizel } from '@vizel/vue';
+</script>
+
+<template>
+  <Vizel
+    :initialContent="{ type: 'doc', content: [] }"
+    placeholder="Start writing..."
+    :editable="true"
+    autofocus="end"
+    :showBubbleMenu="true"
+    :enableEmbed="true"
+    class="my-editor"
+    :features="{
+      image: { onUpload: async (file) => 'url' },
+    }"
+    @update="({ editor }) => {}"
+    @create="({ editor }) => {}"
+    @focus="({ editor }) => {}"
+    @blur="({ editor }) => {}"
+  />
+</template>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `initialContent` | `JSONContent` | - | Initial content |
+| `placeholder` | `string` | - | Placeholder text |
+| `editable` | `boolean` | `true` | Editable state |
+| `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus |
+| `features` | `VizelFeatureOptions` | - | Feature options |
+| `class` | `string` | - | CSS class |
+| `showBubbleMenu` | `boolean` | `true` | Show bubble menu |
+| `enableEmbed` | `boolean` | - | Enable embed in links |
+
+#### Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `update` | `{ editor: Editor }` | Content updated |
+| `create` | `{ editor: Editor }` | Editor created |
+| `focus` | `{ editor: Editor }` | Editor focused |
+| `blur` | `{ editor: Editor }` | Editor blurred |
 
 ## Composables
 
@@ -66,18 +139,18 @@ See [Configuration](/guide/configuration) for full options.
 
 Returns `ShallowRef<Editor | null>`. The editor is `null` during SSR and before initialization.
 
-### useEditorState
+### useVizelState
 
 Forces component re-render on editor state changes.
 
 ```vue
 <script setup lang="ts">
-import { useEditorState } from '@vizel/vue';
+import { useVizelState } from '@vizel/vue';
 
 const props = defineProps<{ editor: Editor | null }>();
 
 // Re-renders when editor state changes
-useEditorState(() => props.editor);
+useVizelState(() => props.editor);
 </script>
 
 <template>
@@ -88,17 +161,17 @@ useEditorState(() => props.editor);
 </template>
 ```
 
-### useAutoSave
+### useVizelAutoSave
 
 Automatically saves editor content.
 
 ```vue
 <script setup lang="ts">
-import { useVizelEditor, useAutoSave, SaveIndicator } from '@vizel/vue';
+import { useVizelEditor, useVizelAutoSave, VizelEditor, VizelSaveIndicator } from '@vizel/vue';
 
 const editor = useVizelEditor();
 
-const { status, lastSaved, save, restore } = useAutoSave(() => editor.value, {
+const { status, lastSaved, save, restore } = useVizelAutoSave(() => editor.value, {
   debounceMs: 2000,
   storage: 'localStorage',
   key: 'my-editor-content',
@@ -109,21 +182,21 @@ const { status, lastSaved, save, restore } = useAutoSave(() => editor.value, {
 
 <template>
   <div>
-    <EditorContent :editor="editor" />
-    <SaveIndicator :status="status" :lastSaved="lastSaved" />
+    <VizelEditor :editor="editor" />
+    <VizelSaveIndicator :status="status" :lastSaved="lastSaved" />
   </div>
 </template>
 ```
 
-### useTheme
+### useVizelTheme
 
-Access theme state within ThemeProvider.
+Access theme state within VizelThemeProvider.
 
 ```vue
 <script setup lang="ts">
-import { useTheme, ThemeProvider } from '@vizel/vue';
+import { useVizelTheme, VizelThemeProvider } from '@vizel/vue';
 
-const { theme, resolvedTheme, setTheme } = useTheme();
+const { theme, resolvedTheme, setTheme } = useVizelTheme();
 
 function toggleTheme() {
   setTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark');
@@ -131,23 +204,23 @@ function toggleTheme() {
 </script>
 
 <template>
-  <ThemeProvider defaultTheme="system">
+  <VizelThemeProvider defaultTheme="system">
     <Editor />
     <button @click="toggleTheme">
       {{ resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode' }}
     </button>
-  </ThemeProvider>
+  </VizelThemeProvider>
 </template>
 ```
 
 ## Components
 
-### EditorContent
+### VizelEditor
 
 Renders the editor content area.
 
 ```vue
-<EditorContent 
+<VizelEditor 
   :editor="editor" 
   class="my-editor"
 />
@@ -160,14 +233,14 @@ Renders the editor content area.
 | `editor` | `Editor \| null` | Editor instance |
 | `class` | `string` | Custom class name |
 
-### BubbleMenu
+### VizelToolbar
 
 Floating toolbar on text selection.
 
 ```vue
-<BubbleMenu 
+<VizelToolbar 
   :editor="editor"
-  class="my-bubble-menu"
+  class="my-toolbar"
   :showDefaultToolbar="true"
   :updateDelay="100"
 />
@@ -185,18 +258,18 @@ Floating toolbar on text selection.
 | `shouldShow` | `Function` | - | Custom visibility logic |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
 
-### ThemeProvider
+### VizelThemeProvider
 
 Provides theme context.
 
 ```vue
-<ThemeProvider 
+<VizelThemeProvider 
   defaultTheme="system"
   storageKey="my-theme"
   :disableTransitionOnChange="false"
 >
   <slot />
-</ThemeProvider>
+</VizelThemeProvider>
 ```
 
 #### Props
@@ -208,26 +281,26 @@ Provides theme context.
 | `targetSelector` | `string` | - | Theme attribute target |
 | `disableTransitionOnChange` | `boolean` | `false` | Disable transitions |
 
-### SaveIndicator
+### VizelSaveIndicator
 
 Displays save status.
 
 ```vue
-<SaveIndicator 
+<VizelSaveIndicator 
   :status="status" 
   :lastSaved="lastSaved"
   class="my-indicator"
 />
 ```
 
-### Portal
+### VizelPortal
 
 Renders children in a portal.
 
 ```vue
-<Portal :container="document.body">
+<VizelPortal :container="document.body">
   <div class="my-overlay">Content</div>
-</Portal>
+</VizelPortal>
 ```
 
 ## Patterns
@@ -237,7 +310,7 @@ Renders children in a portal.
 ```vue
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { JSONContent } from '@vizel/core';
+import type { JSONContent } from '@tiptap/core';
 
 const content = ref<JSONContent>({ type: 'doc', content: [] });
 
@@ -266,7 +339,7 @@ function handleSubmit() {
 
 <template>
   <form @submit.prevent="handleSubmit">
-    <EditorContent :editor="editor" />
+    <VizelEditor :editor="editor" />
     <button type="submit">Submit</button>
   </form>
 </template>
@@ -294,7 +367,7 @@ function focusEditor() {
 <template>
   <div>
     <button @click="focusEditor">Focus</button>
-    <EditorContent :editor="editor" />
+    <VizelEditor :editor="editor" />
   </div>
 </template>
 ```

@@ -16,9 +16,27 @@ bun add @vizel/svelte
 
 ## Quick Start
 
+The simplest way to get started is with the `Vizel` component:
+
 ```svelte
 <script lang="ts">
-  import { EditorContent, BubbleMenu, createVizelEditor } from '@vizel/svelte';
+  import { Vizel } from '@vizel/svelte';
+  import '@vizel/core/styles.css';
+</script>
+
+<Vizel
+  placeholder="Type '/' for commands..."
+  onUpdate={({ editor }) => console.log(editor.getJSON())}
+/>
+```
+
+### Advanced Setup
+
+For more control over the editor, use individual components with runes:
+
+```svelte
+<script lang="ts">
+  import { VizelEditor, VizelToolbar, createVizelEditor } from '@vizel/svelte';
   import '@vizel/core/styles.css';
 
   const editor = createVizelEditor({
@@ -27,12 +45,58 @@ bun add @vizel/svelte
 </script>
 
 <div class="editor-container">
-  <EditorContent editor={editor.current} />
+  <VizelEditor editor={editor.current} />
   {#if editor.current}
-    <BubbleMenu editor={editor.current} />
+    <VizelToolbar editor={editor.current} />
   {/if}
 </div>
 ```
+
+## Components
+
+### Vizel
+
+All-in-one editor component with built-in bubble menu.
+
+```svelte
+<script lang="ts">
+  import { Vizel } from '@vizel/svelte';
+</script>
+
+<Vizel
+  initialContent={{ type: 'doc', content: [] }}
+  placeholder="Start writing..."
+  editable={true}
+  autofocus="end"
+  showBubbleMenu={true}
+  enableEmbed={true}
+  class="my-editor"
+  features={{
+    image: { onUpload: async (file) => 'url' },
+  }}
+  onUpdate={({ editor }) => {}}
+  onCreate={({ editor }) => {}}
+  onFocus={({ editor }) => {}}
+  onBlur={({ editor }) => {}}
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `initialContent` | `JSONContent` | - | Initial content |
+| `placeholder` | `string` | - | Placeholder text |
+| `editable` | `boolean` | `true` | Editable state |
+| `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus |
+| `features` | `VizelFeatureOptions` | - | Feature options |
+| `class` | `string` | - | CSS class |
+| `showBubbleMenu` | `boolean` | `true` | Show bubble menu |
+| `enableEmbed` | `boolean` | - | Enable embed in links |
+| `onUpdate` | `Function` | - | Update callback |
+| `onCreate` | `Function` | - | Create callback |
+| `onFocus` | `Function` | - | Focus callback |
+| `onBlur` | `Function` | - | Blur callback |
 
 ## Runes
 
@@ -66,18 +130,18 @@ See [Configuration](/guide/configuration) for full options.
 
 Returns `{ current: Editor | null }`. Access the editor via `editor.current`.
 
-### createEditorState
+### createVizelState
 
 Forces component re-render on editor state changes.
 
 ```svelte
 <script lang="ts">
-  import { createEditorState } from '@vizel/svelte';
+  import { createVizelState } from '@vizel/svelte';
 
   let { editor } = $props();
   
   // Re-renders when editor state changes
-  const state = createEditorState(() => editor);
+  const state = createVizelState(() => editor);
 </script>
 
 {#if editor}
@@ -88,17 +152,17 @@ Forces component re-render on editor state changes.
 {/if}
 ```
 
-### createAutoSave
+### createVizelAutoSave
 
 Automatically saves editor content.
 
 ```svelte
 <script lang="ts">
-  import { createVizelEditor, createAutoSave, SaveIndicator } from '@vizel/svelte';
+  import { createVizelEditor, createVizelAutoSave, VizelEditor, VizelSaveIndicator } from '@vizel/svelte';
 
   const editor = createVizelEditor();
 
-  const autoSave = createAutoSave(() => editor.current, {
+  const autoSave = createVizelAutoSave(() => editor.current, {
     debounceMs: 2000,
     storage: 'localStorage',
     key: 'my-editor-content',
@@ -107,41 +171,41 @@ Automatically saves editor content.
   });
 </script>
 
-<EditorContent editor={editor.current} />
-<SaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
+<VizelEditor editor={editor.current} />
+<VizelSaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
 ```
 
-### getTheme
+### getVizelTheme
 
-Access theme state within ThemeProvider context.
+Access theme state within VizelThemeProvider context.
 
 ```svelte
 <script lang="ts">
-  import { getTheme, ThemeProvider } from '@vizel/svelte';
+  import { getVizelTheme, VizelThemeProvider } from '@vizel/svelte';
 
-  const theme = getTheme();
+  const theme = getVizelTheme();
 
   function toggleTheme() {
     theme.setTheme(theme.resolvedTheme === 'dark' ? 'light' : 'dark');
   }
 </script>
 
-<ThemeProvider defaultTheme="system">
+<VizelThemeProvider defaultTheme="system">
   <Editor />
   <button onclick={toggleTheme}>
     {theme.resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode'}
   </button>
-</ThemeProvider>
+</VizelThemeProvider>
 ```
 
 ## Components
 
-### EditorContent
+### VizelEditor
 
 Renders the editor content area.
 
 ```svelte
-<EditorContent 
+<VizelEditor 
   editor={editor.current} 
   class="my-editor"
 />
@@ -154,14 +218,14 @@ Renders the editor content area.
 | `editor` | `Editor \| null` | Editor instance |
 | `class` | `string` | Custom class name |
 
-### BubbleMenu
+### VizelToolbar
 
 Floating toolbar on text selection.
 
 ```svelte
-<BubbleMenu 
+<VizelToolbar 
   editor={editor.current}
-  class="my-bubble-menu"
+  class="my-toolbar"
   showDefaultToolbar={true}
   updateDelay={100}
 />
@@ -179,18 +243,18 @@ Floating toolbar on text selection.
 | `shouldShow` | `Function` | - | Custom visibility logic |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
 
-### ThemeProvider
+### VizelThemeProvider
 
 Provides theme context.
 
 ```svelte
-<ThemeProvider 
+<VizelThemeProvider 
   defaultTheme="system"
   storageKey="my-theme"
   disableTransitionOnChange={false}
 >
   <slot />
-</ThemeProvider>
+</VizelThemeProvider>
 ```
 
 #### Props
@@ -202,26 +266,26 @@ Provides theme context.
 | `targetSelector` | `string` | - | Theme attribute target |
 | `disableTransitionOnChange` | `boolean` | `false` | Disable transitions |
 
-### SaveIndicator
+### VizelSaveIndicator
 
 Displays save status.
 
 ```svelte
-<SaveIndicator 
+<VizelSaveIndicator 
   status={autoSave.status} 
   lastSaved={autoSave.lastSaved}
   class="my-indicator"
 />
 ```
 
-### Portal
+### VizelPortal
 
 Renders children in a portal.
 
 ```svelte
-<Portal container={document.body}>
+<VizelPortal container={document.body}>
   <div class="my-overlay">Content</div>
-</Portal>
+</VizelPortal>
 ```
 
 ## Patterns
@@ -230,7 +294,7 @@ Renders children in a portal.
 
 ```svelte
 <script lang="ts">
-  import type { JSONContent } from '@vizel/core';
+  import type { JSONContent } from '@tiptap/core';
 
   let content = $state<JSONContent>({ type: 'doc', content: [] });
 
@@ -259,7 +323,7 @@ Renders children in a portal.
 </script>
 
 <form onsubmit={handleSubmit}>
-  <EditorContent editor={editor.current} />
+  <VizelEditor editor={editor.current} />
   <button type="submit">Submit</button>
 </form>
 ```
@@ -282,7 +346,7 @@ Renders children in a portal.
 </script>
 
 <button onclick={focusEditor}>Focus</button>
-<EditorContent editor={editor.current} />
+<VizelEditor editor={editor.current} />
 ```
 
 ### Custom Toolbar
@@ -343,7 +407,7 @@ Renders children in a portal.
 ```svelte
 <script lang="ts">
   const editor = createVizelEditor();
-  createEditorState(() => editor.current);
+  createVizelState(() => editor.current);
 
   // Derived values that update with editor state
   const characterCount = $derived(
@@ -386,7 +450,7 @@ The editor is client-side only. Use `browser` check or `onMount`:
 </script>
 
 {#if mounted}
-  <EditorContent editor={editor.current} />
+  <VizelEditor editor={editor.current} />
 {:else}
   <div>Loading editor...</div>
 {/if}

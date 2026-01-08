@@ -45,20 +45,20 @@ export interface VizelMarkdownOptions {
  *
  * @example Basic usage
  * ```typescript
- * import { Markdown } from '@vizel/core'
+ * import { VizelMarkdown } from '@vizel/core'
  *
  * const editor = new Editor({
- *   extensions: [Markdown],
+ *   extensions: [VizelMarkdown],
  * })
  * ```
  *
  * @example With options
  * ```typescript
- * import { createMarkdownExtension } from '@vizel/core'
+ * import { createVizelMarkdownExtension } from '@vizel/core'
  *
  * const editor = new Editor({
  *   extensions: [
- *     createMarkdownExtension({
+ *     createVizelMarkdownExtension({
  *       gfm: true,
  *       indentation: { style: 'tab', size: 1 },
  *     }),
@@ -66,7 +66,7 @@ export interface VizelMarkdownOptions {
  * })
  * ```
  */
-export function createMarkdownExtension(
+export function createVizelMarkdownExtension(
   options: VizelMarkdownOptions = {}
 ): ReturnType<typeof TiptapMarkdown.configure> {
   const { indentation = { style: "space", size: 2 }, gfm = true, breaks = false } = options;
@@ -90,7 +90,7 @@ export function createMarkdownExtension(
  * - GitHub Flavored Markdown enabled
  * - No automatic line breaks
  */
-export const Markdown = createMarkdownExtension();
+export const VizelMarkdown = createVizelMarkdownExtension();
 
 // Re-export the extension type for advanced usage
 export { TiptapMarkdown };

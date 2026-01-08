@@ -2,11 +2,64 @@
 
 Svelte 5 components and runes for Vizel editor.
 
+::: tip Looking for a guide?
+See the [Svelte Guide](/guide/svelte) for step-by-step tutorials and common patterns.
+:::
+
 ## Installation
 
 ```bash
 npm install @vizel/svelte
 ```
+
+## Components
+
+### Vizel
+
+All-in-one editor component with built-in toolbar. This is the recommended way to get started.
+
+```svelte
+<script lang="ts">
+  import { Vizel } from '@vizel/svelte';
+  import '@vizel/core/styles.css';
+</script>
+
+<Vizel
+  initialContent={{ type: 'doc', content: [] }}
+  placeholder="Start writing..."
+  editable={true}
+  autofocus="end"
+  showToolbar={true}
+  enableEmbed={true}
+  class="my-editor"
+  features={{ markdown: true }}
+  onUpdate={({ editor }) => {}}
+  onCreate={({ editor }) => {}}
+  onFocus={({ editor }) => {}}
+  onBlur={({ editor }) => {}}
+/>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `initialContent` | `JSONContent` | - | Initial editor content |
+| `placeholder` | `string` | - | Placeholder text |
+| `editable` | `boolean` | `true` | Editable state |
+| `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus behavior |
+| `features` | `VizelFeatureOptions` | - | Feature configuration |
+| `class` | `string` | - | CSS class name |
+| `showToolbar` | `boolean` | `true` | Show toolbar on selection |
+| `enableEmbed` | `boolean` | - | Enable embed in link editor |
+| `onUpdate` | `({ editor }) => void` | - | Update callback |
+| `onCreate` | `({ editor }) => void` | - | Create callback |
+| `onDestroy` | `() => void` | - | Destroy callback |
+| `onSelectionUpdate` | `({ editor }) => void` | - | Selection change callback |
+| `onFocus` | `({ editor }) => void` | - | Focus callback |
+| `onBlur` | `({ editor }) => void` | - | Blur callback |
+
+---
 
 ## Runes
 
@@ -23,29 +76,29 @@ const editor = createVizelEditor(options?: VizelEditorOptions);
 
 **Returns:** `{ current: Editor | null }`
 
-### createEditorState
+### createVizelState
 
 Forces re-render on editor state changes.
 
 ```typescript
-import { createEditorState } from '@vizel/svelte';
+import { createVizelState } from '@vizel/svelte';
 
-const state = createEditorState(getEditor: () => Editor | null);
+const state = createVizelState(getEditor: () => Editor | null);
 // Access: state.current (update count)
 ```
 
 **Returns:** `{ readonly current: number }`
 
-### createAutoSave
+### createVizelAutoSave
 
 Auto-saves editor content with debouncing.
 
 ```typescript
-import { createAutoSave } from '@vizel/svelte';
+import { createVizelAutoSave } from '@vizel/svelte';
 
-const autoSave = createAutoSave(
+const autoSave = createVizelAutoSave(
   getEditor: () => Editor | null,
-  options?: AutoSaveOptions
+  options?: VizelAutoSaveOptions
 );
 ```
 
@@ -53,21 +106,21 @@ const autoSave = createAutoSave(
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `status` | `SaveStatus` | Current save status (reactive) |
+| `status` | `VizelSaveStatus` | Current save status (reactive) |
 | `hasUnsavedChanges` | `boolean` | Has unsaved changes (reactive) |
 | `lastSaved` | `Date \| null` | Last save timestamp (reactive) |
 | `error` | `Error \| null` | Last error (reactive) |
 | `save` | `() => Promise<void>` | Manual save function |
 | `restore` | `() => Promise<JSONContent \| null>` | Manual restore |
 
-### getTheme
+### getVizelTheme
 
-Access theme state within ThemeProvider context.
+Access theme state within VizelThemeProvider context.
 
 ```typescript
-import { getTheme } from '@vizel/svelte';
+import { getVizelTheme } from '@vizel/svelte';
 
-const theme = getTheme();
+const theme = getVizelTheme();
 // Access: theme.theme, theme.resolvedTheme, theme.setTheme()
 ```
 
@@ -75,21 +128,21 @@ const theme = getTheme();
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `theme` | `Theme` | Current theme setting (reactive) |
-| `resolvedTheme` | `ResolvedTheme` | Resolved theme (reactive) |
-| `systemTheme` | `ResolvedTheme` | System preference (reactive) |
-| `setTheme` | `(theme: Theme) => void` | Set theme function |
+| `theme` | `VizelTheme` | Current theme setting (reactive) |
+| `resolvedTheme` | `VizelResolvedTheme` | Resolved theme (reactive) |
+| `systemTheme` | `VizelResolvedTheme` | System preference (reactive) |
+| `setTheme` | `(theme: VizelTheme) => void` | Set theme function |
 
 ---
 
 ## Components
 
-### EditorContent
+### VizelEditor
 
 Renders the editor content area.
 
 ```svelte
-<EditorContent editor={editor.current} class="my-editor" />
+<VizelEditor editor={editor.current} class="my-editor" />
 ```
 
 **Props:**
@@ -99,15 +152,14 @@ Renders the editor content area.
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | CSS class name |
 
-### BubbleMenu
+### VizelToolbar
 
 Floating formatting toolbar.
 
 ```svelte
-<BubbleMenu 
+<VizelToolbar 
   editor={editor.current}
-  showDefaultToolbar={true}
-  updateDelay={100}
+  class="my-toolbar"
 />
 ```
 
@@ -117,11 +169,6 @@ Floating formatting toolbar.
 |------|------|---------|-------------|
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | CSS class name |
-| `showDefaultToolbar` | `boolean` | `true` | Show default toolbar |
-| `pluginKey` | `string` | `"vizelBubbleMenu"` | Plugin key |
-| `updateDelay` | `number` | `100` | Update delay (ms) |
-| `shouldShow` | `Function` | - | Custom visibility |
-| `enableEmbed` | `boolean` | `false` | Enable embed in links |
 
 **Slots:**
 
@@ -129,53 +176,91 @@ Floating formatting toolbar.
 |------|-------------|
 | `default` | Custom toolbar content |
 
-### ThemeProvider
+### VizelToolbarDefault
 
-Provides theme context.
+Default toolbar with all formatting buttons.
 
 ```svelte
-<ThemeProvider
-  defaultTheme="system"
-  storageKey="vizel-theme"
-  disableTransitionOnChange={false}
->
-  <slot />
-</ThemeProvider>
+<VizelToolbarDefault 
+  editor={editor.current}
+  enableEmbed={false}
+/>
 ```
 
 **Props:**
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `defaultTheme` | `Theme` | `"system"` | Default theme |
+| `editor` | `Editor \| null` | - | Editor instance |
+| `enableEmbed` | `boolean` | `false` | Enable embed in links |
+
+### VizelToolbarButton
+
+Individual toolbar button.
+
+```svelte
+<VizelToolbarButton
+  icon="lucide:bold"
+  isActive={editor.current?.isActive('bold')}
+  onclick={() => editor.current?.chain().focus().toggleBold().run()}
+/>
+```
+
+### VizelToolbarDivider
+
+Toolbar divider.
+
+```svelte
+<VizelToolbarDivider />
+```
+
+### VizelThemeProvider
+
+Provides theme context.
+
+```svelte
+<VizelThemeProvider
+  defaultTheme="system"
+  storageKey="vizel-theme"
+  disableTransitionOnChange={false}
+>
+  <slot />
+</VizelThemeProvider>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `defaultTheme` | `VizelTheme` | `"system"` | Default theme |
 | `storageKey` | `string` | `"vizel-theme"` | Storage key |
 | `targetSelector` | `string` | - | Theme target |
 | `disableTransitionOnChange` | `boolean` | `false` | Disable transitions |
 
-### SaveIndicator
+### VizelSaveIndicator
 
 Displays save status.
 
 ```svelte
-<SaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
+<VizelSaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
 ```
 
 **Props:**
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `status` | `SaveStatus` | Save status |
+| `status` | `VizelSaveStatus` | Save status |
 | `lastSaved` | `Date \| null` | Last save time |
 | `class` | `string` | CSS class name |
 
-### Portal
+### VizelPortal
 
 Renders content in a portal.
 
 ```svelte
-<Portal container={document.body}>
+<VizelPortal container={document.body}>
   <!-- content -->
-</Portal>
+</VizelPortal>
 ```
 
 **Props:**
@@ -184,12 +269,12 @@ Renders content in a portal.
 |------|------|-------------|
 | `container` | `HTMLElement` | Portal target |
 
-### ColorPicker
+### VizelColorPicker
 
 Color selection component.
 
 ```svelte
-<ColorPicker
+<VizelColorPicker
   colors={colors}
   value={currentColor}
   recentColors={recentColors}
@@ -197,12 +282,12 @@ Color selection component.
 />
 ```
 
-### SlashMenu
+### VizelSlashMenu
 
 Slash command menu component.
 
 ```svelte
-<SlashMenu
+<VizelSlashMenu
   items={items}
   command={handleCommand}
   class="my-menu"
@@ -213,14 +298,14 @@ Slash command menu component.
 
 ## Utilities
 
-### createSlashMenuRenderer
+### createVizelSlashMenuRenderer
 
 Creates slash menu renderer for the SlashCommand extension.
 
 ```typescript
-import { createSlashMenuRenderer } from '@vizel/svelte';
+import { createVizelSlashMenuRenderer } from '@vizel/svelte';
 
-const suggestion = createSlashMenuRenderer();
+const suggestion = createVizelSlashMenuRenderer();
 
 const editor = createVizelEditor({
   features: {
@@ -239,8 +324,10 @@ const editor = createVizelEditor({
 
 ```svelte
 <script lang="ts">
+  import { createVizelEditor, createVizelState } from '@vizel/svelte';
+
   const editor = createVizelEditor();
-  createEditorState(() => editor.current);
+  createVizelState(() => editor.current);
 
   const isEmpty = $derived(editor.current?.isEmpty ?? true);
   const characterCount = $derived(
@@ -255,6 +342,8 @@ const editor = createVizelEditor({
 
 ```svelte
 <script lang="ts">
+  import { createVizelEditor } from '@vizel/svelte';
+
   const editor = createVizelEditor();
 
   $effect(() => {
@@ -271,21 +360,26 @@ const editor = createVizelEditor({
 
 ---
 
-## Re-exports
+## Importing from @vizel/core and @tiptap/core
 
-All exports from `@vizel/core` are re-exported:
+Framework packages do not re-export from `@vizel/core`. Import directly:
 
 ```typescript
+// Framework-specific components and runes
 import { 
-  // Types
-  type JSONContent,
-  type VizelEditorOptions,
-  type SaveStatus,
-  // Utilities
-  getEditorState,
-  formatRelativeTime,
-  // Constants
-  TEXT_COLORS,
-  HIGHLIGHT_COLORS,
+  Vizel, 
+  VizelEditor, 
+  VizelToolbar, 
+  VizelThemeProvider,
+  createVizelEditor, 
+  createVizelAutoSave,
 } from '@vizel/svelte';
+
+// Vizel types and utilities from @vizel/core
+import { getVizelEditorState, VIZEL_TEXT_COLORS } from '@vizel/core';
+import type { VizelEditorOptions, VizelSaveStatus } from '@vizel/core';
+
+// Tiptap types from @tiptap/core
+import { Editor } from '@tiptap/core';
+import type { JSONContent } from '@tiptap/core';
 ```
