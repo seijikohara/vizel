@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core";
-import { useEffect, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 
 export interface VizelEditorProps {
@@ -7,6 +7,11 @@ export interface VizelEditorProps {
   editor?: Editor | null;
   /** Optional className for the editor container */
   className?: string;
+}
+
+export interface VizelEditorRef {
+  /** The container DOM element */
+  container: HTMLDivElement | null;
 }
 
 /**
@@ -23,12 +28,29 @@ export interface VizelEditorProps {
  *
  * // Or directly with editor prop
  * <VizelEditor editor={editor} className="prose" />
+ *
+ * // With ref to access container DOM
+ * const editorRef = useRef<VizelEditorRef>(null);
+ * <VizelEditor ref={editorRef} editor={editor} />
+ * // editorRef.current?.container gives you the container element
  * ```
  */
-export function VizelEditor({ editor: editorProp, className }: VizelEditorProps) {
+export const VizelEditor = forwardRef<VizelEditorRef, VizelEditorProps>(function VizelEditor(
+  { editor: editorProp, className },
+  ref
+) {
   const context = useVizelContextSafe();
   const editor = editorProp ?? context?.editor;
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Expose container ref via imperative handle
+  useImperativeHandle(
+    ref,
+    () => ({
+      container: containerRef.current,
+    }),
+    []
+  );
 
   useEffect(() => {
     const container = containerRef.current;
@@ -57,4 +79,6 @@ export function VizelEditor({ editor: editorProp, className }: VizelEditorProps)
   }
 
   return <div ref={containerRef} className={className} data-vizel-content="" />;
-}
+});
+
+VizelEditor.displayName = "VizelEditor";

@@ -5,7 +5,7 @@ import type { Snippet } from "svelte";
 /**
  * Props for the Portal component.
  */
-export interface PortalProps {
+export interface VizelPortalProps {
   /** Content to render in the portal */
   children: Snippet;
   /** Z-index layer for the portal content */
@@ -25,7 +25,7 @@ export interface PortalProps {
     layer = "dropdown",
     class: className,
     disabled = false,
-  }: PortalProps = $props();
+  }: VizelPortalProps = $props();
 
   // Create portal action that moves content to the portal container
   function portal(node: HTMLElement) {

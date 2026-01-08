@@ -46,7 +46,7 @@ export {
   // Image
   createVizelImageExtension,
   createVizelImageFileHandlers,
-  createVizelImageUploadExtension,
+  createVizelImageUploadExtensions,
   createVizelImageUploader,
   createVizelImageUploadPlugin,
   createVizelImageUploadWithFileHandler,

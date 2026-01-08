@@ -1,7 +1,7 @@
 <script lang="ts" module>
 import type { VizelSlashCommandItem } from "@vizel/core";
 
-export interface SlashMenuItemProps {
+export interface VizelSlashMenuItemProps {
   /** The slash command item to display */
   item: VizelSlashCommandItem;
   /** Whether the item is selected */
@@ -56,7 +56,7 @@ let {
   class: className,
   onclick,
   titleMatches,
-}: SlashMenuItemProps = $props();
+}: VizelSlashMenuItemProps = $props();
 
 const parts = $derived(highlightMatches(item.title, titleMatches));
 </script>

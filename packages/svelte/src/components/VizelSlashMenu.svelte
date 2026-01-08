@@ -2,11 +2,11 @@
 import type { VizelSlashCommandItem } from "@vizel/core";
 import type { Snippet } from "svelte";
 
-export interface SlashMenuRef {
+export interface VizelSlashMenuRef {
   onKeyDown: (event: KeyboardEvent) => boolean;
 }
 
-export interface SlashMenuProps {
+export interface VizelSlashMenuProps {
   /** The list of slash command items */
   items: VizelSlashCommandItem[];
   /** Custom class name */
@@ -38,7 +38,7 @@ let {
   groupOrder,
   renderItem,
   renderEmpty,
-}: SlashMenuProps = $props();
+}: VizelSlashMenuProps = $props();
 
 let selectedIndex = $state(0);
 let itemRefs: (HTMLElement | null)[] = $state([]);

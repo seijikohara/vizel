@@ -2,7 +2,7 @@
 import type { Editor } from "@tiptap/core";
 import type { Snippet } from "svelte";
 
-export interface EditorRootProps {
+export interface VizelProviderProps {
   /** The editor instance */
   editor: Editor | null;
   /** Custom class name */
@@ -16,7 +16,7 @@ export interface EditorRootProps {
 import { setContext } from "svelte";
 import { VIZEL_CONTEXT_KEY } from "./VizelContext.ts";
 
-let { editor, class: className, children }: EditorRootProps = $props();
+let { editor, class: className, children }: VizelProviderProps = $props();
 
 setContext(VIZEL_CONTEXT_KEY, () => editor);
 </script>

@@ -1,33 +1,37 @@
 // ============================================================================
-// Vizel Toolbar components (formerly BubbleMenu)
-// ============================================================================
-
-// ============================================================================
 // Vizel all-in-one component
 // ============================================================================
 export { default as Vizel, type VizelProps } from "./Vizel.svelte";
+
 // ============================================================================
 // Vizel ColorPicker component
 // ============================================================================
 export {
-  type ColorPickerProps as VizelColorPickerProps,
   default as VizelColorPicker,
+  type VizelColorPickerProps,
 } from "./VizelColorPicker.svelte";
+
+// ============================================================================
+// Vizel Context
+// ============================================================================
 export { getVizelContext, getVizelContextSafe } from "./VizelContext.ts";
+
 // ============================================================================
 // Vizel Editor components
 // ============================================================================
 export {
   default as VizelEditor,
-  type EditorContentProps as VizelEditorProps,
+  type VizelEditorProps,
 } from "./VizelEditor.svelte";
+
 // ============================================================================
 // Vizel EmbedView component
 // ============================================================================
 export {
   default as VizelEmbedView,
-  type EmbedViewProps as VizelEmbedViewProps,
+  type VizelEmbedViewProps,
 } from "./VizelEmbedView.svelte";
+
 // ============================================================================
 // Vizel Icon component
 // ============================================================================
@@ -38,51 +42,64 @@ export {
   setVizelIconContext,
   type VizelIconContextValue,
 } from "./VizelIconContext.ts";
+
+// ============================================================================
+// Vizel LinkEditor component
+// ============================================================================
 export {
-  type BubbleMenuLinkEditorProps as VizelLinkEditorProps,
   default as VizelLinkEditor,
+  type VizelLinkEditorProps,
 } from "./VizelLinkEditor.svelte";
+
 // ============================================================================
 // Vizel NodeSelector component
 // ============================================================================
 export {
   default as VizelNodeSelector,
-  type NodeSelectorProps as VizelNodeSelectorProps,
+  type VizelNodeSelectorProps,
 } from "./VizelNodeSelector.svelte";
+
 // ============================================================================
 // Vizel Portal component
 // ============================================================================
 export {
   default as VizelPortal,
-  type PortalProps as VizelPortalProps,
+  type VizelPortalProps,
 } from "./VizelPortal.svelte";
+
+// ============================================================================
+// Vizel Provider component
+// ============================================================================
 export {
   default as VizelProvider,
-  type EditorRootProps as VizelProviderProps,
+  type VizelProviderProps,
 } from "./VizelProvider.svelte";
+
 // ============================================================================
 // Vizel SaveIndicator component
 // ============================================================================
 export {
   default as VizelSaveIndicator,
-  type SaveIndicatorProps as VizelSaveIndicatorProps,
+  type VizelSaveIndicatorProps,
 } from "./VizelSaveIndicator.svelte";
+
 // ============================================================================
 // Vizel SlashMenu components
 // ============================================================================
 export {
   default as VizelSlashMenu,
-  type SlashMenuProps as VizelSlashMenuProps,
-  type SlashMenuRef as VizelSlashMenuRef,
+  type VizelSlashMenuProps,
+  type VizelSlashMenuRef,
 } from "./VizelSlashMenu.svelte";
 export {
   default as VizelSlashMenuEmpty,
-  type SlashMenuEmptyProps as VizelSlashMenuEmptyProps,
+  type VizelSlashMenuEmptyProps,
 } from "./VizelSlashMenuEmpty.svelte";
 export {
   default as VizelSlashMenuItem,
-  type SlashMenuItemProps as VizelSlashMenuItemProps,
+  type VizelSlashMenuItemProps,
 } from "./VizelSlashMenuItem.svelte";
+
 // ============================================================================
 // Vizel ThemeProvider component
 // ============================================================================
@@ -90,23 +107,27 @@ export {
   default as VizelThemeProvider,
   VIZEL_THEME_CONTEXT_KEY,
 } from "./VizelThemeProvider.svelte";
+
+// ============================================================================
+// Vizel Toolbar components
+// ============================================================================
 export {
-  type BubbleMenuProps as VizelToolbarProps,
   default as VizelToolbar,
+  type VizelToolbarProps,
 } from "./VizelToolbar.svelte";
 export {
-  type BubbleMenuButtonProps as VizelToolbarButtonProps,
   default as VizelToolbarButton,
+  type VizelToolbarButtonProps,
 } from "./VizelToolbarButton.svelte";
 export {
-  type BubbleMenuColorPickerProps as VizelToolbarColorPickerProps,
   default as VizelToolbarColorPicker,
+  type VizelToolbarColorPickerProps,
 } from "./VizelToolbarColorPicker.svelte";
 export {
-  type BubbleMenuToolbarProps as VizelToolbarDefaultProps,
   default as VizelToolbarDefault,
+  type VizelToolbarDefaultProps,
 } from "./VizelToolbarDefault.svelte";
 export {
-  type BubbleMenuDividerProps as VizelToolbarDividerProps,
   default as VizelToolbarDivider,
+  type VizelToolbarDividerProps,
 } from "./VizelToolbarDivider.svelte";

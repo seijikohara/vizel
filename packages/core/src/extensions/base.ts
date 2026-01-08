@@ -27,7 +27,7 @@ import { createVizelDiagramExtension } from "./diagram.ts";
 import { createVizelDragHandleExtensions } from "./drag-handle.ts";
 import { createVizelEmbedExtension } from "./embed.ts";
 import {
-  createVizelImageUploadExtension,
+  createVizelImageUploadExtensions,
   defaultImageResizeOptions,
   vizelDefaultBase64Upload,
 } from "./image.ts";
@@ -126,7 +126,7 @@ function addImageExtension(extensions: Extensions, features: VizelFeatureOptions
   const resizeEnabled = imageOptions.resize !== false;
 
   extensions.push(
-    ...createVizelImageUploadExtension({
+    ...createVizelImageUploadExtensions({
       upload: {
         onUpload,
         ...(imageOptions.maxFileSize !== undefined && { maxFileSize: imageOptions.maxFileSize }),
@@ -318,11 +318,13 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
   addSlashCommandExtension(extensions, features);
 
   if (features.table !== false) {
-    extensions.push(...createVizelTableExtensions());
+    const tableOptions = typeof features.table === "object" ? features.table : {};
+    extensions.push(...createVizelTableExtensions(tableOptions));
   }
 
   if (features.link !== false) {
-    extensions.push(createVizelLinkExtension());
+    const linkOptions = typeof features.link === "object" ? features.link : {};
+    extensions.push(createVizelLinkExtension(linkOptions));
   }
 
   addImageExtension(extensions, features);

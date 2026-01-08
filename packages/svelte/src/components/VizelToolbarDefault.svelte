@@ -1,7 +1,7 @@
 <script lang="ts" module>
 import type { Editor } from "@tiptap/core";
 
-export interface BubbleMenuToolbarProps {
+export interface VizelToolbarDefaultProps {
   /** The editor instance */
   editor: Editor;
   /** Custom class name */
@@ -19,7 +19,7 @@ import VizelLinkEditor from "./VizelLinkEditor.svelte";
 import VizelIcon from "./VizelIcon.svelte";
 import VizelNodeSelector from "./VizelNodeSelector.svelte";
 
-let { editor, class: className, enableEmbed }: BubbleMenuToolbarProps = $props();
+let { editor, class: className, enableEmbed }: VizelToolbarDefaultProps = $props();
 let showLinkEditor = $state(false);
 
 // Subscribe to editor state changes to update active states

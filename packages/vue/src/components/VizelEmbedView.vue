@@ -5,7 +5,7 @@ import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelEmbedViewProps {
   /** Embed data */
-  data: VizelEmbedData & { loading?: boolean };
+  data: VizelEmbedData;
   /** Additional class name */
   class?: string;
   /** Whether the embed is selected */

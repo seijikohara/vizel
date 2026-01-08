@@ -1,7 +1,7 @@
 <script lang="ts" module>
 import type { VizelColorDefinition } from "@vizel/core";
 
-export interface ColorPickerProps {
+export interface VizelColorPickerProps {
   /** Color palette to display */
   colors: VizelColorDefinition[];
   /** Currently selected color */
@@ -63,7 +63,7 @@ let {
   recentColors = [],
   showRecentColors = true,
   noneValues = ["transparent", "inherit"],
-}: ColorPickerProps = $props();
+}: VizelColorPickerProps = $props();
 
 let inputValue = $state("");
 let focusedIndex = $state(-1);

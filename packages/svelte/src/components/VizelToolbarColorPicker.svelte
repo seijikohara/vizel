@@ -2,7 +2,7 @@
 import type { Editor } from "@tiptap/core";
 import type { VizelColorDefinition } from "@vizel/core";
 
-export interface BubbleMenuColorPickerProps {
+export interface VizelToolbarColorPickerProps {
   /** The editor instance */
   editor: Editor;
   /** Color picker type */
@@ -36,7 +36,7 @@ let {
   class: className,
   allowCustomColor = true,
   showRecentColors = true,
-}: BubbleMenuColorPickerProps = $props();
+}: VizelToolbarColorPickerProps = $props();
 
 let isOpen = $state(false);
 let recentColors = $state<string[]>([]);

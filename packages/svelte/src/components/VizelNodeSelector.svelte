@@ -2,7 +2,7 @@
 import type { Editor } from "@tiptap/core";
 import type { VizelNodeTypeOption } from "@vizel/core";
 
-export interface NodeSelectorProps {
+export interface VizelNodeSelectorProps {
   /** The editor instance */
   editor: Editor;
   /** Custom node types (defaults to vizelDefaultNodeTypes) */
@@ -18,7 +18,7 @@ import { onMount } from "svelte";
 import { createVizelState } from "../runes/createVizelState.svelte.ts";
 import VizelIcon from "./VizelIcon.svelte";
 
-let { editor, nodeTypes = vizelDefaultNodeTypes, class: className }: NodeSelectorProps = $props();
+let { editor, nodeTypes = vizelDefaultNodeTypes, class: className }: VizelNodeSelectorProps = $props();
 
 // Subscribe to editor state changes
 const editorState = createVizelState(() => editor);

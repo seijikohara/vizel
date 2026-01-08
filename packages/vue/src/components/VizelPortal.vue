@@ -46,7 +46,7 @@ const wrapperStyle = computed(() => ({
   <Teleport v-if="mounted && !disabled" :to="portalTarget">
     <div
       :data-vizel-portal-layer="layer"
-      :class="props.class"
+      :class="$props.class"
       :style="wrapperStyle"
     >
       <slot />

@@ -2,7 +2,7 @@
 import type { Editor } from "@tiptap/core";
 import type { Snippet } from "svelte";
 
-export interface BubbleMenuProps {
+export interface VizelToolbarProps {
   /** Override the editor from context */
   editor?: Editor | null;
   /** Custom class name for the menu container */
@@ -36,7 +36,7 @@ let {
   shouldShow,
   children,
   enableEmbed,
-}: BubbleMenuProps = $props();
+}: VizelToolbarProps = $props();
 
 const contextEditor = getVizelContextSafe();
 const editor = $derived(editorProp ?? contextEditor?.());

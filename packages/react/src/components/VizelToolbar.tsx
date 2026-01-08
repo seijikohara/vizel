@@ -56,7 +56,7 @@ export function VizelToolbar({
   className,
   children,
   showDefaultToolbar = true,
-  pluginKey = "vizelVizelToolbar",
+  pluginKey = "vizelBubbleMenu",
   updateDelay = 100,
   shouldShow,
   enableEmbed,

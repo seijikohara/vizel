@@ -1,7 +1,7 @@
 <script lang="ts" module>
 import type { VizelSaveStatus } from "@vizel/core";
 
-export interface SaveIndicatorProps {
+export interface VizelSaveIndicatorProps {
   /** Current save status */
   status: VizelSaveStatus;
   /** Timestamp of last successful save */
@@ -23,7 +23,7 @@ let {
   lastSaved = null,
   showTimestamp = true,
   class: className,
-}: SaveIndicatorProps = $props();
+}: VizelSaveIndicatorProps = $props();
 
 let relativeTime = $state("");
 

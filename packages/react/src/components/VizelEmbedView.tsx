@@ -5,7 +5,7 @@ import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelEmbedViewProps {
   /** Embed data */
-  data: VizelEmbedData & { loading?: boolean };
+  data: VizelEmbedData;
   /** Additional class name */
   className?: string;
   /** Whether the embed is selected */

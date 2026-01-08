@@ -100,7 +100,7 @@ export interface VizelImageUploadOptions extends VizelImageOptions {
  * ```ts
  * const extensions = [
  *   ...createVizelExtensions(),
- *   ...createImageUploadExtension({
+ *   ...createVizelImageUploadExtensions({
  *     upload: {
  *       onUpload: async (file) => {
  *         const formData = new FormData();
@@ -116,7 +116,7 @@ export interface VizelImageUploadOptions extends VizelImageOptions {
  * ];
  * ```
  */
-export function createVizelImageUploadExtension(options: VizelImageUploadOptions) {
+export function createVizelImageUploadExtensions(options: VizelImageUploadOptions) {
   const uploadFn = createVizelImageUploader(options.upload);
 
   // Use ResizableImage if resize is enabled, otherwise use standard Image

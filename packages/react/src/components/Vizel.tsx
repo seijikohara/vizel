@@ -139,3 +139,5 @@ export const Vizel = forwardRef<VizelRef, VizelProps>(function Vizel(
     </div>
   );
 });
+
+Vizel.displayName = "Vizel";

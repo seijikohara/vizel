@@ -5,9 +5,11 @@ import type { VizelDetailsOptions } from "./extensions/details.ts";
 import type { VizelDiagramOptions } from "./extensions/diagram.ts";
 import type { VizelDragHandleOptions } from "./extensions/drag-handle.ts";
 import type { VizelEmbedOptions } from "./extensions/embed.ts";
+import type { VizelLinkOptions } from "./extensions/link.ts";
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
 import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
+import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
 import type { ImageUploadOptions } from "./plugins/image-upload.ts";
@@ -33,17 +35,17 @@ export interface VizelImageFeatureOptions extends Partial<ImageUploadOptions> {
 /**
  * Feature configuration for Vizel editor.
  * All features are enabled by default.
- * Set to false to disable a feature, or pass options to configure it.
+ * Set to `true` to enable with defaults, `false` to disable, or pass options to configure.
  */
 export interface VizelFeatureOptions {
   /** Slash command menu (type "/" to open) */
-  slashCommand?: VizelSlashCommandOptions | false;
-  /** Table support */
-  table?: boolean;
-  /** Link extension */
-  link?: boolean;
+  slashCommand?: VizelSlashCommandOptions | boolean;
+  /** Table support with column/row controls */
+  table?: VizelTableOptions | boolean;
+  /** Link extension with autolink and paste support */
+  link?: VizelLinkOptions | boolean;
   /** Image upload and resize */
-  image?: VizelImageFeatureOptions | false;
+  image?: VizelImageFeatureOptions | boolean;
   /** Markdown import/export support */
   markdown?: VizelMarkdownOptions | boolean;
   /** Task list (checkbox) support */
@@ -62,7 +64,7 @@ export interface VizelFeatureOptions {
   embed?: VizelEmbedOptions | boolean;
   /** Collapsible content blocks (accordion) */
   details?: VizelDetailsOptions | boolean;
-  /** Diagram support (Mermaid) */
+  /** Diagram support (Mermaid, GraphViz) */
   diagram?: VizelDiagramOptions | boolean;
 }
 

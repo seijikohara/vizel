@@ -58,6 +58,8 @@ export interface VizelEmbedData {
   siteName?: string;
   /** Favicon URL */
   favicon?: string;
+  /** Whether the embed is currently loading */
+  loading?: boolean;
 }
 
 /**

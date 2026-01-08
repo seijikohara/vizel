@@ -1,7 +1,7 @@
 <script lang="ts" module>
 import type { Editor } from "@tiptap/core";
 
-export interface BubbleMenuLinkEditorProps {
+export interface VizelLinkEditorProps {
   /** The editor instance */
   editor: Editor;
   /** Custom class name */
@@ -23,7 +23,7 @@ let {
   class: className,
   onclose,
   enableEmbed = false,
-}: BubbleMenuLinkEditorProps = $props();
+}: VizelLinkEditorProps = $props();
 
 let formElement: HTMLFormElement;
 let inputElement: HTMLInputElement;

@@ -1,9 +1,9 @@
 <script lang="ts" module>
 import type { VizelEmbedData } from "@vizel/core";
 
-export interface EmbedViewProps {
+export interface VizelEmbedViewProps {
   /** Embed data */
-  data: VizelEmbedData & { loading?: boolean };
+  data: VizelEmbedData;
   /** Additional class name */
   class?: string;
   /** Whether the embed is selected */
@@ -15,7 +15,7 @@ export interface EmbedViewProps {
 import { onMount } from "svelte";
 import VizelIcon from "./VizelIcon.svelte";
 
-let { data, class: className, selected = false }: EmbedViewProps = $props();
+let { data, class: className, selected = false }: VizelEmbedViewProps = $props();
 
 let containerRef: HTMLDivElement | null = $state(null);
 

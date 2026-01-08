@@ -24,8 +24,13 @@ function normalizeHexColor(color: string): string {
 export interface VizelColorPickerProps {
   /** Color palette to display */
   colors: VizelColorDefinition[];
-  /** Currently selected color */
+  /**
+   * Currently selected color (v-model supported)
+   * @deprecated Use modelValue instead for v-model binding
+   */
   value?: string;
+  /** Currently selected color for v-model binding */
+  modelValue?: string;
   /** Label for accessibility */
   label?: string;
   /** Custom class name */
@@ -48,7 +53,15 @@ const props = withDefaults(defineProps<VizelColorPickerProps>(), {
   noneValues: () => ["transparent", "inherit"],
 });
 
-const emit = defineEmits<(e: "change", color: string) => void>();
+const emit = defineEmits<{
+  /** @deprecated Use update:modelValue for v-model binding */
+  change: [color: string];
+  /** Emitted when the selected color changes (v-model) */
+  "update:modelValue": [color: string];
+}>();
+
+// Support both value and modelValue for backwards compatibility
+const currentValue = computed(() => props.modelValue ?? props.value);
 
 const GRID_COLUMNS = 4;
 
@@ -95,6 +108,7 @@ function isNoneValue(color: string): boolean {
 // Handle swatch selection
 function handleSelect(color: string) {
   emit("change", color);
+  emit("update:modelValue", color);
   inputValue.value = "";
 }
 
@@ -103,6 +117,7 @@ function handleInputSubmit() {
   const normalized = normalizeHexColor(inputValue.value);
   if (isValidHexColor(normalized)) {
     emit("change", normalized);
+    emit("update:modelValue", normalized);
     inputValue.value = "";
   }
 }
@@ -170,7 +185,7 @@ function handleKeyDown(e: KeyboardEvent, currentIndex: number) {
 
 // Update input value when value prop changes
 watch(
-  () => props.value,
+  currentValue,
   (value) => {
     if (value && !isNoneValue(value)) {
       inputValue.value = value;
@@ -183,7 +198,7 @@ watch(
 
 // Focus first swatch or current value on mount
 onMounted(() => {
-  const currentIndex = props.value ? allColors.value.indexOf(props.value) : -1;
+  const currentIndex = currentValue.value ? allColors.value.indexOf(currentValue.value) : -1;
   if (currentIndex >= 0) {
     focusedIndex.value = currentIndex;
   } else if (allColors.value.length > 0) {
@@ -199,7 +214,7 @@ const previewColor = computed(() =>
 
 <template>
   <div
-    :class="['vizel-color-picker-content', props.class]"
+    :class="['vizel-color-picker-content', $props.class]"
     role="listbox"
     :aria-label="props.label"
   >
@@ -216,10 +231,10 @@ const previewColor = computed(() =>
           :ref="(el) => { swatchRefs[idx] = el as HTMLButtonElement | null }"
           type="button"
           role="option"
-          :aria-selected="value === color"
+          :aria-selected="currentValue === color"
           :aria-label="color"
           :tabindex="focusedIndex === idx ? 0 : -1"
-          :class="['vizel-color-picker-swatch', { 'is-active': value === color }]"
+          :class="['vizel-color-picker-swatch', { 'is-active': currentValue === color }]"
           :style="{ backgroundColor: isNoneValue(color) ? 'transparent' : color }"
           :data-color="color"
           @click="handleSelect(color)"
@@ -239,10 +254,10 @@ const previewColor = computed(() =>
           :ref="(el) => { swatchRefs[paletteOffset + i] = el as HTMLButtonElement | null }"
           type="button"
           role="option"
-          :aria-selected="value === colorDef.color"
+          :aria-selected="currentValue === colorDef.color"
           :aria-label="colorDef.name"
           :tabindex="focusedIndex === paletteOffset + i ? 0 : -1"
-          :class="['vizel-color-picker-swatch', { 'is-active': value === colorDef.color }]"
+          :class="['vizel-color-picker-swatch', { 'is-active': currentValue === colorDef.color }]"
           :style="{ backgroundColor: isNoneValue(colorDef.color) ? 'transparent' : colorDef.color }"
           :data-color="colorDef.color"
           @click="handleSelect(colorDef.color)"

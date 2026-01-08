@@ -67,11 +67,17 @@ const editor = useVizelEditor({
   onBlur: (e) => emit("blur", e),
 });
 
-const editorInstance = computed(() => editor.value);
-
 // Expose editor instance for advanced use cases
+// Both `editor` property and `getEditor()` method are provided for compatibility
 defineExpose({
-  /** Get the underlying Tiptap editor instance */
+  /** The underlying Tiptap editor instance */
+  get editor() {
+    return editor.value;
+  },
+  /**
+   * Get the underlying Tiptap editor instance
+   * @deprecated Use the `editor` property instead
+   */
   getEditor: () => editor.value,
 });
 </script>

@@ -1,7 +1,7 @@
 <script lang="ts" module>
 import type { Editor } from "@tiptap/core";
 
-export interface EditorContentProps {
+export interface VizelEditorProps {
   /** Override the editor from context */
   editor?: Editor | null;
   /** Custom class name */
@@ -12,7 +12,7 @@ export interface EditorContentProps {
 <script lang="ts">
 import { getVizelContextSafe } from "./VizelContext.ts";
 
-let { editor: editorProp, class: className }: EditorContentProps = $props();
+let { editor: editorProp, class: className }: VizelEditorProps = $props();
 
 const contextEditor = getVizelContextSafe();
 const editor = $derived(editorProp ?? contextEditor?.());

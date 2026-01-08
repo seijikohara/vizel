@@ -77,7 +77,7 @@ export {
 // Image
 export {
   createVizelImageExtension,
-  createVizelImageUploadExtension,
+  createVizelImageUploadExtensions,
   createVizelImageUploader,
   createVizelImageUploadPlugin,
   createVizelImageUploadWithFileHandler,

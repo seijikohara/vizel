@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
 export interface VizelToolbarButtonProps {
-  onClick: () => void;
+  /** Click handler. Optional when disabled is true. */
+  onClick?: () => void;
   isActive?: boolean;
   disabled?: boolean;
   children: ReactNode;
