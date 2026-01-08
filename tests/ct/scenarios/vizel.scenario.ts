@@ -7,7 +7,7 @@ import { expect } from "@playwright/test";
  */
 
 /** Verify the Vizel component renders with editor and bubble menu */
-export async function testVizelRenders(component: Locator, page: Page): Promise<void> {
+export async function testVizelRenders(_component: Locator, page: Page): Promise<void> {
   // Vizel root should be present - use page.locator since component IS the root
   const root = page.locator("[data-vizel-root]");
   await expect(root).toBeVisible();
@@ -24,7 +24,7 @@ export async function testVizelRenders(component: Locator, page: Page): Promise<
 
 /** Verify the Vizel component works with placeholder */
 export async function testVizelPlaceholder(
-  component: Locator,
+  _component: Locator,
   page: Page,
   expectedPlaceholder: string
 ): Promise<void> {
@@ -36,7 +36,7 @@ export async function testVizelPlaceholder(
 }
 
 /** Verify typing in the Vizel component */
-export async function testVizelTyping(component: Locator, page: Page): Promise<void> {
+export async function testVizelTyping(_component: Locator, page: Page): Promise<void> {
   const editor = page.locator("[data-vizel-root] .vizel-editor");
   await editor.click();
   await page.keyboard.type("Hello from Vizel!");
@@ -45,7 +45,7 @@ export async function testVizelTyping(component: Locator, page: Page): Promise<v
 
 /** Verify bubble menu appears on text selection */
 export async function testVizelBubbleMenuOnSelection(
-  component: Locator,
+  _component: Locator,
   page: Page
 ): Promise<void> {
   const editor = page.locator("[data-vizel-root] .vizel-editor");
@@ -61,7 +61,7 @@ export async function testVizelBubbleMenuOnSelection(
 }
 
 /** Verify Vizel without bubble menu when showBubbleMenu is false */
-export async function testVizelWithoutBubbleMenu(component: Locator, page: Page): Promise<void> {
+export async function testVizelWithoutBubbleMenu(_component: Locator, page: Page): Promise<void> {
   // Editor should be rendered
   const editor = page.locator("[data-vizel-root] .vizel-editor");
   await expect(editor).toBeVisible();
@@ -72,7 +72,7 @@ export async function testVizelWithoutBubbleMenu(component: Locator, page: Page)
 }
 
 /** Verify slash menu works in Vizel component */
-export async function testVizelSlashMenu(component: Locator, page: Page): Promise<void> {
+export async function testVizelSlashMenu(_component: Locator, page: Page): Promise<void> {
   const editor = page.locator("[data-vizel-root] .vizel-editor");
   await editor.click();
   await page.keyboard.type("/");
@@ -83,7 +83,10 @@ export async function testVizelSlashMenu(component: Locator, page: Page): Promis
 }
 
 /** Verify formatting via bubble menu in Vizel component */
-export async function testVizelBubbleMenuFormatting(component: Locator, page: Page): Promise<void> {
+export async function testVizelBubbleMenuFormatting(
+  _component: Locator,
+  page: Page
+): Promise<void> {
   // Wait for bubble menu element to be attached (may be hidden initially)
   const bubbleMenu = page.locator("[data-vizel-bubble-menu]");
   await expect(bubbleMenu).toBeAttached({ timeout: 5000 });
