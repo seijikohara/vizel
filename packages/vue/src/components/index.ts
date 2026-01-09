@@ -1,7 +1,25 @@
-// VizelToolbar components (formerly BubbleMenu)
+// VizelBubbleMenu components
 
 // Vizel all-in-one component
 export { default as Vizel, type VizelProps } from "./Vizel.vue";
+// VizelBubbleMenu components
+export { default as VizelBubbleMenu, type VizelBubbleMenuProps } from "./VizelBubbleMenu.vue";
+export {
+  default as VizelBubbleMenuButton,
+  type VizelBubbleMenuButtonProps,
+} from "./VizelBubbleMenuButton.vue";
+export {
+  default as VizelBubbleMenuColorPicker,
+  type VizelBubbleMenuColorPickerProps,
+} from "./VizelBubbleMenuColorPicker.vue";
+export {
+  default as VizelBubbleMenuDefault,
+  type VizelBubbleMenuDefaultProps,
+} from "./VizelBubbleMenuDefault.vue";
+export {
+  default as VizelBubbleMenuDivider,
+  type VizelBubbleMenuDividerProps,
+} from "./VizelBubbleMenuDivider.vue";
 // VizelColorPicker component
 export {
   default as VizelColorPicker,
@@ -58,20 +76,3 @@ export {
   default as VizelThemeProvider,
   type VizelThemeProviderProps,
 } from "./VizelThemeProvider.vue";
-export { default as VizelToolbar, type VizelToolbarProps } from "./VizelToolbar.vue";
-export {
-  default as VizelToolbarButton,
-  type VizelToolbarButtonProps,
-} from "./VizelToolbarButton.vue";
-export {
-  default as VizelToolbarColorPicker,
-  type VizelToolbarColorPickerProps,
-} from "./VizelToolbarColorPicker.vue";
-export {
-  default as VizelToolbarDefault,
-  type VizelToolbarDefaultProps,
-} from "./VizelToolbarDefault.vue";
-export {
-  default as VizelToolbarDivider,
-  type VizelToolbarDividerProps,
-} from "./VizelToolbarDivider.vue";

@@ -85,35 +85,29 @@ function generateDiagramId(): string {
 }
 
 /**
- * Markdown tokenizer for Mermaid diagrams: ```mermaid ... ```
- * GitHub Markdown compatible syntax
+ * Markdown tokenizer for diagram code blocks.
+ * Handles mermaid, dot, and graphviz languages.
+ * GitHub Markdown compatible syntax.
+ *
+ * This tokenizer has a higher priority than the default code block tokenizer
+ * to ensure diagram code blocks are parsed as diagram nodes.
  */
-const mermaidTokenizer: MarkdownTokenizer = {
+const diagramTokenizer: MarkdownTokenizer = {
   name: "diagram",
-  start: "```mermaid",
+  start: "```",
   tokenize(src: string): MarkdownToken | undefined {
-    // Match ```mermaid ... ``` (can span multiple lines)
-    const match = src.match(/^```mermaid\n([\s\S]*?)```/);
-    if (match?.[1] !== undefined) {
+    // Match ```mermaid ... ```
+    const mermaidMatch = src.match(/^```mermaid\n([\s\S]*?)```/);
+    if (mermaidMatch?.[1] !== undefined) {
       return {
         type: "diagram",
-        raw: match[0],
-        code: match[1].trim(),
+        raw: mermaidMatch[0],
+        code: mermaidMatch[1].trim(),
         diagramType: "mermaid",
       };
     }
-    return undefined;
-  },
-};
 
-/**
- * Markdown tokenizer for GraphViz diagrams: ```dot ... ``` or ```graphviz ... ```
- */
-const graphvizTokenizer: MarkdownTokenizer = {
-  name: "diagram-graphviz",
-  start: "```dot",
-  tokenize(src: string): MarkdownToken | undefined {
-    // Match ```dot ... ``` or ```graphviz ... ```
+    // Match ```dot ... ```
     const dotMatch = src.match(/^```dot\n([\s\S]*?)```/);
     if (dotMatch?.[1] !== undefined) {
       return {
@@ -123,6 +117,8 @@ const graphvizTokenizer: MarkdownTokenizer = {
         diagramType: "graphviz",
       };
     }
+
+    // Match ```graphviz ... ```
     const graphvizMatch = src.match(/^```graphviz\n([\s\S]*?)```/);
     if (graphvizMatch?.[1] !== undefined) {
       return {
@@ -132,9 +128,14 @@ const graphvizTokenizer: MarkdownTokenizer = {
         diagramType: "graphviz",
       };
     }
+
     return undefined;
   },
 };
+
+// Keep individual tokenizers for backwards compatibility
+const mermaidTokenizer: MarkdownTokenizer = diagramTokenizer;
+const graphvizTokenizer: MarkdownTokenizer = diagramTokenizer;
 
 /**
  * Initialize Mermaid with the provided configuration
@@ -274,6 +275,8 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
   atom: true,
   selectable: true,
   draggable: true,
+  // Higher priority than codeBlock to ensure diagram code blocks are parsed first
+  priority: 200,
 
   addOptions() {
     return {
@@ -573,9 +576,8 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
   },
 
   // Markdown support (GitHub compatible)
-  // Note: Only mermaidTokenizer is used as the primary tokenizer.
-  // GraphViz tokenizer is registered separately in the extension.
-  markdownTokenizer: mermaidTokenizer,
+  // Single tokenizer handles mermaid, dot, and graphviz code blocks
+  markdownTokenizer: diagramTokenizer,
 
   parseMarkdown(token: MarkdownToken): JSONContent {
     return {

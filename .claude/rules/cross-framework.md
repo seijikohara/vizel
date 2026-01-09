@@ -34,11 +34,11 @@ Each component must exist in all three frameworks with equivalent functionality:
 |-----------|-------|-----|--------|
 | Vizel | `.tsx` | `.vue` | `.svelte` |
 | VizelEditor | `.tsx` | `.vue` | `.svelte` |
-| VizelToolbar | `.tsx` | `.vue` | `.svelte` |
-| VizelToolbarDefault | `.tsx` | `.vue` | `.svelte` |
-| VizelToolbarButton | `.tsx` | `.vue` | `.svelte` |
-| VizelToolbarDivider | `.tsx` | `.vue` | `.svelte` |
-| VizelToolbarLinkEditor | `.tsx` | `.vue` | `.svelte` |
+| VizelBubbleMenu | `.tsx` | `.vue` | `.svelte` |
+| VizelBubbleMenuDefault | `.tsx` | `.vue` | `.svelte` |
+| VizelBubbleMenuButton | `.tsx` | `.vue` | `.svelte` |
+| VizelBubbleMenuDivider | `.tsx` | `.vue` | `.svelte` |
+| VizelBubbleMenuLinkEditor | `.tsx` | `.vue` | `.svelte` |
 | VizelSlashMenu | `.tsx` | `.vue` | `.svelte` |
 | VizelSlashMenuItem | `.tsx` | `.vue` | `.svelte` |
 | VizelSlashMenuEmpty | `.tsx` | `.vue` | `.svelte` |
@@ -58,7 +58,7 @@ interface VizelEditorProps {
   class?: string;  // Vue/Svelte use "class", React uses "className"
 }
 
-interface VizelToolbarProps {
+interface VizelBubbleMenuProps {
   editor?: Editor | null;
   class?: string;
   children?: ...;  // Framework-specific child type

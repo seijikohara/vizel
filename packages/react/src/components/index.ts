@@ -1,7 +1,25 @@
-// VizelToolbar components
+// VizelBubbleMenu components
 
 // Vizel all-in-one component
 export { Vizel, type VizelProps, type VizelRef } from "./Vizel.tsx";
+// VizelBubbleMenu components
+export { VizelBubbleMenu, type VizelBubbleMenuProps } from "./VizelBubbleMenu.tsx";
+export {
+  VizelBubbleMenuButton,
+  type VizelBubbleMenuButtonProps,
+} from "./VizelBubbleMenuButton.tsx";
+export {
+  VizelBubbleMenuColorPicker,
+  type VizelBubbleMenuColorPickerProps,
+} from "./VizelBubbleMenuColorPicker.tsx";
+export {
+  VizelBubbleMenuDefault,
+  type VizelBubbleMenuDefaultProps,
+} from "./VizelBubbleMenuDefault.tsx";
+export {
+  VizelBubbleMenuDivider,
+  type VizelBubbleMenuDividerProps,
+} from "./VizelBubbleMenuDivider.tsx";
 // VizelColorPicker component
 export { VizelColorPicker, type VizelColorPickerProps } from "./VizelColorPicker.tsx";
 export { useVizelContext, useVizelContextSafe } from "./VizelContext.tsx";
@@ -44,20 +62,3 @@ export {
   VizelThemeProvider,
   type VizelThemeProviderProps,
 } from "./VizelThemeProvider.tsx";
-export { VizelToolbar, type VizelToolbarProps } from "./VizelToolbar.tsx";
-export {
-  VizelToolbarButton,
-  type VizelToolbarButtonProps,
-} from "./VizelToolbarButton.tsx";
-export {
-  VizelToolbarColorPicker,
-  type VizelToolbarColorPickerProps,
-} from "./VizelToolbarColorPicker.tsx";
-export {
-  VizelToolbarDefault,
-  type VizelToolbarDefaultProps,
-} from "./VizelToolbarDefault.tsx";
-export {
-  VizelToolbarDivider,
-  type VizelToolbarDividerProps,
-} from "./VizelToolbarDivider.tsx";

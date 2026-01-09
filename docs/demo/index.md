@@ -21,7 +21,7 @@ Type `/` anywhere in the editor to open the command menu:
 
 ### Bubble Menu
 
-Select any text to reveal the formatting toolbar:
+Select any text to reveal the bubble menu:
 
 - **Bold** (`Ctrl/Cmd + B`)
 - **Italic** (`Ctrl/Cmd + I`)

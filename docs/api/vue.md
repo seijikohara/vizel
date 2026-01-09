@@ -16,7 +16,7 @@ npm install @vizel/vue
 
 ### Vizel
 
-All-in-one editor component with built-in toolbar. This is the recommended way to get started.
+All-in-one editor component with built-in bubble menu. This is the recommended way to get started.
 
 ```vue
 <script setup lang="ts">
@@ -30,7 +30,7 @@ import '@vizel/core/styles.css';
     placeholder="Start writing..."
     :editable="true"
     autofocus="end"
-    :showToolbar="true"
+    :showBubbleMenu="true"
     :enableEmbed="true"
     class="my-editor"
     :features="{ markdown: true }"
@@ -46,13 +46,15 @@ import '@vizel/core/styles.css';
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `initialContent` | `JSONContent` | - | Initial editor content |
+| `initialContent` | `JSONContent` | - | Initial editor content (JSON) |
+| `initialMarkdown` | `string` | - | Initial editor content (Markdown) |
+| `v-model:markdown` | `string` | - | Two-way Markdown binding |
 | `placeholder` | `string` | - | Placeholder text |
 | `editable` | `boolean` | `true` | Editable state |
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus behavior |
 | `features` | `VizelFeatureOptions` | - | Feature configuration |
 | `class` | `string` | - | CSS class name |
-| `showToolbar` | `boolean` | `true` | Show toolbar on selection |
+| `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
 
 **Events:**
@@ -60,6 +62,7 @@ import '@vizel/core/styles.css';
 | Event | Payload | Description |
 |-------|---------|-------------|
 | `update` | `{ editor: Editor }` | Content updated |
+| `update:markdown` | `string` | Markdown content changed |
 | `create` | `{ editor: Editor }` | Editor created |
 | `destroy` | - | Editor destroyed |
 | `selectionUpdate` | `{ editor: Editor }` | Selection changed |
@@ -118,6 +121,33 @@ const result = useVizelAutoSave(
 | `save` | `() => Promise<void>` | Manual save function |
 | `restore` | `() => Promise<JSONContent \| null>` | Manual restore |
 
+### useVizelMarkdown
+
+Provides two-way Markdown synchronization with debouncing.
+
+```typescript
+import { useVizelMarkdown } from '@vizel/vue';
+
+const result = useVizelMarkdown(
+  getEditor: () => Editor | null,
+  options?: VizelMarkdownSyncOptions
+);
+```
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `debounceMs` | `number` | `300` | Debounce delay in milliseconds |
+
+**Returns:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `markdown` | `Ref<string>` | Current Markdown content |
+| `setMarkdown` | `(md: string) => void` | Update editor from Markdown |
+| `isPending` | `Ref<boolean>` | Whether sync is pending |
+
 ### useVizelTheme
 
 Access theme state within VizelThemeProvider.
@@ -156,14 +186,14 @@ Renders the editor content area.
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | CSS class name |
 
-### VizelToolbar
+### VizelBubbleMenu
 
-Floating formatting toolbar.
+Floating formatting bubble menu.
 
 ```vue
-<VizelToolbar 
+<VizelBubbleMenu 
   :editor="editor"
-  class="my-toolbar"
+  class="my-bubble-menu"
 />
 ```
 
@@ -178,14 +208,14 @@ Floating formatting toolbar.
 
 | Slot | Description |
 |------|-------------|
-| `default` | Custom toolbar content |
+| `default` | Custom bubble menu content |
 
-### VizelToolbarDefault
+### VizelBubbleMenuDefault
 
-Default toolbar with all formatting buttons.
+Default bubble menu with all formatting buttons.
 
 ```vue
-<VizelToolbarDefault 
+<VizelBubbleMenuDefault 
   :editor="editor"
   :enableEmbed="false"
 />
@@ -198,24 +228,24 @@ Default toolbar with all formatting buttons.
 | `editor` | `Editor \| null` | - | Editor instance |
 | `enableEmbed` | `boolean` | `false` | Enable embed in links |
 
-### VizelToolbarButton
+### VizelBubbleMenuButton
 
-Individual toolbar button.
+Individual bubble menu button.
 
 ```vue
-<VizelToolbarButton
+<VizelBubbleMenuButton
   icon="lucide:bold"
   :isActive="editor.isActive('bold')"
   @click="editor.chain().focus().toggleBold().run()"
 />
 ```
 
-### VizelToolbarDivider
+### VizelBubbleMenuDivider
 
-Toolbar divider.
+Bubble menu divider.
 
 ```vue
-<VizelToolbarDivider />
+<VizelBubbleMenuDivider />
 ```
 
 ### VizelThemeProvider
@@ -331,9 +361,10 @@ Framework packages do not re-export from `@vizel/core`. Import directly:
 import { 
   Vizel, 
   VizelEditor, 
-  VizelToolbar, 
+  VizelBubbleMenu, 
   VizelThemeProvider,
-  useVizelEditor, 
+  useVizelEditor,
+  useVizelMarkdown,
   useVizelAutoSave,
 } from '@vizel/vue';
 

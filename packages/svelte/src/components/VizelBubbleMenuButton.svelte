@@ -1,7 +1,7 @@
 <script lang="ts" module>
 import type { Snippet } from "svelte";
 
-export interface VizelToolbarButtonProps {
+export interface VizelBubbleMenuButtonProps {
   /** Whether the button is in active state */
   isActive?: boolean;
   /** Whether the button is disabled */
@@ -28,7 +28,7 @@ let {
   children,
   onclick,
   action,
-}: VizelToolbarButtonProps = $props();
+}: VizelBubbleMenuButtonProps = $props();
 </script>
 
 <button

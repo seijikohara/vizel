@@ -1,6 +1,7 @@
 import { Editor, type Extensions } from "@tiptap/core";
 import {
   createVizelExtensions,
+  initializeVizelMarkdownContent,
   registerVizelUploadEventHandler,
   resolveVizelFeatures,
   type VizelEditorOptions,
@@ -28,10 +29,20 @@ export interface UseVizelEditorOptions extends VizelEditorOptions {
  *
  * return <EditorContent editor={editor} />;
  * ```
+ *
+ * @example
+ * ```tsx
+ * // With initial markdown content
+ * const editor = useVizelEditor({
+ *   initialMarkdown: "# Hello World\n\nThis is **bold** text.",
+ * });
+ * ```
  */
 export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | null {
   const {
     initialContent,
+    initialMarkdown,
+    transformDiagramsOnImport = true,
     placeholder,
     editable = true,
     autofocus = false,
@@ -60,6 +71,8 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
   // Store options in ref to avoid recreating editor on every render
   const optionsRef = useRef({
     initialContent,
+    initialMarkdown,
+    transformDiagramsOnImport,
     placeholder,
     editable,
     autofocus,
@@ -77,6 +90,16 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
   useEffect(() => {
     const opts = optionsRef.current;
 
+    // Wrap onCreate to handle initialMarkdown
+    const wrappedOnCreate = opts.initialMarkdown
+      ? (props: { editor: Editor }) => {
+          initializeVizelMarkdownContent(props.editor, opts.initialMarkdown as string, {
+            transformDiagrams: opts.transformDiagramsOnImport,
+          });
+          opts.onCreate?.(props);
+        }
+      : opts.onCreate;
+
     const instance = new Editor({
       extensions: [
         ...createVizelExtensions({
@@ -85,13 +108,15 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
         }),
         ...opts.additionalExtensions,
       ],
-      ...(opts.initialContent !== undefined && { content: opts.initialContent }),
+      // Only set initialContent if initialMarkdown is not provided
+      ...(!opts.initialMarkdown &&
+        opts.initialContent !== undefined && { content: opts.initialContent }),
       editable: opts.editable,
       autofocus: opts.autofocus,
       editorProps: vizelDefaultEditorProps,
       // Only pass event handlers that are defined to avoid tiptap emit errors
       ...(opts.onUpdate && { onUpdate: opts.onUpdate }),
-      ...(opts.onCreate && { onCreate: opts.onCreate }),
+      ...(wrappedOnCreate && { onCreate: wrappedOnCreate }),
       ...(opts.onDestroy && { onDestroy: opts.onDestroy }),
       ...(opts.onSelectionUpdate && { onSelectionUpdate: opts.onSelectionUpdate }),
       ...(opts.onFocus && { onFocus: opts.onFocus }),

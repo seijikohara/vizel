@@ -84,7 +84,7 @@ import '@vizel/core/styles.css';
 
 The `Vizel` component includes:
 - Editor content area
-- Floating toolbar (text formatting)
+- Bubble menu (text formatting)
 - Slash command menu
 - All default features
 
@@ -105,7 +105,7 @@ For more control, you can use individual components:
 ### React
 
 ```tsx
-import { VizelEditor, VizelToolbar, useVizelEditor } from '@vizel/react';
+import { VizelEditor, VizelBubbleMenu, useVizelEditor } from '@vizel/react';
 import '@vizel/core/styles.css';
 
 function Editor() {
@@ -116,7 +116,7 @@ function Editor() {
   return (
     <div className="editor-container">
       <VizelEditor editor={editor} />
-      {editor && <VizelToolbar editor={editor} />}
+      {editor && <VizelBubbleMenu editor={editor} />}
     </div>
   );
 }
@@ -128,7 +128,7 @@ export default Editor;
 
 ```vue
 <script setup lang="ts">
-import { VizelEditor, VizelToolbar, useVizelEditor } from '@vizel/vue';
+import { VizelEditor, VizelBubbleMenu, useVizelEditor } from '@vizel/vue';
 import '@vizel/core/styles.css';
 
 const editor = useVizelEditor({
@@ -139,7 +139,7 @@ const editor = useVizelEditor({
 <template>
   <div class="editor-container">
     <VizelEditor :editor="editor" />
-    <VizelToolbar v-if="editor" :editor="editor" />
+    <VizelBubbleMenu v-if="editor" :editor="editor" />
   </div>
 </template>
 ```
@@ -148,7 +148,7 @@ const editor = useVizelEditor({
 
 ```svelte
 <script lang="ts">
-  import { VizelEditor, VizelToolbar, createVizelEditor } from '@vizel/svelte';
+  import { VizelEditor, VizelBubbleMenu, createVizelEditor } from '@vizel/svelte';
   import '@vizel/core/styles.css';
 
   const editor = createVizelEditor({
@@ -159,7 +159,7 @@ const editor = useVizelEditor({
 <div class="editor-container">
   <VizelEditor editor={editor.current} />
   {#if editor.current}
-    <VizelToolbar editor={editor.current} />
+    <VizelBubbleMenu editor={editor.current} />
   {/if}
 </div>
 ```
@@ -168,7 +168,67 @@ const editor = useVizelEditor({
 
 ### Initial Content
 
-You can initialize the editor with content in JSON format:
+You can initialize the editor with content in **Markdown** or **JSON** format.
+
+#### Using Markdown (Recommended)
+
+The simplest way to initialize content is with Markdown:
+
+::: code-group
+
+```tsx [React]
+import { Vizel } from '@vizel/react';
+
+<Vizel initialMarkdown="# Hello World\n\nStart editing..." />
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { Vizel } from '@vizel/vue';
+</script>
+
+<template>
+  <Vizel initialMarkdown="# Hello World\n\nStart editing..." />
+</template>
+```
+
+```svelte [Svelte]
+<script lang="ts">
+import { Vizel } from '@vizel/svelte';
+</script>
+
+<Vizel initialMarkdown="# Hello World\n\nStart editing..." />
+```
+
+:::
+
+Or with the hook/composable/rune:
+
+::: code-group
+
+```tsx [React]
+const editor = useVizelEditor({
+  initialMarkdown: '# Hello World\n\nStart editing...',
+});
+```
+
+```vue [Vue]
+const editor = useVizelEditor({
+  initialMarkdown: '# Hello World\n\nStart editing...',
+});
+```
+
+```svelte [Svelte]
+const editor = createVizelEditor({
+  initialMarkdown: '# Hello World\n\nStart editing...',
+});
+```
+
+:::
+
+#### Using JSON
+
+For more control, use JSON format:
 
 ::: code-group
 
@@ -233,11 +293,15 @@ const editor = createVizelEditor({
 
 ### Getting Content
 
-Access the editor content in JSON format:
+Access the editor content in various formats:
 
 ```typescript
 // Get JSON content
 const json = editor.getJSON();
+
+// Get Markdown content
+import { getVizelMarkdown } from '@vizel/core';
+const markdown = getVizelMarkdown(editor);
 
 // Get HTML content
 const html = editor.getHTML();
@@ -278,6 +342,64 @@ const editor = createVizelEditor({
     // Save to your backend
   },
 });
+```
+
+:::
+
+### Syncing Markdown Content
+
+For two-way Markdown synchronization, use the dedicated hooks/composables/runes:
+
+::: code-group
+
+```tsx [React]
+import { useVizelEditor, useVizelMarkdown } from '@vizel/react';
+
+function Editor() {
+  const editor = useVizelEditor();
+  const { markdown, setMarkdown, isPending } = useVizelMarkdown(editor);
+  
+  // markdown updates automatically when editor content changes
+  // setMarkdown() updates editor content from markdown
+  
+  return (
+    <div>
+      <VizelEditor editor={editor} />
+      <textarea 
+        value={markdown} 
+        onChange={(e) => setMarkdown(e.target.value)}
+      />
+      {isPending && <span>Syncing...</span>}
+    </div>
+  );
+}
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { Vizel } from '@vizel/vue';
+import { ref } from 'vue';
+
+const markdown = ref('# Hello World');
+</script>
+
+<template>
+  <!-- v-model:markdown provides two-way binding -->
+  <Vizel v-model:markdown="markdown" />
+  <textarea v-model="markdown" />
+</template>
+```
+
+```svelte [Svelte]
+<script lang="ts">
+import { Vizel } from '@vizel/svelte';
+
+let markdown = $state('# Hello World');
+</script>
+
+<!-- bind:markdown provides two-way binding -->
+<Vizel bind:markdown={markdown} />
+<textarea bind:value={markdown} />
 ```
 
 :::

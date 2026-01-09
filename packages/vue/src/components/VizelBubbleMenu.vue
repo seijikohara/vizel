@@ -2,16 +2,16 @@
 import type { Editor } from "@tiptap/core";
 import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
 import { computed, onBeforeUnmount, ref, useSlots, watch } from "vue";
+import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
-import VizelToolbarDefault from "./VizelToolbarDefault.vue";
 
-export interface VizelToolbarProps {
+export interface VizelBubbleMenuProps {
   /** Override the editor from context */
   editor?: Editor;
   /** Custom class name for the menu container */
   class?: string;
-  /** Whether to show the default formatting toolbar */
-  showDefaultToolbar?: boolean;
+  /** Whether to show the default formatting menu */
+  showDefaultMenu?: boolean;
   /** Plugin key for the bubble menu */
   pluginKey?: string;
   /** Delay in ms before updating the menu position */
@@ -22,8 +22,8 @@ export interface VizelToolbarProps {
   enableEmbed?: boolean;
 }
 
-const props = withDefaults(defineProps<VizelToolbarProps>(), {
-  showDefaultToolbar: true,
+const props = withDefaults(defineProps<VizelBubbleMenuProps>(), {
+  showDefaultMenu: true,
   pluginKey: "vizelBubbleMenu",
   updateDelay: 100,
 });
@@ -89,6 +89,6 @@ onBeforeUnmount(() => {
     style="visibility: hidden"
   >
     <slot v-if="slots.default" />
-    <VizelToolbarDefault v-else-if="showDefaultToolbar" :editor="editor" :enable-embed="props.enableEmbed" />
+    <VizelBubbleMenuDefault v-else-if="showDefaultMenu" :editor="editor" :enable-embed="props.enableEmbed" />
   </div>
 </template>

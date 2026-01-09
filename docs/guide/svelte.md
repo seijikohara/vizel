@@ -36,7 +36,7 @@ For more control over the editor, use individual components with runes:
 
 ```svelte
 <script lang="ts">
-  import { VizelEditor, VizelToolbar, createVizelEditor } from '@vizel/svelte';
+  import { VizelEditor, VizelBubbleMenu, createVizelEditor } from '@vizel/svelte';
   import '@vizel/core/styles.css';
 
   const editor = createVizelEditor({
@@ -47,7 +47,7 @@ For more control over the editor, use individual components with runes:
 <div class="editor-container">
   <VizelEditor editor={editor.current} />
   {#if editor.current}
-    <VizelToolbar editor={editor.current} />
+    <VizelBubbleMenu editor={editor.current} />
   {/if}
 </div>
 ```
@@ -85,7 +85,9 @@ All-in-one editor component with built-in bubble menu.
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `initialContent` | `JSONContent` | - | Initial content |
+| `initialContent` | `JSONContent` | - | Initial content (JSON) |
+| `initialMarkdown` | `string` | - | Initial content (Markdown) |
+| `bind:markdown` | `string` | - | Two-way Markdown binding |
 | `placeholder` | `string` | - | Placeholder text |
 | `editable` | `boolean` | `true` | Editable state |
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus |
@@ -175,6 +177,35 @@ Automatically saves editor content.
 <VizelSaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
 ```
 
+### createVizelMarkdown
+
+Provides two-way Markdown synchronization with debouncing.
+
+```svelte
+<script lang="ts">
+  import { createVizelEditor, createVizelMarkdown, VizelEditor } from '@vizel/svelte';
+
+  const editor = createVizelEditor();
+  const md = createVizelMarkdown(() => editor.current, {
+    debounceMs: 300, // default: 300ms
+  });
+</script>
+
+<VizelEditor editor={editor.current} />
+<textarea value={md.markdown} oninput={(e) => md.setMarkdown(e.target.value)} />
+{#if md.isPending}
+  <span>Syncing...</span>
+{/if}
+```
+
+#### Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `markdown` | `string` | Current Markdown content (reactive) |
+| `setMarkdown` | `(md: string) => void` | Update editor from Markdown |
+| `isPending` | `boolean` | Whether sync is pending (reactive) |
+
 ### getVizelTheme
 
 Access theme state within VizelThemeProvider context.
@@ -218,15 +249,15 @@ Renders the editor content area.
 | `editor` | `Editor \| null` | Editor instance |
 | `class` | `string` | Custom class name |
 
-### VizelToolbar
+### VizelBubbleMenu
 
-Floating toolbar on text selection.
+Floating bubble menu on text selection.
 
 ```svelte
-<VizelToolbar 
+<VizelBubbleMenu 
   editor={editor.current}
-  class="my-toolbar"
-  showDefaultToolbar={true}
+  class="my-bubble-menu"
+  showDefaultMenu={true}
   updateDelay={100}
 />
 ```
@@ -237,7 +268,7 @@ Floating toolbar on text selection.
 |------|------|---------|-------------|
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | Custom class name |
-| `showDefaultToolbar` | `boolean` | `true` | Show default toolbar |
+| `showDefaultMenu` | `boolean` | `true` | Show default bubble menu |
 | `pluginKey` | `string` | `"vizelBubbleMenu"` | Plugin key |
 | `updateDelay` | `number` | `100` | Position update delay |
 | `shouldShow` | `Function` | - | Custom visibility logic |
@@ -290,7 +321,38 @@ Renders children in a portal.
 
 ## Patterns
 
-### Reactive Content with $state
+### Working with Markdown
+
+```svelte
+<script lang="ts">
+  import { Vizel } from '@vizel/svelte';
+
+  let markdown = $state('# Hello World\n\nStart editing...');
+</script>
+
+<!-- Simple: bind:markdown for two-way binding -->
+<Vizel bind:markdown={markdown} />
+
+<!-- Or one-way with initialMarkdown -->
+<Vizel initialMarkdown="# Read Only Initial" />
+```
+
+### Split View (WYSIWYG + Raw Markdown)
+
+```svelte
+<script lang="ts">
+  import { Vizel } from '@vizel/svelte';
+
+  let markdown = $state('# Hello\n\nEdit in either pane!');
+</script>
+
+<div class="split-view">
+  <Vizel bind:markdown={markdown} />
+  <textarea bind:value={markdown} />
+</div>
+```
+
+### Reactive Content with $state (JSON)
 
 ```svelte
 <script lang="ts">
@@ -349,7 +411,7 @@ Renders children in a portal.
 <VizelEditor editor={editor.current} />
 ```
 
-### Custom Toolbar
+### Custom Bubble Menu
 
 ```svelte
 <script lang="ts">
@@ -359,7 +421,7 @@ Renders children in a portal.
 </script>
 
 {#if editor}
-  <div class="toolbar">
+  <div class="bubble-menu">
     <button
       onclick={() => editor.chain().focus().toggleBold().run()}
       class:active={editor.isActive('bold')}

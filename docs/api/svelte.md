@@ -16,7 +16,7 @@ npm install @vizel/svelte
 
 ### Vizel
 
-All-in-one editor component with built-in toolbar. This is the recommended way to get started.
+All-in-one editor component with built-in bubble menu. This is the recommended way to get started.
 
 ```svelte
 <script lang="ts">
@@ -29,7 +29,7 @@ All-in-one editor component with built-in toolbar. This is the recommended way t
   placeholder="Start writing..."
   editable={true}
   autofocus="end"
-  showToolbar={true}
+  showBubbleMenu={true}
   enableEmbed={true}
   class="my-editor"
   features={{ markdown: true }}
@@ -44,13 +44,15 @@ All-in-one editor component with built-in toolbar. This is the recommended way t
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `initialContent` | `JSONContent` | - | Initial editor content |
+| `initialContent` | `JSONContent` | - | Initial editor content (JSON) |
+| `initialMarkdown` | `string` | - | Initial editor content (Markdown) |
+| `bind:markdown` | `string` | - | Two-way Markdown binding |
 | `placeholder` | `string` | - | Placeholder text |
 | `editable` | `boolean` | `true` | Editable state |
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus behavior |
 | `features` | `VizelFeatureOptions` | - | Feature configuration |
 | `class` | `string` | - | CSS class name |
-| `showToolbar` | `boolean` | `true` | Show toolbar on selection |
+| `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
 | `onUpdate` | `({ editor }) => void` | - | Update callback |
 | `onCreate` | `({ editor }) => void` | - | Create callback |
@@ -113,6 +115,33 @@ const autoSave = createVizelAutoSave(
 | `save` | `() => Promise<void>` | Manual save function |
 | `restore` | `() => Promise<JSONContent \| null>` | Manual restore |
 
+### createVizelMarkdown
+
+Provides two-way Markdown synchronization with debouncing.
+
+```typescript
+import { createVizelMarkdown } from '@vizel/svelte';
+
+const md = createVizelMarkdown(
+  getEditor: () => Editor | null,
+  options?: VizelMarkdownSyncOptions
+);
+```
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `debounceMs` | `number` | `300` | Debounce delay in milliseconds |
+
+**Returns:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `markdown` | `string` | Current Markdown content (reactive) |
+| `setMarkdown` | `(md: string) => void` | Update editor from Markdown |
+| `isPending` | `boolean` | Whether sync is pending (reactive) |
+
 ### getVizelTheme
 
 Access theme state within VizelThemeProvider context.
@@ -152,14 +181,14 @@ Renders the editor content area.
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | CSS class name |
 
-### VizelToolbar
+### VizelBubbleMenu
 
-Floating formatting toolbar.
+Floating formatting bubble menu.
 
 ```svelte
-<VizelToolbar 
+<VizelBubbleMenu 
   editor={editor.current}
-  class="my-toolbar"
+  class="my-bubble-menu"
 />
 ```
 
@@ -174,14 +203,14 @@ Floating formatting toolbar.
 
 | Slot | Description |
 |------|-------------|
-| `default` | Custom toolbar content |
+| `default` | Custom bubble menu content |
 
-### VizelToolbarDefault
+### VizelBubbleMenuDefault
 
-Default toolbar with all formatting buttons.
+Default bubble menu with all formatting buttons.
 
 ```svelte
-<VizelToolbarDefault 
+<VizelBubbleMenuDefault 
   editor={editor.current}
   enableEmbed={false}
 />
@@ -194,24 +223,24 @@ Default toolbar with all formatting buttons.
 | `editor` | `Editor \| null` | - | Editor instance |
 | `enableEmbed` | `boolean` | `false` | Enable embed in links |
 
-### VizelToolbarButton
+### VizelBubbleMenuButton
 
-Individual toolbar button.
+Individual bubble menu button.
 
 ```svelte
-<VizelToolbarButton
+<VizelBubbleMenuButton
   icon="lucide:bold"
   isActive={editor.current?.isActive('bold')}
   onclick={() => editor.current?.chain().focus().toggleBold().run()}
 />
 ```
 
-### VizelToolbarDivider
+### VizelBubbleMenuDivider
 
-Toolbar divider.
+Bubble menu divider.
 
 ```svelte
-<VizelToolbarDivider />
+<VizelBubbleMenuDivider />
 ```
 
 ### VizelThemeProvider
@@ -369,9 +398,10 @@ Framework packages do not re-export from `@vizel/core`. Import directly:
 import { 
   Vizel, 
   VizelEditor, 
-  VizelToolbar, 
+  VizelBubbleMenu, 
   VizelThemeProvider,
-  createVizelEditor, 
+  createVizelEditor,
+  createVizelMarkdown,
   createVizelAutoSave,
 } from '@vizel/svelte';
 

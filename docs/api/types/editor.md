@@ -11,6 +11,9 @@ interface VizelEditorOptions {
   /** Initial content in JSON format */
   initialContent?: JSONContent;
   
+  /** Initial content in Markdown format */
+  initialMarkdown?: string;
+  
   /** Placeholder text when editor is empty */
   placeholder?: string;
   
@@ -45,6 +48,11 @@ interface VizelEditorOptions {
   onBlur?: (props: { editor: Editor }) => void;
 }
 ```
+
+::: tip Markdown vs JSON
+If both `initialContent` and `initialMarkdown` are provided, `initialContent` takes precedence.
+Using `initialMarkdown` is recommended for most use cases as it's more human-readable.
+:::
 
 ## JSONContent
 
@@ -147,4 +155,53 @@ interface VizelEmbedData {
   height?: number;
   html?: string;
 }
+```
+
+## VizelMarkdownSyncOptions
+
+Options for Markdown synchronization hooks/composables/runes.
+
+```typescript
+interface VizelMarkdownSyncOptions {
+  /** Debounce delay in milliseconds (default: 300) */
+  debounceMs?: number;
+}
+```
+
+## VizelMarkdownSyncResult
+
+Return type for Markdown synchronization.
+
+```typescript
+interface VizelMarkdownSyncResult {
+  /** Current Markdown content */
+  markdown: string;
+  
+  /** Update editor content from Markdown */
+  setMarkdown: (markdown: string) => void;
+  
+  /** Whether a sync operation is pending */
+  isPending: boolean;
+}
+```
+
+## Markdown Utilities
+
+Utility functions for working with Markdown content.
+
+```typescript
+import { 
+  getVizelMarkdown, 
+  setVizelMarkdown, 
+  parseVizelMarkdown 
+} from '@vizel/core';
+
+// Get Markdown from editor
+const markdown = getVizelMarkdown(editor);
+
+// Set editor content from Markdown
+setVizelMarkdown(editor, '# Hello World');
+
+// Parse Markdown to JSONContent (without an editor)
+const json = parseVizelMarkdown('# Hello World');
 ```

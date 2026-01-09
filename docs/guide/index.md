@@ -42,7 +42,7 @@ graph LR
 ### Block-Based Experience
 
 - **Slash Commands** - Type `/` to quickly insert any block type
-- **Bubble Menu** - Context-aware formatting toolbar on text selection
+- **Bubble Menu** - Context-aware formatting menu on text selection
 - **Drag Handle** - Reorder blocks with drag and drop
 
 ### Rich Media

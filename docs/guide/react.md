@@ -38,7 +38,7 @@ function App() {
 For more control over the editor, use individual components with hooks:
 
 ```tsx
-import { VizelEditor, VizelToolbar, useVizelEditor } from '@vizel/react';
+import { VizelEditor, VizelBubbleMenu, useVizelEditor } from '@vizel/react';
 import '@vizel/core/styles.css';
 
 function Editor() {
@@ -49,7 +49,7 @@ function Editor() {
   return (
     <div className="editor-container">
       <VizelEditor editor={editor} />
-      {editor && <VizelToolbar editor={editor} />}
+      {editor && <VizelBubbleMenu editor={editor} />}
     </div>
   );
 }
@@ -86,7 +86,8 @@ import { Vizel } from '@vizel/react';
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `initialContent` | `JSONContent` | - | Initial content |
+| `initialContent` | `JSONContent` | - | Initial content (JSON) |
+| `initialMarkdown` | `string` | - | Initial content (Markdown) |
 | `placeholder` | `string` | - | Placeholder text |
 | `editable` | `boolean` | `true` | Editable state |
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus |
@@ -183,6 +184,40 @@ function Editor() {
 }
 ```
 
+### useVizelMarkdown
+
+Provides two-way Markdown synchronization with debouncing.
+
+```tsx
+import { useVizelEditor, useVizelMarkdown, VizelEditor } from '@vizel/react';
+
+function MarkdownEditor() {
+  const editor = useVizelEditor();
+  const { markdown, setMarkdown, isPending } = useVizelMarkdown(editor, {
+    debounceMs: 300, // default: 300ms
+  });
+
+  return (
+    <div>
+      <VizelEditor editor={editor} />
+      <textarea 
+        value={markdown} 
+        onChange={(e) => setMarkdown(e.target.value)}
+      />
+      {isPending && <span>Syncing...</span>}
+    </div>
+  );
+}
+```
+
+#### Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `markdown` | `string` | Current Markdown content |
+| `setMarkdown` | `(md: string) => void` | Update editor from Markdown |
+| `isPending` | `boolean` | Whether sync is pending |
+
 ### useVizelTheme
 
 Access theme state within VizelThemeProvider.
@@ -230,15 +265,15 @@ Renders the editor content area.
 | `editor` | `Editor \| null` | Editor instance |
 | `className` | `string` | Custom class name |
 
-### VizelToolbar
+### VizelBubbleMenu
 
-Floating toolbar on text selection.
+Floating bubble menu on text selection.
 
 ```tsx
-<VizelToolbar 
+<VizelBubbleMenu 
   editor={editor}
-  className="my-toolbar"
-  showDefaultToolbar={true}
+  className="my-bubble-menu"
+  showDefaultMenu={true}
   updateDelay={100}
 />
 ```
@@ -249,7 +284,7 @@ Floating toolbar on text selection.
 |------|------|---------|-------------|
 | `editor` | `Editor \| null` | - | Editor instance |
 | `className` | `string` | - | Custom class name |
-| `showDefaultToolbar` | `boolean` | `true` | Show default toolbar |
+| `showDefaultMenu` | `boolean` | `true` | Show default bubble menu |
 | `pluginKey` | `string` | `"vizelBubbleMenu"` | Plugin key |
 | `updateDelay` | `number` | `100` | Position update delay |
 | `shouldShow` | `Function` | - | Custom visibility logic |
@@ -302,7 +337,49 @@ Renders children in a portal.
 
 ## Patterns
 
-### Controlled Content
+### Working with Markdown
+
+```tsx
+import { Vizel } from '@vizel/react';
+
+// Simple: initialMarkdown prop
+function SimpleMarkdownEditor() {
+  return (
+    <Vizel 
+      initialMarkdown="# Hello World\n\nStart editing..."
+      onUpdate={({ editor }) => {
+        // Get markdown using core utility
+        import { getVizelMarkdown } from '@vizel/core';
+        const md = getVizelMarkdown(editor);
+        console.log(md);
+      }}
+    />
+  );
+}
+
+// Advanced: Two-way sync with useVizelMarkdown
+function TwoWayMarkdownSync() {
+  const editor = useVizelEditor({
+    initialMarkdown: '# Hello',
+  });
+  const { markdown, setMarkdown, isPending } = useVizelMarkdown(editor);
+
+  return (
+    <div className="split-view">
+      <VizelEditor editor={editor} />
+      <div>
+        <textarea 
+          value={markdown} 
+          onChange={(e) => setMarkdown(e.target.value)} 
+        />
+        {isPending && <span>Syncing...</span>}
+      </div>
+    </div>
+  );
+}
+```
+
+### Controlled Content (JSON)
 
 ```tsx
 function ControlledEditor() {
@@ -370,14 +447,14 @@ function EditorWithRef() {
 }
 ```
 
-### Custom Toolbar
+### Custom Bubble Menu
 
 ```tsx
-function CustomToolbar({ editor }: { editor: Editor | null }) {
+function CustomBubbleMenu({ editor }: { editor: Editor | null }) {
   if (!editor) return null;
 
   return (
-    <div className="toolbar">
+    <div className="bubble-menu">
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={editor.isActive('bold') ? 'active' : ''}

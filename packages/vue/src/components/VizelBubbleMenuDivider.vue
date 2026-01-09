@@ -1,10 +1,10 @@
 <script setup lang="ts">
-export interface VizelToolbarDividerProps {
+export interface VizelBubbleMenuDividerProps {
   /** Custom class name */
   class?: string;
 }
 
-defineProps<VizelToolbarDividerProps>();
+defineProps<VizelBubbleMenuDividerProps>();
 </script>
 
 <template>

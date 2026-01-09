@@ -2,18 +2,18 @@ import type { Editor } from "@tiptap/core";
 import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
+import { VizelBubbleMenuDefault } from "./VizelBubbleMenuDefault.tsx";
 import { useVizelContextSafe } from "./VizelContext.tsx";
-import { VizelToolbarDefault } from "./VizelToolbarDefault.tsx";
 
-export interface VizelToolbarProps {
+export interface VizelBubbleMenuProps {
   /** Override the editor from context */
   editor?: Editor | null;
   /** Custom class name for the menu container */
   className?: string;
-  /** Custom menu items (overrides default toolbar) */
+  /** Custom menu items (overrides default menu) */
   children?: ReactNode;
-  /** Whether to show the default formatting toolbar */
-  showDefaultToolbar?: boolean;
+  /** Whether to show the default formatting menu */
+  showDefaultMenu?: boolean;
   /** Plugin key for the bubble menu */
   pluginKey?: string;
   /** Delay in ms before updating the menu position */
@@ -25,42 +25,42 @@ export interface VizelToolbarProps {
 }
 
 /**
- * A floating toolbar that appears when text is selected.
+ * A floating menu that appears when text is selected.
  * Provides formatting options like bold, italic, strike, code, and link.
  *
  * @example
  * ```tsx
- * // Basic usage with default toolbar
+ * // Basic usage with default menu
  * <VizelProvider editor={editor}>
  *   <VizelEditor />
- *   <VizelToolbar />
+ *   <VizelBubbleMenu />
  * </VizelProvider>
  *
  * // With custom items using sub-components
- * <VizelToolbar>
- *   <VizelToolbarButton
+ * <VizelBubbleMenu>
+ *   <VizelBubbleMenuButton
  *     onClick={() => editor.chain().toggleBold().run()}
  *     isActive={editor.isActive("bold")}
  *   >
  *     Bold
- *   </VizelToolbarButton>
- *   <VizelToolbarDivider />
- *   <VizelToolbarButton onClick={() => setShowLinkEditor(true)}>
+ *   </VizelBubbleMenuButton>
+ *   <VizelBubbleMenuDivider />
+ *   <VizelBubbleMenuButton onClick={() => setShowLinkEditor(true)}>
  *     Link
- *   </VizelToolbarButton>
- * </VizelToolbar>
+ *   </VizelBubbleMenuButton>
+ * </VizelBubbleMenu>
  * ```
  */
-export function VizelToolbar({
+export function VizelBubbleMenu({
   editor: editorProp,
   className,
   children,
-  showDefaultToolbar = true,
+  showDefaultMenu = true,
   pluginKey = "vizelBubbleMenu",
   updateDelay = 100,
   shouldShow,
   enableEmbed,
-}: VizelToolbarProps) {
+}: VizelBubbleMenuProps) {
   const context = useVizelContextSafe();
   const editor = editorProp ?? context?.editor ?? null;
   const menuRef = useRef<HTMLDivElement>(null);
@@ -119,8 +119,8 @@ export function VizelToolbar({
       style={{ visibility: "hidden" }}
     >
       {children ??
-        (showDefaultToolbar && (
-          <VizelToolbarDefault editor={editor} {...(enableEmbed ? { enableEmbed } : {})} />
+        (showDefaultMenu && (
+          <VizelBubbleMenuDefault editor={editor} {...(enableEmbed ? { enableEmbed } : {})} />
         ))}
     </div>
   );

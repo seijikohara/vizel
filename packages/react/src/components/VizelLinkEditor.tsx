@@ -12,7 +12,7 @@ export interface VizelLinkEditorProps {
 }
 
 /**
- * A link editor component for editing hyperlinks in the VizelToolbar.
+ * A link editor component for editing hyperlinks in the VizelBubbleMenu.
  * Provides an input field for URL entry and buttons to apply or remove the link.
  * Optionally supports converting links to embeds when the Embed extension is loaded.
  *
@@ -27,9 +27,9 @@ export interface VizelLinkEditorProps {
  *     enableEmbed
  *   />
  * ) : (
- *   <VizelToolbarButton onClick={() => setShowLinkEditor(true)}>
+ *   <VizelBubbleMenuButton onClick={() => setShowLinkEditor(true)}>
  *     Link
- *   </VizelToolbarButton>
+ *   </VizelBubbleMenuButton>
  * )}
  * ```
  */
@@ -85,7 +85,7 @@ export function VizelLinkEditor({
     const timeoutId = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
     }, 0);
-    // Use capture phase so this handler runs before VizelToolbar's handler
+    // Use capture phase so this handler runs before VizelBubbleMenu's handler
     document.addEventListener("keydown", handleKeyDown, true);
 
     return () => {

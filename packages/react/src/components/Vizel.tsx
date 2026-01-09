@@ -3,12 +3,27 @@ import type { VizelFeatureOptions } from "@vizel/core";
 import type { ReactNode } from "react";
 import { forwardRef, useImperativeHandle } from "react";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
+import { VizelBubbleMenu } from "./VizelBubbleMenu.tsx";
 import { VizelEditor } from "./VizelEditor.tsx";
-import { VizelToolbar } from "./VizelToolbar.tsx";
 
 export interface VizelProps {
   /** Initial content in JSON format */
   initialContent?: JSONContent;
+  /**
+   * Initial content in Markdown format.
+   * If both initialContent and initialMarkdown are provided, initialMarkdown takes precedence.
+   * @example
+   * ```tsx
+   * <Vizel initialMarkdown="# Hello World\n\nThis is **bold** text." />
+   * ```
+   */
+  initialMarkdown?: string;
+  /**
+   * Automatically transform diagram code blocks (mermaid, graphviz) to diagram nodes
+   * when importing markdown content. Only applies when initialMarkdown is provided.
+   * @default true
+   */
+  transformDiagramsOnImport?: boolean;
   /** Placeholder text when editor is empty */
   placeholder?: string;
   /** Whether the editor is editable (default: true) */
@@ -49,7 +64,7 @@ export interface VizelRef {
 /**
  * Vizel - All-in-one editor component
  *
- * A complete editor component that includes VizelEditor and VizelToolbar.
+ * A complete editor component that includes VizelEditor and VizelBubbleMenu.
  * This is the recommended way to use Vizel for most use cases.
  *
  * @example
@@ -86,6 +101,8 @@ export interface VizelRef {
 export const Vizel = forwardRef<VizelRef, VizelProps>(function Vizel(
   {
     initialContent,
+    initialMarkdown,
+    transformDiagramsOnImport = true,
     placeholder,
     editable = true,
     autofocus = false,
@@ -106,6 +123,8 @@ export const Vizel = forwardRef<VizelRef, VizelProps>(function Vizel(
 ) {
   const editor = useVizelEditor({
     ...(initialContent !== undefined && { initialContent }),
+    ...(initialMarkdown !== undefined && { initialMarkdown }),
+    transformDiagramsOnImport,
     ...(placeholder !== undefined && { placeholder }),
     editable,
     autofocus,
@@ -130,10 +149,13 @@ export const Vizel = forwardRef<VizelRef, VizelProps>(function Vizel(
   return (
     <div className={`vizel-root ${className ?? ""}`} data-vizel-root="">
       <VizelEditor editor={editor} />
-      {showBubbleMenu && editor && (
-        <VizelToolbar editor={editor} enableEmbed={enableEmbed}>
+      {showBubbleMenu && editor && bubbleMenuContent && (
+        <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed}>
           {bubbleMenuContent}
-        </VizelToolbar>
+        </VizelBubbleMenu>
+      )}
+      {showBubbleMenu && editor && !bubbleMenuContent && (
+        <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} />
       )}
       {children}
     </div>

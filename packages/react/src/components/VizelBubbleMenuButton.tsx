@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export interface VizelToolbarButtonProps {
+export interface VizelBubbleMenuButtonProps {
   /** Click handler. Optional when disabled is true. */
   onClick?: () => void;
   isActive?: boolean;
@@ -13,20 +13,20 @@ export interface VizelToolbarButtonProps {
 }
 
 /**
- * A button component for use in the VizelToolbar.
+ * A button component for use in the VizelBubbleMenu.
  *
  * @example
  * ```tsx
- * <VizelToolbarButton
+ * <VizelBubbleMenuButton
  *   onClick={() => editor.chain().focus().toggleBold().run()}
  *   isActive={editor.isActive("bold")}
  *   title="Bold (Cmd+B)"
  * >
  *   <strong>B</strong>
- * </VizelToolbarButton>
+ * </VizelBubbleMenuButton>
  * ```
  */
-export function VizelToolbarButton({
+export function VizelBubbleMenuButton({
   onClick,
   isActive = false,
   disabled = false,
@@ -34,7 +34,7 @@ export function VizelToolbarButton({
   title,
   className,
   action,
-}: VizelToolbarButtonProps) {
+}: VizelBubbleMenuButtonProps) {
   return (
     <button
       type="button"

@@ -1,5 +1,5 @@
 import type { JSONContent } from "@tiptap/core";
-import { convertVizelCodeBlocksToDiagrams, getVizelEditorState } from "@vizel/core";
+import { getVizelEditorState } from "@vizel/core";
 import {
   useVizelAutoSave,
   useVizelState,
@@ -9,8 +9,8 @@ import {
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/react";
-import { useRef, useState } from "react";
-import { initialContent } from "../../shared/content";
+import { useCallback, useRef, useState } from "react";
+import { initialMarkdown } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
 
 function ReactLogo() {
@@ -42,12 +42,11 @@ function ThemeToggle() {
 }
 
 function AppContent() {
-  const [output, setOutput] = useState<JSONContent | null>(null);
-  const [showOutput, setShowOutput] = useState(false);
-  const [markdownOutput, setMarkdownOutput] = useState("");
+  const [showJson, setShowJson] = useState(false);
+  const [jsonInput, setJsonInput] = useState("");
+
   const [showMarkdown, setShowMarkdown] = useState(false);
   const [markdownInput, setMarkdownInput] = useState("");
-  const [showMarkdownInput, setShowMarkdownInput] = useState(false);
 
   // Store editor reference from Vizel component
   const vizelRef = useRef<VizelRef>(null);
@@ -63,16 +62,28 @@ function AppContent() {
     key: "vizel-demo-react",
   });
 
-  const handleImportMarkdown = () => {
+  // Handle Markdown input change and sync to editor
+  const handleMarkdownChange = useCallback((value: string) => {
+    setMarkdownInput(value);
     const editor = vizelRef.current?.editor;
-    if (editor && markdownInput.trim()) {
-      editor.commands.setContent(markdownInput, { contentType: "markdown" });
-      // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
-      convertVizelCodeBlocksToDiagrams(editor);
-      setMarkdownInput("");
-      setShowMarkdownInput(false);
+    if (editor) {
+      editor.commands.setContent(value, { contentType: "markdown" });
     }
-  };
+  }, []);
+
+  // Handle JSON input change and sync to editor
+  const handleJsonChange = useCallback((value: string) => {
+    setJsonInput(value);
+    try {
+      const parsed = JSON.parse(value) as JSONContent;
+      const editor = vizelRef.current?.editor;
+      if (editor) {
+        editor.commands.setContent(parsed);
+      }
+    } catch {
+      // Invalid JSON, ignore
+    }
+  }, []);
 
   return (
     <div className="app">
@@ -91,73 +102,10 @@ function AppContent() {
       </header>
 
       <main className="main">
-        <div className="features-bar">
-          <div className="feature-tag">
-            <span className="feature-icon">/</span>
-            <span>Slash Commands</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">B</span>
-            <span>Bubble Menu</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">T</span>
-            <span>Tables</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">L</span>
-            <span>Links</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">📎</span>
-            <span>Drag & Drop</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">📋</span>
-            <span>Paste Images</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">M</span>
-            <span>Markdown</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">#</span>
-            <span>Character Count</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">{"</>"}</span>
-            <span>Code Blocks</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">∑</span>
-            <span>Math (LaTeX)</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">💾</span>
-            <span>Auto-save</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">🔗</span>
-            <span>Embeds</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">▸</span>
-            <span>Details</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">📊</span>
-            <span>Diagrams</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">🌓</span>
-            <span>Dark Mode</span>
-          </div>
-        </div>
-
         <div className="editor-container">
           <Vizel
             ref={vizelRef}
-            initialContent={initialContent}
+            initialMarkdown={initialMarkdown}
             autofocus="end"
             className="editor-content"
             enableEmbed
@@ -179,12 +127,14 @@ function AppContent() {
               },
             }}
             onCreate={({ editor }) => {
-              setOutput(editor.getJSON() as JSONContent);
-              setMarkdownOutput(editor.getMarkdown());
+              const json = editor.getJSON() as JSONContent;
+              setJsonInput(JSON.stringify(json, null, 2));
+              setMarkdownInput(editor.getMarkdown());
             }}
             onUpdate={({ editor }) => {
-              setOutput(editor.getJSON() as JSONContent);
-              setMarkdownOutput(editor.getMarkdown());
+              const json = editor.getJSON() as JSONContent;
+              setJsonInput(JSON.stringify(json, null, 2));
+              setMarkdownInput(editor.getMarkdown());
             }}
           />
           <div className="status-bar">
@@ -200,49 +150,36 @@ function AppContent() {
           <button
             type="button"
             className="output-toggle"
-            onClick={() => setShowMarkdownInput(!showMarkdownInput)}
+            onClick={() => setShowMarkdown(!showMarkdown)}
           >
-            <span className="output-toggle-icon">{showMarkdownInput ? "−" : "+"}</span>
-            <span>Markdown Import</span>
+            <span className="output-toggle-icon">{showMarkdown ? "−" : "+"}</span>
+            <span>Markdown</span>
           </button>
-          {showMarkdownInput && (
-            <div className="markdown-input-container">
-              <textarea
-                className="markdown-input"
-                value={markdownInput}
-                onChange={(e) => setMarkdownInput(e.target.value)}
-                placeholder="Paste Markdown here..."
-                rows={6}
-              />
-              <button type="button" className="import-button" onClick={handleImportMarkdown}>
-                Import to Editor
-              </button>
-            </div>
+          {showMarkdown && (
+            <textarea
+              className="sync-textarea"
+              value={markdownInput}
+              onChange={(e) => handleMarkdownChange(e.target.value)}
+              placeholder="Edit Markdown here..."
+              rows={12}
+            />
           )}
         </div>
 
         <div className="output-section">
-          <button
-            type="button"
-            className="output-toggle"
-            onClick={() => setShowMarkdown(!showMarkdown)}
-          >
-            <span className="output-toggle-icon">{showMarkdown ? "−" : "+"}</span>
-            <span>Markdown Export</span>
+          <button type="button" className="output-toggle" onClick={() => setShowJson(!showJson)}>
+            <span className="output-toggle-icon">{showJson ? "−" : "+"}</span>
+            <span>JSON</span>
           </button>
-          {showMarkdown && <pre className="output-content">{markdownOutput}</pre>}
-        </div>
-
-        <div className="output-section">
-          <button
-            type="button"
-            className="output-toggle"
-            onClick={() => setShowOutput(!showOutput)}
-          >
-            <span className="output-toggle-icon">{showOutput ? "−" : "+"}</span>
-            <span>JSON Output</span>
-          </button>
-          {showOutput && <pre className="output-content">{JSON.stringify(output, null, 2)}</pre>}
+          {showJson && (
+            <textarea
+              className="sync-textarea"
+              value={jsonInput}
+              onChange={(e) => handleJsonChange(e.target.value)}
+              placeholder="Edit JSON here..."
+              rows={12}
+            />
+          )}
         </div>
       </main>
 

@@ -2,20 +2,20 @@
 import type { Editor } from "@tiptap/core";
 import type { Snippet } from "svelte";
 
-export interface VizelToolbarProps {
+export interface VizelBubbleMenuProps {
   /** Override the editor from context */
   editor?: Editor | null;
   /** Custom class name for the menu container */
   class?: string;
-  /** Whether to show the default formatting toolbar */
-  showDefaultToolbar?: boolean;
+  /** Whether to show the default formatting menu */
+  showDefaultMenu?: boolean;
   /** Plugin key for the bubble menu */
   pluginKey?: string;
   /** Delay in ms before updating the menu position */
   updateDelay?: number;
   /** Custom shouldShow function */
   shouldShow?: (props: { editor: Editor; from: number; to: number }) => boolean;
-  /** Custom menu items (overrides default toolbar) */
+  /** Custom menu items (overrides default menu) */
   children?: Snippet;
   /** Enable embed option in link editor (requires Embed extension) */
   enableEmbed?: boolean;
@@ -24,19 +24,19 @@ export interface VizelToolbarProps {
 
 <script lang="ts">
 import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
-import VizelToolbarDefault from "./VizelToolbarDefault.svelte";
+import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.svelte";
 import { getVizelContextSafe } from "./VizelContext.ts";
 
 let {
   editor: editorProp,
   class: className,
-  showDefaultToolbar = true,
+  showDefaultMenu = true,
   pluginKey = "vizelBubbleMenu",
   updateDelay = 100,
   shouldShow,
   children,
   enableEmbed,
-}: VizelToolbarProps = $props();
+}: VizelBubbleMenuProps = $props();
 
 const contextEditor = getVizelContextSafe();
 const editor = $derived(editorProp ?? contextEditor?.());
@@ -89,8 +89,8 @@ $effect(() => {
   >
     {#if children}
       {@render children()}
-    {:else if showDefaultToolbar}
-      <VizelToolbarDefault {editor} {...(enableEmbed ? { enableEmbed } : {})} />
+    {:else if showDefaultMenu}
+      <VizelBubbleMenuDefault {editor} {...(enableEmbed ? { enableEmbed } : {})} />
     {/if}
   </div>
 {/if}

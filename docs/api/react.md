@@ -16,7 +16,7 @@ npm install @vizel/react
 
 ### Vizel
 
-All-in-one editor component with built-in toolbar. This is the recommended way to get started.
+All-in-one editor component with built-in bubble menu. This is the recommended way to get started.
 
 ```tsx
 import { Vizel } from '@vizel/react';
@@ -27,7 +27,7 @@ import '@vizel/core/styles.css';
   placeholder="Start writing..."
   editable={true}
   autofocus="end"
-  showToolbar={true}
+  showBubbleMenu={true}
   enableEmbed={true}
   className="my-editor"
   features={{ markdown: true }}
@@ -42,13 +42,14 @@ import '@vizel/core/styles.css';
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `initialContent` | `JSONContent` | - | Initial editor content |
+| `initialContent` | `JSONContent` | - | Initial editor content (JSON) |
+| `initialMarkdown` | `string` | - | Initial editor content (Markdown) |
 | `placeholder` | `string` | - | Placeholder text |
 | `editable` | `boolean` | `true` | Editable state |
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus behavior |
 | `features` | `VizelFeatureOptions` | - | Feature configuration |
 | `className` | `string` | - | CSS class name |
-| `showToolbar` | `boolean` | `true` | Show toolbar on selection |
+| `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
 | `onUpdate` | `({ editor }) => void` | - | Update callback |
 | `onCreate` | `({ editor }) => void` | - | Create callback |
@@ -109,6 +110,33 @@ const result = useVizelAutoSave(
 | `save` | `() => Promise<void>` | Manual save function |
 | `restore` | `() => Promise<JSONContent \| null>` | Manual restore function |
 
+### useVizelMarkdown
+
+Provides two-way Markdown synchronization with debouncing.
+
+```tsx
+import { useVizelMarkdown } from '@vizel/react';
+
+const result = useVizelMarkdown(
+  editor: Editor | null,
+  options?: VizelMarkdownSyncOptions
+);
+```
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `debounceMs` | `number` | `300` | Debounce delay in milliseconds |
+
+**Returns:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `markdown` | `string` | Current Markdown content |
+| `setMarkdown` | `(md: string) => void` | Update editor from Markdown |
+| `isPending` | `boolean` | Whether sync is pending |
+
 ### useVizelTheme
 
 Access theme state within VizelThemeProvider.
@@ -159,16 +187,16 @@ import { VizelEditor } from '@vizel/react';
 | `editor` | `Editor \| null` | - | Editor instance |
 | `className` | `string` | - | CSS class name |
 
-### VizelToolbar
+### VizelBubbleMenu
 
-Floating formatting toolbar.
+Floating formatting bubble menu.
 
 ```tsx
-import { VizelToolbar } from '@vizel/react';
+import { VizelBubbleMenu } from '@vizel/react';
 
-<VizelToolbar 
+<VizelBubbleMenu 
   editor={editor}
-  className="my-toolbar"
+  className="my-bubble-menu"
 />
 ```
 
@@ -180,14 +208,14 @@ import { VizelToolbar } from '@vizel/react';
 | `className` | `string` | - | CSS class name |
 | `children` | `ReactNode` | - | Custom content |
 
-### VizelToolbarDefault
+### VizelBubbleMenuDefault
 
-Default toolbar with all formatting buttons.
+Default bubble menu with all formatting buttons.
 
 ```tsx
-import { VizelToolbarDefault } from '@vizel/react';
+import { VizelBubbleMenuDefault } from '@vizel/react';
 
-<VizelToolbarDefault 
+<VizelBubbleMenuDefault 
   editor={editor}
   enableEmbed={false}
 />
@@ -200,28 +228,28 @@ import { VizelToolbarDefault } from '@vizel/react';
 | `editor` | `Editor \| null` | - | Editor instance |
 | `enableEmbed` | `boolean` | `false` | Enable embed in links |
 
-### VizelToolbarButton
+### VizelBubbleMenuButton
 
-Individual toolbar button.
+Individual bubble menu button.
 
 ```tsx
-import { VizelToolbarButton } from '@vizel/react';
+import { VizelBubbleMenuButton } from '@vizel/react';
 
-<VizelToolbarButton
+<VizelBubbleMenuButton
   icon="lucide:bold"
   isActive={editor.isActive('bold')}
   onClick={() => editor.chain().focus().toggleBold().run()}
 />
 ```
 
-### VizelToolbarDivider
+### VizelBubbleMenuDivider
 
-Toolbar divider.
+Bubble menu divider.
 
 ```tsx
-import { VizelToolbarDivider } from '@vizel/react';
+import { VizelBubbleMenuDivider } from '@vizel/react';
 
-<VizelToolbarDivider />
+<VizelBubbleMenuDivider />
 ```
 
 ### VizelThemeProvider
@@ -347,9 +375,10 @@ Framework packages do not re-export from `@vizel/core`. Import directly:
 import { 
   Vizel, 
   VizelEditor, 
-  VizelToolbar, 
+  VizelBubbleMenu, 
   VizelThemeProvider,
-  useVizelEditor, 
+  useVizelEditor,
+  useVizelMarkdown,
   useVizelAutoSave,
 } from '@vizel/react';
 

@@ -17,6 +17,17 @@ export {
   useVizelThemeSafe,
   // Vizel all-in-one
   Vizel,
+  // BubbleMenu
+  VizelBubbleMenu,
+  VizelBubbleMenuButton,
+  type VizelBubbleMenuButtonProps,
+  VizelBubbleMenuColorPicker,
+  type VizelBubbleMenuColorPickerProps,
+  VizelBubbleMenuDefault,
+  type VizelBubbleMenuDefaultProps,
+  VizelBubbleMenuDivider,
+  type VizelBubbleMenuDividerProps,
+  type VizelBubbleMenuProps,
   // Color Picker
   VizelColorPicker,
   type VizelColorPickerProps,
@@ -58,17 +69,6 @@ export {
   // ThemeProvider
   VizelThemeProvider,
   type VizelThemeProviderProps,
-  // Vizel Toolbar
-  VizelToolbar,
-  VizelToolbarButton,
-  type VizelToolbarButtonProps,
-  VizelToolbarColorPicker,
-  type VizelToolbarColorPickerProps,
-  VizelToolbarDefault,
-  type VizelToolbarDefaultProps,
-  VizelToolbarDivider,
-  type VizelToolbarDividerProps,
-  type VizelToolbarProps,
 } from "./components/index.ts";
 
 // Hooks
@@ -76,8 +76,12 @@ export {
   createVizelSlashMenuRenderer,
   type UseVizelAutoSaveResult,
   type UseVizelEditorOptions,
+  type UseVizelMarkdownOptions,
+  type UseVizelMarkdownResult,
   useVizelAutoSave,
   useVizelEditor,
+  useVizelEditorState,
+  useVizelMarkdown,
   useVizelState,
   type VizelSlashMenuRendererOptions,
 } from "./hooks/index.ts";

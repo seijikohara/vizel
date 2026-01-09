@@ -2,13 +2,13 @@
 import type { Editor } from "@tiptap/core";
 import { computed, ref } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
+import VizelBubbleMenuButton from "./VizelBubbleMenuButton.vue";
+import VizelBubbleMenuColorPicker from "./VizelBubbleMenuColorPicker.vue";
 import VizelIcon from "./VizelIcon.vue";
 import VizelLinkEditor from "./VizelLinkEditor.vue";
 import VizelNodeSelector from "./VizelNodeSelector.vue";
-import VizelToolbarButton from "./VizelToolbarButton.vue";
-import VizelToolbarColorPicker from "./VizelToolbarColorPicker.vue";
 
-export interface VizelToolbarDefaultProps {
+export interface VizelBubbleMenuDefaultProps {
   /** The editor instance */
   editor: Editor;
   /** Custom class name */
@@ -17,7 +17,7 @@ export interface VizelToolbarDefaultProps {
   enableEmbed?: boolean;
 }
 
-const props = defineProps<VizelToolbarDefaultProps>();
+const props = defineProps<VizelBubbleMenuDefaultProps>();
 
 // Subscribe to editor state changes to update active states
 const editorStateVersion = useVizelState(() => props.editor);
@@ -60,55 +60,55 @@ const showLinkEditor = ref(false);
   />
   <div v-else :class="['vizel-bubble-menu-toolbar', $props.class]">
     <VizelNodeSelector :editor="props.editor" />
-    <VizelToolbarButton
+    <VizelBubbleMenuButton
       action="bold"
       :is-active="isBoldActive"
       title="Bold (Cmd+B)"
       @click="props.editor.chain().focus().toggleBold().run()"
     >
       <VizelIcon name="bold" />
-    </VizelToolbarButton>
-    <VizelToolbarButton
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
       action="italic"
       :is-active="isItalicActive"
       title="Italic (Cmd+I)"
       @click="props.editor.chain().focus().toggleItalic().run()"
     >
       <VizelIcon name="italic" />
-    </VizelToolbarButton>
-    <VizelToolbarButton
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
       action="strike"
       :is-active="isStrikeActive"
       title="Strikethrough"
       @click="props.editor.chain().focus().toggleStrike().run()"
     >
       <VizelIcon name="strikethrough" />
-    </VizelToolbarButton>
-    <VizelToolbarButton
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
       action="underline"
       :is-active="isUnderlineActive"
       title="Underline (Cmd+U)"
       @click="props.editor.chain().focus().toggleUnderline().run()"
     >
       <VizelIcon name="underline" />
-    </VizelToolbarButton>
-    <VizelToolbarButton
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
       action="code"
       :is-active="isCodeActive"
       title="Code (Cmd+E)"
       @click="props.editor.chain().focus().toggleCode().run()"
     >
       <VizelIcon name="code" />
-    </VizelToolbarButton>
-    <VizelToolbarButton
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
       action="link"
       :is-active="isLinkActive"
       title="Link (Cmd+K)"
       @click="showLinkEditor = true"
     >
       <VizelIcon name="link" />
-    </VizelToolbarButton>
-    <VizelToolbarColorPicker :editor="props.editor" type="textColor" />
-    <VizelToolbarColorPicker :editor="props.editor" type="highlight" />
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuColorPicker :editor="props.editor" type="textColor" />
+    <VizelBubbleMenuColorPicker :editor="props.editor" type="highlight" />
   </div>
 </template>

@@ -18,6 +18,17 @@ export {
   VIZEL_THEME_CONTEXT_KEY,
   // Vizel all-in-one
   Vizel,
+  // BubbleMenu
+  VizelBubbleMenu,
+  VizelBubbleMenuButton,
+  type VizelBubbleMenuButtonProps,
+  VizelBubbleMenuColorPicker,
+  type VizelBubbleMenuColorPickerProps,
+  VizelBubbleMenuDefault,
+  type VizelBubbleMenuDefaultProps,
+  VizelBubbleMenuDivider,
+  type VizelBubbleMenuDividerProps,
+  type VizelBubbleMenuProps,
   // ColorPicker
   VizelColorPicker,
   type VizelColorPickerProps,
@@ -53,25 +64,18 @@ export {
   type VizelSlashMenuProps,
   type VizelSlashMenuRef,
   VizelThemeProvider,
-  // Vizel Toolbar
-  VizelToolbar,
-  VizelToolbarButton,
-  type VizelToolbarButtonProps,
-  VizelToolbarColorPicker,
-  type VizelToolbarColorPickerProps,
-  VizelToolbarDefault,
-  type VizelToolbarDefaultProps,
-  VizelToolbarDivider,
-  type VizelToolbarDividerProps,
-  type VizelToolbarProps,
 } from "./components/index.ts";
 
 // Runes (Svelte 5 reactive state)
 export {
   type CreateVizelAutoSaveResult,
   type CreateVizelEditorOptions,
+  type CreateVizelMarkdownOptions,
+  type CreateVizelMarkdownResult,
   createVizelAutoSave,
   createVizelEditor,
+  createVizelEditorState,
+  createVizelMarkdown,
   createVizelSlashMenuRenderer,
   createVizelState,
   getVizelTheme,

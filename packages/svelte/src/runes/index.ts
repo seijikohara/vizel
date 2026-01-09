@@ -11,5 +11,10 @@ export {
   createVizelEditor,
 } from "./createVizelEditor.svelte.ts";
 export { createVizelEditorState } from "./createVizelEditorState.svelte.ts";
+export {
+  type CreateVizelMarkdownOptions,
+  type CreateVizelMarkdownResult,
+  createVizelMarkdown,
+} from "./createVizelMarkdown.svelte.ts";
 export { createVizelState } from "./createVizelState.svelte.ts";
 export { getVizelTheme, getVizelThemeSafe } from "./getVizelTheme.svelte.ts";

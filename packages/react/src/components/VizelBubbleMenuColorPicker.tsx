@@ -10,7 +10,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { VizelColorPicker } from "./VizelColorPicker.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
 
-export interface VizelToolbarColorPickerProps {
+export interface VizelBubbleMenuColorPickerProps {
   editor: Editor;
   /** Color picker type */
   type: "textColor" | "highlight";
@@ -25,17 +25,17 @@ export interface VizelToolbarColorPickerProps {
 }
 
 /**
- * A color picker component for the VizelToolbar.
+ * A color picker component for the VizelBubbleMenu.
  * Supports text color and highlight color selection with custom colors and recent colors.
  */
-export function VizelToolbarColorPicker({
+export function VizelBubbleMenuColorPicker({
   editor,
   type,
   colors,
   className,
   allowCustomColor = true,
   showRecentColors = true,
-}: VizelToolbarColorPickerProps) {
+}: VizelBubbleMenuColorPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [recentColors, setRecentColors] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);

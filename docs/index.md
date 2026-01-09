@@ -158,7 +158,7 @@ Type `/` to open the command menu and quickly insert blocks:
 
 ### Bubble Menu
 
-Select text to reveal the formatting toolbar:
+Select text to reveal the bubble menu:
 
 - **Bold**, *Italic*, ~~Strikethrough~~
 - Links, Highlights, Code

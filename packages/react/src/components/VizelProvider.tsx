@@ -5,7 +5,7 @@ import { VizelInternalProvider } from "./VizelContext.tsx";
 export interface VizelProviderProps {
   /** The editor instance from useVizelEditor */
   editor: Editor | null;
-  /** Child components (VizelEditor, VizelToolbar, etc.) */
+  /** Child components (VizelEditor, VizelBubbleMenu, etc.) */
   children: ReactNode;
   /** Optional className for the root container */
   className?: string;
@@ -22,7 +22,7 @@ export interface VizelProviderProps {
  * return (
  *   <VizelProvider editor={editor}>
  *     <VizelEditor />
- *     <VizelToolbar />
+ *     <VizelBubbleMenu />
  *   </VizelProvider>
  * );
  * ```

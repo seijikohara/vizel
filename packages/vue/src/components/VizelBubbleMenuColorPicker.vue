@@ -11,7 +11,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import VizelColorPicker from "./VizelColorPicker.vue";
 import VizelIcon from "./VizelIcon.vue";
 
-export interface VizelToolbarColorPickerProps {
+export interface VizelBubbleMenuColorPickerProps {
   /** The editor instance */
   editor: Editor;
   /** Color picker type */
@@ -26,7 +26,7 @@ export interface VizelToolbarColorPickerProps {
   showRecentColors?: boolean;
 }
 
-const props = withDefaults(defineProps<VizelToolbarColorPickerProps>(), {
+const props = withDefaults(defineProps<VizelBubbleMenuColorPickerProps>(), {
   allowCustomColor: true,
   showRecentColors: true,
 });

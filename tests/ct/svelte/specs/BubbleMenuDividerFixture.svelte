@@ -1,5 +1,5 @@
 <script lang="ts">
-import { VizelToolbarDivider } from "@vizel/svelte";
+import { VizelBubbleMenuDivider } from "@vizel/svelte";
 
 interface Props {
   class?: string;
@@ -8,4 +8,4 @@ interface Props {
 let { class: className }: Props = $props();
 </script>
 
-<VizelToolbarDivider class={className} />
+<VizelBubbleMenuDivider class={className} />

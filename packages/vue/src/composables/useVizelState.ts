@@ -4,7 +4,7 @@ import { onBeforeUnmount, type Ref, ref, watch } from "vue";
 /**
  * Composable that forces a re-render whenever the editor's state changes.
  * This is useful for components that need to reflect the current editor state
- * (e.g., toolbar buttons that show active state).
+ * (e.g., formatting buttons that show active state).
  *
  * @param getEditor - A function that returns the editor instance
  * @returns A ref that changes on each editor state update (can be ignored)

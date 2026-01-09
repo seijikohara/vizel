@@ -1,5 +1,5 @@
 <script setup lang="ts">
-export interface VizelToolbarButtonProps {
+export interface VizelBubbleMenuButtonProps {
   /** Whether the button is in active state */
   isActive?: boolean;
   /** Whether the button is disabled */
@@ -12,7 +12,7 @@ export interface VizelToolbarButtonProps {
   action?: string;
 }
 
-const props = defineProps<VizelToolbarButtonProps>();
+const props = defineProps<VizelBubbleMenuButtonProps>();
 
 const emit = defineEmits<{
   click: [];

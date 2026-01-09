@@ -76,6 +76,23 @@ export interface VizelEditorOptions {
   features?: VizelFeatureOptions;
   /** Initial content in JSON format */
   initialContent?: JSONContent;
+  /**
+   * Initial content in Markdown format.
+   * If both initialContent and initialMarkdown are provided, initialMarkdown takes precedence.
+   * @example
+   * ```typescript
+   * const editor = useVizelEditor({
+   *   initialMarkdown: "# Hello World\n\nThis is **bold** text.",
+   * });
+   * ```
+   */
+  initialMarkdown?: string;
+  /**
+   * Automatically transform diagram code blocks (mermaid, graphviz) to diagram nodes
+   * when importing markdown content. Only applies when initialMarkdown is provided.
+   * @default true
+   */
+  transformDiagramsOnImport?: boolean;
   /** Placeholder text when editor is empty */
   placeholder?: string;
   /** Whether the editor is editable */
@@ -94,6 +111,38 @@ export interface VizelEditorOptions {
   onFocus?: (props: { editor: Editor }) => void;
   /** Callback when editor loses focus */
   onBlur?: (props: { editor: Editor }) => void;
+}
+
+/**
+ * Options for Markdown synchronization
+ */
+export interface VizelMarkdownSyncOptions {
+  /**
+   * Debounce delay in milliseconds for markdown export.
+   * Set to 0 for immediate export (not recommended for large documents).
+   * @default 300
+   */
+  debounceMs?: number;
+  /**
+   * Automatically transform diagram code blocks when setting markdown content.
+   * @default true
+   */
+  transformDiagrams?: boolean;
+}
+
+/**
+ * Result of Markdown synchronization
+ */
+export interface VizelMarkdownSyncResult {
+  /** Current markdown content (reactive) */
+  markdown: string;
+  /**
+   * Set markdown content to the editor.
+   * Automatically transforms diagram code blocks if transformDiagrams is enabled.
+   */
+  setMarkdown: (markdown: string) => void;
+  /** Whether markdown export is currently pending (debounced) */
+  isPending: boolean;
 }
 
 /**

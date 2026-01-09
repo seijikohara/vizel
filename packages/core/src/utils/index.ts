@@ -15,6 +15,17 @@ export {
   vizelDefaultEditorProps,
 } from "./editorHelpers.ts";
 
+// Markdown utilities
+export {
+  createVizelMarkdownSyncHandlers,
+  getVizelMarkdown,
+  initializeVizelMarkdownContent,
+  parseVizelMarkdown,
+  setVizelMarkdown,
+  VIZEL_DEFAULT_MARKDOWN_DEBOUNCE_MS,
+  type VizelMarkdownSyncHandlers,
+} from "./markdown.ts";
+
 // Portal utilities
 export {
   createVizelPortalElement,

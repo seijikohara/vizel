@@ -93,46 +93,6 @@ body {
   flex: 1;
 }
 
-/* Features Bar */
-.features-bar {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.feature-tag {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: oklch(1 0 0);
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  color: oklch(0.481 0.019 251.308);
-  box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
-  border: 1px solid oklch(0.922 0.007 247.896);
-  transition: all 0.2s;
-}
-
-.feature-tag:hover {
-  border-color: var(--framework-color);
-  background: var(--framework-bg);
-}
-
-.feature-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  background: var(--framework-bg);
-  color: var(--framework-color-dark);
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 0.75rem;
-}
-
 /* Editor Container */
 .editor-container {
   background: oklch(1 0 0);
@@ -242,62 +202,28 @@ body {
   font-weight: 600;
 }
 
-/* Markdown Input Section */
-.markdown-input-container {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid oklch(0.922 0.007 247.896);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.markdown-input {
+/* Synced Textarea (Markdown/JSON) */
+.sync-textarea {
   width: 100%;
-  padding: 0.75rem 1rem;
-  font-size: 0.875rem;
+  padding: 1rem 1.5rem;
+  font-size: 0.75rem;
   font-family: "Fira Code", "Monaco", monospace;
-  border: 1px solid oklch(0.922 0.007 247.896);
-  border-radius: 8px;
+  border: none;
+  border-top: 1px solid oklch(0.922 0.007 247.896);
   resize: vertical;
   background: oklch(0.985 0.002 247.839);
   color: oklch(0.269 0.015 252.417);
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
+  min-height: 200px;
+  line-height: 1.5;
 }
 
-.markdown-input:focus {
+.sync-textarea:focus {
   outline: none;
-  border-color: var(--framework-color);
-  box-shadow: 0 0 0 3px var(--framework-bg);
+  background: oklch(1 0 0);
 }
 
-.markdown-input::placeholder {
+.sync-textarea::placeholder {
   color: oklch(0.708 0.015 255.058);
-}
-
-.import-button {
-  align-self: flex-end;
-  padding: 0.5rem 1rem;
-  background: var(--framework-color);
-  color: oklch(0.269 0.015 252.417);
-  font-weight: 600;
-  font-size: 0.875rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition:
-    background-color 0.15s,
-    transform 0.1s;
-}
-
-.import-button:hover {
-  background: var(--framework-color-dark);
-  color: oklch(1 0 0);
-}
-
-.import-button:active {
-  transform: scale(0.98);
 }
 
 /* Theme Toggle Button */
@@ -353,16 +279,6 @@ body {
   color: oklch(0.708 0.015 255.058);
 }
 
-[data-vizel-theme="dark"] .feature-tag {
-  background: oklch(0.269 0.015 252.417);
-  border-color: oklch(0.391 0.018 249.879);
-  color: oklch(0.869 0.011 249.18);
-}
-
-[data-vizel-theme="dark"] .feature-tag:hover {
-  background: var(--framework-bg);
-}
-
 [data-vizel-theme="dark"] .editor-container {
   background: oklch(0.269 0.015 252.417);
   border-color: oklch(0.391 0.018 249.879);
@@ -397,17 +313,17 @@ body {
   border-top-color: oklch(0.391 0.018 249.879);
 }
 
-[data-vizel-theme="dark"] .markdown-input-container {
-  border-top-color: oklch(0.391 0.018 249.879);
-}
-
-[data-vizel-theme="dark"] .markdown-input {
+[data-vizel-theme="dark"] .sync-textarea {
   background: oklch(0.216 0.006 285.885);
-  border-color: oklch(0.391 0.018 249.879);
+  border-top-color: oklch(0.391 0.018 249.879);
   color: oklch(0.967 0.003 264.542);
 }
 
-[data-vizel-theme="dark"] .markdown-input::placeholder {
+[data-vizel-theme="dark"] .sync-textarea:focus {
+  background: oklch(0.269 0.015 252.417);
+}
+
+[data-vizel-theme="dark"] .sync-textarea::placeholder {
   color: oklch(0.556 0.018 247.897);
 }
 

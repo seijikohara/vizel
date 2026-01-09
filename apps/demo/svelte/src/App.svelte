@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { Editor, JSONContent } from "@tiptap/core";
-import { convertVizelCodeBlocksToDiagrams, getVizelEditorState } from "@vizel/core";
+import { getVizelEditorState } from "@vizel/core";
 import {
   createVizelAutoSave,
   createVizelState,
@@ -8,16 +8,15 @@ import {
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/svelte";
-import { initialContent } from "../../shared/content";
+import { initialMarkdown } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
 import ThemeToggle from "./ThemeToggle.svelte";
 
-let output: JSONContent | null = $state(null);
-let showOutput = $state(false);
-let markdownOutput = $state("");
+let showJson = $state(false);
+let jsonInput = $state("");
+
 let showMarkdown = $state(false);
 let markdownInput = $state("");
-let showMarkdownInput = $state(false);
 
 // Store editor reference from Vizel component
 let editorRef: Editor | null = $state(null);
@@ -38,22 +37,35 @@ const autoSave = createVizelAutoSave(() => editorRef, {
 
 function handleCreate({ editor }: { editor: Editor }) {
   editorRef = editor;
-  output = editor.getJSON();
-  markdownOutput = editor.getMarkdown();
+  jsonInput = JSON.stringify(editor.getJSON(), null, 2);
+  markdownInput = editor.getMarkdown();
 }
 
 function handleUpdate({ editor }: { editor: Editor }) {
-  output = editor.getJSON();
-  markdownOutput = editor.getMarkdown();
+  jsonInput = JSON.stringify(editor.getJSON(), null, 2);
+  markdownInput = editor.getMarkdown();
 }
 
-function handleImportMarkdown() {
-  if (editorRef && markdownInput.trim()) {
-    editorRef.commands.setContent(markdownInput, { contentType: "markdown" });
-    // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
-    convertVizelCodeBlocksToDiagrams(editorRef);
-    markdownInput = "";
-    showMarkdownInput = false;
+function handleMarkdownChange(event: Event) {
+  const target = event.target as HTMLTextAreaElement;
+  const value = target.value;
+  markdownInput = value;
+  if (editorRef) {
+    editorRef.commands.setContent(value, { contentType: "markdown" });
+  }
+}
+
+function handleJsonChange(event: Event) {
+  const target = event.target as HTMLTextAreaElement;
+  const value = target.value;
+  jsonInput = value;
+  try {
+    const parsed = JSON.parse(value) as JSONContent;
+    if (editorRef) {
+      editorRef.commands.setContent(parsed);
+    }
+  } catch {
+    // Invalid JSON, ignore
   }
 }
 </script>
@@ -78,72 +90,9 @@ function handleImportMarkdown() {
   </header>
 
   <main class="main">
-    <div class="features-bar">
-      <div class="feature-tag">
-        <span class="feature-icon">/</span>
-        <span>Slash Commands</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">B</span>
-        <span>Bubble Menu</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">T</span>
-        <span>Tables</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">L</span>
-        <span>Links</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">📎</span>
-        <span>Drag & Drop</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">📋</span>
-        <span>Paste Images</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">M</span>
-        <span>Markdown</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">#</span>
-        <span>Character Count</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">{"</>"}</span>
-        <span>Code Blocks</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">∑</span>
-        <span>Math (LaTeX)</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">💾</span>
-        <span>Auto-save</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">🔗</span>
-        <span>Embeds</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">▸</span>
-        <span>Details</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">📊</span>
-        <span>Diagrams</span>
-      </div>
-      <div class="feature-tag">
-        <span class="feature-icon">🌓</span>
-        <span>Dark Mode</span>
-      </div>
-    </div>
-
     <div class="editor-container">
       <Vizel
-        {initialContent}
+        {initialMarkdown}
         autofocus="end"
         class="editor-content"
         enableEmbed
@@ -176,37 +125,19 @@ function handleImportMarkdown() {
       <button
         type="button"
         class="output-toggle"
-        onclick={() => showMarkdownInput = !showMarkdownInput}
-      >
-        <span class="output-toggle-icon">{showMarkdownInput ? '−' : '+'}</span>
-        <span>Markdown Import</span>
-      </button>
-      {#if showMarkdownInput}
-        <div class="markdown-input-container">
-          <textarea
-            class="markdown-input"
-            bind:value={markdownInput}
-            placeholder="Paste Markdown here..."
-            rows="6"
-          ></textarea>
-          <button type="button" class="import-button" onclick={handleImportMarkdown}>
-            Import to Editor
-          </button>
-        </div>
-      {/if}
-    </div>
-
-    <div class="output-section">
-      <button
-        type="button"
-        class="output-toggle"
         onclick={() => showMarkdown = !showMarkdown}
       >
         <span class="output-toggle-icon">{showMarkdown ? '−' : '+'}</span>
-        <span>Markdown Export</span>
+        <span>Markdown</span>
       </button>
       {#if showMarkdown}
-        <pre class="output-content">{markdownOutput}</pre>
+        <textarea
+          class="sync-textarea"
+          value={markdownInput}
+          placeholder="Edit Markdown here..."
+          rows="12"
+          oninput={handleMarkdownChange}
+        ></textarea>
       {/if}
     </div>
 
@@ -214,13 +145,19 @@ function handleImportMarkdown() {
       <button
         type="button"
         class="output-toggle"
-        onclick={() => showOutput = !showOutput}
+        onclick={() => showJson = !showJson}
       >
-        <span class="output-toggle-icon">{showOutput ? '−' : '+'}</span>
-        <span>JSON Output</span>
+        <span class="output-toggle-icon">{showJson ? '−' : '+'}</span>
+        <span>JSON</span>
       </button>
-      {#if showOutput}
-        <pre class="output-content">{JSON.stringify(output, null, 2)}</pre>
+      {#if showJson}
+        <textarea
+          class="sync-textarea"
+          value={jsonInput}
+          placeholder="Edit JSON here..."
+          rows="12"
+          oninput={handleJsonChange}
+        ></textarea>
       {/if}
     </div>
   </main>

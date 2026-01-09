@@ -16,6 +16,17 @@ export {
   useVizelIconContext,
   // Vizel all-in-one
   Vizel,
+  // BubbleMenu
+  VizelBubbleMenu,
+  VizelBubbleMenuButton,
+  type VizelBubbleMenuButtonProps,
+  VizelBubbleMenuColorPicker,
+  type VizelBubbleMenuColorPickerProps,
+  VizelBubbleMenuDefault,
+  type VizelBubbleMenuDefaultProps,
+  VizelBubbleMenuDivider,
+  type VizelBubbleMenuDividerProps,
+  type VizelBubbleMenuProps,
   // ColorPicker
   VizelColorPicker,
   type VizelColorPickerProps,
@@ -56,17 +67,6 @@ export {
   VizelThemeContextKey,
   VizelThemeProvider,
   type VizelThemeProviderProps,
-  // Vizel Toolbar
-  VizelToolbar,
-  VizelToolbarButton,
-  type VizelToolbarButtonProps,
-  VizelToolbarColorPicker,
-  type VizelToolbarColorPickerProps,
-  VizelToolbarDefault,
-  type VizelToolbarDefaultProps,
-  VizelToolbarDivider,
-  type VizelToolbarDividerProps,
-  type VizelToolbarProps,
 } from "./components/index.ts";
 
 // Composables
@@ -74,8 +74,12 @@ export {
   createVizelSlashMenuRenderer,
   type UseVizelAutoSaveResult,
   type UseVizelEditorOptions,
+  type UseVizelMarkdownOptions,
+  type UseVizelMarkdownResult,
   useVizelAutoSave,
   useVizelEditor,
+  useVizelEditorState,
+  useVizelMarkdown,
   useVizelState,
   useVizelTheme,
   useVizelThemeSafe,

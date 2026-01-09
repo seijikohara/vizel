@@ -38,7 +38,7 @@ For more control over the editor, use individual components with composables:
 
 ```vue
 <script setup lang="ts">
-import { VizelEditor, VizelToolbar, useVizelEditor } from '@vizel/vue';
+import { VizelEditor, VizelBubbleMenu, useVizelEditor } from '@vizel/vue';
 import '@vizel/core/styles.css';
 
 const editor = useVizelEditor({
@@ -49,7 +49,7 @@ const editor = useVizelEditor({
 <template>
   <div class="editor-container">
     <VizelEditor :editor="editor" />
-    <VizelToolbar v-if="editor" :editor="editor" />
+    <VizelBubbleMenu v-if="editor" :editor="editor" />
   </div>
 </template>
 ```
@@ -89,7 +89,9 @@ import { Vizel } from '@vizel/vue';
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `initialContent` | `JSONContent` | - | Initial content |
+| `initialContent` | `JSONContent` | - | Initial content (JSON) |
+| `initialMarkdown` | `string` | - | Initial content (Markdown) |
+| `v-model:markdown` | `string` | - | Two-way Markdown binding |
 | `placeholder` | `string` | - | Placeholder text |
 | `editable` | `boolean` | `true` | Editable state |
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus |
@@ -103,6 +105,7 @@ import { Vizel } from '@vizel/vue';
 | Event | Payload | Description |
 |-------|---------|-------------|
 | `update` | `{ editor: Editor }` | Content updated |
+| `update:markdown` | `string` | Markdown content changed |
 | `create` | `{ editor: Editor }` | Editor created |
 | `focus` | `{ editor: Editor }` | Editor focused |
 | `blur` | `{ editor: Editor }` | Editor blurred |
@@ -188,6 +191,35 @@ const { status, lastSaved, save, restore } = useVizelAutoSave(() => editor.value
 </template>
 ```
 
+### useVizelMarkdown
+
+Provides two-way Markdown synchronization with debouncing.
+
+```vue
+<script setup lang="ts">
+import { useVizelEditor, useVizelMarkdown, VizelEditor } from '@vizel/vue';
+
+const editor = useVizelEditor();
+const { markdown, setMarkdown, isPending } = useVizelMarkdown(() => editor.value, {
+  debounceMs: 300, // default: 300ms
+});
+</script>
+
+<template>
+  <VizelEditor :editor="editor" />
+  <textarea :value="markdown" @input="setMarkdown($event.target.value)" />
+  <span v-if="isPending">Syncing...</span>
+</template>
+```
+
+#### Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `markdown` | `Ref<string>` | Current Markdown content |
+| `setMarkdown` | `(md: string) => void` | Update editor from Markdown |
+| `isPending` | `Ref<boolean>` | Whether sync is pending |
+
 ### useVizelTheme
 
 Access theme state within VizelThemeProvider.
@@ -233,15 +265,15 @@ Renders the editor content area.
 | `editor` | `Editor \| null` | Editor instance |
 | `class` | `string` | Custom class name |
 
-### VizelToolbar
+### VizelBubbleMenu
 
-Floating toolbar on text selection.
+Floating bubble menu on text selection.
 
 ```vue
-<VizelToolbar 
+<VizelBubbleMenu 
   :editor="editor"
-  class="my-toolbar"
-  :showDefaultToolbar="true"
+  class="my-bubble-menu"
+  :showDefaultMenu="true"
   :updateDelay="100"
 />
 ```
@@ -252,7 +284,7 @@ Floating toolbar on text selection.
 |------|------|---------|-------------|
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | Custom class name |
-| `showDefaultToolbar` | `boolean` | `true` | Show default toolbar |
+| `showDefaultMenu` | `boolean` | `true` | Show default bubble menu |
 | `pluginKey` | `string` | `"vizelBubbleMenu"` | Plugin key |
 | `updateDelay` | `number` | `100` | Position update delay |
 | `shouldShow` | `Function` | - | Custom visibility logic |
@@ -305,7 +337,44 @@ Renders children in a portal.
 
 ## Patterns
 
-### Controlled Content with v-model
+### Working with Markdown
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import { Vizel } from '@vizel/vue';
+
+const markdown = ref('# Hello World\n\nStart editing...');
+</script>
+
+<template>
+  <!-- Simple: v-model:markdown for two-way binding -->
+  <Vizel v-model:markdown="markdown" />
+  
+  <!-- Or one-way with initialMarkdown -->
+  <Vizel initialMarkdown="# Read Only Initial" />
+</template>
+```
+
+### Split View (WYSIWYG + Raw Markdown)
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import { Vizel } from '@vizel/vue';
+
+const markdown = ref('# Hello\n\nEdit in either pane!');
+</script>
+
+<template>
+  <div class="split-view">
+    <Vizel v-model:markdown="markdown" />
+    <textarea v-model="markdown" />
+  </div>
+</template>
+```
+
+### Controlled Content with v-model (JSON)
 
 ```vue
 <script setup lang="ts">
@@ -372,7 +441,7 @@ function focusEditor() {
 </template>
 ```
 
-### Custom Toolbar
+### Custom Bubble Menu
 
 ```vue
 <script setup lang="ts">
@@ -382,7 +451,7 @@ const props = defineProps<{ editor: Editor | null }>();
 </script>
 
 <template>
-  <div v-if="editor" class="toolbar">
+  <div v-if="editor" class="bubble-menu">
     <button
       @click="editor.chain().focus().toggleBold().run()"
       :class="{ active: editor.isActive('bold') }"

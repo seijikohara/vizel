@@ -6,7 +6,7 @@ export interface EmbedFixtureProps {
 </script>
 
 <script lang="ts">
-import { VizelToolbar, VizelEditor, VizelProvider, createVizelEditor } from "@vizel/svelte";
+import { VizelBubbleMenu, VizelEditor, VizelProvider, createVizelEditor } from "@vizel/svelte";
 
 const props = $props<EmbedFixtureProps>();
 
@@ -21,5 +21,5 @@ const editor = createVizelEditor({
 
 <VizelProvider editor={editor.current}>
   <VizelEditor />
-  <VizelToolbar enableEmbed />
+  <VizelBubbleMenu enableEmbed />
 </VizelProvider>

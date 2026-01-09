@@ -27,7 +27,7 @@ export function VizelInternalProvider({ editor, children }: VizelInternalProvide
  *
  * @example
  * ```tsx
- * function Toolbar() {
+ * function BoldButton() {
  *   const { editor } = useVizelContext();
  *   if (!editor) return null;
  *

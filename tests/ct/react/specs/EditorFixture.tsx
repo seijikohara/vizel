@@ -1,4 +1,4 @@
-import { useVizelEditor, VizelEditor, VizelProvider, VizelToolbar } from "@vizel/react";
+import { useVizelEditor, VizelBubbleMenu, VizelEditor, VizelProvider } from "@vizel/react";
 
 export interface EditorFixtureProps {
   placeholder?: string;
@@ -22,7 +22,7 @@ export function EditorFixture({
   return (
     <VizelProvider editor={editor}>
       <VizelEditor />
-      {showBubbleMenu && <VizelToolbar />}
+      {showBubbleMenu && <VizelBubbleMenu />}
     </VizelProvider>
   );
 }

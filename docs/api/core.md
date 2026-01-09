@@ -303,17 +303,6 @@ import { addVizelRecentColor } from '@vizel/core';
 addVizelRecentColor('text', '#ff0000');
 ```
 
-### isVizelValidHexColor
-
-Validates a hex color string.
-
-```typescript
-import { isVizelValidHexColor } from '@vizel/core';
-
-isVizelValidHexColor('#ff0000'); // true
-isVizelValidHexColor('red');     // false
-```
-
 ---
 
 ## Embed Utilities
@@ -327,17 +316,6 @@ import { detectVizelEmbedProvider } from '@vizel/core';
 
 const provider = detectVizelEmbedProvider('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 // { name: 'YouTube', ... }
-```
-
-### isVizelValidUrl
-
-Checks if a string is a valid URL.
-
-```typescript
-import { isVizelValidUrl } from '@vizel/core';
-
-isVizelValidUrl('https://example.com'); // true
-isVizelValidUrl('not a url');           // false
 ```
 
 ---
@@ -362,12 +340,12 @@ import { VIZEL_HIGHLIGHT_COLORS } from '@vizel/core';
 // Array of { name: string, color: string }
 ```
 
-### VIZEL_DEFAULT_EMBED_PROVIDERS
+### vizelDefaultEmbedProviders
 
 Default oEmbed providers.
 
 ```typescript
-import { VIZEL_DEFAULT_EMBED_PROVIDERS } from '@vizel/core';
+import { vizelDefaultEmbedProviders } from '@vizel/core';
 // YouTube, Vimeo, Twitter, etc.
 ```
 
