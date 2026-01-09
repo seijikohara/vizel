@@ -10,11 +10,23 @@ export interface VizelEditorProps {
   class?: string;
 }
 
+export interface VizelEditorExposed {
+  /** The container DOM element */
+  container: HTMLDivElement | null;
+}
+
 const props = defineProps<VizelEditorProps>();
 
 const containerRef = ref<HTMLDivElement | null>(null);
 const getContextEditor = useVizelContextSafe();
 const editor = computed(() => props.editor ?? getContextEditor?.());
+
+// Expose container ref to parent component
+defineExpose<VizelEditorExposed>({
+  get container() {
+    return containerRef.value;
+  },
+});
 
 watch(
   () => [editor.value, containerRef.value] as const,

@@ -41,6 +41,7 @@ export { getVizelContext, getVizelContextSafe } from "./VizelContext.ts";
 // ============================================================================
 export {
   default as VizelEditor,
+  type VizelEditorExposed,
   type VizelEditorProps,
 } from "./VizelEditor.svelte";
 // ============================================================================

@@ -27,7 +27,11 @@ export {
 } from "./VizelColorPicker.vue";
 export { useVizelContext, useVizelContextSafe } from "./VizelContext.ts";
 // Editor components
-export { default as VizelEditor, type VizelEditorProps } from "./VizelEditor.vue";
+export {
+  default as VizelEditor,
+  type VizelEditorExposed,
+  type VizelEditorProps,
+} from "./VizelEditor.vue";
 // VizelEmbedView component
 export { default as VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.vue";
 // VizelIcon component

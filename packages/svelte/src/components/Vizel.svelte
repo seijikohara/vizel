@@ -94,11 +94,16 @@ const wrappedOnUpdate = (e: { editor: import("@tiptap/core").Editor }) => {
   }
 };
 
+// Capture initial values for editor creation (these are intentionally not reactive)
+// The editor is created once and should not be recreated when props change
+// svelte-ignore state_referenced_locally
+const initialTransformDiagrams = transformDiagramsOnImport;
+
 // Create editor with initial props - editor is intentionally created once
 const editorState = createVizelEditor({
   ...(restProps.initialContent !== undefined && { initialContent: restProps.initialContent }),
   ...(restProps.initialMarkdown !== undefined && { initialMarkdown: restProps.initialMarkdown }),
-  transformDiagramsOnImport,
+  transformDiagramsOnImport: initialTransformDiagrams,
   ...(restProps.placeholder !== undefined && { placeholder: restProps.placeholder }),
   editable: restProps.editable ?? true,
   autofocus: restProps.autofocus ?? false,

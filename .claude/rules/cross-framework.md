@@ -38,7 +38,9 @@ Each component must exist in all three frameworks with equivalent functionality:
 | VizelBubbleMenuDefault | `.tsx` | `.vue` | `.svelte` |
 | VizelBubbleMenuButton | `.tsx` | `.vue` | `.svelte` |
 | VizelBubbleMenuDivider | `.tsx` | `.vue` | `.svelte` |
-| VizelBubbleMenuLinkEditor | `.tsx` | `.vue` | `.svelte` |
+| VizelBubbleMenuColorPicker | `.tsx` | `.vue` | `.svelte` |
+| VizelLinkEditor | `.tsx` | `.vue` | `.svelte` |
+| VizelNodeSelector | `.tsx` | `.vue` | `.svelte` |
 | VizelSlashMenu | `.tsx` | `.vue` | `.svelte` |
 | VizelSlashMenuItem | `.tsx` | `.vue` | `.svelte` |
 | VizelSlashMenuEmpty | `.tsx` | `.vue` | `.svelte` |
@@ -46,6 +48,9 @@ Each component must exist in all three frameworks with equivalent functionality:
 | VizelSaveIndicator | `.tsx` | `.vue` | `.svelte` |
 | VizelPortal | `.tsx` | `.vue` | `.svelte` |
 | VizelColorPicker | `.tsx` | `.vue` | `.svelte` |
+| VizelEmbedView | `.tsx` | `.vue` | `.svelte` |
+| VizelIcon | `.tsx` | `.vue` | `.svelte` |
+| VizelProvider | `.tsx` | `.vue` | `.svelte` |
 
 ### Props Interface
 
@@ -106,9 +111,9 @@ interface VizelEditorOptions {
 
 | Feature | React | Vue | Svelte |
 |---------|-------|-----|--------|
-| Provider | `EditorProvider` | `provide()` | `setContext()` |
-| Consumer | `useEditorContext()` | `useEditorContext()` | `getEditorContext()` |
-| Safe access | `useEditorContextSafe()` | `useEditorContextSafe()` | `getEditorContextSafe()` |
+| Provider | `VizelProvider` | `VizelProvider` | `VizelProvider` |
+| Consumer | `useVizelContext()` | `useVizelContext()` | `getVizelContext()` |
+| Safe access | `useVizelContextSafe()` | `useVizelContextSafe()` | `getVizelContextSafe()` |
 
 ## Adding New Features
 

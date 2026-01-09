@@ -7,6 +7,11 @@ export interface VizelEditorProps {
   /** Custom class name */
   class?: string;
 }
+
+export interface VizelEditorExposed {
+  /** The container DOM element */
+  container: HTMLElement | undefined;
+}
 </script>
 
 <script lang="ts">
@@ -18,6 +23,15 @@ const contextEditor = getVizelContextSafe();
 const editor = $derived(editorProp ?? contextEditor?.());
 
 let element: HTMLElement | undefined = $state();
+
+// Expose container element to parent component
+export function getExposed(): VizelEditorExposed {
+  return {
+    get container() {
+      return element;
+    },
+  };
+}
 
 $effect(() => {
   if (!editor || !element) {
