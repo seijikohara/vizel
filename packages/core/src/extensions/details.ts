@@ -13,7 +13,7 @@ import DetailsSummary from "@tiptap/extension-details-summary";
 /**
  * Options for the Details container extension
  */
-export interface DetailsNodeOptions {
+export interface VizelDetailsNodeOptions {
   /**
    * HTML attributes to add to the details element
    */
@@ -26,9 +26,9 @@ export interface DetailsNodeOptions {
 }
 
 /**
- * Options for the DetailsContent extension
+ * Options for the VizelDetailsContent extension
  */
-export interface DetailsContentOptions {
+export interface VizelDetailsContentOptions {
   /**
    * HTML attributes to add to the details content element
    */
@@ -36,9 +36,9 @@ export interface DetailsContentOptions {
 }
 
 /**
- * Options for the DetailsSummary extension
+ * Options for the VizelDetailsSummary extension
  */
-export interface DetailsSummaryOptions {
+export interface VizelDetailsSummaryOptions {
   /**
    * HTML attributes to add to the details summary element
    */
@@ -46,21 +46,21 @@ export interface DetailsSummaryOptions {
 }
 
 /**
- * Combined options for all Details extensions
+ * Combined options for all VizelDetails extensions
  */
 export interface VizelDetailsOptions {
   /**
    * Options for the details container extension
    */
-  details?: DetailsNodeOptions;
+  details?: VizelDetailsNodeOptions;
   /**
    * Options for the details content extension
    */
-  detailsContent?: DetailsContentOptions;
+  detailsContent?: VizelDetailsContentOptions;
   /**
    * Options for the details summary extension
    */
-  detailsSummary?: DetailsSummaryOptions;
+  detailsSummary?: VizelDetailsSummaryOptions;
 }
 
 /**
@@ -68,18 +68,18 @@ export interface VizelDetailsOptions {
  *
  * @example
  * ```typescript
- * import { createDetailsExtensions } from '@vizel/core'
+ * import { createVizelDetailsExtensions } from '@vizel/core'
  *
- * const extensions = createDetailsExtensions({
+ * const extensions = createVizelDetailsExtensions({
  *   details: { openByDefault: false }
  * })
  * ```
  */
-export function createDetailsExtensions(options: VizelDetailsOptions = {}): Extensions {
+export function createVizelDetailsExtensions(options: VizelDetailsOptions = {}): Extensions {
   const { details = {}, detailsContent = {}, detailsSummary = {} } = options;
 
   // Extend Details with markdown serialization
-  const DetailsWithMarkdown = Details.extend({
+  const VizelDetails = Details.extend({
     renderMarkdown(node, helpers) {
       const isOpen = (node as JSONContent).attrs?.open === true;
       const openAttr = isOpen ? " open" : "";
@@ -89,7 +89,7 @@ export function createDetailsExtensions(options: VizelDetailsOptions = {}): Exte
   });
 
   // Extend DetailsSummary with markdown serialization
-  const DetailsSummaryWithMarkdown = DetailsSummary.extend({
+  const VizelDetailsSummary = DetailsSummary.extend({
     renderMarkdown(node, helpers) {
       const content = helpers.renderChildren((node as JSONContent).content ?? [], "");
       return `<summary>${content}</summary>\n`;
@@ -97,7 +97,7 @@ export function createDetailsExtensions(options: VizelDetailsOptions = {}): Exte
   });
 
   // Extend DetailsContent with markdown serialization
-  const DetailsContentWithMarkdown = DetailsContent.extend({
+  const VizelDetailsContent = DetailsContent.extend({
     renderMarkdown(node, helpers) {
       const content = helpers.renderChildren((node as JSONContent).content ?? [], "\n\n");
       return `\n${content}\n`;
@@ -105,20 +105,20 @@ export function createDetailsExtensions(options: VizelDetailsOptions = {}): Exte
   });
 
   return [
-    DetailsWithMarkdown.configure({
+    VizelDetails.configure({
       HTMLAttributes: {
         class: "vizel-details",
         ...details.HTMLAttributes,
       },
       persist: true,
     }),
-    DetailsContentWithMarkdown.configure({
+    VizelDetailsContent.configure({
       HTMLAttributes: {
         class: "vizel-details-content",
         ...detailsContent.HTMLAttributes,
       },
     }),
-    DetailsSummaryWithMarkdown.configure({
+    VizelDetailsSummary.configure({
       HTMLAttributes: {
         class: "vizel-details-summary",
         ...detailsSummary.HTMLAttributes,

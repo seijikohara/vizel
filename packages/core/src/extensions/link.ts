@@ -38,7 +38,7 @@ export interface VizelLinkOptions {
  * ```ts
  * const editor = new Editor({
  *   extensions: [
- *     createLinkExtension({
+ *     createVizelLinkExtension({
  *       openOnClick: true,
  *       autolink: true,
  *     }),
@@ -52,7 +52,7 @@ export interface VizelLinkOptions {
  * editor.chain().focus().unsetLink().run();
  * ```
  */
-export function createLinkExtension(options: VizelLinkOptions = {}) {
+export function createVizelLinkExtension(options: VizelLinkOptions = {}) {
   return Link.configure({
     openOnClick: options.openOnClick ?? true,
     autolink: options.autolink ?? true,

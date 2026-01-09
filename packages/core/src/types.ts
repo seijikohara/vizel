@@ -5,10 +5,12 @@ import type { VizelDetailsOptions } from "./extensions/details.ts";
 import type { VizelDiagramOptions } from "./extensions/diagram.ts";
 import type { VizelDragHandleOptions } from "./extensions/drag-handle.ts";
 import type { VizelEmbedOptions } from "./extensions/embed.ts";
+import type { VizelLinkOptions } from "./extensions/link.ts";
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
-import type { SlashCommandItem } from "./extensions/slash-command.ts";
-import type { VizelTaskListOptions } from "./extensions/task-list.ts";
+import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
+import type { VizelTableOptions } from "./extensions/table.ts";
+import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
 import type { ImageUploadOptions } from "./plugins/image-upload.ts";
 
@@ -17,7 +19,7 @@ import type { ImageUploadOptions } from "./plugins/image-upload.ts";
  */
 export interface VizelSlashCommandOptions {
   /** Custom slash command items */
-  items?: SlashCommandItem[];
+  items?: VizelSlashCommandItem[];
   /** Suggestion options (framework-specific renderer) */
   suggestion?: Record<string, unknown>;
 }
@@ -33,21 +35,21 @@ export interface VizelImageFeatureOptions extends Partial<ImageUploadOptions> {
 /**
  * Feature configuration for Vizel editor.
  * All features are enabled by default.
- * Set to false to disable a feature, or pass options to configure it.
+ * Set to `true` to enable with defaults, `false` to disable, or pass options to configure.
  */
 export interface VizelFeatureOptions {
   /** Slash command menu (type "/" to open) */
-  slashCommand?: VizelSlashCommandOptions | false;
-  /** Table support */
-  table?: boolean;
-  /** Link extension */
-  link?: boolean;
+  slashCommand?: VizelSlashCommandOptions | boolean;
+  /** Table support with column/row controls */
+  table?: VizelTableOptions | boolean;
+  /** Link extension with autolink and paste support */
+  link?: VizelLinkOptions | boolean;
   /** Image upload and resize */
-  image?: VizelImageFeatureOptions | false;
+  image?: VizelImageFeatureOptions | boolean;
   /** Markdown import/export support */
   markdown?: VizelMarkdownOptions | boolean;
   /** Task list (checkbox) support */
-  taskList?: VizelTaskListOptions | boolean;
+  taskList?: VizelTaskListExtensionsOptions | boolean;
   /** Character and word count tracking */
   characterCount?: VizelCharacterCountOptions | boolean;
   /** Text color and highlight support */
@@ -62,7 +64,7 @@ export interface VizelFeatureOptions {
   embed?: VizelEmbedOptions | boolean;
   /** Collapsible content blocks (accordion) */
   details?: VizelDetailsOptions | boolean;
-  /** Diagram support (Mermaid) */
+  /** Diagram support (Mermaid, GraphViz) */
   diagram?: VizelDiagramOptions | boolean;
 }
 
@@ -74,6 +76,23 @@ export interface VizelEditorOptions {
   features?: VizelFeatureOptions;
   /** Initial content in JSON format */
   initialContent?: JSONContent;
+  /**
+   * Initial content in Markdown format.
+   * If both initialContent and initialMarkdown are provided, initialMarkdown takes precedence.
+   * @example
+   * ```typescript
+   * const editor = useVizelEditor({
+   *   initialMarkdown: "# Hello World\n\nThis is **bold** text.",
+   * });
+   * ```
+   */
+  initialMarkdown?: string;
+  /**
+   * Automatically transform diagram code blocks (mermaid, graphviz) to diagram nodes
+   * when importing markdown content. Only applies when initialMarkdown is provided.
+   * @default true
+   */
+  transformDiagramsOnImport?: boolean;
   /** Placeholder text when editor is empty */
   placeholder?: string;
   /** Whether the editor is editable */
@@ -95,6 +114,38 @@ export interface VizelEditorOptions {
 }
 
 /**
+ * Options for Markdown synchronization
+ */
+export interface VizelMarkdownSyncOptions {
+  /**
+   * Debounce delay in milliseconds for markdown export.
+   * Set to 0 for immediate export (not recommended for large documents).
+   * @default 300
+   */
+  debounceMs?: number;
+  /**
+   * Automatically transform diagram code blocks when setting markdown content.
+   * @default true
+   */
+  transformDiagrams?: boolean;
+}
+
+/**
+ * Result of Markdown synchronization
+ */
+export interface VizelMarkdownSyncResult {
+  /** Current markdown content (reactive) */
+  markdown: string;
+  /**
+   * Set markdown content to the editor.
+   * Automatically transforms diagram code blocks if transformDiagrams is enabled.
+   */
+  setMarkdown: (markdown: string) => void;
+  /** Whether markdown export is currently pending (debounced) */
+  isPending: boolean;
+}
+
+/**
  * Editor state for external consumption
  */
 export interface VizelEditorState {
@@ -111,8 +162,3 @@ export interface VizelEditorState {
   /** Word count */
   wordCount: number;
 }
-
-/**
- * Re-export Tiptap types for convenience
- */
-export type { Extensions, JSONContent } from "@tiptap/core";

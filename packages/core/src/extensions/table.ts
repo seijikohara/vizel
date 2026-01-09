@@ -1,12 +1,12 @@
 import type { Extensions } from "@tiptap/core";
-import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
+import { TableRow } from "@tiptap/extension-table";
 import {
-  type TableCellAlignment,
   VizelTable,
   VizelTableCell,
+  type VizelTableCellAlignment,
   VizelTableHeader,
 } from "./table-base";
-import { type TableControlsOptions, VizelTableWithControls } from "./table-controls";
+import { type VizelTableControlsOptions, VizelTableWithControls } from "./table-controls";
 
 export interface VizelTableOptions {
   /**
@@ -32,7 +32,7 @@ export interface VizelTableOptions {
    * Set to `true` to enable all controls, `false` to disable, or an object to customize.
    * @default true
    */
-  controls?: boolean | TableControlsOptions;
+  controls?: boolean | VizelTableControlsOptions;
 
   /**
    * Additional HTML attributes for table elements.
@@ -50,7 +50,7 @@ export interface VizelTableOptions {
  * ```ts
  * const editor = new Editor({
  *   extensions: [
- *     ...createTableExtensions({ resizable: true }),
+ *     ...createVizelTableExtensions({ resizable: true }),
  *   ],
  * });
  *
@@ -96,7 +96,7 @@ export interface VizelTableOptions {
  * editor.chain().focus().fixTables().run();
  * ```
  */
-export function createTableExtensions(options: VizelTableOptions = {}): Extensions {
+export function createVizelTableExtensions(options: VizelTableOptions = {}): Extensions {
   const { controls = true, ...tableOptions } = options;
 
   // Determine which Table extension to use
@@ -146,8 +146,5 @@ export function createTableExtensions(options: VizelTableOptions = {}): Extensio
   ];
 }
 
-// Export original extensions for advanced usage
-export { Table, TableRow, TableHeader, TableCell };
-
 // Export extended extensions with textAlign and Markdown support
-export { VizelTable, VizelTableCell, VizelTableHeader, type TableCellAlignment };
+export { VizelTable, VizelTableCell, VizelTableHeader, type VizelTableCellAlignment };

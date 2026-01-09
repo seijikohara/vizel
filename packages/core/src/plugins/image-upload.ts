@@ -40,7 +40,7 @@ export interface ImageUploadOptions {
   /**
    * Callback for validation errors
    */
-  onValidationError?: (error: ImageValidationError) => void;
+  onValidationError?: (error: VizelImageValidationError) => void;
 
   /**
    * Callback for upload errors
@@ -51,13 +51,13 @@ export interface ImageUploadOptions {
 /**
  * Image validation error types
  */
-export type ImageValidationErrorType = "invalid_type" | "file_too_large";
+export type VizelImageValidationErrorType = "invalid_type" | "file_too_large";
 
 /**
  * Image validation error
  */
-export interface ImageValidationError {
-  type: ImageValidationErrorType;
+export interface VizelImageValidationError {
+  type: VizelImageValidationErrorType;
   message: string;
   file: File;
 }
@@ -100,7 +100,7 @@ const isImageUploadAction = (value: unknown): value is ImageUploadAction =>
 /**
  * Create an image upload plugin with decoration-based placeholders
  */
-export function createImageUploadPlugin(options: ImageUploadOptions): Plugin {
+export function createVizelImageUploadPlugin(options: ImageUploadOptions): Plugin {
   const { placeholderClass = "vizel-image-placeholder", imageClass = "vizel-image-uploading" } =
     options;
 
@@ -168,10 +168,10 @@ function findPlaceholder(state: EditorState, id: object): number | null {
 /**
  * Validate an image file
  */
-export function validateImageFile(
+export function validateVizelImageFile(
   file: File,
   options: Pick<ImageUploadOptions, "maxFileSize" | "allowedTypes">
-): ImageValidationError | null {
+): VizelImageValidationError | null {
   const maxFileSize = options.maxFileSize ?? DEFAULT_MAX_FILE_SIZE;
   const allowedTypes = options.allowedTypes ?? DEFAULT_ALLOWED_TYPES;
 
@@ -201,17 +201,17 @@ export function validateImageFile(
 /**
  * Image upload function type
  */
-export type UploadImageFn = (file: File, view: EditorView, pos: number) => void;
+export type VizelUploadImageFn = (file: File, view: EditorView, pos: number) => void;
 
 /**
  * Create an image uploader function
  */
-export function createImageUploader(options: ImageUploadOptions): UploadImageFn {
+export function createVizelImageUploader(options: ImageUploadOptions): VizelUploadImageFn {
   const { onUpload, maxFileSize, allowedTypes, onValidationError, onUploadError } = options;
 
   return (file: File, view: EditorView, pos: number): void => {
     // Validate file
-    const validationError = validateImageFile(file, {
+    const validationError = validateVizelImageFile(file, {
       ...(maxFileSize !== undefined && { maxFileSize }),
       ...(allowedTypes !== undefined && { allowedTypes }),
     });
@@ -295,10 +295,10 @@ export function createImageUploader(options: ImageUploadOptions): UploadImageFn 
 /**
  * Handle image paste from clipboard
  */
-export function handleImagePaste(
+export function handleVizelImagePaste(
   view: EditorView,
   event: ClipboardEvent,
-  uploadFn: UploadImageFn
+  uploadFn: VizelUploadImageFn
 ): boolean {
   const files = event.clipboardData?.files;
 
@@ -327,11 +327,11 @@ export function handleImagePaste(
 /**
  * Handle image drop from drag-and-drop
  */
-export function handleImageDrop(
+export function handleVizelImageDrop(
   view: EditorView,
   event: DragEvent,
   moved: boolean,
-  uploadFn: UploadImageFn
+  uploadFn: VizelUploadImageFn
 ): boolean {
   // Skip if this is an internal move
   if (moved) {
@@ -371,6 +371,6 @@ export function handleImageDrop(
 /**
  * Get the image upload plugin key (for external access)
  */
-export function getImageUploadPluginKey(): PluginKey<DecorationSet> {
+export function getVizelImageUploadPluginKey(): PluginKey<DecorationSet> {
   return imageUploadKey;
 }

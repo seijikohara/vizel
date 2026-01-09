@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { EditorContent, EditorRoot, useVizelEditor } from "@vizel/vue";
+import { useVizelEditor, VizelEditor, VizelProvider } from "@vizel/vue";
 
 export interface DetailsFixtureProps {
   placeholder?: string;
@@ -20,7 +20,7 @@ const editor = useVizelEditor({
 </script>
 
 <template>
-  <EditorRoot :editor="editor">
-    <EditorContent />
-  </EditorRoot>
+  <VizelProvider :editor="editor">
+    <VizelEditor />
+  </VizelProvider>
 </template>

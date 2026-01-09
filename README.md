@@ -1,13 +1,31 @@
-# Vizel
+<p align="center">
+  <img src="docs/public/logo.svg" width="100" height="100" alt="Vizel Logo">
+</p>
 
-A block-based visual editor for Markdown built with [Tiptap](https://tiptap.dev/), supporting React, Vue, and Svelte.
+<h1 align="center">Vizel</h1>
+
+<p align="center">
+  A block-based visual editor for Markdown built with <a href="https://tiptap.dev/">Tiptap</a>, supporting React, Vue, and Svelte.
+</p>
+
+<p align="center">
+  <a href="https://github.com/seijikohara/vizel/actions/workflows/ci.yml"><img src="https://github.com/seijikohara/vizel/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/seijikohara/vizel/blob/main/LICENSE"><img src="https://img.shields.io/github/license/seijikohara/vizel" alt="License"></a>
+  <a href="https://seijikohara.github.io/vizel/"><img src="https://img.shields.io/badge/Docs-GitHub%20Pages-blue?logo=github" alt="Documentation"></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" alt="React">
+  <img src="https://img.shields.io/badge/Vue-3-4FC08D?logo=vuedotjs&logoColor=white" alt="Vue">
+  <img src="https://img.shields.io/badge/Svelte-5-FF3E00?logo=svelte&logoColor=white" alt="Svelte">
+</p>
 
 ## Features
 
 - **Rich Text Editing** - Bold, italic, underline, strikethrough, text color, highlight
 - **Block Elements** - Headings (H1-H6), lists (bullet, numbered, task), blockquotes, horizontal rules
 - **Slash Commands** - Type `/` to insert blocks quickly
-- **Bubble Menu** - Inline formatting toolbar on text selection
+- **Floating Toolbar** - Inline formatting toolbar on text selection
 - **Tables** - Full table support with row/column controls
 - **Code Blocks** - Syntax highlighting with 190+ languages
 - **Images** - Drag & drop, paste, resize support
@@ -24,7 +42,7 @@ A block-based visual editor for Markdown built with [Tiptap](https://tiptap.dev/
 | Package | Description |
 |---------|-------------|
 | `@vizel/core` | Framework-agnostic core with Tiptap extensions and styles |
-| `@vizel/react` | React 18/19 components and hooks |
+| `@vizel/react` | React 19 components and hooks |
 | `@vizel/vue` | Vue 3 components and composables |
 | `@vizel/svelte` | Svelte 5 components and runes |
 
@@ -63,9 +81,60 @@ import '@vizel/core/components.css';
 
 ## Usage
 
+The `Vizel` component is the recommended way to get started. It wraps the editor content with a floating toolbar out of the box.
+
 ### React
 
 ```tsx
+import { Vizel } from '@vizel/react';
+import '@vizel/core/styles.css';
+
+function App() {
+  return (
+    <Vizel
+      placeholder="Type '/' for commands..."
+      onUpdate={({ editor }) => console.log(editor.getJSON())}
+    />
+  );
+}
+```
+
+### Vue
+
+```vue
+<script setup lang="ts">
+import { Vizel } from '@vizel/vue';
+import '@vizel/core/styles.css';
+</script>
+
+<template>
+  <Vizel
+    placeholder="Type '/' for commands..."
+    @update="({ editor }) => console.log(editor.getJSON())"
+  />
+</template>
+```
+
+### Svelte
+
+```svelte
+<script lang="ts">
+  import { Vizel } from '@vizel/svelte';
+  import '@vizel/core/styles.css';
+</script>
+
+<Vizel
+  placeholder="Type '/' for commands..."
+  onUpdate={({ editor }) => console.log(editor.getJSON())}
+/>
+```
+
+### Advanced Usage
+
+For more control, use individual components with hooks/composables/runes:
+
+```tsx
+// React
 import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/react';
 import '@vizel/core/styles.css';
 
@@ -73,17 +142,9 @@ function Editor() {
   const editor = useVizelEditor({
     placeholder: "Type '/' for commands...",
     features: {
-      markdown: true,
-      mathematics: true,
       image: {
-        onUpload: async (file) => {
-          // Upload file and return URL
-          return 'https://example.com/image.png';
-        },
+        onUpload: async (file) => 'https://example.com/image.png',
       },
-    },
-    onUpdate: ({ editor }) => {
-      console.log(editor.getJSON());
     },
   });
 
@@ -96,118 +157,55 @@ function Editor() {
 }
 ```
 
-### Vue
-
-```vue
-<script setup lang="ts">
-import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/vue';
-import '@vizel/core/styles.css';
-
-const editor = useVizelEditor({
-  placeholder: "Type '/' for commands...",
-  features: {
-    markdown: true,
-    mathematics: true,
-  },
-});
-</script>
-
-<template>
-  <div>
-    <EditorContent :editor="editor" />
-    <BubbleMenu v-if="editor" :editor="editor" />
-  </div>
-</template>
-```
-
-### Svelte
-
-```svelte
-<script lang="ts">
-import { EditorContent, BubbleMenu, createVizelEditor } from '@vizel/svelte';
-import '@vizel/core/styles.css';
-
-const editor = createVizelEditor({
-  placeholder: "Type '/' for commands...",
-  features: {
-    markdown: true,
-    mathematics: true,
-  },
-});
-</script>
-
-<EditorContent editor={editor.current} />
-{#if editor.current}
-  <BubbleMenu editor={editor.current} />
-{/if}
-```
-
 ## Configuration
+
+### Vizel Component Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `initialContent` | `JSONContent` | - | Initial editor content |
+| `placeholder` | `string` | - | Placeholder text |
+| `editable` | `boolean` | `true` | Whether editor is editable |
+| `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus behavior |
+| `features` | `VizelFeatureOptions` | - | Feature configuration |
+| `class` / `className` | `string` | - | Custom CSS class |
+| `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
+| `enableEmbed` | `boolean` | - | Enable embed in bubble menu link editor |
 
 ### Feature Options
 
+All major features are enabled by default:
+
 ```typescript
-const editor = useVizelEditor({
-  // Initial content (JSON or Markdown)
-  initialContent: { type: 'doc', content: [] },
-  
-  // Placeholder text
-  placeholder: "Type '/' for commands...",
-  
-  // Auto-focus on mount
-  autofocus: 'end', // 'start' | 'end' | 'all' | number | boolean
-  
-  // Feature configuration
-  features: {
-    // Slash commands (default: enabled)
-    slashCommand: true,
-    
-    // Table support (default: enabled)
-    table: true,
-    
-    // Link handling (default: enabled)
-    link: true,
-    
-    // Task lists (default: enabled)
-    taskList: true,
-    
-    // Text color/highlight (default: enabled)
-    textColor: true,
-    
-    // Code block with syntax highlighting (default: enabled)
-    codeBlock: true,
-    
-    // Drag handle (default: enabled)
-    dragHandle: true,
-    
-    // Character count (default: enabled)
-    characterCount: true,
-    
-    // Image upload (default: disabled)
+// Using Vizel component
+<Vizel
+  placeholder="Type '/' for commands..."
+  features={{
+    // Image upload (configure handler)
     image: {
       onUpload: async (file) => 'url',
       maxFileSize: 10 * 1024 * 1024, // 10MB
-      allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
     },
-    
-    // Markdown import/export (default: disabled)
-    markdown: true,
-    
-    // LaTeX mathematics (default: disabled)
-    mathematics: true,
-    
-    // URL embeds (default: disabled)
-    embed: true,
-    
-    // Collapsible details (default: disabled)
-    details: true,
+  }}
+/>
+
+// Or using useVizelEditor hook
+const editor = useVizelEditor({
+  features: {
+    slashCommand: true,    // enabled by default
+    table: true,           // enabled by default
+    link: true,            // enabled by default
+    taskList: true,        // enabled by default
+    textColor: true,       // enabled by default
+    codeBlock: true,       // enabled by default
+    dragHandle: true,      // enabled by default
+    characterCount: true,  // enabled by default
+    markdown: true,        // enabled by default
+    mathematics: true,     // enabled by default
+    embed: true,           // enabled by default
+    details: true,         // enabled by default
+    diagram: true,         // enabled by default
   },
-  
-  // Callbacks
-  onUpdate: ({ editor }) => {},
-  onCreate: ({ editor }) => {},
-  onFocus: ({ editor }) => {},
-  onBlur: ({ editor }) => {},
 });
 ```
 

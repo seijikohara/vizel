@@ -1,18 +1,16 @@
+import type { JSONContent } from "@tiptap/core";
+import { getVizelEditorState } from "@vizel/core";
 import {
-  BubbleMenu,
-  convertCodeBlocksToDiagrams,
-  EditorContent,
-  getEditorState,
-  type JSONContent,
-  SaveIndicator,
-  ThemeProvider,
-  useAutoSave,
-  useEditorState,
-  useTheme,
-  useVizelEditor,
+  useVizelAutoSave,
+  useVizelState,
+  useVizelTheme,
+  Vizel,
+  type VizelRef,
+  VizelSaveIndicator,
+  VizelThemeProvider,
 } from "@vizel/react";
-import { useState } from "react";
-import { initialContent } from "../../shared/content";
+import { useCallback, useRef, useState } from "react";
+import { initialMarkdown } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
 
 function ReactLogo() {
@@ -29,7 +27,7 @@ function ReactLogo() {
 }
 
 function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useVizelTheme();
 
   return (
     <button
@@ -44,63 +42,48 @@ function ThemeToggle() {
 }
 
 function AppContent() {
-  const [output, setOutput] = useState<JSONContent | null>(null);
-  const [showOutput, setShowOutput] = useState(false);
-  const [markdownOutput, setMarkdownOutput] = useState("");
+  const [showJson, setShowJson] = useState(false);
+  const [jsonInput, setJsonInput] = useState("");
+
   const [showMarkdown, setShowMarkdown] = useState(false);
   const [markdownInput, setMarkdownInput] = useState("");
-  const [showMarkdownInput, setShowMarkdownInput] = useState(false);
 
-  const editor = useVizelEditor({
-    initialContent,
-    autofocus: "end",
-    features: {
-      markdown: true,
-      mathematics: true,
-      embed: true,
-      details: true,
-      diagram: true,
-      image: {
-        onUpload: mockUploadImage,
-        maxFileSize: 10 * 1024 * 1024, // 10MB
-        onValidationError: (error) => {
-          alert(`Validation error: ${error.message}`);
-        },
-        onUploadError: (error) => {
-          alert(`Upload failed: ${error.message}`);
-        },
-      },
-    },
-    onUpdate: ({ editor: e }) => {
-      setOutput(e.getJSON());
-      setMarkdownOutput(e.getMarkdown());
-    },
-    onCreate: ({ editor: e }) => {
-      setOutput(e.getJSON());
-      setMarkdownOutput(e.getMarkdown());
-    },
-  });
+  // Store editor reference from Vizel component
+  const vizelRef = useRef<VizelRef>(null);
 
   // Track editor state for character/word count
-  useEditorState(editor);
-  const editorState = getEditorState(editor);
+  useVizelState(vizelRef.current?.editor ?? null);
+  const editorState = getVizelEditorState(vizelRef.current?.editor ?? null);
 
   // Auto-save functionality
-  const { status, lastSaved } = useAutoSave(editor, {
+  const { status, lastSaved } = useVizelAutoSave(vizelRef.current?.editor ?? null, {
     debounceMs: 2000,
     storage: "localStorage",
     key: "vizel-demo-react",
   });
 
-  const handleImportMarkdown = () => {
-    if (editor && markdownInput.trim()) {
-      editor.commands.setContent(markdownInput, { contentType: "markdown" });
-      // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
-      convertCodeBlocksToDiagrams(editor);
-      setMarkdownInput("");
-      setShowMarkdownInput(false);
+  // Handle Markdown input change and sync to editor
+  const handleMarkdownChange = useCallback((value: string) => {
+    setMarkdownInput(value);
+    const editor = vizelRef.current?.editor;
+    if (editor) {
+      editor.commands.setContent(value, { contentType: "markdown" });
     }
-  };
+  }, []);
+
+  // Handle JSON input change and sync to editor
+  const handleJsonChange = useCallback((value: string) => {
+    setJsonInput(value);
+    try {
+      const parsed = JSON.parse(value) as JSONContent;
+      const editor = vizelRef.current?.editor;
+      if (editor) {
+        editor.commands.setContent(parsed);
+      }
+    } catch {
+      // Invalid JSON, ignore
+    }
+  }, []);
 
   return (
     <div className="app">
@@ -119,76 +102,43 @@ function AppContent() {
       </header>
 
       <main className="main">
-        <div className="features-bar">
-          <div className="feature-tag">
-            <span className="feature-icon">/</span>
-            <span>Slash Commands</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">B</span>
-            <span>Bubble Menu</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">T</span>
-            <span>Tables</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">L</span>
-            <span>Links</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">📎</span>
-            <span>Drag & Drop</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">📋</span>
-            <span>Paste Images</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">M</span>
-            <span>Markdown</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">#</span>
-            <span>Character Count</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">{"</>"}</span>
-            <span>Code Blocks</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">∑</span>
-            <span>Math (LaTeX)</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">💾</span>
-            <span>Auto-save</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">🔗</span>
-            <span>Embeds</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">▸</span>
-            <span>Details</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">📊</span>
-            <span>Diagrams</span>
-          </div>
-          <div className="feature-tag">
-            <span className="feature-icon">🌓</span>
-            <span>Dark Mode</span>
-          </div>
-        </div>
-
         <div className="editor-container">
-          <div className="editor-root">
-            <EditorContent editor={editor} className="editor-content" />
-            {editor && <BubbleMenu editor={editor} enableEmbed />}
-          </div>
+          <Vizel
+            ref={vizelRef}
+            initialMarkdown={initialMarkdown}
+            autofocus="end"
+            className="editor-content"
+            enableEmbed
+            features={{
+              markdown: true,
+              mathematics: true,
+              embed: true,
+              details: true,
+              diagram: true,
+              image: {
+                onUpload: mockUploadImage,
+                maxFileSize: 10 * 1024 * 1024, // 10MB
+                onValidationError: (error) => {
+                  alert(`Validation error: ${error.message}`);
+                },
+                onUploadError: (error) => {
+                  alert(`Upload failed: ${error.message}`);
+                },
+              },
+            }}
+            onCreate={({ editor }) => {
+              const json = editor.getJSON() as JSONContent;
+              setJsonInput(JSON.stringify(json, null, 2));
+              setMarkdownInput(editor.getMarkdown());
+            }}
+            onUpdate={({ editor }) => {
+              const json = editor.getJSON() as JSONContent;
+              setJsonInput(JSON.stringify(json, null, 2));
+              setMarkdownInput(editor.getMarkdown());
+            }}
+          />
           <div className="status-bar">
-            <SaveIndicator status={status} lastSaved={lastSaved} />
+            <VizelSaveIndicator status={status} lastSaved={lastSaved} />
             <span className="status-divider">·</span>
             <span className="status-item">{editorState.characterCount} characters</span>
             <span className="status-divider">·</span>
@@ -200,49 +150,36 @@ function AppContent() {
           <button
             type="button"
             className="output-toggle"
-            onClick={() => setShowMarkdownInput(!showMarkdownInput)}
+            onClick={() => setShowMarkdown(!showMarkdown)}
           >
-            <span className="output-toggle-icon">{showMarkdownInput ? "−" : "+"}</span>
-            <span>Markdown Import</span>
+            <span className="output-toggle-icon">{showMarkdown ? "−" : "+"}</span>
+            <span>Markdown</span>
           </button>
-          {showMarkdownInput && (
-            <div className="markdown-input-container">
-              <textarea
-                className="markdown-input"
-                value={markdownInput}
-                onChange={(e) => setMarkdownInput(e.target.value)}
-                placeholder="Paste Markdown here..."
-                rows={6}
-              />
-              <button type="button" className="import-button" onClick={handleImportMarkdown}>
-                Import to Editor
-              </button>
-            </div>
+          {showMarkdown && (
+            <textarea
+              className="sync-textarea"
+              value={markdownInput}
+              onChange={(e) => handleMarkdownChange(e.target.value)}
+              placeholder="Edit Markdown here..."
+              rows={12}
+            />
           )}
         </div>
 
         <div className="output-section">
-          <button
-            type="button"
-            className="output-toggle"
-            onClick={() => setShowMarkdown(!showMarkdown)}
-          >
-            <span className="output-toggle-icon">{showMarkdown ? "−" : "+"}</span>
-            <span>Markdown Export</span>
+          <button type="button" className="output-toggle" onClick={() => setShowJson(!showJson)}>
+            <span className="output-toggle-icon">{showJson ? "−" : "+"}</span>
+            <span>JSON</span>
           </button>
-          {showMarkdown && <pre className="output-content">{markdownOutput}</pre>}
-        </div>
-
-        <div className="output-section">
-          <button
-            type="button"
-            className="output-toggle"
-            onClick={() => setShowOutput(!showOutput)}
-          >
-            <span className="output-toggle-icon">{showOutput ? "−" : "+"}</span>
-            <span>JSON Output</span>
-          </button>
-          {showOutput && <pre className="output-content">{JSON.stringify(output, null, 2)}</pre>}
+          {showJson && (
+            <textarea
+              className="sync-textarea"
+              value={jsonInput}
+              onChange={(e) => handleJsonChange(e.target.value)}
+              placeholder="Edit JSON here..."
+              rows={12}
+            />
+          )}
         </div>
       </main>
 
@@ -257,8 +194,8 @@ function AppContent() {
 
 export function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vizel-theme">
+    <VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
       <AppContent />
-    </ThemeProvider>
+    </VizelThemeProvider>
   );
 }

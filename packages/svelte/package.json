@@ -35,6 +35,7 @@
     "@iconify/svelte": "^5",
     "@iconify/utils": "^3.1.0",
     "@tiptap/core": "^3.15.1",
+    "@tiptap/extension-bubble-menu": "^3.15.1",
     "@tiptap/suggestion": "^3.15.1",
     "@vizel/core": "workspace:*"
   },

@@ -1,5 +1,5 @@
-import { HIGHLIGHT_COLORS, TEXT_COLORS } from "@vizel/core";
-import { ColorPicker, type ColorPickerProps } from "@vizel/react";
+import { VIZEL_HIGHLIGHT_COLORS, VIZEL_TEXT_COLORS } from "@vizel/core";
+import { type ColorPickerProps, VizelColorPicker } from "@vizel/react";
 import { useState } from "react";
 
 interface Props {
@@ -27,11 +27,11 @@ export function ColorPickerFixture({
 }: Props) {
   const [selectedColor, setSelectedColor] = useState(initialValue ?? "");
 
-  const colorPalette = colors ?? (useHighlightColors ? HIGHLIGHT_COLORS : TEXT_COLORS);
+  const colorPalette = colors ?? (useHighlightColors ? VIZEL_HIGHLIGHT_COLORS : VIZEL_TEXT_COLORS);
 
   return (
     <div>
-      <ColorPicker
+      <VizelColorPicker
         colors={colorPalette}
         value={selectedColor}
         onChange={setSelectedColor}

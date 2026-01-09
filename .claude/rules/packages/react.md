@@ -8,7 +8,7 @@ See `cross-framework.md` for component/hook equivalence requirements.
 
 ## Package Purpose
 
-React 18/19 components and hooks for Vizel editor.
+React 19 components and hooks for Vizel editor.
 This package only contains React-specific wrappers around `@vizel/core`.
 
 ## Component Development
@@ -79,6 +79,6 @@ const editor = useVizelEditor({
 
 ## Testing
 
-- Test with React 18 and 19
+- Test with React 19
 - Verify SSR compatibility
 - Test keyboard navigation

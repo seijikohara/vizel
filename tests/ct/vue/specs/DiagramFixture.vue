@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BubbleMenu, EditorContent, EditorRoot, useVizelEditor } from "@vizel/vue";
+import { useVizelEditor, VizelBubbleMenu, VizelEditor, VizelProvider } from "@vizel/vue";
 
 const props = withDefaults(
   defineProps<{
@@ -24,8 +24,8 @@ const editor = useVizelEditor({
 </script>
 
 <template>
-  <EditorRoot :editor="editor">
-    <EditorContent />
-    <BubbleMenu v-if="showBubbleMenu" />
-  </EditorRoot>
+  <VizelProvider :editor="editor">
+    <VizelEditor />
+    <VizelBubbleMenu v-if="showBubbleMenu" />
+  </VizelProvider>
 </template>

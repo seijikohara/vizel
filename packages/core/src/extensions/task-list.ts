@@ -2,7 +2,7 @@ import type { Extensions } from "@tiptap/core";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 
-export interface TaskListOptions {
+export interface VizelTaskListOptions {
   /**
    * HTML attributes to add to the task list element
    */
@@ -14,7 +14,7 @@ export interface TaskListOptions {
   itemTypeName?: string;
 }
 
-export interface TaskItemOptions {
+export interface VizelTaskItemOptions {
   /**
    * HTML attributes to add to the task item element
    */
@@ -30,15 +30,15 @@ export interface TaskItemOptions {
   onReadOnlyChecked?: (node: unknown, checked: boolean) => boolean;
 }
 
-export interface VizelTaskListOptions {
+export interface VizelTaskListExtensionsOptions {
   /**
    * Options for the task list extension
    */
-  taskList?: TaskListOptions;
+  taskList?: VizelTaskListOptions;
   /**
    * Options for the task item extension
    */
-  taskItem?: TaskItemOptions;
+  taskItem?: VizelTaskItemOptions;
 }
 
 /**
@@ -46,14 +46,16 @@ export interface VizelTaskListOptions {
  *
  * @example
  * ```typescript
- * import { createTaskListExtensions } from '@vizel/core'
+ * import { createVizelTaskListExtensions } from '@vizel/core'
  *
- * const extensions = createTaskListExtensions({
+ * const extensions = createVizelTaskListExtensions({
  *   taskItem: { nested: true }
  * })
  * ```
  */
-export function createTaskListExtensions(options: VizelTaskListOptions = {}): Extensions {
+export function createVizelTaskListExtensions(
+  options: VizelTaskListExtensionsOptions = {}
+): Extensions {
   const { taskList = {}, taskItem = {} } = options;
 
   return [

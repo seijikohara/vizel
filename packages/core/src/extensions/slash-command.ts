@@ -1,35 +1,35 @@
 import { Extension } from "@tiptap/core";
 import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
 import {
-  defaultGroupOrder,
-  defaultSlashCommands,
-  filterSlashCommands,
-  flattenSlashCommandGroups,
-  groupSlashCommands,
-  type SlashCommandGroup,
-  type SlashCommandItem,
-  type SlashCommandRange,
-  type SlashCommandSearchResult,
-  searchSlashCommands,
+  filterSlashCommands as filterVizelSlashCommands,
+  flattenSlashCommandGroups as flattenVizelSlashCommandGroups,
+  groupSlashCommands as groupVizelSlashCommands,
+  searchSlashCommands as searchVizelSlashCommands,
+  type SlashCommandGroup as VizelSlashCommandGroup,
+  type SlashCommandItem as VizelSlashCommandItem,
+  type SlashCommandRange as VizelSlashCommandRange,
+  type SlashCommandSearchResult as VizelSlashCommandSearchResult,
+  defaultGroupOrder as vizelDefaultGroupOrder,
+  defaultSlashCommands as vizelDefaultSlashCommands,
 } from "../commands/slash-items.ts";
 
-export interface SlashCommandOptions {
+export interface VizelSlashCommandExtensionOptions {
   /** Custom slash command items (defaults to heading, list, quote, code) */
-  items?: SlashCommandItem[];
+  items?: VizelSlashCommandItem[];
   /** Suggestion options for customizing the popup behavior */
   suggestion?: Partial<SuggestionOptions>;
 }
 
-/** Type guard for SlashCommandItem */
-const isSlashCommandItem = (value: unknown): value is SlashCommandItem =>
+/** Type guard for VizelSlashCommandItem */
+const isVizelSlashCommandItem = (value: unknown): value is VizelSlashCommandItem =>
   typeof value === "object" && value !== null && "title" in value && "command" in value;
 
-export const SlashCommand = Extension.create<SlashCommandOptions>({
+export const VizelSlashCommand = Extension.create<VizelSlashCommandExtensionOptions>({
   name: "slashCommand",
 
   addOptions() {
     return {
-      items: defaultSlashCommands,
+      items: vizelDefaultSlashCommands,
       suggestion: {
         char: "/",
         startOfLine: false,
@@ -44,10 +44,10 @@ export const SlashCommand = Extension.create<SlashCommandOptions>({
         char: this.options.suggestion?.char ?? "/",
         startOfLine: this.options.suggestion?.startOfLine ?? false,
         items: ({ query }) => {
-          return filterSlashCommands(this.options.items ?? [], query);
+          return filterVizelSlashCommands(this.options.items ?? [], query);
         },
         command: ({ editor, range, props }) => {
-          if (isSlashCommandItem(props)) {
+          if (isVizelSlashCommandItem(props)) {
             props.command({ editor, range });
           }
         },
@@ -58,14 +58,14 @@ export const SlashCommand = Extension.create<SlashCommandOptions>({
 });
 
 export {
-  defaultGroupOrder,
-  defaultSlashCommands,
-  filterSlashCommands,
-  flattenSlashCommandGroups,
-  groupSlashCommands,
-  searchSlashCommands,
-  type SlashCommandGroup,
-  type SlashCommandItem,
-  type SlashCommandRange,
-  type SlashCommandSearchResult,
+  vizelDefaultGroupOrder,
+  vizelDefaultSlashCommands,
+  filterVizelSlashCommands,
+  flattenVizelSlashCommandGroups,
+  groupVizelSlashCommands,
+  searchVizelSlashCommands,
+  type VizelSlashCommandGroup,
+  type VizelSlashCommandItem,
+  type VizelSlashCommandRange,
+  type VizelSlashCommandSearchResult,
 };

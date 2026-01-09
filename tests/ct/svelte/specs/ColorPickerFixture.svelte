@@ -1,9 +1,9 @@
 <script lang="ts">
-import { type ColorDefinition, HIGHLIGHT_COLORS, TEXT_COLORS } from "@vizel/core";
-import { ColorPicker } from "@vizel/svelte";
+import { VIZEL_HIGHLIGHT_COLORS, VIZEL_TEXT_COLORS, type VizelColorDefinition } from "@vizel/core";
+import { VizelColorPicker } from "@vizel/svelte";
 
 interface Props {
-  colors?: ColorDefinition[];
+  colors?: VizelColorDefinition[];
   value?: string;
   label?: string;
   class?: string;
@@ -14,21 +14,13 @@ interface Props {
   useHighlightColors?: boolean;
 }
 
-let {
-  colors,
-  value,
-  label = "Color palette",
-  class: className,
-  allowCustomColor = true,
-  recentColors,
-  showRecentColors = true,
-  noneValues,
-  useHighlightColors = false,
-}: Props = $props();
+const props = $props<Props>();
 
-let selectedColor = $state(value ?? "");
+let selectedColor = $state(props.value ?? "");
 
-const colorPalette = $derived(colors ?? (useHighlightColors ? HIGHLIGHT_COLORS : TEXT_COLORS));
+const colorPalette = $derived(
+  props.colors ?? (props.useHighlightColors ? VIZEL_HIGHLIGHT_COLORS : VIZEL_TEXT_COLORS)
+);
 
 function handleChange(color: string) {
   selectedColor = color;
@@ -36,16 +28,16 @@ function handleChange(color: string) {
 </script>
 
 <div>
-  <ColorPicker
+  <VizelColorPicker
     colors={colorPalette}
     value={selectedColor}
     onchange={handleChange}
-    {label}
-    class={className}
-    {allowCustomColor}
-    {recentColors}
-    {showRecentColors}
-    {noneValues}
+    label={props.label ?? "Color palette"}
+    class={props.class}
+    allowCustomColor={props.allowCustomColor ?? true}
+    recentColors={props.recentColors}
+    showRecentColors={props.showRecentColors ?? true}
+    noneValues={props.noneValues}
   />
   <div data-testid="selected-color">{selectedColor}</div>
 </div>

@@ -7,7 +7,7 @@ A block-based visual editor for Markdown built with Tiptap, supporting React, Vu
 ```
 packages/
 ├── core/     # Framework-agnostic core (Tiptap extensions)
-├── react/    # React 18/19 components and hooks
+├── react/    # React 19 components and hooks
 ├── vue/      # Vue 3 components and composables
 └── svelte/   # Svelte 5 components and runes
 apps/
@@ -52,9 +52,9 @@ Use Bun instead of Node.js for all operations:
 ## Architecture Principles
 
 - Core package contains all Tiptap extensions and is framework-agnostic
-- Framework packages (react, vue, svelte) re-export core and add framework-specific components
-- Each framework package provides: EditorContent, BubbleMenu, SlashMenu components
-- Use composition pattern: EditorRoot > EditorContent + BubbleMenu
+- Framework packages (react, vue, svelte) add framework-specific components (no re-exports from core)
+- Each framework package provides: Vizel, VizelEditor, VizelBubbleMenu, VizelSlashMenu components
+- Use composition pattern: Vizel (all-in-one) or VizelEditor + VizelBubbleMenu
 
 ### Core Package Centralization
 
@@ -62,16 +62,15 @@ All framework-agnostic code belongs in `@vizel/core`:
 
 | Category | Location | Examples |
 |----------|----------|----------|
-| Types | `core/src/types.ts` | `JSONContent`, `VizelEditorOptions` |
-| Constants | `core/src/` | `VIZEL_UPLOAD_IMAGE_EVENT` |
-| Extensions | `core/src/extensions/` | `SlashCommand`, `ImageResize` |
-| Utilities | `core/src/utils/` | `resolveFeatures`, `createImageUploader` |
+| Types | `core/src/types.ts` | `VizelEditorOptions`, `VizelFeatureOptions` |
+| Constants | `core/src/` | `VIZEL_UPLOAD_IMAGE_EVENT`, `VIZEL_TEXT_COLORS` |
+| Extensions | `core/src/extensions/` | `VizelSlashCommand`, `VizelImageResize` |
+| Utilities | `core/src/utils/` | `resolveVizelFeatures`, `createVizelImageUploader` |
 | Styles | `core/src/styles/` | All CSS |
 
 Framework packages only contain:
 - Framework-specific components
 - Framework-specific state management (hooks/composables/runes)
-- Re-exports from core
 
 ---
 

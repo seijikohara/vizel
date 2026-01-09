@@ -313,7 +313,8 @@
         "**/svelte.config.js",
         "**/tailwind.config.ts",
         "**/postcss.config.js",
-        "**/playwright-ct.config.ts"
+        "**/playwright-ct.config.ts",
+        "docs/.vitepress/config.mts"
       ],
       "linter": {
         "rules": {

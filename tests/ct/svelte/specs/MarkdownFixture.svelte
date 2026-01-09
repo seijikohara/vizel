@@ -1,11 +1,11 @@
 <script lang="ts">
-import { Markdown } from "@vizel/core";
-import { createVizelEditor, EditorContent, EditorRoot } from "@vizel/svelte";
+import { VizelMarkdown } from "@vizel/core";
+import { createVizelEditor, VizelEditor, VizelProvider } from "@vizel/svelte";
 
 let markdownOutput = $state("");
 
 const editor = createVizelEditor({
-  extensions: [Markdown],
+  extensions: [VizelMarkdown],
 });
 
 function handleExport() {
@@ -97,7 +97,7 @@ function handleImportTable() {
 }
 </script>
 
-<EditorRoot editor={editor.current}>
+<VizelProvider editor={editor.current}>
   <div class="toolbar">
     <button type="button" data-testid="export-button" onclick={handleExport}>
       Export
@@ -133,6 +133,6 @@ function handleImportTable() {
       Import Table
     </button>
   </div>
-  <EditorContent />
+  <VizelEditor />
   <pre data-testid="markdown-output">{markdownOutput}</pre>
-</EditorRoot>
+</VizelProvider>

@@ -1,16 +1,16 @@
 import type { Editor } from "@tiptap/core";
 import type { EditorView } from "@tiptap/pm/view";
-import type { CharacterCountStorage } from "../extensions/character-count.ts";
-import { createImageUploader } from "../extensions/image.ts";
+import type { VizelCharacterCountStorage } from "../extensions/character-count.ts";
+import { createVizelImageUploader } from "../extensions/image.ts";
 import type { VizelEditorState, VizelFeatureOptions, VizelImageFeatureOptions } from "../types.ts";
 
 /**
  * JSON content type for Tiptap documents
  */
-export interface ContentNode {
+export interface VizelContentNode {
   type: string;
   attrs?: Record<string, unknown>;
-  content?: ContentNode[];
+  content?: VizelContentNode[];
   text?: string;
   marks?: Array<{ type: string; attrs?: Record<string, unknown> }>;
 }
@@ -18,7 +18,7 @@ export interface ContentNode {
 /**
  * Options for resolving features with a custom slash menu renderer.
  */
-export interface ResolveFeaturesOptions {
+export interface VizelResolveFeaturesOptions {
   /** The features configuration */
   features?: VizelFeatureOptions;
   /** Factory function to create the slash menu renderer */
@@ -30,7 +30,9 @@ export interface ResolveFeaturesOptions {
  * If slashCommand is enabled but no suggestion renderer is provided,
  * automatically adds the provided renderer.
  */
-export function resolveFeatures(options: ResolveFeaturesOptions): VizelFeatureOptions | undefined {
+export function resolveVizelFeatures(
+  options: VizelResolveFeaturesOptions
+): VizelFeatureOptions | undefined {
   const { features, createSlashMenuRenderer } = options;
 
   if (!features) {
@@ -76,7 +78,7 @@ const isVizelUploadImageEvent = (
 /**
  * Options for creating an image upload event handler.
  */
-export interface CreateUploadEventHandlerOptions {
+export interface VizelCreateUploadEventHandlerOptions {
   /** Function to get the current editor instance */
   getEditor: () => Editor | null | undefined;
   /** Function to get the current image options */
@@ -87,8 +89,8 @@ export interface CreateUploadEventHandlerOptions {
  * Creates an event handler for the vizel:upload-image custom event.
  * This handler is used by the slash command to trigger image uploads.
  */
-export function createUploadEventHandler(
-  options: CreateUploadEventHandlerOptions
+export function createVizelUploadEventHandler(
+  options: VizelCreateUploadEventHandlerOptions
 ): (event: Event) => void {
   return (event: Event) => {
     const editor = options.getEditor();
@@ -100,7 +102,7 @@ export function createUploadEventHandler(
     const imageOptions = options.getImageOptions();
 
     // Create upload function with configured options
-    const uploadFn = createImageUploader({
+    const uploadFn = createVizelImageUploader({
       onUpload:
         imageOptions.onUpload ??
         ((f: File) =>
@@ -136,8 +138,10 @@ export const VIZEL_UPLOAD_IMAGE_EVENT = "vizel:upload-image";
  * Registers the image upload event handler.
  * Returns a cleanup function to remove the event listener.
  */
-export function registerUploadEventHandler(options: CreateUploadEventHandlerOptions): () => void {
-  const handler = createUploadEventHandler(options);
+export function registerVizelUploadEventHandler(
+  options: VizelCreateUploadEventHandlerOptions
+): () => void {
+  const handler = createVizelUploadEventHandler(options);
   document.addEventListener(VIZEL_UPLOAD_IMAGE_EVENT, handler);
   return () => {
     document.removeEventListener(VIZEL_UPLOAD_IMAGE_EVENT, handler);
@@ -147,7 +151,7 @@ export function registerUploadEventHandler(options: CreateUploadEventHandlerOpti
 /**
  * Default editor props for Vizel editors.
  */
-export const defaultEditorProps = {
+export const vizelDefaultEditorProps = {
   attributes: {
     class: "vizel-editor",
   },
@@ -156,9 +160,9 @@ export const defaultEditorProps = {
 /**
  * Type guard to check if character count storage is available.
  */
-function hasCharacterCountStorage(
+function hasVizelCharacterCountStorage(
   storage: Record<string, unknown>
-): storage is { characterCount: CharacterCountStorage } {
+): storage is { characterCount: VizelCharacterCountStorage } {
   return (
     "characterCount" in storage &&
     typeof storage.characterCount === "object" &&
@@ -178,12 +182,12 @@ function hasCharacterCountStorage(
  *
  * @example
  * ```typescript
- * const state = getEditorState(editor);
+ * const state = getVizelEditorState(editor);
  * console.log(`Characters: ${state.characterCount}, Words: ${state.wordCount}`);
  * console.log(`Can undo: ${state.canUndo}, Can redo: ${state.canRedo}`);
  * ```
  */
-export function getEditorState(editor: Editor | null | undefined): VizelEditorState {
+export function getVizelEditorState(editor: Editor | null | undefined): VizelEditorState {
   if (!editor) {
     return {
       isFocused: false,
@@ -199,7 +203,7 @@ export function getEditorState(editor: Editor | null | undefined): VizelEditorSt
   let characterCount = 0;
   let wordCount = 0;
 
-  if (hasCharacterCountStorage(storage)) {
+  if (hasVizelCharacterCountStorage(storage)) {
     characterCount = storage.characterCount.characters();
     wordCount = storage.characterCount.words();
   }
@@ -235,11 +239,11 @@ const DIAGRAM_LANGUAGES: Record<string, "mermaid" | "graphviz"> = {
  * ```typescript
  * // After parsing markdown with editor.markdown.parse()
  * const parsed = editor.markdown.parse(markdownText);
- * const transformed = transformDiagramCodeBlocks(parsed);
+ * const transformed = transformVizelDiagramCodeBlocks(parsed);
  * editor.commands.setContent(transformed);
  * ```
  */
-export function transformDiagramCodeBlocks(content: ContentNode): ContentNode {
+export function transformVizelDiagramCodeBlocks(content: VizelContentNode): VizelContentNode {
   if (!content) return content;
 
   // Transform codeBlock with diagram language to diagram node
@@ -265,7 +269,7 @@ export function transformDiagramCodeBlocks(content: ContentNode): ContentNode {
   if (content.content && Array.isArray(content.content)) {
     return {
       ...content,
-      content: content.content.map(transformDiagramCodeBlocks),
+      content: content.content.map(transformVizelDiagramCodeBlocks),
     };
   }
 
@@ -273,10 +277,10 @@ export function transformDiagramCodeBlocks(content: ContentNode): ContentNode {
 }
 
 /**
- * @deprecated Use `transformDiagramCodeBlocks` instead. This function only handles mermaid diagrams.
+ * @deprecated Use `transformVizelDiagramCodeBlocks` instead. This function only handles mermaid diagrams.
  */
-export function transformMermaidToDiagram(content: ContentNode): ContentNode {
-  return transformDiagramCodeBlocks(content);
+export function transformVizelMermaidToDiagram(content: VizelContentNode): VizelContentNode {
+  return transformVizelDiagramCodeBlocks(content);
 }
 
 /**
@@ -289,10 +293,10 @@ export function transformMermaidToDiagram(content: ContentNode): ContentNode {
  * @example
  * ```typescript
  * editor.commands.setContent(markdownText, { contentType: 'markdown' });
- * convertCodeBlocksToDiagrams(editor);
+ * convertVizelCodeBlocksToDiagrams(editor);
  * ```
  */
-export function convertCodeBlocksToDiagrams(editor: Editor): void {
+export function convertVizelCodeBlocksToDiagrams(editor: Editor): void {
   const diagramType = editor.schema.nodes.diagram;
   if (!diagramType) return;
 
@@ -338,8 +342,8 @@ export function convertCodeBlocksToDiagrams(editor: Editor): void {
 }
 
 /**
- * @deprecated Use `convertCodeBlocksToDiagrams` instead. This function only handles mermaid diagrams.
+ * @deprecated Use `convertVizelCodeBlocksToDiagrams` instead. This function only handles mermaid diagrams.
  */
-export function convertMermaidCodeBlocksToDiagrams(editor: Editor): void {
-  convertCodeBlocksToDiagrams(editor);
+export function convertVizelMermaidCodeBlocksToDiagrams(editor: Editor): void {
+  convertVizelCodeBlocksToDiagrams(editor);
 }

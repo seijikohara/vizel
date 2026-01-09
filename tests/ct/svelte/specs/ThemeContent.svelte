@@ -1,7 +1,7 @@
 <script lang="ts">
-import { getTheme } from "@vizel/svelte";
+import { getVizelTheme } from "@vizel/svelte";
 
-const themeState = getTheme();
+const themeState = getVizelTheme();
 
 function toggleTheme() {
   themeState.setTheme(themeState.resolvedTheme === "dark" ? "light" : "dark");

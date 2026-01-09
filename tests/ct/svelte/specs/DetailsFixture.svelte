@@ -6,19 +6,19 @@ export interface DetailsFixtureProps {
 </script>
 
 <script lang="ts">
-import { EditorContent, EditorRoot, createVizelEditor } from "@vizel/svelte";
+import { VizelEditor, VizelProvider, createVizelEditor } from "@vizel/svelte";
 
-let { placeholder = "Type something...", initialContent }: DetailsFixtureProps = $props();
+const props = $props<DetailsFixtureProps>();
 
 const editor = createVizelEditor({
-  placeholder,
-  initialContent,
+  placeholder: props.placeholder ?? "Type something...",
+  initialContent: props.initialContent,
   features: {
     details: true,
   },
 });
 </script>
 
-<EditorRoot editor={editor.current}>
-  <EditorContent />
-</EditorRoot>
+<VizelProvider editor={editor.current}>
+  <VizelEditor />
+</VizelProvider>

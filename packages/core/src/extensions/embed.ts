@@ -14,12 +14,12 @@ import { Plugin, PluginKey } from "@tiptap/pm/state";
 /**
  * Embed type based on available metadata
  */
-export type EmbedType = "oembed" | "ogp" | "title" | "link";
+export type VizelEmbedType = "oembed" | "ogp" | "title" | "link";
 
 /**
  * oEmbed provider definition
  */
-export interface EmbedProvider {
+export interface VizelEmbedProvider {
   /** Provider name (e.g., 'youtube', 'twitter') */
   name: string;
   /** URL patterns to match */
@@ -35,11 +35,11 @@ export interface EmbedProvider {
 /**
  * Embed metadata returned from fetch
  */
-export interface EmbedData {
+export interface VizelEmbedData {
   /** Original URL */
   url: string;
   /** Type of embed based on available data */
-  type: EmbedType;
+  type: VizelEmbedType;
   /** Provider name if detected */
   provider?: string;
   /** oEmbed HTML content */
@@ -58,18 +58,20 @@ export interface EmbedData {
   siteName?: string;
   /** Favicon URL */
   favicon?: string;
+  /** Whether the embed is currently loading */
+  loading?: boolean;
 }
 
 /**
  * Function to fetch embed data from URL
  * This should be provided by the user to handle CORS
  */
-export type FetchEmbedDataFn = (url: string) => Promise<EmbedData>;
+export type VizelFetchEmbedDataFn = (url: string) => Promise<VizelEmbedData>;
 
 /**
  * Default oEmbed providers
  */
-export const defaultEmbedProviders: EmbedProvider[] = [
+export const vizelDefaultEmbedProviders: VizelEmbedProvider[] = [
   // Video - these providers support CORS on their oEmbed endpoints
   {
     name: "youtube",
@@ -177,10 +179,10 @@ export const defaultEmbedProviders: EmbedProvider[] = [
 /**
  * Detect provider from URL
  */
-export function detectProvider(
+export function detectVizelEmbedProvider(
   url: string,
-  providers: EmbedProvider[] = defaultEmbedProviders
-): EmbedProvider | null {
+  providers: VizelEmbedProvider[] = vizelDefaultEmbedProviders
+): VizelEmbedProvider | null {
   for (const provider of providers) {
     for (const pattern of provider.patterns) {
       if (pattern.test(url)) {
@@ -194,7 +196,7 @@ export function detectProvider(
 /**
  * Check if URL is a valid embed URL
  */
-export function isValidUrl(url: string): boolean {
+function isValidUrl(url: string): boolean {
   try {
     new URL(url);
     return true;
@@ -224,7 +226,10 @@ interface OEmbedResponse {
 /**
  * Fetch oEmbed data from a provider endpoint
  */
-async function fetchOEmbed(url: string, provider: EmbedProvider): Promise<OEmbedResponse | null> {
+async function fetchOEmbed(
+  url: string,
+  provider: VizelEmbedProvider
+): Promise<OEmbedResponse | null> {
   if (!(provider.oEmbedEndpoint && provider.supportsCors)) {
     return null;
   }
@@ -254,7 +259,10 @@ async function fetchOEmbed(url: string, provider: EmbedProvider): Promise<OEmbed
  * Convert oEmbed response to EmbedData
  * Uses conditional spreading to avoid assigning undefined to optional properties
  */
-function oembedToEmbedData(oembed: OEmbedResponse, baseData: EmbedData): EmbedData | null {
+function oembedToEmbedData(
+  oembed: OEmbedResponse,
+  baseData: VizelEmbedData
+): VizelEmbedData | null {
   // Check if we have HTML content (rich embed)
   if (oembed.html) {
     return {
@@ -294,7 +302,7 @@ function oembedToEmbedData(oembed: OEmbedResponse, baseData: EmbedData): EmbedDa
  * For full OGP support, you need to provide a custom fetchEmbedData function
  * that fetches data through a server-side proxy.
  *
- * @param providers - Custom providers to use (defaults to defaultEmbedProviders)
+ * @param providers - Custom providers to use (defaults to vizelDefaultEmbedProviders)
  * @returns A fetchEmbedData function
  *
  * @example
@@ -303,20 +311,20 @@ function oembedToEmbedData(oembed: OEmbedResponse, baseData: EmbedData): EmbedDa
  *   features: {
  *     embed: {
  *       // Use default client-side fetcher
- *       fetchEmbedData: createDefaultFetchEmbedData(),
+ *       fetchEmbedData: createVizelDefaultFetchEmbedData(),
  *     },
  *   },
  * });
  * ```
  */
-export function createDefaultFetchEmbedData(
-  providers: EmbedProvider[] = defaultEmbedProviders
-): FetchEmbedDataFn {
-  return async (url: string): Promise<EmbedData> => {
-    const provider = detectProvider(url, providers);
+export function createVizelDefaultFetchEmbedData(
+  providers: VizelEmbedProvider[] = vizelDefaultEmbedProviders
+): VizelFetchEmbedDataFn {
+  return async (url: string): Promise<VizelEmbedData> => {
+    const provider = detectVizelEmbedProvider(url, providers);
 
     // Base embed data (conditionally include provider to avoid undefined)
-    const baseData: EmbedData = {
+    const baseData: VizelEmbedData = {
       url,
       type: "link",
       ...(provider?.name !== undefined && { provider: provider.name }),
@@ -342,7 +350,7 @@ export function createDefaultFetchEmbedData(
 /**
  * Plugin key for embed paste handler
  */
-export const embedPastePluginKey = new PluginKey("embedPaste");
+export const vizelEmbedPastePluginKey = new PluginKey("vizelEmbedPaste");
 
 /**
  * Embed extension options
@@ -351,15 +359,15 @@ export interface VizelEmbedOptions {
   /**
    * Function to fetch embed data from URL
    *
-   * By default, uses createDefaultFetchEmbedData() which fetches oEmbed data
+   * By default, uses createVizelDefaultFetchEmbedData() which fetches oEmbed data
    * for CORS-enabled providers (YouTube, Vimeo, Spotify, etc.)
    *
    * For full OGP/metadata support, provide a custom function that uses
    * a server-side proxy to fetch page metadata.
    */
-  fetchEmbedData?: FetchEmbedDataFn;
+  fetchEmbedData?: VizelFetchEmbedDataFn;
   /** Custom providers to add or override */
-  providers?: EmbedProvider[];
+  providers?: VizelEmbedProvider[];
   /** HTML attributes for the embed wrapper */
   HTMLAttributes?: Record<string, unknown>;
   /** Enable paste handler for URL detection */
@@ -378,7 +386,7 @@ declare module "@tiptap/core" {
       /**
        * Update embed data
        */
-      updateEmbed: (data: Partial<EmbedData>) => ReturnType;
+      updateEmbed: (data: Partial<VizelEmbedData>) => ReturnType;
     };
   }
 }
@@ -490,7 +498,7 @@ function renderLink(container: HTMLElement, url: string, title?: string): void {
 /**
  * Embed node extension
  */
-export const Embed = Node.create<VizelEmbedOptions>({
+export const VizelEmbed = Node.create<VizelEmbedOptions>({
   name: "embed",
 
   group() {
@@ -507,8 +515,8 @@ export const Embed = Node.create<VizelEmbedOptions>({
 
   addOptions(): VizelEmbedOptions {
     return {
-      fetchEmbedData: createDefaultFetchEmbedData(),
-      providers: defaultEmbedProviders,
+      fetchEmbedData: createVizelDefaultFetchEmbedData(),
+      providers: vizelDefaultEmbedProviders,
       HTMLAttributes: {
         class: "vizel-embed",
       },
@@ -523,7 +531,7 @@ export const Embed = Node.create<VizelEmbedOptions>({
         default: null,
       },
       type: {
-        default: "link" as EmbedType,
+        default: "link" as VizelEmbedType,
       },
       provider: {
         default: null,
@@ -622,12 +630,13 @@ export const Embed = Node.create<VizelEmbedOptions>({
             return false;
           }
 
-          const provider = detectProvider(url, this.options.providers);
-          const attrs: { url: string; type: EmbedType; provider?: string; loading: boolean } = {
-            url,
-            type: "link",
-            loading: true,
-          };
+          const provider = detectVizelEmbedProvider(url, this.options.providers);
+          const attrs: { url: string; type: VizelEmbedType; provider?: string; loading: boolean } =
+            {
+              url,
+              type: "link",
+              loading: true,
+            };
           if (provider) {
             attrs.provider = provider.name;
           }
@@ -800,7 +809,7 @@ export const Embed = Node.create<VizelEmbedOptions>({
 
     return [
       new Plugin({
-        key: embedPastePluginKey,
+        key: vizelEmbedPastePluginKey,
         props: {
           handlePaste(view, event) {
             const text = event.clipboardData?.getData("text/plain");
@@ -811,7 +820,7 @@ export const Embed = Node.create<VizelEmbedOptions>({
             if (!isValidUrl(trimmedText)) return false;
 
             // Check if there's a known provider
-            const provider = detectProvider(trimmedText, extension.options.providers);
+            const provider = detectVizelEmbedProvider(trimmedText, extension.options.providers);
             if (!provider) return false;
 
             // Only handle if it's a recognized embed provider
@@ -898,6 +907,6 @@ export const Embed = Node.create<VizelEmbedOptions>({
 /**
  * Create embed extension with options
  */
-export function createEmbedExtension(options: VizelEmbedOptions = {}) {
-  return Embed.configure(options);
+export function createVizelEmbedExtension(options: VizelEmbedOptions = {}) {
+  return VizelEmbed.configure(options);
 }

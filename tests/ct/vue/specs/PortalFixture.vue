@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PortalLayer } from "@vizel/core";
-import { Portal } from "@vizel/vue";
+import { VizelPortal } from "@vizel/vue";
 
 interface Props {
   layer?: PortalLayer;
@@ -27,17 +27,17 @@ const props = withDefaults(defineProps<Props>(), {
       position: 'relative',
     }"
   >
-    <Portal :layer="layer" :disabled="disabled" :class="props.class">
+    <VizelPortal :layer="layer" :disabled="disabled" :class="props.class">
       <div class="test-portal-content" data-testid="portal-content">
         Portal Content
       </div>
-    </Portal>
+    </VizelPortal>
   </div>
   <div v-else data-testid="portal-fixture">
-    <Portal :layer="layer" :disabled="disabled" :class="props.class">
+    <VizelPortal :layer="layer" :disabled="disabled" :class="props.class">
       <div class="test-portal-content" data-testid="portal-content">
         Portal Content
       </div>
-    </Portal>
+    </VizelPortal>
   </div>
 </template>

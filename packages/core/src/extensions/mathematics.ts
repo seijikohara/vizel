@@ -157,7 +157,7 @@ const mathBlockTokenizer: MarkdownTokenizer = {
 /**
  * Mathematics extension for inline math expressions
  */
-export const MathInline = Node.create<VizelMathematicsOptions>({
+export const VizelMathInline = Node.create<VizelMathematicsOptions>({
   name: "mathInline",
   group: "inline",
   inline: true,
@@ -368,7 +368,7 @@ export const MathInline = Node.create<VizelMathematicsOptions>({
 /**
  * Mathematics extension for block math expressions
  */
-export const MathBlock = Node.create<VizelMathematicsOptions>({
+export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
   name: "mathBlock",
   group: "block",
   atom: true,
@@ -623,14 +623,14 @@ export const MathBlock = Node.create<VizelMathematicsOptions>({
  * @example Basic usage
  * ```ts
  * const extensions = [
- *   ...createMathematicsExtensions(),
+ *   ...createVizelMathematicsExtensions(),
  * ];
  * ```
  *
  * @example With custom KaTeX options
  * ```ts
  * const extensions = [
- *   ...createMathematicsExtensions({
+ *   ...createVizelMathematicsExtensions({
  *     katexOptions: {
  *       macros: {
  *         '\\R': '\\mathbb{R}',
@@ -640,10 +640,10 @@ export const MathBlock = Node.create<VizelMathematicsOptions>({
  * ];
  * ```
  */
-export function createMathematicsExtensions(
+export function createVizelMathematicsExtensions(
   options: VizelMathematicsOptions = {}
-): [typeof MathInline, typeof MathBlock] {
-  return [MathInline.configure(options), MathBlock.configure(options)];
+): [typeof VizelMathInline, typeof VizelMathBlock] {
+  return [VizelMathInline.configure(options), VizelMathBlock.configure(options)];
 }
 
 // Export individual extensions for advanced usage

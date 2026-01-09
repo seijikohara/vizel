@@ -1,195 +1,183 @@
+// Base extensions
+export { createVizelExtensions, type VizelExtensionsOptions } from "./base.ts";
+
+// Character count
 export {
-  Blockquote,
-  Bold,
-  BulletList,
-  Code,
-  CodeBlock,
-  createVizelExtensions,
-  Document,
-  Dropcursor,
-  Gapcursor,
-  HardBreak,
-  Heading,
-  History,
-  HorizontalRule,
-  Italic,
-  ListItem,
-  ListKeymap,
-  OrderedList,
-  Paragraph,
-  Placeholder,
-  Strike,
-  Text,
-  Underline,
-  type VizelExtensionsOptions,
-} from "./base.ts";
-export {
-  CharacterCount,
-  type CharacterCountStorage,
-  createCharacterCountExtension,
+  createVizelCharacterCountExtension,
   type VizelCharacterCountOptions,
+  type VizelCharacterCountStorage,
 } from "./character-count.ts";
+
+// Code block with syntax highlighting
 export {
-  type CodeBlockLanguage,
-  CodeBlockLowlight,
-  createCodeBlockLowlightExtension,
-  findLanguage,
-  getAllLanguageIds,
-  getRegisteredLanguages,
-  lowlight,
+  createVizelCodeBlockExtension,
+  findVizelLanguage,
+  getAllVizelLanguageIds,
+  getVizelRegisteredLanguages,
+  type VizelCodeBlockLanguage,
   type VizelCodeBlockOptions,
 } from "./code-block-lowlight.ts";
+
+// Details (collapsible content)
 export {
-  createDetailsExtensions,
-  Details,
-  DetailsContent,
-  type DetailsContentOptions,
-  type DetailsNodeOptions,
-  DetailsSummary,
-  type DetailsSummaryOptions,
+  createVizelDetailsExtensions,
+  type VizelDetailsContentOptions,
+  type VizelDetailsNodeOptions,
   type VizelDetailsOptions,
+  type VizelDetailsSummaryOptions,
 } from "./details.ts";
+
+// Diagram (Mermaid, GraphViz)
 export {
-  createDiagramExtension,
-  Diagram,
-  type DiagramType,
-  mermaid,
+  createVizelDiagramExtension,
+  type GraphvizEngine,
+  VizelDiagram,
   type VizelDiagramOptions,
+  type VizelDiagramType,
 } from "./diagram.ts";
+
+// Drag handle
 export {
-  BlockMoveKeymap,
-  createDragHandleExtension,
-  createDragHandleExtensions,
-  DragHandle,
+  createVizelDragHandleExtension,
+  createVizelDragHandleExtensions,
   type DragHandleOptions,
+  VizelBlockMoveKeymap,
+  VizelDragHandle,
   type VizelDragHandleOptions,
 } from "./drag-handle.ts";
+
+// Embed (oEmbed, OGP)
 export {
-  createDefaultFetchEmbedData,
-  createEmbedExtension,
-  defaultEmbedProviders,
-  detectProvider,
-  Embed,
-  type EmbedData,
-  type EmbedProvider,
-  type EmbedType,
-  embedPastePluginKey,
-  type FetchEmbedDataFn,
-  isValidUrl,
+  createVizelDefaultFetchEmbedData,
+  createVizelEmbedExtension,
+  detectVizelEmbedProvider,
+  VizelEmbed,
+  type VizelEmbedData,
   type VizelEmbedOptions,
+  type VizelEmbedProvider,
+  type VizelEmbedType,
+  type VizelFetchEmbedDataFn,
+  vizelDefaultEmbedProviders,
+  vizelEmbedPastePluginKey,
 } from "./embed.ts";
+
+// File handler
 export {
-  createFileHandlerExtension,
-  createImageFileHandlers,
-  DEFAULT_FILE_MIME_TYPES,
-  FileHandler,
-  type FileHandlerError,
-  type FileHandlerErrorType,
-  filterFilesByMimeType,
-  type ImageFileHandlerOptions,
-  type ImageFileHandlers,
+  createVizelFileHandlerExtension,
+  createVizelImageFileHandlers,
+  filterVizelFilesByMimeType,
+  VIZEL_DEFAULT_FILE_MIME_TYPES,
+  type VizelFileHandlerError,
+  type VizelFileHandlerErrorType,
   type VizelFileHandlerOptions,
+  type VizelImageFileHandlerOptions,
+  type VizelImageFileHandlers,
 } from "./file-handler.ts";
+
+// Image
 export {
-  createImageExtension,
-  createImageUploadExtension,
-  createImageUploader,
-  createImageUploadPlugin,
-  createImageUploadWithFileHandler,
-  defaultBase64Upload,
-  getImageUploadPluginKey,
-  handleImageDrop,
-  handleImagePaste,
-  Image,
+  createVizelImageExtension,
+  createVizelImageUploadExtensions,
+  createVizelImageUploader,
+  createVizelImageUploadPlugin,
+  createVizelImageUploadWithFileHandler,
+  getVizelImageUploadPluginKey,
+  handleVizelImageDrop,
+  handleVizelImagePaste,
   type ImageUploadOptions,
-  type ImageValidationError,
-  type ImageValidationErrorType,
-  type UploadImageFn,
+  VizelImage,
   type VizelImageOptions,
   type VizelImageUploadOptions,
   type VizelImageUploadWithFileHandlerOptions,
-  validateImageFile,
+  type VizelImageValidationError,
+  type VizelImageValidationErrorType,
+  type VizelUploadImageFn,
+  validateVizelImageFile,
+  vizelDefaultBase64Upload,
 } from "./image.ts";
+
+// Image resize
 export {
-  ImageResize,
-  type ImageResizeOptions,
-  ResizableImage,
+  VizelImageResize,
+  type VizelImageResizeOptions,
+  VizelResizableImage,
 } from "./image-resize.ts";
+
+// Link
+export { createVizelLinkExtension, type VizelLinkOptions } from "./link.ts";
+
+// Markdown
 export {
-  createLinkExtension,
-  Link,
-  type VizelLinkOptions,
-} from "./link.ts";
-export {
-  createMarkdownExtension,
-  Markdown,
-  TiptapMarkdown,
+  createVizelMarkdownExtension,
+  VizelMarkdown,
   type VizelMarkdownOptions,
 } from "./markdown.ts";
+
+// Mathematics (KaTeX)
 export {
-  createMathematicsExtensions,
-  katex,
-  MathBlock,
-  MathInline,
+  createVizelMathematicsExtensions,
+  VizelMathBlock,
   type VizelMathematicsOptions,
+  VizelMathInline,
 } from "./mathematics.ts";
+
+// Node types
 export {
-  defaultNodeTypes,
-  getActiveNodeType,
-  type NodeTypeOption,
+  getVizelActiveNodeType,
+  type VizelNodeTypeOption,
+  vizelDefaultNodeTypes,
 } from "./node-types.ts";
+
+// Slash command
 export {
-  defaultGroupOrder,
-  defaultSlashCommands,
-  filterSlashCommands,
-  flattenSlashCommandGroups,
-  groupSlashCommands,
-  SlashCommand,
-  type SlashCommandGroup,
-  type SlashCommandItem,
-  type SlashCommandOptions,
-  type SlashCommandRange,
-  type SlashCommandSearchResult,
-  searchSlashCommands,
+  filterVizelSlashCommands,
+  flattenVizelSlashCommandGroups,
+  groupVizelSlashCommands,
+  searchVizelSlashCommands,
+  VizelSlashCommand,
+  type VizelSlashCommandExtensionOptions,
+  type VizelSlashCommandGroup,
+  type VizelSlashCommandItem,
+  type VizelSlashCommandRange,
+  type VizelSlashCommandSearchResult,
+  vizelDefaultGroupOrder,
+  vizelDefaultSlashCommands,
 } from "./slash-command.ts";
+
+// Table
 export {
-  createTableExtensions,
-  Table,
-  TableCell,
-  type TableCellAlignment,
-  TableHeader,
-  TableRow,
+  createVizelTableExtensions,
   VizelTable,
   VizelTableCell,
+  type VizelTableCellAlignment,
   VizelTableHeader,
   type VizelTableOptions,
 } from "./table.ts";
+
+// Table controls
 export {
-  TABLE_MENU_ITEMS,
-  type TableControlsOptions,
-  type TableControlsUIOptions,
-  type TableMenuItem,
+  VIZEL_TABLE_MENU_ITEMS,
+  type VizelTableControlsOptions,
+  type VizelTableControlsUIOptions,
+  type VizelTableMenuItem,
   VizelTableWithControls,
 } from "./table-controls.ts";
+
+// Task list
 export {
-  createTaskListExtensions,
-  TaskItem,
-  type TaskItemOptions,
-  TaskList,
-  type TaskListOptions,
+  createVizelTaskListExtensions,
+  type VizelTaskItemOptions,
+  type VizelTaskListExtensionsOptions,
   type VizelTaskListOptions,
 } from "./task-list.ts";
+
+// Text color
 export {
-  addRecentColor,
-  Color,
-  type ColorDefinition,
-  createTextColorExtensions,
-  getRecentColors,
-  HIGHLIGHT_COLORS,
-  Highlight,
-  isValidHexColor,
-  normalizeHexColor,
-  TEXT_COLORS,
-  TextStyle,
+  addVizelRecentColor,
+  createVizelTextColorExtensions,
+  getVizelRecentColors,
+  VIZEL_HIGHLIGHT_COLORS,
+  VIZEL_TEXT_COLORS,
+  type VizelColorDefinition,
   type VizelTextColorOptions,
 } from "./text-color.ts";

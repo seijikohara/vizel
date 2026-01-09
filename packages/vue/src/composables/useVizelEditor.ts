@@ -1,15 +1,15 @@
+import { Editor, type Extensions } from "@tiptap/core";
 import {
   createVizelExtensions,
-  defaultEditorProps,
-  Editor,
-  type Extensions,
-  registerUploadEventHandler,
-  resolveFeatures,
+  initializeVizelMarkdownContent,
+  registerVizelUploadEventHandler,
+  resolveVizelFeatures,
   type VizelEditorOptions,
+  vizelDefaultEditorProps,
 } from "@vizel/core";
 import type { ShallowRef } from "vue";
 import { onBeforeUnmount, onMounted, shallowRef } from "vue";
-import { createSlashMenuRenderer } from "./createSlashMenuRenderer.ts";
+import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.ts";
 
 export interface UseVizelEditorOptions extends VizelEditorOptions {
   /** Additional extensions to include */
@@ -36,10 +36,22 @@ export interface UseVizelEditorOptions extends VizelEditorOptions {
  *   <EditorContent :editor="editor" />
  * </template>
  * ```
+ *
+ * @example
+ * ```vue
+ * <script setup lang="ts">
+ * // With initial markdown content
+ * const editor = useVizelEditor({
+ *   initialMarkdown: "# Hello World\n\nThis is **bold** text.",
+ * });
+ * </script>
+ * ```
  */
 export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<Editor | null> {
   const {
     initialContent,
+    initialMarkdown,
+    transformDiagramsOnImport = true,
     placeholder,
     editable = true,
     autofocus = false,
@@ -53,9 +65,9 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
     onBlur,
   } = options;
 
-  const resolvedFeatures = resolveFeatures({
+  const resolvedFeatures = resolveVizelFeatures({
     ...(features !== undefined && { features }),
-    createSlashMenuRenderer,
+    createSlashMenuRenderer: createVizelSlashMenuRenderer,
   });
 
   // Store image upload options for event handler
@@ -67,6 +79,16 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
   let cleanupHandler: (() => void) | null = null;
 
   onMounted(() => {
+    // Wrap onCreate to handle initialMarkdown
+    const wrappedOnCreate = initialMarkdown
+      ? (props: { editor: Editor }) => {
+          initializeVizelMarkdownContent(props.editor, initialMarkdown, {
+            transformDiagrams: transformDiagramsOnImport,
+          });
+          onCreate?.(props);
+        }
+      : onCreate;
+
     editor.value = new Editor({
       extensions: [
         ...createVizelExtensions({
@@ -75,20 +97,21 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
         }),
         ...additionalExtensions,
       ],
-      ...(initialContent !== undefined && { content: initialContent }),
+      // Only set initialContent if initialMarkdown is not provided
+      ...(!initialMarkdown && initialContent !== undefined && { content: initialContent }),
       editable,
       autofocus,
-      editorProps: defaultEditorProps,
+      editorProps: vizelDefaultEditorProps,
       // Only pass event handlers that are defined to avoid tiptap emit errors
       ...(onUpdate && { onUpdate }),
-      ...(onCreate && { onCreate }),
+      ...(wrappedOnCreate && { onCreate: wrappedOnCreate }),
       ...(onDestroy && { onDestroy }),
       ...(onSelectionUpdate && { onSelectionUpdate }),
       ...(onFocus && { onFocus }),
       ...(onBlur && { onBlur }),
     });
 
-    cleanupHandler = registerUploadEventHandler({
+    cleanupHandler = registerVizelUploadEventHandler({
       getEditor: () => editor.value,
       getImageOptions: () => imageOptions,
     });

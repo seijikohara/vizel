@@ -10,7 +10,7 @@
  * Icon names used in slash commands and menus.
  * These are semantic names that map to actual icons in framework packages.
  */
-export type SlashCommandIconName =
+export type VizelSlashCommandIconName =
   // Text/Headings
   | "heading1"
   | "heading2"
@@ -38,7 +38,7 @@ export type SlashCommandIconName =
 /**
  * Icon names used in node type selector.
  */
-export type NodeTypeIconName =
+export type VizelNodeTypeIconName =
   | "paragraph"
   | "heading1"
   | "heading2"
@@ -52,7 +52,7 @@ export type NodeTypeIconName =
 /**
  * Icon names used in table controls.
  */
-export type TableIconName =
+export type VizelTableIconName =
   | "arrowUp"
   | "arrowDown"
   | "arrowLeft"
@@ -67,12 +67,12 @@ export type TableIconName =
 /**
  * Icon names used in UI components (SaveIndicator, etc.).
  */
-export type UIIconName = "check" | "loader" | "circle" | "warning" | "chevronDown" | "x";
+export type VizelUIIconName = "check" | "loader" | "circle" | "warning" | "chevronDown" | "x";
 
 /**
  * Icon names used in BubbleMenu toolbar.
  */
-export type BubbleMenuIconName =
+export type VizelBubbleMenuIconName =
   | "bold"
   | "italic"
   | "strikethrough"
@@ -84,9 +84,9 @@ export type BubbleMenuIconName =
 
 /**
  * Icon names used internally in NodeView rendering (drag handle, table controls).
- * These icons are rendered via the injected IconRenderer from framework packages.
+ * These icons are rendered via the injected VizelIconRenderer from framework packages.
  */
-export type InternalIconName =
+export type VizelInternalIconName =
   | "grip"
   | "gripHorizontal"
   | "plusSmall"
@@ -104,20 +104,20 @@ export type InternalIconName =
 /**
  * All icon names used in Vizel.
  */
-export type IconName =
-  | SlashCommandIconName
-  | NodeTypeIconName
-  | TableIconName
-  | UIIconName
-  | BubbleMenuIconName
-  | InternalIconName;
+export type VizelIconName =
+  | VizelSlashCommandIconName
+  | VizelNodeTypeIconName
+  | VizelTableIconName
+  | VizelUIIconName
+  | VizelBubbleMenuIconName
+  | VizelInternalIconName;
 
 /**
  * Default Iconify icon IDs for each icon name.
  * Uses Lucide icons as the default set.
  * Users can override these by providing their own icon mappings.
  */
-export const defaultIconIds: Record<IconName, string> = {
+export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   // Text/Headings
   heading1: "lucide:heading-1",
   heading2: "lucide:heading-2",
@@ -181,20 +181,23 @@ export const defaultIconIds: Record<IconName, string> = {
  * @param customIcons - Optional custom icon mappings to override defaults
  * @returns The Iconify icon ID (e.g., "lucide:heading-1")
  */
-export function getIconId(name: IconName, customIcons?: Partial<Record<IconName, string>>): string {
-  return customIcons?.[name] ?? defaultIconIds[name];
+export function getVizelIconId(
+  name: VizelIconName,
+  customIcons?: Partial<Record<VizelIconName, string>>
+): string {
+  return customIcons?.[name] ?? vizelDefaultIconIds[name];
 }
 
 /**
  * Icon renderer function type.
  * Framework packages inject their implementation to render icons as SVG strings.
  */
-export type IconRenderer = (name: InternalIconName) => string;
+export type VizelIconRenderer = (name: VizelInternalIconName) => string;
 
 /**
  * Icon renderer options for customization.
  */
-export interface IconRendererOptions {
+export interface VizelIconRendererOptions {
   /** Icon width in pixels */
   width?: number;
   /** Icon height in pixels */
@@ -204,13 +207,13 @@ export interface IconRendererOptions {
 /**
  * Extended icon renderer function type with options support.
  */
-export type IconRendererWithOptions = (
-  name: InternalIconName,
-  options?: IconRendererOptions
+export type VizelIconRendererWithOptions = (
+  name: VizelInternalIconName,
+  options?: VizelIconRendererOptions
 ) => string;
 
 // Global icon renderer, injected by framework packages
-let iconRenderer: IconRendererWithOptions | null = null;
+let iconRenderer: VizelIconRendererWithOptions | null = null;
 
 /**
  * Set the icon renderer function.
@@ -219,12 +222,12 @@ let iconRenderer: IconRendererWithOptions | null = null;
  * @example
  * ```typescript
  * // In @vizel/react
- * import { setIconRenderer, defaultIconIds } from "@vizel/core";
+ * import { setVizelIconRenderer, vizelDefaultIconIds } from "@vizel/core";
  * import { iconToSVG, getIconData } from "@iconify/utils";
  * import lucideIcons from "@iconify-json/lucide";
  *
- * setIconRenderer((name, options) => {
- *   const iconId = defaultIconIds[name];
+ * setVizelIconRenderer((name, options) => {
+ *   const iconId = vizelDefaultIconIds[name];
  *   const [, iconName] = iconId.split(":");
  *   const data = getIconData(lucideIcons, iconName);
  *   if (!data) return "";
@@ -233,7 +236,7 @@ let iconRenderer: IconRendererWithOptions | null = null;
  * });
  * ```
  */
-export function setIconRenderer(renderer: IconRendererWithOptions): void {
+export function setVizelIconRenderer(renderer: VizelIconRendererWithOptions): void {
   iconRenderer = renderer;
 }
 
@@ -245,11 +248,14 @@ export function setIconRenderer(renderer: IconRendererWithOptions): void {
  * @param options - Optional rendering options (width, height)
  * @returns The SVG string, or empty string if no renderer is set
  */
-export function renderIcon(name: InternalIconName, options?: IconRendererOptions): string {
+export function renderVizelIcon(
+  name: VizelInternalIconName,
+  options?: VizelIconRendererOptions
+): string {
   if (!iconRenderer) {
     if (process.env.NODE_ENV === "development") {
       console.warn(
-        `[Vizel] Icon renderer not set. Call setIconRenderer() from your framework package (@vizel/react, @vizel/vue, or @vizel/svelte).`
+        `[Vizel] Icon renderer not set. Call setVizelIconRenderer() from your framework package (@vizel/react, @vizel/vue, or @vizel/svelte).`
       );
     }
     return "";

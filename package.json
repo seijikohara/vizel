@@ -11,6 +11,9 @@
     "dev:svelte": "bun run --cwd apps/demo/svelte dev",
     "dev:all": "concurrently -n react,vue,svelte -c blue,green,magenta \"bun run dev:react\" \"bun run dev:vue\" \"bun run dev:svelte\"",
     "build": "bun run --filter '@vizel/*' build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "test": "bun run --filter '*' test",
     "test:ct": "concurrently -g -n react,vue,svelte -c blue,green,magenta \"bun run test:ct:react\" \"bun run test:ct:vue\" \"bun run test:ct:svelte\"",
     "test:ct:seq": "bun run test:ct:react && bun run test:ct:vue && bun run test:ct:svelte",
@@ -28,6 +31,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
+    "@braintree/sanitize-url": "^7.1.1",
     "@playwright/experimental-ct-react": "^1.57.0",
     "@playwright/experimental-ct-svelte": "^1.57.0",
     "@playwright/experimental-ct-vue": "^1.57.0",
@@ -40,13 +44,20 @@
     "@vitejs/plugin-vue": "^6.0.3",
     "@vue/compiler-dom": "^3.5.26",
     "concurrently": "^9.2.1",
+    "cytoscape": "^3.33.1",
+    "cytoscape-cose-bilkent": "^4.1.0",
+    "dayjs": "^1.11.19",
+    "debug": "^4.4.3",
     "lefthook": "^2.0.13",
+    "mermaid": "^11.12.2",
     "playwright": "^1.57.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "sass": "^1.97.2",
     "svelte": "^5.46.1",
     "typescript": "^5.9.3",
+    "vitepress": "^1.6.4",
+    "vitepress-plugin-mermaid": "^2.0.17",
     "vue": "^3.5.26"
   }
 }

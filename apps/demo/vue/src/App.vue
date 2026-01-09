@@ -1,85 +1,78 @@
 <script setup lang="ts">
+import type { Editor, JSONContent } from "@tiptap/core";
+import { getVizelEditorState } from "@vizel/core";
 import {
-  BubbleMenu,
-  convertCodeBlocksToDiagrams,
-  EditorContent,
-  getEditorState,
-  type JSONContent,
-  SaveIndicator,
-  ThemeProvider,
-  useAutoSave,
-  useEditorState,
-  useVizelEditor,
+  useVizelAutoSave,
+  useVizelState,
+  Vizel,
+  VizelSaveIndicator,
+  VizelThemeProvider,
 } from "@vizel/vue";
-import { computed, ref } from "vue";
-import { initialContent } from "../../shared/content";
+import { computed, ref, shallowRef } from "vue";
+import { initialMarkdown } from "../../shared/content";
 import { mockUploadImage } from "../../shared/utils";
 import ThemeToggle from "./ThemeToggle.vue";
 
-const output = ref<JSONContent | null>(null);
-const showOutput = ref(false);
-const markdownOutput = ref("");
+const showJson = ref(false);
+const jsonInput = ref("");
+
 const showMarkdown = ref(false);
 const markdownInput = ref("");
-const showMarkdownInput = ref(false);
 
-const editor = useVizelEditor({
-  initialContent,
-  autofocus: "end",
-  features: {
-    markdown: true,
-    mathematics: true,
-    embed: true,
-    details: true,
-    diagram: true,
-    image: {
-      onUpload: mockUploadImage,
-      maxFileSize: 10 * 1024 * 1024, // 10MB
-      onValidationError: (error) => {
-        alert(`Validation error: ${error.message}`);
-      },
-      onUploadError: (error) => {
-        alert(`Upload failed: ${error.message}`);
-      },
-    },
-  },
-  onUpdate: ({ editor: e }) => {
-    output.value = e.getJSON();
-    markdownOutput.value = e.getMarkdown();
-  },
-  onCreate: ({ editor: e }) => {
-    output.value = e.getJSON();
-    markdownOutput.value = e.getMarkdown();
-  },
-});
+// Store editor reference from Vizel component
+const editorRef = shallowRef<Editor | null>(null);
 
 // Track editor state for character/word count
-const updateCount = useEditorState(() => editor.value);
+const updateCount = useVizelState(() => editorRef.value);
 const editorState = computed(() => {
   void updateCount.value;
-  return getEditorState(editor.value);
+  return getVizelEditorState(editorRef.value);
 });
 
 // Auto-save functionality
-const { status, lastSaved } = useAutoSave(() => editor.value, {
+const { status, lastSaved } = useVizelAutoSave(() => editorRef.value, {
   debounceMs: 2000,
   storage: "localStorage",
   key: "vizel-demo-vue",
 });
 
-function handleImportMarkdown() {
-  if (editor.value && markdownInput.value.trim()) {
-    editor.value.commands.setContent(markdownInput.value, { contentType: "markdown" });
-    // Convert diagram code blocks (mermaid, dot, graphviz) to diagram nodes after importing
-    convertCodeBlocksToDiagrams(editor.value);
-    markdownInput.value = "";
-    showMarkdownInput.value = false;
+function handleCreate({ editor }: { editor: Editor }) {
+  editorRef.value = editor;
+  jsonInput.value = JSON.stringify(editor.getJSON(), null, 2);
+  markdownInput.value = editor.getMarkdown();
+}
+
+function handleUpdate({ editor }: { editor: Editor }) {
+  jsonInput.value = JSON.stringify(editor.getJSON(), null, 2);
+  markdownInput.value = editor.getMarkdown();
+}
+
+function handleMarkdownChange(event: Event) {
+  const target = event.target as HTMLTextAreaElement;
+  const value = target.value;
+  markdownInput.value = value;
+  if (editorRef.value) {
+    editorRef.value.commands.setContent(value, { contentType: "markdown" });
+  }
+}
+
+function handleJsonChange(event: Event) {
+  const target = event.target as HTMLTextAreaElement;
+  const value = target.value;
+  jsonInput.value = value;
+  try {
+    const parsed = JSON.parse(value) as JSONContent;
+    if (editorRef.value) {
+      editorRef.value.commands.setContent(parsed);
+    }
+  } catch {
+    // Invalid JSON, ignore
   }
 }
 </script>
 
 <template>
-  <ThemeProvider defaultTheme="system" storageKey="vizel-theme">
+  <VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
     <div class="app">
       <header class="header">
         <div class="header-content">
@@ -99,76 +92,30 @@ function handleImportMarkdown() {
       </header>
 
       <main class="main">
-        <div class="features-bar">
-          <div class="feature-tag">
-            <span class="feature-icon">/</span>
-            <span>Slash Commands</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">B</span>
-            <span>Bubble Menu</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">T</span>
-            <span>Tables</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">L</span>
-            <span>Links</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">📎</span>
-            <span>Drag & Drop</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">📋</span>
-            <span>Paste Images</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">M</span>
-            <span>Markdown</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">#</span>
-            <span>Character Count</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">&lt;/&gt;</span>
-            <span>Code Blocks</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">∑</span>
-            <span>Math (LaTeX)</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">💾</span>
-            <span>Auto-save</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">🔗</span>
-            <span>Embeds</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">▸</span>
-            <span>Details</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">📊</span>
-            <span>Diagrams</span>
-          </div>
-          <div class="feature-tag">
-            <span class="feature-icon">🌓</span>
-            <span>Dark Mode</span>
-          </div>
-        </div>
-
         <div class="editor-container">
-          <div class="editor-root">
-            <EditorContent :editor="editor" class="editor-content" />
-            <BubbleMenu v-if="editor" :editor="editor" enable-embed />
-          </div>
+          <Vizel
+            :initial-markdown="initialMarkdown"
+            autofocus="end"
+            class="editor-content"
+            enable-embed
+            :features="{
+              markdown: true,
+              mathematics: true,
+              embed: true,
+              details: true,
+              diagram: true,
+              image: {
+                onUpload: mockUploadImage,
+                maxFileSize: 10 * 1024 * 1024,
+                onValidationError: (error) => alert(`Validation error: ${error.message}`),
+                onUploadError: (error) => alert(`Upload failed: ${error.message}`),
+              },
+            }"
+            @create="handleCreate"
+            @update="handleUpdate"
+          />
           <div class="status-bar">
-            <SaveIndicator :status="status" :lastSaved="lastSaved" />
+            <VizelSaveIndicator :status="status" :lastSaved="lastSaved" />
             <span class="status-divider">·</span>
             <span class="status-item">{{ editorState.characterCount }} characters</span>
             <span class="status-divider">·</span>
@@ -180,46 +127,38 @@ function handleImportMarkdown() {
           <button
             type="button"
             class="output-toggle"
-            @click="showMarkdownInput = !showMarkdownInput"
-          >
-            <span class="output-toggle-icon">{{ showMarkdownInput ? '−' : '+' }}</span>
-            <span>Markdown Import</span>
-          </button>
-          <div v-if="showMarkdownInput" class="markdown-input-container">
-            <textarea
-              v-model="markdownInput"
-              class="markdown-input"
-              placeholder="Paste Markdown here..."
-              rows="6"
-            />
-            <button type="button" class="import-button" @click="handleImportMarkdown">
-              Import to Editor
-            </button>
-          </div>
-        </div>
-
-        <div class="output-section">
-          <button
-            type="button"
-            class="output-toggle"
             @click="showMarkdown = !showMarkdown"
           >
             <span class="output-toggle-icon">{{ showMarkdown ? '−' : '+' }}</span>
-            <span>Markdown Export</span>
+            <span>Markdown</span>
           </button>
-          <pre v-if="showMarkdown" class="output-content">{{ markdownOutput }}</pre>
+          <textarea
+            v-if="showMarkdown"
+            class="sync-textarea"
+            :value="markdownInput"
+            placeholder="Edit Markdown here..."
+            rows="12"
+            @input="handleMarkdownChange"
+          />
         </div>
 
         <div class="output-section">
           <button
             type="button"
             class="output-toggle"
-            @click="showOutput = !showOutput"
+            @click="showJson = !showJson"
           >
-            <span class="output-toggle-icon">{{ showOutput ? '−' : '+' }}</span>
-            <span>JSON Output</span>
+            <span class="output-toggle-icon">{{ showJson ? '−' : '+' }}</span>
+            <span>JSON</span>
           </button>
-          <pre v-if="showOutput" class="output-content">{{ JSON.stringify(output, null, 2) }}</pre>
+          <textarea
+            v-if="showJson"
+            class="sync-textarea"
+            :value="jsonInput"
+            placeholder="Edit JSON here..."
+            rows="12"
+            @input="handleJsonChange"
+          />
         </div>
       </main>
 
@@ -229,5 +168,5 @@ function handleImportMarkdown() {
         </p>
       </footer>
     </div>
-  </ThemeProvider>
+  </VizelThemeProvider>
 </template>

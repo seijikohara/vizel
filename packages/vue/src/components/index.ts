@@ -1,70 +1,82 @@
-// BubbleMenu components
-export { type BubbleMenuProps, default as BubbleMenu } from "./BubbleMenu.vue";
+// VizelBubbleMenu components
+
+// Vizel all-in-one component
+export { default as Vizel, type VizelProps } from "./Vizel.vue";
+// VizelBubbleMenu components
+export { default as VizelBubbleMenu, type VizelBubbleMenuProps } from "./VizelBubbleMenu.vue";
 export {
-  type BubbleMenuButtonProps,
-  default as BubbleMenuButton,
-} from "./BubbleMenuButton.vue";
+  default as VizelBubbleMenuButton,
+  type VizelBubbleMenuButtonProps,
+} from "./VizelBubbleMenuButton.vue";
 export {
-  type BubbleMenuColorPickerProps,
-  default as BubbleMenuColorPicker,
-} from "./BubbleMenuColorPicker.vue";
+  default as VizelBubbleMenuColorPicker,
+  type VizelBubbleMenuColorPickerProps,
+} from "./VizelBubbleMenuColorPicker.vue";
 export {
-  type BubbleMenuDividerProps,
-  default as BubbleMenuDivider,
-} from "./BubbleMenuDivider.vue";
+  default as VizelBubbleMenuDefault,
+  type VizelBubbleMenuDefaultProps,
+} from "./VizelBubbleMenuDefault.vue";
 export {
-  type BubbleMenuLinkEditorProps,
-  default as BubbleMenuLinkEditor,
-} from "./BubbleMenuLinkEditor.vue";
+  default as VizelBubbleMenuDivider,
+  type VizelBubbleMenuDividerProps,
+} from "./VizelBubbleMenuDivider.vue";
+// VizelColorPicker component
 export {
-  type BubbleMenuToolbarProps,
-  default as BubbleMenuToolbar,
-} from "./BubbleMenuToolbar.vue";
-// ColorPicker component
-export {
-  type ColorPickerProps,
-  default as ColorPicker,
-} from "./ColorPicker.vue";
+  default as VizelColorPicker,
+  type VizelColorPickerProps,
+} from "./VizelColorPicker.vue";
+export { useVizelContext, useVizelContextSafe } from "./VizelContext.ts";
 // Editor components
-export { default as EditorContent, type EditorContentProps } from "./EditorContent.vue";
-export { useEditorContext, useEditorContextSafe } from "./EditorContext.ts";
-export { default as EditorRoot, type EditorRootProps } from "./EditorRoot.vue";
-// EmbedView component
-export { default as EmbedView, type EmbedViewProps } from "./EmbedView.vue";
-// Icon component
-export { default as Icon, type IconProps } from "./Icon.vue";
+export {
+  default as VizelEditor,
+  type VizelEditorExposed,
+  type VizelEditorProps,
+} from "./VizelEditor.vue";
+// VizelEmbedView component
+export { default as VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.vue";
+// VizelIcon component
+export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.vue";
 export {
   type CustomIconMap,
-  IconContextKey,
-  type IconContextValue,
-  provideIconContext,
-  useIconContext,
-} from "./IconContext.ts";
-
-// NodeSelector component
+  provideVizelIconContext,
+  useVizelIconContext,
+  VizelIconContextKey,
+  type VizelIconContextValue,
+} from "./VizelIconContext.ts";
 export {
-  default as NodeSelector,
-  type NodeSelectorProps,
-} from "./NodeSelector.vue";
-
-// Portal component
-export { default as Portal, type PortalProps } from "./Portal.vue";
-
-// SaveIndicator component
+  default as VizelLinkEditor,
+  type VizelLinkEditorProps,
+} from "./VizelLinkEditor.vue";
+// VizelNodeSelector component
 export {
-  default as SaveIndicator,
-  type SaveIndicatorProps,
-} from "./SaveIndicator.vue";
-
-// SlashMenu components
+  default as VizelNodeSelector,
+  type VizelNodeSelectorProps,
+} from "./VizelNodeSelector.vue";
+// VizelPortal component
+export { default as VizelPortal, type VizelPortalProps } from "./VizelPortal.vue";
+export { default as VizelProvider, type VizelProviderProps } from "./VizelProvider.vue";
+// VizelSaveIndicator component
 export {
-  default as SlashMenu,
-  type SlashMenuProps,
-  type SlashMenuRef,
-} from "./SlashMenu.vue";
-export { default as SlashMenuEmpty, type SlashMenuEmptyProps } from "./SlashMenuEmpty.vue";
-export { default as SlashMenuItem, type SlashMenuItemProps } from "./SlashMenuItem.vue";
-
-// ThemeProvider component
-export { ThemeContextKey } from "./ThemeContext";
-export { default as ThemeProvider, type ThemeProviderProps } from "./ThemeProvider.vue";
+  default as VizelSaveIndicator,
+  type VizelSaveIndicatorProps,
+} from "./VizelSaveIndicator.vue";
+// VizelSlashMenu components
+export {
+  default as VizelSlashMenu,
+  type VizelSlashMenuProps,
+  type VizelSlashMenuRef,
+} from "./VizelSlashMenu.vue";
+export {
+  default as VizelSlashMenuEmpty,
+  type VizelSlashMenuEmptyProps,
+} from "./VizelSlashMenuEmpty.vue";
+export {
+  default as VizelSlashMenuItem,
+  type VizelSlashMenuItemProps,
+} from "./VizelSlashMenuItem.vue";
+// VizelThemeProvider component
+export { VizelThemeContextKey } from "./VizelThemeContext";
+export {
+  default as VizelThemeProvider,
+  type VizelThemeProviderProps,
+} from "./VizelThemeProvider.vue";

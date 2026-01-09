@@ -7,17 +7,17 @@ import type { IconifyIcon } from "@iconify/utils";
 import { getIconData, iconToSVG } from "@iconify/utils";
 import lucide from "@iconify-json/lucide/icons.json";
 import {
-  defaultIconIds,
-  type IconRendererOptions,
-  type InternalIconName,
-  setIconRenderer,
+  setVizelIconRenderer,
+  type VizelIconRendererOptions,
+  type VizelInternalIconName,
+  vizelDefaultIconIds,
 } from "@vizel/core";
 
 /**
  * Render an Iconify icon as an SVG string.
  */
-function renderIconSvg(name: InternalIconName, options?: IconRendererOptions): string {
-  const iconId = defaultIconIds[name];
+function renderIconSvg(name: VizelInternalIconName, options?: VizelIconRendererOptions): string {
+  const iconId = vizelDefaultIconIds[name];
   if (!iconId) return "";
 
   // Parse icon ID (format: "prefix:name")
@@ -59,7 +59,7 @@ function renderIconSvg(name: InternalIconName, options?: IconRendererOptions): s
  * This should be called once when the package is loaded.
  */
 export function initIconRenderer(): void {
-  setIconRenderer(renderIconSvg);
+  setVizelIconRenderer(renderIconSvg);
 }
 
 // Auto-initialize when this module is imported

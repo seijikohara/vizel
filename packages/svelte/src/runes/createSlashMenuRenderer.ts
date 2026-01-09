@@ -1,9 +1,9 @@
 import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
-import type { SlashCommandItem } from "@vizel/core";
+import type { VizelSlashCommandItem } from "@vizel/core";
 import { mount, unmount } from "svelte";
-import SlashMenu from "../components/SlashMenu.svelte";
+import VizelSlashMenu from "../components/VizelSlashMenu.svelte";
 
-export interface SlashMenuRendererOptions {
+export interface VizelSlashMenuRendererOptions {
   /** Custom class name for the menu */
   className?: string;
 }
@@ -22,27 +22,28 @@ const isSlashMenuRef = (value: unknown): value is SlashMenuRef =>
  *
  * @example
  * ```ts
- * import { SlashCommand, createSlashMenuRenderer } from '@vizel/svelte';
+ * import { createVizelSlashMenuRenderer } from '@vizel/svelte';
+ * import { VizelSlashCommand } from '@vizel/core';
  *
  * const editor = new Editor({
  *   extensions: [
- *     SlashCommand.configure({
- *       suggestion: createSlashMenuRenderer(),
+ *     VizelSlashCommand.configure({
+ *       suggestion: createVizelSlashMenuRenderer(),
  *     }),
  *   ],
  * });
  * ```
  */
-export function createSlashMenuRenderer(
-  options: SlashMenuRendererOptions = {}
-): Partial<SuggestionOptions<SlashCommandItem>> {
+export function createVizelSlashMenuRenderer(
+  options: VizelSlashMenuRendererOptions = {}
+): Partial<SuggestionOptions<VizelSlashCommandItem>> {
   return {
     render: () => {
       let component: ReturnType<typeof mount> | null = null;
       let container: HTMLDivElement | null = null;
       let menuContainer: HTMLDivElement | null = null;
-      let items: SlashCommandItem[] = [];
-      let commandFn: ((item: SlashCommandItem) => void) | null = null;
+      let items: VizelSlashCommandItem[] = [];
+      let commandFn: ((item: VizelSlashCommandItem) => void) | null = null;
 
       const updatePosition = (clientRect: (() => DOMRect | null) | null | undefined) => {
         if (!(container && clientRect)) return;
@@ -59,7 +60,7 @@ export function createSlashMenuRenderer(
       };
 
       return {
-        onStart: (props: SuggestionProps<SlashCommandItem>) => {
+        onStart: (props: SuggestionProps<VizelSlashCommandItem>) => {
           items = props.items;
           commandFn = props.command;
 
@@ -72,12 +73,12 @@ export function createSlashMenuRenderer(
           menuContainer = document.createElement("div");
           container.appendChild(menuContainer);
 
-          component = mount(SlashMenu, {
+          component = mount(VizelSlashMenu, {
             target: menuContainer,
             props: {
               items,
               ...(options.className !== undefined && { class: options.className }),
-              oncommand: (item: SlashCommandItem) => {
+              oncommand: (item: VizelSlashCommandItem) => {
                 commandFn?.(item);
               },
             },
@@ -86,7 +87,7 @@ export function createSlashMenuRenderer(
           updatePosition(props.clientRect);
         },
 
-        onUpdate: (props: SuggestionProps<SlashCommandItem>) => {
+        onUpdate: (props: SuggestionProps<VizelSlashCommandItem>) => {
           items = props.items;
           commandFn = props.command;
 
@@ -94,12 +95,12 @@ export function createSlashMenuRenderer(
           // We need to remount the component with new props
           if (component && menuContainer) {
             unmount(component);
-            component = mount(SlashMenu, {
+            component = mount(VizelSlashMenu, {
               target: menuContainer,
               props: {
                 items,
                 ...(options.className !== undefined && { class: options.className }),
-                oncommand: (item: SlashCommandItem) => {
+                oncommand: (item: VizelSlashCommandItem) => {
                   commandFn?.(item);
                 },
               },
