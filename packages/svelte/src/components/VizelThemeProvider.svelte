@@ -1,7 +1,13 @@
 <script lang="ts" module>
-import type { VizelThemeState } from "@vizel/core";
+import type { VizelThemeProviderOptions, VizelThemeState } from "@vizel/core";
+import type { Snippet } from "svelte";
 
 export const VIZEL_THEME_CONTEXT_KEY = Symbol("VizelThemeContext");
+
+export interface VizelThemeProviderProps extends VizelThemeProviderOptions {
+  /** Children to render */
+  children: Snippet;
+}
 </script>
 
 <script lang="ts">
@@ -16,14 +22,8 @@ export const VIZEL_THEME_CONTEXT_KEY = Symbol("VizelThemeContext");
     storeVizelTheme,
     type VizelResolvedTheme,
     type VizelTheme,
-    type VizelThemeProviderOptions,
   } from "@vizel/core";
-  import { onMount, setContext, type Snippet } from "svelte";
-
-  interface Props extends VizelThemeProviderOptions {
-    /** Children to render */
-    children: Snippet;
-  }
+  import { onMount, setContext } from "svelte";
 
   let {
     children,
@@ -31,7 +31,7 @@ export const VIZEL_THEME_CONTEXT_KEY = Symbol("VizelThemeContext");
     storageKey = VIZEL_DEFAULT_THEME_STORAGE_KEY,
     targetSelector,
     disableTransitionOnChange = false,
-  }: Props = $props();
+  }: VizelThemeProviderProps = $props();
 
   // Intentionally capture initial values only - theme state should persist
   // regardless of prop changes after mount

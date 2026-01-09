@@ -32,6 +32,7 @@ export {
   type VizelColorPickerProps,
   // Editor components
   VizelEditor,
+  type VizelEditorExposed,
   type VizelEditorProps,
   // EmbedView
   VizelEmbedView,

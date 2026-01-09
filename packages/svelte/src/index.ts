@@ -34,6 +34,7 @@ export {
   type VizelColorPickerProps,
   // Editor components
   VizelEditor,
+  type VizelEditorExposed,
   type VizelEditorProps,
   // EmbedView
   VizelEmbedView,
@@ -41,6 +42,7 @@ export {
   // Icon
   VizelIcon,
   type VizelIconContextValue,
+  type VizelIconProps,
   VizelLinkEditor,
   type VizelLinkEditorProps,
   // NodeSelector
@@ -64,6 +66,7 @@ export {
   type VizelSlashMenuProps,
   type VizelSlashMenuRef,
   VizelThemeProvider,
+  type VizelThemeProviderProps,
 } from "./components/index.ts";
 
 // Runes (Svelte 5 reactive state)

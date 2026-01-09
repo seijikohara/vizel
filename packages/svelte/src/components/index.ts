@@ -54,7 +54,7 @@ export {
 // ============================================================================
 // Vizel Icon component
 // ============================================================================
-export { default as VizelIcon } from "./VizelIcon.svelte";
+export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.svelte";
 export {
   type CustomIconMap,
   getVizelIconContext,
@@ -118,4 +118,5 @@ export {
 export {
   default as VizelThemeProvider,
   VIZEL_THEME_CONTEXT_KEY,
+  type VizelThemeProviderProps,
 } from "./VizelThemeProvider.svelte";

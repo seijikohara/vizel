@@ -1,10 +1,8 @@
-<script lang="ts">
-import type { IconifyIconProps } from "@iconify/svelte";
-import Icon from "@iconify/svelte";
-import { type VizelIconName, vizelDefaultIconIds } from "@vizel/core";
-import { type CustomIconMap, getVizelIconContext } from "./VizelIconContext";
+<script lang="ts" module>
+import type { VizelIconName } from "@vizel/core";
+import type { CustomIconMap } from "./VizelIconContext";
 
-interface Props {
+export interface VizelIconProps {
   /**
    * The semantic icon name from Vizel's icon system.
    */
@@ -31,8 +29,15 @@ interface Props {
    */
   class?: string;
 }
+</script>
 
-const { name, customIcons, width, height, color, class: className }: Props = $props();
+<script lang="ts">
+import type { IconifyIconProps } from "@iconify/svelte";
+import Icon from "@iconify/svelte";
+import { vizelDefaultIconIds } from "@vizel/core";
+import { getVizelIconContext } from "./VizelIconContext";
+
+const { name, customIcons, width, height, color, class: className }: VizelIconProps = $props();
 const { customIcons: contextIcons } = getVizelIconContext();
 
 const iconId = $derived(customIcons?.[name] ?? contextIcons?.[name] ?? vizelDefaultIconIds[name]);
