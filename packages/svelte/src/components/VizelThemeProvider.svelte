@@ -23,7 +23,7 @@ export interface VizelThemeProviderProps extends VizelThemeProviderOptions {
     type VizelResolvedTheme,
     type VizelTheme,
   } from "@vizel/core";
-  import { onMount, setContext } from "svelte";
+  import { setContext } from "svelte";
 
   let {
     children,
@@ -66,7 +66,7 @@ export interface VizelThemeProviderProps extends VizelThemeProviderOptions {
     applyVizelTheme(resolvedTheme, targetSelector, disableTransitionOnChange);
   });
 
-  onMount(() => {
+  $effect(() => {
     // Listen for system theme changes
     const cleanup = createVizelSystemThemeListener((newSystemTheme: VizelResolvedTheme) => {
       systemTheme = newSystemTheme;

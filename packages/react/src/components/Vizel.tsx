@@ -1,12 +1,14 @@
 import type { Editor, JSONContent } from "@tiptap/core";
 import type { VizelFeatureOptions } from "@vizel/core";
-import type { ReactNode } from "react";
-import { forwardRef, useImperativeHandle } from "react";
+import type { ReactNode, Ref } from "react";
+import { useImperativeHandle } from "react";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
 import { VizelBubbleMenu } from "./VizelBubbleMenu.tsx";
 import { VizelEditor } from "./VizelEditor.tsx";
 
 export interface VizelProps {
+  /** Ref to access editor instance */
+  ref?: Ref<VizelRef>;
   /** Initial content in JSON format */
   initialContent?: JSONContent;
   /**
@@ -98,29 +100,27 @@ export interface VizelRef {
  * }
  * ```
  */
-export const Vizel = forwardRef<VizelRef, VizelProps>(function Vizel(
-  {
-    initialContent,
-    initialMarkdown,
-    transformDiagramsOnImport = true,
-    placeholder,
-    editable = true,
-    autofocus = false,
-    features,
-    className,
-    showBubbleMenu = true,
-    enableEmbed = false,
-    bubbleMenuContent,
-    children,
-    onUpdate,
-    onCreate,
-    onDestroy,
-    onSelectionUpdate,
-    onFocus,
-    onBlur,
-  },
-  ref
-) {
+export function Vizel({
+  ref,
+  initialContent,
+  initialMarkdown,
+  transformDiagramsOnImport = true,
+  placeholder,
+  editable = true,
+  autofocus = false,
+  features,
+  className,
+  showBubbleMenu = true,
+  enableEmbed = false,
+  bubbleMenuContent,
+  children,
+  onUpdate,
+  onCreate,
+  onDestroy,
+  onSelectionUpdate,
+  onFocus,
+  onBlur,
+}: VizelProps): ReactNode {
   const editor = useVizelEditor({
     ...(initialContent !== undefined && { initialContent }),
     ...(initialMarkdown !== undefined && { initialMarkdown }),
@@ -160,6 +160,4 @@ export const Vizel = forwardRef<VizelRef, VizelProps>(function Vizel(
       {children}
     </div>
   );
-});
-
-Vizel.displayName = "Vizel";
+}

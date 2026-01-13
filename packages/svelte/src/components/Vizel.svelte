@@ -3,6 +3,15 @@ import type { Editor, JSONContent } from "@tiptap/core";
 import type { VizelFeatureOptions } from "@vizel/core";
 import type { Snippet } from "svelte";
 
+/**
+ * Exposed ref type for Vizel component.
+ * Use with `bind:this` and access the `editor` property.
+ */
+export interface VizelRef {
+  /** The underlying Tiptap editor instance */
+  readonly editor: Editor | null;
+}
+
 export interface VizelProps {
   /** Initial content in JSON format */
   initialContent?: JSONContent;

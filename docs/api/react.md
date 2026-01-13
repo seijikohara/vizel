@@ -81,10 +81,25 @@ Forces re-render on editor state changes.
 ```tsx
 import { useVizelState } from '@vizel/react';
 
-const updateCount = useVizelState(editor: Editor | null);
+const updateCount = useVizelState(() => editor);
 ```
 
 **Returns:** `number` (update count)
+
+### useVizelEditorState
+
+Tracks specific editor state properties reactively.
+
+```tsx
+import { useVizelEditorState } from '@vizel/react';
+
+const isBold = useVizelEditorState(
+  () => editor,
+  (editor) => editor.isActive('bold')
+);
+```
+
+**Returns:** The value returned by the selector function
 
 ### useVizelAutoSave
 
@@ -94,7 +109,7 @@ Auto-saves editor content with debouncing.
 import { useVizelAutoSave } from '@vizel/react';
 
 const result = useVizelAutoSave(
-  editor: Editor | null,
+  () => editor,
   options?: VizelAutoSaveOptions
 );
 ```
@@ -118,7 +133,7 @@ Provides two-way Markdown synchronization with debouncing.
 import { useVizelMarkdown } from '@vizel/react';
 
 const result = useVizelMarkdown(
-  editor: Editor | null,
+  () => editor,
   options?: VizelMarkdownSyncOptions
 );
 ```
@@ -327,6 +342,25 @@ import { VizelColorPicker } from '@vizel/react';
   recentColors={recentColors}
 />
 ```
+
+### VizelIconProvider
+
+Provides custom icons for Vizel components.
+
+```tsx
+import { VizelIconProvider } from '@vizel/react';
+
+<VizelIconProvider icons={{ bold: MyBoldIcon, italic: MyItalicIcon }}>
+  <Vizel />
+</VizelIconProvider>
+```
+
+**Props:**
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `icons` | `CustomIconMap` | Map of icon names to custom components |
+| `children` | `ReactNode` | Children |
 
 ### VizelSlashMenu
 

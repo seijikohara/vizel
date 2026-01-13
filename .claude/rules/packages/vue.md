@@ -79,20 +79,18 @@ const editor = useVizelEditor({
 
 ## Context (Provide/Inject)
 
-### EditorContext
+### VizelContext
 
-- Use `provide()` in EditorRoot
+- Use `provide()` in VizelProvider
 - Use `inject()` in child components
-- Use Symbol keys for type safety
+- Use `useVizelContext()` to access editor
+- Use `useVizelContextSafe()` for optional access
 
 ```typescript
-export const EditorContextKey = Symbol("EditorContext");
+// Access editor from context
+import { useVizelContext } from '@vizel/vue';
 
-// Provide
-provide(EditorContextKey, editor);
-
-// Inject
-const editor = inject(EditorContextKey);
+const { editor } = useVizelContext();
 ```
 
 ## Reactivity

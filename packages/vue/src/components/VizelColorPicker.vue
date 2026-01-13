@@ -1,25 +1,11 @@
 <script setup lang="ts">
-import type { VizelColorDefinition } from "@vizel/core";
+import {
+  isVizelValidHexColor,
+  normalizeVizelHexColor,
+  type VizelColorDefinition,
+} from "@vizel/core";
 import { computed, onMounted, ref, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
-
-/**
- * Validates a hex color string
- */
-function isValidHexColor(color: string): boolean {
-  return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(color);
-}
-
-/**
- * Normalizes a hex color string (adds # prefix if missing)
- */
-function normalizeHexColor(color: string): string {
-  const trimmed = color.trim();
-  if (trimmed.startsWith("#")) {
-    return trimmed;
-  }
-  return `#${trimmed}`;
-}
 
 export interface VizelColorPickerProps {
   /** Color palette to display */
@@ -114,8 +100,8 @@ function handleSelect(color: string) {
 
 // Handle custom color input submit
 function handleInputSubmit() {
-  const normalized = normalizeHexColor(inputValue.value);
-  if (isValidHexColor(normalized)) {
+  const normalized = normalizeVizelHexColor(inputValue.value);
+  if (isVizelValidHexColor(normalized)) {
     emit("change", normalized);
     emit("update:modelValue", normalized);
     inputValue.value = "";
@@ -206,9 +192,9 @@ onMounted(() => {
   }
 });
 
-const isInputValid = computed(() => isValidHexColor(normalizeHexColor(inputValue.value)));
+const isInputValid = computed(() => isVizelValidHexColor(normalizeVizelHexColor(inputValue.value)));
 const previewColor = computed(() =>
-  isInputValid.value ? normalizeHexColor(inputValue.value) : undefined
+  isInputValid.value ? normalizeVizelHexColor(inputValue.value) : undefined
 );
 </script>
 

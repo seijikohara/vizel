@@ -1,19 +1,17 @@
-import { Editor, type Extensions } from "@tiptap/core";
+import type { Editor } from "@tiptap/core";
 import {
-  createVizelExtensions,
-  initializeVizelMarkdownContent,
+  createVizelEditorInstance,
   registerVizelUploadEventHandler,
-  resolveVizelFeatures,
-  type VizelEditorOptions,
-  vizelDefaultEditorProps,
+  type VizelCreateEditorOptions,
 } from "@vizel/core";
 import { useEffect, useRef, useState } from "react";
-import { createVizelSlashMenuRenderer } from "./createSlashMenuRenderer.ts";
+import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.ts";
 
-export interface UseVizelEditorOptions extends VizelEditorOptions {
-  /** Additional extensions to include */
-  extensions?: Extensions;
-}
+/**
+ * Options for useVizelEditor hook.
+ * @see VizelCreateEditorOptions for available options.
+ */
+export type UseVizelEditorOptions = VizelCreateEditorOptions;
 
 /**
  * React hook to create and manage a Vizel editor instance.
@@ -39,29 +37,9 @@ export interface UseVizelEditorOptions extends VizelEditorOptions {
  * ```
  */
 export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | null {
-  const {
-    initialContent,
-    initialMarkdown,
-    transformDiagramsOnImport = true,
-    placeholder,
-    editable = true,
-    autofocus = false,
-    features,
-    extensions: additionalExtensions = [],
-    onUpdate,
-    onCreate,
-    onDestroy,
-    onSelectionUpdate,
-    onFocus,
-    onBlur,
-  } = options;
+  const { features, extensions: additionalExtensions = [], ...editorOptions } = options;
 
   const [editor, setEditor] = useState<Editor | null>(null);
-
-  const resolvedFeatures = resolveVizelFeatures({
-    ...(features !== undefined && { features }),
-    createSlashMenuRenderer: createVizelSlashMenuRenderer,
-  });
 
   // Store image upload options for event handler
   const imageOptions = typeof features?.image === "object" ? features.image : {};
@@ -70,57 +48,20 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
 
   // Store options in ref to avoid recreating editor on every render
   const optionsRef = useRef({
-    initialContent,
-    initialMarkdown,
-    transformDiagramsOnImport,
-    placeholder,
-    editable,
-    autofocus,
-    resolvedFeatures,
+    features,
     additionalExtensions,
-    onUpdate,
-    onCreate,
-    onDestroy,
-    onSelectionUpdate,
-    onFocus,
-    onBlur,
+    editorOptions,
   });
 
   // Create editor on mount
   useEffect(() => {
     const opts = optionsRef.current;
 
-    // Wrap onCreate to handle initialMarkdown
-    const wrappedOnCreate = opts.initialMarkdown
-      ? (props: { editor: Editor }) => {
-          initializeVizelMarkdownContent(props.editor, opts.initialMarkdown as string, {
-            transformDiagrams: opts.transformDiagramsOnImport,
-          });
-          opts.onCreate?.(props);
-        }
-      : opts.onCreate;
-
-    const instance = new Editor({
-      extensions: [
-        ...createVizelExtensions({
-          ...(opts.placeholder !== undefined && { placeholder: opts.placeholder }),
-          ...(opts.resolvedFeatures !== undefined && { features: opts.resolvedFeatures }),
-        }),
-        ...opts.additionalExtensions,
-      ],
-      // Only set initialContent if initialMarkdown is not provided
-      ...(!opts.initialMarkdown &&
-        opts.initialContent !== undefined && { content: opts.initialContent }),
-      editable: opts.editable,
-      autofocus: opts.autofocus,
-      editorProps: vizelDefaultEditorProps,
-      // Only pass event handlers that are defined to avoid tiptap emit errors
-      ...(opts.onUpdate && { onUpdate: opts.onUpdate }),
-      ...(wrappedOnCreate && { onCreate: wrappedOnCreate }),
-      ...(opts.onDestroy && { onDestroy: opts.onDestroy }),
-      ...(opts.onSelectionUpdate && { onSelectionUpdate: opts.onSelectionUpdate }),
-      ...(opts.onFocus && { onFocus: opts.onFocus }),
-      ...(opts.onBlur && { onBlur: opts.onBlur }),
+    const { editor: instance } = createVizelEditorInstance({
+      ...opts.editorOptions,
+      ...(opts.features !== undefined && { features: opts.features }),
+      extensions: opts.additionalExtensions,
+      createSlashMenuRenderer: createVizelSlashMenuRenderer,
     });
 
     setEditor(instance);

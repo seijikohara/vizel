@@ -86,6 +86,8 @@
       "version": "0.0.1",
       "dependencies": {
         "@hpcc-js/wasm-graphviz": "^1.18.0",
+        "@iconify-json/lucide": "^1.2.84",
+        "@iconify/utils": "^3.1.0",
         "@tiptap/core": "^3.15.1",
         "@tiptap/extension-blockquote": "^3.15.1",
         "@tiptap/extension-bold": "^3.15.1",
@@ -143,14 +145,12 @@
       "version": "0.0.1",
       "dependencies": {
         "@iconify/react": "^6",
-        "@iconify/utils": "^3.1.0",
         "@tiptap/core": "^3.15.1",
         "@tiptap/extension-bubble-menu": "^3.15.1",
         "@tiptap/suggestion": "^3.15.1",
         "@vizel/core": "workspace:*",
       },
       "devDependencies": {
-        "@iconify-json/lucide": "^1.2.82",
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "@vitejs/plugin-react": "^5",
@@ -167,14 +167,12 @@
       "version": "0.0.1",
       "dependencies": {
         "@iconify/svelte": "^5",
-        "@iconify/utils": "^3.1.0",
         "@tiptap/core": "^3.15.1",
         "@tiptap/extension-bubble-menu": "^3.15.1",
         "@tiptap/suggestion": "^3.15.1",
         "@vizel/core": "workspace:*",
       },
       "devDependencies": {
-        "@iconify-json/lucide": "^1.2.82",
         "@sveltejs/package": "^2",
         "@sveltejs/vite-plugin-svelte": "^6",
         "svelte-check": "^4",
@@ -187,7 +185,6 @@
       "name": "@vizel/vue",
       "version": "0.0.1",
       "dependencies": {
-        "@iconify/utils": "^3.1.0",
         "@iconify/vue": "^5",
         "@tiptap/core": "^3.15.1",
         "@tiptap/extension-bubble-menu": "^3.15.1",
@@ -195,7 +192,6 @@
         "@vizel/core": "workspace:*",
       },
       "devDependencies": {
-        "@iconify-json/lucide": "^1.2.82",
         "@vitejs/plugin-vue": "^6",
         "vite": "^7",
         "vite-plugin-dts": "^4",
@@ -379,7 +375,7 @@
 
     "@hpcc-js/wasm-graphviz": ["@hpcc-js/wasm-graphviz@1.18.0", "", {}, "sha512-qfd3gTqtVQG+dWrNy6uwRH7czKw/RiJ9EwDB4F+pYTEfFW+E9kIZXQnLYtgxbGt1nNN2bowHBcOJ9F78PJ5IAQ=="],
 
-    "@iconify-json/lucide": ["@iconify-json/lucide@1.2.82", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-fHZWegspOZonl5GNTvOkHsjnTMdSslFh3EzpzUtRyLxO8bOonqk2OTU3hCl0k4VXzViMjqpRK3X1sotnuBXkFA=="],
+    "@iconify-json/lucide": ["@iconify-json/lucide@1.2.84", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-m45MY1aW2swSK6Neb3J2qdZ+BxZ1VTdN7UeoXENwyMACG9bqGHWYJYxWoFzwoSnCfYLyKWTcBhesBgMd5IrUzQ=="],
 
     "@iconify-json/simple-icons": ["@iconify-json/simple-icons@1.2.65", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-v/O0UeqrDz6ASuRVE5g2Puo5aWyej4M/CxX6WYDBARgswwxK0mp3VQbGgPFEAAUU9QN02IjTgjMuO021gpWf2w=="],
 

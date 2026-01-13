@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { VizelSlashCommandItem } from "@vizel/core";
+import { splitVizelTextByMatches, type VizelSlashCommandItem } from "@vizel/core";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelSlashMenuItemProps {
@@ -18,38 +18,6 @@ defineProps<VizelSlashMenuItemProps>();
 const emit = defineEmits<{
   click: [];
 }>();
-
-/**
- * Highlight text based on match indices from fuzzy search
- */
-function highlightMatches(
-  text: string,
-  matches?: [number, number][]
-): { text: string; highlight: boolean }[] {
-  if (!matches || matches.length === 0) {
-    return [{ text, highlight: false }];
-  }
-
-  const result: { text: string; highlight: boolean }[] = [];
-  let lastIndex = 0;
-
-  for (const [start, end] of matches) {
-    // Add text before match
-    if (start > lastIndex) {
-      result.push({ text: text.slice(lastIndex, start), highlight: false });
-    }
-    // Add highlighted match
-    result.push({ text: text.slice(start, end + 1), highlight: true });
-    lastIndex = end + 1;
-  }
-
-  // Add remaining text
-  if (lastIndex < text.length) {
-    result.push({ text: text.slice(lastIndex), highlight: false });
-  }
-
-  return result;
-}
 </script>
 
 <template>
@@ -68,7 +36,7 @@ function highlightMatches(
     </span>
     <div class="vizel-slash-menu-text">
       <span class="vizel-slash-menu-title">
-        <template v-for="(part, idx) in highlightMatches(item.title, titleMatches)" :key="idx">
+        <template v-for="(part, idx) in splitVizelTextByMatches(item.title, titleMatches)" :key="idx">
           <mark v-if="part.highlight" class="vizel-slash-menu-highlight">{{ part.text }}</mark>
           <template v-else>{{ part.text }}</template>
         </template>

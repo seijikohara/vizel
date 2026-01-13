@@ -277,13 +277,6 @@ export function transformVizelDiagramCodeBlocks(content: VizelContentNode): Vize
 }
 
 /**
- * @deprecated Use `transformVizelDiagramCodeBlocks` instead. This function only handles mermaid diagrams.
- */
-export function transformVizelMermaidToDiagram(content: VizelContentNode): VizelContentNode {
-  return transformVizelDiagramCodeBlocks(content);
-}
-
-/**
  * Convert all diagram code blocks in a document to diagram nodes.
  * This command should be called after importing markdown content.
  * Supports mermaid, dot, and graphviz code blocks.
@@ -339,11 +332,4 @@ export function convertVizelCodeBlocksToDiagrams(editor: Editor): void {
   }
 
   editor.view.dispatch(tr);
-}
-
-/**
- * @deprecated Use `convertVizelCodeBlocksToDiagrams` instead. This function only handles mermaid diagrams.
- */
-export function convertVizelMermaidCodeBlocksToDiagrams(editor: Editor): void {
-  convertVizelCodeBlocksToDiagrams(editor);
 }

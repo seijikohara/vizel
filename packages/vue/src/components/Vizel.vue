@@ -10,6 +10,15 @@ import { useVizelEditor } from "../composables/useVizelEditor.ts";
 import VizelBubbleMenu from "./VizelBubbleMenu.vue";
 import VizelEditor from "./VizelEditor.vue";
 
+/**
+ * Exposed ref type for Vizel component.
+ * Use with `ref` attribute to access the editor instance.
+ */
+export interface VizelRef {
+  /** The underlying Tiptap editor instance */
+  editor: Editor | null;
+}
+
 export interface VizelProps {
   /** Initial content in JSON format */
   initialContent?: JSONContent;
@@ -28,11 +37,6 @@ export interface VizelProps {
    * @default true
    */
   transformDiagramsOnImport?: boolean;
-  /**
-   * Two-way binding for markdown content (v-model:markdown).
-   * When set, markdown will be synchronized with the editor content.
-   */
-  markdown?: string;
   /** Placeholder text when editor is empty */
   placeholder?: string;
   /** Whether the editor is editable (default: true) */
@@ -70,9 +74,14 @@ const emit = defineEmits<{
   focus: [{ editor: Editor }];
   /** Emitted when editor loses focus */
   blur: [{ editor: Editor }];
-  /** Emitted when markdown content changes (for v-model:markdown) */
-  "update:markdown": [markdown: string];
 }>();
+
+/**
+ * Two-way binding for markdown content (v-model:markdown).
+ * When set, markdown will be synchronized with the editor content.
+ * Uses Vue 3.4+ defineModel for cleaner two-way binding.
+ */
+const markdown = defineModel<string>("markdown");
 
 const slots = useSlots();
 
@@ -89,9 +98,9 @@ const editor = useVizelEditor({
   ...(props.features !== undefined && { features: props.features }),
   onUpdate: (e) => {
     emit("update", e);
-    // Emit markdown update for v-model:markdown if not updating from external change
-    if (!isUpdatingFromMarkdown && props.markdown !== undefined) {
-      emit("update:markdown", getVizelMarkdown(e.editor));
+    // Update markdown model if not updating from external change
+    if (!isUpdatingFromMarkdown && markdown.value !== undefined) {
+      markdown.value = getVizelMarkdown(e.editor);
     }
   },
   onCreate: (e) => emit("create", e),
@@ -102,27 +111,24 @@ const editor = useVizelEditor({
 });
 
 // Watch for external markdown changes (v-model:markdown)
-watch(
-  () => props.markdown,
-  (newMarkdown) => {
-    if (newMarkdown === undefined || !editor.value) return;
+watch(markdown, (newMarkdown) => {
+  if (newMarkdown === undefined || !editor.value) return;
 
-    // Get current editor markdown
-    const currentMarkdown = getVizelMarkdown(editor.value);
-    if (newMarkdown === currentMarkdown) return;
+  // Get current editor markdown
+  const currentMarkdown = getVizelMarkdown(editor.value);
+  if (newMarkdown === currentMarkdown) return;
 
-    // Set flag to prevent emitting update:markdown during this update
-    isUpdatingFromMarkdown = true;
-    setVizelMarkdown(editor.value, newMarkdown, {
-      transformDiagrams: props.transformDiagramsOnImport,
-    });
-    isUpdatingFromMarkdown = false;
-  }
-);
+  // Set flag to prevent emitting update:markdown during this update
+  isUpdatingFromMarkdown = true;
+  setVizelMarkdown(editor.value, newMarkdown, {
+    transformDiagrams: props.transformDiagramsOnImport,
+  });
+  isUpdatingFromMarkdown = false;
+});
 
 // Expose editor instance for advanced use cases
 // Both `editor` property and `getEditor()` method are provided for compatibility
-defineExpose({
+defineExpose<VizelRef & { getEditor: () => Editor | null }>({
   /** The underlying Tiptap editor instance */
   get editor() {
     return editor.value;

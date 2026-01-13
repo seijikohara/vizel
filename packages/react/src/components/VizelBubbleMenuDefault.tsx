@@ -31,7 +31,7 @@ export function VizelBubbleMenuDefault({
   enableEmbed,
 }: VizelBubbleMenuDefaultProps) {
   // Subscribe to editor state changes to update active states
-  useVizelState(editor);
+  useVizelState(() => editor);
   const [showLinkEditor, setShowLinkEditor] = useState(false);
 
   if (showLinkEditor) {

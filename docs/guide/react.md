@@ -143,7 +143,7 @@ import { useVizelState } from '@vizel/react';
 
 function EditorStats({ editor }) {
   // Re-renders when editor state changes
-  useVizelState(editor);
+  useVizelState(() => editor);
 
   if (!editor) return null;
 
@@ -167,7 +167,7 @@ import { useVizelAutoSave, VizelEditor, VizelSaveIndicator } from '@vizel/react'
 function Editor() {
   const editor = useVizelEditor();
 
-  const { status, lastSaved, save, restore } = useVizelAutoSave(editor, {
+  const { status, lastSaved, save, restore } = useVizelAutoSave(() => editor, {
     debounceMs: 2000,
     storage: 'localStorage',
     key: 'my-editor-content',
@@ -193,7 +193,7 @@ import { useVizelEditor, useVizelMarkdown, VizelEditor } from '@vizel/react';
 
 function MarkdownEditor() {
   const editor = useVizelEditor();
-  const { markdown, setMarkdown, isPending } = useVizelMarkdown(editor, {
+  const { markdown, setMarkdown, isPending } = useVizelMarkdown(() => editor, {
     debounceMs: 300, // default: 300ms
   });
 
@@ -362,7 +362,7 @@ function TwoWayMarkdownSync() {
   const editor = useVizelEditor({
     initialMarkdown: '# Hello',
   });
-  const { markdown, setMarkdown, isPending } = useVizelMarkdown(editor);
+  const { markdown, setMarkdown, isPending } = useVizelMarkdown(() => editor);
 
   return (
     <div className="split-view">

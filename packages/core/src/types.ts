@@ -1,4 +1,4 @@
-import type { Editor, JSONContent } from "@tiptap/core";
+import type { Editor, Extensions, JSONContent } from "@tiptap/core";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelCodeBlockOptions } from "./extensions/code-block-lowlight.ts";
 import type { VizelDetailsOptions } from "./extensions/details.ts";
@@ -12,7 +12,7 @@ import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
-import type { ImageUploadOptions } from "./plugins/image-upload.ts";
+import type { VizelImageUploadPluginOptions } from "./plugins/image-upload.ts";
 
 /**
  * Slash command feature options
@@ -27,7 +27,7 @@ export interface VizelSlashCommandOptions {
 /**
  * Image feature options
  */
-export interface VizelImageFeatureOptions extends Partial<ImageUploadOptions> {
+export interface VizelImageFeatureOptions extends Partial<VizelImageUploadPluginOptions> {
   /** Enable image resizing (default: true) */
   resize?: boolean;
 }
@@ -161,4 +161,34 @@ export interface VizelEditorState {
   characterCount: number;
   /** Word count */
   wordCount: number;
+}
+
+/**
+ * Options for creating a slash menu renderer
+ */
+export interface VizelSlashMenuRendererOptions {
+  /** Custom class name for the menu */
+  className?: string;
+}
+
+/**
+ * Options for creating a Vizel editor instance with framework hooks/composables/runes.
+ * Extends VizelEditorOptions with ability to add custom Tiptap extensions.
+ */
+export interface VizelCreateEditorOptions extends VizelEditorOptions {
+  /**
+   * Additional Tiptap extensions to include.
+   * These are added alongside the default Vizel extensions.
+   *
+   * @example
+   * ```typescript
+   * import { useVizelEditor } from '@vizel/react';
+   * import { Underline } from '@tiptap/extension-underline';
+   *
+   * const editor = useVizelEditor({
+   *   extensions: [Underline],
+   * });
+   * ```
+   */
+  extensions?: Extensions;
 }

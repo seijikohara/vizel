@@ -24,7 +24,7 @@ export {
 export { VizelColorPicker, type VizelColorPickerProps } from "./VizelColorPicker.tsx";
 export { useVizelContext, useVizelContextSafe } from "./VizelContext.tsx";
 // Editor components
-export { VizelEditor, type VizelEditorProps, type VizelEditorRef } from "./VizelEditor.tsx";
+export { VizelEditor, type VizelEditorProps, type VizelExposed } from "./VizelEditor.tsx";
 // VizelEmbedView component
 export { VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.tsx";
 // Icon component

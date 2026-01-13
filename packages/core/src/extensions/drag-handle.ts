@@ -1,9 +1,8 @@
 import { Extension } from "@tiptap/core";
-import DragHandle, { type DragHandleOptions } from "@tiptap/extension-drag-handle";
+import DragHandle from "@tiptap/extension-drag-handle";
 import { renderVizelIcon } from "../icons/types.ts";
 
 export { DragHandle as VizelDragHandle };
-export type { DragHandleOptions };
 
 export interface VizelDragHandleOptions {
   /**

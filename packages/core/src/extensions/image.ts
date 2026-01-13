@@ -7,7 +7,7 @@ import {
   createVizelImageUploadPlugin,
   handleVizelImageDrop,
   handleVizelImagePaste,
-  type ImageUploadOptions,
+  type VizelImageUploadPluginOptions,
   validateVizelImageFile,
 } from "../plugins/image-upload.ts";
 import { VizelResizableImage } from "./image-resize.ts";
@@ -88,7 +88,7 @@ export function createVizelImageExtension(options: VizelImageOptions = {}) {
  */
 export interface VizelImageUploadOptions extends VizelImageOptions {
   /** Image upload configuration */
-  upload: ImageUploadOptions;
+  upload: VizelImageUploadPluginOptions;
   /** Image resize options (set to false to disable) */
   resize?: VizelImageResizeOptions | false;
 }
@@ -173,7 +173,7 @@ export function createVizelImageUploadExtensions(options: VizelImageUploadOption
  */
 export interface VizelImageUploadWithFileHandlerOptions extends VizelImageOptions {
   /** Image upload configuration */
-  upload: ImageUploadOptions;
+  upload: VizelImageUploadPluginOptions;
   /** Image resize options (set to false to disable) */
   resize?: VizelImageResizeOptions | false;
   /** Use @tiptap/extension-file-handler for drop/paste handling (default: true) */
@@ -313,7 +313,7 @@ export {
   getVizelImageUploadPluginKey,
   handleVizelImageDrop,
   handleVizelImagePaste,
-  type ImageUploadOptions,
+  type VizelImageUploadPluginOptions,
   type VizelImageValidationError,
   type VizelImageValidationErrorType,
   type VizelUploadImageFn,

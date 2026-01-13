@@ -98,12 +98,12 @@ const editor = createVizelEditor({
 editor.current?.commands.setContent(content);
 ```
 
-### createEditorState
+### createVizelEditorState
 
 Rune for tracking editor state changes.
 
 ```typescript
-const updateCount = createEditorState(() => editor.current);
+const updateCount = createVizelEditorState(() => editor.current);
 // Use updateCount.current to trigger reactivity
 ```
 
@@ -111,26 +111,32 @@ const updateCount = createEditorState(() => editor.current);
 
 - File extension: `.svelte.ts`
 - Return object with getter: `{ get current() { return editor; } }`
-- Use `onMount` for DOM-dependent initialization
-- Use `onDestroy` for cleanup
+- Use `$effect` for lifecycle management (Svelte 5 pattern)
 - Initialize state with `$state<Editor | null>(null)`
+
+```typescript
+// $effect replaces onMount/onDestroy
+$effect(() => {
+  // Setup code runs when component mounts
+  return () => {
+    // Cleanup runs when component unmounts
+  };
+});
+```
 
 ## Context
 
-### EditorContext
+### VizelContext
 
-- Use `setContext()` in EditorRoot
-- Use `getContext()` in child components
-- Use Symbol or string keys
+- Use `setContext()` in VizelProvider
+- Use `getVizelContext()` to access editor
+- Use `getVizelContextSafe()` for optional access
 
 ```typescript
-import { setContext, getContext } from "svelte";
-
-// Set context
-setContext("editor", editor);
+import { getVizelContext } from '@vizel/svelte';
 
 // Get context
-const editor = getContext<Editor>("editor");
+const { editor } = getVizelContext();
 ```
 
 ## Event Handling

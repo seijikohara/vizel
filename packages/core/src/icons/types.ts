@@ -6,6 +6,10 @@
  * using Iconify or other icon libraries.
  */
 
+import type { IconifyIcon } from "@iconify/utils";
+import { getIconData, iconToSVG } from "@iconify/utils";
+import lucide from "@iconify-json/lucide/icons.json";
+
 /**
  * Icon names used in slash commands and menus.
  * These are semantic names that map to actual icons in framework packages.
@@ -111,6 +115,32 @@ export type VizelIconName =
   | VizelUIIconName
   | VizelBubbleMenuIconName
   | VizelInternalIconName;
+
+/**
+ * Custom icon mappings to override default Iconify icon IDs.
+ * Keys are semantic icon names, values are Iconify icon IDs.
+ *
+ * @example
+ * ```ts
+ * const customIcons: CustomIconMap = {
+ *   heading1: "mdi:format-header-1",
+ *   bold: "mdi:format-bold",
+ *   // Use any Iconify icon set: Material Design, Heroicons, Phosphor, etc.
+ * };
+ * ```
+ */
+export type CustomIconMap = Partial<Record<VizelIconName, string>>;
+
+/**
+ * Context value for icon customization.
+ * Used by framework-specific icon providers.
+ */
+export interface VizelIconContextValue {
+  /**
+   * Custom icon mappings that override default Lucide icons.
+   */
+  customIcons?: CustomIconMap | undefined;
+}
 
 /**
  * Default Iconify icon IDs for each icon name.
@@ -261,4 +291,68 @@ export function renderVizelIcon(
     return "";
   }
   return iconRenderer(name, options);
+}
+
+/**
+ * Render an Iconify icon as an SVG string using Lucide icons.
+ * This is the default implementation used by framework packages.
+ *
+ * @param name - The internal icon name
+ * @param options - Optional rendering options (width, height)
+ * @returns The SVG string, or empty string if icon not found
+ */
+export function renderVizelIconSvg(
+  name: VizelInternalIconName,
+  options?: VizelIconRendererOptions
+): string {
+  const iconId = vizelDefaultIconIds[name];
+  if (!iconId) return "";
+
+  // Parse icon ID (format: "prefix:name")
+  const [, iconName] = iconId.split(":");
+  if (!iconName) return "";
+
+  // Get icon data from the Lucide icon set
+  const iconData = getIconData(lucide, iconName) as IconifyIcon | null;
+  if (!iconData) return "";
+
+  // Convert icon data to SVG
+  const result = iconToSVG(iconData, {
+    height: options?.height ?? 24,
+    width: options?.width ?? 24,
+  });
+
+  // Build SVG element
+  const attrs: string[] = [
+    'xmlns="http://www.w3.org/2000/svg"',
+    `width="${options?.width ?? 24}"`,
+    `height="${options?.height ?? 24}"`,
+    `viewBox="0 0 ${iconData.width ?? 24} ${iconData.height ?? 24}"`,
+  ];
+
+  // Add additional attributes from the result
+  if (result.attributes) {
+    for (const [key, value] of Object.entries(result.attributes)) {
+      if (!["width", "height", "viewBox"].includes(key)) {
+        attrs.push(`${key}="${value}"`);
+      }
+    }
+  }
+
+  return `<svg ${attrs.join(" ")}>${result.body}</svg>`;
+}
+
+/**
+ * Initialize the Vizel icon renderer with the default Lucide implementation.
+ * Call this once when your framework package is loaded.
+ *
+ * @example
+ * ```typescript
+ * // In @vizel/react entry point
+ * import { initVizelIconRenderer } from "@vizel/core";
+ * initVizelIconRenderer();
+ * ```
+ */
+export function initVizelIconRenderer(): void {
+  setVizelIconRenderer(renderVizelIconSvg);
 }

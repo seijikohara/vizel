@@ -184,10 +184,10 @@ Be careful when adding extensions that might conflict with Vizel's built-in exte
 Access editor state programmatically:
 
 ```typescript
-import { getEditorState } from '@vizel/core';
+import { getVizelEditorState } from '@vizel/core';
 
 // Get current state
-const state = getEditorState(editor);
+const state = getVizelEditorState(editor);
 
 console.log(state);
 // {
@@ -203,10 +203,10 @@ console.log(state);
 ### React Hook
 
 ```tsx
-import { useEditorState } from '@vizel/react';
+import { useVizelState } from '@vizel/react';
 
 function EditorStatus({ editor }) {
-  const updateCount = useEditorState(editor);
+  const updateCount = useVizelState(() => editor);
   
   // Component re-renders on editor changes
   return (
@@ -222,10 +222,10 @@ function EditorStatus({ editor }) {
 
 ```vue
 <script setup lang="ts">
-import { useEditorState } from '@vizel/vue';
+import { useVizelState } from '@vizel/vue';
 
 const props = defineProps<{ editor: Editor | null }>();
-const updateCount = useEditorState(() => props.editor);
+const updateCount = useVizelState(() => props.editor);
 </script>
 
 <template>
@@ -239,10 +239,10 @@ const updateCount = useEditorState(() => props.editor);
 
 ```svelte
 <script lang="ts">
-  import { createEditorState } from '@vizel/svelte';
+  import { createVizelState } from '@vizel/svelte';
 
   let { editor } = $props();
-  const state = createEditorState(() => editor);
+  const state = createVizelState(() => editor);
 </script>
 
 <div>

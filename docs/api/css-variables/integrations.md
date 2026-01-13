@@ -156,19 +156,19 @@ function App() {
 }
 ```
 
-Or use Vizel's ThemeProvider:
+Or use Vizel's VizelThemeProvider:
 
 ```tsx
-import { ThemeProvider, Vizel } from '@vizel/react';
+import { VizelThemeProvider, Vizel } from '@vizel/react';
 import '@vizel/core/styles.css';
 import { Button } from '@/components/ui/button';
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark">
+    <VizelThemeProvider defaultTheme="dark">
       <Vizel placeholder="Type '/' for commands..." />
       <Button>Save</Button>
-    </ThemeProvider>
+    </VizelThemeProvider>
   );
 }
 ```

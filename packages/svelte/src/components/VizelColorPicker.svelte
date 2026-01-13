@@ -24,32 +24,8 @@ export interface VizelColorPickerProps {
 </script>
 
 <script lang="ts">
-import { onMount } from "svelte";
+import { isVizelValidHexColor, normalizeVizelHexColor } from "@vizel/core";
 import VizelIcon from "./VizelIcon.svelte";
-
-/**
- * Normalize a hex color string to standard format (#RRGGBB).
- * Handles shorthand (#RGB) and lowercase conversion.
- */
-function normalizeHexColor(color: string): string {
-  const trimmed = color.trim();
-  if (!trimmed.startsWith("#")) {
-    return `#${trimmed}`;
-  }
-  // Handle shorthand hex (#RGB -> #RRGGBB)
-  if (trimmed.length === 4) {
-    const [, r, g, b] = trimmed;
-    return `#${r}${r}${g}${g}${b}${b}`.toUpperCase();
-  }
-  return trimmed.toUpperCase();
-}
-
-/**
- * Validate if a string is a valid hex color.
- */
-function isValidHexColor(color: string): boolean {
-  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
-}
 
 const GRID_COLUMNS = 4;
 
@@ -111,8 +87,8 @@ function handleSelect(color: string) {
 
 // Handle custom color input submit
 function handleInputSubmit() {
-  const normalized = normalizeHexColor(inputValue);
-  if (isValidHexColor(normalized)) {
+  const normalized = normalizeVizelHexColor(inputValue);
+  if (isVizelValidHexColor(normalized)) {
     onchange(normalized);
     inputValue = "";
   }
@@ -186,8 +162,8 @@ $effect(() => {
   }
 });
 
-// Focus first swatch or current value on mount
-onMount(() => {
+// Focus first swatch or current value on mount (run only once)
+$effect(() => {
   const currentIndex = value ? allColors.indexOf(value) : -1;
   if (currentIndex >= 0) {
     focusedIndex = currentIndex;
@@ -196,8 +172,8 @@ onMount(() => {
   }
 });
 
-const isInputValid = $derived(isValidHexColor(normalizeHexColor(inputValue)));
-const previewColor = $derived(isInputValid ? normalizeHexColor(inputValue) : undefined);
+const isInputValid = $derived(isVizelValidHexColor(normalizeVizelHexColor(inputValue)));
+const previewColor = $derived(isInputValid ? normalizeVizelHexColor(inputValue) : undefined);
 </script>
 
 <div

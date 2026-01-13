@@ -1,7 +1,7 @@
 // ============================================================================
 // Vizel all-in-one component
 // ============================================================================
-export { default as Vizel, type VizelProps } from "./Vizel.svelte";
+export { default as Vizel, type VizelProps, type VizelRef } from "./Vizel.svelte";
 // ============================================================================
 // Vizel BubbleMenu components
 // ============================================================================
@@ -41,8 +41,8 @@ export { getVizelContext, getVizelContextSafe } from "./VizelContext.ts";
 // ============================================================================
 export {
   default as VizelEditor,
-  type VizelEditorExposed,
   type VizelEditorProps,
+  type VizelExposed,
 } from "./VizelEditor.svelte";
 // ============================================================================
 // Vizel EmbedView component
@@ -58,9 +58,13 @@ export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.svelte";
 export {
   type CustomIconMap,
   getVizelIconContext,
-  setVizelIconContext,
+  setVizelIcons,
   type VizelIconContextValue,
 } from "./VizelIconContext.ts";
+export {
+  default as VizelIconProvider,
+  type VizelIconProviderProps,
+} from "./VizelIconProvider.svelte";
 // ============================================================================
 // Vizel LinkEditor component
 // ============================================================================
@@ -117,6 +121,5 @@ export {
 // ============================================================================
 export {
   default as VizelThemeProvider,
-  VIZEL_THEME_CONTEXT_KEY,
   type VizelThemeProviderProps,
 } from "./VizelThemeProvider.svelte";

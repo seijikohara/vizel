@@ -13,9 +13,7 @@ export {
   getVizelContext,
   getVizelContextSafe,
   getVizelIconContext,
-  setVizelIconContext,
-  // ThemeProvider
-  VIZEL_THEME_CONTEXT_KEY,
+  setVizelIcons,
   // Vizel all-in-one
   Vizel,
   // BubbleMenu
@@ -34,15 +32,17 @@ export {
   type VizelColorPickerProps,
   // Editor components
   VizelEditor,
-  type VizelEditorExposed,
   type VizelEditorProps,
   // EmbedView
   VizelEmbedView,
   type VizelEmbedViewProps,
+  type VizelExposed,
   // Icon
   VizelIcon,
   type VizelIconContextValue,
   type VizelIconProps,
+  VizelIconProvider,
+  type VizelIconProviderProps,
   VizelLinkEditor,
   type VizelLinkEditorProps,
   // NodeSelector
@@ -54,6 +54,7 @@ export {
   type VizelProps,
   VizelProvider,
   type VizelProviderProps,
+  type VizelRef,
   // SaveIndicator
   VizelSaveIndicator,
   type VizelSaveIndicatorProps,

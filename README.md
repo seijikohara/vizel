@@ -135,7 +135,7 @@ For more control, use individual components with hooks/composables/runes:
 
 ```tsx
 // React
-import { EditorContent, BubbleMenu, useVizelEditor } from '@vizel/react';
+import { VizelEditor, VizelBubbleMenu, useVizelEditor } from '@vizel/react';
 import '@vizel/core/styles.css';
 
 function Editor() {
@@ -150,8 +150,8 @@ function Editor() {
 
   return (
     <div>
-      <EditorContent editor={editor} />
-      {editor && <BubbleMenu editor={editor} />}
+      <VizelEditor editor={editor} />
+      {editor && <VizelBubbleMenu editor={editor} />}
     </div>
   );
 }
@@ -213,27 +213,27 @@ const editor = useVizelEditor({
 
 ```typescript
 // React
-import { useAutoSave } from '@vizel/react';
+import { useVizelAutoSave } from '@vizel/react';
 
-const { status, lastSaved } = useAutoSave(editor, {
+const { status, lastSaved } = useVizelAutoSave(() => editor, {
   debounceMs: 2000,
   storage: 'localStorage', // or 'sessionStorage' or custom
   key: 'my-editor-content',
 });
 
 // Vue
-import { useAutoSave } from '@vizel/vue';
+import { useVizelAutoSave } from '@vizel/vue';
 
-const { status, lastSaved } = useAutoSave(() => editor.value, {
+const { status, lastSaved } = useVizelAutoSave(() => editor.value, {
   debounceMs: 2000,
   storage: 'localStorage',
   key: 'my-editor-content',
 });
 
 // Svelte
-import { createAutoSave } from '@vizel/svelte';
+import { createVizelAutoSave } from '@vizel/svelte';
 
-const autoSave = createAutoSave(() => editor.current, {
+const autoSave = createVizelAutoSave(() => editor.current, {
   debounceMs: 2000,
   storage: 'localStorage',
   key: 'my-editor-content',
@@ -245,18 +245,18 @@ const autoSave = createAutoSave(() => editor.current, {
 
 ```typescript
 // React
-import { ThemeProvider, useTheme } from '@vizel/react';
+import { VizelThemeProvider, useVizelTheme } from '@vizel/react';
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="my-theme">
+    <VizelThemeProvider defaultTheme="system" storageKey="my-theme">
       <Editor />
-    </ThemeProvider>
+    </VizelThemeProvider>
   );
 }
 
 function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useVizelTheme();
   return (
     <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
       Toggle

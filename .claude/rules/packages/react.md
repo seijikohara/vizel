@@ -15,20 +15,24 @@ This package only contains React-specific wrappers around `@vizel/core`.
 
 ### Component Structure
 
+React 19 no longer requires `forwardRef` - use `ref` as a regular prop:
+
 ```typescript
 // Component file structure
-import { forwardRef, useImperativeHandle } from "react";
-import type { ComponentProps } from "./types";
+import { useImperativeHandle } from "react";
 
 export interface ComponentProps {
+  ref?: React.Ref<RefType>;
   // Props definition
 }
 
-export const Component = forwardRef<RefType, ComponentProps>((props, ref) => {
+export function Component({ ref, ...props }: ComponentProps) {
+  useImperativeHandle(ref, () => ({
+    // Exposed methods
+  }));
+  
   // Implementation
-});
-
-Component.displayName = "Component";
+}
 ```
 
 ### Props Naming
@@ -71,11 +75,11 @@ const editor = useVizelEditor({
 
 ## Context
 
-### EditorContext
+### VizelContext
 
 - Provides editor instance to child components
-- Use `useEditorContext()` to access
-- Use `useEditorContextSafe()` for optional access
+- Use `useVizelContext()` to access
+- Use `useVizelContextSafe()` for optional access
 
 ## Testing
 

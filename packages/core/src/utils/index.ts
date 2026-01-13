@@ -1,20 +1,26 @@
 // Editor helpers
+
+// Color utilities
+export { isVizelValidHexColor, normalizeVizelHexColor } from "./colorUtils.ts";
+// Editor factory
+export {
+  type CreateVizelEditorInstanceOptions,
+  type CreateVizelEditorInstanceResult,
+  createVizelEditorInstance,
+} from "./editorFactory.ts";
 export {
   convertVizelCodeBlocksToDiagrams,
-  convertVizelMermaidCodeBlocksToDiagrams,
   createVizelUploadEventHandler,
   getVizelEditorState,
   registerVizelUploadEventHandler,
   resolveVizelFeatures,
   transformVizelDiagramCodeBlocks,
-  transformVizelMermaidToDiagram,
   VIZEL_UPLOAD_IMAGE_EVENT,
   type VizelContentNode,
   type VizelCreateUploadEventHandlerOptions,
   type VizelResolveFeaturesOptions,
   vizelDefaultEditorProps,
 } from "./editorHelpers.ts";
-
 // Markdown utilities
 export {
   createVizelMarkdownSyncHandlers,
@@ -25,7 +31,6 @@ export {
   VIZEL_DEFAULT_MARKDOWN_DEBOUNCE_MS,
   type VizelMarkdownSyncHandlers,
 } from "./markdown.ts";
-
 // Portal utilities
 export {
   createVizelPortalElement,
@@ -39,3 +44,13 @@ export {
   type VizelMountPortalOptions,
   type VizelPortalLayer,
 } from "./portal.ts";
+// Suggestion container utilities
+export {
+  createVizelSuggestionContainer,
+  handleVizelSuggestionEscape,
+  VIZEL_SUGGESTION_Z_INDEX,
+  type VizelDOMRectGetter,
+  type VizelSuggestionContainer,
+} from "./suggestionContainer.ts";
+// Text highlight utilities
+export { splitVizelTextByMatches, type VizelTextSegment } from "./textHighlight.ts";

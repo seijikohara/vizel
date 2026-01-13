@@ -53,7 +53,7 @@ Use Bun instead of Node.js for all operations:
 
 - Core package contains all Tiptap extensions and is framework-agnostic
 - Framework packages (react, vue, svelte) add framework-specific components (no re-exports from core)
-- Each framework package provides: Vizel, VizelEditor, VizelBubbleMenu, VizelSlashMenu components
+- Each framework package provides: Vizel, VizelEditor, VizelBubbleMenu, VizelSlashMenu, VizelIconProvider components
 - Use composition pattern: Vizel (all-in-one) or VizelEditor + VizelBubbleMenu
 
 ### Core Package Centralization
@@ -112,8 +112,9 @@ For detailed coding rules and guidelines, see the following files:
 ### Cross-Framework
 
 - All components must exist in React, Vue, and Svelte
-- React: `use*` hooks, Vue: `use*` composables, Svelte: `create*` runes
+- React: `use*` hooks, Vue: `use*` composables, Svelte: `create*`/`get*` runes
 - Shared types/constants/utils go in `@vizel/core`
+- All hooks/composables/runes use getter pattern: `() => editor`
 
 ### Git
 
