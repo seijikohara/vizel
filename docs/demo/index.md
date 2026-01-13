@@ -1,6 +1,6 @@
 # Demo
 
-Try the full-featured demos for each framework:
+Try the demos for each framework:
 
 <div class="demo-links">
   <a href="/vizel/demo/react/" target="_blank" class="demo-link">

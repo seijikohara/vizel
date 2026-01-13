@@ -4,7 +4,7 @@ Complete reference of all CSS custom properties available in Vizel. All color va
 
 ## Overview
 
-Vizel provides a comprehensive set of CSS custom properties for theming. Variables are organized into the following categories:
+Vizel provides CSS custom properties for theming. Variables are organized into the following categories:
 
 | Category | Description |
 |----------|-------------|

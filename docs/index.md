@@ -75,7 +75,7 @@ features:
 
 ## Quick Start
 
-Install Vizel for your preferred framework:
+Install Vizel for your framework:
 
 ::: code-group
 
