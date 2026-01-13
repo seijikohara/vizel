@@ -61,7 +61,7 @@ const editor = useVizelEditor({
 
 ## Slash Commands
 
-Type `/` to open the command menu for quick block insertion.
+Type `/` to open the command menu for block insertion.
 
 ### Options
 
@@ -509,7 +509,7 @@ const editor = useVizelEditor({
 
 ## Task Lists
 
-Checkbox task lists for to-do items.
+Checkbox task lists.
 
 ### Options
 

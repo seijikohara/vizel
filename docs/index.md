@@ -143,7 +143,7 @@ import '@vizel/core/styles.css';
 
 ### Slash Commands
 
-Type `/` to open the command menu and quickly insert blocks:
+Type `/` to open the command menu:
 
 - **Headings** - H1, H2, H3
 - **Lists** - Bullet, Numbered, Task
@@ -162,16 +162,16 @@ Select text to display the bubble menu:
 
 Drag blocks by their handle to reorder content.
 
-## Why Vizel?
+## Features
 
-| Feature | Vizel | Other Editors |
-|---------|-------|---------------|
-| Multi-framework | React, Vue, Svelte | Usually single framework |
-| TypeScript | Full support | Partial or none |
-| Markdown | Import/Export | Often limited |
-| Theming | CSS Variables | Complex overrides |
-| Bundle Size | Tree-shakeable | Often monolithic |
-| Extensions | Modular | Tightly coupled |
+| Feature | Description |
+|---------|-------------|
+| Multi-framework | React 19, Vue 3, Svelte 5 |
+| TypeScript | Type definitions included |
+| Markdown | Import and export |
+| Theming | CSS variables |
+| Bundle size | Tree-shakeable |
+| Extensions | Modular architecture |
 
 ## Community
 

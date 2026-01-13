@@ -1,7 +1,5 @@
 # Configuration
 
-This page covers all available configuration options for the Vizel editor.
-
 ## Editor Options
 
 The main configuration object passed to `useVizelEditor` (React/Vue) or `createVizelEditor` (Svelte).

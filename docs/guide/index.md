@@ -31,7 +31,7 @@ graph LR
     Vizel --> Output
 ```
 
-## Key Features
+## Features
 
 ### Text Editing
 
