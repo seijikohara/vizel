@@ -551,7 +551,7 @@ Vizel uses Svelte 5 runes. Key differences:
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Full options reference
+- [Configuration](/guide/configuration) - Editor options
 - [Features](/guide/features) - Enable and configure features
 - [Theming](/guide/theming) - Customize appearance
-- [API Reference](/api/svelte) - Complete API documentation
+- [API Reference](/api/svelte)

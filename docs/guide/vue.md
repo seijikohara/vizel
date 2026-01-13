@@ -522,7 +522,7 @@ const Editor = defineAsyncComponent(() => import('./Editor.vue'));
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Full options reference
+- [Configuration](/guide/configuration) - Editor options
 - [Features](/guide/features) - Enable and configure features
 - [Theming](/guide/theming) - Customize appearance
-- [API Reference](/api/vue) - Complete API documentation
+- [API Reference](/api/vue)

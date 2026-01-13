@@ -562,4 +562,4 @@ const editor = useVizelEditor({
 
 - [Theming](/guide/theming) - Customize the appearance
 - [Auto-Save](/guide/auto-save) - Persist content automatically
-- [API Reference](/api/) - Complete API documentation
+- [API Reference](/api/)

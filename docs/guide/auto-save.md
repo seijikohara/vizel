@@ -245,7 +245,7 @@ useVizelAutoSave(() => editor, { debounceMs: 5000 });
 
 ## Error Handling
 
-Handle save errors gracefully:
+Handle save errors:
 
 ```typescript
 const { status, error } = useVizelAutoSave(() => editor, {
@@ -375,6 +375,6 @@ const { status } = useVizelAutoSave(() => editor, {
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Full editor options
+- [Configuration](/guide/configuration) - Editor options
 - [Features](/guide/features) - Configure features
-- [API Reference](/api/) - Complete API documentation
+- [API Reference](/api/)

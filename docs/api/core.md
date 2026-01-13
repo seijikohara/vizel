@@ -369,8 +369,8 @@ import type { JSONContent, Extensions } from '@tiptap/core';
 
 ## Next Steps
 
-- [CSS Variables](/api/css-variables/) - Complete CSS variable reference
-- [Type Definitions](/api/types/) - Full TypeScript types
+- [CSS Variables](/api/css-variables/)
+- [Type Definitions](/api/types/)
 - [React API](/api/react) - React-specific APIs
 - [Vue API](/api/vue) - Vue-specific APIs
 - [Svelte API](/api/svelte) - Svelte-specific APIs

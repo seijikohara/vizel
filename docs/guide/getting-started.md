@@ -289,7 +289,7 @@ const editor = createVizelEditor({
 
 ### Getting Content
 
-Access the editor content in various formats:
+Access the editor content:
 
 ```typescript
 // Get JSON content
@@ -607,7 +607,7 @@ See [Theming](/guide/theming) for more customization options.
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Full editor options reference
+- [Configuration](/guide/configuration) - Editor options
 - [Features](/guide/features) - Configure individual features
 - [Theming](/guide/theming) - Customize appearance with CSS variables
 - [Auto-Save](/guide/auto-save) - Persist content automatically

@@ -1,6 +1,6 @@
 # Type Definitions
 
-Complete TypeScript type reference for Vizel.
+TypeScript type reference for Vizel.
 
 ## Overview
 

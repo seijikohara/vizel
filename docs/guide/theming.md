@@ -481,6 +481,6 @@ Or manually:
 
 ## Next Steps
 
-- [CSS Variables Reference](/api/css-variables/) - Complete variable list
+- [CSS Variables Reference](/api/css-variables/)
 - [Auto-Save](/guide/auto-save) - Persist content automatically
-- [API Reference](/api/) - Complete API documentation
+- [API Reference](/api/)

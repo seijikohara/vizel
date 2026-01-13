@@ -506,7 +506,7 @@ export function Editor() {
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Full options reference
+- [Configuration](/guide/configuration) - Editor options
 - [Features](/guide/features) - Enable and configure features
 - [Theming](/guide/theming) - Customize appearance
-- [API Reference](/api/react) - Complete API documentation
+- [API Reference](/api/react)
