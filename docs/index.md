@@ -20,38 +20,32 @@ hero:
       link: /api/
 
 features:
-  - icon: 📝
-    title: Block-based Editing
-    details: Intuitive block-based editing with slash commands, drag-and-drop reordering, and a bubble menu for inline formatting. Create rich content effortlessly.
+  - title: Block-based Editing
+    details: Intuitive block-based editing with slash commands, drag-and-drop reordering, and a bubble menu for inline formatting.
     link: /guide/features
     linkText: Explore Features
 
-  - icon: ✨
-    title: Markdown Support
-    details: Full Markdown import/export with real-time preview. Write in Markdown or use the visual editor - seamlessly switch between both.
+  - title: Markdown Support
+    details: Full Markdown import/export with real-time preview. Write in Markdown or use the visual editor seamlessly.
     link: /guide/configuration
     linkText: Learn More
 
-  - icon: ⚛️
-    title: Multi-Framework Support
+  - title: Multi-Framework
     details: First-class support for React 19, Vue 3, and Svelte 5 with consistent APIs and framework-specific optimizations.
     link: /guide/react
     linkText: Choose Your Framework
 
-  - icon: 🎨
-    title: Fully Customizable
+  - title: Fully Customizable
     details: Extensive theming with CSS variables, custom extensions, and configurable features. Make it yours with minimal effort.
     link: /guide/theming
     linkText: Customize Theme
 
-  - icon: 🔌
-    title: Rich Extensions
-    details: Built-in support for images, tables, code blocks, diagrams (Mermaid), math equations, embeds, and more.
+  - title: Rich Extensions
+    details: Built-in support for images, tables, code blocks, diagrams, math equations, embeds, and more.
     link: /guide/features
     linkText: View Extensions
 
-  - icon: 📦
-    title: TypeScript First
+  - title: TypeScript First
     details: Complete TypeScript support with comprehensive type definitions. Enjoy full IntelliSense and type safety.
     link: /api/types
     linkText: Type Definitions
