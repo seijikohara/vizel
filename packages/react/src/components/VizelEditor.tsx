@@ -1,4 +1,4 @@
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useEffect, useImperativeHandle, useRef } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";

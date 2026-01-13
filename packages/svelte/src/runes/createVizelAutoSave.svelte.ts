@@ -1,6 +1,7 @@
-import type { Editor, JSONContent } from "@tiptap/core";
 import {
   createVizelAutoSaveHandlers,
+  type Editor,
+  type JSONContent,
   VIZEL_DEFAULT_AUTO_SAVE_OPTIONS,
   type VizelAutoSaveOptions,
   type VizelAutoSaveState,

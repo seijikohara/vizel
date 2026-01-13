@@ -1,4 +1,4 @@
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import { createContext, type ReactNode, useContext } from "react";
 
 interface VizelContextValue {

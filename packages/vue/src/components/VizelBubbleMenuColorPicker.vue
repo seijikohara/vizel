@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/core";
 import {
   addVizelRecentColor,
+  type Editor,
   getVizelRecentColors,
   VIZEL_HIGHLIGHT_COLORS,
   VIZEL_TEXT_COLORS,

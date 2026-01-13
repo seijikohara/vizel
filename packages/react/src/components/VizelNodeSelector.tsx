@@ -1,5 +1,5 @@
-import type { Editor } from "@tiptap/core";
 import {
+  type Editor,
   getVizelActiveNodeType,
   type VizelNodeTypeOption,
   vizelDefaultNodeTypes,

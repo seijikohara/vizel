@@ -1,4 +1,4 @@
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import { getContext } from "svelte";
 
 export const VIZEL_CONTEXT_KEY = Symbol("vizel-editor");

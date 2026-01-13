@@ -1,7 +1,8 @@
-import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 import {
   createVizelSuggestionContainer,
   handleVizelSuggestionEscape,
+  type SuggestionOptions,
+  type SuggestionProps,
   type VizelSlashCommandItem,
   type VizelSlashMenuRendererOptions,
 } from "@vizel/core";

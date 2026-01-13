@@ -1,5 +1,4 @@
-import type { Editor, JSONContent } from "@tiptap/core";
-import type { VizelFeatureOptions } from "@vizel/core";
+import type { Editor, JSONContent, VizelFeatureOptions } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useImperativeHandle } from "react";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";

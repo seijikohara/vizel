@@ -1,4 +1,4 @@
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 
 /**
  * Rune that forces a re-render whenever the editor's state changes.

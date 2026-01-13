@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import type { Snippet } from "svelte";
 
 export interface VizelProviderProps {

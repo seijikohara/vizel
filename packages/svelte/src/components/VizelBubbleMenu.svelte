@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import type { Snippet } from "svelte";
 
 export interface VizelBubbleMenuProps {
@@ -23,7 +23,7 @@ export interface VizelBubbleMenuProps {
 </script>
 
 <script lang="ts">
-import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
+import { BubbleMenuPlugin } from "@vizel/core";
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.svelte";
 import { getVizelContextSafe } from "./VizelContext.ts";
 

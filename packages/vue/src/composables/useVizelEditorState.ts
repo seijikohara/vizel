@@ -1,5 +1,4 @@
-import type { Editor } from "@tiptap/core";
-import { getVizelEditorState, type VizelEditorState } from "@vizel/core";
+import { type Editor, getVizelEditorState, type VizelEditorState } from "@vizel/core";
 import { type ComputedRef, computed } from "vue";
 import { useVizelState } from "./useVizelState.ts";
 

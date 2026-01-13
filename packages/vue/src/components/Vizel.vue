@@ -3,8 +3,13 @@
 //
 // A complete editor component that includes EditorContent and BubbleMenu.
 // This is the recommended way to use Vizel for most use cases.
-import type { Editor, JSONContent } from "@tiptap/core";
-import { getVizelMarkdown, setVizelMarkdown, type VizelFeatureOptions } from "@vizel/core";
+import {
+  type Editor,
+  getVizelMarkdown,
+  type JSONContent,
+  setVizelMarkdown,
+  type VizelFeatureOptions,
+} from "@vizel/core";
 import { useSlots, watch } from "vue";
 import { useVizelEditor } from "../composables/useVizelEditor.ts";
 import VizelBubbleMenu from "./VizelBubbleMenu.vue";

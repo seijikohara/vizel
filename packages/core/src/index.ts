@@ -6,6 +6,13 @@
  */
 
 // =============================================================================
+// Tiptap Re-exports (for framework packages)
+// =============================================================================
+export type { Editor, JSONContent } from "@tiptap/core";
+export { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
+export type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
+
+// =============================================================================
 // Auto-save
 // =============================================================================
 export {

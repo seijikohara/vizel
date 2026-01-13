@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import { computed, ref, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 
