@@ -31,34 +31,34 @@ graph LR
     Vizel --> Output
 ```
 
-## Key Features
+## Features
 
-### Rich Text Editing
+### Text Editing
 
 - **Text Formatting** - Bold, italic, underline, strikethrough, text color, highlight
 - **Block Elements** - Headings (H1-H6), lists (bullet, numbered, task), blockquotes
-- **Code Blocks** - Syntax highlighting with 190+ languages via [Shiki](https://shiki.style/)
+- **Code Blocks** - Syntax highlighting via [lowlight](https://github.com/wooorm/lowlight)
 
-### Block-Based Experience
+### Block-Based Editing
 
-- **Slash Commands** - Type `/` to quickly insert any block type
-- **Bubble Menu** - Context-aware formatting menu on text selection
+- **Slash Commands** - Type `/` to insert blocks
+- **Bubble Menu** - Formatting menu on text selection
 - **Drag Handle** - Reorder blocks with drag and drop
 
-### Rich Media
+### Media
 
-- **Images** - Drag & drop, paste from clipboard, resize with handles
-- **Tables** - Full table editing with row/column controls
-- **Embeds** - YouTube, Vimeo, Twitter, and more via oEmbed
+- **Images** - Drag and drop, paste from clipboard, resize with handles
+- **Tables** - Table editing with row and column controls
+- **Embeds** - YouTube, Vimeo, Twitter via oEmbed
 - **Mathematics** - LaTeX equations rendered with KaTeX
-- **Diagrams** - Mermaid and GraphViz diagram support
+- **Diagrams** - Mermaid and GraphViz diagrams
 
-### Developer Experience
+### Development
 
-- **TypeScript** - Full type safety with comprehensive definitions
+- **TypeScript** - Written in TypeScript with exported type definitions
 - **Multi-Framework** - Consistent APIs across React, Vue, and Svelte
-- **Extensible** - Built on Tiptap's modular architecture
-- **Lightweight** - Tree-shakeable packages with minimal bundle impact
+- **Extensible** - Built on Tiptap's extension architecture
+- **Tree-shakeable** - Packages support tree-shaking
 
 ## Package Architecture
 

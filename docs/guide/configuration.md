@@ -1,7 +1,5 @@
 # Configuration
 
-This page covers all available configuration options for the Vizel editor.
-
 ## Editor Options
 
 The main configuration object passed to `useVizelEditor` (React/Vue) or `createVizelEditor` (Svelte).
@@ -309,4 +307,4 @@ editor.commands.clearContent();
 - [Features](/guide/features) - Configure individual features in detail
 - [Theming](/guide/theming) - Customize the editor appearance
 - [Auto-Save](/guide/auto-save) - Persist content automatically
-- [API Reference](/api/) - Complete API documentation
+- [API Reference](/api/)

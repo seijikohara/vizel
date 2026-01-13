@@ -1,6 +1,6 @@
 # Features
 
-Vizel provides a modular feature system. Each feature can be enabled, disabled, or customized through the `features` option.
+Each feature can be enabled, disabled, or customized through the `features` option.
 
 ## Feature Overview
 
@@ -61,7 +61,7 @@ const editor = useVizelEditor({
 
 ## Slash Commands
 
-Type `/` to open the command menu for quick block insertion.
+Type `/` to open the command menu for block insertion.
 
 ### Options
 
@@ -113,7 +113,7 @@ const editor = useVizelEditor({
 
 ## Images
 
-Image support with drag & drop, paste, and resize functionality.
+Supports drag and drop, paste, and resize.
 
 ### Options
 
@@ -172,7 +172,7 @@ const editor = useVizelEditor({
 
 ## Code Blocks
 
-Syntax-highlighted code blocks with language selection.
+Code blocks with syntax highlighting and language selection.
 
 ### Options
 
@@ -351,7 +351,7 @@ const editor = useVizelEditor({
 
 ## Embeds
 
-Embed external content from URLs (YouTube, Vimeo, Twitter, etc.).
+Embed content from URLs (YouTube, Vimeo, Twitter).
 
 ### Options
 
@@ -431,7 +431,7 @@ Use the slash command `/details` or `/toggle` to insert a collapsible block.
 
 ## Diagrams
 
-Mermaid and GraphViz diagram support.
+Mermaid and GraphViz diagrams.
 
 ### Options
 
@@ -509,7 +509,7 @@ const editor = useVizelEditor({
 
 ## Task Lists
 
-Checkbox task lists for to-do items.
+Checkbox task lists.
 
 ### Options
 
@@ -536,7 +536,7 @@ const editor = useVizelEditor({
 
 ## Drag Handle
 
-Visual handle for drag-and-drop block reordering.
+Handle for drag-and-drop block reordering.
 
 ### Options
 
@@ -562,4 +562,4 @@ const editor = useVizelEditor({
 
 - [Theming](/guide/theming) - Customize the appearance
 - [Auto-Save](/guide/auto-save) - Persist content automatically
-- [API Reference](/api/) - Complete API documentation
+- [API Reference](/api/)

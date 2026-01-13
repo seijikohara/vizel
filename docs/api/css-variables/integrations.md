@@ -4,7 +4,7 @@ Integrate Vizel CSS variables with Tailwind CSS and shadcn/ui.
 
 ## Tailwind CSS
 
-Vizel works seamlessly with Tailwind CSS. Map Vizel's CSS variables to Tailwind's theme system.
+Vizel works with Tailwind CSS. Map Vizel's CSS variables to Tailwind's theme system.
 
 ### Configuration
 

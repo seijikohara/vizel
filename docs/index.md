@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Vizel
   text: Block-based Visual Editor
-  tagline: A powerful Markdown editor built with Tiptap, supporting React 19, Vue 3, and Svelte 5
+  tagline: A Markdown editor built with Tiptap for React 19, Vue 3, and Svelte 5
   image:
     src: /logo.svg
     alt: Vizel Logo
@@ -20,39 +20,33 @@ hero:
       link: /api/
 
 features:
-  - icon: 📝
-    title: Block-based Editing
-    details: Intuitive block-based editing with slash commands, drag-and-drop reordering, and a bubble menu for inline formatting. Create rich content effortlessly.
+  - title: Block-based Editing
+    details: Block-based editing with slash commands, drag-and-drop reordering, and a bubble menu for inline formatting.
     link: /guide/features
-    linkText: Explore Features
+    linkText: Features
 
-  - icon: ✨
-    title: Markdown Support
-    details: Full Markdown import/export with real-time preview. Write in Markdown or use the visual editor - seamlessly switch between both.
+  - title: Markdown Support
+    details: Markdown import and export. Switch between Markdown source and visual editing.
     link: /guide/configuration
-    linkText: Learn More
+    linkText: Configuration
 
-  - icon: ⚛️
-    title: Multi-Framework Support
-    details: First-class support for React 19, Vue 3, and Svelte 5 with consistent APIs and framework-specific optimizations.
+  - title: Multi-Framework
+    details: Supports React 19, Vue 3, and Svelte 5 with consistent APIs.
     link: /guide/react
-    linkText: Choose Your Framework
+    linkText: Framework Guides
 
-  - icon: 🎨
-    title: Fully Customizable
-    details: Extensive theming with CSS variables, custom extensions, and configurable features. Make it yours with minimal effort.
+  - title: Customizable
+    details: Theming with CSS variables, custom extensions, and configurable features.
     link: /guide/theming
-    linkText: Customize Theme
+    linkText: Theming
 
-  - icon: 🔌
-    title: Rich Extensions
-    details: Built-in support for images, tables, code blocks, diagrams (Mermaid), math equations, embeds, and more.
+  - title: Built-in Extensions
+    details: Images, tables, code blocks, diagrams, math equations, and embeds.
     link: /guide/features
-    linkText: View Extensions
+    linkText: Extensions
 
-  - icon: 📦
-    title: TypeScript First
-    details: Complete TypeScript support with comprehensive type definitions. Enjoy full IntelliSense and type safety.
+  - title: TypeScript
+    details: Written in TypeScript with exported type definitions.
     link: /api/types
     linkText: Type Definitions
 ---
@@ -81,7 +75,7 @@ features:
 
 ## Quick Start
 
-Install Vizel for your preferred framework:
+Install Vizel for your framework:
 
 ::: code-group
 
@@ -149,7 +143,7 @@ import '@vizel/core/styles.css';
 
 ### Slash Commands
 
-Type `/` to open the command menu and quickly insert blocks:
+Type `/` to open the command menu:
 
 - **Headings** - H1, H2, H3
 - **Lists** - Bullet, Numbered, Task
@@ -158,37 +152,37 @@ Type `/` to open the command menu and quickly insert blocks:
 
 ### Bubble Menu
 
-Select text to reveal the bubble menu:
+Select text to display the bubble menu:
 
 - **Bold**, *Italic*, ~~Strikethrough~~
 - Links, Highlights, Code
-- Text alignment and more
+- Text alignment
 
 ### Drag & Drop
 
-Grab any block by its handle and reorder your content with intuitive drag-and-drop.
+Drag blocks by their handle to reorder content.
 
-## Why Vizel?
+## Features
 
-| Feature | Vizel | Other Editors |
-|---------|-------|---------------|
-| Multi-framework | React, Vue, Svelte | Usually single framework |
-| TypeScript | Full support | Partial or none |
-| Markdown | Import/Export | Often limited |
-| Theming | CSS Variables | Complex overrides |
-| Bundle Size | Tree-shakeable | Often monolithic |
-| Extensions | Modular | Tightly coupled |
+| Feature | Description |
+|---------|-------------|
+| Multi-framework | React 19, Vue 3, Svelte 5 |
+| TypeScript | Type definitions included |
+| Markdown | Import and export |
+| Theming | CSS variables |
+| Bundle size | Tree-shakeable |
+| Extensions | Modular architecture |
 
 ## Community
 
-- [GitHub Repository](https://github.com/seijikohara/vizel) - Star us on GitHub!
-- [Issue Tracker](https://github.com/seijikohara/vizel/issues) - Report bugs or request features
-- [Discussions](https://github.com/seijikohara/vizel/discussions) - Ask questions and share ideas
+- [GitHub Repository](https://github.com/seijikohara/vizel)
+- [Issue Tracker](https://github.com/seijikohara/vizel/issues)
+- [Discussions](https://github.com/seijikohara/vizel/discussions)
 
 ---
 
 <div style="text-align: center; margin-top: 2rem;">
   <a href="./guide/getting-started" style="display: inline-block; padding: 0.75rem 1.5rem; background: linear-gradient(120deg, oklch(0.623 0.214 259.815), oklch(0.627 0.265 303.9)); color: oklch(1 0 0); border-radius: 8px; text-decoration: none; font-weight: 600;">
-    Get Started with Vizel →
+    Getting Started
   </a>
 </div>

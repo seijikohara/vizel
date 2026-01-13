@@ -16,7 +16,7 @@ bun add @vizel/vue
 
 ## Quick Start
 
-The simplest way to get started is with the `Vizel` component:
+Use the `Vizel` component:
 
 ```vue
 <script setup lang="ts">
@@ -34,7 +34,7 @@ import '@vizel/core/styles.css';
 
 ### Advanced Setup
 
-For more control over the editor, use individual components with composables:
+To customize, use individual components with composables:
 
 ```vue
 <script setup lang="ts">
@@ -193,7 +193,7 @@ const { status, lastSaved, save, restore } = useVizelAutoSave(() => editor.value
 
 ### useVizelMarkdown
 
-Provides two-way Markdown synchronization with debouncing.
+Two-way Markdown synchronization with debouncing.
 
 ```vue
 <script setup lang="ts">
@@ -522,7 +522,7 @@ const Editor = defineAsyncComponent(() => import('./Editor.vue'));
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Full options reference
+- [Configuration](/guide/configuration) - Editor options
 - [Features](/guide/features) - Enable and configure features
 - [Theming](/guide/theming) - Customize appearance
-- [API Reference](/api/vue) - Complete API documentation
+- [API Reference](/api/vue)

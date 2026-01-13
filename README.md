@@ -22,16 +22,16 @@
 
 ## Features
 
-- **Rich Text Editing** - Bold, italic, underline, strikethrough, text color, highlight
+- **Text Formatting** - Bold, italic, underline, strikethrough, text color, highlight
 - **Block Elements** - Headings (H1-H6), lists (bullet, numbered, task), blockquotes, horizontal rules
-- **Slash Commands** - Type `/` to insert blocks quickly
+- **Slash Commands** - Type `/` to insert blocks
 - **Floating Toolbar** - Inline formatting toolbar on text selection
-- **Tables** - Full table support with row/column controls
+- **Tables** - Table editing with row/column controls
 - **Code Blocks** - Syntax highlighting with 190+ languages
 - **Images** - Drag & drop, paste, resize support
 - **Markdown** - Import/export Markdown content
 - **Mathematics** - LaTeX equations with KaTeX
-- **Embeds** - YouTube, Vimeo, Twitter, and more via oEmbed
+- **Embeds** - YouTube, Vimeo, Twitter, CodePen, Figma via oEmbed
 - **Details** - Collapsible content blocks
 - **Auto-save** - localStorage, sessionStorage, or custom backend
 - **Dark Mode** - System-aware theme switching

@@ -1,19 +1,6 @@
-import { fileURLToPath } from "node:url";
 import { withMermaid } from "vitepress-plugin-mermaid";
 
 export default withMermaid({
-  vite: {
-    resolve: {
-      alias: {
-        "@vizel/vue": fileURLToPath(new URL("../../packages/vue/src/index.ts", import.meta.url)),
-        "@vizel/core": fileURLToPath(new URL("../../packages/core/src/index.ts", import.meta.url)),
-      },
-    },
-    ssr: {
-      noExternal: ["@vizel/vue", "@vizel/core"],
-    },
-  },
-
   title: "Vizel",
   description:
     "A block-based visual editor for Markdown built with Tiptap, supporting React, Vue, and Svelte",

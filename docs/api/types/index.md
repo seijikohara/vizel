@@ -1,10 +1,10 @@
 # Type Definitions
 
-Complete TypeScript type reference for Vizel.
+TypeScript type reference for Vizel.
 
 ## Overview
 
-Vizel provides comprehensive TypeScript types organized into the following categories:
+Vizel provides TypeScript types organized into the following categories:
 
 | Category | Description |
 |----------|-------------|
