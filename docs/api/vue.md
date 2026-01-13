@@ -92,10 +92,25 @@ Forces re-render on editor state changes.
 ```typescript
 import { useVizelState } from '@vizel/vue';
 
-const updateCount = useVizelState(getEditor: () => Editor | null);
+const updateCount = useVizelState(() => editor.value);
 ```
 
 **Returns:** `Ref<number>` (update count)
+
+### useVizelEditorState
+
+Tracks specific editor state properties reactively.
+
+```typescript
+import { useVizelEditorState } from '@vizel/vue';
+
+const isBold = useVizelEditorState(
+  () => editor.value,
+  (editor) => editor.isActive('bold')
+);
+```
+
+**Returns:** `ComputedRef` with the value returned by the selector function
 
 ### useVizelAutoSave
 
@@ -315,6 +330,28 @@ Color selection component.
   @update:value="setColor"
 />
 ```
+
+### VizelIconProvider
+
+Provides custom icons for Vizel components.
+
+```vue
+<VizelIconProvider :icons="{ bold: MyBoldIcon, italic: MyItalicIcon }">
+  <Vizel />
+</VizelIconProvider>
+```
+
+**Props:**
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `icons` | `CustomIconMap` | Map of icon names to custom components |
+
+**Slots:**
+
+| Slot | Description |
+|------|-------------|
+| `default` | Children |
 
 ### VizelSlashMenu
 

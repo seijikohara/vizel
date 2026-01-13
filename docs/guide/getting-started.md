@@ -353,11 +353,11 @@ For two-way Markdown synchronization, use the dedicated hooks/composables/runes:
 ::: code-group
 
 ```tsx [React]
-import { useVizelEditor, useVizelMarkdown } from '@vizel/react';
+import { useVizelEditor, useVizelMarkdown, VizelEditor } from '@vizel/react';
 
 function Editor() {
   const editor = useVizelEditor();
-  const { markdown, setMarkdown, isPending } = useVizelMarkdown(editor);
+  const { markdown, setMarkdown, isPending } = useVizelMarkdown(() => editor);
   
   // markdown updates automatically when editor content changes
   // setMarkdown() updates editor content from markdown

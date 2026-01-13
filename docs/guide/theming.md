@@ -31,50 +31,50 @@ This includes only component styles without CSS variable definitions.
 
 ## Theme Provider
 
-Use the `ThemeProvider` to enable dark mode support:
+Use the `VizelThemeProvider` to enable dark mode support:
 
 ::: code-group
 
 ```tsx [React]
-import { ThemeProvider } from '@vizel/react';
+import { VizelThemeProvider } from '@vizel/react';
 
 function App() {
   return (
-    <ThemeProvider 
+    <VizelThemeProvider 
       defaultTheme="system" 
       storageKey="my-app-theme"
     >
       <Editor />
-    </ThemeProvider>
+    </VizelThemeProvider>
   );
 }
 ```
 
 ```vue [Vue]
 <script setup lang="ts">
-import { ThemeProvider } from '@vizel/vue';
+import { VizelThemeProvider } from '@vizel/vue';
 </script>
 
 <template>
-  <ThemeProvider defaultTheme="system" storageKey="my-app-theme">
+  <VizelThemeProvider defaultTheme="system" storageKey="my-app-theme">
     <Editor />
-  </ThemeProvider>
+  </VizelThemeProvider>
 </template>
 ```
 
 ```svelte [Svelte]
 <script lang="ts">
-  import { ThemeProvider } from '@vizel/svelte';
+  import { VizelThemeProvider } from '@vizel/svelte';
 </script>
 
-<ThemeProvider defaultTheme="system" storageKey="my-app-theme">
+<VizelThemeProvider defaultTheme="system" storageKey="my-app-theme">
   <Editor />
-</ThemeProvider>
+</VizelThemeProvider>
 ```
 
 :::
 
-### ThemeProvider Options
+### VizelThemeProvider Options
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -88,10 +88,10 @@ import { ThemeProvider } from '@vizel/vue';
 ::: code-group
 
 ```tsx [React]
-import { useTheme } from '@vizel/react';
+import { useVizelTheme } from '@vizel/react';
 
 function ThemeToggle() {
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useVizelTheme();
   
   return (
     <select value={theme} onChange={(e) => setTheme(e.target.value)}>
@@ -105,9 +105,9 @@ function ThemeToggle() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import { useTheme } from '@vizel/vue';
+import { useVizelTheme } from '@vizel/vue';
 
-const { theme, resolvedTheme, setTheme } = useTheme();
+const { theme, resolvedTheme, setTheme } = useVizelTheme();
 </script>
 
 <template>
@@ -121,9 +121,9 @@ const { theme, resolvedTheme, setTheme } = useTheme();
 
 ```svelte [Svelte]
 <script lang="ts">
-  import { getTheme } from '@vizel/svelte';
+  import { getVizelTheme } from '@vizel/svelte';
   
-  const theme = getTheme();
+  const theme = getVizelTheme();
 </script>
 
 <select value={theme.theme} onchange={(e) => theme.setTheme(e.target.value)}>
@@ -458,10 +458,10 @@ For detailed integration instructions, see the [CSS Variables Reference](/api/cs
 Add the theme init script to your HTML `<head>` to prevent flash:
 
 ```typescript
-import { getThemeInitScript } from '@vizel/core';
+import { getVizelThemeInitScript } from '@vizel/core';
 
 // In your HTML head
-const script = getThemeInitScript('my-theme-key');
+const script = getVizelThemeInitScript('my-theme-key');
 // <script>{script}</script>
 ```
 

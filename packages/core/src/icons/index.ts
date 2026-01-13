@@ -6,10 +6,14 @@
  */
 
 export {
+  type CustomIconMap,
   getVizelIconId,
+  initVizelIconRenderer,
   renderVizelIcon,
+  renderVizelIconSvg,
   setVizelIconRenderer,
   type VizelBubbleMenuIconName,
+  type VizelIconContextValue,
   type VizelIconName,
   type VizelIconRenderer,
   type VizelIconRendererOptions,

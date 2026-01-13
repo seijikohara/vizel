@@ -1,24 +1,10 @@
-import type { VizelColorDefinition } from "@vizel/core";
+import {
+  isVizelValidHexColor,
+  normalizeVizelHexColor,
+  type VizelColorDefinition,
+} from "@vizel/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
-
-/**
- * Normalize a hex color string to include the # prefix
- */
-function normalizeHexColor(color: string): string {
-  const trimmed = color.trim();
-  if (trimmed.startsWith("#")) {
-    return trimmed.toUpperCase();
-  }
-  return `#${trimmed.toUpperCase()}`;
-}
-
-/**
- * Validate if a string is a valid hex color (both #RGB and #RRGGBB formats)
- */
-function isValidHexColor(color: string): boolean {
-  return /^#([0-9A-F]{3}|[0-9A-F]{6})$/i.test(color);
-}
 
 export interface VizelColorPickerProps {
   /** Color palette to display */
@@ -98,8 +84,8 @@ export function VizelColorPicker({
 
   // Handle custom color input submit
   const handleInputSubmit = useCallback(() => {
-    const normalized = normalizeHexColor(inputValue);
-    if (isValidHexColor(normalized)) {
+    const normalized = normalizeVizelHexColor(inputValue);
+    if (isVizelValidHexColor(normalized)) {
       onChange(normalized);
       setInputValue("");
     }
@@ -188,8 +174,8 @@ export function VizelColorPicker({
     }
   }, [allColors, value]);
 
-  const isInputValid = isValidHexColor(normalizeHexColor(inputValue));
-  const previewColor = isInputValid ? normalizeHexColor(inputValue) : undefined;
+  const isInputValid = isVizelValidHexColor(normalizeVizelHexColor(inputValue));
+  const previewColor = isInputValid ? normalizeVizelHexColor(inputValue) : undefined;
 
   return (
     <div

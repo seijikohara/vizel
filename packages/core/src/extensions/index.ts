@@ -40,7 +40,6 @@ export {
 export {
   createVizelDragHandleExtension,
   createVizelDragHandleExtensions,
-  type DragHandleOptions,
   VizelBlockMoveKeymap,
   VizelDragHandle,
   type VizelDragHandleOptions,
@@ -67,6 +66,7 @@ export {
   createVizelImageFileHandlers,
   filterVizelFilesByMimeType,
   VIZEL_DEFAULT_FILE_MIME_TYPES,
+  VIZEL_DEFAULT_IMAGE_MAX_FILE_SIZE,
   type VizelFileHandlerError,
   type VizelFileHandlerErrorType,
   type VizelFileHandlerOptions,
@@ -84,10 +84,11 @@ export {
   getVizelImageUploadPluginKey,
   handleVizelImageDrop,
   handleVizelImagePaste,
-  type ImageUploadOptions,
   VizelImage,
   type VizelImageOptions,
+  type VizelImageResizeOptions,
   type VizelImageUploadOptions,
+  type VizelImageUploadPluginOptions,
   type VizelImageUploadWithFileHandlerOptions,
   type VizelImageValidationError,
   type VizelImageValidationErrorType,
@@ -99,8 +100,8 @@ export {
 // Image resize
 export {
   VizelImageResize,
-  type VizelImageResizeOptions,
   VizelResizableImage,
+  type VizelResizableImageOptions,
 } from "./image-resize.ts";
 
 // Link

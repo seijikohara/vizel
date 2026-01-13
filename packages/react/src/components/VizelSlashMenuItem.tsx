@@ -1,4 +1,4 @@
-import type { VizelSlashCommandItem } from "@vizel/core";
+import { splitVizelTextByMatches, type VizelSlashCommandItem } from "@vizel/core";
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelSlashMenuItemProps {
@@ -11,36 +11,23 @@ export interface VizelSlashMenuItemProps {
 }
 
 /**
- * Highlight text based on match indices from fuzzy search
+ * Render text with highlighted segments based on match indices from fuzzy search
  */
-function highlightMatches(text: string, matches?: [number, number][]): React.ReactNode {
-  if (!matches || matches.length === 0) {
-    return text;
-  }
-
-  const result: React.ReactNode[] = [];
-  let lastIndex = 0;
-
-  for (const [start, end] of matches) {
-    // Add text before match
-    if (start > lastIndex) {
-      result.push(text.slice(lastIndex, start));
-    }
-    // Add highlighted match
-    result.push(
-      <mark key={start} className="vizel-slash-menu-highlight">
-        {text.slice(start, end + 1)}
+function renderHighlightedText(text: string, matches?: [number, number][]): React.ReactNode {
+  const segments = splitVizelTextByMatches(text, matches);
+  // Use fragment with cumulative character position as unique key
+  let charPos = 0;
+  return segments.map((segment) => {
+    const key = `${charPos}-${segment.highlight}`;
+    charPos += segment.text.length;
+    return segment.highlight ? (
+      <mark key={key} className="vizel-slash-menu-highlight">
+        {segment.text}
       </mark>
+    ) : (
+      segment.text
     );
-    lastIndex = end + 1;
-  }
-
-  // Add remaining text
-  if (lastIndex < text.length) {
-    result.push(text.slice(lastIndex));
-  }
-
-  return result;
+  });
 }
 
 /**
@@ -74,7 +61,9 @@ export function VizelSlashMenuItem({
         <VizelIcon name={item.icon} />
       </span>
       <div className="vizel-slash-menu-text">
-        <span className="vizel-slash-menu-title">{highlightMatches(item.title, titleMatches)}</span>
+        <span className="vizel-slash-menu-title">
+          {renderHighlightedText(item.title, titleMatches)}
+        </span>
         <span className="vizel-slash-menu-description">{item.description}</span>
       </div>
       {item.shortcut && <span className="vizel-slash-menu-shortcut">{item.shortcut}</span>}

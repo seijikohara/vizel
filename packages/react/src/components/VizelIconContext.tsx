@@ -1,27 +1,7 @@
-import type { VizelIconName } from "@vizel/core";
+import type { CustomIconMap, VizelIconContextValue } from "@vizel/core";
 import { createContext, type ReactNode, useContext } from "react";
 
-/**
- * Custom icon mappings to override default Iconify icon IDs.
- * Keys are semantic icon names, values are Iconify icon IDs.
- *
- * @example
- * ```tsx
- * const customIcons = {
- *   heading1: "mdi:format-header-1",
- *   bold: "mdi:format-bold",
- *   // Use any Iconify icon set: Material Design, Heroicons, Phosphor, etc.
- * };
- * ```
- */
-export type CustomIconMap = Partial<Record<VizelIconName, string>>;
-
-export interface VizelIconContextValue {
-  /**
-   * Custom icon mappings that override default Lucide icons.
-   */
-  customIcons?: CustomIconMap | undefined;
-}
+export type { CustomIconMap, VizelIconContextValue };
 
 const VizelIconContext = createContext<VizelIconContextValue>({});
 

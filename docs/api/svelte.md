@@ -311,6 +311,23 @@ Color selection component.
 />
 ```
 
+### VizelIconProvider
+
+Provides custom icons for Vizel components.
+
+```svelte
+<VizelIconProvider icons={{ bold: MyBoldIcon, italic: MyItalicIcon }}>
+  <Vizel />
+</VizelIconProvider>
+```
+
+**Props:**
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `icons` | `CustomIconMap` | Map of icon names to custom components |
+| `children` | `Snippet` | Children |
+
 ### VizelSlashMenu
 
 Slash command menu component.

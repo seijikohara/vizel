@@ -50,6 +50,7 @@ Each component must exist in all three frameworks with equivalent functionality:
 | VizelColorPicker | `.tsx` | `.vue` | `.svelte` |
 | VizelEmbedView | `.tsx` | `.vue` | `.svelte` |
 | VizelIcon | `.tsx` | `.vue` | `.svelte` |
+| VizelIconProvider | `.tsx` | `.vue` | `.svelte` |
 | VizelProvider | `.tsx` | `.vue` | `.svelte` |
 
 ### Props Interface
@@ -77,8 +78,12 @@ interface VizelBubbleMenuProps {
 | `hooks/` | `composables/` | `runes/` |
 | `useVizelEditor` | `useVizelEditor` | `createVizelEditor` |
 | `useVizelState` | `useVizelState` | `createVizelState` |
+| `useVizelEditorState` | `useVizelEditorState` | `createVizelEditorState` |
 | `useVizelAutoSave` | `useVizelAutoSave` | `createVizelAutoSave` |
+| `useVizelMarkdown` | `useVizelMarkdown` | `createVizelMarkdown` |
 | `useVizelTheme` | `useVizelTheme` | `getVizelTheme` |
+| `useVizelContext` | `useVizelContext` | `getVizelContext` |
+| `useVizelIconContext` | `useVizelIconContext` | `getVizelIconContext` |
 | `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` |
 
 ### Naming Conventions

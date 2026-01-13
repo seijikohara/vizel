@@ -28,7 +28,6 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@iconify/utils": "^3.1.0",
     "@iconify/vue": "^5",
     "@tiptap/core": "^3.15.1",
     "@tiptap/extension-bubble-menu": "^3.15.1",
@@ -39,7 +38,6 @@
     "vue": "^3.4"
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.2.82",
     "@vitejs/plugin-vue": "^6",
     "vite": "^7",
     "vite-plugin-dts": "^4",

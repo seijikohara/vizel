@@ -38,7 +38,7 @@ export interface UseVizelMarkdownResult {
 /**
  * React hook for bidirectional Markdown synchronization with the editor.
  *
- * @param editor - The editor instance
+ * @param getEditor - Function to get the editor instance
  * @param options - Sync options
  * @returns Markdown state and control functions
  *
@@ -48,7 +48,7 @@ export interface UseVizelMarkdownResult {
  *
  * function App() {
  *   const editor = useVizelEditor();
- *   const { markdown, setMarkdown, isPending } = useVizelMarkdown(editor, {
+ *   const { markdown, setMarkdown, isPending } = useVizelMarkdown(() => editor, {
  *     debounceMs: 300,
  *   });
  *
@@ -68,14 +68,14 @@ export interface UseVizelMarkdownResult {
  * @example
  * ```tsx
  * // With initial markdown value
- * const { markdown, setMarkdown } = useVizelMarkdown(editor, {
+ * const { markdown, setMarkdown } = useVizelMarkdown(() => editor, {
  *   initialValue: "# Hello World",
  *   transformDiagrams: true,
  * });
  * ```
  */
 export function useVizelMarkdown(
-  editor: Editor | null,
+  getEditor: () => Editor | null | undefined,
   options: UseVizelMarkdownOptions = {}
 ): UseVizelMarkdownResult {
   const { initialValue, ...syncOptions } = options;
@@ -94,6 +94,7 @@ export function useVizelMarkdown(
 
   // Set initial markdown when editor is ready
   useEffect(() => {
+    const editor = getEditor();
     if (!editor || initialSetRef.current) return;
 
     if (initialValue !== undefined) {
@@ -106,10 +107,11 @@ export function useVizelMarkdown(
     }
 
     initialSetRef.current = true;
-  }, [editor, initialValue]);
+  }, [getEditor, initialValue]);
 
   // Subscribe to editor updates
   useEffect(() => {
+    const editor = getEditor();
     if (!editor) return;
 
     const handlers = handlersRef.current;
@@ -136,7 +138,7 @@ export function useVizelMarkdown(
     return () => {
       editor.off("update", handleUpdate);
     };
-  }, [editor]);
+  }, [getEditor]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -147,20 +149,22 @@ export function useVizelMarkdown(
 
   const setMarkdown = useCallback(
     (newMarkdown: string) => {
+      const editor = getEditor();
       if (!editor) return;
       handlersRef.current?.setMarkdown(editor, newMarkdown);
       setMarkdownState(newMarkdown);
       setIsPending(false);
     },
-    [editor]
+    [getEditor]
   );
 
   const flush = useCallback(() => {
+    const editor = getEditor();
     if (!editor) return;
     handlersRef.current?.flush(editor);
     setMarkdownState(handlersRef.current?.getMarkdown() ?? "");
     setIsPending(false);
-  }, [editor]);
+  }, [getEditor]);
 
   return {
     markdown,

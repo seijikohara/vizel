@@ -5,7 +5,6 @@ import {
   type VizelMarkdownSyncHandlers,
   type VizelMarkdownSyncOptions,
 } from "@vizel/core";
-import { onDestroy } from "svelte";
 
 export interface CreateVizelMarkdownOptions extends VizelMarkdownSyncOptions {
   /**
@@ -136,12 +135,8 @@ export function createVizelMarkdown(
 
     return () => {
       editor.off("update", handleUpdate);
+      handlers?.destroy();
     };
-  });
-
-  // Cleanup on unmount
-  onDestroy(() => {
-    handlers?.destroy();
   });
 
   const setMarkdown = (newMarkdown: string) => {

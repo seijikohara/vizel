@@ -119,9 +119,9 @@ function getTriggerStyle() {
         :colors="colorPalette"
         :value="currentColor"
         :label="isTextColor ? 'Text color palette' : 'Highlight color palette'"
-        :allow-custom-color="props.allowCustomColor ?? true"
+        :allow-custom-color="props.allowCustomColor"
         :recent-colors="recentColors"
-        :show-recent-colors="props.showRecentColors ?? true"
+        :show-recent-colors="props.showRecentColors"
         :none-values="noneValues"
         @change="handleColorChange"
       />

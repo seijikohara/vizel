@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * @vizel/react
  *
@@ -37,6 +39,7 @@ export {
   // EmbedView
   VizelEmbedView,
   type VizelEmbedViewProps,
+  type VizelExposed,
   // Icon
   VizelIcon,
   type VizelIconContextValue,

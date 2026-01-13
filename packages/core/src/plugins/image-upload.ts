@@ -1,11 +1,15 @@
 import type { EditorState } from "@tiptap/pm/state";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet, type EditorView } from "@tiptap/pm/view";
+import {
+  VIZEL_DEFAULT_FILE_MIME_TYPES,
+  VIZEL_DEFAULT_IMAGE_MAX_FILE_SIZE,
+} from "../extensions/file-handler.ts";
 
 /**
- * Image upload options
+ * Image upload plugin options
  */
-export interface ImageUploadOptions {
+export interface VizelImageUploadPluginOptions {
   /**
    * Handler to upload file and return the uploaded image URL
    * @param file The file to upload
@@ -65,16 +69,6 @@ export interface VizelImageValidationError {
 // Plugin key for identifying the plugin state
 const imageUploadKey = new PluginKey<DecorationSet>("vizel-image-upload");
 
-// Default values
-const DEFAULT_MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
-const DEFAULT_ALLOWED_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-  "image/svg+xml",
-];
-
 // Action types for plugin state management
 interface ImageUploadAddAction {
   type: "add";
@@ -100,7 +94,7 @@ const isImageUploadAction = (value: unknown): value is ImageUploadAction =>
 /**
  * Create an image upload plugin with decoration-based placeholders
  */
-export function createVizelImageUploadPlugin(options: ImageUploadOptions): Plugin {
+export function createVizelImageUploadPlugin(options: VizelImageUploadPluginOptions): Plugin {
   const { placeholderClass = "vizel-image-placeholder", imageClass = "vizel-image-uploading" } =
     options;
 
@@ -170,10 +164,10 @@ function findPlaceholder(state: EditorState, id: object): number | null {
  */
 export function validateVizelImageFile(
   file: File,
-  options: Pick<ImageUploadOptions, "maxFileSize" | "allowedTypes">
+  options: Pick<VizelImageUploadPluginOptions, "maxFileSize" | "allowedTypes">
 ): VizelImageValidationError | null {
-  const maxFileSize = options.maxFileSize ?? DEFAULT_MAX_FILE_SIZE;
-  const allowedTypes = options.allowedTypes ?? DEFAULT_ALLOWED_TYPES;
+  const maxFileSize = options.maxFileSize ?? VIZEL_DEFAULT_IMAGE_MAX_FILE_SIZE;
+  const allowedTypes = options.allowedTypes ?? VIZEL_DEFAULT_FILE_MIME_TYPES;
 
   // Check MIME type
   if (!allowedTypes.includes(file.type)) {
@@ -206,7 +200,9 @@ export type VizelUploadImageFn = (file: File, view: EditorView, pos: number) => 
 /**
  * Create an image uploader function
  */
-export function createVizelImageUploader(options: ImageUploadOptions): VizelUploadImageFn {
+export function createVizelImageUploader(
+  options: VizelImageUploadPluginOptions
+): VizelUploadImageFn {
   const { onUpload, maxFileSize, allowedTypes, onValidationError, onUploadError } = options;
 
   return (file: File, view: EditorView, pos: number): void => {

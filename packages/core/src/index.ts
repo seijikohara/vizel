@@ -61,7 +61,6 @@ export {
   // Task list
   createVizelTaskListExtensions,
   createVizelTextColorExtensions,
-  type DragHandleOptions,
   detectVizelEmbedProvider,
   filterVizelFilesByMimeType,
   // Slash command
@@ -78,7 +77,6 @@ export {
   groupVizelSlashCommands,
   handleVizelImageDrop,
   handleVizelImagePaste,
-  type ImageUploadOptions,
   searchVizelSlashCommands,
   VIZEL_DEFAULT_FILE_MIME_TYPES,
   VIZEL_HIGHLIGHT_COLORS,
@@ -118,6 +116,7 @@ export {
   VizelImageResize,
   type VizelImageResizeOptions,
   type VizelImageUploadOptions,
+  type VizelImageUploadPluginOptions,
   type VizelImageUploadWithFileHandlerOptions,
   type VizelImageValidationError,
   type VizelImageValidationErrorType,
@@ -129,6 +128,7 @@ export {
   VizelMathInline,
   type VizelNodeTypeOption,
   VizelResizableImage,
+  type VizelResizableImageOptions,
   VizelSlashCommand,
   type VizelSlashCommandExtensionOptions,
   type VizelSlashCommandGroup,
@@ -162,10 +162,14 @@ export {
 // Icons
 // =============================================================================
 export {
+  type CustomIconMap,
   getVizelIconId,
+  initVizelIconRenderer,
   renderVizelIcon,
+  renderVizelIconSvg,
   setVizelIconRenderer,
   type VizelBubbleMenuIconName,
+  type VizelIconContextValue,
   type VizelIconName,
   type VizelIconRenderer,
   type VizelIconRendererOptions,
@@ -202,6 +206,7 @@ export {
 // Types
 // =============================================================================
 export type {
+  VizelCreateEditorOptions,
   VizelEditorOptions,
   VizelEditorState,
   VizelFeatureOptions,
@@ -209,42 +214,57 @@ export type {
   VizelMarkdownSyncOptions,
   VizelMarkdownSyncResult,
   VizelSlashCommandOptions,
+  VizelSlashMenuRendererOptions,
 } from "./types.ts";
 
 // =============================================================================
 // Utilities
 // =============================================================================
 export {
+  type CreateVizelEditorInstanceOptions,
+  type CreateVizelEditorInstanceResult,
   // Editor helpers
   convertVizelCodeBlocksToDiagrams,
-  convertVizelMermaidCodeBlocksToDiagrams,
+  // Editor factory
+  createVizelEditorInstance,
   // Markdown utilities
   createVizelMarkdownSyncHandlers,
   createVizelPortalElement,
+  // Suggestion container utilities
+  createVizelSuggestionContainer,
   createVizelUploadEventHandler,
   getVizelEditorState,
   getVizelMarkdown,
   getVizelPortalContainer,
+  handleVizelSuggestionEscape,
   hasVizelPortalContainer,
   initializeVizelMarkdownContent,
+  // Color utilities
+  isVizelValidHexColor,
   mountToVizelPortal,
+  normalizeVizelHexColor,
   parseVizelMarkdown,
   registerVizelUploadEventHandler,
   removeVizelPortalContainer,
   resolveVizelFeatures,
   setVizelMarkdown,
+  // Text highlight utilities
+  splitVizelTextByMatches,
   transformVizelDiagramCodeBlocks,
-  transformVizelMermaidToDiagram,
   unmountFromVizelPortal,
   VIZEL_DEFAULT_MARKDOWN_DEBOUNCE_MS,
   VIZEL_PORTAL_ID,
   VIZEL_PORTAL_Z_INDEX,
+  VIZEL_SUGGESTION_Z_INDEX,
   VIZEL_UPLOAD_IMAGE_EVENT,
   type VizelContentNode,
   type VizelCreateUploadEventHandlerOptions,
+  type VizelDOMRectGetter,
   type VizelMarkdownSyncHandlers,
   type VizelMountPortalOptions,
   type VizelPortalLayer,
   type VizelResolveFeaturesOptions,
+  type VizelSuggestionContainer,
+  type VizelTextSegment,
   vizelDefaultEditorProps,
 } from "./utils/index.ts";

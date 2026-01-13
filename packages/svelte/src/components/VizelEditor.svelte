@@ -8,9 +8,9 @@ export interface VizelEditorProps {
   class?: string;
 }
 
-export interface VizelEditorExposed {
+export interface VizelExposed {
   /** The container DOM element */
-  container: HTMLElement | undefined;
+  container: HTMLDivElement | null;
 }
 </script>
 
@@ -22,10 +22,10 @@ let { editor: editorProp, class: className }: VizelEditorProps = $props();
 const contextEditor = getVizelContextSafe();
 const editor = $derived(editorProp ?? contextEditor?.());
 
-let element: HTMLElement | undefined = $state();
+let element: HTMLDivElement | null = $state(null);
 
 // Expose container element to parent component
-export function getExposed(): VizelEditorExposed {
+export function getExposed(): VizelExposed {
   return {
     get container() {
       return element;

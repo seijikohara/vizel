@@ -1,19 +1,16 @@
-import { Editor, type Extensions } from "@tiptap/core";
-import type { VizelEditorOptions } from "@vizel/core";
+import type { Editor } from "@tiptap/core";
 import {
-  createVizelExtensions,
-  initializeVizelMarkdownContent,
+  createVizelEditorInstance,
   registerVizelUploadEventHandler,
-  resolveVizelFeatures,
-  vizelDefaultEditorProps,
+  type VizelCreateEditorOptions,
 } from "@vizel/core";
-import { onDestroy, onMount } from "svelte";
-import { createVizelSlashMenuRenderer } from "./createSlashMenuRenderer.ts";
+import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.ts";
 
-export interface CreateVizelEditorOptions extends VizelEditorOptions {
-  /** Additional extensions to include */
-  extensions?: Extensions;
-}
+/**
+ * Options for createVizelEditor rune.
+ * @see VizelCreateEditorOptions for available options.
+ */
+export type CreateVizelEditorOptions = VizelCreateEditorOptions;
 
 /**
  * Svelte 5 rune to create and manage a Vizel editor instance.
@@ -49,81 +46,34 @@ export interface CreateVizelEditorOptions extends VizelEditorOptions {
  * ```
  */
 export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
-  const {
-    initialContent,
-    initialMarkdown,
-    transformDiagramsOnImport = true,
-    placeholder,
-    editable = true,
-    autofocus = false,
-    features,
-    extensions: additionalExtensions = [],
-    onUpdate,
-    onCreate,
-    onDestroy: onEditorDestroy,
-    onSelectionUpdate,
-    onFocus,
-    onBlur,
-  } = options;
-
-  const resolvedFeatures = resolveVizelFeatures({
-    ...(features !== undefined && { features }),
-    createSlashMenuRenderer: createVizelSlashMenuRenderer,
-  });
+  const { features, extensions: additionalExtensions = [], ...editorOptions } = options;
 
   // Store image upload options for event handler
   const imageOptions = typeof features?.image === "object" ? features.image : {};
 
   let editor = $state<Editor | null>(null);
 
-  // Handle vizel:upload-image custom event from slash command
-  let cleanupHandler: (() => void) | null = null;
-
-  // Create editor on mount (after DOM is ready)
-  onMount(() => {
-    // Wrap onCreate to handle initialMarkdown
-    const wrappedOnCreate = initialMarkdown
-      ? (props: { editor: Editor }) => {
-          initializeVizelMarkdownContent(props.editor, initialMarkdown, {
-            transformDiagrams: transformDiagramsOnImport,
-          });
-          onCreate?.(props);
-        }
-      : onCreate;
-
-    editor = new Editor({
-      extensions: [
-        ...createVizelExtensions({
-          ...(placeholder !== undefined && { placeholder }),
-          ...(resolvedFeatures !== undefined && { features: resolvedFeatures }),
-        }),
-        ...additionalExtensions,
-      ],
-      // Only set initialContent if initialMarkdown is not provided
-      ...(!initialMarkdown && initialContent !== undefined && { content: initialContent }),
-      editable,
-      autofocus,
-      // Add vizel-editor class for styling
-      editorProps: vizelDefaultEditorProps,
-      // Only pass event handlers that are defined to avoid tiptap emit errors
-      ...(onUpdate && { onUpdate }),
-      ...(wrappedOnCreate && { onCreate: wrappedOnCreate }),
-      ...(onEditorDestroy && { onDestroy: onEditorDestroy }),
-      ...(onSelectionUpdate && { onSelectionUpdate }),
-      ...(onFocus && { onFocus }),
-      ...(onBlur && { onBlur }),
+  // Create editor on mount and cleanup on destroy
+  $effect(() => {
+    const { editor: instance } = createVizelEditorInstance({
+      ...editorOptions,
+      ...(features !== undefined && { features }),
+      extensions: additionalExtensions,
+      createSlashMenuRenderer: createVizelSlashMenuRenderer,
     });
 
-    cleanupHandler = registerVizelUploadEventHandler({
+    editor = instance;
+
+    // Handle vizel:upload-image custom event from slash command
+    const cleanupHandler = registerVizelUploadEventHandler({
       getEditor: () => editor,
       getImageOptions: () => imageOptions,
     });
-  });
 
-  // Cleanup on component destroy
-  onDestroy(() => {
-    cleanupHandler?.();
-    editor?.destroy();
+    return () => {
+      cleanupHandler();
+      editor?.destroy();
+    };
   });
 
   return {

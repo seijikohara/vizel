@@ -1,7 +1,7 @@
 // VizelBubbleMenu components
 
 // Vizel all-in-one component
-export { default as Vizel, type VizelProps } from "./Vizel.vue";
+export { default as Vizel, type VizelProps, type VizelRef } from "./Vizel.vue";
 // VizelBubbleMenu components
 export { default as VizelBubbleMenu, type VizelBubbleMenuProps } from "./VizelBubbleMenu.vue";
 export {
@@ -29,8 +29,8 @@ export { useVizelContext, useVizelContextSafe } from "./VizelContext.ts";
 // Editor components
 export {
   default as VizelEditor,
-  type VizelEditorExposed,
   type VizelEditorProps,
+  type VizelExposed,
 } from "./VizelEditor.vue";
 // VizelEmbedView component
 export { default as VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.vue";
@@ -38,11 +38,14 @@ export { default as VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbe
 export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.vue";
 export {
   type CustomIconMap,
-  provideVizelIconContext,
+  provideVizelIcons,
   useVizelIconContext,
-  VizelIconContextKey,
   type VizelIconContextValue,
 } from "./VizelIconContext.ts";
+export {
+  default as VizelIconProvider,
+  type VizelIconProviderProps,
+} from "./VizelIconProvider.vue";
 export {
   default as VizelLinkEditor,
   type VizelLinkEditorProps,
@@ -75,7 +78,6 @@ export {
   type VizelSlashMenuItemProps,
 } from "./VizelSlashMenuItem.vue";
 // VizelThemeProvider component
-export { VizelThemeContextKey } from "./VizelThemeContext";
 export {
   default as VizelThemeProvider,
   type VizelThemeProviderProps,

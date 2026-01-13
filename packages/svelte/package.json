@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "@iconify/svelte": "^5",
-    "@iconify/utils": "^3.1.0",
     "@tiptap/core": "^3.15.1",
     "@tiptap/extension-bubble-menu": "^3.15.1",
     "@tiptap/suggestion": "^3.15.1",
@@ -43,7 +42,6 @@
     "svelte": "^5"
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.2.82",
     "@sveltejs/package": "^2",
     "@sveltejs/vite-plugin-svelte": "^6",
     "svelte-check": "^4"

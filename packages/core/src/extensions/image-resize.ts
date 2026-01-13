@@ -1,6 +1,10 @@
 import Image from "@tiptap/extension-image";
 
-export interface VizelImageResizeOptions {
+/**
+ * Configuration options for the VizelResizableImage extension.
+ * These are passed to VizelResizableImage.configure().
+ */
+export interface VizelResizableImageOptions {
   /** Minimum width in pixels (default: 100) */
   minWidth?: number;
   /** Minimum height in pixels (default: 100) */
@@ -21,7 +25,7 @@ export interface VizelImageResizeOptions {
  * Extends the base Image extension with resize handles.
  * Uses a NodeView to wrap images with draggable resize handles.
  */
-export const VizelResizableImage = Image.extend<VizelImageResizeOptions>({
+export const VizelResizableImage = Image.extend<VizelResizableImageOptions>({
   name: "image",
 
   addOptions() {
@@ -238,8 +242,3 @@ export const VizelResizableImage = Image.extend<VizelImageResizeOptions>({
 });
 
 export { VizelResizableImage as VizelImageResize };
-
-// Legacy aliases (deprecated)
-export { VizelResizableImage as ResizableImage };
-export { VizelResizableImage as ImageResize };
-export type { VizelImageResizeOptions as ImageResizeOptions };

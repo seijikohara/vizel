@@ -14,7 +14,7 @@ import {
   type VizelThemeState,
 } from "@vizel/core";
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
-import { VizelThemeContextKey } from "./VizelThemeContext";
+import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext";
 
 export interface VizelThemeProviderProps extends VizelThemeProviderOptions {}
 
@@ -47,7 +47,7 @@ const themeState: VizelThemeState = {
   setTheme,
 };
 
-provide(VizelThemeContextKey, themeState);
+provide(VIZEL_THEME_CONTEXT_KEY, themeState);
 
 let cleanup: (() => void) | null = null;
 

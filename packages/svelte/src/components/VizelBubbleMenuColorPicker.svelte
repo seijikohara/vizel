@@ -25,7 +25,6 @@ import {
   VIZEL_HIGHLIGHT_COLORS,
   VIZEL_TEXT_COLORS,
 } from "@vizel/core";
-import { onMount, onDestroy } from "svelte";
 import VizelColorPicker from "./VizelColorPicker.svelte";
 import VizelIcon from "./VizelIcon.svelte";
 
@@ -85,12 +84,11 @@ function handleClickOutside(event: MouseEvent) {
   }
 }
 
-onMount(() => {
+$effect(() => {
   document.addEventListener("mousedown", handleClickOutside);
-});
-
-onDestroy(() => {
-  document.removeEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
 });
 
 function getTriggerStyle(): string {

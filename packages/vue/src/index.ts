@@ -10,7 +10,7 @@ import "./iconRenderer.ts";
 // Components
 export {
   type CustomIconMap,
-  provideVizelIconContext,
+  provideVizelIcons,
   useVizelContext,
   useVizelContextSafe,
   useVizelIconContext,
@@ -32,16 +32,17 @@ export {
   type VizelColorPickerProps,
   // Editor components
   VizelEditor,
-  type VizelEditorExposed,
   type VizelEditorProps,
   // EmbedView
   VizelEmbedView,
   type VizelEmbedViewProps,
+  type VizelExposed,
   // Icon
   VizelIcon,
-  VizelIconContextKey,
   type VizelIconContextValue,
   type VizelIconProps,
+  VizelIconProvider,
+  type VizelIconProviderProps,
   VizelLinkEditor,
   type VizelLinkEditorProps,
   // NodeSelector
@@ -53,6 +54,7 @@ export {
   type VizelProps,
   VizelProvider,
   type VizelProviderProps,
+  type VizelRef,
   // SaveIndicator
   VizelSaveIndicator,
   type VizelSaveIndicatorProps,
@@ -64,8 +66,6 @@ export {
   type VizelSlashMenuItemProps,
   type VizelSlashMenuProps,
   type VizelSlashMenuRef,
-  // ThemeProvider
-  VizelThemeContextKey,
   VizelThemeProvider,
   type VizelThemeProviderProps,
 } from "./components/index.ts";

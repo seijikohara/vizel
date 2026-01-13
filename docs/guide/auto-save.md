@@ -7,12 +7,12 @@ Vizel provides built-in auto-save functionality to persist editor content automa
 ::: code-group
 
 ```tsx [React]
-import { useVizelEditor, useAutoSave, SaveIndicator } from '@vizel/react';
+import { useVizelEditor, useVizelAutoSave, VizelEditor, VizelSaveIndicator } from '@vizel/react';
 
 function Editor() {
   const editor = useVizelEditor();
   
-  const { status, lastSaved } = useAutoSave(editor, {
+  const { status, lastSaved } = useVizelAutoSave(() => editor, {
     debounceMs: 2000,
     storage: 'localStorage',
     key: 'my-editor-content',
@@ -20,8 +20,8 @@ function Editor() {
 
   return (
     <div>
-      <EditorContent editor={editor} />
-      <SaveIndicator status={status} lastSaved={lastSaved} />
+      <VizelEditor editor={editor} />
+      <VizelSaveIndicator status={status} lastSaved={lastSaved} />
     </div>
   );
 }
@@ -29,11 +29,12 @@ function Editor() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import { useVizelEditor, useAutoSave, SaveIndicator } from '@vizel/vue';
+import { useVizelEditor, useVizelAutoSave } from '@vizel/vue';
+import { VizelEditor, VizelSaveIndicator } from '@vizel/vue';
 
 const editor = useVizelEditor();
 
-const { status, lastSaved } = useAutoSave(() => editor.value, {
+const { status, lastSaved } = useVizelAutoSave(() => editor.value, {
   debounceMs: 2000,
   storage: 'localStorage',
   key: 'my-editor-content',
@@ -42,27 +43,27 @@ const { status, lastSaved } = useAutoSave(() => editor.value, {
 
 <template>
   <div>
-    <EditorContent :editor="editor" />
-    <SaveIndicator :status="status" :lastSaved="lastSaved" />
+    <VizelEditor :editor="editor" />
+    <VizelSaveIndicator :status="status" :lastSaved="lastSaved" />
   </div>
 </template>
 ```
 
 ```svelte [Svelte]
 <script lang="ts">
-  import { createVizelEditor, createAutoSave, SaveIndicator } from '@vizel/svelte';
+  import { createVizelEditor, createVizelAutoSave, VizelEditor, VizelSaveIndicator } from '@vizel/svelte';
 
   const editor = createVizelEditor();
   
-  const autoSave = createAutoSave(() => editor.current, {
+  const autoSave = createVizelAutoSave(() => editor.current, {
     debounceMs: 2000,
     storage: 'localStorage',
     key: 'my-editor-content',
   });
 </script>
 
-<EditorContent editor={editor.current} />
-<SaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
+<VizelEditor editor={editor.current} />
+<VizelSaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
 ```
 
 :::
@@ -88,7 +89,7 @@ const { status, lastSaved } = useAutoSave(() => editor.value, {
 Persists content in the browser's localStorage:
 
 ```typescript
-const { status } = useAutoSave(editor, {
+const { status } = useVizelAutoSave(() => editor, {
   storage: 'localStorage',
   key: 'my-editor-content',
 });
@@ -99,7 +100,7 @@ const { status } = useAutoSave(editor, {
 Persists content only for the current session:
 
 ```typescript
-const { status } = useAutoSave(editor, {
+const { status } = useVizelAutoSave(() => editor, {
   storage: 'sessionStorage',
   key: 'my-editor-content',
 });
@@ -110,7 +111,7 @@ const { status } = useAutoSave(editor, {
 Implement your own storage backend for server-side persistence:
 
 ```typescript
-const { status } = useAutoSave(editor, {
+const { status } = useVizelAutoSave(() => editor, {
   storage: {
     save: async (content) => {
       await fetch('/api/save', {
@@ -158,7 +159,7 @@ const { status } = useAutoSave(editor, {
 ## Manual Save/Restore
 
 ```typescript
-const { save, restore } = useAutoSave(editor, { storage: 'localStorage' });
+const { save, restore } = useVizelAutoSave(() => editor, { storage: 'localStorage' });
 
 // Trigger manual save
 await save();
@@ -172,14 +173,14 @@ if (content) {
 
 ## Save Indicator
 
-The `SaveIndicator` component displays the current save status:
+The `VizelSaveIndicator` component displays the current save status:
 
 ::: code-group
 
 ```tsx [React]
-import { SaveIndicator } from '@vizel/react';
+import { VizelSaveIndicator } from '@vizel/react';
 
-<SaveIndicator 
+<VizelSaveIndicator 
   status={status} 
   lastSaved={lastSaved}
   className="my-indicator"
@@ -187,7 +188,9 @@ import { SaveIndicator } from '@vizel/react';
 ```
 
 ```vue [Vue]
-<SaveIndicator 
+import { VizelSaveIndicator } from '@vizel/vue';
+
+<VizelSaveIndicator 
   :status="status" 
   :lastSaved="lastSaved"
   class="my-indicator"
@@ -195,7 +198,9 @@ import { SaveIndicator } from '@vizel/react';
 ```
 
 ```svelte [Svelte]
-<SaveIndicator 
+import { VizelSaveIndicator } from '@vizel/svelte';
+
+<VizelSaveIndicator 
   status={autoSave.status} 
   lastSaved={autoSave.lastSaved}
   class="my-indicator"
@@ -232,10 +237,10 @@ The `debounceMs` option controls how long to wait after the last change before s
 
 ```typescript
 // Save 500ms after last change (more responsive)
-useAutoSave(editor, { debounceMs: 500 });
+useVizelAutoSave(() => editor, { debounceMs: 500 });
 
 // Save 5 seconds after last change (less frequent)
-useAutoSave(editor, { debounceMs: 5000 });
+useVizelAutoSave(() => editor, { debounceMs: 5000 });
 ```
 
 ## Error Handling
@@ -243,7 +248,7 @@ useAutoSave(editor, { debounceMs: 5000 });
 Handle save errors gracefully:
 
 ```typescript
-const { status, error } = useAutoSave(editor, {
+const { status, error } = useVizelAutoSave(() => editor, {
   storage: {
     save: async (content) => {
       const response = await fetch('/api/save', {
@@ -271,11 +276,12 @@ Restore saved content when the editor initializes:
 
 ```tsx [React]
 import { useEffect } from 'react';
+import { useVizelEditor, useVizelAutoSave, VizelEditor } from '@vizel/react';
 
 function Editor() {
   const editor = useVizelEditor();
   
-  const { restore } = useAutoSave(editor, {
+  const { restore } = useVizelAutoSave(() => editor, {
     storage: 'localStorage',
     key: 'my-editor-content',
     onRestore: (content) => {
@@ -295,17 +301,18 @@ function Editor() {
     }
   }, [editor]);
 
-  return <EditorContent editor={editor} />;
+  return <VizelEditor editor={editor} />;
 }
 ```
 
 ```vue [Vue]
 <script setup lang="ts">
 import { watch } from 'vue';
+import { useVizelEditor, useVizelAutoSave } from '@vizel/vue';
 
 const editor = useVizelEditor();
 
-const { restore } = useAutoSave(() => editor.value, {
+const { restore } = useVizelAutoSave(() => editor.value, {
   storage: 'localStorage',
   key: 'my-editor-content',
 });
@@ -324,10 +331,11 @@ watch(editor, async (ed) => {
 ```svelte [Svelte]
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { createVizelEditor, createVizelAutoSave } from '@vizel/svelte';
 
   const editor = createVizelEditor();
   
-  const autoSave = createAutoSave(() => editor.current, {
+  const autoSave = createVizelAutoSave(() => editor.current, {
     storage: 'localStorage',
     key: 'my-editor-content',
   });
@@ -348,7 +356,7 @@ watch(editor, async (ed) => {
 Temporarily disable auto-save:
 
 ```typescript
-const { status } = useAutoSave(editor, {
+const { status } = useVizelAutoSave(() => editor, {
   enabled: false, // Disable auto-save
 });
 ```
@@ -358,7 +366,7 @@ Or conditionally based on state:
 ```typescript
 const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
 
-const { status } = useAutoSave(editor, {
+const { status } = useVizelAutoSave(() => editor, {
   enabled: autoSaveEnabled,
 });
 ```

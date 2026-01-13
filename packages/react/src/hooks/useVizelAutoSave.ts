@@ -29,7 +29,7 @@ export interface UseVizelAutoSaveResult {
 /**
  * Hook for auto-saving editor content with debouncing.
  *
- * @param editor - The editor instance
+ * @param getEditor - Function that returns the editor instance
  * @param options - Auto-save configuration options
  * @returns Auto-save state and controls
  *
@@ -37,7 +37,7 @@ export interface UseVizelAutoSaveResult {
  * ```tsx
  * function Editor() {
  *   const editor = useVizelEditor({ ... });
- *   const { status, lastSaved, save } = useVizelAutoSave(editor, {
+ *   const { status, lastSaved, save } = useVizelAutoSave(() => editor, {
  *     debounceMs: 2000,
  *     storage: 'localStorage',
  *     key: 'my-document',
@@ -53,7 +53,7 @@ export interface UseVizelAutoSaveResult {
  * ```
  */
 export function useVizelAutoSave(
-  editor: Editor | null,
+  getEditor: () => Editor | null | undefined,
   options: VizelAutoSaveOptions = {}
 ): UseVizelAutoSaveResult {
   // Store full options in ref to access callbacks without recreating handlers
@@ -74,9 +74,9 @@ export function useVizelAutoSave(
     error: null,
   });
 
-  // Keep a ref to the editor for the handlers
-  const editorRef = useRef(editor);
-  editorRef.current = editor;
+  // Keep a ref to the getEditor function for the handlers
+  const getEditorRef = useRef(getEditor);
+  getEditorRef.current = getEditor;
 
   const handleStateChange = useCallback((partial: Partial<VizelAutoSaveState>) => {
     setState((prev) => ({ ...prev, ...partial }));
@@ -87,7 +87,7 @@ export function useVizelAutoSave(
   const handlers = useMemo(
     () =>
       createVizelAutoSaveHandlers(
-        () => editorRef.current,
+        () => getEditorRef.current(),
         {
           enabled,
           debounceMs,
@@ -105,6 +105,7 @@ export function useVizelAutoSave(
 
   // Subscribe to editor updates
   useEffect(() => {
+    const editor = getEditor();
     if (!(editor && enabled)) return;
 
     editor.on("update", handlers.handleUpdate);
@@ -113,7 +114,7 @@ export function useVizelAutoSave(
       editor.off("update", handlers.handleUpdate);
       handlers.cancel();
     };
-  }, [editor, enabled, handlers]);
+  }, [getEditor, enabled, handlers]);
 
   const save = useCallback(async () => {
     await handlers.saveNow();

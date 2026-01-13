@@ -8,13 +8,13 @@ import { useVizelState } from "./useVizelState.ts";
  * This is a convenience hook that combines `useVizelState` (for reactivity)
  * and `getVizelEditorState` (for state extraction).
  *
- * @param editor - The editor instance to observe
+ * @param getEditor - A function that returns the editor instance to observe
  * @returns The current editor state including focus, empty status, undo/redo, and character/word counts
  *
  * @example
  * ```tsx
  * function StatusBar({ editor }: { editor: Editor | null }) {
- *   const { characterCount, wordCount, canUndo, canRedo } = useVizelEditorState(editor);
+ *   const { characterCount, wordCount, canUndo, canRedo } = useVizelEditorState(() => editor);
  *
  *   return (
  *     <div className="status-bar">
@@ -27,9 +27,10 @@ import { useVizelState } from "./useVizelState.ts";
  * }
  * ```
  */
-export function useVizelEditorState(editor: Editor | null): VizelEditorState {
+export function useVizelEditorState(getEditor: () => Editor | null | undefined): VizelEditorState {
   // Subscribe to editor state changes for reactivity
-  const updateCount = useVizelState(editor);
+  const updateCount = useVizelState(getEditor);
+  const editor = getEditor() ?? null;
 
   // Memoize the state extraction to avoid unnecessary recalculations
   // biome-ignore lint/correctness/useExhaustiveDependencies: updateCount triggers recalculation on state changes

@@ -56,13 +56,18 @@ export interface VizelFileHandlerError {
 /**
  * Default allowed MIME types (images only)
  */
-export const VIZEL_DEFAULT_FILE_MIME_TYPES = [
+export const VIZEL_DEFAULT_FILE_MIME_TYPES: string[] = [
   "image/jpeg",
   "image/png",
   "image/gif",
   "image/webp",
   "image/svg+xml",
 ];
+
+/**
+ * Default maximum file size for images (20MB)
+ */
+export const VIZEL_DEFAULT_IMAGE_MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 /**
  * Filter files by allowed MIME types

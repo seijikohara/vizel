@@ -13,41 +13,10 @@ export interface VizelSlashMenuItemProps {
   /** Match indices for highlighting (from fuzzy search) */
   titleMatches?: [number, number][];
 }
-
-/**
- * Highlight text based on match indices from fuzzy search
- */
-export function highlightMatches(
-  text: string,
-  matches?: [number, number][]
-): { text: string; highlight: boolean }[] {
-  if (!matches || matches.length === 0) {
-    return [{ text, highlight: false }];
-  }
-
-  const result: { text: string; highlight: boolean }[] = [];
-  let lastIndex = 0;
-
-  for (const [start, end] of matches) {
-    // Add text before match
-    if (start > lastIndex) {
-      result.push({ text: text.slice(lastIndex, start), highlight: false });
-    }
-    // Add highlighted match
-    result.push({ text: text.slice(start, end + 1), highlight: true });
-    lastIndex = end + 1;
-  }
-
-  // Add remaining text
-  if (lastIndex < text.length) {
-    result.push({ text: text.slice(lastIndex), highlight: false });
-  }
-
-  return result;
-}
 </script>
 
 <script lang="ts">
+import { splitVizelTextByMatches } from "@vizel/core";
 import VizelIcon from "./VizelIcon.svelte";
 
 let {
@@ -58,7 +27,7 @@ let {
   titleMatches,
 }: VizelSlashMenuItemProps = $props();
 
-const parts = $derived(highlightMatches(item.title, titleMatches));
+const parts = $derived(splitVizelTextByMatches(item.title, titleMatches));
 </script>
 
 <button

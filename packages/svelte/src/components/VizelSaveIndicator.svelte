@@ -15,7 +15,6 @@ export interface VizelSaveIndicatorProps {
 
 <script lang="ts">
 import { formatVizelRelativeTime } from "@vizel/core";
-import { onMount } from "svelte";
 import VizelIcon from "./VizelIcon.svelte";
 
 let {
@@ -35,7 +34,7 @@ function updateTime() {
   }
 }
 
-onMount(() => {
+$effect(() => {
   updateTime();
   const intervalId = setInterval(updateTime, 10000);
 

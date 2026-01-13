@@ -1,6 +1,6 @@
 import type { VizelThemeState } from "@vizel/core";
 import { inject } from "vue";
-import { VizelThemeContextKey } from "../components/VizelThemeContext";
+import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext";
 
 /**
  * Composable to access theme state and controls
@@ -21,7 +21,7 @@ import { VizelThemeContextKey } from "../components/VizelThemeContext";
  * ```
  */
 export function useVizelTheme(): VizelThemeState {
-  const context = inject(VizelThemeContextKey);
+  const context = inject(VIZEL_THEME_CONTEXT_KEY);
 
   if (!context) {
     throw new Error("useVizelTheme must be used within a VizelThemeProvider");
@@ -34,5 +34,5 @@ export function useVizelTheme(): VizelThemeState {
  * Composable to access theme state safely (returns null if not in provider)
  */
 export function useVizelThemeSafe(): VizelThemeState | null {
-  return inject(VizelThemeContextKey, null);
+  return inject(VIZEL_THEME_CONTEXT_KEY, null);
 }

@@ -5,12 +5,12 @@ import { useVizelContextSafe } from "./VizelContext.ts";
 
 export interface VizelEditorProps {
   /** Override the editor from context */
-  editor?: Editor;
+  editor?: Editor | null;
   /** Custom class name */
   class?: string;
 }
 
-export interface VizelEditorExposed {
+export interface VizelExposed {
   /** The container DOM element */
   container: HTMLDivElement | null;
 }
@@ -22,7 +22,7 @@ const getContextEditor = useVizelContextSafe();
 const editor = computed(() => props.editor ?? getContextEditor?.());
 
 // Expose container ref to parent component
-defineExpose<VizelEditorExposed>({
+defineExpose<VizelExposed>({
   get container() {
     return containerRef.value;
   },

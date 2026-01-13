@@ -12,7 +12,6 @@ export interface VizelEmbedViewProps {
 </script>
 
 <script lang="ts">
-import { onMount } from "svelte";
 import VizelIcon from "./VizelIcon.svelte";
 
 let { data, class: className, selected = false }: VizelEmbedViewProps = $props();
@@ -58,13 +57,10 @@ function loadScripts() {
   }
 }
 
+// Load scripts on mount and when data changes
 $effect(() => {
-  if (data.type === "oembed" && data.html) {
-    loadScripts();
-  }
+  loadScripts();
 });
-
-onMount(loadScripts);
 </script>
 
 {#if data.loading}

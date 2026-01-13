@@ -4,7 +4,7 @@ export {
   getVizelImageUploadPluginKey,
   handleVizelImageDrop,
   handleVizelImagePaste,
-  type ImageUploadOptions,
+  type VizelImageUploadPluginOptions,
   type VizelImageValidationError,
   type VizelImageValidationErrorType,
   type VizelUploadImageFn,

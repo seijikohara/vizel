@@ -1,12 +1,14 @@
 import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
-import type { VizelSlashCommandItem } from "@vizel/core";
+import {
+  createVizelSuggestionContainer,
+  handleVizelSuggestionEscape,
+  type VizelSlashCommandItem,
+  type VizelSlashMenuRendererOptions,
+} from "@vizel/core";
 import { mount, unmount } from "svelte";
 import VizelSlashMenu from "../components/VizelSlashMenu.svelte";
 
-export interface VizelSlashMenuRendererOptions {
-  /** Custom class name for the menu */
-  className?: string;
-}
+export type { VizelSlashMenuRendererOptions };
 
 interface SlashMenuRef {
   onKeyDown: (event: KeyboardEvent) => boolean;
@@ -40,23 +42,22 @@ export function createVizelSlashMenuRenderer(
   return {
     render: () => {
       let component: ReturnType<typeof mount> | null = null;
-      let container: HTMLDivElement | null = null;
-      let menuContainer: HTMLDivElement | null = null;
+      let suggestionContainer: ReturnType<typeof createVizelSuggestionContainer> | null = null;
       let items: VizelSlashCommandItem[] = [];
       let commandFn: ((item: VizelSlashCommandItem) => void) | null = null;
 
-      const updatePosition = (clientRect: (() => DOMRect | null) | null | undefined) => {
-        if (!(container && clientRect)) return;
-
-        const rect = clientRect();
-        if (!rect) return;
-
-        // Position below the cursor
-        const top = rect.bottom + window.scrollY;
-        const left = rect.left + window.scrollX;
-
-        container.style.top = `${top}px`;
-        container.style.left = `${left}px`;
+      const mountComponent = () => {
+        if (!suggestionContainer) return;
+        component = mount(VizelSlashMenu, {
+          target: suggestionContainer.menuContainer,
+          props: {
+            items,
+            ...(options.className !== undefined && { class: options.className }),
+            oncommand: (item: VizelSlashCommandItem) => {
+              commandFn?.(item);
+            },
+          },
+        });
       };
 
       return {
@@ -64,27 +65,9 @@ export function createVizelSlashMenuRenderer(
           items = props.items;
           commandFn = props.command;
 
-          // Create positioned container
-          container = document.createElement("div");
-          container.style.position = "absolute";
-          container.style.zIndex = "50";
-          document.body.appendChild(container);
-
-          menuContainer = document.createElement("div");
-          container.appendChild(menuContainer);
-
-          component = mount(VizelSlashMenu, {
-            target: menuContainer,
-            props: {
-              items,
-              ...(options.className !== undefined && { class: options.className }),
-              oncommand: (item: VizelSlashCommandItem) => {
-                commandFn?.(item);
-              },
-            },
-          });
-
-          updatePosition(props.clientRect);
+          suggestionContainer = createVizelSuggestionContainer();
+          mountComponent();
+          suggestionContainer.updatePosition(props.clientRect);
         },
 
         onUpdate: (props: SuggestionProps<VizelSlashCommandItem>) => {
@@ -93,28 +76,18 @@ export function createVizelSlashMenuRenderer(
 
           // Svelte 5 mount doesn't support updating props after mount
           // We need to remount the component with new props
-          if (component && menuContainer) {
+          if (component && suggestionContainer) {
             unmount(component);
-            component = mount(VizelSlashMenu, {
-              target: menuContainer,
-              props: {
-                items,
-                ...(options.className !== undefined && { class: options.className }),
-                oncommand: (item: VizelSlashCommandItem) => {
-                  commandFn?.(item);
-                },
-              },
-            });
+            mountComponent();
           }
 
-          updatePosition(props.clientRect);
+          suggestionContainer?.updatePosition(props.clientRect);
         },
 
         onKeyDown: (props: { event: KeyboardEvent }) => {
-          if (props.event.key === "Escape") {
+          if (handleVizelSuggestionEscape(props.event)) {
             return true;
           }
-
           if (component && isSlashMenuRef(component)) {
             return component.onKeyDown(props.event);
           }
@@ -125,10 +98,9 @@ export function createVizelSlashMenuRenderer(
           if (component) {
             unmount(component);
           }
-          container?.remove();
+          suggestionContainer?.destroy();
           component = null;
-          container = null;
-          menuContainer = null;
+          suggestionContainer = null;
         },
       };
     },

@@ -15,7 +15,7 @@ export interface VizelLinkEditorProps {
 
 <script lang="ts">
 import { detectVizelEmbedProvider } from "@vizel/core";
-import { onMount, untrack } from "svelte";
+import { untrack } from "svelte";
 import VizelIcon from "./VizelIcon.svelte";
 
 let {
@@ -61,7 +61,7 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 }
 
-onMount(() => {
+$effect(() => {
   inputElement?.focus();
 
   // Use setTimeout to avoid immediate trigger from the click that opened the editor

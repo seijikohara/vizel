@@ -14,7 +14,6 @@ export interface VizelNodeSelectorProps {
 
 <script lang="ts">
 import { vizelDefaultNodeTypes, getVizelActiveNodeType } from "@vizel/core";
-import { onMount } from "svelte";
 import { createVizelState } from "../runes/createVizelState.svelte.ts";
 import VizelIcon from "./VizelIcon.svelte";
 
@@ -43,7 +42,7 @@ function handleClickOutside(event: MouseEvent) {
   }
 }
 
-onMount(() => {
+$effect(() => {
   document.addEventListener("mousedown", handleClickOutside);
   return () => document.removeEventListener("mousedown", handleClickOutside);
 });

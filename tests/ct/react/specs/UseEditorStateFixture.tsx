@@ -11,7 +11,7 @@ export function UseEditorStateFixture({ nullEditor = false }: UseEditorStateFixt
   });
 
   const actualEditor = nullEditor ? null : editor;
-  const updateCount = useVizelState(actualEditor);
+  const updateCount = useVizelState(() => actualEditor);
 
   const isBoldActive = actualEditor?.isActive("bold") ?? false;
   const isItalicActive = actualEditor?.isActive("italic") ?? false;
