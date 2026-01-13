@@ -52,11 +52,11 @@ function AppContent() {
   const vizelRef = useRef<VizelRef>(null);
 
   // Track editor state for character/word count
-  useVizelState(vizelRef.current?.editor ?? null);
+  useVizelState(() => vizelRef.current?.editor ?? null);
   const editorState = getVizelEditorState(vizelRef.current?.editor ?? null);
 
   // Auto-save functionality
-  const { status, lastSaved } = useVizelAutoSave(vizelRef.current?.editor ?? null, {
+  const { status, lastSaved } = useVizelAutoSave(() => vizelRef.current?.editor ?? null, {
     debounceMs: 2000,
     storage: "localStorage",
     key: "vizel-demo-react",
