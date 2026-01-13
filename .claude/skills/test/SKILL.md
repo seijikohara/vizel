@@ -178,7 +178,7 @@ For each implementation, determine coverage status:
 | Function | React | Vue | Svelte | Status |
 |----------|:-----:|:---:|:------:|--------|
 | useVizelEditor | ✅ | ✅ | ✅ | Indirect |
-| useEditorState | ❌ | ❌ | ❌ | Missing |
+| useVizelEditorState | ❌ | ❌ | ❌ | Missing |
 
 ### Summary
 - Components: X/Y covered (Z%)
