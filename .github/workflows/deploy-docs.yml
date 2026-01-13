@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build with VitePress
+      - name: Build docs with demos
         run: bun run docs:build
 
       - name: Upload artifact
