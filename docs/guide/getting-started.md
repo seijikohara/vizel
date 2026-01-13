@@ -47,7 +47,7 @@ Each framework package has peer dependencies on its respective framework:
 
 ## Quick Start
 
-The simplest way to use Vizel is with the `Vizel` component, which includes everything you need:
+Use the `Vizel` component:
 
 ::: code-group
 
@@ -82,11 +82,7 @@ import '@vizel/core/styles.css';
 
 :::
 
-The `Vizel` component includes:
-- Editor content area
-- Bubble menu (text formatting)
-- Slash command menu
-- All default features
+The `Vizel` component includes the editor, bubble menu, and slash command menu.
 
 ## Import Styles
 
@@ -100,7 +96,7 @@ This includes both CSS variables and component styles. For custom theming, see [
 
 ## Advanced Usage
 
-For more control, you can use individual components:
+To customize the editor, use individual components:
 
 ### React
 
@@ -168,11 +164,11 @@ const editor = useVizelEditor({
 
 ### Initial Content
 
-You can initialize the editor with content in **Markdown** or **JSON** format.
+Initialize the editor with **Markdown** or **JSON** format.
 
-#### Using Markdown (Recommended)
+#### Using Markdown
 
-The simplest way to initialize content is with Markdown:
+Initialize with Markdown:
 
 ::: code-group
 
@@ -228,7 +224,7 @@ const editor = createVizelEditor({
 
 #### Using JSON
 
-For more control, use JSON format:
+Initialize with JSON format:
 
 ::: code-group
 
@@ -538,7 +534,7 @@ const editor = createVizelEditor({
 
 ## Dark Mode
 
-Vizel supports light and dark themes. Use the `VizelThemeProvider` component:
+Use `VizelThemeProvider` for theme support:
 
 ::: code-group
 

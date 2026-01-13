@@ -16,7 +16,7 @@ bun add @vizel/svelte
 
 ## Quick Start
 
-The simplest way to get started is with the `Vizel` component:
+Use the `Vizel` component:
 
 ```svelte
 <script lang="ts">
@@ -32,7 +32,7 @@ The simplest way to get started is with the `Vizel` component:
 
 ### Advanced Setup
 
-For more control over the editor, use individual components with runes:
+To customize, use individual components with runes:
 
 ```svelte
 <script lang="ts">
@@ -179,7 +179,7 @@ Automatically saves editor content.
 
 ### createVizelMarkdown
 
-Provides two-way Markdown synchronization with debouncing.
+Two-way Markdown synchronization with debouncing.
 
 ```svelte
 <script lang="ts">

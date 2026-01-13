@@ -1,21 +1,18 @@
 # Theming
 
-Vizel provides a comprehensive theming system using CSS variables. You can customize colors, typography, spacing, and more.
+Customize colors, typography, and spacing using CSS variables.
 
 ## Importing Styles
 
 ### Default Styles
 
-Import the complete stylesheet (recommended for most projects):
+Import the stylesheet:
 
 ```typescript
 import '@vizel/core/styles.css';
 ```
 
-This includes:
-- CSS variable definitions (light and dark themes)
-- Component styles
-- Typography styles
+This includes CSS variable definitions (light and dark themes), component styles, and typography styles.
 
 ### Components Only (shadcn/ui)
 

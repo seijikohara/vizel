@@ -1,6 +1,6 @@
 # Auto-Save
 
-Vizel provides built-in auto-save functionality to persist editor content automatically.
+Auto-save persists editor content automatically.
 
 ## Basic Usage
 

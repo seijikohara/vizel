@@ -17,7 +17,7 @@ bun add @vizel/react
 
 ## Quick Start
 
-The simplest way to get started is with the `Vizel` component:
+Use the `Vizel` component:
 
 ```tsx
 import { Vizel } from '@vizel/react';
@@ -35,7 +35,7 @@ function App() {
 
 ### Advanced Setup
 
-For more control over the editor, use individual components with hooks:
+To customize, use individual components with hooks:
 
 ```tsx
 import { VizelEditor, VizelBubbleMenu, useVizelEditor } from '@vizel/react';
@@ -186,7 +186,7 @@ function Editor() {
 
 ### useVizelMarkdown
 
-Provides two-way Markdown synchronization with debouncing.
+Two-way Markdown synchronization with debouncing.
 
 ```tsx
 import { useVizelEditor, useVizelMarkdown, VizelEditor } from '@vizel/react';
