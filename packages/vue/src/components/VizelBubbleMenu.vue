@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/core";
-import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
+import { BubbleMenuPlugin, type Editor } from "@vizel/core";
 import { computed, onBeforeUnmount, ref, useSlots, watch } from "vue";
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.vue";
 import { useVizelContextSafe } from "./VizelContext.ts";

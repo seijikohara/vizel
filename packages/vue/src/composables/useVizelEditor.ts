@@ -1,6 +1,6 @@
-import type { Editor } from "@tiptap/core";
 import {
   createVizelEditorInstance,
+  type Editor,
   registerVizelUploadEventHandler,
   type VizelCreateEditorOptions,
 } from "@vizel/core";

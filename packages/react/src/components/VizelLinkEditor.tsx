@@ -1,5 +1,4 @@
-import type { Editor } from "@tiptap/core";
-import { detectVizelEmbedProvider } from "@vizel/core";
+import { detectVizelEmbedProvider, type Editor } from "@vizel/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 

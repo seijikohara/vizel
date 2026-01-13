@@ -1,4 +1,4 @@
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import { useState } from "react";
 import { useVizelState } from "../hooks/useVizelState.ts";
 import { VizelBubbleMenuButton } from "./VizelBubbleMenuButton.tsx";

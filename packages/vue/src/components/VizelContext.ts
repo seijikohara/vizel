@@ -1,4 +1,4 @@
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import { type ComputedRef, computed, type InjectionKey, inject } from "vue";
 
 export const VIZEL_CONTEXT_KEY: InjectionKey<() => Editor | null> = Symbol("vizel-editor");

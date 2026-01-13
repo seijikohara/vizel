@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import { provide } from "vue";
 import { VIZEL_CONTEXT_KEY } from "./VizelContext.ts";
 

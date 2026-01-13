@@ -6,9 +6,7 @@
  */
 
 import type { Extensions, JSONContent } from "@tiptap/core";
-import Details from "@tiptap/extension-details";
-import DetailsContent from "@tiptap/extension-details-content";
-import DetailsSummary from "@tiptap/extension-details-summary";
+import { Details, DetailsContent, DetailsSummary } from "@tiptap/extension-details";
 
 /**
  * Options for the Details container extension

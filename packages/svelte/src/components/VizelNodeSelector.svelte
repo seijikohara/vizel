@@ -1,6 +1,5 @@
 <script lang="ts" module>
-import type { Editor } from "@tiptap/core";
-import type { VizelNodeTypeOption } from "@vizel/core";
+import type { Editor, VizelNodeTypeOption } from "@vizel/core";
 
 export interface VizelNodeSelectorProps {
   /** The editor instance */

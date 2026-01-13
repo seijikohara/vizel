@@ -1,6 +1,5 @@
 <script lang="ts" module>
-import type { Editor, JSONContent } from "@tiptap/core";
-import type { VizelFeatureOptions } from "@vizel/core";
+import type { Editor, JSONContent, VizelFeatureOptions } from "@vizel/core";
 import type { Snippet } from "svelte";
 
 /**
@@ -95,7 +94,7 @@ let isUpdatingFromMarkdown = false;
 
 // Wrap onUpdate to sync markdown
 const originalOnUpdate = restProps.onUpdate;
-const wrappedOnUpdate = (e: { editor: import("@tiptap/core").Editor }) => {
+const wrappedOnUpdate = (e: { editor: import("@vizel/core").Editor }) => {
   originalOnUpdate?.(e);
   // Update markdown binding if not updating from external change
   if (!isUpdatingFromMarkdown && markdown !== undefined) {

@@ -1,6 +1,5 @@
 <script lang="ts" module>
-import type { Editor } from "@tiptap/core";
-import type { VizelColorDefinition } from "@vizel/core";
+import type { Editor, VizelColorDefinition } from "@vizel/core";
 
 export interface VizelBubbleMenuColorPickerProps {
   /** The editor instance */

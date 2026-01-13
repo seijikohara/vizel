@@ -29,9 +29,6 @@
   },
   "dependencies": {
     "@iconify/react": "^6",
-    "@tiptap/core": "^3.15.1",
-    "@tiptap/extension-bubble-menu": "^3.15.1",
-    "@tiptap/suggestion": "^3.15.1",
     "@vizel/core": "workspace:*"
   },
   "peerDependencies": {

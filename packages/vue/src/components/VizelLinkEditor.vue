@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/core";
-import { detectVizelEmbedProvider } from "@vizel/core";
+import { detectVizelEmbedProvider, type Editor } from "@vizel/core";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 

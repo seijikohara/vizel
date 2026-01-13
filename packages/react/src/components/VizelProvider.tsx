@@ -1,4 +1,4 @@
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@vizel/core";
 import type { ReactNode } from "react";
 import { VizelInternalProvider } from "./VizelContext.tsx";
 

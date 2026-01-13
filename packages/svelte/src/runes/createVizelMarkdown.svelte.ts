@@ -1,6 +1,6 @@
-import type { Editor } from "@tiptap/core";
 import {
   createVizelMarkdownSyncHandlers,
+  type Editor,
   getVizelMarkdown,
   type VizelMarkdownSyncHandlers,
   type VizelMarkdownSyncOptions,

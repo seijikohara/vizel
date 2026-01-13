@@ -7,7 +7,6 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@tiptap/core": "^2.24.2",
     "@vizel/core": "workspace:*",
     "@vizel/react": "workspace:*",
     "react": "^19.2.3",
