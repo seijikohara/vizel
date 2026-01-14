@@ -9,8 +9,6 @@ Install the package for your framework:
 ```bash [React]
 npm install @vizel/react
 # or
-bun add @vizel/react
-# or
 pnpm add @vizel/react
 # or
 yarn add @vizel/react
@@ -19,8 +17,6 @@ yarn add @vizel/react
 ```bash [Vue]
 npm install @vizel/vue
 # or
-bun add @vizel/vue
-# or
 pnpm add @vizel/vue
 # or
 yarn add @vizel/vue
@@ -28,8 +24,6 @@ yarn add @vizel/vue
 
 ```bash [Svelte]
 npm install @vizel/svelte
-# or
-bun add @vizel/svelte
 # or
 pnpm add @vizel/svelte
 # or

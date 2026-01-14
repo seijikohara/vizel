@@ -23,29 +23,29 @@ tests/
 ## Development Commands
 
 ```bash
-bun install          # Install dependencies
-bun run dev:react    # Run React demo
-bun run dev:vue      # Run Vue demo
-bun run dev:svelte   # Run Svelte demo
-bun run dev:all      # Run all demos simultaneously
-bun run lint         # Run Biome linter
-bun run check        # Run Biome check with auto-fix
-bun run typecheck    # Run type checking for all packages
-bun run build        # Build all packages
-bun run test:ct      # Run all E2E tests (parallel)
-bun run test:ct:seq  # Run all E2E tests (sequential)
-bun run test:ct:react    # Run React E2E tests
-bun run test:ct:vue      # Run Vue E2E tests
-bun run test:ct:svelte   # Run Svelte E2E tests
+npm install          # Install dependencies
+npm run dev:react    # Run React demo
+npm run dev:vue      # Run Vue demo
+npm run dev:svelte   # Run Svelte demo
+npm run dev:all      # Run all demos simultaneously
+npm run lint         # Run Biome linter
+npm run check        # Run Biome check with auto-fix
+npm run typecheck    # Run type checking for all packages
+npm run build        # Build all packages
+npm run test:ct      # Run all E2E tests (parallel)
+npm run test:ct:seq  # Run all E2E tests (sequential)
+npm run test:ct:react    # Run React E2E tests
+npm run test:ct:vue      # Run Vue E2E tests
+npm run test:ct:svelte   # Run Svelte E2E tests
 ```
 
 ## Runtime Environment
 
-Use Bun instead of Node.js for all operations:
+Use Node.js LTS for all operations:
 
-- `bun install` instead of npm/yarn/pnpm install
-- `bun run <script>` instead of npm run
-- `bunx <package>` instead of npx
+- `npm install` for dependency installation
+- `npm run <script>` for script execution
+- `npx <package>` for package execution
 
 ---
 
@@ -124,6 +124,6 @@ For detailed coding rules and guidelines, see the following files:
 
 ### Testing
 
-- `bun run test:ct` - Run all tests
+- `npm run test:ct` - Run all tests
 - Use shared scenarios in `tests/ct/scenarios/`
 - Prefer `[data-vizel-*]` attributes for locators

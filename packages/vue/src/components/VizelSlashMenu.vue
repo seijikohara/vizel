@@ -8,7 +8,12 @@ import { computed, nextTick, ref, useSlots, watch } from "vue";
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.vue";
 import VizelSlashMenuItem from "./VizelSlashMenuItem.vue";
 
+/**
+ * Ref interface for VizelSlashMenu component.
+ * Exposes keyboard navigation handler for parent components.
+ */
 export interface VizelSlashMenuRef {
+  /** Handle keyboard navigation events (ArrowUp, ArrowDown, Enter, Tab) */
   onKeyDown: (props: { event: KeyboardEvent }) => boolean;
 }
 

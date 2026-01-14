@@ -87,7 +87,7 @@ export function useVizelMarkdown(
   // Create sync handlers
   let handlers: VizelMarkdownSyncHandlers | null = null;
 
-  const initHandlers = () => {
+  const initHandlers = (): VizelMarkdownSyncHandlers => {
     if (!handlers) {
       handlers = createVizelMarkdownSyncHandlers(syncOptions);
     }

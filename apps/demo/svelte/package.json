@@ -7,8 +7,8 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@vizel/core": "workspace:*",
-    "@vizel/svelte": "workspace:*",
+    "@vizel/core": "*",
+    "@vizel/svelte": "*",
     "svelte": "^5.46.1"
   },
   "devDependencies": {

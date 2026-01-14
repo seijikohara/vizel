@@ -7,7 +7,9 @@ React 19 components and hooks for Vizel editor.
 ```bash
 npm install @vizel/react
 # or
-bun add @vizel/react
+pnpm add @vizel/react
+# or
+yarn add @vizel/react
 ```
 
 ::: info Requirements

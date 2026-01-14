@@ -13,32 +13,29 @@ export interface VizelEmbedViewProps {
 }
 
 /** Build base class name for embed container */
-function buildBaseClass(
+const buildBaseClass = (
   loading: boolean | undefined,
   selected: boolean | undefined,
   className: string | undefined
-): string {
-  return `vizel-embed ${loading ? "is-loading" : ""} ${selected ? "ProseMirror-selectednode" : ""} ${className ?? ""}`;
-}
+): string =>
+  `vizel-embed ${loading ? "is-loading" : ""} ${selected ? "ProseMirror-selectednode" : ""} ${className ?? ""}`;
 
 /** Render loading state */
-function renderLoading(baseClass: string, provider: string | undefined): React.JSX.Element {
-  return (
-    <div className={baseClass} data-embed-type="loading" data-embed-provider={provider}>
-      <div className="vizel-embed-loading">
-        <div className="vizel-embed-loading-spinner" />
-        <span>Loading embed...</span>
-      </div>
+const renderLoading = (baseClass: string, provider: string | undefined): React.JSX.Element => (
+  <div className={baseClass} data-embed-type="loading" data-embed-provider={provider}>
+    <div className="vizel-embed-loading">
+      <div className="vizel-embed-loading-spinner" />
+      <span>Loading embed...</span>
     </div>
-  );
-}
+  </div>
+);
 
 /** Render oEmbed (rich embed) */
-function renderOEmbed(
+const renderOEmbed = (
   baseClass: string,
   data: VizelEmbedData,
   containerRef: React.RefObject<HTMLDivElement | null>
-): React.JSX.Element {
+): React.JSX.Element => {
   const isVideo = ["youtube", "vimeo", "loom", "tiktok"].includes(data.provider ?? "");
 
   return (
@@ -55,10 +52,10 @@ function renderOEmbed(
       />
     </div>
   );
-}
+};
 
 /** Render OGP card */
-function renderOGPCard(baseClass: string, data: VizelEmbedData): React.JSX.Element {
+const renderOGPCard = (baseClass: string, data: VizelEmbedData): React.JSX.Element => {
   const hasImage = Boolean(data.image);
   const cardLayout = hasImage ? "vizel-embed-card-horizontal" : "";
 
@@ -91,39 +88,35 @@ function renderOGPCard(baseClass: string, data: VizelEmbedData): React.JSX.Eleme
       </a>
     </div>
   );
-}
+};
 
 /** Render title link */
-function renderTitleLink(
+const renderTitleLink = (
   baseClass: string,
   data: VizelEmbedData,
   LinkIcon: React.JSX.Element
-): React.JSX.Element {
-  return (
-    <div className={baseClass} data-embed-type="title" data-embed-provider={data.provider}>
-      <a href={data.url} target="_blank" rel="noopener noreferrer" className="vizel-embed-link">
-        <span className="vizel-embed-link-icon">{LinkIcon}</span>
-        <span className="vizel-embed-link-text">{data.title}</span>
-      </a>
-    </div>
-  );
-}
+): React.JSX.Element => (
+  <div className={baseClass} data-embed-type="title" data-embed-provider={data.provider}>
+    <a href={data.url} target="_blank" rel="noopener noreferrer" className="vizel-embed-link">
+      <span className="vizel-embed-link-icon">{LinkIcon}</span>
+      <span className="vizel-embed-link-text">{data.title}</span>
+    </a>
+  </div>
+);
 
 /** Render plain link (fallback) */
-function renderPlainLink(
+const renderPlainLink = (
   baseClass: string,
   data: VizelEmbedData,
   LinkIcon: React.JSX.Element
-): React.JSX.Element {
-  return (
-    <div className={baseClass} data-embed-type="link" data-embed-provider={data.provider}>
-      <a href={data.url} target="_blank" rel="noopener noreferrer" className="vizel-embed-link">
-        <span className="vizel-embed-link-icon">{LinkIcon}</span>
-        <span className="vizel-embed-link-text">{data.url}</span>
-      </a>
-    </div>
-  );
-}
+): React.JSX.Element => (
+  <div className={baseClass} data-embed-type="link" data-embed-provider={data.provider}>
+    <a href={data.url} target="_blank" rel="noopener noreferrer" className="vizel-embed-link">
+      <span className="vizel-embed-link-icon">{LinkIcon}</span>
+      <span className="vizel-embed-link-text">{data.url}</span>
+    </a>
+  </div>
+);
 
 /**
  * Renders an embed based on its type.

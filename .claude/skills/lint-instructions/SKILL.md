@@ -93,13 +93,13 @@ Quick checks to run:
 
 ```bash
 # Biome handles: formatting, imports, exports, naming
-bun run check
+npm run check
 
 # Type safety
-bun run typecheck
+npm run typecheck
 
 # Build verification
-bun run build
+npm run build
 ```
 
 ## Common Violations

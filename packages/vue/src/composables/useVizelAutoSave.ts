@@ -69,15 +69,15 @@ export function useVizelAutoSave(
   let currentEditor: Editor | null = null;
   let handlers: ReturnType<typeof createVizelAutoSaveHandlers> | null = null;
 
-  function handleStateChange(partial: Partial<VizelAutoSaveState>) {
+  const handleStateChange = (partial: Partial<VizelAutoSaveState>) => {
     if (partial.status !== undefined) state.status = partial.status;
     if (partial.hasUnsavedChanges !== undefined)
       state.hasUnsavedChanges = partial.hasUnsavedChanges;
     if (partial.lastSaved !== undefined) state.lastSaved = partial.lastSaved;
     if (partial.error !== undefined) state.error = partial.error;
-  }
+  };
 
-  function subscribe() {
+  const subscribe = () => {
     const editor = getEditor();
 
     // Unsubscribe from previous editor
@@ -96,7 +96,7 @@ export function useVizelAutoSave(
     handlers = createVizelAutoSaveHandlers(() => currentEditor, opts, handleStateChange);
 
     currentEditor.on("update", handlers.handleUpdate);
-  }
+  };
 
   onMounted(() => {
     subscribe();

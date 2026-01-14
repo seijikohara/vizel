@@ -7,8 +7,8 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@vizel/core": "workspace:*",
-    "@vizel/react": "workspace:*",
+    "@vizel/core": "*",
+    "@vizel/react": "*",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },

@@ -13,7 +13,7 @@ export interface VizelSlashMenuItemProps {
 /**
  * Render text with highlighted segments based on match indices from fuzzy search
  */
-function renderHighlightedText(text: string, matches?: [number, number][]): React.ReactNode {
+const renderHighlightedText = (text: string, matches?: [number, number][]): React.ReactNode => {
   const segments = splitVizelTextByMatches(text, matches);
   // Use fragment with cumulative character position as unique key
   let charPos = 0;
@@ -28,7 +28,7 @@ function renderHighlightedText(text: string, matches?: [number, number][]): Reac
       segment.text
     );
   });
-}
+};
 
 /**
  * A menu item component for the VizelSlashMenu.

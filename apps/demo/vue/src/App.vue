@@ -58,7 +58,8 @@ function handleUpdate({ editor }: { editor: Editor }) {
 }
 
 function handleMarkdownChange(event: Event) {
-  const target = event.target as HTMLTextAreaElement;
+  const target = event.target;
+  if (!(target instanceof HTMLTextAreaElement)) return;
   const value = target.value;
   markdownInput.value = value;
   if (editorRef.value) {
@@ -67,7 +68,8 @@ function handleMarkdownChange(event: Event) {
 }
 
 function handleJsonChange(event: Event) {
-  const target = event.target as HTMLTextAreaElement;
+  const target = event.target;
+  if (!(target instanceof HTMLTextAreaElement)) return;
   const value = target.value;
   jsonInput.value = value;
   try {

@@ -316,7 +316,17 @@ Color selection component.
 Provides custom icons for Vizel components.
 
 ```svelte
-<VizelIconProvider icons={{ bold: MyBoldIcon, italic: MyItalicIcon }}>
+<script lang="ts">
+import { VizelIconProvider } from '@vizel/svelte';
+import type { CustomIconMap } from '@vizel/core';
+
+const icons: CustomIconMap = {
+  bold: 'mdi:format-bold',
+  italic: 'mdi:format-italic',
+};
+</script>
+
+<VizelIconProvider {icons}>
   <Vizel />
 </VizelIconProvider>
 ```
@@ -325,7 +335,7 @@ Provides custom icons for Vizel components.
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `icons` | `CustomIconMap` | Map of icon names to custom components |
+| `icons` | [`CustomIconMap`](/api/core#customiconmap) | Map of icon names to Iconify icon IDs |
 | `children` | `Snippet` | Children |
 
 ### VizelSlashMenu

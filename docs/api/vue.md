@@ -336,16 +336,28 @@ Color selection component.
 Provides custom icons for Vizel components.
 
 ```vue
-<VizelIconProvider :icons="{ bold: MyBoldIcon, italic: MyItalicIcon }">
-  <Vizel />
-</VizelIconProvider>
+<script setup lang="ts">
+import { VizelIconProvider } from '@vizel/vue';
+import type { CustomIconMap } from '@vizel/core';
+
+const icons: CustomIconMap = {
+  bold: 'mdi:format-bold',
+  italic: 'mdi:format-italic',
+};
+</script>
+
+<template>
+  <VizelIconProvider :icons="icons">
+    <Vizel />
+  </VizelIconProvider>
+</template>
 ```
 
 **Props:**
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `icons` | `CustomIconMap` | Map of icon names to custom components |
+| `icons` | [`CustomIconMap`](/api/core#customiconmap) | Map of icon names to Iconify icon IDs |
 
 **Slots:**
 

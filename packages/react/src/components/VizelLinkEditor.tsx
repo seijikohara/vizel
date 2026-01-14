@@ -65,20 +65,20 @@ export function VizelLinkEditor({
 
   // Handle click outside to close
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const handleClickOutside = (event: MouseEvent) => {
       if (formRef.current && !formRef.current.contains(event.target as Node)) {
         onClose();
       }
-    }
+    };
 
     // Handle Escape key to close
-    function handleKeyDown(event: KeyboardEvent) {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopImmediatePropagation();
         onClose();
       }
-    }
+    };
 
     // Use setTimeout to avoid immediate trigger from the click that opened the editor
     const timeoutId = setTimeout(() => {
