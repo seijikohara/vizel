@@ -11,7 +11,6 @@ import "./iconRenderer.ts";
 
 // Components
 export {
-  type CustomIconMap,
   useVizelContext,
   useVizelContextSafe,
   useVizelIconContext,
@@ -42,7 +41,6 @@ export {
   type VizelExposed,
   // Icon
   VizelIcon,
-  type VizelIconContextValue,
   type VizelIconProps,
   VizelIconProvider,
   type VizelIconProviderProps,

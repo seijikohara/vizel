@@ -58,7 +58,8 @@ function handleUpdate({ editor }: { editor: NonNullable<VizelEditor> }) {
 }
 
 function handleMarkdownChange(event: Event) {
-  const target = event.target as HTMLTextAreaElement;
+  const target = event.target;
+  if (!(target instanceof HTMLTextAreaElement)) return;
   const value = target.value;
   markdownInput = value;
   if (editorRef) {
@@ -67,7 +68,8 @@ function handleMarkdownChange(event: Event) {
 }
 
 function handleJsonChange(event: Event) {
-  const target = event.target as HTMLTextAreaElement;
+  const target = event.target;
+  if (!(target instanceof HTMLTextAreaElement)) return;
   const value = target.value;
   jsonInput = value;
   try {

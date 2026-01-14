@@ -55,12 +55,7 @@ export {
 // Vizel Icon component
 // ============================================================================
 export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.svelte";
-export {
-  type CustomIconMap,
-  getVizelIconContext,
-  setVizelIcons,
-  type VizelIconContextValue,
-} from "./VizelIconContext.ts";
+export { getVizelIconContext, setVizelIcons } from "./VizelIconContext.ts";
 export {
   default as VizelIconProvider,
   type VizelIconProviderProps,

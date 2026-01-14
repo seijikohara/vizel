@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Icon as IconifyIcon } from "@iconify/vue";
+import type { CustomIconMap } from "@vizel/core";
 import { type VizelIconName, vizelDefaultIconIds } from "@vizel/core";
 import { computed } from "vue";
-import { type CustomIconMap, useVizelIconContext } from "./VizelIconContext";
+import { useVizelIconContext } from "./VizelIconContext";
 
 export interface VizelIconProps {
   /**

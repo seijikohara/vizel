@@ -2,8 +2,6 @@ import type { CustomIconMap, VizelIconContextValue } from "@vizel/core";
 import type { InjectionKey } from "vue";
 import { inject, provide } from "vue";
 
-export type { CustomIconMap, VizelIconContextValue };
-
 /**
  * Injection key for icon context (internal use only).
  */

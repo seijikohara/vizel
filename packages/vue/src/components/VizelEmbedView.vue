@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { VizelEmbedData, VizelEmbedType } from "@vizel/core";
+import type { VizelEmbedData } from "@vizel/core";
 import { computed, onMounted, ref, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 

@@ -30,9 +30,7 @@ export { VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.tsx";
 // Icon component
 export { VizelIcon, type VizelIconProps } from "./VizelIcon.tsx";
 export {
-  type CustomIconMap,
   useVizelIconContext,
-  type VizelIconContextValue,
   VizelIconProvider,
   type VizelIconProviderProps,
 } from "./VizelIconContext.tsx";

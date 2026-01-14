@@ -29,24 +29,24 @@ tests/
 
 | Command | Description |
 |---------|-------------|
-| `bun run test:ct` | Run all E2E tests (all frameworks) |
-| `bun run test:ct:react` | Run React E2E tests |
-| `bun run test:ct:vue` | Run Vue E2E tests |
-| `bun run test:ct:svelte` | Run Svelte E2E tests |
+| `npm run test:ct` | Run all E2E tests (all frameworks) |
+| `npm run test:ct:react` | Run React E2E tests |
+| `npm run test:ct:vue` | Run Vue E2E tests |
+| `npm run test:ct:svelte` | Run Svelte E2E tests |
 
 ### Browser Options
 
 ```bash
 # Run with specific browser
-bun run test:ct:react --project=chromium
-bun run test:ct:react --project=firefox
-bun run test:ct:react --project=webkit
+npm run test:ct:react -- --project=chromium
+npm run test:ct:react -- --project=firefox
+npm run test:ct:react -- --project=webkit
 
 # Run in headed mode (visible browser)
-bun run test:ct:react --headed
+npm run test:ct:react -- --headed
 
 # Run specific test file
-bun run test:ct:react tests/ct/react/specs/Editor.spec.tsx
+npm run test:ct:react -- tests/ct/react/specs/Editor.spec.tsx
 ```
 
 ## Writing Tests

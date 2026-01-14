@@ -349,8 +349,14 @@ Provides custom icons for Vizel components.
 
 ```tsx
 import { VizelIconProvider } from '@vizel/react';
+import type { CustomIconMap } from '@vizel/core';
 
-<VizelIconProvider icons={{ bold: MyBoldIcon, italic: MyItalicIcon }}>
+const icons: CustomIconMap = {
+  bold: 'mdi:format-bold',
+  italic: 'mdi:format-italic',
+};
+
+<VizelIconProvider icons={icons}>
   <Vizel />
 </VizelIconProvider>
 ```
@@ -359,7 +365,7 @@ import { VizelIconProvider } from '@vizel/react';
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `icons` | `CustomIconMap` | Map of icon names to custom components |
+| `icons` | [`CustomIconMap`](/api/core#customiconmap) | Map of icon names to Iconify icon IDs |
 | `children` | `ReactNode` | Children |
 
 ### VizelSlashMenu

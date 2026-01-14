@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@iconify/vue": "^5",
-    "@vizel/core": "workspace:*"
+    "@vizel/core": "*"
   },
   "peerDependencies": {
     "vue": "^3.4"

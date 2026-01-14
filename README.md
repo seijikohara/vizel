@@ -50,13 +50,13 @@
 
 ```bash
 # React
-bun add @vizel/react
+npm install @vizel/react
 
 # Vue
-bun add @vizel/vue
+npm install @vizel/vue
 
 # Svelte
-bun add @vizel/svelte
+npm install @vizel/svelte
 ```
 
 ### With shadcn/ui (Optional)
@@ -321,29 +321,29 @@ See [_tokens.scss](packages/core/src/styles/_tokens.scss) for all available desi
 
 ```bash
 # Install dependencies
-bun install
+npm install
 
 # Run demos
-bun run dev:react     # React demo (http://localhost:3000)
-bun run dev:vue       # Vue demo (http://localhost:3001)
-bun run dev:svelte    # Svelte demo (http://localhost:3002)
-bun run dev:all       # All demos simultaneously
+npm run dev:react     # React demo (http://localhost:3000)
+npm run dev:vue       # Vue demo (http://localhost:3001)
+npm run dev:svelte    # Svelte demo (http://localhost:3002)
+npm run dev:all       # All demos simultaneously
 
 # Build all packages
-bun run build
+npm run build
 
 # Type check
-bun run typecheck
+npm run typecheck
 
 # Lint
-bun run lint
-bun run check         # Lint + format with auto-fix
+npm run lint
+npm run check         # Lint + format with auto-fix
 
 # Run E2E tests
-bun run test:ct       # All frameworks (parallel)
-bun run test:ct:react # React only
-bun run test:ct:vue   # Vue only
-bun run test:ct:svelte # Svelte only
+npm run test:ct       # All frameworks (parallel)
+npm run test:ct:react # React only
+npm run test:ct:vue   # Vue only
+npm run test:ct:svelte # Svelte only
 ```
 
 ## License

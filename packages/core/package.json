@@ -28,8 +28,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build && bun run build:css",
-    "build:css": "bun run build:css:styles && bun run build:css:components",
+    "build": "vite build && npm run build:css",
+    "build:css": "npm run build:css:styles && npm run build:css:components",
     "build:css:styles": "sass --load-path=src/styles --load-path=node_modules src/styles/index.scss dist/styles.css --style=compressed",
     "build:css:components": "sass --load-path=src/styles --load-path=node_modules src/styles/components.scss dist/components.css --style=compressed",
     "typecheck": "tsc --noEmit"

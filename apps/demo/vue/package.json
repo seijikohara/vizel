@@ -7,8 +7,8 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@vizel/core": "workspace:*",
-    "@vizel/vue": "workspace:*",
+    "@vizel/core": "*",
+    "@vizel/vue": "*",
     "vue": "^3.5.26"
   },
   "devDependencies": {

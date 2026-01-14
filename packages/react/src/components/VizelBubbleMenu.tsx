@@ -80,7 +80,7 @@ export function VizelBubbleMenu({
       updateDelay,
       ...(shouldShowRef.current && {
         shouldShow: ({ editor: e, from, to }) =>
-          shouldShowRef.current?.({ editor: e as Editor, from, to }) ?? false,
+          shouldShowRef.current?.({ editor: e, from, to }) ?? false,
       }),
       options: {
         placement: "top",
@@ -91,12 +91,12 @@ export function VizelBubbleMenu({
 
     // Handle Escape key to hide bubble menu by collapsing selection
     const currentEditor = editor;
-    function handleKeyDown(event: KeyboardEvent) {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !currentEditor.view.state.selection.empty) {
         event.preventDefault();
         currentEditor.commands.setTextSelection(currentEditor.view.state.selection.to);
       }
-    }
+    };
 
     document.addEventListener("keydown", handleKeyDown);
 

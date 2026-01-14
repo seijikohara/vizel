@@ -7,7 +7,9 @@ Vue 3 components and composables for Vizel editor.
 ```bash
 npm install @vizel/vue
 # or
-bun add @vizel/vue
+pnpm add @vizel/vue
+# or
+yarn add @vizel/vue
 ```
 
 ::: info Requirements

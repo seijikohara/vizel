@@ -36,12 +36,7 @@ export {
 export { default as VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.vue";
 // VizelIcon component
 export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.vue";
-export {
-  type CustomIconMap,
-  provideVizelIcons,
-  useVizelIconContext,
-  type VizelIconContextValue,
-} from "./VizelIconContext.ts";
+export { provideVizelIcons, useVizelIconContext } from "./VizelIconContext.ts";
 export {
   default as VizelIconProvider,
   type VizelIconProviderProps,

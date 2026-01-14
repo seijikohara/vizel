@@ -1,15 +1,14 @@
-import type { JSONContent } from "@tiptap/core";
-import { getVizelEditorState, setVizelMarkdown } from "@vizel/core";
+import type { Editor, JSONContent } from "@tiptap/core";
+import { setVizelMarkdown } from "@vizel/core";
 import {
   useVizelAutoSave,
-  useVizelState,
+  useVizelEditorState,
   useVizelTheme,
   Vizel,
-  type VizelRef,
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { initialMarkdown } from "../../shared/content";
 import reactLogo from "../../shared/logos/react.svg";
 import { mockUploadImage } from "../../shared/utils";
@@ -66,51 +65,49 @@ function AppContent() {
   const [jsonInput, setJsonInput] = useState("");
   const [markdownInput, setMarkdownInput] = useState("");
 
-  // Store editor reference from Vizel component
-  const vizelRef = useRef<VizelRef>(null);
+  // Store editor reference (useState for reactivity, unlike useRef)
+  const [editor, setEditor] = useState<Editor | null>(null);
 
   // Track editor state for character/word count (only when stats enabled)
-  useVizelState(() => (features.stats ? (vizelRef.current?.editor ?? null) : null));
-  const editorState = features.stats
-    ? getVizelEditorState(vizelRef.current?.editor ?? null)
-    : { characterCount: 0, wordCount: 0 };
+  const editorState = useVizelEditorState(() => (features.stats ? editor : null));
 
   // Auto-save functionality (only when autoSave enabled)
-  const { status, lastSaved } = useVizelAutoSave(
-    () => (features.autoSave ? (vizelRef.current?.editor ?? null) : null),
-    {
-      debounceMs: 2000,
-      storage: "localStorage",
-      key: "vizel-demo-react",
-    }
-  );
+  const { status, lastSaved } = useVizelAutoSave(() => (features.autoSave ? editor : null), {
+    debounceMs: 2000,
+    storage: "localStorage",
+    key: "vizel-demo-react",
+  });
 
   // Handle Markdown input change and sync to editor
-  const handleMarkdownChange = useCallback((value: string) => {
-    setMarkdownInput(value);
-    const editor = vizelRef.current?.editor;
-    if (editor) {
-      setVizelMarkdown(editor, value);
-    }
-  }, []);
+  const handleMarkdownChange = useCallback(
+    (value: string) => {
+      setMarkdownInput(value);
+      if (editor) {
+        setVizelMarkdown(editor, value);
+      }
+    },
+    [editor]
+  );
 
   // Handle JSON input change and sync to editor
-  const handleJsonChange = useCallback((value: string) => {
-    setJsonInput(value);
-    try {
-      const parsed = JSON.parse(value) as JSONContent;
-      const editor = vizelRef.current?.editor;
-      if (editor) {
-        editor.commands.setContent(parsed);
+  const handleJsonChange = useCallback(
+    (value: string) => {
+      setJsonInput(value);
+      try {
+        const parsed = JSON.parse(value) as JSONContent;
+        if (editor) {
+          editor.commands.setContent(parsed);
+        }
+      } catch {
+        // Invalid JSON, ignore
       }
-    } catch {
-      // Invalid JSON, ignore
-    }
-  }, []);
+    },
+    [editor]
+  );
 
-  const updateFeature = (key: keyof DemoFeatures, value: boolean) => {
+  function updateFeature(key: keyof DemoFeatures, value: boolean) {
     setFeatures((prev) => ({ ...prev, [key]: value }));
-  };
+  }
 
   const showPanel = features.syncPanel;
 
@@ -163,7 +160,6 @@ function AppContent() {
         <div className="editor-section">
           <div className="editor-container">
             <Vizel
-              ref={vizelRef}
               initialMarkdown={initialMarkdown}
               autofocus="end"
               className="editor-content"
@@ -185,15 +181,16 @@ function AppContent() {
                   },
                 },
               }}
-              onCreate={({ editor }) => {
-                const json = editor.getJSON() as JSONContent;
+              onCreate={({ editor: newEditor }) => {
+                setEditor(newEditor);
+                const json = newEditor.getJSON() as JSONContent;
                 setJsonInput(JSON.stringify(json, null, 2));
-                setMarkdownInput(editor.getMarkdown());
+                setMarkdownInput(newEditor.getMarkdown());
               }}
-              onUpdate={({ editor }) => {
-                const json = editor.getJSON() as JSONContent;
+              onUpdate={({ editor: updatedEditor }) => {
+                const json = updatedEditor.getJSON() as JSONContent;
                 setJsonInput(JSON.stringify(json, null, 2));
-                setMarkdownInput(editor.getMarkdown());
+                setMarkdownInput(updatedEditor.getMarkdown());
               }}
             />
             {(features.autoSave || features.stats) && (

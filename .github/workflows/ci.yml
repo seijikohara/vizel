@@ -10,9 +10,6 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  BUN_INSTALL_CACHE_DIR: ~/.bun/install/cache
-
 jobs:
   lint:
     name: Lint
@@ -21,24 +18,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-
-      - name: Cache Bun dependencies
-        uses: actions/cache@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          path: |
-            ~/.bun/install/cache
-            node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
+          node-version: lts/*
+          cache: npm
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: npm ci
 
       - name: Run Biome lint
-        run: bun run lint
+        run: npm run lint
 
   typecheck:
     name: TypeCheck
@@ -47,24 +37,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-
-      - name: Cache Bun dependencies
-        uses: actions/cache@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          path: |
-            ~/.bun/install/cache
-            node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
+          node-version: lts/*
+          cache: npm
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: npm ci
 
       - name: Run TypeCheck
-        run: bun run typecheck
+        run: npm run typecheck
 
   build:
     name: Build
@@ -74,24 +57,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-
-      - name: Cache Bun dependencies
-        uses: actions/cache@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          path: |
-            ~/.bun/install/cache
-            node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
+          node-version: lts/*
+          cache: npm
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: npm ci
 
       - name: Build packages
-        run: bun run build
+        run: npm run build
 
   e2e:
     name: E2E (${{ matrix.framework }}/${{ matrix.browser }})
@@ -106,28 +82,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-
-      - name: Cache Bun dependencies
-        uses: actions/cache@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          path: |
-            ~/.bun/install/cache
-            node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
+          node-version: lts/*
+          cache: npm
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: npm ci
 
       - name: Install Playwright browsers
-        run: bunx playwright install --with-deps ${{ matrix.browser }}
+        run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Run E2E tests
         id: test
-        run: bun run test:ct:${{ matrix.framework }} --project=${{ matrix.browser }}
+        run: npm run test:ct:${{ matrix.framework }} -- --project=${{ matrix.browser }}
 
       - name: Save test result
         if: always()

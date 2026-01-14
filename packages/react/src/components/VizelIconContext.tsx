@@ -1,8 +1,6 @@
 import type { CustomIconMap, VizelIconContextValue } from "@vizel/core";
 import { createContext, type ReactNode, useContext } from "react";
 
-export type { CustomIconMap, VizelIconContextValue };
-
 const VizelIconContext = createContext<VizelIconContextValue>({});
 
 export interface VizelIconProviderProps {

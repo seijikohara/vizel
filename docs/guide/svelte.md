@@ -7,7 +7,9 @@ Svelte 5 components and runes for Vizel editor.
 ```bash
 npm install @vizel/svelte
 # or
-bun add @vizel/svelte
+pnpm add @vizel/svelte
+# or
+yarn add @vizel/svelte
 ```
 
 ::: info Requirements

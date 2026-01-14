@@ -1,6 +1,5 @@
 <script lang="ts" module>
-import type { VizelIconName } from "@vizel/core";
-import type { CustomIconMap } from "./VizelIconContext";
+import type { CustomIconMap, VizelIconName } from "@vizel/core";
 
 export interface VizelIconProps {
   /**

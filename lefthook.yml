@@ -6,24 +6,24 @@ pre-commit:
   commands:
     biome-check:
       glob: "*.{js,ts,cjs,mjs,jsx,tsx,json,jsonc,vue,svelte}"
-      run: bunx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      run: npx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
       stage_fixed: true
 
     typecheck-core:
       glob: "packages/core/**/*.ts"
-      run: bun run --filter @vizel/core typecheck
+      run: npm run typecheck --workspace=@vizel/core
 
     typecheck-react:
       glob: "packages/react/**/*.{ts,tsx}"
-      run: bun run --filter @vizel/react typecheck
+      run: npm run typecheck --workspace=@vizel/react
 
     typecheck-vue:
       glob: "packages/vue/**/*.{ts,vue}"
-      run: bun run --filter @vizel/vue typecheck
+      run: npm run typecheck --workspace=@vizel/vue
 
     typecheck-svelte:
       glob: "packages/svelte/**/*.{ts,svelte}"
-      run: bun run --filter @vizel/svelte typecheck
+      run: npm run typecheck --workspace=@vizel/svelte
 
 commit-msg:
   commands:
@@ -44,7 +44,7 @@ pre-push:
   parallel: true
   commands:
     lint:
-      run: bun run lint
+      run: npm run lint
 
     typecheck:
-      run: bun run typecheck
+      run: npm run typecheck
