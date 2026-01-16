@@ -145,12 +145,29 @@ jobs:
 
       - name: Publish to npm
         if: ${{ !inputs.dry-run }}
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
         run: |
+          # Determine npm tag for prerelease versions
+          # e.g., 1.0.0-alpha.1 -> alpha, 1.0.0-beta.2 -> beta, 1.0.0 -> (empty)
+          PRERELEASE_TAG=""
+          if [[ "$VERSION" == *-* ]]; then
+            # Extract prerelease identifier (e.g., alpha, beta, rc)
+            PRERELEASE_TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+          fi
+
+          # Build publish command with optional tag
+          PUBLISH_OPTS="--provenance --access public"
+          if [ -n "$PRERELEASE_TAG" ]; then
+            PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
+            echo "📌 Publishing with tag: $PRERELEASE_TAG"
+          fi
+
           # Publish with provenance for supply chain security
-          npm publish --workspace=@vizel/core --provenance --access public
-          npm publish --workspace=@vizel/react --provenance --access public
-          npm publish --workspace=@vizel/vue --provenance --access public
-          npm publish --workspace=@vizel/svelte --provenance --access public
+          npm publish --workspace=@vizel/core $PUBLISH_OPTS
+          npm publish --workspace=@vizel/react $PUBLISH_OPTS
+          npm publish --workspace=@vizel/vue $PUBLISH_OPTS
+          npm publish --workspace=@vizel/svelte $PUBLISH_OPTS
           echo "✅ Published all packages to npm"
 
       - name: Commit version changes
