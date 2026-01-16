@@ -1,0 +1,43 @@
+name: Test
+description: Run lint, typecheck, build, and E2E tests
+
+inputs:
+  framework:
+    description: "Framework to test (react, vue, svelte)"
+    required: true
+  browser:
+    description: "Browser for E2E tests (chromium, firefox, webkit)"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: lts/*
+        cache: npm
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Run lint
+      shell: bash
+      run: npm run lint
+
+    - name: Run typecheck
+      shell: bash
+      run: npm run typecheck
+
+    - name: Build packages
+      shell: bash
+      run: npm run build
+
+    - name: Install Playwright browser
+      shell: bash
+      run: npx playwright install --with-deps ${{ inputs.browser }}
+
+    - name: Run E2E tests
+      shell: bash
+      run: npm run test:ct:${{ inputs.framework }} -- --project=${{ inputs.browser }}
