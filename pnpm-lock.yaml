@@ -112,7 +112,7 @@ importers:
         version: 19.2.3(react@19.2.3)
     devDependencies:
       '@types/react':
-        specifier: ^19.2.9
+        specifier: ^19.2.7
         version: 19.2.9
       '@types/react-dom':
         specifier: ^19.2.3
@@ -121,7 +121,7 @@ importers:
         specifier: ^5.1.2
         version: 5.1.2(vite@7.3.1(@types/node@25.0.9)(sass@1.97.2))
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.0
         version: 7.3.1(@types/node@25.0.9)(sass@1.97.2)
 
   apps/demo/svelte:
@@ -133,14 +133,14 @@ importers:
         specifier: '*'
         version: 0.0.1-alpha.1(@tiptap/extension-collaboration@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0)(@tiptap/y-tiptap@3.0.1(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.5)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))(yjs@13.6.29))(@tiptap/extension-list@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))(@tiptap/extension-node-range@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))(@tiptap/extensions@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))(@tiptap/y-tiptap@3.0.1(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.5)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))(svelte@5.47.1)
       svelte:
-        specifier: ^5.47.1
+        specifier: ^5.46.1
         version: 5.47.1
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
-        specifier: ^6.2.4
+        specifier: ^6.2.1
         version: 6.2.4(svelte@5.47.1)(vite@7.3.1(@types/node@25.0.9)(sass@1.97.2))
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.0
         version: 7.3.1(@types/node@25.0.9)(sass@1.97.2)
 
   apps/demo/vue:
@@ -152,14 +152,14 @@ importers:
         specifier: '*'
         version: 0.0.1-alpha.1(@tiptap/extension-collaboration@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0)(@tiptap/y-tiptap@3.0.1(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.5)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))(yjs@13.6.29))(@tiptap/extension-list@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))(@tiptap/extension-node-range@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))(@tiptap/extensions@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))(@tiptap/y-tiptap@3.0.1(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.5)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))(vue@3.5.27(typescript@5.9.3))
       vue:
-        specifier: ^3.5.27
+        specifier: ^3.5.26
         version: 3.5.27(typescript@5.9.3)
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^6.0.3
         version: 6.0.3(vite@7.3.1(@types/node@25.0.9)(sass@1.97.2))(vue@3.5.27(typescript@5.9.3))
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.0
         version: 7.3.1(@types/node@25.0.9)(sass@1.97.2)
 
   packages/core:
