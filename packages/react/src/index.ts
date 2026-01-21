@@ -6,6 +6,9 @@
  * React components and hooks for the Vizel visual editor.
  */
 
+// Import Tiptap extension types for ChainedCommands augmentation
+import "./tiptap-extensions.ts";
+
 // Initialize icon renderer (auto-registers with core)
 import "./iconRenderer.ts";
 

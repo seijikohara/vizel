@@ -84,8 +84,8 @@ Use the same format as commit messages:
 
 ## Test Plan
 
-- [x] Run lint (`npm run lint`)
-- [x] Run typecheck (`npm run typecheck`)
+- [x] Run lint (`pnpm lint`)
+- [x] Run typecheck (`pnpm typecheck`)
 - [x] Manual testing description
 ```
 

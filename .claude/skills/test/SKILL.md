@@ -19,11 +19,11 @@ Runs Playwright Component Tests across all frameworks.
 
 | Command | Description |
 |---------|-------------|
-| `npm run test:ct` | Run all framework tests in parallel |
-| `npm run test:ct:seq` | Run all framework tests sequentially |
-| `npm run test:ct:react` | Run React tests only |
-| `npm run test:ct:vue` | Run Vue tests only |
-| `npm run test:ct:svelte` | Run Svelte tests only |
+| `pnpm test:ct` | Run all framework tests in parallel |
+| `pnpm test:ct:seq` | Run all framework tests sequentially |
+| `pnpm test:ct:react` | Run React tests only |
+| `pnpm test:ct:vue` | Run Vue tests only |
+| `pnpm test:ct:svelte` | Run Svelte tests only |
 
 ## Instructions
 
@@ -46,38 +46,38 @@ Based on user request or changed files:
 
 #### All Frameworks (Parallel)
 ```bash
-npm run test:ct
+pnpm test:ct
 ```
 
 > **Note**: Parallel execution may cause timeout errors when running with all browsers due to resource contention. Use `--project=chromium` for faster, more reliable parallel runs.
 
 #### All Frameworks (Sequential)
 ```bash
-npm run test:ct:seq
+pnpm test:ct:seq
 ```
 
 #### Single Framework
 ```bash
-npm run test:ct:react
-npm run test:ct:vue
-npm run test:ct:svelte
+pnpm test:ct:react
+pnpm test:ct:vue
+pnpm test:ct:svelte
 ```
 
 #### Specific Browser
 ```bash
-npm run test:ct:react --project=chromium
-npm run test:ct:react --project=firefox
-npm run test:ct:react --project=webkit
+pnpm test:ct:react --project=chromium
+pnpm test:ct:react --project=firefox
+pnpm test:ct:react --project=webkit
 ```
 
 #### Specific Test File
 ```bash
-npm run test:ct:react tests/ct/react/specs/Editor.spec.tsx
+pnpm test:ct:react tests/ct/react/specs/Editor.spec.tsx
 ```
 
 #### Debug Mode (Headed)
 ```bash
-npm run test:ct:react --headed
+pnpm test:ct:react --headed
 ```
 
 ### 3. Analyze Results
@@ -193,9 +193,9 @@ For each implementation, determine coverage status:
 
 ### Browser Not Installed
 ```bash
-npx playwright install chromium
+pnpm exec playwright install chromium
 # or install all browsers
-npx playwright install
+pnpm exec playwright install
 ```
 
 ### Test Timeout
@@ -214,8 +214,8 @@ browserContext.newPage: Test timeout of 10000ms exceeded
 ```
 
 **Solutions:**
-1. Use single browser: `npm run test:ct --project=chromium`
-2. Use sequential execution: `npm run test:ct:seq`
+1. Use single browser: `pnpm test:ct --project=chromium`
+2. Use sequential execution: `pnpm test:ct:seq`
 3. Reduce parallel workers in config (currently 50% CPU)
 
 ### Element Not Found
@@ -236,23 +236,23 @@ const popup = page.locator(".selector");
 git diff --name-only HEAD~1
 
 # Run relevant tests based on changes
-npm run test:ct:react  # if React files changed
+pnpm test:ct:react  # if React files changed
 ```
 
 ### Run Before Commit
 ```bash
 # Quick parallel check with single browser (recommended)
-npm run test:ct --project=chromium
+pnpm test:ct --project=chromium
 
 # Or sequential check with single browser
-npm run test:ct:seq --project=chromium
+pnpm test:ct:seq --project=chromium
 ```
 
 ### Full CI-like Test
 ```bash
 # All frameworks in parallel, all browsers
-npm run test:ct
+pnpm test:ct
 
 # All frameworks sequentially, all browsers (more stable)
-npm run test:ct:seq
+pnpm test:ct:seq
 ```

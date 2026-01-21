@@ -99,11 +99,23 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
-          cache: npm
           registry-url: "https://registry.npmjs.org"
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Get pnpm store directory
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-store-
+
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Configure git
         run: |
@@ -115,32 +127,32 @@ jobs:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
           # Update version in all publishable packages
-          npm version "$VERSION" --no-git-tag-version --workspace=@vizel/core
-          npm version "$VERSION" --no-git-tag-version --workspace=@vizel/react
-          npm version "$VERSION" --no-git-tag-version --workspace=@vizel/vue
-          npm version "$VERSION" --no-git-tag-version --workspace=@vizel/svelte
+          pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
 
           # Update internal dependency versions
-          npm pkg set "dependencies.@vizel/core=^$VERSION" --workspace=@vizel/react
-          npm pkg set "dependencies.@vizel/core=^$VERSION" --workspace=@vizel/vue
-          npm pkg set "dependencies.@vizel/core=^$VERSION" --workspace=@vizel/svelte
+          pnpm --filter @vizel/react pkg set "dependencies.@vizel/core=^$VERSION"
+          pnpm --filter @vizel/vue pkg set "dependencies.@vizel/core=^$VERSION"
+          pnpm --filter @vizel/svelte pkg set "dependencies.@vizel/core=^$VERSION"
 
-          # Regenerate package-lock.json with updated versions
-          npm install --package-lock-only
+          # Regenerate pnpm-lock.yaml with updated versions
+          pnpm install --lockfile-only
 
           echo "✅ Updated all packages to version $VERSION"
 
       - name: Build packages
-        run: npm run build
+        run: pnpm build
 
       - name: Publish (dry-run)
         if: ${{ inputs.dry-run }}
         run: |
           echo "🔍 Running dry-run publish..."
-          npm publish --workspace=@vizel/core --dry-run
-          npm publish --workspace=@vizel/react --dry-run
-          npm publish --workspace=@vizel/vue --dry-run
-          npm publish --workspace=@vizel/svelte --dry-run
+          pnpm --filter @vizel/core publish --dry-run --no-git-checks
+          pnpm --filter @vizel/react publish --dry-run --no-git-checks
+          pnpm --filter @vizel/vue publish --dry-run --no-git-checks
+          pnpm --filter @vizel/svelte publish --dry-run --no-git-checks
           echo "✅ Dry-run completed successfully"
 
       - name: Publish to npm
@@ -157,17 +169,17 @@ jobs:
           fi
 
           # Build publish command with optional tag
-          PUBLISH_OPTS="--provenance --access public"
+          PUBLISH_OPTS="--provenance --access public --no-git-checks"
           if [ -n "$PRERELEASE_TAG" ]; then
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing with tag: $PRERELEASE_TAG"
           fi
 
           # Publish with provenance for supply chain security
-          npm publish --workspace=@vizel/core $PUBLISH_OPTS
-          npm publish --workspace=@vizel/react $PUBLISH_OPTS
-          npm publish --workspace=@vizel/vue $PUBLISH_OPTS
-          npm publish --workspace=@vizel/svelte $PUBLISH_OPTS
+          pnpm --filter @vizel/core publish $PUBLISH_OPTS
+          pnpm --filter @vizel/react publish $PUBLISH_OPTS
+          pnpm --filter @vizel/vue publish $PUBLISH_OPTS
+          pnpm --filter @vizel/svelte publish $PUBLISH_OPTS
           echo "✅ Published all packages to npm"
 
       - name: Commit version changes

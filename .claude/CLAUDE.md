@@ -23,29 +23,29 @@ tests/
 ## Development Commands
 
 ```bash
-npm install          # Install dependencies
-npm run dev:react    # Run React demo
-npm run dev:vue      # Run Vue demo
-npm run dev:svelte   # Run Svelte demo
-npm run dev:all      # Run all demos simultaneously
-npm run lint         # Run Biome linter
-npm run check        # Run Biome check with auto-fix
-npm run typecheck    # Run type checking for all packages
-npm run build        # Build all packages
-npm run test:ct      # Run all E2E tests (parallel)
-npm run test:ct:seq  # Run all E2E tests (sequential)
-npm run test:ct:react    # Run React E2E tests
-npm run test:ct:vue      # Run Vue E2E tests
-npm run test:ct:svelte   # Run Svelte E2E tests
+pnpm install          # Install dependencies
+pnpm dev:react        # Run React demo
+pnpm dev:vue          # Run Vue demo
+pnpm dev:svelte       # Run Svelte demo
+pnpm dev:all          # Run all demos simultaneously
+pnpm lint             # Run Biome linter
+pnpm check            # Run Biome check with auto-fix
+pnpm typecheck        # Run type checking for all packages
+pnpm build            # Build all packages
+pnpm test:ct          # Run all E2E tests (parallel)
+pnpm test:ct:seq      # Run all E2E tests (sequential)
+pnpm test:ct:react    # Run React E2E tests
+pnpm test:ct:vue      # Run Vue E2E tests
+pnpm test:ct:svelte   # Run Svelte E2E tests
 ```
 
 ## Runtime Environment
 
-Use Node.js LTS for all operations:
+Use Node.js LTS and pnpm for all operations:
 
-- `npm install` for dependency installation
-- `npm run <script>` for script execution
-- `npx <package>` for package execution
+- `pnpm install` for dependency installation
+- `pnpm <script>` for script execution
+- `pnpm exec <package>` for package execution
 
 ---
 
@@ -124,6 +124,6 @@ For detailed coding rules and guidelines, see the following files:
 
 ### Testing
 
-- `npm run test:ct` - Run all tests
+- `pnpm test:ct` - Run all tests
 - Use shared scenarios in `tests/ct/scenarios/`
 - Prefer `[data-vizel-*]` attributes for locators

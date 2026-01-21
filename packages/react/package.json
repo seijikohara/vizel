@@ -41,6 +41,14 @@
     "react-dom": "^19"
   },
   "devDependencies": {
+    "@tiptap/extension-bold": "^3",
+    "@tiptap/extension-code": "^3",
+    "@tiptap/extension-color": "^3",
+    "@tiptap/extension-highlight": "^3",
+    "@tiptap/extension-italic": "^3",
+    "@tiptap/extension-strike": "^3",
+    "@tiptap/extension-text-style": "^3",
+    "@tiptap/extension-underline": "^3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5",

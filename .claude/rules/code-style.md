@@ -5,7 +5,7 @@ paths: "**/*.{ts,tsx,js,jsx,vue,svelte}"
 # Code Style Guidelines
 
 Code formatting, imports, exports, and naming are enforced by Biome.
-Run `npm run check` to auto-fix. This document covers guidelines Biome doesn't enforce.
+Run `pnpm check` to auto-fix. This document covers guidelines Biome doesn't enforce.
 
 ## Language
 
