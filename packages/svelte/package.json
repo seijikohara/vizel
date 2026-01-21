@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@iconify/svelte": "^5",
-    "@vizel/core": "*"
+    "@vizel/core": "workspace:*"
   },
   "peerDependencies": {
     "svelte": "^5"
