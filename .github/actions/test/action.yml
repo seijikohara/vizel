@@ -53,4 +53,4 @@ runs:
 
     - name: Run E2E tests
       shell: bash
-      run: pnpm test:ct:${{ inputs.framework }} -- --project=${{ inputs.browser }}
+      run: pnpm test:ct:${{ inputs.framework }} --project=${{ inputs.browser }}
