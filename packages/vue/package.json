@@ -34,12 +34,20 @@
   },
   "dependencies": {
     "@iconify/vue": "^5",
-    "@vizel/core": "*"
+    "@vizel/core": "workspace:*"
   },
   "peerDependencies": {
     "vue": "^3.4"
   },
   "devDependencies": {
+    "@tiptap/extension-bold": "^3",
+    "@tiptap/extension-code": "^3",
+    "@tiptap/extension-color": "^3",
+    "@tiptap/extension-highlight": "^3",
+    "@tiptap/extension-italic": "^3",
+    "@tiptap/extension-strike": "^3",
+    "@tiptap/extension-text-style": "^3",
+    "@tiptap/extension-underline": "^3",
     "@vitejs/plugin-vue": "^6",
     "vite": "^7",
     "vite-plugin-dts": "^4",

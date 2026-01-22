@@ -128,4 +128,4 @@ When adding a feature:
 2. Implement in all three framework packages
 3. Ensure props/options are consistent
 4. Update all three demo apps
-5. Verify with `npm run typecheck && npm run build`
+5. Verify with `pnpm typecheck && pnpm build`

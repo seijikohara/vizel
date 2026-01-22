@@ -11,19 +11,19 @@ pre-commit:
 
     typecheck-core:
       glob: "packages/core/**/*.ts"
-      run: npm run typecheck --workspace=@vizel/core
+      run: pnpm --filter @vizel/core typecheck
 
     typecheck-react:
       glob: "packages/react/**/*.{ts,tsx}"
-      run: npm run typecheck --workspace=@vizel/react
+      run: pnpm --filter @vizel/react typecheck
 
     typecheck-vue:
       glob: "packages/vue/**/*.{ts,vue}"
-      run: npm run typecheck --workspace=@vizel/vue
+      run: pnpm --filter @vizel/vue typecheck
 
     typecheck-svelte:
       glob: "packages/svelte/**/*.{ts,svelte}"
-      run: npm run typecheck --workspace=@vizel/svelte
+      run: pnpm --filter @vizel/svelte typecheck
 
 commit-msg:
   commands:
@@ -44,7 +44,7 @@ pre-push:
   parallel: true
   commands:
     lint:
-      run: npm run lint
+      run: pnpm lint
 
     typecheck:
-      run: npm run typecheck
+      run: pnpm typecheck

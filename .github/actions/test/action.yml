@@ -16,28 +16,41 @@ runs:
       uses: actions/setup-node@v6
       with:
         node-version: lts/*
-        cache: npm
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+
+    - name: Get pnpm store directory
+      shell: bash
+      run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - name: Setup pnpm cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: ${{ runner.os }}-pnpm-store-
 
     - name: Install dependencies
       shell: bash
-      run: npm ci
+      run: pnpm install --frozen-lockfile
 
     - name: Run lint
       shell: bash
-      run: npm run lint
+      run: pnpm lint
 
     - name: Run typecheck
       shell: bash
-      run: npm run typecheck
+      run: pnpm typecheck
 
     - name: Build packages
       shell: bash
-      run: npm run build
+      run: pnpm build
 
     - name: Install Playwright browser
       shell: bash
-      run: npx playwright install --with-deps ${{ inputs.browser }}
+      run: pnpm exec playwright install --with-deps ${{ inputs.browser }}
 
     - name: Run E2E tests
       shell: bash
-      run: npm run test:ct:${{ inputs.framework }} -- --project=${{ inputs.browser }}
+      run: pnpm test:ct:${{ inputs.framework }} --project=${{ inputs.browser }}

@@ -29,24 +29,24 @@ tests/
 
 | Command | Description |
 |---------|-------------|
-| `npm run test:ct` | Run all E2E tests (all frameworks) |
-| `npm run test:ct:react` | Run React E2E tests |
-| `npm run test:ct:vue` | Run Vue E2E tests |
-| `npm run test:ct:svelte` | Run Svelte E2E tests |
+| `pnpm test:ct` | Run all E2E tests (all frameworks) |
+| `pnpm test:ct:react` | Run React E2E tests |
+| `pnpm test:ct:vue` | Run Vue E2E tests |
+| `pnpm test:ct:svelte` | Run Svelte E2E tests |
 
 ### Browser Options
 
 ```bash
 # Run with specific browser
-npm run test:ct:react -- --project=chromium
-npm run test:ct:react -- --project=firefox
-npm run test:ct:react -- --project=webkit
+pnpm test:ct:react -- --project=chromium
+pnpm test:ct:react -- --project=firefox
+pnpm test:ct:react -- --project=webkit
 
 # Run in headed mode (visible browser)
-npm run test:ct:react -- --headed
+pnpm test:ct:react -- --headed
 
 # Run specific test file
-npm run test:ct:react -- tests/ct/react/specs/Editor.spec.tsx
+pnpm test:ct:react -- tests/ct/react/specs/Editor.spec.tsx
 ```
 
 ## Writing Tests
