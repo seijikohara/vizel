@@ -143,10 +143,8 @@ jobs:
         if: ${{ inputs.dry-run }}
         run: |
           echo "🔍 Running dry-run publish..."
-          pnpm --filter @vizel/core publish --dry-run --no-git-checks
-          pnpm --filter @vizel/react publish --dry-run --no-git-checks
-          pnpm --filter @vizel/vue publish --dry-run --no-git-checks
-          pnpm --filter @vizel/svelte publish --dry-run --no-git-checks
+          # Use recursive publish to handle all packages in dependency order
+          pnpm publish -r --dry-run --no-git-checks --filter "./packages/*"
           echo "✅ Dry-run completed successfully"
 
       - name: Publish to npm
@@ -162,18 +160,16 @@ jobs:
             PRERELEASE_TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
           fi
 
-          # Build publish command with optional tag
+          # Build publish options
           PUBLISH_OPTS="--provenance --access public --no-git-checks"
           if [ -n "$PRERELEASE_TAG" ]; then
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing with tag: $PRERELEASE_TAG"
           fi
 
-          # Publish with provenance for supply chain security
-          pnpm --filter @vizel/core publish $PUBLISH_OPTS
-          pnpm --filter @vizel/react publish $PUBLISH_OPTS
-          pnpm --filter @vizel/vue publish $PUBLISH_OPTS
-          pnpm --filter @vizel/svelte publish $PUBLISH_OPTS
+          # Publish all packages recursively in dependency order
+          # Using -r (recursive) ensures proper ordering and single OIDC token usage
+          pnpm publish -r $PUBLISH_OPTS --filter "./packages/*"
           echo "✅ Published all packages to npm"
 
       - name: Commit version changes
