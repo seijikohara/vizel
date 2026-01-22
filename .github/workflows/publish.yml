@@ -133,9 +133,9 @@ jobs:
           pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
 
           # Update internal dependency versions
-          pnpm --filter @vizel/react pkg set "dependencies.@vizel/core=^$VERSION"
-          pnpm --filter @vizel/vue pkg set "dependencies.@vizel/core=^$VERSION"
-          pnpm --filter @vizel/svelte pkg set "dependencies.@vizel/core=^$VERSION"
+          pnpm --filter @vizel/react exec npm pkg set "dependencies.@vizel/core=^$VERSION"
+          pnpm --filter @vizel/vue exec npm pkg set "dependencies.@vizel/core=^$VERSION"
+          pnpm --filter @vizel/svelte exec npm pkg set "dependencies.@vizel/core=^$VERSION"
 
           # Regenerate pnpm-lock.yaml with updated versions
           pnpm install --lockfile-only
