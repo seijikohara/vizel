@@ -127,18 +127,12 @@ jobs:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
           # Update version in all publishable packages
+          # Note: Internal dependencies use workspace:^ protocol, which pnpm
+          # automatically converts to semver ranges (e.g., ^0.0.1-alpha.2) during publish
           pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
-
-          # Update internal dependency versions
-          pnpm --filter @vizel/react exec npm pkg set "dependencies.@vizel/core=^$VERSION"
-          pnpm --filter @vizel/vue exec npm pkg set "dependencies.@vizel/core=^$VERSION"
-          pnpm --filter @vizel/svelte exec npm pkg set "dependencies.@vizel/core=^$VERSION"
-
-          # Regenerate pnpm-lock.yaml with updated versions
-          pnpm install --lockfile-only
 
           echo "✅ Updated all packages to version $VERSION"
 

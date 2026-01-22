@@ -319,7 +319,7 @@ importers:
         specifier: ^6
         version: 6.0.2(react@19.2.3)
       '@vizel/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       react:
         specifier: ^19
@@ -374,7 +374,7 @@ importers:
         specifier: ^5
         version: 5.2.1(svelte@5.47.1)
       '@vizel/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       svelte:
         specifier: ^5
@@ -420,7 +420,7 @@ importers:
         specifier: ^5
         version: 5.0.0(vue@3.5.27(typescript@5.9.3))
       '@vizel/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       vue:
         specifier: ^3.4
