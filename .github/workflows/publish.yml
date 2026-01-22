@@ -168,7 +168,7 @@ jobs:
           cd packages/core && npm publish $PUBLISH_OPTS
           echo "✅ Published @vizel/core@$VERSION"
 
-  # Publish framework packages in parallel (each job has its own OIDC token)
+  # Publish framework packages sequentially to avoid OIDC token conflicts
   publish-framework:
     name: Publish @vizel/${{ matrix.package }}
     runs-on: ubuntu-latest
@@ -177,6 +177,7 @@ jobs:
     environment: npm
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         package: [react, vue, svelte]
     steps:
