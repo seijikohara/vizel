@@ -77,29 +77,19 @@ jobs:
           framework: ${{ matrix.framework }}
           browser: chromium
 
-  publish:
-    name: Publish
+  # Build all packages first, then publish each in separate jobs for OIDC token isolation
+  build:
+    name: Build
     runs-on: ubuntu-latest
     needs: [validate, test]
-    environment: npm
     steps:
-      - name: Generate GitHub App token
-        id: app-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ vars.DEV_AUTOMATION_APP_ID }}
-          private-key: ${{ secrets.DEV_AUTOMATION_PRIVATE_KEY }}
-
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          token: ${{ steps.app-token.outputs.token }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
-          registry-url: "https://registry.npmjs.org"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -117,66 +107,161 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
       - name: Update package versions
         env:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
-          # Update version in all publishable packages
-          # Note: Internal dependencies use workspace:^ protocol, which pnpm
-          # automatically converts to semver ranges (e.g., ^0.0.1-alpha.2) during publish
           pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
-
           echo "✅ Updated all packages to version $VERSION"
 
       - name: Build packages
         run: pnpm build
 
-      - name: Publish (dry-run)
-        if: ${{ inputs.dry-run }}
-        run: |
-          echo "🔍 Running dry-run publish..."
-          # Use recursive publish to handle all packages in dependency order
-          pnpm publish -r --dry-run --no-git-checks --filter "./packages/*"
-          echo "✅ Dry-run completed successfully"
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            packages/*/dist
+            packages/*/package.json
+          retention-days: 1
 
-      - name: Publish to npm
-        if: ${{ !inputs.dry-run }}
+  # Publish core first (other packages depend on it)
+  publish-core:
+    name: Publish @vizel/core
+    runs-on: ubuntu-latest
+    needs: [validate, build]
+    if: ${{ !inputs.dry-run }}
+    environment: npm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: packages
+
+      - name: Publish
         env:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
-          # Determine npm tag for prerelease versions
-          # e.g., 1.0.0-alpha.1 -> alpha, 1.0.0-beta.2 -> beta, 1.0.0 -> (empty)
           PRERELEASE_TAG=""
           if [[ "$VERSION" == *-* ]]; then
-            # Extract prerelease identifier (e.g., alpha, beta, rc)
             PRERELEASE_TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
           fi
-
-          # Build publish options
           PUBLISH_OPTS="--provenance --access public --no-git-checks"
           if [ -n "$PRERELEASE_TAG" ]; then
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
-            echo "📌 Publishing with tag: $PRERELEASE_TAG"
+            echo "📌 Publishing @vizel/core with tag: $PRERELEASE_TAG"
           fi
+          cd packages/core && npm publish $PUBLISH_OPTS
+          echo "✅ Published @vizel/core@$VERSION"
 
-          # Publish all packages recursively in dependency order
-          # Using -r (recursive) ensures proper ordering and single OIDC token usage
-          pnpm publish -r $PUBLISH_OPTS --filter "./packages/*"
-          echo "✅ Published all packages to npm"
+  # Publish framework packages in parallel (each job has its own OIDC token)
+  publish-framework:
+    name: Publish @vizel/${{ matrix.package }}
+    runs-on: ubuntu-latest
+    needs: [validate, build, publish-core]
+    if: ${{ !inputs.dry-run }}
+    environment: npm
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [react, vue, svelte]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - name: Commit version changes
-        if: ${{ !inputs.dry-run && !inputs.skip-git }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: packages
+
+      - name: Update dependency version
         env:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
+          cd packages/${{ matrix.package }}
+          # Replace workspace:^ with actual version for publishing
+          sed -i 's/"@vizel\/core": "workspace:\^"/"@vizel\/core": "^'"$VERSION"'"/' package.json
+
+      - name: Publish
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          PRERELEASE_TAG=""
+          if [[ "$VERSION" == *-* ]]; then
+            PRERELEASE_TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+          fi
+          PUBLISH_OPTS="--provenance --access public --no-git-checks"
+          if [ -n "$PRERELEASE_TAG" ]; then
+            PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
+            echo "📌 Publishing @vizel/${{ matrix.package }} with tag: $PRERELEASE_TAG"
+          fi
+          cd packages/${{ matrix.package }} && npm publish $PUBLISH_OPTS
+          echo "✅ Published @vizel/${{ matrix.package }}@$VERSION"
+
+  # Finalize: commit version changes and create release
+  finalize:
+    name: Finalize
+    runs-on: ubuntu-latest
+    needs: [validate, build, publish-core, publish-framework]
+    if: ${{ !inputs.dry-run && !inputs.skip-git }}
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.DEV_AUTOMATION_APP_ID }}
+          private-key: ${{ secrets.DEV_AUTOMATION_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit version changes
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
           git add -A
           git commit -m "chore(release): v$VERSION"
           git tag "v$VERSION"
@@ -184,7 +269,6 @@ jobs:
           echo "✅ Committed and tagged v$VERSION"
 
       - name: Create GitHub Release
-        if: ${{ !inputs.dry-run && !inputs.skip-git }}
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ steps.app-token.outputs.token }}
