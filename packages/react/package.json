@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@iconify/react": "^6",
-    "@vizel/core": "workspace:*"
+    "@vizel/core": "workspace:^"
   },
   "peerDependencies": {
     "react": "^19",
