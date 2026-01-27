@@ -201,8 +201,8 @@ importers:
         specifier: ^3.16.0
         version: 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/extension-code-block@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0)(highlight.js@11.11.1)(lowlight@3.3.0)
       '@tiptap/extension-color':
-        specifier: ^3.16.0
-        version: 3.16.0(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))
+        specifier: ^3.17.1
+        version: 3.17.1(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))
       '@tiptap/extension-details':
         specifier: ^3.16.0
         version: 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))(@tiptap/pm@3.16.0)
@@ -336,7 +336,7 @@ importers:
         version: 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))
       '@tiptap/extension-color':
         specifier: ^3
-        version: 3.16.0(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))
+        version: 3.17.1(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))
       '@tiptap/extension-highlight':
         specifier: ^3
         version: 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))
@@ -394,7 +394,7 @@ importers:
         version: 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))
       '@tiptap/extension-color':
         specifier: ^3
-        version: 3.16.0(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))
+        version: 3.17.1(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))
       '@tiptap/extension-highlight':
         specifier: ^3
         version: 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))
@@ -434,7 +434,7 @@ importers:
         version: 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))
       '@tiptap/extension-color':
         specifier: ^3
-        version: 3.16.0(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))
+        version: 3.17.1(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))
       '@tiptap/extension-highlight':
         specifier: ^3
         version: 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))
@@ -1660,10 +1660,10 @@ packages:
       '@tiptap/y-tiptap': ^3.0.0
       yjs: ^13
 
-  '@tiptap/extension-color@3.16.0':
-    resolution: {integrity: sha512-ws9hayQKncfztUnOL0isLgGg1Bzl8/pcPQQVtXSH336DLzaPQB1Uv2fBmUlBx229IZHa6YKI9oGZSYfXSi934A==}
+  '@tiptap/extension-color@3.17.1':
+    resolution: {integrity: sha512-QVlzpzGB+QcZgHgvFMRPckZutpkOLzNmZzhupNA7G2CMeeoCwZOJeZkyd3zvtAnRZkf7FrQBO123On30pJt7TA==}
     peerDependencies:
-      '@tiptap/extension-text-style': ^3.16.0
+      '@tiptap/extension-text-style': ^3.17.1
 
   '@tiptap/extension-details@3.16.0':
     resolution: {integrity: sha512-9DG/Xww+OrSW9+cWMx7IH49YXYaO7C7P/n5yOI/gRzGzB+YR1s/8Ogd8SbnCxslnB87HiywyE0Oce1U/wd044A==}
@@ -4604,7 +4604,7 @@ snapshots:
       '@tiptap/y-tiptap': 3.0.1(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.5)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29)
       yjs: 13.6.29
 
-  '@tiptap/extension-color@3.16.0(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))':
+  '@tiptap/extension-color@3.17.1(@tiptap/extension-text-style@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0)))':
     dependencies:
       '@tiptap/extension-text-style': 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))
 

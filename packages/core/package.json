@@ -52,7 +52,7 @@
     "@tiptap/extension-code": "^3.16.0",
     "@tiptap/extension-code-block": "^3.16.0",
     "@tiptap/extension-code-block-lowlight": "^3.16.0",
-    "@tiptap/extension-color": "^3.16.0",
+    "@tiptap/extension-color": "^3.17.1",
     "@tiptap/extension-details": "^3.16.0",
     "@tiptap/extension-document": "^3.16.0",
     "@tiptap/extension-drag-handle": "^3.16.0",
