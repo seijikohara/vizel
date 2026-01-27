@@ -189,8 +189,8 @@ importers:
         specifier: ^3.16.0
         version: 3.16.0(@tiptap/extension-list@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))
       '@tiptap/extension-character-count':
-        specifier: ^3.16.0
-        version: 3.16.0(@tiptap/extensions@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))
+        specifier: ^3.17.1
+        version: 3.17.1(@tiptap/extensions@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))
       '@tiptap/extension-code':
         specifier: ^3.16.0
         version: 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))
@@ -1627,10 +1627,10 @@ packages:
     peerDependencies:
       '@tiptap/extension-list': ^3.16.0
 
-  '@tiptap/extension-character-count@3.16.0':
-    resolution: {integrity: sha512-3sClOGpR0Nm1ASoWKro8ATDEd/nYnV3cUH8YPIrRHDeNk6Ac71GfJn2K/0EJN+ZzGwdD35AseiuFSN26iEpy1w==}
+  '@tiptap/extension-character-count@3.17.1':
+    resolution: {integrity: sha512-hlDtBTftExATw6s0voBxQI5CkE9HBTOIMrqB5MiE4x+W6CSNQmRABAFKfyMK3OaXtNtDVwySISfQjXLh0Ev8TQ==}
     peerDependencies:
-      '@tiptap/extensions': ^3.16.0
+      '@tiptap/extensions': ^3.17.1
 
   '@tiptap/extension-code-block-lowlight@3.16.0':
     resolution: {integrity: sha512-PeqnrSjsf4PHg1vY7xTOqIxXo1CAq27drBvWWcqox6Sjq73jW8Yln0cVDQL/0RHIgryKD6GB5HJ2W6ORVG4Ufg==}
@@ -4576,7 +4576,7 @@ snapshots:
     dependencies:
       '@tiptap/extension-list': 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0)
 
-  '@tiptap/extension-character-count@3.16.0(@tiptap/extensions@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))':
+  '@tiptap/extension-character-count@3.17.1(@tiptap/extensions@3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0))':
     dependencies:
       '@tiptap/extensions': 3.16.0(@tiptap/core@3.16.0(@tiptap/pm@3.16.0))(@tiptap/pm@3.16.0)
 
