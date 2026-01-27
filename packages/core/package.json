@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "^1.20.0",
-    "@iconify-json/lucide": "^1.2.86",
+    "@iconify-json/lucide": "^1.2.87",
     "@iconify/utils": "^3.1.0",
     "@tiptap/core": "^3.16.0",
     "@tiptap/extension-blockquote": "^3.16.0",
