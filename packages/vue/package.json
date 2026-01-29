@@ -40,17 +40,17 @@
     "vue": "^3.4"
   },
   "devDependencies": {
-    "@tiptap/extension-bold": "^3",
-    "@tiptap/extension-code": "^3",
-    "@tiptap/extension-color": "^3",
-    "@tiptap/extension-highlight": "^3",
-    "@tiptap/extension-italic": "^3",
-    "@tiptap/extension-strike": "^3",
-    "@tiptap/extension-text-style": "^3",
-    "@tiptap/extension-underline": "^3",
-    "@vitejs/plugin-vue": "^6",
-    "vite": "^7",
-    "vite-plugin-dts": "^4",
-    "vue-tsc": "^3"
+    "@tiptap/extension-bold": "^3.18.0",
+    "@tiptap/extension-code": "^3.18.0",
+    "@tiptap/extension-color": "^3.18.0",
+    "@tiptap/extension-highlight": "^3.18.0",
+    "@tiptap/extension-italic": "^3.18.0",
+    "@tiptap/extension-strike": "^3.18.0",
+    "@tiptap/extension-text-style": "^3.18.0",
+    "@tiptap/extension-underline": "^3.18.0",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vue-tsc": "^3.2.4"
   }
 }

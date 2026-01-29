@@ -37,23 +37,23 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@iconify/svelte": "^5",
+    "@iconify/svelte": "^5.2.1",
     "@vizel/core": "workspace:^"
   },
   "peerDependencies": {
     "svelte": "^5"
   },
   "devDependencies": {
-    "@sveltejs/package": "^2",
-    "@sveltejs/vite-plugin-svelte": "^6",
-    "@tiptap/extension-bold": "^3",
-    "@tiptap/extension-code": "^3",
-    "@tiptap/extension-color": "^3",
-    "@tiptap/extension-highlight": "^3",
-    "@tiptap/extension-italic": "^3",
-    "@tiptap/extension-strike": "^3",
-    "@tiptap/extension-text-style": "^3",
-    "@tiptap/extension-underline": "^3",
-    "svelte-check": "^4"
+    "@sveltejs/package": "^2.5.7",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@tiptap/extension-bold": "^3.18.0",
+    "@tiptap/extension-code": "^3.18.0",
+    "@tiptap/extension-color": "^3.18.0",
+    "@tiptap/extension-highlight": "^3.18.0",
+    "@tiptap/extension-italic": "^3.18.0",
+    "@tiptap/extension-strike": "^3.18.0",
+    "@tiptap/extension-text-style": "^3.18.0",
+    "@tiptap/extension-underline": "^3.18.0",
+    "svelte-check": "^4.3.5"
   }
 }
