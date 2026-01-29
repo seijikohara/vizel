@@ -33,7 +33,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@iconify/react": "^6",
+    "@iconify/react": "^6.0.2",
     "@vizel/core": "workspace:^"
   },
   "peerDependencies": {
@@ -41,18 +41,18 @@
     "react-dom": "^19"
   },
   "devDependencies": {
-    "@tiptap/extension-bold": "^3",
-    "@tiptap/extension-code": "^3",
-    "@tiptap/extension-color": "^3",
-    "@tiptap/extension-highlight": "^3",
-    "@tiptap/extension-italic": "^3",
-    "@tiptap/extension-strike": "^3",
-    "@tiptap/extension-text-style": "^3",
-    "@tiptap/extension-underline": "^3",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^5",
-    "vite": "^7",
-    "vite-plugin-dts": "^4"
+    "@tiptap/extension-bold": "^3.18.0",
+    "@tiptap/extension-code": "^3.18.0",
+    "@tiptap/extension-color": "^3.18.0",
+    "@tiptap/extension-highlight": "^3.18.0",
+    "@tiptap/extension-italic": "^3.18.0",
+    "@tiptap/extension-strike": "^3.18.0",
+    "@tiptap/extension-text-style": "^3.18.0",
+    "@tiptap/extension-underline": "^3.18.0",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4"
   }
 }
