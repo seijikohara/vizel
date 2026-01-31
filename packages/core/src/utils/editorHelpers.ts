@@ -161,14 +161,18 @@ export const vizelDefaultEditorProps = {
  * Type guard to check if character count storage is available.
  */
 function hasVizelCharacterCountStorage(
-  storage: Record<string, unknown>
+  storage: unknown
 ): storage is { characterCount: VizelCharacterCountStorage } {
+  if (typeof storage !== "object" || storage === null) return false;
+  if (!("characterCount" in storage)) return false;
+  const cc = (storage as { characterCount: unknown }).characterCount;
   return (
-    "characterCount" in storage &&
-    typeof storage.characterCount === "object" &&
-    storage.characterCount !== null &&
-    "characters" in storage.characterCount &&
-    "words" in storage.characterCount
+    typeof cc === "object" &&
+    cc !== null &&
+    "characters" in cc &&
+    typeof (cc as { characters: unknown }).characters === "function" &&
+    "words" in cc &&
+    typeof (cc as { words: unknown }).words === "function"
   );
 }
 
@@ -199,10 +203,10 @@ export function getVizelEditorState(editor: Editor | null | undefined): VizelEdi
     };
   }
 
-  const storage = editor.storage as unknown as Record<string, unknown>;
   let characterCount = 0;
   let wordCount = 0;
 
+  const storage: unknown = editor.storage;
   if (hasVizelCharacterCountStorage(storage)) {
     characterCount = storage.characterCount.characters();
     wordCount = storage.characterCount.words();
