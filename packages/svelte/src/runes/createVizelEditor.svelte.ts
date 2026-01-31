@@ -53,26 +53,39 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
 
   let editor = $state<Editor | null>(null);
 
-  // Create editor on mount and cleanup on destroy
+  // Create editor on mount and cleanup on destroy (async - optional deps loaded dynamically)
   $effect(() => {
-    const { editor: instance } = createVizelEditorInstance({
-      ...editorOptions,
-      ...(features !== undefined && { features }),
-      extensions: additionalExtensions,
-      createSlashMenuRenderer: createVizelSlashMenuRenderer,
-    });
+    let isMounted = true;
+    let instance: Editor | null = null;
+    let cleanupHandler: (() => void) | null = null;
 
-    editor = instance;
+    void (async () => {
+      const result = await createVizelEditorInstance({
+        ...editorOptions,
+        ...(features !== undefined && { features }),
+        extensions: additionalExtensions,
+        createSlashMenuRenderer: createVizelSlashMenuRenderer,
+      });
 
-    // Handle vizel:upload-image custom event from slash command
-    const cleanupHandler = registerVizelUploadEventHandler({
-      getEditor: () => editor,
-      getImageOptions: () => imageOptions,
-    });
+      if (!isMounted) {
+        result.editor.destroy();
+        return;
+      }
+
+      instance = result.editor;
+      editor = instance;
+
+      // Handle vizel:upload-image custom event from slash command
+      cleanupHandler = registerVizelUploadEventHandler({
+        getEditor: () => editor,
+        getImageOptions: () => imageOptions,
+      });
+    })();
 
     return () => {
-      cleanupHandler();
-      editor?.destroy();
+      isMounted = false;
+      cleanupHandler?.();
+      instance?.destroy();
     };
   });
 

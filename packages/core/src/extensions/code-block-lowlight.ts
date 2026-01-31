@@ -2,12 +2,16 @@
  * Code Block with Syntax Highlighting Extension
  *
  * Provides syntax highlighting for code blocks using lowlight (highlight.js wrapper).
- * Supports 190+ programming languages with automatic and manual language detection.
+ * Supports programming languages with automatic and manual language detection.
+ *
+ * lowlight is an optional dependency. Install it to enable syntax highlighting:
+ * ```
+ * npm install lowlight
+ * ```
  */
 import CodeBlockLowlight, {
   type CodeBlockLowlightOptions,
 } from "@tiptap/extension-code-block-lowlight";
-import { all, createLowlight } from "lowlight";
 import { renderVizelIcon } from "../icons/types.ts";
 
 /**
@@ -35,19 +39,32 @@ export interface VizelCodeBlockOptions {
    */
   lineNumbers?: boolean;
   /**
-   * Custom lowlight instance (if not provided, uses all languages)
+   * Custom lowlight instance. If provided, the `languages` option is ignored.
    */
-  lowlight?: ReturnType<typeof createLowlight>;
+  lowlight?: ReturnType<typeof import("lowlight").createLowlight>;
+  /**
+   * Language loading strategy (ignored if `lowlight` option is provided).
+   * - "common": Load ~37 common languages (default, recommended)
+   * - "all": Load all 190+ languages (larger bundle)
+   * @default "common"
+   */
+  languages?: "common" | "all";
 }
 
-// Create a lowlight instance with all languages registered
-const lowlightWithAllLanguages = createLowlight(all);
+/**
+ * Module-level cached lowlight instance.
+ * Set when the extension is created, used by utility functions.
+ */
+let activeLowlightInstance: ReturnType<typeof import("lowlight").createLowlight> | null = null;
 
 /**
- * Get the list of all registered languages (sorted alphabetically)
+ * Get the list of all registered languages (sorted alphabetically).
+ * Returns an empty array if the code block extension has not been initialized yet.
  */
 export function getVizelRegisteredLanguages(): VizelCodeBlockLanguage[] {
-  const registeredNames = lowlightWithAllLanguages.listLanguages();
+  if (!activeLowlightInstance) return [];
+
+  const registeredNames = activeLowlightInstance.listLanguages();
 
   return registeredNames
     .sort((a, b) => a.localeCompare(b))
@@ -59,14 +76,16 @@ export function getVizelRegisteredLanguages(): VizelCodeBlockLanguage[] {
 }
 
 /**
- * Get all language IDs
+ * Get all language IDs.
+ * Returns an empty array if the code block extension has not been initialized yet.
  */
 export function getAllVizelLanguageIds(): string[] {
   return getVizelRegisteredLanguages().map((lang) => lang.id);
 }
 
 /**
- * Find a language by ID
+ * Find a language by ID.
+ * Returns undefined if the code block extension has not been initialized yet.
  */
 export function findVizelLanguage(id: string): VizelCodeBlockLanguage | undefined {
   const normalized = id.toLowerCase();
@@ -74,35 +93,79 @@ export function findVizelLanguage(id: string): VizelCodeBlockLanguage | undefine
 }
 
 /**
- * Create the CodeBlockLowlight extension with all languages registered
+ * Load a lowlight instance with the specified language set.
+ */
+async function loadLowlightInstance(
+  languages: "common" | "all" = "common"
+): Promise<ReturnType<typeof import("lowlight").createLowlight>> {
+  try {
+    const lowlightMod = await import("lowlight");
+    const grammars = languages === "all" ? lowlightMod.all : lowlightMod.common;
+    return lowlightMod.createLowlight(grammars);
+  } catch (error) {
+    throw new Error(
+      `[Vizel] Failed to load "lowlight". ` +
+        `Please install it for code block syntax highlighting: npm install lowlight\n` +
+        `Original error: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+}
+
+/**
+ * Create the CodeBlockLowlight extension with syntax highlighting.
+ *
+ * This function is async because lowlight is loaded dynamically as an optional dependency.
  *
  * @example Basic usage
  * ```ts
  * const extensions = [
- *   ...createVizelCodeBlockExtension(),
+ *   ...await createVizelCodeBlockExtension(),
  * ];
  * ```
  *
  * @example With options
  * ```ts
  * const extensions = [
- *   ...createVizelCodeBlockExtension({
+ *   ...await createVizelCodeBlockExtension({
  *     defaultLanguage: 'typescript',
  *     lineNumbers: true,
+ *     languages: 'all', // Load all 190+ languages
  *   }),
  * ];
  * ```
+ *
+ * @example With custom lowlight instance
+ * ```ts
+ * import { common, createLowlight } from 'lowlight';
+ * import typescript from 'highlight.js/lib/languages/typescript';
+ *
+ * const lowlight = createLowlight(common);
+ * lowlight.register('typescript', typescript);
+ *
+ * const extensions = [
+ *   ...await createVizelCodeBlockExtension({ lowlight }),
+ * ];
+ * ```
  */
-export function createVizelCodeBlockExtension(
+export async function createVizelCodeBlockExtension(
   options: VizelCodeBlockOptions = {}
-): CodeBlockLowlightOptions["lowlight"] extends undefined
-  ? never
-  : ReturnType<typeof CodeBlockLowlight.configure>[] {
+): Promise<
+  CodeBlockLowlightOptions["lowlight"] extends undefined
+    ? never
+    : ReturnType<typeof CodeBlockLowlight.configure>[]
+> {
   const {
     defaultLanguage = "plaintext",
     lineNumbers = false,
-    lowlight = lowlightWithAllLanguages,
+    lowlight: customLowlight,
+    languages = "common",
   } = options;
+
+  // Resolve lowlight instance
+  const lowlight = customLowlight ?? (await loadLowlightInstance(languages));
+
+  // Cache the instance for utility functions
+  activeLowlightInstance = lowlight;
 
   const extension = CodeBlockLowlight.extend({
     addAttributes() {
@@ -196,6 +259,7 @@ export function createVizelCodeBlockExtension(
         const lineNumbersBtn = document.createElement("button");
         lineNumbersBtn.type = "button";
         lineNumbersBtn.classList.add("vizel-code-block-line-numbers-toggle");
+        // Safe: renderVizelIcon generates trusted SVG from the internal @iconify system
         lineNumbersBtn.innerHTML = renderVizelIcon("listOrdered", { width: 16, height: 16 });
         if (node.attrs.lineNumbers) {
           lineNumbersBtn.classList.add("active");
@@ -239,7 +303,7 @@ export function createVizelCodeBlockExtension(
             text.endsWith("\n") && lines.length > 1 ? lines.length - 1 : Math.max(1, lines.length);
 
           if (gutter.children.length !== lineCount) {
-            gutter.innerHTML = "";
+            gutter.replaceChildren();
             for (let i = 1; i <= lineCount; i++) {
               const lineNum = document.createElement("div");
               lineNum.classList.add("vizel-code-block-line-number");
@@ -334,9 +398,6 @@ export function createVizelCodeBlockExtension(
 
   return [extension] as ReturnType<typeof CodeBlockLowlight.configure>[];
 }
-
-// Export the default lowlight instance for advanced usage
-export { lowlightWithAllLanguages as lowlight };
 
 // Re-export the base extension for advanced customization
 export { CodeBlockLowlight };

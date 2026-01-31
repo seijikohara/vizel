@@ -14,11 +14,27 @@
  * @see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams
  */
 
-import { Graphviz } from "@hpcc-js/wasm-graphviz";
+import type { Graphviz as GraphvizType } from "@hpcc-js/wasm-graphviz";
 import type { JSONContent, MarkdownToken, MarkdownTokenizer } from "@tiptap/core";
 import { mergeAttributes, Node } from "@tiptap/core";
 import type { MermaidConfig } from "mermaid";
-import mermaid from "mermaid";
+import { createLazyLoader } from "../utils/lazy-import.ts";
+
+/**
+ * Lazy loader for mermaid (optional dependency)
+ */
+const loadMermaid = createLazyLoader("mermaid", async () => {
+  const mod = await import("mermaid");
+  return mod.default;
+});
+
+/**
+ * Lazy loader for @hpcc-js/wasm-graphviz (optional dependency)
+ */
+const loadGraphvizModule = createLazyLoader("@hpcc-js/wasm-graphviz", async () => {
+  const mod = await import("@hpcc-js/wasm-graphviz");
+  return mod.Graphviz;
+});
 
 /**
  * Supported diagram types
@@ -138,53 +154,55 @@ const mermaidTokenizer: MarkdownTokenizer = diagramTokenizer;
 const graphvizTokenizer: MarkdownTokenizer = diagramTokenizer;
 
 /**
- * Initialize Mermaid with the provided configuration
+ * Initialize Mermaid with the provided configuration.
+ * Loads the mermaid module dynamically on first use.
  */
-let mermaidInitialized = false;
+async function initializeMermaid(
+  config: MermaidConfig | undefined,
+  storage: { mermaidInitialized: boolean }
+): Promise<void> {
+  if (storage.mermaidInitialized) return;
 
-function initializeMermaid(config?: MermaidConfig): void {
-  if (mermaidInitialized) return;
-
+  const mermaid = await loadMermaid();
   mermaid.initialize({
     startOnLoad: false,
-    securityLevel: "loose",
     theme: "default",
     fontFamily: "var(--vizel-font-sans)",
     ...config,
+    securityLevel: config?.securityLevel ?? "strict",
   });
 
-  mermaidInitialized = true;
+  storage.mermaidInitialized = true;
 }
 
 /**
- * GraphViz instance (lazy loaded)
+ * Shared GraphViz WASM instance.
+ * GraphViz WASM initialization is expensive, so the instance is shared across
+ * all editor instances at the module level.
  */
-let graphvizInstance: Graphviz | null = null;
-let graphvizInitializing = false;
-let graphvizInitPromise: Promise<Graphviz> | null = null;
+let graphvizInstance: GraphvizType | null = null;
+let graphvizInitPromise: Promise<GraphvizType> | null = null;
 
 /**
- * Initialize GraphViz WASM
+ * Initialize GraphViz WASM (shared singleton)
  */
-function initializeGraphviz(): Promise<Graphviz> {
+function initializeGraphviz(): Promise<GraphvizType> {
   if (graphvizInstance) return Promise.resolve(graphvizInstance);
+  if (graphvizInitPromise) return graphvizInitPromise;
 
-  if (graphvizInitializing && graphvizInitPromise) {
-    return graphvizInitPromise;
-  }
-
-  graphvizInitializing = true;
-  graphvizInitPromise = Graphviz.load().then((instance) => {
+  graphvizInitPromise = (async () => {
+    const GraphvizClass = await loadGraphvizModule();
+    const instance = await GraphvizClass.load();
     graphvizInstance = instance;
-    graphvizInitializing = false;
     return instance;
-  });
+  })();
 
   return graphvizInitPromise;
 }
 
 /**
- * Render a Mermaid diagram to SVG
+ * Render a Mermaid diagram to SVG.
+ * Assumes mermaid has been initialized via initializeMermaid().
  */
 async function renderMermaid(code: string): Promise<{ svg: string; error: string | null }> {
   if (!code.trim()) {
@@ -192,6 +210,7 @@ async function renderMermaid(code: string): Promise<{ svg: string; error: string
   }
 
   try {
+    const mermaid = await loadMermaid();
     const id = generateDiagramId();
     const { svg } = await mermaid.render(id, code);
     return { svg, error: null };
@@ -288,6 +307,13 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
     };
   },
 
+  addStorage() {
+    return {
+      /** Whether mermaid has been initialized for this editor instance */
+      mermaidInitialized: false,
+    };
+  },
+
   addAttributes() {
     return {
       code: {
@@ -329,8 +355,8 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
 
   addNodeView() {
     return ({ node, getPos, editor }) => {
-      // Initialize Mermaid on first use
-      initializeMermaid(this.options.mermaidConfig);
+      const mermaidConfig = this.options.mermaidConfig;
+      const diagramStorage = this.storage as { mermaidInitialized: boolean };
 
       const dom = document.createElement("div");
       dom.classList.add("vizel-diagram");
@@ -384,8 +410,10 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
         container: HTMLElement
       ): Promise<void> => {
         if (!code.trim()) {
-          container.innerHTML =
-            '<div class="vizel-diagram-placeholder">Click to add diagram code</div>';
+          const placeholder = document.createElement("div");
+          placeholder.className = "vizel-diagram-placeholder";
+          placeholder.textContent = "Click to add diagram code";
+          container.replaceChildren(placeholder);
           return;
         }
 
@@ -394,6 +422,7 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
         if (type === "graphviz") {
           result = await renderGraphviz(code, this.options.graphvizEngine);
         } else {
+          await initializeMermaid(mermaidConfig, diagramStorage);
           result = await renderMermaid(code);
         }
 
@@ -641,5 +670,5 @@ export function createVizelDiagramExtension(
   return VizelDiagram.configure(options);
 }
 
-// Export for advanced usage
-export { mermaid, graphvizTokenizer, mermaidTokenizer };
+// Export tokenizers for advanced usage
+export { graphvizTokenizer, mermaidTokenizer };

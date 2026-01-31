@@ -53,21 +53,32 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
     editorOptions,
   });
 
-  // Create editor on mount
+  // Create editor on mount (async - optional dependencies are loaded dynamically)
   useEffect(() => {
     const opts = optionsRef.current;
+    let isMounted = true;
+    let editorInstance: Editor | null = null;
 
-    const { editor: instance } = createVizelEditorInstance({
-      ...opts.editorOptions,
-      ...(opts.features !== undefined && { features: opts.features }),
-      extensions: opts.additionalExtensions,
-      createSlashMenuRenderer: createVizelSlashMenuRenderer,
-    });
+    void (async () => {
+      const result = await createVizelEditorInstance({
+        ...opts.editorOptions,
+        ...(opts.features !== undefined && { features: opts.features }),
+        extensions: opts.additionalExtensions,
+        createSlashMenuRenderer: createVizelSlashMenuRenderer,
+      });
 
-    setEditor(instance);
+      if (!isMounted) {
+        result.editor.destroy();
+        return;
+      }
+
+      editorInstance = result.editor;
+      setEditor(result.editor);
+    })();
 
     return () => {
-      instance.destroy();
+      isMounted = false;
+      editorInstance?.destroy();
     };
   }, []);
 

@@ -51,9 +51,9 @@ export interface CreateVizelEditorInstanceResult {
  * });
  * ```
  */
-export function createVizelEditorInstance(
+export async function createVizelEditorInstance(
   options: CreateVizelEditorInstanceOptions
-): CreateVizelEditorInstanceResult {
+): Promise<CreateVizelEditorInstanceResult> {
   const {
     initialContent,
     initialMarkdown,
@@ -92,15 +92,15 @@ export function createVizelEditorInstance(
       }
     : onCreate;
 
+  // Create extensions (async - optional dependencies are loaded dynamically)
+  const vizelExtensions = await createVizelExtensions({
+    ...(placeholder !== undefined && { placeholder }),
+    ...(resolvedFeatures !== undefined && { features: resolvedFeatures }),
+  });
+
   // Create the editor instance
   const editor = new Editor({
-    extensions: [
-      ...createVizelExtensions({
-        ...(placeholder !== undefined && { placeholder }),
-        ...(resolvedFeatures !== undefined && { features: resolvedFeatures }),
-      }),
-      ...additionalExtensions,
-    ],
+    extensions: [...vizelExtensions, ...additionalExtensions],
     // Only set initialContent if initialMarkdown is not provided
     ...(!initialMarkdown && initialContent !== undefined && { content: initialContent }),
     editable,
