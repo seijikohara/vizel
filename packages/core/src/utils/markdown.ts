@@ -12,10 +12,41 @@ import {
 export const VIZEL_DEFAULT_MARKDOWN_DEBOUNCE_MS = 300;
 
 /**
- * Check if the editor has markdown extension enabled.
+ * Editor with markdown export capability (provided by @tiptap/markdown).
  */
-function hasMarkdownExtension(editor: Editor): boolean {
-  return typeof (editor as unknown as { getMarkdown?: () => string }).getMarkdown === "function";
+interface EditorWithMarkdownExport {
+  getMarkdown: () => string;
+}
+
+/**
+ * Editor with markdown storage for parsing (provided by @tiptap/markdown).
+ */
+interface EditorWithMarkdownStorage {
+  markdown: { parse: (md: string) => JSONContent };
+}
+
+/**
+ * Type guard: check if the editor has markdown export (getMarkdown method).
+ */
+function hasMarkdownExport(editor: Editor): editor is Editor & EditorWithMarkdownExport {
+  return (
+    "getMarkdown" in editor &&
+    typeof (editor as EditorWithMarkdownExport).getMarkdown === "function"
+  );
+}
+
+/**
+ * Type guard: check if the editor has markdown storage with parse capability.
+ */
+function hasMarkdownStorage(editor: Editor): editor is Editor & EditorWithMarkdownStorage {
+  if (!("markdown" in editor)) return false;
+  const storage = (editor as Editor & { markdown: unknown }).markdown;
+  return (
+    typeof storage === "object" &&
+    storage !== null &&
+    "parse" in storage &&
+    typeof (storage as EditorWithMarkdownStorage["markdown"]).parse === "function"
+  );
 }
 
 /**
@@ -24,13 +55,13 @@ function hasMarkdownExtension(editor: Editor): boolean {
  */
 export function getVizelMarkdown(editor: Editor | null | undefined): string {
   if (!editor) return "";
-  if (!hasMarkdownExtension(editor)) {
+  if (!hasMarkdownExport(editor)) {
     console.warn(
       "[Vizel] Markdown extension is not enabled. Enable it via features.markdown option."
     );
     return "";
   }
-  return (editor as unknown as { getMarkdown: () => string }).getMarkdown();
+  return editor.getMarkdown();
 }
 
 /**
@@ -50,7 +81,7 @@ export function setVizelMarkdown(
 
   const { transformDiagrams = true } = options;
 
-  if (!hasMarkdownExtension(editor)) {
+  if (!hasMarkdownExport(editor)) {
     console.warn(
       "[Vizel] Markdown extension is not enabled. Enable it via features.markdown option."
     );
@@ -86,17 +117,14 @@ export function parseVizelMarkdown(
 
   const { transformDiagrams = true } = options;
 
-  const markdownStorage = (
-    editor as unknown as { markdown?: { parse: (md: string) => JSONContent } }
-  ).markdown;
-  if (!markdownStorage?.parse) {
+  if (!hasMarkdownStorage(editor)) {
     console.warn(
       "[Vizel] Markdown extension is not enabled. Enable it via features.markdown option."
     );
     return null;
   }
 
-  const parsed = markdownStorage.parse(markdown);
+  const parsed = editor.markdown.parse(markdown);
 
   if (transformDiagrams && parsed?.type) {
     return transformVizelDiagramCodeBlocks(parsed as VizelContentNode);
