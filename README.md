@@ -27,7 +27,7 @@
 - **Slash Commands** - Type `/` to insert blocks
 - **Floating Toolbar** - Inline formatting toolbar on text selection
 - **Tables** - Table editing with row/column controls
-- **Code Blocks** - Syntax highlighting with 190+ languages
+- **Code Blocks** - Syntax highlighting with 37+ languages (190+ available)
 - **Images** - Drag & drop, paste, resize support
 - **Markdown** - Import/export Markdown content
 - **Mathematics** - LaTeX equations with KaTeX
@@ -57,6 +57,24 @@ npm install @vizel/vue
 
 # Svelte
 npm install @vizel/svelte
+```
+
+### Optional Features
+
+Install additional packages to enable optional features:
+
+| Feature | Package | Install |
+|---------|---------|---------|
+| Mathematics (LaTeX) | `katex` | `npm install katex` |
+| Diagrams (Mermaid) | `mermaid` | `npm install mermaid` |
+| Diagrams (GraphViz) | `@hpcc-js/wasm-graphviz` | `npm install @hpcc-js/wasm-graphviz` |
+| Code syntax highlighting | `lowlight` | `npm install lowlight` |
+
+When using mathematics, also import the KaTeX stylesheet:
+
+```typescript
+import '@vizel/core/styles.css';
+import '@vizel/core/mathematics.css'; // KaTeX styles for math rendering
 ```
 
 ### With shadcn/ui (Optional)

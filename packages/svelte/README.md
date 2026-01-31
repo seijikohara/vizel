@@ -5,7 +5,7 @@ Svelte 5 components for Vizel block-based Markdown editor.
 ## Installation
 
 ```bash
-npm install @vizel/svelte @vizel/core
+npm install @vizel/svelte
 ```
 
 ## Requirements
