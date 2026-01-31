@@ -1,0 +1,14 @@
+/**
+ * Vizel Mathematics (KaTeX) Stylesheet
+ *
+ * Import this file when using the mathematics (LaTeX) feature.
+ * This includes KaTeX CSS required for rendering math expressions.
+ *
+ * @example
+ * ```ts
+ * import '@vizel/core/styles.css';
+ * import '@vizel/core/mathematics.css';
+ * ```
+ */
+
+@import "katex/dist/katex.min.css";

@@ -5,7 +5,7 @@ Vue 3 components for Vizel block-based Markdown editor.
 ## Installation
 
 ```bash
-npm install @vizel/vue @vizel/core
+npm install @vizel/vue
 ```
 
 ## Requirements

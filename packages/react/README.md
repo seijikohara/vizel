@@ -5,7 +5,7 @@ React components for Vizel block-based Markdown editor.
 ## Installation
 
 ```bash
-npm install @vizel/react @vizel/core
+npm install @vizel/react
 ```
 
 ## Requirements
@@ -37,8 +37,8 @@ function App() {
 
   return (
     <>
-      <VizelEditor editor={editor.current} />
-      <VizelBubbleMenu editor={editor.current} />
+      <VizelEditor editor={editor} />
+      <VizelBubbleMenu editor={editor} />
     </>
   );
 }
@@ -51,14 +51,14 @@ import { useVizelEditor, useVizelMarkdown } from "@vizel/react";
 
 function App() {
   const editor = useVizelEditor();
-  const { getMarkdown, setMarkdown } = useVizelMarkdown(() => editor.current);
+  const { getMarkdown, setMarkdown } = useVizelMarkdown(() => editor);
 
   const handleExport = () => {
     const markdown = getMarkdown();
     console.log(markdown);
   };
 
-  return <VizelEditor editor={editor.current} />;
+  return <VizelEditor editor={editor} />;
 }
 ```
 
