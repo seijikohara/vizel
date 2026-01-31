@@ -21,7 +21,7 @@ import Text from "@tiptap/extension-text";
 import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
 import { createVizelCharacterCountExtension } from "./character-count.ts";
-import { createVizelCodeBlockExtension } from "./code-block-lowlight.ts";
+import type { VizelCodeBlockOptions } from "./code-block-lowlight.ts";
 import { createVizelDetailsExtensions } from "./details.ts";
 import { createVizelDiagramExtension } from "./diagram.ts";
 import { createVizelDragHandleExtensions } from "./drag-handle.ts";
@@ -185,21 +185,29 @@ function addTextColorExtension(extensions: Extensions, features: VizelFeatureOpt
 }
 
 /**
- * Add Code Block extension (with or without syntax highlighting)
+ * Add Code Block extension (with or without syntax highlighting).
+ * Async because lowlight is loaded dynamically as an optional dependency.
  */
-function addCodeBlockExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+async function addCodeBlockExtension(
+  extensions: Extensions,
+  features: VizelFeatureOptions
+): Promise<void> {
   // If codeBlock is explicitly set to false, don't add any code block extension
   if (features.codeBlock === false) {
     return;
   }
 
+  // Dynamically import to avoid loading lowlight at module evaluation time
+  const { createVizelCodeBlockExtension } = await import("./code-block-lowlight.ts");
+
   // If codeBlock is enabled (true or options object), use syntax highlighting
   if (features.codeBlock === true || typeof features.codeBlock === "object") {
-    const codeBlockOptions = typeof features.codeBlock === "object" ? features.codeBlock : {};
-    extensions.push(...createVizelCodeBlockExtension(codeBlockOptions));
+    const codeBlockOptions: VizelCodeBlockOptions =
+      typeof features.codeBlock === "object" ? features.codeBlock : {};
+    extensions.push(...(await createVizelCodeBlockExtension(codeBlockOptions)));
   } else {
     // Default: use syntax highlighting with default options
-    extensions.push(...createVizelCodeBlockExtension());
+    extensions.push(...(await createVizelCodeBlockExtension()));
   }
 }
 
@@ -298,7 +306,9 @@ function addDiagramExtension(extensions: Extensions, features: VizelFeatureOptio
  * });
  * ```
  */
-export function createVizelExtensions(options: VizelExtensionsOptions = {}): Extensions {
+export async function createVizelExtensions(
+  options: VizelExtensionsOptions = {}
+): Promise<Extensions> {
   const {
     placeholder = "Type '/' for commands...",
     headingLevels = [1, 2, 3],
@@ -314,7 +324,7 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
     }),
   ];
 
-  // Add optional features
+  // Add optional features (sync)
   addSlashCommandExtension(extensions, features);
 
   if (features.table !== false) {
@@ -332,12 +342,14 @@ export function createVizelExtensions(options: VizelExtensionsOptions = {}): Ext
   addTaskListExtension(extensions, features);
   addCharacterCountExtension(extensions, features);
   addTextColorExtension(extensions, features);
-  addCodeBlockExtension(extensions, features);
   addMathematicsExtension(extensions, features);
   addDragHandleExtension(extensions, features);
   addDetailsExtension(extensions, features);
   addEmbedExtension(extensions, features);
   addDiagramExtension(extensions, features);
+
+  // Add code block extension (async - lowlight is loaded dynamically)
+  await addCodeBlockExtension(extensions, features);
 
   return extensions;
 }

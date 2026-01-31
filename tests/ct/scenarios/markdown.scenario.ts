@@ -28,6 +28,7 @@ export async function testMarkdownExport(component: Locator, page: Page): Promis
  */
 export async function testMarkdownImport(component: Locator, _page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
+  await expect(editor).toBeVisible();
 
   // Click import button (which sets content from markdown)
   const importButton = component.locator("[data-testid='import-button']");
@@ -84,6 +85,7 @@ export async function testMarkdownList(component: Locator, page: Page): Promise<
  */
 export async function testMarkdownCodeBlock(component: Locator, _page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
+  await expect(editor).toBeVisible();
 
   // Import markdown with code block
   const importCodeButton = component.locator("[data-testid='import-code-button']");
@@ -100,6 +102,7 @@ export async function testMarkdownCodeBlock(component: Locator, _page: Page): Pr
  */
 export async function testMarkdownLink(component: Locator, _page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
+  await expect(editor).toBeVisible();
 
   // Import markdown with link
   const importLinkButton = component.locator("[data-testid='import-link-button']");
@@ -138,6 +141,7 @@ export async function testMarkdownItalic(component: Locator, page: Page): Promis
  */
 export async function testMarkdownStrikethrough(component: Locator, _page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
+  await expect(editor).toBeVisible();
 
   // Import markdown with strikethrough
   const importButton = component.locator("[data-testid='import-strikethrough-button']");
@@ -154,6 +158,7 @@ export async function testMarkdownStrikethrough(component: Locator, _page: Page)
  */
 export async function testMarkdownInlineCode(component: Locator, _page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
+  await expect(editor).toBeVisible();
 
   // Import markdown with inline code
   const importButton = component.locator("[data-testid='import-inline-code-button']");
@@ -170,6 +175,7 @@ export async function testMarkdownInlineCode(component: Locator, _page: Page): P
  */
 export async function testMarkdownImage(component: Locator, _page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
+  await expect(editor).toBeVisible();
 
   // Import markdown with image
   const importButton = component.locator("[data-testid='import-image-button']");
@@ -187,6 +193,7 @@ export async function testMarkdownImage(component: Locator, _page: Page): Promis
  */
 export async function testMarkdownOrderedList(component: Locator, _page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
+  await expect(editor).toBeVisible();
 
   // Import markdown with ordered list
   const importButton = component.locator("[data-testid='import-ordered-list-button']");
@@ -204,6 +211,7 @@ export async function testMarkdownOrderedList(component: Locator, _page: Page): 
  */
 export async function testMarkdownBlockquote(component: Locator, _page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
+  await expect(editor).toBeVisible();
 
   // Import markdown with blockquote
   const importButton = component.locator("[data-testid='import-blockquote-button']");
@@ -220,6 +228,7 @@ export async function testMarkdownBlockquote(component: Locator, _page: Page): P
  */
 export async function testMarkdownHorizontalRule(component: Locator, _page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
+  await expect(editor).toBeVisible();
 
   // Import markdown with horizontal rule
   const importButton = component.locator("[data-testid='import-hr-button']");
@@ -235,6 +244,7 @@ export async function testMarkdownHorizontalRule(component: Locator, _page: Page
  */
 export async function testMarkdownTable(component: Locator, _page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
+  await expect(editor).toBeVisible();
 
   // Import markdown with table
   const importButton = component.locator("[data-testid='import-table-button']");

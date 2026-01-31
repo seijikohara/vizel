@@ -57,11 +57,10 @@ export default defineConfig({
         "@tiptap/extension-text",
         "@tiptap/pm",
         "@tiptap/suggestion",
-        // Large dependencies - externalized to reduce bundle size
+        // Large optional dependencies - externalized to reduce bundle size
         "@hpcc-js/wasm-graphviz",
         "mermaid",
         "katex",
-        "highlight.js",
         "lowlight",
         "fuse.js",
       ],

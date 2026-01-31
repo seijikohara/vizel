@@ -21,6 +21,8 @@ export {
   type VizelResolveFeaturesOptions,
   vizelDefaultEditorProps,
 } from "./editorHelpers.ts";
+// Lazy import utility
+export { createLazyLoader } from "./lazy-import.ts";
 // Markdown utilities
 export {
   createVizelMarkdownSyncHandlers,

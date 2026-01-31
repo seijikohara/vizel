@@ -56,15 +56,15 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
   // Handle vizel:upload-image custom event from slash command
   let cleanupHandler: (() => void) | null = null;
 
-  onMounted(() => {
-    const { editor: instance } = createVizelEditorInstance({
+  onMounted(async () => {
+    const result = await createVizelEditorInstance({
       ...editorOptions,
       ...(features !== undefined && { features }),
       extensions: additionalExtensions,
       createSlashMenuRenderer: createVizelSlashMenuRenderer,
     });
 
-    editor.value = instance;
+    editor.value = result.editor;
 
     cleanupHandler = registerVizelUploadEventHandler({
       getEditor: () => editor.value,

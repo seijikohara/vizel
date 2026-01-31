@@ -14,7 +14,16 @@
 import type { JSONContent, MarkdownToken, MarkdownTokenizer } from "@tiptap/core";
 import { InputRule, mergeAttributes, Node } from "@tiptap/core";
 import type { NodeType } from "@tiptap/pm/model";
-import katex from "katex";
+import type katex from "katex";
+import { createLazyLoader } from "../utils/lazy-import.ts";
+
+/**
+ * Lazy loader for katex (optional dependency)
+ */
+const loadKatex = createLazyLoader("katex", async () => {
+  const mod = await import("katex");
+  return mod.default;
+});
 
 /**
  * Options for the Mathematics extension
@@ -53,15 +62,17 @@ declare module "@tiptap/core" {
 }
 
 /**
- * Render LaTeX to HTML using KaTeX
+ * Render LaTeX to HTML using KaTeX.
+ * Loads the katex module dynamically on first use.
  */
-function renderKatex(
+async function renderKatex(
   latex: string,
   displayMode: boolean,
   options?: katex.KatexOptions
-): { html: string; error: string | null } {
+): Promise<{ html: string; error: string | null }> {
   try {
-    const html = katex.renderToString(latex, {
+    const katexModule = await loadKatex();
+    const html = katexModule.renderToString(latex, {
       displayMode,
       throwOnError: false,
       strict: false,
@@ -224,10 +235,13 @@ export const VizelMathInline = Node.create<VizelMathematicsOptions>({
       dom.appendChild(editInput);
 
       let isEditing = false;
+      const katexOptions = this.options.katexOptions;
 
       const renderMath = (latex: string) => {
-        const { html } = renderKatex(latex, false, this.options.katexOptions);
-        renderContainer.innerHTML = html;
+        // KaTeX renderToString produces safe HTML (trust: false is enforced)
+        void renderKatex(latex, false, katexOptions).then(({ html }) => {
+          renderContainer.innerHTML = html;
+        });
       };
 
       const startEditing = () => {
@@ -444,15 +458,20 @@ export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
       dom.appendChild(editContainer);
 
       let isEditing = false;
+      const katexBlockOptions = this.options.katexOptions;
 
       const renderMath = (latex: string) => {
-        const { html } = renderKatex(latex, true, this.options.katexOptions);
-        renderContainer.innerHTML = html;
+        // KaTeX renderToString produces safe HTML (trust: false is enforced)
+        void renderKatex(latex, true, katexBlockOptions).then(({ html }) => {
+          renderContainer.innerHTML = html;
+        });
       };
 
       const updatePreview = (latex: string) => {
-        const { html } = renderKatex(latex, true, this.options.katexOptions);
-        previewContainer.innerHTML = html;
+        // KaTeX renderToString produces safe HTML (trust: false is enforced)
+        void renderKatex(latex, true, katexBlockOptions).then(({ html }) => {
+          previewContainer.innerHTML = html;
+        });
       };
 
       const startEditing = () => {
@@ -659,5 +678,5 @@ export function createVizelMathematicsExtensions(
   return [VizelMathInline.configure(options), VizelMathBlock.configure(options)];
 }
 
-// Export individual extensions for advanced usage
-export { katex };
+// Export the lazy loader for advanced usage
+export { loadKatex };

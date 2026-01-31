@@ -40,7 +40,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "^1.20.1",
     "@iconify-json/lucide": "^1.2.87",
     "@iconify/utils": "^3.1.0",
     "@tiptap/core": "^3.18.0",
@@ -82,11 +81,27 @@
     "@tiptap/markdown": "^3.18.0",
     "@tiptap/pm": "^3.18.0",
     "@tiptap/suggestion": "^3.18.0",
-    "fuse.js": "^7.1.0",
-    "highlight.js": "^11.11.1",
-    "katex": "^0.16.28",
-    "lowlight": "^3.3.0",
-    "mermaid": "^11.12.2"
+    "fuse.js": "^7.1.0"
+  },
+  "peerDependencies": {
+    "katex": "^0.16.0",
+    "lowlight": "^3.0.0",
+    "mermaid": "^11.0.0",
+    "@hpcc-js/wasm-graphviz": "^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "katex": {
+      "optional": true
+    },
+    "lowlight": {
+      "optional": true
+    },
+    "mermaid": {
+      "optional": true
+    },
+    "@hpcc-js/wasm-graphviz": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "vite": "^7.3.1",
