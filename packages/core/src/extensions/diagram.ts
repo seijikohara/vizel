@@ -147,10 +147,10 @@ function initializeMermaid(config?: MermaidConfig): void {
 
   mermaid.initialize({
     startOnLoad: false,
-    securityLevel: "loose",
     theme: "default",
     fontFamily: "var(--vizel-font-sans)",
     ...config,
+    securityLevel: config?.securityLevel ?? "strict",
   });
 
   mermaidInitialized = true;

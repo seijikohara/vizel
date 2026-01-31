@@ -490,31 +490,31 @@ export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
         }
       };
 
-      // Event listeners
-      dom.addEventListener("click", (e) => {
+      // Event listeners (named handlers for proper cleanup in destroy())
+      const handleDomClick = (e: MouseEvent) => {
         if (!isEditing && e.target === dom) {
           e.preventDefault();
           e.stopPropagation();
           startEditing();
         }
-      });
+      };
 
-      renderContainer.addEventListener("click", (e) => {
+      const handleRenderClick = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         startEditing();
-      });
+      };
 
-      editTextarea.addEventListener("blur", (e) => {
+      const handleTextareaBlur = (e: FocusEvent) => {
         // Don't stop editing if clicking within the edit container
         const relatedTarget = e.relatedTarget;
         if (relatedTarget instanceof HTMLElement && editContainer.contains(relatedTarget)) {
           return;
         }
         stopEditing();
-      });
+      };
 
-      editTextarea.addEventListener("keydown", (e) => {
+      const handleTextareaKeydown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
           e.preventDefault();
           editTextarea.value = node.attrs.latex;
@@ -525,11 +525,17 @@ export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
           e.preventDefault();
           stopEditing();
         }
-      });
+      };
 
-      editTextarea.addEventListener("input", () => {
+      const handleTextareaInput = () => {
         updatePreview(editTextarea.value);
-      });
+      };
+
+      dom.addEventListener("click", handleDomClick);
+      renderContainer.addEventListener("click", handleRenderClick);
+      editTextarea.addEventListener("blur", handleTextareaBlur);
+      editTextarea.addEventListener("keydown", handleTextareaKeydown);
+      editTextarea.addEventListener("input", handleTextareaInput);
 
       // Initial render
       renderMath(node.attrs.latex);
@@ -550,6 +556,13 @@ export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
         },
         deselectNode() {
           dom.classList.remove("vizel-math-selected");
+        },
+        destroy() {
+          dom.removeEventListener("click", handleDomClick);
+          renderContainer.removeEventListener("click", handleRenderClick);
+          editTextarea.removeEventListener("blur", handleTextareaBlur);
+          editTextarea.removeEventListener("keydown", handleTextareaKeydown);
+          editTextarea.removeEventListener("input", handleTextareaInput);
         },
       };
     };
