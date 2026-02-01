@@ -17,7 +17,7 @@ export interface VizelSlashCommandExtensionOptions {
   /** Custom slash command items (defaults to heading, list, quote, code) */
   items?: VizelSlashCommandItem[];
   /** Suggestion options for customizing the popup behavior */
-  suggestion?: Partial<SuggestionOptions>;
+  suggestion?: Partial<SuggestionOptions<VizelSlashCommandItem>>;
 }
 
 /** Type guard for VizelSlashCommandItem */

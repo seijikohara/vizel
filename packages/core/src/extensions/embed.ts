@@ -374,6 +374,14 @@ export interface VizelEmbedOptions {
   pasteHandler?: boolean;
   /** Inline embeds (rendered inline with text) vs block embeds */
   inline?: boolean;
+  /**
+   * Called when embed data fetch fails.
+   * If not provided, errors are logged to console.
+   *
+   * @param error - The error that occurred
+   * @param url - The URL that failed to fetch
+   */
+  onFetchError?: (error: Error, url: string) => void;
 }
 
 declare module "@tiptap/core" {
@@ -676,7 +684,16 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
                 });
               })
               .catch((error) => {
-                console.error("Failed to fetch embed data:", error);
+                const err = error instanceof Error ? error : new Error(String(error));
+                try {
+                  if (this.options.onFetchError) {
+                    this.options.onFetchError(err, url);
+                  } else {
+                    console.error("Failed to fetch embed data:", err);
+                  }
+                } catch {
+                  // Ensure fallback update always executes even if callback throws
+                }
                 // Update node to remove loading state and fallback to link
                 editor.state.doc.descendants((node, pos) => {
                   if (
@@ -874,7 +891,16 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
                   });
                 })
                 .catch((error) => {
-                  console.error("Failed to fetch embed data:", error);
+                  const err = error instanceof Error ? error : new Error(String(error));
+                  try {
+                    if (extension.options.onFetchError) {
+                      extension.options.onFetchError(err, trimmedText);
+                    } else {
+                      console.error("Failed to fetch embed data:", err);
+                    }
+                  } catch {
+                    // Ensure fallback update always executes even if callback throws
+                  }
                   // Update node to remove loading state and fallback to link
                   view.state.doc.descendants((node, pos) => {
                     if (

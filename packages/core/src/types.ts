@@ -1,4 +1,5 @@
 import type { Editor, Extensions, JSONContent } from "@tiptap/core";
+import type { SuggestionOptions } from "@tiptap/suggestion";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelCodeBlockOptions } from "./extensions/code-block-lowlight.ts";
 import type { VizelDetailsOptions } from "./extensions/details.ts";
@@ -21,7 +22,7 @@ export interface VizelSlashCommandOptions {
   /** Custom slash command items */
   items?: VizelSlashCommandItem[];
   /** Suggestion options (framework-specific renderer) */
-  suggestion?: Record<string, unknown>;
+  suggestion?: Partial<SuggestionOptions<VizelSlashCommandItem>>;
 }
 
 /**

@@ -1,7 +1,9 @@
 import type { Editor } from "@tiptap/core";
 import type { EditorView } from "@tiptap/pm/view";
+import type { SuggestionOptions } from "@tiptap/suggestion";
 import type { VizelCharacterCountStorage } from "../extensions/character-count.ts";
 import { createVizelImageUploader } from "../extensions/image.ts";
+import type { VizelSlashCommandItem } from "../extensions/slash-command.ts";
 import type { VizelEditorState, VizelFeatureOptions, VizelImageFeatureOptions } from "../types.ts";
 
 /**
@@ -22,7 +24,7 @@ export interface VizelResolveFeaturesOptions {
   /** The features configuration */
   features?: VizelFeatureOptions;
   /** Factory function to create the slash menu renderer */
-  createSlashMenuRenderer: () => unknown;
+  createSlashMenuRenderer: () => Partial<SuggestionOptions<VizelSlashCommandItem>>;
 }
 
 /**
@@ -39,7 +41,7 @@ export function resolveVizelFeatures(
     // No features specified, use defaults with auto slash menu
     return {
       slashCommand: {
-        suggestion: createSlashMenuRenderer() as Record<string, unknown>,
+        suggestion: createSlashMenuRenderer(),
       },
     };
   }
@@ -60,7 +62,7 @@ export function resolveVizelFeatures(
     ...features,
     slashCommand: {
       ...slashOptions,
-      suggestion: createSlashMenuRenderer() as Record<string, unknown>,
+      suggestion: createSlashMenuRenderer(),
     },
   };
 }
