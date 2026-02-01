@@ -76,14 +76,19 @@ async function renderKatex(
       displayMode,
       throwOnError: false,
       strict: false,
-      trust: false,
       ...options,
+      trust: false, // Enforced: prevents external URL access via \url, \href commands
     });
     return { html, error: null };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Invalid LaTeX";
+    const escaped = errorMessage
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
     return {
-      html: `<span class="vizel-math-error">${errorMessage}</span>`,
+      html: `<span class="vizel-math-error">${escaped}</span>`,
       error: errorMessage,
     };
   }

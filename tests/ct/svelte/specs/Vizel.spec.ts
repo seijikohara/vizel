@@ -45,9 +45,7 @@ test.describe("Vizel - Svelte", () => {
     await testVizelSlashMenu(component, page);
   });
 
-  // TODO: Investigate why bubble menu doesn't appear in Vizel all-in-one component test
-  // The individual BubbleMenu tests pass, but the Vizel component test fails
-  test.skip("applies formatting via bubble menu", async ({ mount, page }) => {
+  test("applies formatting via bubble menu", async ({ mount, page }) => {
     const component = await mount(VizelFixture);
     await testVizelBubbleMenuFormatting(component, page);
   });

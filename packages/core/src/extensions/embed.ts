@@ -414,7 +414,12 @@ function renderLoading(container: HTMLElement): void {
 }
 
 /**
- * Render oEmbed HTML content
+ * Render oEmbed HTML content.
+ *
+ * Security: oEmbed HTML comes from trusted providers defined in
+ * vizelDefaultEmbedProviders. Custom fetchEmbedData implementations
+ * must sanitize HTML before returning. Consider adding DOMPurify
+ * for defense-in-depth if handling untrusted providers.
  */
 function renderOembed(container: HTMLElement, html: string): void {
   container.innerHTML = html;

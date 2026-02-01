@@ -23,22 +23,22 @@ export async function testThemeProviderDefaultTheme(
 export async function testThemeProviderToggle(page: Page, toggleButton: Locator): Promise<void> {
   const html = page.locator("html");
 
-  // Get initial theme
-  const initialTheme = await html.getAttribute("data-vizel-theme");
+  // Get initial theme (auto-retrying assertion ensures attribute exists)
+  await expect(html).toHaveAttribute("data-vizel-theme", /(light|dark)/);
+  const initialTheme = (await html.getAttribute("data-vizel-theme")) ?? "";
 
   // Click toggle button
   await toggleButton.click();
 
-  // Theme should be different
-  const newTheme = await html.getAttribute("data-vizel-theme");
-  expect(newTheme).not.toBe(initialTheme);
+  // Theme should be different (auto-retrying)
+  const expectedAfterToggle = initialTheme === "light" ? "dark" : "light";
+  await expect(html).toHaveAttribute("data-vizel-theme", expectedAfterToggle);
 
   // Toggle back
   await toggleButton.click();
 
-  // Should be back to initial theme
-  const finalTheme = await html.getAttribute("data-vizel-theme");
-  expect(finalTheme).toBe(initialTheme);
+  // Should be back to initial theme (auto-retrying)
+  await expect(html).toHaveAttribute("data-vizel-theme", initialTheme);
 }
 
 /**
@@ -52,9 +52,10 @@ export async function testThemeProviderPersistence(
   // Click toggle to change theme
   await toggleButton.click();
 
-  // Check localStorage
-  const storedTheme = await page.evaluate((key) => localStorage.getItem(key), storageKey);
-  expect(storedTheme).toMatch(/(light|dark)/);
+  // Check localStorage (use expect.poll for auto-retry on async evaluation)
+  await expect
+    .poll(() => page.evaluate((key) => localStorage.getItem(key), storageKey))
+    .toMatch(/(light|dark)/);
 }
 
 /**

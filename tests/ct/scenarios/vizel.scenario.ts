@@ -87,10 +87,6 @@ export async function testVizelBubbleMenuFormatting(
   _component: Locator,
   page: Page
 ): Promise<void> {
-  // Wait for bubble menu element to be attached (may be hidden initially)
-  const bubbleMenu = page.locator("[data-vizel-bubble-menu]");
-  await expect(bubbleMenu).toBeAttached({ timeout: 5000 });
-
   const editor = page.locator("[data-vizel-root] .vizel-editor");
   await editor.click();
   await page.keyboard.type("Format this");
@@ -98,10 +94,8 @@ export async function testVizelBubbleMenuFormatting(
   // Select all text
   await page.keyboard.press("ControlOrMeta+a");
 
-  // Wait a moment for selection to register
-  await page.waitForTimeout(100);
-
-  // Wait for bubble menu to become visible
+  // Wait for bubble menu to become visible (auto-retries, no waitForTimeout needed)
+  const bubbleMenu = page.locator("[data-vizel-bubble-menu]");
   await expect(bubbleMenu).toBeVisible({ timeout: 5000 });
 
   // Click bold button - use data-action attribute
