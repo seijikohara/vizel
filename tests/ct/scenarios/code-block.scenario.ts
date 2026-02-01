@@ -78,9 +78,8 @@ export async function testCodeBlockLanguageInputEnterKey(
   // Verify language was changed
   await expect(languageInput).toHaveValue("typescript");
 
-  // Verify no newline was added to the code block
-  const finalContent = await code.textContent();
-  expect(finalContent).toBe(initialContent);
+  // Verify no newline was added to the code block (strict comparison to detect whitespace changes)
+  await expect.poll(() => code.textContent()).toBe(initialContent ?? "");
 }
 
 /** Verify line numbers toggle button exists */

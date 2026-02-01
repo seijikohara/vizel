@@ -150,8 +150,7 @@ export async function testResizeTooltipAppears(component: Locator, page: Page): 
   await expect(tooltip).toHaveCSS("display", "block");
 
   // Tooltip should show dimensions (format: "NNN × NNN")
-  const tooltipText = await tooltip.textContent();
-  expect(tooltipText).toMatch(/\d+ × \d+/);
+  await expect(tooltip).toHaveText(/\d+ × \d+/);
 
   // Release mouse
   await page.mouse.up();
