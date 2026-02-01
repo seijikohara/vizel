@@ -28,9 +28,9 @@ export async function testMarkdownEmptyExport(component: Locator, _page: Page): 
   const exportButton = component.locator("[data-testid='export-button']");
   await exportButton.click();
 
-  // Empty editor should produce empty or whitespace-only markdown (auto-retry assertion)
+  // Empty editor may produce empty string or "&nbsp;" (browser-dependent)
   const markdownOutput = component.locator("[data-testid='markdown-output']");
-  await expect(markdownOutput).toHaveText(/^\s*$/);
+  await expect(markdownOutput).toHaveText(/^(\s*|&nbsp;)$/);
 }
 
 // ============================================================================
