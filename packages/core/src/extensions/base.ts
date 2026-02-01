@@ -109,7 +109,7 @@ function addSlashCommandExtension(extensions: Extensions, features: VizelFeature
     VizelSlashCommand.configure({
       items,
       ...(slashOptions.suggestion !== undefined && {
-        suggestion: slashOptions.suggestion as Record<string, unknown>,
+        suggestion: slashOptions.suggestion,
       }),
     })
   );
