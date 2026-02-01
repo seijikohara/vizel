@@ -427,8 +427,16 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
         }
 
         if (result.error) {
-          container.innerHTML = `<div class="vizel-diagram-error-display">${result.error}</div>`;
+          container.textContent = "";
+          const errorDiv = document.createElement("div");
+          errorDiv.className = "vizel-diagram-error-display";
+          errorDiv.textContent = result.error;
+          container.appendChild(errorDiv);
         } else {
+          // Mermaid defaults to securityLevel "strict" (sanitized SVG).
+          // GraphViz generates SVG from DOT without script execution.
+          // If custom mermaidConfig overrides securityLevel, the SVG
+          // may contain unsanitized content per the user's configuration.
           container.innerHTML = result.svg;
         }
       };
