@@ -15,6 +15,7 @@ export interface VizelBubbleMenuDefaultProps {
 import { createVizelState } from "../runes/createVizelState.svelte.ts";
 import VizelBubbleMenuButton from "./VizelBubbleMenuButton.svelte";
 import VizelBubbleMenuColorPicker from "./VizelBubbleMenuColorPicker.svelte";
+import VizelBubbleMenuDivider from "./VizelBubbleMenuDivider.svelte";
 import VizelLinkEditor from "./VizelLinkEditor.svelte";
 import VizelIcon from "./VizelIcon.svelte";
 import VizelNodeSelector from "./VizelNodeSelector.svelte";
@@ -57,6 +58,7 @@ const isLinkActive = $derived.by(() => {
 {:else}
   <div class="vizel-bubble-menu-toolbar {className ?? ''}">
     <VizelNodeSelector {editor} />
+    <VizelBubbleMenuDivider />
     <VizelBubbleMenuButton
       action="bold"
       isActive={isBoldActive}
@@ -97,6 +99,7 @@ const isLinkActive = $derived.by(() => {
     >
       <VizelIcon name="code" />
     </VizelBubbleMenuButton>
+    <VizelBubbleMenuDivider />
     <VizelBubbleMenuButton
       action="link"
       isActive={isLinkActive}
@@ -105,6 +108,7 @@ const isLinkActive = $derived.by(() => {
     >
       <VizelIcon name="link" />
     </VizelBubbleMenuButton>
+    <VizelBubbleMenuDivider />
     <VizelBubbleMenuColorPicker {editor} type="textColor" />
     <VizelBubbleMenuColorPicker {editor} type="highlight" />
   </div>

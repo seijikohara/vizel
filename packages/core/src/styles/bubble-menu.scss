@@ -16,30 +16,60 @@
 
   &-toolbar {
     display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem;
+  }
+
+  &-divider {
+    width: 1px;
+    height: 1.25rem;
+    background-color: v("border");
+    flex-shrink: 0;
+    margin: 0 0.1875rem;
+    opacity: 0.6;
   }
 
   &-button {
-    padding: 0.5rem 0.75rem;
+    padding: 0.375rem 0.5rem;
     background: transparent;
     border: none;
     cursor: pointer;
     font-size: 0.875rem;
     color: v("foreground");
-    transition: all 0.15s;
+    transition: background-color 0.15s, color 0.15s;
+    border-radius: v("radius-sm");
+    min-width: 2rem;
+    min-height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       background-color: v("primary-bg");
       color: v("primary-hover");
     }
 
+    &:focus-visible {
+      outline: 2px solid v("primary");
+      outline-offset: -2px;
+    }
+
     &.is-active {
       background-color: v("primary");
       color: v("background");
     }
+  }
+}
 
-    & + & {
-      border-left: 1px solid v("border");
-    }
+@media (prefers-reduced-motion: reduce) {
+  .vizel-bubble-menu-button,
+  .vizel-color-picker-trigger,
+  .vizel-color-picker-swatch,
+  .vizel-color-picker-apply,
+  .vizel-node-selector-trigger,
+  .vizel-node-selector-option {
+    transition: none;
   }
 }
 
@@ -48,11 +78,25 @@
   display: inline-flex;
 
   &-trigger {
-    border-left: 1px solid v("border");
     min-width: 2rem;
+    min-height: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: v("radius-sm");
+    transition: background-color 0.15s;
+
+    &:hover {
+      background-color: v("primary-bg");
+    }
+
+    &:focus-visible {
+      outline: 2px solid v("primary");
+      outline-offset: -2px;
+    }
 
     &.has-color[data-action="textColor"] {
       font-weight: 700;
@@ -108,19 +152,19 @@
   &-recent {
     display: flex;
     flex-wrap: wrap;
-    gap: 3px;
+    gap: 4px;
   }
 
   &-grid {
     display: inline-grid;
-    grid-template-columns: repeat(4, 1.25rem);
-    gap: 3px;
+    grid-template-columns: repeat(4, 1.5rem);
+    gap: 4px;
   }
 
   &-swatch {
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 3px;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 4px;
     border: none;
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
@@ -152,31 +196,38 @@
     font-size: 0.625rem;
     color: v("foreground-muted");
     font-weight: 700;
-    background: v("background");
+    background:
+      linear-gradient(
+        135deg,
+        v("background") 40%,
+        v("destructive") 40%,
+        v("destructive") 60%,
+        v("background") 60%
+      );
     box-shadow: inset 0 0 0 1px v("border");
   }
 
   &-input-row {
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     margin-top: 0.5rem;
     padding-top: 0.5rem;
     border-top: 1px solid v("border");
-    width: calc(4 * 1.25rem + 3 * 3px);
+    width: calc(4 * 1.5rem + 3 * 4px);
   }
 
   &-preview {
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 3px;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 4px;
     flex-shrink: 0;
     box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.1);
   }
 
   &-custom {
     display: flex;
-    gap: 3px;
+    gap: 4px;
     padding-top: 0.5rem;
     border-top: 1px solid v("border");
     margin-top: 0.375rem;
@@ -240,19 +291,24 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    padding: 0.5rem 0.625rem;
+    padding: 0.375rem 0.5rem;
     background: transparent;
     border: none;
-    border-left: 1px solid v("border");
     cursor: pointer;
     font-size: 0.8125rem;
     color: v("foreground");
-    transition: all 0.15s;
-    min-width: 5rem;
+    transition: background-color 0.15s, color 0.15s;
+    border-radius: v("radius-sm");
+    min-width: 6.5rem;
 
     &:hover {
       background-color: v("primary-bg");
       color: v("primary-hover");
+    }
+
+    &:focus-visible {
+      outline: 2px solid v("primary");
+      outline-offset: -2px;
     }
   }
 
@@ -285,15 +341,15 @@
     border: 1px solid v("border");
     padding: 0.25rem;
     z-index: 100;
-    min-width: 8rem;
+    min-width: 10rem;
   }
 
   &-option {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.625rem;
     width: 100%;
-    padding: 0.375rem 0.5rem;
+    padding: 0.5rem 0.625rem;
     background: transparent;
     border: none;
     border-radius: v("radius-sm");

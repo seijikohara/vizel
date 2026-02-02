@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
 import VizelBubbleMenuButton from "./VizelBubbleMenuButton.vue";
 import VizelBubbleMenuColorPicker from "./VizelBubbleMenuColorPicker.vue";
+import VizelBubbleMenuDivider from "./VizelBubbleMenuDivider.vue";
 import VizelIcon from "./VizelIcon.vue";
 import VizelLinkEditor from "./VizelLinkEditor.vue";
 import VizelNodeSelector from "./VizelNodeSelector.vue";
@@ -60,6 +61,7 @@ const showLinkEditor = ref(false);
   />
   <div v-else :class="['vizel-bubble-menu-toolbar', $props.class]">
     <VizelNodeSelector :editor="props.editor" />
+    <VizelBubbleMenuDivider />
     <VizelBubbleMenuButton
       action="bold"
       :is-active="isBoldActive"
@@ -100,6 +102,7 @@ const showLinkEditor = ref(false);
     >
       <VizelIcon name="code" />
     </VizelBubbleMenuButton>
+    <VizelBubbleMenuDivider />
     <VizelBubbleMenuButton
       action="link"
       :is-active="isLinkActive"
@@ -108,6 +111,7 @@ const showLinkEditor = ref(false);
     >
       <VizelIcon name="link" />
     </VizelBubbleMenuButton>
+    <VizelBubbleMenuDivider />
     <VizelBubbleMenuColorPicker :editor="props.editor" type="textColor" />
     <VizelBubbleMenuColorPicker :editor="props.editor" type="highlight" />
   </div>

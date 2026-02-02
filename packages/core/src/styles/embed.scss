@@ -252,6 +252,20 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .vizel-embed-card {
+    transition: none;
+  }
+
+  .vizel-embed-link {
+    transition: none;
+  }
+
+  .vizel-embed-loading-spinner {
+    animation: none;
+  }
+}
+
 @keyframes vizel-embed-spin {
   to {
     transform: rotate(360deg);

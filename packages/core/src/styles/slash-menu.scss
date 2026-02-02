@@ -9,7 +9,7 @@
 .vizel-slash-menu {
   background: v("background");
   border-radius: v("radius-lg");
-  box-shadow: v("shadow-md");
+  box-shadow: v("shadow-lg");
   border: 1px solid v("border");
   overflow: hidden;
   min-width: 280px;
@@ -34,20 +34,19 @@
   }
 
   &-group {
-    padding-bottom: 0.25rem;
+    padding: 0.25rem 0;
 
     & + & {
       border-top: 1px solid v("border");
-      padding-top: 0.25rem;
     }
 
     &-header {
-      padding: 0.5rem 1rem 0.25rem;
-      font-size: 0.65rem;
+      padding: 0.5rem 0.75rem 0.25rem;
+      font-size: 0.6875rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: v("foreground-secondary");
+      letter-spacing: 0.08em;
+      color: v("foreground-muted");
     }
   }
 
@@ -56,16 +55,26 @@
     align-items: center;
     gap: 0.75rem;
     width: 100%;
-    padding: 0.5rem 1rem;
+    padding: 0.4375rem 0.75rem;
     background: transparent;
     border: none;
+    border-left: 3px solid transparent;
     cursor: pointer;
     text-align: left;
-    transition: background-color 0.15s;
+    transition: background-color 0.1s, border-color 0.1s;
 
-    &:hover,
-    &.is-selected {
+    &:hover {
       background-color: v("primary-bg");
+    }
+
+    &.is-selected {
+      background-color: v("primary-bg-hover");
+      border-left-color: v("primary");
+    }
+
+    &:focus-visible {
+      outline: 2px solid v("primary");
+      outline-offset: -2px;
     }
   }
 
@@ -99,7 +108,7 @@
 
   &-description {
     font-size: 0.75rem;
-    color: v("foreground-secondary");
+    color: v("foreground-muted");
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -111,7 +120,7 @@
     font-size: 0.625rem;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     color: v("foreground-secondary");
-    background: v("primary-bg");
+    background: v("muted");
     border-radius: v("radius-sm");
     margin-left: auto;
   }
@@ -128,5 +137,11 @@
     text-align: center;
     color: v("foreground-secondary");
     font-size: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vizel-slash-menu-item {
+    transition: none;
   }
 }

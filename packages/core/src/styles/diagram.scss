@@ -96,7 +96,7 @@
   &-textarea {
     font-family: v("font-mono");
     font-size: v("font-size-sm");
-    line-height: v("line-height-relaxed");
+    line-height: 1.7;
     padding: 0.75rem;
     border: 1px solid v("border");
     border-radius: v("radius-md");
@@ -156,7 +156,13 @@
 
   svg .node text,
   svg .nodeLabel {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vizel-diagram {
+    transition: none;
   }
 }
 

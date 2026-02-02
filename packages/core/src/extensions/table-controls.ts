@@ -102,6 +102,10 @@ const CELL_MENU_ITEMS: VizelTableMenuItem[] = [
 /** Threshold distance in pixels for detecting boundary hover */
 const BOUNDARY_THRESHOLD_PX = 20;
 
+/** Padding offset constants matching CSS (.vizel-table-controls-wrapper) */
+const PADDING_TOP_PX = 20;
+const PADDING_LEFT_PX = 24;
+
 /** Combined menu items (legacy, for reference) */
 const VIZEL_TABLE_MENU_ITEMS: VizelTableMenuItem[] = [
   ...ROW_MENU_ITEMS.slice(0, 3),
@@ -511,52 +515,52 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
       // Create column insert button (positioned in padding area above table)
       // CSS controls visibility via :hover on wrapper, JS only updates position
       // CSS uses transform: translateX(-50%) to center the button on its left position
-      // Wrapper has padding: 32px left/top, so button positions are relative to wrapper
+      // Wrapper has padding: 24px left / 20px top, so button positions are relative to wrapper
       const columnInsertBtn = document.createElement("button");
       columnInsertBtn.className = "vizel-table-insert-button vizel-table-column-insert";
       columnInsertBtn.type = "button";
-      columnInsertBtn.innerHTML = renderVizelIcon("plusSmall", { width: 12, height: 12 });
+      columnInsertBtn.innerHTML = renderVizelIcon("plusSmall", { width: 10, height: 10 });
       columnInsertBtn.setAttribute("aria-label", "Insert column");
       columnInsertBtn.title = "Insert column";
       // Initial position at first column boundary (CSS translateX(-50%) centers it)
-      columnInsertBtn.style.left = "32px";
-      columnInsertBtn.style.top = "6px";
+      columnInsertBtn.style.left = `${PADDING_LEFT_PX}px`;
+      columnInsertBtn.style.top = "0px";
 
       // Create row insert button (positioned in padding area left of table)
       // CSS uses transform: translateY(-50%) to center the button on its top position
       const rowInsertBtn = document.createElement("button");
       rowInsertBtn.className = "vizel-table-insert-button vizel-table-row-insert";
       rowInsertBtn.type = "button";
-      rowInsertBtn.innerHTML = renderVizelIcon("plusSmall", { width: 12, height: 12 });
+      rowInsertBtn.innerHTML = renderVizelIcon("plusSmall", { width: 10, height: 10 });
       rowInsertBtn.setAttribute("aria-label", "Insert row");
       rowInsertBtn.title = "Insert row";
       // Initial position at first row boundary (CSS translateY(-50%) centers it)
-      rowInsertBtn.style.left = "6px";
-      rowInsertBtn.style.top = "32px";
+      rowInsertBtn.style.left = "0px";
+      rowInsertBtn.style.top = `${PADDING_TOP_PX}px`;
 
       // Create row handle (positioned in padding area left of table)
       // This handle opens a menu with row/column operations
       const rowHandle = document.createElement("button");
       rowHandle.className = "vizel-table-row-handle";
       rowHandle.type = "button";
-      rowHandle.innerHTML = renderVizelIcon("grip", { width: 12, height: 12 });
+      rowHandle.innerHTML = renderVizelIcon("grip", { width: 10, height: 10 });
       rowHandle.setAttribute("aria-label", "Table row options");
       rowHandle.title = "Row options (delete, align, etc.)";
       // Initial position at first row (in padding area)
-      rowHandle.style.left = "4px";
-      rowHandle.style.top = "44px";
+      rowHandle.style.left = "2px";
+      rowHandle.style.top = `${PADDING_TOP_PX + 12}px`;
 
       // Create column handle (positioned in padding area above table)
       // This handle opens a menu with column operations
       const columnHandle = document.createElement("button");
       columnHandle.className = "vizel-table-column-handle";
       columnHandle.type = "button";
-      columnHandle.innerHTML = renderVizelIcon("gripHorizontal", { width: 12, height: 12 });
+      columnHandle.innerHTML = renderVizelIcon("gripHorizontal", { width: 10, height: 10 });
       columnHandle.setAttribute("aria-label", "Table column options");
       columnHandle.title = "Column options (delete, align, etc.)";
       // Initial position at first column (in padding area)
-      columnHandle.style.left = "80px";
-      columnHandle.style.top = "4px";
+      columnHandle.style.left = "64px";
+      columnHandle.style.top = "0px";
 
       // Menu state
       let activeMenu: HTMLElement | null = null;
@@ -701,8 +705,8 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         const boundary = findColumnBoundary(table, mouseX, tableRect);
         if (boundary) {
           currentColumnBoundary = boundary;
-          columnInsertBtn.style.left = `${boundary.position + 32}px`;
-          columnInsertBtn.style.top = "6px";
+          columnInsertBtn.style.left = `${boundary.position + PADDING_LEFT_PX}px`;
+          columnInsertBtn.style.top = "0px";
         } else if (!currentColumnBoundary) {
           currentColumnBoundary = { index: 0, position: 0 };
         }
@@ -713,8 +717,8 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         const boundary = findRowBoundary(table, mouseY, tableRect);
         if (boundary) {
           currentRowBoundary = boundary;
-          rowInsertBtn.style.left = "6px";
-          rowInsertBtn.style.top = `${boundary.position + 32}px`;
+          rowInsertBtn.style.left = "0px";
+          rowInsertBtn.style.top = `${boundary.position + PADDING_TOP_PX}px`;
         } else if (!currentRowBoundary) {
           currentRowBoundary = { index: 0, position: 0 };
         }
@@ -726,8 +730,8 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         if (hoveredRow) {
           currentHoveredRow = hoveredRow;
           const rowRect = hoveredRow.element.getBoundingClientRect();
-          rowHandle.style.left = "4px";
-          rowHandle.style.top = `${rowRect.top - tableRect.top + 32 + (rowRect.height - 24) / 2}px`;
+          rowHandle.style.left = "2px";
+          rowHandle.style.top = `${rowRect.top - tableRect.top + PADDING_TOP_PX + (rowRect.height - 20) / 2}px`;
         }
       };
 
@@ -736,8 +740,8 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         const hoveredColumn = findHoveredColumn(table, mouseX, tableRect);
         if (hoveredColumn) {
           currentHoveredColumn = hoveredColumn;
-          columnHandle.style.left = `${hoveredColumn.centerX + 32}px`;
-          columnHandle.style.top = "4px";
+          columnHandle.style.left = `${hoveredColumn.centerX + PADDING_LEFT_PX}px`;
+          columnHandle.style.top = "0px";
         }
       };
 
@@ -757,6 +761,7 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
 
         if (showColumnInsert) updateColumnInsertPosition(e.clientX, tableRect);
         if (showRowInsert) updateRowInsertPosition(e.clientY, tableRect);
+
         if (showRowHandle && isInTable) {
           updateRowHandlePosition(e.clientY, tableRect);
           updateColumnHandlePosition(e.clientX, tableRect);
