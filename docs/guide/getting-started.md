@@ -174,7 +174,7 @@ Enable the built-in fixed toolbar for a traditional formatting bar above the edi
 
 :::
 
-The toolbar includes undo/redo, text formatting, headings, lists, and block actions by default. See the API reference for [VizelToolbar](/api/react#vizeltoolbar) for customization options.
+The toolbar includes undo/redo, text formatting, headings, lists, and block actions by default. See the API reference for VizelToolbar ([React](/api/react#vizeltoolbar), [Vue](/api/vue#vizeltoolbar), [Svelte](/api/svelte#vizeltoolbar)) for customization options.
 
 ## Working with Content
 

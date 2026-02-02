@@ -49,6 +49,8 @@ import '@vizel/core/styles.css';
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus behavior |
 | `features` | `VizelFeatureOptions` | - | Feature configuration |
 | `className` | `string` | - | CSS class name |
+| `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
+| `toolbarContent` | `ReactNode` | - | Custom toolbar content |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
 | `onUpdate` | `({ editor }) => void` | - | Update callback |

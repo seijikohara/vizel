@@ -54,8 +54,15 @@ import '@vizel/core/styles.css';
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus behavior |
 | `features` | `VizelFeatureOptions` | - | Feature configuration |
 | `class` | `string` | - | CSS class name |
+| `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
+
+**Slots:**
+
+| Slot | Props | Description |
+|------|-------|-------------|
+| `toolbar` | `{ editor: Editor }` | Custom toolbar content |
 
 **Events:**
 
