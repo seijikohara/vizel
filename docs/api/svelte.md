@@ -52,6 +52,7 @@ All-in-one editor component with built-in bubble menu. This is the recommended w
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus behavior |
 | `features` | `VizelFeatureOptions` | - | Feature configuration |
 | `class` | `string` | - | CSS class name |
+| `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
 | `onUpdate` | `({ editor }) => void` | - | Update callback |
@@ -252,7 +253,7 @@ Fixed toolbar component.
   import { VizelToolbar } from '@vizel/svelte';
 </script>
 
-<VizelToolbar editor={editor} class="my-toolbar" />
+<VizelToolbar editor={editor.current} class="my-toolbar" />
 ```
 
 **Props:**
@@ -269,7 +270,7 @@ Fixed toolbar component.
 Default toolbar content with grouped formatting buttons.
 
 ```svelte
-<VizelToolbarDefault {editor} actions={customActions} />
+<VizelToolbarDefault editor={editor.current} actions={customActions} />
 ```
 
 **Props:**
@@ -286,8 +287,8 @@ Individual toolbar button.
 
 ```svelte
 <VizelToolbarButton
-  onclick={() => editor.chain().focus().toggleBold().run()}
-  isActive={editor.isActive("bold")}
+  onclick={() => editor.current?.chain().focus().toggleBold().run()}
+  isActive={editor.current?.isActive("bold") ?? false}
   title="Bold (Cmd+B)"
 >
   <VizelIcon name="bold" />
