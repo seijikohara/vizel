@@ -7,6 +7,26 @@
     "url": "https://github.com/seijikohara/vizel",
     "directory": "packages/vue"
   },
+  "description": "Vue 3 components and composables for Vizel block-based Markdown editor",
+  "license": "MIT",
+  "author": "Seiji Kohara",
+  "homepage": "https://seijikohara.github.io/vizel/",
+  "bugs": {
+    "url": "https://github.com/seijikohara/vizel/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "vizel",
+    "tiptap",
+    "editor",
+    "markdown",
+    "vue",
+    "wysiwyg",
+    "rich-text",
+    "block-editor"
+  ],
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
