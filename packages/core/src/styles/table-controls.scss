@@ -8,9 +8,9 @@
 
 .vizel-table-controls-wrapper {
   position: relative;
-  margin: 1.5em 0;
-  padding-left: 32px;
-  padding-top: 32px;
+  margin: 0.5em 0;
+  padding-left: 24px;
+  padding-top: 20px;
 
   .vizel-table {
     margin: 0;
@@ -24,13 +24,14 @@
       opacity: 1;
       pointer-events: auto;
     }
+
   }
 }
 
 .vizel-table-insert-button {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background-color: v("primary");
   color: v("primary-foreground");
@@ -56,13 +57,14 @@
   }
 
   svg {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
   }
 }
 
 .vizel-table-column-insert {
   transform: translateX(-50%);
+  z-index: 11;
 
   &:hover {
     transform: translateX(-50%) scale(1.1);
@@ -109,8 +111,8 @@
   }
 
   svg {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
   }
 }
 
@@ -175,5 +177,14 @@
     &-label {
       flex: 1;
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vizel-table-insert-button,
+  .vizel-table-row-handle,
+  .vizel-table-column-handle,
+  .vizel-table-menu-item {
+    transition: none;
   }
 }
