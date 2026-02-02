@@ -263,6 +263,82 @@ Bubble menu divider.
 <VizelBubbleMenuDivider />
 ```
 
+### VizelToolbar
+
+Fixed toolbar component.
+
+```vue
+<script setup lang="ts">
+import { VizelToolbar } from '@vizel/vue';
+</script>
+
+<template>
+  <VizelToolbar :editor="editor" class="my-toolbar" />
+</template>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor \| null` | - | Editor instance (falls back to context) |
+| `class` | `string` | - | CSS class name |
+| `showDefaultToolbar` | `boolean` | `true` | Show default toolbar content |
+
+**Slots:**
+
+| Slot | Props | Description |
+|------|-------|-------------|
+| `default` | `{ editor: Editor }` | Custom toolbar content |
+
+### VizelToolbarDefault
+
+Default toolbar content with grouped formatting buttons.
+
+```vue
+<VizelToolbarDefault :editor="editor" :actions="customActions" />
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor` | - | Editor instance (required) |
+| `class` | `string` | - | CSS class name |
+| `actions` | `VizelToolbarAction[]` | `vizelDefaultToolbarActions` | Custom actions |
+
+### VizelToolbarButton
+
+Individual toolbar button.
+
+```vue
+<VizelToolbarButton
+  :is-active="editor.isActive('bold')"
+  title="Bold (Cmd+B)"
+  @click="editor.chain().focus().toggleBold().run()"
+>
+  <VizelIcon name="bold" />
+</VizelToolbarButton>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `isActive` | `boolean` | `false` | Active state |
+| `disabled` | `boolean` | `false` | Disabled state |
+| `title` | `string` | - | Tooltip text |
+| `class` | `string` | - | CSS class name |
+| `action` | `string` | - | Action identifier |
+
+### VizelToolbarDivider
+
+Divider between toolbar button groups.
+
+```vue
+<VizelToolbarDivider />
+```
+
 ### VizelThemeProvider
 
 Provides theme context.
