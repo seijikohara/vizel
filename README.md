@@ -33,6 +33,7 @@
 - **Block Elements** - Headings (H1-H6), lists (bullet, numbered, task), blockquotes, horizontal rules
 - **Slash Commands** - Type `/` to insert blocks
 - **Floating Toolbar** - Inline formatting toolbar on text selection
+- **Fixed Toolbar** - Optional sticky toolbar with formatting buttons
 - **Tables** - Table editing with row/column controls
 - **Code Blocks** - Syntax highlighting with 37+ languages (190+ available)
 - **Images** - Drag & drop, paste, resize support
@@ -106,7 +107,7 @@ import '@vizel/core/components.css';
 
 ## Usage
 
-The `Vizel` component is the recommended way to get started. It wraps the editor content with a floating toolbar out of the box.
+The `Vizel` component is the recommended way to get started. It includes a floating bubble menu on text selection, with an optional fixed toolbar.
 
 ### React
 
@@ -189,11 +190,13 @@ function Editor() {
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `initialContent` | `JSONContent` | - | Initial editor content |
+| `initialMarkdown` | `string` | - | Initial content in Markdown format |
 | `placeholder` | `string` | - | Placeholder text |
 | `editable` | `boolean` | `true` | Whether editor is editable |
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus behavior |
 | `features` | `VizelFeatureOptions` | - | Feature configuration |
 | `class` / `className` | `string` | - | Custom CSS class |
+| `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in bubble menu link editor |
 
@@ -346,29 +349,29 @@ See [_tokens.scss](packages/core/src/styles/_tokens.scss) for all available desi
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Run demos
-npm run dev:react     # React demo (http://localhost:3000)
-npm run dev:vue       # Vue demo (http://localhost:3001)
-npm run dev:svelte    # Svelte demo (http://localhost:3002)
-npm run dev:all       # All demos simultaneously
+pnpm dev:react        # React demo (http://localhost:3000)
+pnpm dev:vue          # Vue demo (http://localhost:3001)
+pnpm dev:svelte       # Svelte demo (http://localhost:3002)
+pnpm dev:all          # All demos simultaneously
 
 # Build all packages
-npm run build
+pnpm build
 
 # Type check
-npm run typecheck
+pnpm typecheck
 
 # Lint
-npm run lint
-npm run check         # Lint + format with auto-fix
+pnpm lint
+pnpm check            # Lint + format check
 
 # Run E2E tests
-npm run test:ct       # All frameworks (parallel)
-npm run test:ct:react # React only
-npm run test:ct:vue   # Vue only
-npm run test:ct:svelte # Svelte only
+pnpm test:ct          # All frameworks (parallel)
+pnpm test:ct:react    # React only
+pnpm test:ct:vue      # Vue only
+pnpm test:ct:svelte   # Svelte only
 ```
 
 ## License

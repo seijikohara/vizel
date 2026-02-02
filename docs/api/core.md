@@ -351,6 +351,51 @@ import { vizelDefaultEmbedProviders } from '@vizel/core';
 
 ---
 
+## Toolbar
+
+### VizelToolbarAction
+
+Toolbar action type definition.
+
+```typescript
+import type { VizelToolbarAction } from '@vizel/core';
+
+interface VizelToolbarAction {
+  id: string;
+  label: string;
+  icon: VizelIconName;
+  group: string;
+  isActive: (editor: Editor) => boolean;
+  isEnabled: (editor: Editor) => boolean;
+  run: (editor: Editor) => void;
+  shortcut?: string;
+}
+```
+
+### vizelDefaultToolbarActions
+
+Default toolbar actions including undo/redo, formatting, headings, lists, and blocks.
+
+```typescript
+import { vizelDefaultToolbarActions } from '@vizel/core';
+// Array of VizelToolbarAction
+```
+
+**Default groups:** `history`, `format`, `heading`, `list`, `block`
+
+### groupVizelToolbarActions
+
+Groups toolbar actions by their `group` property for rendering with dividers.
+
+```typescript
+import { groupVizelToolbarActions } from '@vizel/core';
+
+const groups = groupVizelToolbarActions(actions);
+// VizelToolbarAction[][] - each sub-array is a group
+```
+
+---
+
 ## Importing from Tiptap
 
 Vizel does not re-export Tiptap types and classes. Import them directly from `@tiptap/core`:

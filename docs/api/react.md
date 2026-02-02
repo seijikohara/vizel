@@ -267,6 +267,81 @@ import { VizelBubbleMenuDivider } from '@vizel/react';
 <VizelBubbleMenuDivider />
 ```
 
+### VizelToolbar
+
+Fixed toolbar component.
+
+```tsx
+import { VizelToolbar } from '@vizel/react';
+
+<VizelToolbar editor={editor} className="my-toolbar" />
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor \| null` | - | Editor instance (falls back to context) |
+| `className` | `string` | - | CSS class name |
+| `showDefaultToolbar` | `boolean` | `true` | Show default toolbar content |
+| `children` | `ReactNode` | - | Custom toolbar content |
+
+### VizelToolbarDefault
+
+Default toolbar content with grouped formatting buttons.
+
+```tsx
+import { VizelToolbarDefault } from '@vizel/react';
+
+<VizelToolbarDefault editor={editor} actions={customActions} />
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor` | - | Editor instance (required) |
+| `className` | `string` | - | CSS class name |
+| `actions` | `VizelToolbarAction[]` | `vizelDefaultToolbarActions` | Custom actions |
+
+### VizelToolbarButton
+
+Individual toolbar button.
+
+```tsx
+import { VizelToolbarButton } from '@vizel/react';
+
+<VizelToolbarButton
+  onClick={() => editor.chain().focus().toggleBold().run()}
+  isActive={editor.isActive("bold")}
+  title="Bold (Cmd+B)"
+>
+  <VizelIcon name="bold" />
+</VizelToolbarButton>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `onClick` | `() => void` | - | Click handler |
+| `isActive` | `boolean` | `false` | Active state |
+| `disabled` | `boolean` | `false` | Disabled state |
+| `children` | `ReactNode` | - | Button content |
+| `title` | `string` | - | Tooltip text |
+| `className` | `string` | - | CSS class name |
+| `action` | `string` | - | Action identifier |
+
+### VizelToolbarDivider
+
+Divider between toolbar button groups.
+
+```tsx
+import { VizelToolbarDivider } from '@vizel/react';
+
+<VizelToolbarDivider />
+```
+
 ### VizelThemeProvider
 
 Provides theme context.

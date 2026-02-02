@@ -154,6 +154,28 @@ const editor = useVizelEditor({
 </div>
 ```
 
+## Toolbar
+
+Enable the built-in fixed toolbar for a traditional formatting bar above the editor:
+
+::: code-group
+
+```tsx [React]
+<Vizel showToolbar placeholder="Type '/' for commands..." />
+```
+
+```vue [Vue]
+<Vizel :show-toolbar="true" placeholder="Type '/' for commands..." />
+```
+
+```svelte [Svelte]
+<Vizel showToolbar placeholder="Type '/' for commands..." />
+```
+
+:::
+
+The toolbar includes undo/redo, text formatting, headings, lists, and block actions by default. See the API reference for [VizelToolbar](/api/react#vizeltoolbar) for customization options.
+
 ## Working with Content
 
 ### Initial Content

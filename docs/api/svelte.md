@@ -243,6 +243,77 @@ Bubble menu divider.
 <VizelBubbleMenuDivider />
 ```
 
+### VizelToolbar
+
+Fixed toolbar component.
+
+```svelte
+<script lang="ts">
+  import { VizelToolbar } from '@vizel/svelte';
+</script>
+
+<VizelToolbar editor={editor} class="my-toolbar" />
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor \| null` | - | Editor instance (falls back to context) |
+| `class` | `string` | - | CSS class name |
+| `showDefaultToolbar` | `boolean` | `true` | Show default toolbar content |
+| `children` | `Snippet<[{ editor: Editor }]>` | - | Custom toolbar content |
+
+### VizelToolbarDefault
+
+Default toolbar content with grouped formatting buttons.
+
+```svelte
+<VizelToolbarDefault {editor} actions={customActions} />
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor` | - | Editor instance (required) |
+| `class` | `string` | - | CSS class name |
+| `actions` | `VizelToolbarAction[]` | `vizelDefaultToolbarActions` | Custom actions |
+
+### VizelToolbarButton
+
+Individual toolbar button.
+
+```svelte
+<VizelToolbarButton
+  onclick={() => editor.chain().focus().toggleBold().run()}
+  isActive={editor.isActive("bold")}
+  title="Bold (Cmd+B)"
+>
+  <VizelIcon name="bold" />
+</VizelToolbarButton>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `onclick` | `() => void` | - | Click handler |
+| `isActive` | `boolean` | `false` | Active state |
+| `disabled` | `boolean` | `false` | Disabled state |
+| `children` | `Snippet` | - | Button content |
+| `title` | `string` | - | Tooltip text |
+| `class` | `string` | - | CSS class name |
+| `action` | `string` | - | Action identifier |
+
+### VizelToolbarDivider
+
+Divider between toolbar button groups.
+
+```svelte
+<VizelToolbarDivider />
+```
+
 ### VizelThemeProvider
 
 Provides theme context.
