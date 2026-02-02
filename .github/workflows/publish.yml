@@ -120,6 +120,18 @@ jobs:
       - name: Build packages
         run: pnpm build
 
+      - name: Verify package contents
+        run: |
+          echo "## 📦 Package Contents" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          for pkg in core react vue svelte; do
+            echo "### @vizel/$pkg" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            (cd packages/$pkg && npm pack --dry-run 2>&1) >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          done
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
         with:
