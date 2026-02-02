@@ -16,7 +16,7 @@
   border-radius: 0.25rem;
   background-color: transparent;
   color: v("muted-foreground");
-  opacity: 0;
+  opacity: 0.2;
   pointer-events: none;
   transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
   user-select: none;
@@ -37,6 +37,8 @@
   }
 
   &:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
     outline: 2px solid v("primary");
     outline-offset: 1px;
   }
@@ -65,6 +67,16 @@
       height: 14px;
       flex-shrink: 0;
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vizel-drag-handle {
+    transition: none;
+  }
+
+  .vizel-drop-indicator {
+    transition: none;
   }
 }
 

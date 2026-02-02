@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useVizelState } from "../hooks/useVizelState.ts";
 import { VizelBubbleMenuButton } from "./VizelBubbleMenuButton.tsx";
 import { VizelBubbleMenuColorPicker } from "./VizelBubbleMenuColorPicker.tsx";
+import { VizelBubbleMenuDivider } from "./VizelBubbleMenuDivider.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
 import { VizelLinkEditor } from "./VizelLinkEditor.tsx";
 import { VizelNodeSelector } from "./VizelNodeSelector.tsx";
@@ -47,6 +48,7 @@ export function VizelBubbleMenuDefault({
   return (
     <div className={`vizel-bubble-menu-toolbar ${className ?? ""}`}>
       <VizelNodeSelector editor={editor} />
+      <VizelBubbleMenuDivider />
       <VizelBubbleMenuButton
         action="bold"
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -87,6 +89,7 @@ export function VizelBubbleMenuDefault({
       >
         <VizelIcon name="code" />
       </VizelBubbleMenuButton>
+      <VizelBubbleMenuDivider />
       <VizelBubbleMenuButton
         action="link"
         onClick={() => setShowLinkEditor(true)}
@@ -95,6 +98,7 @@ export function VizelBubbleMenuDefault({
       >
         <VizelIcon name="link" />
       </VizelBubbleMenuButton>
+      <VizelBubbleMenuDivider />
       <VizelBubbleMenuColorPicker editor={editor} type="textColor" />
       <VizelBubbleMenuColorPicker editor={editor} type="highlight" />
     </div>

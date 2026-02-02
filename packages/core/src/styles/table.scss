@@ -15,9 +15,10 @@
   &-cell,
   &-header {
     border: 1px solid v("border");
-    padding: 0.5em 0.75em;
-    min-width: 100px;
+    padding: 0.625em 0.875em;
+    min-width: 120px;
     vertical-align: top;
+    word-break: break-word;
     position: relative;
 
     p {
@@ -34,6 +35,7 @@
     background: v("primary-bg");
     font-weight: 600;
     text-align: left;
+    letter-spacing: 0.01em;
   }
 
   &-wrapper {

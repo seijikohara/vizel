@@ -17,7 +17,8 @@
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     background-color: v("code-block-toolbar-bg");
-    border-bottom: 1px solid v("code-block-border");
+    border-bottom: none;
+    box-shadow: 0 1px 0 v("code-block-border");
     user-select: none;
   }
 
@@ -226,6 +227,22 @@
 .hljs-bullet,
 .hljs-selector-pseudo {
   color: oklch(0.801 0.088 80.173);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vizel-code-block {
+    &-language-input {
+      transition: none;
+    }
+
+    &-line-numbers-toggle {
+      transition: none;
+
+      svg {
+        transition: none;
+      }
+    }
+  }
 }
 
 // Light Theme Override
