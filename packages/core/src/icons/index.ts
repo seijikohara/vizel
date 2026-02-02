@@ -22,6 +22,7 @@ export {
   type VizelNodeTypeIconName,
   type VizelSlashCommandIconName,
   type VizelTableIconName,
+  type VizelToolbarIconName,
   type VizelUIIconName,
   vizelDefaultIconIds,
 } from "./types.ts";

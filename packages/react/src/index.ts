@@ -73,6 +73,15 @@ export {
   // ThemeProvider
   VizelThemeProvider,
   type VizelThemeProviderProps,
+  // Toolbar
+  VizelToolbar,
+  VizelToolbarButton,
+  type VizelToolbarButtonProps,
+  VizelToolbarDefault,
+  type VizelToolbarDefaultProps,
+  VizelToolbarDivider,
+  type VizelToolbarDividerProps,
+  type VizelToolbarProps,
 } from "./components/index.ts";
 
 // Hooks

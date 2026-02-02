@@ -193,7 +193,7 @@ body {
   box-shadow:
     0 4px 6px -1px oklch(0 0 0 / 0.1),
     0 2px 4px -2px oklch(0 0 0 / 0.1);
-  overflow: hidden;
+  overflow: clip;
   border: 1px solid oklch(0.922 0.007 247.896);
 }
 

@@ -1,0 +1,56 @@
+<script lang="ts" module>
+import type { Editor, VizelToolbarAction } from "@vizel/core";
+
+export interface VizelToolbarDefaultProps {
+  /** The editor instance */
+  editor: Editor;
+  /** Custom class name */
+  class?: string;
+  /** Custom toolbar actions (defaults to vizelDefaultToolbarActions) */
+  actions?: VizelToolbarAction[];
+}
+</script>
+
+<script lang="ts">
+import {
+  groupVizelToolbarActions,
+  vizelDefaultToolbarActions,
+} from "@vizel/core";
+import { createVizelState } from "../runes/createVizelState.svelte.ts";
+import VizelIcon from "./VizelIcon.svelte";
+import VizelToolbarButton from "./VizelToolbarButton.svelte";
+import VizelToolbarDivider from "./VizelToolbarDivider.svelte";
+
+let {
+  editor,
+  class: className,
+  actions = vizelDefaultToolbarActions,
+}: VizelToolbarDefaultProps = $props();
+
+// Subscribe to editor state changes to update active/enabled states
+const editorState = createVizelState(() => editor);
+
+const groups = $derived.by(() => {
+  void editorState.current;
+  return groupVizelToolbarActions(actions);
+});
+</script>
+
+<div class="vizel-toolbar-content {className ?? ''}" data-vizel-toolbar>
+  {#each groups as group, groupIndex (group[0]?.group ?? groupIndex)}
+    {#if groupIndex > 0}
+      <VizelToolbarDivider />
+    {/if}
+    {#each group as action (action.id)}
+      <VizelToolbarButton
+        action={action.id}
+        isActive={action.isActive(editor)}
+        disabled={!action.isEnabled(editor)}
+        title={action.shortcut ? `${action.label} (${action.shortcut})` : action.label}
+        onclick={() => action.run(editor)}
+      >
+        <VizelIcon name={action.icon} />
+      </VizelToolbarButton>
+    {/each}
+  {/each}
+</div>

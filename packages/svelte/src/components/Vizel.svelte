@@ -44,6 +44,10 @@ export interface VizelProps {
   features?: VizelFeatureOptions;
   /** Custom class name for the editor container */
   class?: string;
+  /** Whether to show the toolbar (default: false) */
+  showToolbar?: boolean;
+  /** Custom toolbar content */
+  toolbar?: Snippet<[{ editor: Editor }]>;
   /** Whether to show the bubble menu (default: true) */
   showBubbleMenu?: boolean;
   /** Enable embed option in bubble menu link editor (requires Embed extension) */
@@ -75,11 +79,14 @@ import { getVizelMarkdown, setVizelMarkdown } from "@vizel/core";
 import { createVizelEditor } from "../runes/createVizelEditor.svelte.ts";
 import VizelBubbleMenu from "./VizelBubbleMenu.svelte";
 import VizelEditor from "./VizelEditor.svelte";
+import VizelToolbar from "./VizelToolbar.svelte";
 
 // Use $props() without destructuring to avoid state_referenced_locally warnings
 // Props are intentionally captured once at editor creation time
 let {
   class: className,
+  showToolbar = false,
+  toolbar,
   showBubbleMenu = true,
   enableEmbed = false,
   bubbleMenu,
@@ -144,6 +151,15 @@ $effect(() => {
 </script>
 
 <div class="vizel-root {className ?? ''}" data-vizel-root>
+  {#if showToolbar && editor && toolbar}
+    <VizelToolbar {editor}>
+      {#snippet children({ editor: e })}
+        {@render toolbar({ editor: e })}
+      {/snippet}
+    </VizelToolbar>
+  {:else if showToolbar && editor}
+    <VizelToolbar {editor} />
+  {/if}
   <VizelEditor {editor} />
   {#if showBubbleMenu && editor && bubbleMenu}
     <VizelBubbleMenu {editor} {enableEmbed}>

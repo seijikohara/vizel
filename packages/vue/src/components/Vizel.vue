@@ -14,6 +14,7 @@ import { useSlots, watch } from "vue";
 import { useVizelEditor } from "../composables/useVizelEditor.ts";
 import VizelBubbleMenu from "./VizelBubbleMenu.vue";
 import VizelEditor from "./VizelEditor.vue";
+import VizelToolbar from "./VizelToolbar.vue";
 
 /**
  * Exposed ref type for Vizel component.
@@ -52,6 +53,8 @@ export interface VizelProps {
   features?: VizelFeatureOptions;
   /** Custom class name for the editor container */
   class?: string;
+  /** Whether to show the toolbar (default: false) */
+  showToolbar?: boolean;
   /** Whether to show the bubble menu (default: true) */
   showBubbleMenu?: boolean;
   /** Enable embed option in bubble menu link editor (requires Embed extension) */
@@ -61,6 +64,7 @@ export interface VizelProps {
 const props = withDefaults(defineProps<VizelProps>(), {
   editable: true,
   autofocus: false,
+  showToolbar: false,
   showBubbleMenu: true,
   enableEmbed: false,
   transformDiagramsOnImport: true,
@@ -148,6 +152,10 @@ defineExpose<VizelRef & { getEditor: () => Editor | null }>({
 
 <template>
   <div :class="['vizel-root', $props.class]" data-vizel-root>
+    <VizelToolbar v-if="showToolbar && editor && slots['toolbar']" :editor="editor">
+      <slot name="toolbar" :editor="editor" />
+    </VizelToolbar>
+    <VizelToolbar v-else-if="showToolbar && editor" :editor="editor" />
     <VizelEditor v-if="editor" :editor="editor" />
     <VizelBubbleMenu v-if="showBubbleMenu && editor && slots['bubble-menu']" :editor="editor" :enable-embed="enableEmbed ?? false">
       <slot name="bubble-menu" :editor="editor" />

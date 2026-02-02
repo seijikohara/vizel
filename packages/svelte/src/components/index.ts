@@ -118,3 +118,22 @@ export {
   default as VizelThemeProvider,
   type VizelThemeProviderProps,
 } from "./VizelThemeProvider.svelte";
+// ============================================================================
+// Vizel Toolbar components
+// ============================================================================
+export {
+  default as VizelToolbar,
+  type VizelToolbarProps,
+} from "./VizelToolbar.svelte";
+export {
+  default as VizelToolbarButton,
+  type VizelToolbarButtonProps,
+} from "./VizelToolbarButton.svelte";
+export {
+  default as VizelToolbarDefault,
+  type VizelToolbarDefaultProps,
+} from "./VizelToolbarDefault.svelte";
+export {
+  default as VizelToolbarDivider,
+  type VizelToolbarDividerProps,
+} from "./VizelToolbarDivider.svelte";
