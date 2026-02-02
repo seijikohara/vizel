@@ -4,6 +4,7 @@ import { useImperativeHandle } from "react";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
 import { VizelBubbleMenu } from "./VizelBubbleMenu.tsx";
 import { VizelEditor } from "./VizelEditor.tsx";
+import { VizelToolbar } from "./VizelToolbar.tsx";
 
 export interface VizelProps {
   /** Ref to access editor instance */
@@ -35,6 +36,10 @@ export interface VizelProps {
   features?: VizelFeatureOptions;
   /** Custom class name for the editor container */
   className?: string;
+  /** Whether to show the toolbar (default: false) */
+  showToolbar?: boolean;
+  /** Custom toolbar content */
+  toolbarContent?: ReactNode;
   /** Whether to show the bubble menu (default: true) */
   showBubbleMenu?: boolean;
   /** Enable embed option in bubble menu link editor (requires Embed extension) */
@@ -109,6 +114,8 @@ export function Vizel({
   autofocus = false,
   features,
   className,
+  showToolbar = false,
+  toolbarContent,
   showBubbleMenu = true,
   enableEmbed = false,
   bubbleMenuContent,
@@ -147,6 +154,10 @@ export function Vizel({
 
   return (
     <div className={`vizel-root ${className ?? ""}`} data-vizel-root="">
+      {showToolbar && editor && toolbarContent && (
+        <VizelToolbar editor={editor}>{toolbarContent}</VizelToolbar>
+      )}
+      {showToolbar && editor && !toolbarContent && <VizelToolbar editor={editor} />}
       <VizelEditor editor={editor} />
       {showBubbleMenu && editor && bubbleMenuContent && (
         <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed}>

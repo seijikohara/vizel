@@ -87,6 +87,11 @@ export type VizelBubbleMenuIconName =
   | "highlighter";
 
 /**
+ * Icon names used in Toolbar.
+ */
+export type VizelToolbarIconName = "undo" | "redo";
+
+/**
  * Icon names used internally in NodeView rendering (drag handle, table controls).
  * These icons are rendered via the injected VizelIconRenderer from framework packages.
  */
@@ -114,6 +119,7 @@ export type VizelIconName =
   | VizelTableIconName
   | VizelUIIconName
   | VizelBubbleMenuIconName
+  | VizelToolbarIconName
   | VizelInternalIconName;
 
 /**
@@ -190,6 +196,9 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   warning: "lucide:alert-triangle",
   chevronDown: "lucide:chevron-down",
   x: "lucide:x",
+  // Toolbar
+  undo: "lucide:undo-2",
+  redo: "lucide:redo-2",
   // BubbleMenu toolbar
   bold: "lucide:bold",
   italic: "lucide:italic",

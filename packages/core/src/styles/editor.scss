@@ -11,7 +11,7 @@
   border-radius: v("radius-xl");
   box-shadow: v("shadow-md");
   border: 1px solid v("border");
-  overflow: hidden;
+  overflow: clip;
 }
 
 .vizel-editor {

@@ -185,10 +185,10 @@ export {
   type VizelNodeTypeIconName,
   type VizelSlashCommandIconName,
   type VizelTableIconName,
+  type VizelToolbarIconName,
   type VizelUIIconName,
   vizelDefaultIconIds,
 } from "./icons/index.ts";
-
 // =============================================================================
 // Theme
 // =============================================================================
@@ -208,6 +208,14 @@ export {
   type VizelThemeProviderOptions,
   type VizelThemeState,
 } from "./theme.ts";
+// =============================================================================
+// Toolbar
+// =============================================================================
+export {
+  groupVizelToolbarActions,
+  type VizelToolbarAction,
+  vizelDefaultToolbarActions,
+} from "./toolbar/index.ts";
 
 // =============================================================================
 // Types

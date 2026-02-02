@@ -16,6 +16,7 @@ import ThemeToggle from "./ThemeToggle.vue";
 
 // Feature toggles (all enabled by default)
 const features = reactive({
+  toolbar: true,
   theme: true,
   autoSave: true,
   stats: true,
@@ -107,6 +108,10 @@ function handleJsonChange(event: Event) {
         </div>
         <div class="features-toggles">
           <label class="feature-toggle">
+            <input type="checkbox" v-model="features.toolbar" />
+            <span class="feature-toggle-label">Toolbar</span>
+          </label>
+          <label class="feature-toggle">
             <input type="checkbox" v-model="features.theme" />
             <span class="feature-toggle-label">Theme</span>
           </label>
@@ -132,6 +137,7 @@ function handleJsonChange(event: Event) {
               :initial-markdown="initialMarkdown"
               autofocus="end"
               class="editor-content"
+              :show-toolbar="features.toolbar"
               enable-embed
               :features="{
                 markdown: true,

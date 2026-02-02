@@ -18,6 +18,7 @@ type JSONContent = Record<string, unknown>;
 
 // Feature toggles (all enabled by default)
 let features = $state({
+  toolbar: true,
   theme: true,
   autoSave: true,
   stats: true,
@@ -108,6 +109,10 @@ function handleJsonChange(event: Event) {
     </div>
     <div class="features-toggles">
       <label class="feature-toggle">
+        <input type="checkbox" bind:checked={features.toolbar} />
+        <span class="feature-toggle-label">Toolbar</span>
+      </label>
+      <label class="feature-toggle">
         <input type="checkbox" bind:checked={features.theme} />
         <span class="feature-toggle-label">Theme</span>
       </label>
@@ -133,6 +138,7 @@ function handleJsonChange(event: Event) {
           {initialMarkdown}
           autofocus="end"
           class="editor-content"
+          showToolbar={features.toolbar}
           enableEmbed
           features={{
             markdown: true,

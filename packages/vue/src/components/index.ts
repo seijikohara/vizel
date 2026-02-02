@@ -77,3 +77,17 @@ export {
   default as VizelThemeProvider,
   type VizelThemeProviderProps,
 } from "./VizelThemeProvider.vue";
+// VizelToolbar components
+export { default as VizelToolbar, type VizelToolbarProps } from "./VizelToolbar.vue";
+export {
+  default as VizelToolbarButton,
+  type VizelToolbarButtonProps,
+} from "./VizelToolbarButton.vue";
+export {
+  default as VizelToolbarDefault,
+  type VizelToolbarDefaultProps,
+} from "./VizelToolbarDefault.vue";
+export {
+  default as VizelToolbarDivider,
+  type VizelToolbarDividerProps,
+} from "./VizelToolbarDivider.vue";

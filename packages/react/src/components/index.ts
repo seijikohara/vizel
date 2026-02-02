@@ -60,3 +60,14 @@ export {
   VizelThemeProvider,
   type VizelThemeProviderProps,
 } from "./VizelThemeProvider.tsx";
+// VizelToolbar components
+export { VizelToolbar, type VizelToolbarProps } from "./VizelToolbar.tsx";
+export { VizelToolbarButton, type VizelToolbarButtonProps } from "./VizelToolbarButton.tsx";
+export {
+  VizelToolbarDefault,
+  type VizelToolbarDefaultProps,
+} from "./VizelToolbarDefault.tsx";
+export {
+  VizelToolbarDivider,
+  type VizelToolbarDividerProps,
+} from "./VizelToolbarDivider.tsx";

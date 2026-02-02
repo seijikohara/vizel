@@ -1,0 +1,75 @@
+/**
+ * Vizel Toolbar Styles
+ *
+ * Styles for the fixed toolbar that appears above the editor.
+ */
+
+@use "tokens" as *;
+
+.vizel-toolbar {
+  display: flex;
+  position: sticky;
+  top: 0;
+  background: v("background");
+  border-bottom: 1px solid v("border");
+  z-index: v("z-sticky");
+
+  &-content {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem;
+    flex-wrap: wrap;
+  }
+
+  &-divider {
+    width: 1px;
+    height: 1.25rem;
+    background-color: v("border");
+    flex-shrink: 0;
+    margin: 0 0.1875rem;
+    opacity: 0.6;
+  }
+
+  &-button {
+    padding: 0.375rem 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: v("foreground");
+    transition: background-color 0.15s, color 0.15s;
+    border-radius: v("radius-sm");
+    min-width: 2rem;
+    min-height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+      background-color: v("primary-bg");
+      color: v("primary-hover");
+    }
+
+    &:focus-visible {
+      outline: 2px solid v("primary");
+      outline-offset: -2px;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    &.is-active {
+      background-color: v("primary");
+      color: v("background");
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vizel-toolbar-button {
+    transition: none;
+  }
+}

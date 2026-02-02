@@ -44,6 +44,7 @@ function FeatureToggle({ label, checked, onChange }: FeatureToggleProps) {
 }
 
 interface DemoFeatures {
+  toolbar: boolean;
   theme: boolean;
   autoSave: boolean;
   stats: boolean;
@@ -55,6 +56,7 @@ type PanelTab = "markdown" | "json";
 function AppContent() {
   // Feature toggles (all enabled by default)
   const [features, setFeatures] = useState<DemoFeatures>({
+    toolbar: true,
     theme: true,
     autoSave: true,
     stats: true,
@@ -134,6 +136,11 @@ function AppContent() {
         </div>
         <div className="features-toggles">
           <FeatureToggle
+            label="Toolbar"
+            checked={features.toolbar}
+            onChange={(v) => updateFeature("toolbar", v)}
+          />
+          <FeatureToggle
             label="Theme"
             checked={features.theme}
             onChange={(v) => updateFeature("theme", v)}
@@ -163,6 +170,7 @@ function AppContent() {
               initialMarkdown={initialMarkdown}
               autofocus="end"
               className="editor-content"
+              showToolbar={features.toolbar}
               enableEmbed
               features={{
                 markdown: true,
