@@ -20,6 +20,13 @@
   <img src="https://img.shields.io/badge/Svelte-5-FF3E00?logo=svelte&logoColor=white" alt="Svelte">
 </p>
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/@vizel/core"><img src="https://img.shields.io/npm/v/@vizel/core?label=%40vizel%2Fcore&color=blue" alt="npm @vizel/core"></a>
+  <a href="https://www.npmjs.com/package/@vizel/react"><img src="https://img.shields.io/npm/v/@vizel/react?label=%40vizel%2Freact&color=blue" alt="npm @vizel/react"></a>
+  <a href="https://www.npmjs.com/package/@vizel/vue"><img src="https://img.shields.io/npm/v/@vizel/vue?label=%40vizel%2Fvue&color=blue" alt="npm @vizel/vue"></a>
+  <a href="https://www.npmjs.com/package/@vizel/svelte"><img src="https://img.shields.io/npm/v/@vizel/svelte?label=%40vizel%2Fsvelte&color=blue" alt="npm @vizel/svelte"></a>
+</p>
+
 ## Features
 
 - **Text Formatting** - Bold, italic, underline, strikethrough, text color, highlight
