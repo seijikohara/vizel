@@ -47,7 +47,7 @@ refactor/replace-starter-kit
 | `pnpm dev:all` | Run all demos |
 | `pnpm build` | Build all packages |
 | `pnpm lint` | Run Biome linter |
-| `pnpm check` | Run Biome check with auto-fix |
+| `pnpm check` | Run Biome check (lint + format) |
 | `pnpm typecheck` | Run type checking for all packages |
 | `pnpm test:ct` | Run all E2E tests (parallel) |
 | `pnpm test:ct:react` | Run React E2E tests |
@@ -56,7 +56,7 @@ refactor/replace-starter-kit
 
 ### Before Submitting
 
-1. Run `pnpm check` to auto-fix lint and formatting issues
+1. Run `pnpm check` to verify lint and formatting
 2. Run `pnpm typecheck` to verify type safety
 3. Run `pnpm build` to verify all packages build
 4. Run `pnpm test:ct` to verify all E2E tests pass
@@ -68,8 +68,10 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/). 
 ### Format
 
 ```
-<type>(<scope>): <description>
+<type>[(<scope>)]: <description>
 ```
+
+> Scope is optional. Examples: `feat(core): add feature`, `docs: update README`
 
 ### Types
 
@@ -85,6 +87,7 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/). 
 | `build` | Build system changes |
 | `ci` | CI configuration changes |
 | `chore` | Other changes |
+| `revert` | Revert previous commit |
 
 ### Scopes
 
