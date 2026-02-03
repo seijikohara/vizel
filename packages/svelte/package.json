@@ -74,6 +74,6 @@
     "@tiptap/extension-strike": "^3.18.0",
     "@tiptap/extension-text-style": "^3.18.0",
     "@tiptap/extension-underline": "^3.18.0",
-    "svelte-check": "^4.3.5"
+    "svelte-check": "^4.3.6"
   }
 }
