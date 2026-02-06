@@ -100,22 +100,24 @@ export function useVizelMarkdown(
   // Watch for editor availability
   watch(
     getEditor,
-    (editor) => {
-      if (!editor || initialSet) return;
+    (editor, _oldEditor, onCleanup) => {
+      if (!editor) return;
 
       const h = initHandlers();
 
-      if (initialValue !== undefined) {
-        h.setMarkdown(editor, initialValue);
-        markdown.value = initialValue;
-      } else {
-        // Get initial markdown from editor
-        markdown.value = getVizelMarkdown(editor);
+      // Initial value setup (only once)
+      if (!initialSet) {
+        if (initialValue !== undefined) {
+          h.setMarkdown(editor, initialValue);
+          markdown.value = initialValue;
+        } else {
+          // Get initial markdown from editor
+          markdown.value = getVizelMarkdown(editor);
+        }
+        initialSet = true;
       }
 
-      initialSet = true;
-
-      // Subscribe to editor updates
+      // Subscribe to editor updates (every time editor changes)
       const handleUpdate = () => {
         h.handleUpdate(editor);
         pendingState.value = h.isPending();
@@ -133,6 +135,11 @@ export function useVizelMarkdown(
       };
 
       editor.on("update", handleUpdate);
+
+      // Cleanup when watch re-runs or component unmounts
+      onCleanup(() => {
+        editor.off("update", handleUpdate);
+      });
     },
     { immediate: true }
   );
