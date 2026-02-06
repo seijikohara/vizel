@@ -14,6 +14,7 @@ import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
 import type { VizelImageUploadPluginOptions } from "./plugins/image-upload.ts";
+import type { VizelError } from "./utils/errorHandling.ts";
 
 /**
  * Slash command feature options
@@ -112,6 +113,25 @@ export interface VizelEditorOptions {
   onFocus?: (props: { editor: Editor }) => void;
   /** Callback when editor loses focus */
   onBlur?: (props: { editor: Editor }) => void;
+  /**
+   * Callback when an error occurs during editor operations.
+   * Provides structured error information for logging or user feedback.
+   *
+   * Note: After this callback is invoked, the error is re-thrown to preserve
+   * existing error handling behavior. This callback is primarily for logging,
+   * analytics, or showing user notifications.
+   *
+   * @example
+   * ```typescript
+   * const editor = useVizelEditor({
+   *   onError: (error) => {
+   *     console.error(`[${error.code}] ${error.message}`);
+   *     // Optionally show user notification
+   *   },
+   * });
+   * ```
+   */
+  onError?: (error: VizelError) => void;
 }
 
 /**

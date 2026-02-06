@@ -242,6 +242,8 @@ export {
   convertVizelCodeBlocksToDiagrams,
   // Editor factory
   createVizelEditorInstance,
+  // Error handling
+  createVizelError,
   // Markdown utilities
   createVizelMarkdownSyncHandlers,
   createVizelPortalElement,
@@ -254,6 +256,7 @@ export {
   handleVizelSuggestionEscape,
   hasVizelPortalContainer,
   initializeVizelMarkdownContent,
+  isVizelError,
   // Color utilities
   isVizelValidHexColor,
   mountToVizelPortal,
@@ -275,6 +278,8 @@ export {
   type VizelContentNode,
   type VizelCreateUploadEventHandlerOptions,
   type VizelDOMRectGetter,
+  VizelError,
+  type VizelErrorCode,
   type VizelMarkdownSyncHandlers,
   type VizelMountPortalOptions,
   type VizelPortalLayer,
@@ -282,4 +287,6 @@ export {
   type VizelSuggestionContainer,
   type VizelTextSegment,
   vizelDefaultEditorProps,
+  type WrapAsVizelErrorOptions,
+  wrapAsVizelError,
 } from "./utils/index.ts";
