@@ -1,0 +1,65 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="logo-gradient" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="text-gradient" x1="400" y1="280" x2="800" y2="380" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="200" fill="#6366F1" opacity="0.05"/>
+  <circle cx="1100" cy="530" r="250" fill="#A855F7" opacity="0.05"/>
+
+  <!-- Grid pattern -->
+  <g opacity="0.03">
+    <line x1="0" y1="157.5" x2="1200" y2="157.5" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="315" x2="1200" y2="315" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="472.5" x2="1200" y2="472.5" stroke="white" stroke-width="1"/>
+    <line x1="300" y1="0" x2="300" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="900" y1="0" x2="900" y2="630" stroke="white" stroke-width="1"/>
+  </g>
+
+  <!-- Logo -->
+  <g transform="translate(200, 215)">
+    <circle cx="100" cy="100" r="70" stroke="#475569" stroke-width="2" stroke-dasharray="8 8"/>
+    <path d="M70 80L100 140L130 80" stroke="url(#logo-gradient)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="100" cy="30" r="8" fill="#6366F1"/>
+    <circle cx="170" cy="100" r="6" fill="#A855F7" opacity="0.6"/>
+  </g>
+
+  <!-- Title -->
+  <text x="420" y="290" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="96" font-weight="700" fill="url(#text-gradient)">Vizel</text>
+
+  <!-- Tagline -->
+  <text x="420" y="360" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="32" fill="#94A3B8">Block-based Visual Editor for Markdown</text>
+
+  <!-- Framework badges -->
+  <g transform="translate(420, 400)">
+    <!-- React -->
+    <rect x="0" y="0" width="100" height="40" rx="8" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+    <text x="50" y="26" font-family="system-ui, sans-serif" font-size="16" fill="#61DAFB" text-anchor="middle">React</text>
+
+    <!-- Vue -->
+    <rect x="120" y="0" width="100" height="40" rx="8" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+    <text x="170" y="26" font-family="system-ui, sans-serif" font-size="16" fill="#42B883" text-anchor="middle">Vue</text>
+
+    <!-- Svelte -->
+    <rect x="240" y="0" width="100" height="40" rx="8" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+    <text x="290" y="26" font-family="system-ui, sans-serif" font-size="16" fill="#FF3E00" text-anchor="middle">Svelte</text>
+  </g>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="620" width="1200" height="10" fill="url(#logo-gradient)"/>
+</svg>
