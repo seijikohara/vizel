@@ -3,6 +3,7 @@ import {
   type Editor,
   registerVizelUploadEventHandler,
   type VizelCreateEditorOptions,
+  wrapAsVizelError,
 } from "@vizel/core";
 import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.ts";
 
@@ -60,26 +61,35 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
     let cleanupHandler: (() => void) | null = null;
 
     void (async () => {
-      const result = await createVizelEditorInstance({
-        ...editorOptions,
-        ...(features !== undefined && { features }),
-        extensions: additionalExtensions,
-        createSlashMenuRenderer: createVizelSlashMenuRenderer,
-      });
+      try {
+        const result = await createVizelEditorInstance({
+          ...editorOptions,
+          ...(features !== undefined && { features }),
+          extensions: additionalExtensions,
+          createSlashMenuRenderer: createVizelSlashMenuRenderer,
+        });
 
-      if (!isMounted) {
-        result.editor.destroy();
-        return;
+        if (!isMounted) {
+          result.editor.destroy();
+          return;
+        }
+
+        instance = result.editor;
+        editor = instance;
+
+        // Handle vizel:upload-image custom event from slash command
+        cleanupHandler = registerVizelUploadEventHandler({
+          getEditor: () => editor,
+          getImageOptions: () => imageOptions,
+        });
+      } catch (error) {
+        const vizelError = wrapAsVizelError(error, {
+          context: "Editor initialization failed",
+          code: "EDITOR_INIT_FAILED",
+        });
+        editorOptions.onError?.(vizelError);
+        throw vizelError;
       }
-
-      instance = result.editor;
-      editor = instance;
-
-      // Handle vizel:upload-image custom event from slash command
-      cleanupHandler = registerVizelUploadEventHandler({
-        getEditor: () => editor,
-        getImageOptions: () => imageOptions,
-      });
     })();
 
     return () => {

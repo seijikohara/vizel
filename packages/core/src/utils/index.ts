@@ -21,6 +21,15 @@ export {
   type VizelResolveFeaturesOptions,
   vizelDefaultEditorProps,
 } from "./editorHelpers.ts";
+// Error handling utilities
+export {
+  createVizelError,
+  isVizelError,
+  VizelError,
+  type VizelErrorCode,
+  type WrapAsVizelErrorOptions,
+  wrapAsVizelError,
+} from "./errorHandling.ts";
 // Lazy import utility
 export { createLazyLoader } from "./lazy-import.ts";
 // Markdown utilities

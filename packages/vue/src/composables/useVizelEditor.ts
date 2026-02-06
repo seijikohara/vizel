@@ -3,6 +3,7 @@ import {
   type Editor,
   registerVizelUploadEventHandler,
   type VizelCreateEditorOptions,
+  wrapAsVizelError,
 } from "@vizel/core";
 import type { ShallowRef } from "vue";
 import { onBeforeUnmount, onMounted, shallowRef } from "vue";
@@ -57,19 +58,28 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
   let cleanupHandler: (() => void) | null = null;
 
   onMounted(async () => {
-    const result = await createVizelEditorInstance({
-      ...editorOptions,
-      ...(features !== undefined && { features }),
-      extensions: additionalExtensions,
-      createSlashMenuRenderer: createVizelSlashMenuRenderer,
-    });
+    try {
+      const result = await createVizelEditorInstance({
+        ...editorOptions,
+        ...(features !== undefined && { features }),
+        extensions: additionalExtensions,
+        createSlashMenuRenderer: createVizelSlashMenuRenderer,
+      });
 
-    editor.value = result.editor;
+      editor.value = result.editor;
 
-    cleanupHandler = registerVizelUploadEventHandler({
-      getEditor: () => editor.value,
-      getImageOptions: () => imageOptions,
-    });
+      cleanupHandler = registerVizelUploadEventHandler({
+        getEditor: () => editor.value,
+        getImageOptions: () => imageOptions,
+      });
+    } catch (error) {
+      const vizelError = wrapAsVizelError(error, {
+        context: "Editor initialization failed",
+        code: "EDITOR_INIT_FAILED",
+      });
+      editorOptions.onError?.(vizelError);
+      throw vizelError;
+    }
   });
 
   onBeforeUnmount(() => {

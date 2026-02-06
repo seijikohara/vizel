@@ -3,6 +3,7 @@ import {
   type Editor,
   registerVizelUploadEventHandler,
   type VizelCreateEditorOptions,
+  wrapAsVizelError,
 } from "@vizel/core";
 import { useEffect, useRef, useState } from "react";
 import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.ts";
@@ -60,20 +61,29 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
     let editorInstance: Editor | null = null;
 
     void (async () => {
-      const result = await createVizelEditorInstance({
-        ...opts.editorOptions,
-        ...(opts.features !== undefined && { features: opts.features }),
-        extensions: opts.additionalExtensions,
-        createSlashMenuRenderer: createVizelSlashMenuRenderer,
-      });
+      try {
+        const result = await createVizelEditorInstance({
+          ...opts.editorOptions,
+          ...(opts.features !== undefined && { features: opts.features }),
+          extensions: opts.additionalExtensions,
+          createSlashMenuRenderer: createVizelSlashMenuRenderer,
+        });
 
-      if (!isMounted) {
-        result.editor.destroy();
-        return;
+        if (!isMounted) {
+          result.editor.destroy();
+          return;
+        }
+
+        editorInstance = result.editor;
+        setEditor(result.editor);
+      } catch (error) {
+        const vizelError = wrapAsVizelError(error, {
+          context: "Editor initialization failed",
+          code: "EDITOR_INIT_FAILED",
+        });
+        opts.editorOptions.onError?.(vizelError);
+        throw vizelError;
       }
-
-      editorInstance = result.editor;
-      setEditor(result.editor);
     })();
 
     return () => {
