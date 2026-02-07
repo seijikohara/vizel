@@ -29,6 +29,123 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^6.2.4
         version: 6.2.4(svelte@5.49.0)(vite@7.3.1(@types/node@25.2.0)(sass@1.97.3))
+      '@tiptap/core':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/pm@3.18.0)
+      '@tiptap/extension-blockquote':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-bold':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-bubble-menu':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)
+      '@tiptap/extension-bullet-list':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extension-list@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-character-count':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extensions@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-code':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-code-block':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)
+      '@tiptap/extension-code-block-lowlight':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-code-block@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)(highlight.js@11.11.1)(lowlight@3.3.0)
+      '@tiptap/extension-color':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extension-text-style@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))
+      '@tiptap/extension-details':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-text-style@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))(@tiptap/pm@3.18.0)
+      '@tiptap/extension-document':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-drag-handle':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-collaboration@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)(@tiptap/y-tiptap@3.0.1(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.5)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))(yjs@13.6.29))(@tiptap/extension-node-range@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)(@tiptap/y-tiptap@3.0.1(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.5)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))
+      '@tiptap/extension-dropcursor':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extensions@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-file-handler':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-text-style@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))(@tiptap/pm@3.18.0)
+      '@tiptap/extension-gapcursor':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extensions@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-hard-break':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-heading':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-highlight':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-history':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extensions@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-horizontal-rule':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)
+      '@tiptap/extension-image':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-italic':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-link':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)
+      '@tiptap/extension-list-item':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extension-list@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-list-keymap':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extension-list@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-ordered-list':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extension-list@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-paragraph':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-placeholder':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extensions@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-strike':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-table':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)
+      '@tiptap/extension-task-item':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extension-list@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-task-list':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/extension-list@3.16.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))
+      '@tiptap/extension-text':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-text-style':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-underline':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/markdown':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)
+      '@tiptap/pm':
+        specifier: ^3.18.0
+        version: 3.18.0
+      '@tiptap/suggestion':
+        specifier: ^3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)
       '@types/node':
         specifier: ^25.2.0
         version: 25.2.0
@@ -62,6 +179,9 @@ importers:
       debug:
         specifier: ^4.4.3
         version: 4.4.3
+      fuse.js:
+        specifier: ^7.1.0
+        version: 7.1.0
       lefthook:
         specifier: ^2.0.16
         version: 2.0.16
