@@ -42,6 +42,7 @@ import {
 import { createVizelTableExtensions } from "./table.ts";
 import { createVizelTaskListExtensions } from "./task-list.ts";
 import { createVizelTextColorExtensions } from "./text-color.ts";
+import { createVizelWikiLinkExtension } from "./wiki-link.ts";
 
 export interface VizelExtensionsOptions {
   /** Placeholder text when editor is empty */
@@ -262,6 +263,16 @@ function addDiagramExtension(extensions: Extensions, features: VizelFeatureOptio
 }
 
 /**
+ * Add Wiki Link extension if enabled (disabled by default)
+ */
+function addWikiLinkExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (!features.wikiLink) return;
+
+  const wikiLinkOptions = typeof features.wikiLink === "object" ? features.wikiLink : {};
+  extensions.push(createVizelWikiLinkExtension(wikiLinkOptions));
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * All features are enabled by default. Set any feature to `false` to disable it.
  *
@@ -347,6 +358,7 @@ export async function createVizelExtensions(
   addDetailsExtension(extensions, features);
   addEmbedExtension(extensions, features);
   addDiagramExtension(extensions, features);
+  addWikiLinkExtension(extensions, features);
 
   // Add code block extension (async - lowlight is loaded dynamically)
   await addCodeBlockExtension(extensions, features);

@@ -70,6 +70,7 @@ export {
   // Task list
   createVizelTaskListExtensions,
   createVizelTextColorExtensions,
+  createVizelWikiLinkExtension,
   detectVizelEmbedProvider,
   filterVizelFilesByMimeType,
   // Slash command
@@ -162,6 +163,9 @@ export {
   type VizelTaskListOptions,
   type VizelTextColorOptions,
   type VizelUploadImageFn,
+  VizelWikiLink,
+  type VizelWikiLinkOptions,
+  type VizelWikiLinkSuggestion,
   validateVizelImageFile,
   vizelDefaultBase64Upload,
   vizelDefaultEmbedProviders,
@@ -170,6 +174,7 @@ export {
   vizelDefaultSlashCommands,
   vizelEmbedPastePluginKey,
   vizelFindReplacePluginKey,
+  vizelWikiLinkPluginKey,
 } from "./extensions/index.ts";
 // =============================================================================
 // Icons

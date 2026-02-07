@@ -181,7 +181,6 @@ export {
   type VizelTaskListExtensionsOptions,
   type VizelTaskListOptions,
 } from "./task-list.ts";
-
 // Text color
 export {
   addVizelRecentColor,
@@ -192,3 +191,11 @@ export {
   type VizelColorDefinition,
   type VizelTextColorOptions,
 } from "./text-color.ts";
+// Wiki link
+export {
+  createVizelWikiLinkExtension,
+  VizelWikiLink,
+  type VizelWikiLinkOptions,
+  type VizelWikiLinkSuggestion,
+  vizelWikiLinkPluginKey,
+} from "./wiki-link.ts";

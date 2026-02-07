@@ -1,0 +1,38 @@
+/**
+ * Vizel Wiki Link Styles
+ */
+
+@use "tokens" as *;
+
+.vizel-wiki-link {
+  color: v("primary");
+  text-decoration: none;
+  border-bottom: 1px dashed v("primary");
+  cursor: pointer;
+  padding: 0 0.125rem;
+  border-radius: v("radius-sm");
+  transition: background-color v("transition-fast") ease,
+    color v("transition-fast") ease;
+
+  &:hover {
+    background-color: v("primary-bg");
+    color: v("primary-hover");
+  }
+
+  // Existing page - solid underline
+  &--existing {
+    border-bottom-style: solid;
+  }
+
+  // Non-existing page - dashed underline with muted color
+  &--new {
+    color: v("muted-foreground");
+    border-bottom-color: v("muted-foreground");
+    border-bottom-style: dashed;
+
+    &:hover {
+      background-color: v("hover-bg");
+      color: v("foreground");
+    }
+  }
+}

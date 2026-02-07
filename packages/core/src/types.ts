@@ -13,6 +13,7 @@ import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
+import type { VizelWikiLinkOptions } from "./extensions/wiki-link.ts";
 import type { VizelImageUploadPluginOptions } from "./plugins/image-upload.ts";
 import type { VizelError } from "./utils/errorHandling.ts";
 
@@ -68,6 +69,8 @@ export interface VizelFeatureOptions {
   details?: VizelDetailsOptions | boolean;
   /** Diagram support (Mermaid, GraphViz) */
   diagram?: VizelDiagramOptions | boolean;
+  /** Wiki links ([[page-name]], [[page|display text]]) for knowledge base use cases */
+  wikiLink?: VizelWikiLinkOptions | boolean;
 }
 
 /**
