@@ -1,0 +1,12 @@
+{
+  "include": [
+    "packages/*/src/**/*.ts",
+    "packages/*/src/**/*.tsx",
+    "packages/*/src/**/*.vue",
+    "packages/*/src/**/*.svelte"
+  ],
+  "exclude": ["**/*.spec.ts", "**/*.spec.tsx", "**/*.test.ts", "**/node_modules/**"],
+  "reporter": ["text", "html", "lcov"],
+  "all": true,
+  "checkCoverage": false
+}
