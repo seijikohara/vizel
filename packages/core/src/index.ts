@@ -254,8 +254,13 @@ export {
   getVizelMarkdown,
   getVizelPortalContainer,
   handleVizelSuggestionEscape,
+  // Type guard utilities
+  hasFunction,
   hasVizelPortalContainer,
   initializeVizelMarkdownContent,
+  isOptionalString,
+  isRecord,
+  isString,
   isVizelError,
   // Color utilities
   isVizelValidHexColor,

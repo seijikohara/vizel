@@ -167,15 +167,13 @@ function hasVizelCharacterCountStorage(
 ): storage is { characterCount: VizelCharacterCountStorage } {
   if (typeof storage !== "object" || storage === null) return false;
   if (!("characterCount" in storage)) return false;
-  const cc = (storage as { characterCount: unknown }).characterCount;
-  return (
-    typeof cc === "object" &&
-    cc !== null &&
-    "characters" in cc &&
-    typeof (cc as { characters: unknown }).characters === "function" &&
-    "words" in cc &&
-    typeof (cc as { words: unknown }).words === "function"
-  );
+
+  const record = storage as Record<string, unknown>;
+  const cc = record.characterCount;
+  if (typeof cc !== "object" || cc === null) return false;
+
+  const ccRecord = cc as Record<string, unknown>;
+  return typeof ccRecord.characters === "function" && typeof ccRecord.words === "function";
 }
 
 /**
@@ -253,7 +251,8 @@ export function transformVizelDiagramCodeBlocks(content: VizelContentNode): Vize
   if (!content) return content;
 
   // Transform codeBlock with diagram language to diagram node
-  const language = content.attrs?.language as string | undefined;
+  const languageAttr = content.attrs?.language;
+  const language = typeof languageAttr === "string" ? languageAttr : undefined;
   if (content.type === "codeBlock" && language && language in DIAGRAM_LANGUAGES) {
     // Extract text content from the code block
     const code =
@@ -309,7 +308,8 @@ export function convertVizelCodeBlocksToDiagrams(editor: Editor): void {
 
   editor.state.doc.descendants((node, pos) => {
     if (node.type.name === "codeBlock") {
-      const language = node.attrs.language as string | undefined;
+      const languageAttr = node.attrs.language;
+      const language = typeof languageAttr === "string" ? languageAttr : undefined;
       const diagramType = language ? DIAGRAM_LANGUAGES[language] : undefined;
       if (diagramType) {
         replacements.push({

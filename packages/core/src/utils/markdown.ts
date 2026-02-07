@@ -29,24 +29,22 @@ interface EditorWithMarkdownStorage {
  * Type guard: check if the editor has markdown export (getMarkdown method).
  */
 function hasMarkdownExport(editor: Editor): editor is Editor & EditorWithMarkdownExport {
-  return (
-    "getMarkdown" in editor &&
-    typeof (editor as EditorWithMarkdownExport).getMarkdown === "function"
-  );
+  const editorRecord = editor as unknown as Record<string, unknown>;
+  return "getMarkdown" in editor && typeof editorRecord.getMarkdown === "function";
 }
 
 /**
  * Type guard: check if the editor has markdown storage with parse capability.
  */
 function hasMarkdownStorage(editor: Editor): editor is Editor & EditorWithMarkdownStorage {
+  const editorRecord = editor as unknown as Record<string, unknown>;
   if (!("markdown" in editor)) return false;
-  const storage = (editor as Editor & { markdown: unknown }).markdown;
-  return (
-    typeof storage === "object" &&
-    storage !== null &&
-    "parse" in storage &&
-    typeof (storage as EditorWithMarkdownStorage["markdown"]).parse === "function"
-  );
+
+  const storage = editorRecord.markdown;
+  if (typeof storage !== "object" || storage === null) return false;
+
+  const storageRecord = storage as Record<string, unknown>;
+  return "parse" in storage && typeof storageRecord.parse === "function";
 }
 
 /**

@@ -42,6 +42,18 @@ const loadGraphvizModule = createLazyLoader("@hpcc-js/wasm-graphviz", async () =
 export type VizelDiagramType = "mermaid" | "graphviz";
 
 /**
+ * Valid diagram type values for type guard.
+ */
+const VALID_DIAGRAM_TYPES: readonly VizelDiagramType[] = ["mermaid", "graphviz"];
+
+/**
+ * Type guard to check if a value is a valid VizelDiagramType.
+ */
+function isVizelDiagramType(value: unknown): value is VizelDiagramType {
+  return typeof value === "string" && VALID_DIAGRAM_TYPES.includes(value as VizelDiagramType);
+}
+
+/**
  * GraphViz layout engine options
  */
 export type GraphvizEngine = "dot" | "neato" | "fdp" | "sfdp" | "twopi" | "circo";
@@ -325,8 +337,10 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
       },
       type: {
         default: "mermaid",
-        parseHTML: (element) =>
-          (element.getAttribute("data-diagram-type") as VizelDiagramType) || "mermaid",
+        parseHTML: (element) => {
+          const typeAttr = element.getAttribute("data-diagram-type");
+          return isVizelDiagramType(typeAttr) ? typeAttr : "mermaid";
+        },
         renderHTML: (attributes) => ({
           "data-diagram-type": attributes.type,
         }),
@@ -621,7 +635,7 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
       type: "diagram",
       attrs: {
         code: token.code || "",
-        type: (token.diagramType as VizelDiagramType) || "mermaid",
+        type: isVizelDiagramType(token.diagramType) ? token.diagramType : "mermaid",
       },
     };
   },
