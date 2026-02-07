@@ -22,6 +22,7 @@ import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
 import { createVizelCharacterCountExtension } from "./character-count.ts";
 import type { VizelCodeBlockOptions } from "./code-block-lowlight.ts";
+import { createVizelCommentExtension } from "./comment.ts";
 import { createVizelDetailsExtensions } from "./details.ts";
 import { createVizelDiagramExtension } from "./diagram.ts";
 import { createVizelDragHandleExtensions } from "./drag-handle.ts";
@@ -273,6 +274,16 @@ function addWikiLinkExtension(extensions: Extensions, features: VizelFeatureOpti
 }
 
 /**
+ * Add Comment extension if enabled (disabled by default)
+ */
+function addCommentExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (!features.comment) return;
+
+  const commentOptions = typeof features.comment === "object" ? features.comment : {};
+  extensions.push(createVizelCommentExtension(commentOptions));
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * All features are enabled by default. Set any feature to `false` to disable it.
  *
@@ -359,6 +370,7 @@ export async function createVizelExtensions(
   addEmbedExtension(extensions, features);
   addDiagramExtension(extensions, features);
   addWikiLinkExtension(extensions, features);
+  addCommentExtension(extensions, features);
 
   // Add code block extension (async - lowlight is loaded dynamically)
   await addCodeBlockExtension(extensions, features);

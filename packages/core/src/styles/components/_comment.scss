@@ -1,0 +1,47 @@
+// Comment annotation styles
+// Highlight styles for commented text
+
+.vizel-comment-marker {
+  background-color: var(--vizel-comment-bg, rgba(255, 212, 100, 0.3));
+  border-bottom: 2px solid var(--vizel-comment-border, rgba(255, 180, 50, 0.6));
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--vizel-comment-hover-bg, rgba(255, 212, 100, 0.5));
+  }
+
+  [data-vizel-theme="dark"] & {
+    background-color: var(--vizel-comment-bg, rgba(255, 212, 100, 0.15));
+    border-bottom-color: var(--vizel-comment-border, rgba(255, 180, 50, 0.4));
+
+    &:hover {
+      background-color: var(--vizel-comment-hover-bg, rgba(255, 212, 100, 0.25));
+    }
+  }
+}
+
+// Active comment highlight (decoration overlay)
+.vizel-comment-marker--active {
+  background-color: var(--vizel-comment-active-bg, rgba(255, 180, 50, 0.5));
+  border-bottom: 2px solid var(--vizel-comment-active-border, rgba(255, 150, 0, 0.8));
+  outline: 1px solid var(--vizel-comment-active-outline, rgba(255, 150, 0, 0.4));
+  outline-offset: -1px;
+
+  [data-vizel-theme="dark"] & {
+    background-color: var(--vizel-comment-active-bg, rgba(255, 180, 50, 0.3));
+    border-bottom-color: var(--vizel-comment-active-border, rgba(255, 150, 0, 0.6));
+    outline-color: var(--vizel-comment-active-outline, rgba(255, 150, 0, 0.3));
+  }
+}
+
+// Resolved comment (dimmed)
+.vizel-comment-marker[data-vizel-comment-resolved] {
+  background-color: var(--vizel-comment-resolved-bg, rgba(200, 200, 200, 0.2));
+  border-bottom-color: var(--vizel-comment-resolved-border, rgba(160, 160, 160, 0.4));
+
+  [data-vizel-theme="dark"] & {
+    background-color: var(--vizel-comment-resolved-bg, rgba(200, 200, 200, 0.1));
+    border-bottom-color: var(--vizel-comment-resolved-border, rgba(160, 160, 160, 0.2));
+  }
+}

@@ -2,6 +2,7 @@ import type { Editor, Extensions, JSONContent } from "@tiptap/core";
 import type { SuggestionOptions } from "@tiptap/suggestion";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelCodeBlockOptions } from "./extensions/code-block-lowlight.ts";
+import type { VizelCommentMarkOptions } from "./extensions/comment.ts";
 import type { VizelDetailsOptions } from "./extensions/details.ts";
 import type { VizelDiagramOptions } from "./extensions/diagram.ts";
 import type { VizelDragHandleOptions } from "./extensions/drag-handle.ts";
@@ -71,6 +72,8 @@ export interface VizelFeatureOptions {
   diagram?: VizelDiagramOptions | boolean;
   /** Wiki links ([[page-name]], [[page|display text]]) for knowledge base use cases */
   wikiLink?: VizelWikiLinkOptions | boolean;
+  /** Comment/annotation marks for collaborative review workflows */
+  comment?: VizelCommentMarkOptions | boolean;
 }
 
 /**

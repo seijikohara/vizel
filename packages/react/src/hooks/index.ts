@@ -5,6 +5,7 @@ export {
   type VizelSlashMenuRendererOptions,
 } from "./createVizelSlashMenuRenderer.ts";
 export { type UseVizelAutoSaveResult, useVizelAutoSave } from "./useVizelAutoSave.ts";
+export { type UseVizelCommentResult, useVizelComment } from "./useVizelComment.ts";
 export { type UseVizelEditorOptions, useVizelEditor } from "./useVizelEditor.ts";
 export { useVizelEditorState } from "./useVizelEditorState.ts";
 export {
