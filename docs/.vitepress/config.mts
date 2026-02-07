@@ -136,6 +136,8 @@ export default withMermaid({
             { text: "Features", link: "/guide/features" },
             { text: "Theming", link: "/guide/theming" },
             { text: "Auto-Save", link: "/guide/auto-save" },
+            { text: "Performance", link: "/guide/performance" },
+            { text: "Accessibility", link: "/guide/accessibility" },
             { text: "Troubleshooting", link: "/guide/troubleshooting" },
           ],
         },
