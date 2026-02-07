@@ -25,6 +25,21 @@ export {
   type VizelSaveStatus,
   type VizelStorageBackend,
 } from "./auto-save.ts";
+
+// =============================================================================
+// Comments
+// =============================================================================
+export {
+  createVizelCommentHandlers,
+  getVizelCommentStorageBackend,
+  VIZEL_DEFAULT_COMMENT_OPTIONS,
+  type VizelComment,
+  type VizelCommentOptions,
+  type VizelCommentReply,
+  type VizelCommentState,
+  type VizelCommentStorage,
+} from "./comment.ts";
+
 // =============================================================================
 // Extensions
 // =============================================================================
@@ -35,6 +50,8 @@ export {
   createVizelCharacterCountExtension,
   // Code block with syntax highlighting
   createVizelCodeBlockExtension,
+  // Comment
+  createVizelCommentExtension,
   // Embed (oEmbed, OGP)
   createVizelDefaultFetchEmbedData,
   // Details (collapsible content)
@@ -80,6 +97,7 @@ export {
   getAllVizelLanguageIds,
   // Node types
   getVizelActiveNodeType,
+  getVizelCommentPluginState,
   getVizelFindReplaceState,
   getVizelImageUploadPluginKey,
   getVizelRecentColors,
@@ -99,6 +117,9 @@ export {
   type VizelCodeBlockLanguage,
   type VizelCodeBlockOptions,
   type VizelColorDefinition,
+  VizelCommentMark,
+  type VizelCommentMarkOptions,
+  type VizelCommentPluginState,
   type VizelDetailsContentOptions,
   type VizelDetailsNodeOptions,
   type VizelDetailsOptions,
@@ -166,6 +187,7 @@ export {
   type VizelWikiLinkOptions,
   type VizelWikiLinkSuggestion,
   validateVizelImageFile,
+  vizelCommentPluginKey,
   vizelDefaultBase64Upload,
   vizelDefaultEmbedProviders,
   vizelDefaultGroupOrder,

@@ -1,13 +1,11 @@
 // Base extensions
 export { createVizelExtensions, type VizelExtensionsOptions } from "./base.ts";
-
 // Character count
 export {
   createVizelCharacterCountExtension,
   type VizelCharacterCountOptions,
   type VizelCharacterCountStorage,
 } from "./character-count.ts";
-
 // Code block with syntax highlighting
 export {
   createVizelCodeBlockExtension,
@@ -17,6 +15,15 @@ export {
   type VizelCodeBlockLanguage,
   type VizelCodeBlockOptions,
 } from "./code-block-lowlight.ts";
+// Comment
+export {
+  createVizelCommentExtension,
+  getVizelCommentPluginState,
+  VizelCommentMark,
+  type VizelCommentMarkOptions,
+  type VizelCommentPluginState,
+  vizelCommentPluginKey,
+} from "./comment.ts";
 
 // Details (collapsible content)
 export {

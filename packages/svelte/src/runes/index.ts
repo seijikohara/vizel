@@ -3,6 +3,10 @@ export {
   createVizelAutoSave,
 } from "./createVizelAutoSave.svelte.ts";
 export {
+  type CreateVizelCommentResult,
+  createVizelComment,
+} from "./createVizelComment.svelte.ts";
+export {
   type CreateVizelEditorOptions,
   createVizelEditor,
 } from "./createVizelEditor.svelte.ts";
