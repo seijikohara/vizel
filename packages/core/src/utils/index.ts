@@ -65,3 +65,5 @@ export {
 } from "./suggestionContainer.ts";
 // Text highlight utilities
 export { splitVizelTextByMatches, type VizelTextSegment } from "./textHighlight.ts";
+// Type guard utilities
+export { hasFunction, isOptionalString, isRecord, isString } from "./typeGuards.ts";
