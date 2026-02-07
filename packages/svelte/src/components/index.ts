@@ -52,6 +52,13 @@ export {
   type VizelEmbedViewProps,
 } from "./VizelEmbedView.svelte";
 // ============================================================================
+// Vizel FindReplace component
+// ============================================================================
+export {
+  default as VizelFindReplace,
+  type VizelFindReplaceProps,
+} from "./VizelFindReplace.svelte";
+// ============================================================================
 // Vizel Icon component
 // ============================================================================
 export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.svelte";
