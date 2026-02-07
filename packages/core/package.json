@@ -64,7 +64,10 @@
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.87",
-    "@iconify/utils": "^3.1.0",
+    "@iconify/utils": "^3.1.0"
+  },
+  "peerDependencies": {
+    "@hpcc-js/wasm-graphviz": "^1.0.0",
     "@tiptap/core": "^3.18.0",
     "@tiptap/extension-blockquote": "^3.18.0",
     "@tiptap/extension-bold": "^3.18.0",
@@ -104,15 +107,18 @@
     "@tiptap/markdown": "^3.18.0",
     "@tiptap/pm": "^3.18.0",
     "@tiptap/suggestion": "^3.18.0",
-    "fuse.js": "^7.1.0"
-  },
-  "peerDependencies": {
+    "fuse.js": "^7.1.0",
     "katex": "^0.16.0",
     "lowlight": "^3.0.0",
-    "mermaid": "^11.0.0",
-    "@hpcc-js/wasm-graphviz": "^1.0.0"
+    "mermaid": "^11.0.0"
   },
   "peerDependenciesMeta": {
+    "@hpcc-js/wasm-graphviz": {
+      "optional": true
+    },
+    "fuse.js": {
+      "optional": true
+    },
     "katex": {
       "optional": true
     },
@@ -120,9 +126,6 @@
       "optional": true
     },
     "mermaid": {
-      "optional": true
-    },
-    "@hpcc-js/wasm-graphviz": {
       "optional": true
     }
   },
