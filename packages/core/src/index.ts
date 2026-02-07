@@ -171,7 +171,6 @@ export {
   vizelEmbedPastePluginKey,
   vizelFindReplacePluginKey,
 } from "./extensions/index.ts";
-
 // =============================================================================
 // Icons
 // =============================================================================
@@ -196,6 +195,15 @@ export {
   type VizelUIIconName,
   vizelDefaultIconIds,
 } from "./icons/index.ts";
+// =============================================================================
+// Plugin System
+// =============================================================================
+export {
+  resolveVizelPluginDependencies,
+  type VizelPlugin,
+  VizelPluginManager,
+  validateVizelPlugin,
+} from "./plugin-system.ts";
 // =============================================================================
 // Theme
 // =============================================================================
