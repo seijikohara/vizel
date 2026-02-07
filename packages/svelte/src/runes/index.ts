@@ -17,4 +17,8 @@ export {
   type VizelSlashMenuRendererOptions,
 } from "./createVizelSlashMenuRenderer.ts";
 export { createVizelState } from "./createVizelState.svelte.ts";
+export {
+  type CreateVizelVersionHistoryResult,
+  createVizelVersionHistory,
+} from "./createVizelVersionHistory.svelte.ts";
 export { getVizelTheme, getVizelThemeSafe } from "./getVizelTheme.svelte.ts";

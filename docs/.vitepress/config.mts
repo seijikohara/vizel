@@ -138,6 +138,7 @@ export default withMermaid({
             { text: "Auto-Save", link: "/guide/auto-save" },
             { text: "Plugins", link: "/guide/plugins" },
             { text: "Wiki Links", link: "/guide/wiki-links" },
+            { text: "Version History", link: "/guide/version-history" },
             { text: "Performance", link: "/guide/performance" },
             { text: "Accessibility", link: "/guide/accessibility" },
             { text: "Troubleshooting", link: "/guide/troubleshooting" },

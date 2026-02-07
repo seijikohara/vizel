@@ -25,7 +25,6 @@ export {
   type VizelSaveStatus,
   type VizelStorageBackend,
 } from "./auto-save.ts";
-
 // =============================================================================
 // Extensions
 // =============================================================================
@@ -236,7 +235,6 @@ export {
   type VizelToolbarAction,
   vizelDefaultToolbarActions,
 } from "./toolbar/index.ts";
-
 // =============================================================================
 // Types
 // =============================================================================
@@ -251,7 +249,6 @@ export type {
   VizelSlashCommandOptions,
   VizelSlashMenuRendererOptions,
 } from "./types.ts";
-
 // =============================================================================
 // Utilities
 // =============================================================================
@@ -315,3 +312,15 @@ export {
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./utils/index.ts";
+// =============================================================================
+// Version History
+// =============================================================================
+export {
+  createVizelVersionHistoryHandlers,
+  getVizelVersionStorageBackend,
+  VIZEL_DEFAULT_VERSION_HISTORY_OPTIONS,
+  type VizelVersionHistoryOptions,
+  type VizelVersionHistoryState,
+  type VizelVersionSnapshot,
+  type VizelVersionStorage,
+} from "./version-history.ts";

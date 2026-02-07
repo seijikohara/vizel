@@ -12,3 +12,7 @@ export {
 } from "./useVizelMarkdown.ts";
 export { useVizelState } from "./useVizelState.ts";
 export { useVizelTheme, useVizelThemeSafe } from "./useVizelTheme.ts";
+export {
+  type UseVizelVersionHistoryResult,
+  useVizelVersionHistory,
+} from "./useVizelVersionHistory.ts";
