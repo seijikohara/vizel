@@ -27,6 +27,18 @@ export {
 } from "./auto-save.ts";
 
 // =============================================================================
+// Collaboration
+// =============================================================================
+export {
+  createVizelCollaborationHandlers,
+  VIZEL_DEFAULT_COLLABORATION_OPTIONS,
+  type VizelCollaborationOptions,
+  type VizelCollaborationState,
+  type VizelCollaborationUser,
+  type VizelYjsAwareness,
+  type VizelYjsProvider,
+} from "./collaboration.ts";
+// =============================================================================
 // Comments
 // =============================================================================
 export {

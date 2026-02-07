@@ -110,7 +110,9 @@
     "fuse.js": "^7.1.0",
     "katex": "^0.16.0",
     "lowlight": "^3.0.0",
-    "mermaid": "^11.0.0"
+    "mermaid": "^11.0.0",
+    "yjs": "^13.6.0",
+    "y-websocket": "^2.0.0"
   },
   "peerDependenciesMeta": {
     "@hpcc-js/wasm-graphviz": {
@@ -126,6 +128,12 @@
       "optional": true
     },
     "mermaid": {
+      "optional": true
+    },
+    "yjs": {
+      "optional": true
+    },
+    "y-websocket": {
       "optional": true
     }
   },

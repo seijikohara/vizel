@@ -140,6 +140,7 @@ export default withMermaid({
             { text: "Wiki Links", link: "/guide/wiki-links" },
             { text: "Version History", link: "/guide/version-history" },
             { text: "Comments", link: "/guide/comments" },
+            { text: "Collaboration", link: "/guide/collaboration" },
             { text: "Performance", link: "/guide/performance" },
             { text: "Accessibility", link: "/guide/accessibility" },
             { text: "Troubleshooting", link: "/guide/troubleshooting" },

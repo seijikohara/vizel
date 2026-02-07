@@ -67,11 +67,11 @@ export interface VizelExtensionsOptions {
  * to support syntax highlighting when enabled.
  */
 function createBaseExtensions(
-  options: { headingLevels?: (1 | 2 | 3 | 4 | 5 | 6)[] } = {}
+  options: { headingLevels?: (1 | 2 | 3 | 4 | 5 | 6)[]; excludeHistory?: boolean } = {}
 ): Extensions {
-  const { headingLevels = [1, 2, 3] } = options;
+  const { headingLevels = [1, 2, 3], excludeHistory = false } = options;
 
-  return [
+  const extensions: Extensions = [
     // Nodes
     Document,
     Paragraph,
@@ -93,9 +93,15 @@ function createBaseExtensions(
     // Functionality
     Dropcursor.configure({ color: "#3b82f6", width: 2 }),
     Gapcursor,
-    History,
     ListKeymap,
   ];
+
+  // History is excluded when collaboration is enabled (Yjs provides its own undo manager)
+  if (!excludeHistory) {
+    extensions.push(History);
+  }
+
+  return extensions;
 }
 
 /**
@@ -337,8 +343,10 @@ export async function createVizelExtensions(
     features = {},
   } = options;
 
+  const excludeHistory = features.collaboration === true;
+
   const extensions: Extensions = [
-    ...createBaseExtensions({ headingLevels }),
+    ...createBaseExtensions({ headingLevels, excludeHistory }),
     Placeholder.configure({
       placeholder,
       emptyEditorClass: "vizel-editor-empty",
