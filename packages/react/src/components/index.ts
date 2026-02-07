@@ -27,6 +27,8 @@ export { useVizelContext, useVizelContextSafe } from "./VizelContext.tsx";
 export { VizelEditor, type VizelEditorProps, type VizelExposed } from "./VizelEditor.tsx";
 // VizelEmbedView component
 export { VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.tsx";
+// VizelFindReplace component
+export { VizelFindReplace, type VizelFindReplaceProps } from "./VizelFindReplace.tsx";
 // Icon component
 export { VizelIcon, type VizelIconProps } from "./VizelIcon.tsx";
 export {

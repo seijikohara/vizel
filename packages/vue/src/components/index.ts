@@ -34,6 +34,11 @@ export {
 } from "./VizelEditor.vue";
 // VizelEmbedView component
 export { default as VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.vue";
+// VizelFindReplace component
+export {
+  default as VizelFindReplace,
+  type VizelFindReplaceProps,
+} from "./VizelFindReplace.vue";
 // VizelIcon component
 export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.vue";
 export { provideVizelIcons, useVizelIconContext } from "./VizelIconContext.ts";

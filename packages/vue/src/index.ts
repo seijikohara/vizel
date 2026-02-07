@@ -39,6 +39,9 @@ export {
   VizelEmbedView,
   type VizelEmbedViewProps,
   type VizelExposed,
+  // FindReplace
+  VizelFindReplace,
+  type VizelFindReplaceProps,
   // Icon
   VizelIcon,
   type VizelIconProps,

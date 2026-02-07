@@ -50,6 +50,8 @@ export {
   createVizelExtensions,
   // File handler
   createVizelFileHandlerExtension,
+  // Find & Replace
+  createVizelFindReplaceExtension,
   // Image
   createVizelImageExtension,
   createVizelImageFileHandlers,
@@ -78,6 +80,7 @@ export {
   getAllVizelLanguageIds,
   // Node types
   getVizelActiveNodeType,
+  getVizelFindReplaceState,
   getVizelImageUploadPluginKey,
   getVizelRecentColors,
   getVizelRegisteredLanguages,
@@ -115,6 +118,9 @@ export {
   type VizelFileHandlerError,
   type VizelFileHandlerErrorType,
   type VizelFileHandlerOptions,
+  type VizelFindMatch,
+  type VizelFindReplaceOptions,
+  type VizelFindReplaceState,
   VizelImage,
   type VizelImageFileHandlerOptions,
   type VizelImageFileHandlers,
@@ -163,6 +169,7 @@ export {
   vizelDefaultNodeTypes,
   vizelDefaultSlashCommands,
   vizelEmbedPastePluginKey,
+  vizelFindReplacePluginKey,
 } from "./extensions/index.ts";
 
 // =============================================================================

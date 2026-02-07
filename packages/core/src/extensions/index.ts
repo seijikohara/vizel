@@ -74,6 +74,16 @@ export {
   type VizelImageFileHandlers,
 } from "./file-handler.ts";
 
+// Find & Replace
+export {
+  createVizelFindReplaceExtension,
+  getVizelFindReplaceState,
+  type VizelFindMatch,
+  type VizelFindReplaceOptions,
+  type VizelFindReplaceState,
+  vizelFindReplacePluginKey,
+} from "./find-replace.ts";
+
 // Image
 export {
   createVizelImageExtension,
