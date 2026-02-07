@@ -74,6 +74,12 @@ export interface VizelFeatureOptions {
   wikiLink?: VizelWikiLinkOptions | boolean;
   /** Comment/annotation marks for collaborative review workflows */
   comment?: VizelCommentMarkOptions | boolean;
+  /**
+   * Real-time collaboration mode.
+   * When enabled, the History extension is excluded (Yjs provides its own undo manager).
+   * Users must install and configure Yjs collaboration extensions separately.
+   */
+  collaboration?: boolean;
 }
 
 /**
