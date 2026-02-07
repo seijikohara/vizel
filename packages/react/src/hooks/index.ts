@@ -13,3 +13,7 @@ export {
   useVizelMarkdown,
 } from "./useVizelMarkdown.ts";
 export { useVizelState } from "./useVizelState.ts";
+export {
+  type UseVizelVersionHistoryResult,
+  useVizelVersionHistory,
+} from "./useVizelVersionHistory.ts";
