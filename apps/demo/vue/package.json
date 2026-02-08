@@ -12,8 +12,8 @@
     "vue": "^3.5.27"
   },
   "devDependencies": {
-    "@hpcc-js/wasm-graphviz": "^1.20.1",
-    "@vitejs/plugin-vue": "^6.0.3",
+    "@hpcc-js/wasm-graphviz": "^1.21.0",
+    "@vitejs/plugin-vue": "^6.0.4",
     "katex": "^0.16.28",
     "lowlight": "^3.3.0",
     "mermaid": "^11.12.2",
