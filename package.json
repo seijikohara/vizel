@@ -42,7 +42,7 @@
     "@braintree/sanitize-url": "^7.1.2",
     "@playwright/experimental-ct-react": "~1.57.0",
     "@playwright/experimental-ct-svelte": "~1.57.0",
-    "@playwright/experimental-ct-vue": "~1.57.0",
+    "@playwright/experimental-ct-vue": "~1.58.2",
     "@playwright/test": "~1.57.0",
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "@tiptap/core": "^3.19.0",
