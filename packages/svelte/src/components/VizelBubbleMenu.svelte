@@ -25,7 +25,7 @@ export interface VizelBubbleMenuProps {
 <script lang="ts">
 import { BubbleMenuPlugin } from "@vizel/core";
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.svelte";
-import { getVizelContextSafe } from "./VizelContext.ts";
+import { getVizelContextSafe } from "./VizelContext.js";
 
 let {
   editor: editorProp,

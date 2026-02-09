@@ -34,7 +34,7 @@ export interface VizelIconProps {
 import type { IconifyIconProps } from "@iconify/svelte";
 import Icon from "@iconify/svelte";
 import { vizelDefaultIconIds } from "@vizel/core";
-import { getVizelIconContext } from "./VizelIconContext";
+import { getVizelIconContext } from "./VizelIconContext.js";
 
 const { name, customIcons, width, height, color, class: className }: VizelIconProps = $props();
 const { customIcons: contextIcons } = getVizelIconContext();

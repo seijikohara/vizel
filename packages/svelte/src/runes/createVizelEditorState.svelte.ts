@@ -1,5 +1,5 @@
 import { type Editor, getVizelEditorState, type VizelEditorState } from "@vizel/core";
-import { createVizelState } from "./createVizelState.svelte.ts";
+import { createVizelState } from "./createVizelState.svelte.js";
 
 /**
  * Rune that returns the current editor state and updates on state changes.

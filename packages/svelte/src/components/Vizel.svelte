@@ -78,7 +78,7 @@ export interface VizelProps {
 // A complete editor component that includes EditorContent and BubbleMenu.
 // This is the recommended way to use Vizel for most use cases.
 import { getVizelMarkdown, setVizelMarkdown } from "@vizel/core";
-import { createVizelEditor } from "../runes/createVizelEditor.svelte.ts";
+import { createVizelEditor } from "../runes/createVizelEditor.svelte.js";
 import VizelBubbleMenu from "./VizelBubbleMenu.svelte";
 import VizelEditor from "./VizelEditor.svelte";
 import VizelToolbar from "./VizelToolbar.svelte";

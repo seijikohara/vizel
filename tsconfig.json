@@ -27,6 +27,17 @@
 
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+
+    "paths": {
+      "@vizel/core": ["./packages/core/src/index.ts"],
+      "@vizel/core/*": ["./packages/core/src/*"],
+      "@vizel/react": ["./packages/react/src/index.ts"],
+      "@vizel/react/*": ["./packages/react/src/*"],
+      "@vizel/vue": ["./packages/vue/src/index.ts"],
+      "@vizel/vue/*": ["./packages/vue/src/*"],
+      "@vizel/svelte": ["./packages/svelte/src/index.ts"],
+      "@vizel/svelte/*": ["./packages/svelte/src/*"]
+    }
   }
 }

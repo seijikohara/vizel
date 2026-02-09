@@ -5,7 +5,7 @@ import {
   type VizelCreateEditorOptions,
   wrapAsVizelError,
 } from "@vizel/core";
-import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.ts";
+import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.js";
 
 /**
  * Options for createVizelEditor rune.

@@ -30,7 +30,7 @@ export interface VizelIconProviderProps {
 </script>
 
 <script lang="ts">
-  import { setVizelIcons } from "./VizelIconContext.ts";
+  import { setVizelIcons } from "./VizelIconContext.js";
 
   const { icons, children }: VizelIconProviderProps = $props();
 

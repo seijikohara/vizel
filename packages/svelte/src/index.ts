@@ -5,10 +5,10 @@
  */
 
 // Import Tiptap extension types for ChainedCommands augmentation
-import "./tiptap-extensions.ts";
+import "./tiptap-extensions.js";
 
 // Initialize icon renderer (auto-registers with core)
-import "./iconRenderer.ts";
+import "./iconRenderer.js";
 
 // Components
 export {
@@ -81,7 +81,7 @@ export {
   VizelToolbarDivider,
   type VizelToolbarDividerProps,
   type VizelToolbarProps,
-} from "./components/index.ts";
+} from "./components/index.js";
 
 // Runes (Svelte 5 reactive state)
 export {
@@ -104,4 +104,4 @@ export {
   getVizelTheme,
   getVizelThemeSafe,
   type VizelSlashMenuRendererOptions,
-} from "./runes/index.ts";
+} from "./runes/index.js";

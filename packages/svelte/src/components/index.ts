@@ -35,7 +35,7 @@ export {
 // ============================================================================
 // Vizel Context
 // ============================================================================
-export { getVizelContext, getVizelContextSafe } from "./VizelContext.ts";
+export { getVizelContext, getVizelContextSafe } from "./VizelContext.js";
 // ============================================================================
 // Vizel Editor components
 // ============================================================================
@@ -62,7 +62,7 @@ export {
 // Vizel Icon component
 // ============================================================================
 export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.svelte";
-export { getVizelIconContext, setVizelIcons } from "./VizelIconContext.ts";
+export { getVizelIconContext, setVizelIcons } from "./VizelIconContext.js";
 export {
   default as VizelIconProvider,
   type VizelIconProviderProps,

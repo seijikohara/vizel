@@ -14,7 +14,7 @@ export interface VizelProviderProps {
 
 <script lang="ts">
 import { setContext } from "svelte";
-import { VIZEL_CONTEXT_KEY } from "./VizelContext.ts";
+import { VIZEL_CONTEXT_KEY } from "./VizelContext.js";
 
 let { editor, class: className, children }: VizelProviderProps = $props();
 
