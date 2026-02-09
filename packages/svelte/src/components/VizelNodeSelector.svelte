@@ -13,7 +13,7 @@ export interface VizelNodeSelectorProps {
 
 <script lang="ts">
 import { vizelDefaultNodeTypes, getVizelActiveNodeType } from "@vizel/core";
-import { createVizelState } from "../runes/createVizelState.svelte.ts";
+import { createVizelState } from "../runes/createVizelState.svelte.js";
 import VizelIcon from "./VizelIcon.svelte";
 
 let { editor, nodeTypes = vizelDefaultNodeTypes, class: className }: VizelNodeSelectorProps = $props();

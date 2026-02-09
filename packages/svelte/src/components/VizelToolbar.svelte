@@ -15,7 +15,7 @@ export interface VizelToolbarProps {
 </script>
 
 <script lang="ts">
-import { getVizelContextSafe } from "./VizelContext.ts";
+import { getVizelContextSafe } from "./VizelContext.js";
 import VizelToolbarDefault from "./VizelToolbarDefault.svelte";
 
 let {

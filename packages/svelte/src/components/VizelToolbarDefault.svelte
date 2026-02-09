@@ -16,7 +16,7 @@ import {
   groupVizelToolbarActions,
   vizelDefaultToolbarActions,
 } from "@vizel/core";
-import { createVizelState } from "../runes/createVizelState.svelte.ts";
+import { createVizelState } from "../runes/createVizelState.svelte.js";
 import VizelIcon from "./VizelIcon.svelte";
 import VizelToolbarButton from "./VizelToolbarButton.svelte";
 import VizelToolbarDivider from "./VizelToolbarDivider.svelte";

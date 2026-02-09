@@ -12,7 +12,7 @@ export interface VizelBubbleMenuDefaultProps {
 </script>
 
 <script lang="ts">
-import { createVizelState } from "../runes/createVizelState.svelte.ts";
+import { createVizelState } from "../runes/createVizelState.svelte.js";
 import VizelBubbleMenuButton from "./VizelBubbleMenuButton.svelte";
 import VizelBubbleMenuColorPicker from "./VizelBubbleMenuColorPicker.svelte";
 import VizelBubbleMenuDivider from "./VizelBubbleMenuDivider.svelte";

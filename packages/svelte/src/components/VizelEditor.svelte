@@ -15,7 +15,7 @@ export interface VizelExposed {
 </script>
 
 <script lang="ts">
-import { getVizelContextSafe } from "./VizelContext.ts";
+import { getVizelContextSafe } from "./VizelContext.js";
 
 let { editor: editorProp, class: className }: VizelEditorProps = $props();
 
