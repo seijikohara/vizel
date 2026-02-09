@@ -1,3 +1,5 @@
+import "@vizel/core/styles.css";
+import "@vizel/core/mathematics.css";
 import { createRoot } from "react-dom/client";
 import { App } from "./App.tsx";
 

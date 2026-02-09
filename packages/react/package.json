@@ -43,14 +43,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@iconify/react": "^6.0.2",
-    "@vizel/core": "workspace:^"
+    "@iconify/react": "^6.0.2"
   },
   "peerDependencies": {
+    "@vizel/core": "^1.1.0",
     "react": "^19",
     "react-dom": "^19"
   },
   "devDependencies": {
+    "@vizel/core": "workspace:^",
     "@tiptap/extension-bold": "^3.19.0",
     "@tiptap/extension-code": "^3.19.0",
     "@tiptap/extension-color": "^3.19.0",

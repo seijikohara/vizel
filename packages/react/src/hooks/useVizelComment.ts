@@ -125,12 +125,13 @@ export function useVizelComment(
     [enabled, storage, key, handleStateChange]
   );
 
+  // Track editor value (stable reference) instead of getEditor (unstable function)
+  const editor = getEditor();
   useEffect(() => {
-    const editor = getEditor();
     if (editor && enabled) {
       handlers.loadComments();
     }
-  }, [getEditor, enabled, handlers]);
+  }, [editor, enabled, handlers]);
 
   const addComment = useCallback(
     (text: string, author?: string) => handlers.addComment(text, author),

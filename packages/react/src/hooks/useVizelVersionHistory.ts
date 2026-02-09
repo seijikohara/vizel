@@ -106,13 +106,15 @@ export function useVizelVersionHistory(
     [enabled, maxVersions, storage, key, handleStateChange]
   );
 
+  // Track editor value (stable reference) instead of getEditor (unstable function)
+  const editor = getEditor();
+
   // Load versions when editor becomes available
   useEffect(() => {
-    const editor = getEditor();
     if (editor && enabled) {
       handlers.loadVersions();
     }
-  }, [getEditor, enabled, handlers]);
+  }, [editor, enabled, handlers]);
 
   const saveVersion = useCallback(
     (description?: string, author?: string) => handlers.saveVersion(description, author),

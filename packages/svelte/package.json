@@ -45,13 +45,14 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@iconify/svelte": "^5.2.1",
-    "@vizel/core": "workspace:^"
+    "@iconify/svelte": "^5.2.1"
   },
   "peerDependencies": {
+    "@vizel/core": "^1.1.0",
     "svelte": "^5"
   },
   "devDependencies": {
+    "@vizel/core": "workspace:^",
     "@sveltejs/package": "^2.5.7",
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "@tiptap/extension-bold": "^3.19.0",
