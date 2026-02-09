@@ -10,6 +10,7 @@ export default defineConfig({
       include: ["src/**/*.ts", "src/**/*.tsx"],
       outDir: "dist",
       rollupTypes: true,
+      tsconfigPath: resolve(__dirname, "tsconfig.build.json"),
     }),
   ],
   build: {
@@ -24,13 +25,8 @@ export default defineConfig({
         "react-dom",
         "react/jsx-runtime",
         "@tiptap/core",
-        "@tiptap/extension-bubble-menu",
-        "@tiptap/react",
-        "@tiptap/suggestion",
         "@vizel/core",
-        // Large dependencies - externalized to reduce bundle size
         "@iconify/react",
-        "@iconify/utils",
       ],
       output: {
         preserveModules: true,

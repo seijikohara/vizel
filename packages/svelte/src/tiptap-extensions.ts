@@ -1,16 +1,22 @@
 /**
- * Import Tiptap extension types to include their module augmentations.
+ * Reference Tiptap extension types to include their module augmentations.
  * These augmentations add extension-specific commands to the ChainedCommands interface.
  *
- * Note: This file must be imported somewhere in the package for TypeScript
- * to include the module augmentations during type checking.
+ * Uses triple-slash directives instead of bare imports to avoid emitting
+ * runtime JavaScript. svelte-package preserves bare imports verbatim,
+ * causing ProseMirror module duplication when consumers exclude @vizel/svelte
+ * from Vite's optimizeDeps.
+ *
+ * Ref: https://www.typescriptlang.org/docs/handbook/triple-slash-directives.html
  */
 
-import "@tiptap/extension-bold";
-import "@tiptap/extension-code";
-import "@tiptap/extension-color";
-import "@tiptap/extension-highlight";
-import "@tiptap/extension-italic";
-import "@tiptap/extension-strike";
-import "@tiptap/extension-text-style";
-import "@tiptap/extension-underline";
+/// <reference types="@tiptap/extension-bold" />
+/// <reference types="@tiptap/extension-code" />
+/// <reference types="@tiptap/extension-color" />
+/// <reference types="@tiptap/extension-highlight" />
+/// <reference types="@tiptap/extension-italic" />
+/// <reference types="@tiptap/extension-strike" />
+/// <reference types="@tiptap/extension-text-style" />
+/// <reference types="@tiptap/extension-underline" />
+
+export {};

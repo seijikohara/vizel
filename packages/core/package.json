@@ -49,10 +49,6 @@
     "build:css:mathematics": "sass --load-path=src/styles --load-path=node_modules src/styles/katex-entry.scss dist/mathematics.css --style=compressed",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "@iconify-json/lucide": "^1.2.89",
-    "@iconify/utils": "^3.1.0"
-  },
   "peerDependencies": {
     "@hpcc-js/wasm-graphviz": "^1.0.0",
     "@tiptap/core": "^3.18.0",
@@ -64,6 +60,8 @@
     "@tiptap/extension-code": "^3.18.0",
     "@tiptap/extension-code-block": "^3.18.0",
     "@tiptap/extension-code-block-lowlight": "^3.18.0",
+    "@tiptap/extension-collaboration": "^3.18.0",
+    "@tiptap/extension-collaboration-cursor": "^3.0.0",
     "@tiptap/extension-color": "^3.18.0",
     "@tiptap/extension-details": "^3.18.0",
     "@tiptap/extension-document": "^3.18.0",
@@ -105,6 +103,12 @@
     "@hpcc-js/wasm-graphviz": {
       "optional": true
     },
+    "@tiptap/extension-collaboration": {
+      "optional": true
+    },
+    "@tiptap/extension-collaboration-cursor": {
+      "optional": true
+    },
     "fuse.js": {
       "optional": true
     },
@@ -125,6 +129,8 @@
     }
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.89",
+    "@iconify/utils": "^3.1.0",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4"
   }

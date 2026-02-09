@@ -10,6 +10,7 @@ export default defineConfig({
       include: ["src/**/*.ts", "src/**/*.vue"],
       outDir: "dist",
       rollupTypes: true,
+      tsconfigPath: resolve(__dirname, "tsconfig.build.json"),
     }),
   ],
   build: {
@@ -19,17 +20,7 @@ export default defineConfig({
       fileName: "index",
     },
     rollupOptions: {
-      external: [
-        "vue",
-        "@tiptap/core",
-        "@tiptap/extension-bubble-menu",
-        "@tiptap/suggestion",
-        "@tiptap/vue-3",
-        "@vizel/core",
-        // Large dependencies - externalized to reduce bundle size
-        "@iconify/vue",
-        "@iconify/utils",
-      ],
+      external: ["vue", "@tiptap/core", "@vizel/core", "@iconify/vue"],
       output: {
         preserveModules: true,
         preserveModulesRoot: "src",

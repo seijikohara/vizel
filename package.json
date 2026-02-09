@@ -37,6 +37,12 @@
     "deps:check": "pnpm dlx taze --recursive",
     "deps:update": "pnpm dlx taze --recursive --write && pnpm install"
   },
+  "pnpm": {
+    "overrides": {
+      "@tiptap/core": "$@tiptap/core",
+      "@tiptap/pm": "$@tiptap/pm"
+    }
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.3.14",
     "@braintree/sanitize-url": "^7.1.2",

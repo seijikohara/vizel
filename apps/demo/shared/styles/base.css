@@ -1,8 +1,3 @@
-/* Import Vizel core styles */
-@import "../../../../packages/core/src/styles/index.scss";
-/* Import KaTeX styles for mathematics feature */
-@import "../../../../packages/core/src/styles/katex-entry.scss";
-
 /* Base Styles */
 * {
   box-sizing: border-box;
