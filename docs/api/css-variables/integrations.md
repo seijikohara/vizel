@@ -1,10 +1,10 @@
 # Framework Integrations
 
-Integrate Vizel CSS variables with Tailwind CSS and shadcn/ui.
+This guide explains how to integrate Vizel CSS variables with Tailwind CSS and shadcn/ui.
 
 ## Tailwind CSS
 
-Vizel works with Tailwind CSS. Map Vizel's CSS variables to Tailwind's theme system.
+Vizel works with Tailwind CSS. You can map Vizel's CSS variables to Tailwind's theme system.
 
 ### Configuration
 
@@ -62,11 +62,11 @@ export default {
 
 ## shadcn/ui
 
-Vizel is designed to work with [shadcn/ui](https://ui.shadcn.com/). Both libraries use similar CSS variable naming conventions.
+Vizel works with [shadcn/ui](https://ui.shadcn.com/). Both libraries use similar CSS variable naming conventions.
 
 ### Variable Mapping
 
-Add these CSS variable mappings to your global styles:
+Add the following CSS variable mappings to your global styles:
 
 ```css
 @layer base {

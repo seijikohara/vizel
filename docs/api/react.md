@@ -66,7 +66,7 @@ import '@vizel/core/styles.css';
 
 ### useVizelEditor
 
-Creates and manages a Vizel editor instance.
+This hook creates and manages a Vizel editor instance.
 
 ```tsx
 import { useVizelEditor } from '@vizel/react';
@@ -78,7 +78,7 @@ const editor = useVizelEditor(options?: VizelEditorOptions);
 
 ### useVizelState
 
-Forces re-render on editor state changes.
+This hook forces a re-render on editor state changes.
 
 ```tsx
 import { useVizelState } from '@vizel/react';
@@ -90,7 +90,7 @@ const updateCount = useVizelState(() => editor);
 
 ### useVizelEditorState
 
-Tracks specific editor state properties reactively.
+This hook tracks specific editor state properties reactively.
 
 ```tsx
 import { useVizelEditorState } from '@vizel/react';
@@ -105,7 +105,7 @@ const isBold = useVizelEditorState(
 
 ### useVizelAutoSave
 
-Auto-saves editor content with debouncing.
+This hook auto-saves editor content with debouncing.
 
 ```tsx
 import { useVizelAutoSave } from '@vizel/react';
@@ -121,15 +121,15 @@ const result = useVizelAutoSave(
 | Property | Type | Description |
 |----------|------|-------------|
 | `status` | `VizelSaveStatus` | Current save status |
-| `hasUnsavedChanges` | `boolean` | Whether there are unsaved changes |
+| `hasUnsavedChanges` | `boolean` | Whether unsaved changes exist |
 | `lastSaved` | `Date \| null` | Last save timestamp |
 | `error` | `Error \| null` | Last error |
-| `save` | `() => Promise<void>` | Manual save function |
-| `restore` | `() => Promise<JSONContent \| null>` | Manual restore function |
+| `save` | `() => Promise<void>` | Save content manually |
+| `restore` | `() => Promise<JSONContent \| null>` | Restore content manually |
 
 ### useVizelMarkdown
 
-Provides two-way Markdown synchronization with debouncing.
+This hook provides two-way Markdown synchronization with debouncing.
 
 ```tsx
 import { useVizelMarkdown } from '@vizel/react';
@@ -156,7 +156,7 @@ const result = useVizelMarkdown(
 
 ### useVizelTheme
 
-Access theme state within VizelThemeProvider.
+This hook accesses theme state within VizelThemeProvider.
 
 ```tsx
 import { useVizelTheme } from '@vizel/react';
@@ -175,7 +175,7 @@ const { theme, resolvedTheme, systemTheme, setTheme } = useVizelTheme();
 
 ### useVizelContext
 
-Access editor from VizelProvider context.
+This hook accesses the editor from VizelProvider context.
 
 ```tsx
 import { useVizelContext } from '@vizel/react';
@@ -183,13 +183,161 @@ import { useVizelContext } from '@vizel/react';
 const { editor } = useVizelContext();
 ```
 
+### useVizelCollaboration
+
+This hook tracks real-time collaboration state with a Yjs provider.
+
+```tsx
+import { useVizelCollaboration } from '@vizel/react';
+
+const {
+  isConnected,
+  isSynced,
+  peerCount,
+  error,
+  connect,
+  disconnect,
+  updateUser,
+} = useVizelCollaboration(
+  () => wsProvider,
+  { user: { name: 'Alice', color: '#ff0000' } }
+);
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `getProvider` | `() => VizelYjsProvider \| null \| undefined` | Getter function for the Yjs provider |
+| `options` | `VizelCollaborationOptions` | Collaboration options including user info |
+
+**Returns:** `UseVizelCollaborationResult`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `isConnected` | `boolean` | Whether the editor is connected to the server |
+| `isSynced` | `boolean` | Whether initial sync is complete |
+| `peerCount` | `number` | Number of connected peers |
+| `error` | `Error \| null` | Last error |
+| `connect` | `() => void` | Connect to the server |
+| `disconnect` | `() => void` | Disconnect from the server |
+| `updateUser` | `(user: VizelCollaborationUser) => void` | Update user cursor info |
+
+### useVizelComment
+
+This hook manages document comments and annotations.
+
+```tsx
+import { useVizelComment } from '@vizel/react';
+
+const {
+  comments,
+  activeCommentId,
+  isLoading,
+  error,
+  addComment,
+  removeComment,
+  resolveComment,
+  reopenComment,
+  replyToComment,
+  setActiveComment,
+  loadComments,
+  getCommentById,
+} = useVizelComment(() => editor, { key: 'my-comments' });
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `getEditor` | `() => Editor \| null \| undefined` | Getter function for the editor |
+| `options` | `VizelCommentOptions` | Comment configuration options |
+
+**Returns:** `UseVizelCommentResult`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `comments` | `VizelComment[]` | All stored comments (newest first) |
+| `activeCommentId` | `string \| null` | Currently active comment ID |
+| `isLoading` | `boolean` | Whether comments are loading |
+| `error` | `Error \| null` | Last error |
+| `addComment` | `(text: string, author?: string) => Promise<VizelComment \| null>` | Add a comment to the selection |
+| `removeComment` | `(commentId: string) => Promise<void>` | Remove a comment |
+| `resolveComment` | `(commentId: string) => Promise<boolean>` | Resolve a comment |
+| `reopenComment` | `(commentId: string) => Promise<boolean>` | Reopen a comment |
+| `replyToComment` | `(commentId: string, text: string, author?: string) => Promise<VizelCommentReply \| null>` | Reply to a comment |
+| `setActiveComment` | `(commentId: string \| null) => void` | Set the active comment |
+| `loadComments` | `() => Promise<VizelComment[]>` | Load comments from storage |
+| `getCommentById` | `(commentId: string) => VizelComment \| undefined` | Get a comment by ID |
+
+### useVizelVersionHistory
+
+This hook manages document version history with save, restore, and delete operations.
+
+```tsx
+import { useVizelVersionHistory } from '@vizel/react';
+
+const {
+  snapshots,
+  isLoading,
+  error,
+  saveVersion,
+  restoreVersion,
+  loadVersions,
+  deleteVersion,
+  clearVersions,
+} = useVizelVersionHistory(() => editor, { maxVersions: 20 });
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `getEditor` | `() => Editor \| null \| undefined` | Getter function for the editor |
+| `options` | `VizelVersionHistoryOptions` | Version history configuration |
+
+**Returns:** `UseVizelVersionHistoryResult`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `snapshots` | `VizelVersionSnapshot[]` | All stored snapshots (newest first) |
+| `isLoading` | `boolean` | Whether history is loading |
+| `error` | `Error \| null` | Last error |
+| `saveVersion` | `(description?: string, author?: string) => Promise<VizelVersionSnapshot \| null>` | Save a new version |
+| `restoreVersion` | `(versionId: string) => Promise<boolean>` | Restore a version |
+| `loadVersions` | `() => Promise<VizelVersionSnapshot[]>` | Load versions from storage |
+| `deleteVersion` | `(versionId: string) => Promise<void>` | Delete a version |
+| `clearVersions` | `() => Promise<void>` | Delete all versions |
+
 ---
 
 ## Components
 
+### VizelFindReplace
+
+Find & Replace panel component. This component renders when the Find & Replace extension is open.
+
+```tsx
+import { VizelFindReplace } from '@vizel/react';
+
+<VizelFindReplace
+  editor={editor}
+  className="my-find-replace"
+  onClose={() => console.log('Closed')}
+/>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor \| null` | - | Editor instance |
+| `className` | `string` | - | CSS class name |
+| `onClose` | `() => void` | - | Called when the panel closes |
+
 ### VizelEditor
 
-Renders the editor content area.
+This component renders the editor content area.
 
 ```tsx
 import { VizelEditor } from '@vizel/react';
@@ -206,7 +354,7 @@ import { VizelEditor } from '@vizel/react';
 
 ### VizelBubbleMenu
 
-Floating formatting bubble menu.
+This component renders a floating formatting bubble menu.
 
 ```tsx
 import { VizelBubbleMenu } from '@vizel/react';
@@ -227,7 +375,7 @@ import { VizelBubbleMenu } from '@vizel/react';
 
 ### VizelBubbleMenuDefault
 
-Default bubble menu with all formatting buttons.
+This component renders the default bubble menu with all formatting buttons.
 
 ```tsx
 import { VizelBubbleMenuDefault } from '@vizel/react';
@@ -247,7 +395,7 @@ import { VizelBubbleMenuDefault } from '@vizel/react';
 
 ### VizelBubbleMenuButton
 
-Individual bubble menu button.
+This component renders an individual bubble menu button.
 
 ```tsx
 import { VizelBubbleMenuButton } from '@vizel/react';
@@ -261,7 +409,7 @@ import { VizelBubbleMenuButton } from '@vizel/react';
 
 ### VizelBubbleMenuDivider
 
-Bubble menu divider.
+This component renders a bubble menu divider.
 
 ```tsx
 import { VizelBubbleMenuDivider } from '@vizel/react';
@@ -271,7 +419,7 @@ import { VizelBubbleMenuDivider } from '@vizel/react';
 
 ### VizelToolbar
 
-Fixed toolbar component.
+This component renders a fixed toolbar.
 
 ```tsx
 import { VizelToolbar } from '@vizel/react';
@@ -290,7 +438,7 @@ import { VizelToolbar } from '@vizel/react';
 
 ### VizelToolbarDefault
 
-Default toolbar content with grouped formatting buttons.
+This component renders the default toolbar content with grouped formatting buttons.
 
 ```tsx
 import { VizelToolbarDefault } from '@vizel/react';
@@ -308,7 +456,7 @@ import { VizelToolbarDefault } from '@vizel/react';
 
 ### VizelToolbarButton
 
-Individual toolbar button.
+This component renders an individual toolbar button.
 
 ```tsx
 import { VizelToolbarButton } from '@vizel/react';
@@ -336,7 +484,7 @@ import { VizelToolbarButton } from '@vizel/react';
 
 ### VizelToolbarDivider
 
-Divider between toolbar button groups.
+This component renders a divider between toolbar button groups.
 
 ```tsx
 import { VizelToolbarDivider } from '@vizel/react';
@@ -346,7 +494,7 @@ import { VizelToolbarDivider } from '@vizel/react';
 
 ### VizelThemeProvider
 
-Provides theme context.
+This component provides theme context to its children.
 
 ```tsx
 import { VizelThemeProvider } from '@vizel/react';
@@ -372,7 +520,7 @@ import { VizelThemeProvider } from '@vizel/react';
 
 ### VizelSaveIndicator
 
-Displays save status.
+This component displays the save status.
 
 ```tsx
 import { VizelSaveIndicator } from '@vizel/react';
@@ -390,7 +538,7 @@ import { VizelSaveIndicator } from '@vizel/react';
 
 ### VizelPortal
 
-Renders content in a portal.
+This component renders its children in a portal.
 
 ```tsx
 import { VizelPortal } from '@vizel/react';
@@ -407,7 +555,7 @@ import { VizelPortal } from '@vizel/react';
 
 ### VizelColorPicker
 
-Color selection component.
+This component renders a color selection interface.
 
 ```tsx
 import { VizelColorPicker } from '@vizel/react';
@@ -422,7 +570,7 @@ import { VizelColorPicker } from '@vizel/react';
 
 ### VizelIconProvider
 
-Provides custom icons for Vizel components.
+This component provides custom icons for Vizel components.
 
 ```tsx
 import { VizelIconProvider } from '@vizel/react';
@@ -447,7 +595,7 @@ const icons: CustomIconMap = {
 
 ### VizelSlashMenu
 
-Slash command menu component.
+This component renders the slash command menu.
 
 ```tsx
 import { VizelSlashMenu } from '@vizel/react';
@@ -465,7 +613,7 @@ import { VizelSlashMenu } from '@vizel/react';
 
 ### createVizelSlashMenuRenderer
 
-Creates slash menu renderer for the SlashCommand extension.
+This function creates a slash menu renderer for the SlashCommand extension.
 
 ```tsx
 import { createVizelSlashMenuRenderer } from '@vizel/react';
@@ -485,7 +633,7 @@ const editor = useVizelEditor({
 
 ## Importing from @vizel/core and @tiptap/core
 
-Framework packages do not re-export from `@vizel/core`. Import directly:
+Framework packages do not re-export from `@vizel/core`. You must import directly:
 
 ```tsx
 // Framework-specific components and hooks

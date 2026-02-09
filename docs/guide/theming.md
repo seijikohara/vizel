@@ -1,12 +1,12 @@
 # Theming
 
-Customize colors, typography, and spacing using CSS variables.
+You can customize colors, typography, and spacing using CSS variables.
 
 ## Importing Styles
 
 ### Default Styles
 
-Import the stylesheet:
+Import the default stylesheet:
 
 ```typescript
 import '@vizel/core/styles.css';
@@ -145,7 +145,7 @@ const { theme, resolvedTheme, setTheme } = useVizelTheme();
 
 ## CSS Variables
 
-Vizel uses CSS custom properties (variables) for all visual styling. Override these to customize the appearance.
+Vizel uses CSS custom properties (variables) for all visual styling. You can override these to customize the appearance.
 
 ### Theme Selectors
 
@@ -423,7 +423,7 @@ Vizel uses the OKLCH color space for all color values. Here's an example of cust
 
 ## shadcn/ui Integration
 
-Map shadcn/ui CSS variables to Vizel. Note that shadcn/ui uses HSL format while Vizel uses OKLCH, but CSS custom properties can reference each other:
+You can map shadcn/ui CSS variables to Vizel. Note that shadcn/ui uses HSL format while Vizel uses OKLCH, but CSS custom properties can reference each other:
 
 ```css
 :root {
@@ -452,7 +452,7 @@ For detailed integration instructions, see the [CSS Variables Reference](/api/cs
 
 ## Preventing Flash of Unstyled Content
 
-Add the theme init script to your HTML `<head>` to prevent flash:
+Add the theme init script to your HTML `<head>` to prevent a flash of unstyled content:
 
 ```typescript
 import { getVizelThemeInitScript } from '@vizel/core';

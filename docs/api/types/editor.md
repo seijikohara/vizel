@@ -96,7 +96,7 @@ const content: JSONContent = {
 
 ## VizelEditorState
 
-Editor state object returned by `getVizelEditorState()`.
+The editor state object that `getVizelEditorState()` returns.
 
 ```typescript
 interface VizelEditorState {
@@ -131,7 +131,7 @@ console.log(`${state.characterCount} characters, ${state.wordCount} words`);
 
 ## VizelRange
 
-Selection range type used in commands.
+Selection range type that commands use.
 
 ```typescript
 interface VizelRange {
@@ -142,7 +142,7 @@ interface VizelRange {
 
 ## VizelEmbedData
 
-Data structure for embedded content.
+Data structure that represents embedded content.
 
 ```typescript
 interface VizelEmbedData {
@@ -170,7 +170,7 @@ interface VizelMarkdownSyncOptions {
 
 ## VizelMarkdownSyncResult
 
-Return type for Markdown synchronization.
+Return type that Markdown synchronization hooks/composables/runes provide.
 
 ```typescript
 interface VizelMarkdownSyncResult {
@@ -187,7 +187,7 @@ interface VizelMarkdownSyncResult {
 
 ## Markdown Utilities
 
-Utility functions for working with Markdown content.
+These utility functions help you work with Markdown content.
 
 ```typescript
 import { 

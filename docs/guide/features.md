@@ -1,10 +1,10 @@
 # Features
 
-Each feature can be enabled, disabled, or customized through the `features` option.
+You can enable, disable, or customize each feature through the `features` option.
 
 ## Feature Overview
 
-All features are enabled by default. Set any feature to `false` to disable it.
+Vizel enables all features by default. Set any feature to `false` to disable it.
 
 ```mermaid
 graph TB
@@ -23,6 +23,11 @@ graph TB
         Embed["Embeds"]
         Details["Details"]
         Diagram["Diagrams"]
+        WikiLink["Wiki Links"]
+        Comment["Comments"]
+    end
+    subgraph opt["Opt-in Features"]
+        Collaboration["Collaboration"]
     end
 ```
 
@@ -42,6 +47,9 @@ graph TB
 | `embed` | URL embeds (YouTube, etc.) |
 | `details` | Collapsible content blocks |
 | `diagram` | Mermaid/GraphViz diagrams |
+| `wikiLink` | Wiki-style internal links (`[[page-name]]`) |
+| `comment` | Text annotations and comments |
+| `collaboration` | Real-time collaboration mode (disables History) |
 
 ## Disabling Features
 
@@ -113,7 +121,7 @@ const editor = useVizelEditor({
 
 ## Images
 
-Supports drag and drop, paste, and resize.
+The image feature supports drag and drop, paste, and resize.
 
 ### Options
 
@@ -172,7 +180,7 @@ const editor = useVizelEditor({
 
 ## Code Blocks
 
-Code blocks with syntax highlighting and language selection.
+This feature provides code blocks with syntax highlighting and language selection.
 
 ### Options
 
@@ -204,7 +212,7 @@ const editor = useVizelEditor({
 
 ## Character Count
 
-Track character and word counts.
+This feature tracks character and word counts.
 
 ### Options
 
@@ -237,7 +245,7 @@ const percentage = (chars / limit) * 100;
 
 ## Text Color & Highlight
 
-Text color and background highlight support.
+This feature adds text color and background highlight support.
 
 ### Options
 
@@ -276,7 +284,7 @@ const editor = useVizelEditor({
 
 ## Markdown
 
-Enable Markdown import/export.
+This feature enables Markdown import/export.
 
 ### Options
 
@@ -315,7 +323,7 @@ editor.commands.setContent(
 
 ## Mathematics
 
-LaTeX math equations rendered with KaTeX.
+This feature renders LaTeX math equations with KaTeX.
 
 ### Options
 
@@ -351,7 +359,7 @@ const editor = useVizelEditor({
 
 ## Embeds
 
-Embed content from URLs (YouTube, Vimeo, Twitter).
+This feature embeds content from URLs (YouTube, Vimeo, Twitter).
 
 ### Options
 
@@ -403,7 +411,7 @@ const editor = useVizelEditor({
 
 ## Details
 
-Collapsible content blocks (accordion/disclosure).
+This feature provides collapsible content blocks (accordion/disclosure).
 
 ### Options
 
@@ -431,7 +439,7 @@ Use the slash command `/details` or `/toggle` to insert a collapsible block.
 
 ## Diagrams
 
-Mermaid and GraphViz diagrams.
+This feature supports Mermaid and GraphViz diagrams.
 
 ### Options
 
@@ -474,7 +482,7 @@ const editor = useVizelEditor({
 
 ## Links
 
-Link editing and auto-linking.
+This feature provides link editing and auto-linking.
 
 ### Options
 
@@ -509,7 +517,7 @@ const editor = useVizelEditor({
 
 ## Task Lists
 
-Checkbox task lists.
+This feature adds checkbox task lists.
 
 ### Options
 
@@ -536,7 +544,7 @@ const editor = useVizelEditor({
 
 ## Drag Handle
 
-Handle for drag-and-drop block reordering.
+This feature provides a handle for drag-and-drop block reordering.
 
 ### Options
 
@@ -558,8 +566,93 @@ const editor = useVizelEditor({
 
 ---
 
+## Wiki Links
+
+This feature adds wiki-style `[[page-name]]` links for linking between pages. It supports display text aliases with `[[page-name|display text]]` syntax.
+
+### Options
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `resolveLink` | `(pageName: string) => string` | `(p) => '#' + p` | Resolves a page name to a URL |
+| `pageExists` | `(pageName: string) => boolean` | `() => true` | Checks if a page exists |
+| `getPageSuggestions` | `(query: string) => VizelWikiLinkSuggestion[]` | - | Autocomplete suggestions |
+| `onLinkClick` | `(pageName: string, event: MouseEvent) => void` | - | Click callback |
+
+### Example
+
+```typescript
+const editor = useVizelEditor({
+  features: {
+    wikiLink: {
+      resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
+      pageExists: (page) => knownPages.has(page),
+    },
+  },
+});
+```
+
+See the [Wiki Links Guide](/guide/wiki-links) for detailed usage.
+
+---
+
+## Comments
+
+This feature adds text annotation marks for reviewing and discussion.
+
+### Options
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `enabled` | `boolean` | `true` | Enable comment marks |
+
+### Example
+
+```typescript
+const editor = useVizelEditor({
+  features: {
+    comment: true,
+  },
+});
+```
+
+Comment management (storage, replies, resolution) uses the framework-specific hooks/composables/runes. See the [Comments Guide](/guide/comments) for details.
+
+---
+
+## Collaboration
+
+This feature enables real-time multi-user editing built on Yjs. When you enable it, Vizel disables the built-in History extension (Yjs handles undo/redo).
+
+::: warning
+This opt-in feature requires additional dependencies: `yjs`, a Yjs provider, `@tiptap/extension-collaboration`, and `@tiptap/extension-collaboration-cursor`.
+:::
+
+### Example
+
+```typescript
+const editor = useVizelEditor({
+  features: {
+    collaboration: true, // Disables History
+  },
+  extensions: [
+    Collaboration.configure({ document: ydoc }),
+    CollaborationCursor.configure({ provider, user }),
+  ],
+});
+```
+
+See the [Collaboration Guide](/guide/collaboration) for setup instructions.
+
+---
+
 ## Next Steps
 
+- [Wiki Links](/guide/wiki-links) - Wiki-style internal links
+- [Comments](/guide/comments) - Text annotations and comments
+- [Version History](/guide/version-history) - Document snapshots
+- [Collaboration](/guide/collaboration) - Real-time multi-user editing
+- [Plugins](/guide/plugins) - Extend Vizel with plugins
 - [Theming](/guide/theming) - Customize the appearance
 - [Auto-Save](/guide/auto-save) - Persist content automatically
 - [API Reference](/api/)

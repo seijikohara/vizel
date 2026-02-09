@@ -31,7 +31,7 @@ features:
     linkText: Configuration
 
   - title: Multi-Framework
-    details: Supports React 19, Vue 3, and Svelte 5 with consistent APIs.
+    details: Vizel supports React 19, Vue 3, and Svelte 5 with consistent APIs.
     link: /guide/react
     linkText: Framework Guides
 
@@ -46,7 +46,7 @@ features:
     linkText: Extensions
 
   - title: TypeScript
-    details: Written in TypeScript with exported type definitions.
+    details: Vizel uses TypeScript with exported type definitions.
     link: /api/types
     linkText: Type Definitions
 ---
@@ -166,12 +166,12 @@ Drag blocks by their handle to reorder content.
 
 | Feature | Description |
 |---------|-------------|
-| Multi-framework | React 19, Vue 3, Svelte 5 |
-| TypeScript | Type definitions included |
-| Markdown | Import and export |
-| Theming | CSS variables |
-| Bundle size | Tree-shakeable |
-| Extensions | Modular architecture |
+| Multi-framework | Supports React 19, Vue 3, and Svelte 5 |
+| TypeScript | Includes type definitions |
+| Markdown | Imports and exports Markdown |
+| Theming | Uses CSS variables |
+| Bundle size | Supports tree-shaking |
+| Extensions | Uses modular architecture |
 
 ## Community
 

@@ -1,4 +1,4 @@
-import type { Editor, JSONContent, VizelFeatureOptions } from "@vizel/core";
+import type { Editor, Extensions, JSONContent, VizelFeatureOptions } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useImperativeHandle } from "react";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
@@ -34,6 +34,8 @@ export interface VizelProps {
   autofocus?: boolean | "start" | "end" | "all" | number;
   /** Feature configuration */
   features?: VizelFeatureOptions;
+  /** Additional Tiptap extensions */
+  extensions?: Extensions;
   /** Custom class name for the editor container */
   className?: string;
   /** Whether to show the toolbar (default: false) */
@@ -113,6 +115,7 @@ export function Vizel({
   editable = true,
   autofocus = false,
   features,
+  extensions,
   className,
   showToolbar = false,
   toolbarContent,
@@ -135,6 +138,7 @@ export function Vizel({
     editable,
     autofocus,
     ...(features !== undefined && { features }),
+    ...(extensions !== undefined && { extensions }),
     ...(onUpdate !== undefined && { onUpdate }),
     ...(onCreate !== undefined && { onCreate }),
     ...(onDestroy !== undefined && { onDestroy }),

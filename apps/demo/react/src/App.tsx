@@ -1,14 +1,15 @@
 import type { Editor, JSONContent } from "@tiptap/core";
-import { setVizelMarkdown } from "@vizel/core";
+import { createVizelFindReplaceExtension, setVizelMarkdown } from "@vizel/core";
 import {
   useVizelAutoSave,
   useVizelEditorState,
   useVizelTheme,
   Vizel,
+  VizelFindReplace,
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { initialMarkdown } from "../../shared/content";
 import reactLogo from "../../shared/logos/react.svg";
 import { mockUploadImage } from "../../shared/utils";
@@ -79,6 +80,9 @@ function AppContent() {
     storage: "localStorage",
     key: "vizel-demo-react",
   });
+
+  // Find & Replace extension (stable reference)
+  const findReplaceExtensions = useMemo(() => [createVizelFindReplaceExtension()], []);
 
   // Handle Markdown input change and sync to editor
   const handleMarkdownChange = useCallback(
@@ -172,6 +176,7 @@ function AppContent() {
               className="editor-content"
               showToolbar={features.toolbar}
               enableEmbed
+              extensions={findReplaceExtensions}
               features={{
                 markdown: true,
                 mathematics: true,
@@ -200,7 +205,9 @@ function AppContent() {
                 setJsonInput(JSON.stringify(json, null, 2));
                 setMarkdownInput(updatedEditor.getMarkdown());
               }}
-            />
+            >
+              <VizelFindReplace editor={editor} />
+            </Vizel>
             {(features.autoSave || features.stats) && (
               <div className="status-bar">
                 {features.autoSave && (

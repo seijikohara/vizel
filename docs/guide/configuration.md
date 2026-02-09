@@ -19,12 +19,12 @@ The main configuration object passed to `useVizelEditor` (React/Vue) or `createV
 
 | Callback | Type | Description |
 |----------|------|-------------|
-| `onUpdate` | `({ editor }) => void` | Called when content changes |
-| `onCreate` | `({ editor }) => void` | Called when editor is created |
-| `onDestroy` | `() => void` | Called when editor is destroyed |
-| `onSelectionUpdate` | `({ editor }) => void` | Called when selection changes |
-| `onFocus` | `({ editor }) => void` | Called when editor receives focus |
-| `onBlur` | `({ editor }) => void` | Called when editor loses focus |
+| `onUpdate` | `({ editor }) => void` | Fires when content changes |
+| `onCreate` | `({ editor }) => void` | Fires when the editor initializes |
+| `onDestroy` | `() => void` | Fires when the editor unmounts |
+| `onSelectionUpdate` | `({ editor }) => void` | Fires when selection changes |
+| `onFocus` | `({ editor }) => void` | Fires when the editor receives focus |
+| `onBlur` | `({ editor }) => void` | Fires when the editor loses focus |
 
 ### Example
 
@@ -109,16 +109,16 @@ const editor = createVizelEditor({
 
 ## Autofocus Options
 
-The `autofocus` option controls where the cursor is placed when the editor mounts:
+The `autofocus` option controls where the editor places the cursor on mount:
 
 | Value | Description |
 |-------|-------------|
 | `false` | No autofocus (default) |
-| `true` | Focus at the start |
-| `"start"` | Focus at the start of the document |
-| `"end"` | Focus at the end of the document |
-| `"all"` | Select all content |
-| `number` | Focus at specific position |
+| `true` | Focuses at the start |
+| `"start"` | Focuses at the start of the document |
+| `"end"` | Focuses at the end of the document |
+| `"all"` | Selects all content |
+| `number` | Focuses at a specific position |
 
 ```typescript
 // Focus at end of document
@@ -158,7 +158,7 @@ const isEditable = editor.isEditable;
 
 ## Custom Extensions
 
-Add additional Tiptap extensions alongside Vizel's defaults:
+You can add additional Tiptap extensions alongside Vizel's defaults:
 
 ```typescript
 import { useVizelEditor } from '@vizel/react';
@@ -174,12 +174,12 @@ const editor = useVizelEditor({
 ```
 
 ::: warning Extension Conflicts
-Be careful when adding extensions that might conflict with Vizel's built-in extensions. If you need to customize a built-in extension, disable the feature and add your own configuration.
+Be careful when you add extensions that might conflict with Vizel's built-in extensions. If you need to customize a built-in extension, disable the feature and add your own configuration.
 :::
 
 ## Editor State
 
-Access editor state programmatically:
+You can access editor state programmatically:
 
 ```typescript
 import { getVizelEditorState } from '@vizel/core';

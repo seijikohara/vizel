@@ -1,6 +1,6 @@
 # Spacing & Layout Variables
 
-Spacing scale, border radius, shadows, transitions, and z-index.
+CSS variables for the spacing scale, border radius, shadows, transitions, and z-index.
 
 ## Spacing
 

@@ -1,10 +1,10 @@
 # CSS Variables Reference
 
-Reference of CSS custom properties available in Vizel. Color values use the OKLCH color space for perceptual uniformity and wider gamut support.
+This page lists all CSS custom properties available in Vizel. Color values use the OKLCH color space for perceptual uniformity and wider gamut support.
 
 ## Overview
 
-Vizel provides CSS custom properties for theming. Variables are organized into the following categories:
+Vizel provides CSS custom properties for theming. The following categories organize these variables:
 
 | Category | Description |
 |----------|-------------|
@@ -18,16 +18,16 @@ Vizel provides CSS custom properties for theming. Variables are organized into t
 
 Vizel uses the [OKLCH color space](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch) for all color values because:
 
-1. **Perceptual uniformity** - Colors with the same lightness value appear equally bright
-2. **Predictable manipulation** - Adjusting hue, chroma, or lightness produces predictable results
-3. **Wider gamut** - Access to colors beyond sRGB on supported displays
-4. **Dark mode** - Easier to create accessible color variations
+1. **Perceptual uniformity** — Colors with the same lightness value appear equally bright
+2. **Predictable manipulation** — Adjusting hue, chroma, or lightness produces predictable results
+3. **Wider gamut** — Provides access to colors beyond sRGB on supported displays
+4. **Dark mode** — Simplifies creating accessible color variations
 
 OKLCH is supported in all modern browsers (Chrome 111+, Firefox 113+, Safari 15.4+).
 
 ## Theme Selectors
 
-CSS selectors that trigger theme changes:
+These CSS selectors trigger theme changes:
 
 ```css
 /* Light theme (default) */

@@ -33,7 +33,7 @@ yarn add @vizel/svelte
 :::
 
 ::: info Peer Dependencies
-Each framework package has peer dependencies on its respective framework:
+Each framework package requires its respective framework as a peer dependency:
 - `@vizel/react` requires `react@^19` and `react-dom@^19`
 - `@vizel/vue` requires `vue@^3`
 - `@vizel/svelte` requires `svelte@^5`
@@ -90,7 +90,7 @@ This includes both CSS variables and component styles. For custom theming, see [
 
 ## Advanced Usage
 
-To customize the editor, use individual components:
+To customize the editor, you can use individual components:
 
 ### React
 
@@ -156,7 +156,7 @@ const editor = useVizelEditor({
 
 ## Toolbar
 
-Enable the built-in fixed toolbar for a traditional formatting bar above the editor:
+You can enable the built-in fixed toolbar for a traditional formatting bar above the editor:
 
 ::: code-group
 
@@ -180,11 +180,11 @@ The toolbar includes undo/redo, text formatting, headings, lists, and block acti
 
 ### Initial Content
 
-Initialize the editor with **Markdown** or **JSON** format.
+You can initialize the editor with **Markdown** or **JSON** format.
 
 #### Using Markdown
 
-Initialize with Markdown:
+You can initialize with Markdown:
 
 ::: code-group
 
@@ -240,7 +240,7 @@ const editor = createVizelEditor({
 
 #### Using JSON
 
-Initialize with JSON format:
+You can initialize with JSON format:
 
 ::: code-group
 
@@ -305,7 +305,7 @@ const editor = createVizelEditor({
 
 ### Getting Content
 
-Access the editor content:
+You can access the editor content in multiple formats:
 
 ```typescript
 // Get JSON content
@@ -418,7 +418,7 @@ let markdown = $state('# Hello World');
 
 ## Enabling Features
 
-Enable optional features through the `features` option:
+You can enable optional features through the `features` option:
 
 ::: code-group
 
@@ -476,7 +476,7 @@ See [Features](/guide/features) for detailed configuration of each feature.
 
 ## Image Upload
 
-Configure image uploads with a custom handler:
+You can configure image uploads with a custom handler:
 
 ::: code-group
 

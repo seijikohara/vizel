@@ -1,6 +1,6 @@
 # Color Variables
 
-All color values use the OKLCH color space for better perceptual uniformity.
+All color values use the OKLCH color space for perceptual uniformity.
 
 ## Primary Colors
 

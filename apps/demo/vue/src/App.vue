@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import type { Editor, JSONContent } from "@tiptap/core";
-import { getVizelEditorState, setVizelMarkdown } from "@vizel/core";
+import {
+  createVizelFindReplaceExtension,
+  getVizelEditorState,
+  setVizelMarkdown,
+} from "@vizel/core";
 import {
   useVizelAutoSave,
   useVizelState,
   Vizel,
+  VizelFindReplace,
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/vue";
@@ -46,6 +51,9 @@ const { status, lastSaved } = useVizelAutoSave(() => (features.autoSave ? editor
   storage: "localStorage",
   key: "vizel-demo-vue",
 });
+
+// Find & Replace extension
+const findReplaceExtensions = [createVizelFindReplaceExtension()];
 
 function handleCreate({ editor }: { editor: Editor }) {
   editorRef.value = editor;
@@ -139,6 +147,7 @@ function handleJsonChange(event: Event) {
               class="editor-content"
               :show-toolbar="features.toolbar"
               enable-embed
+              :extensions="findReplaceExtensions"
               :features="{
                 markdown: true,
                 mathematics: true,
@@ -154,7 +163,11 @@ function handleJsonChange(event: Event) {
               }"
               @create="handleCreate"
               @update="handleUpdate"
-            />
+            >
+              <template #default="{ editor: slotEditor }">
+                <VizelFindReplace v-if="slotEditor" :editor="slotEditor" />
+              </template>
+            </Vizel>
             <div v-if="features.autoSave || features.stats" class="status-bar">
               <template v-if="features.autoSave">
                 <VizelSaveIndicator :status="status" :lastSaved="lastSaved" />

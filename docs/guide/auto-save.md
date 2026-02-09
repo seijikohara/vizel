@@ -78,15 +78,15 @@ const { status, lastSaved } = useVizelAutoSave(() => editor.value, {
 | `debounceMs` | `number` | `1000` | Debounce delay in milliseconds |
 | `storage` | `StorageBackend` | `"localStorage"` | Storage backend |
 | `key` | `string` | `"vizel-content"` | Storage key |
-| `onSave` | `(content) => void` | - | Callback after successful save |
-| `onError` | `(error) => void` | - | Callback on save error |
-| `onRestore` | `(content) => void` | - | Callback when content is restored |
+| `onSave` | `(content) => void` | - | Fires after a successful save |
+| `onError` | `(error) => void` | - | Fires on a save error |
+| `onRestore` | `(content) => void` | - | Fires when the system restores content |
 
 ## Storage Backends
 
 ### localStorage (Default)
 
-Persists content in the browser's localStorage:
+This backend persists content in the browser's localStorage:
 
 ```typescript
 const { status } = useVizelAutoSave(() => editor, {
@@ -97,7 +97,7 @@ const { status } = useVizelAutoSave(() => editor, {
 
 ### sessionStorage
 
-Persists content only for the current session:
+This backend persists content only for the current session:
 
 ```typescript
 const { status } = useVizelAutoSave(() => editor, {
@@ -108,7 +108,7 @@ const { status } = useVizelAutoSave(() => editor, {
 
 ### Custom Backend
 
-Implement your own storage backend for server-side persistence:
+You can implement your own storage backend for server-side persistence:
 
 ```typescript
 const { status } = useVizelAutoSave(() => editor, {
@@ -135,10 +135,10 @@ const { status } = useVizelAutoSave(() => editor, {
 
 | Value | Description |
 |-------|-------------|
-| `"saved"` | Content is saved and up to date |
-| `"saving"` | Save operation in progress |
-| `"unsaved"` | Unsaved changes pending |
-| `"error"` | Save failed |
+| `"saved"` | Content has been saved and is up to date |
+| `"saving"` | A save operation is in progress |
+| `"unsaved"` | Unsaved changes exist |
+| `"error"` | The last save attempt failed |
 
 ### Properties
 
@@ -153,8 +153,8 @@ const { status } = useVizelAutoSave(() => editor, {
 
 | Method | Description |
 |--------|-------------|
-| `save()` | Manually trigger save |
-| `restore()` | Manually restore content |
+| `save()` | Triggers a save manually |
+| `restore()` | Restores content manually |
 
 ## Manual Save/Restore
 
@@ -245,7 +245,7 @@ useVizelAutoSave(() => editor, { debounceMs: 5000 });
 
 ## Error Handling
 
-Handle save errors:
+You can handle save errors with the `onError` callback:
 
 ```typescript
 const { status, error } = useVizelAutoSave(() => editor, {
@@ -270,7 +270,7 @@ const { status, error } = useVizelAutoSave(() => editor, {
 
 ## Restoring Content on Load
 
-Restore saved content when the editor initializes:
+You can restore saved content when the editor initializes:
 
 ::: code-group
 
@@ -353,7 +353,7 @@ watch(editor, async (ed) => {
 
 ## Disabling Auto-Save
 
-Temporarily disable auto-save:
+You can temporarily disable auto-save:
 
 ```typescript
 const { status } = useVizelAutoSave(() => editor, {

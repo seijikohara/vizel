@@ -68,7 +68,7 @@ All-in-one editor component with built-in bubble menu. This is the recommended w
 
 ### createVizelEditor
 
-Creates and manages a Vizel editor instance.
+This rune creates and manages a Vizel editor instance.
 
 ```typescript
 import { createVizelEditor } from '@vizel/svelte';
@@ -81,7 +81,7 @@ const editor = createVizelEditor(options?: VizelEditorOptions);
 
 ### createVizelState
 
-Forces re-render on editor state changes.
+This rune forces a re-render on editor state changes.
 
 ```typescript
 import { createVizelState } from '@vizel/svelte';
@@ -94,7 +94,7 @@ const state = createVizelState(getEditor: () => Editor | null);
 
 ### createVizelAutoSave
 
-Auto-saves editor content with debouncing.
+This rune auto-saves editor content with debouncing.
 
 ```typescript
 import { createVizelAutoSave } from '@vizel/svelte';
@@ -110,15 +110,15 @@ const autoSave = createVizelAutoSave(
 | Property | Type | Description |
 |----------|------|-------------|
 | `status` | `VizelSaveStatus` | Current save status (reactive) |
-| `hasUnsavedChanges` | `boolean` | Has unsaved changes (reactive) |
+| `hasUnsavedChanges` | `boolean` | Whether unsaved changes exist (reactive) |
 | `lastSaved` | `Date \| null` | Last save timestamp (reactive) |
 | `error` | `Error \| null` | Last error (reactive) |
-| `save` | `() => Promise<void>` | Manual save function |
-| `restore` | `() => Promise<JSONContent \| null>` | Manual restore |
+| `save` | `() => Promise<void>` | Save content manually |
+| `restore` | `() => Promise<JSONContent \| null>` | Restore content manually |
 
 ### createVizelMarkdown
 
-Provides two-way Markdown synchronization with debouncing.
+This rune provides two-way Markdown synchronization with debouncing.
 
 ```typescript
 import { createVizelMarkdown } from '@vizel/svelte';
@@ -145,7 +145,7 @@ const md = createVizelMarkdown(
 
 ### getVizelTheme
 
-Access theme state within VizelThemeProvider context.
+This rune accesses theme state within VizelThemeProvider context.
 
 ```typescript
 import { getVizelTheme } from '@vizel/svelte';
@@ -163,13 +163,148 @@ const theme = getVizelTheme();
 | `systemTheme` | `VizelResolvedTheme` | System preference (reactive) |
 | `setTheme` | `(theme: VizelTheme) => void` | Set theme function |
 
+### createVizelCollaboration
+
+This rune tracks real-time collaboration state with a Yjs provider.
+
+```typescript
+import { createVizelCollaboration } from '@vizel/svelte';
+
+const collab = createVizelCollaboration(
+  () => provider,
+  { user: { name: 'Alice', color: '#ff0000' } }
+);
+
+// Access reactive state
+// collab.isConnected, collab.peerCount
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `getProvider` | `() => VizelYjsProvider \| null \| undefined` | Getter function for the Yjs provider |
+| `options` | `VizelCollaborationOptions` | Collaboration options including user info |
+
+**Returns:** `CreateVizelCollaborationResult`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `isConnected` | `boolean` | Whether the editor is connected to the server (reactive) |
+| `isSynced` | `boolean` | Whether initial sync is complete (reactive) |
+| `peerCount` | `number` | Number of connected peers (reactive) |
+| `error` | `Error \| null` | Last error (reactive) |
+| `connect` | `() => void` | Connect to the server |
+| `disconnect` | `() => void` | Disconnect from the server |
+| `updateUser` | `(user: VizelCollaborationUser) => void` | Update user cursor info |
+
+### createVizelComment
+
+This rune manages document comments and annotations.
+
+```typescript
+import { createVizelComment } from '@vizel/svelte';
+
+const comment = createVizelComment(
+  () => editor.current,
+  { key: 'my-comments' }
+);
+
+// Access reactive state
+// comment.comments, comment.activeCommentId
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `getEditor` | `() => Editor \| null \| undefined` | Getter function for the editor |
+| `options` | `VizelCommentOptions` | Comment configuration options |
+
+**Returns:** `CreateVizelCommentResult`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `comments` | `VizelComment[]` | All stored comments (newest first, reactive) |
+| `activeCommentId` | `string \| null` | Currently active comment ID (reactive) |
+| `isLoading` | `boolean` | Whether comments are loading (reactive) |
+| `error` | `Error \| null` | Last error (reactive) |
+| `addComment` | `(text: string, author?: string) => Promise<VizelComment \| null>` | Add a comment to the selection |
+| `removeComment` | `(commentId: string) => Promise<void>` | Remove a comment |
+| `resolveComment` | `(commentId: string) => Promise<boolean>` | Resolve a comment |
+| `reopenComment` | `(commentId: string) => Promise<boolean>` | Reopen a comment |
+| `replyToComment` | `(commentId: string, text: string, author?: string) => Promise<VizelCommentReply \| null>` | Reply to a comment |
+| `setActiveComment` | `(commentId: string \| null) => void` | Set the active comment |
+| `loadComments` | `() => Promise<VizelComment[]>` | Load comments from storage |
+| `getCommentById` | `(commentId: string) => VizelComment \| undefined` | Get a comment by ID |
+
+### createVizelVersionHistory
+
+This rune manages document version history with save, restore, and delete operations.
+
+```typescript
+import { createVizelVersionHistory } from '@vizel/svelte';
+
+const history = createVizelVersionHistory(
+  () => editor.current,
+  { maxVersions: 20 }
+);
+
+// Access reactive state
+// history.snapshots, history.isLoading
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `getEditor` | `() => Editor \| null \| undefined` | Getter function for the editor |
+| `options` | `VizelVersionHistoryOptions` | Version history configuration |
+
+**Returns:** `CreateVizelVersionHistoryResult`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `snapshots` | `VizelVersionSnapshot[]` | All stored snapshots (newest first, reactive) |
+| `isLoading` | `boolean` | Whether history is loading (reactive) |
+| `error` | `Error \| null` | Last error (reactive) |
+| `saveVersion` | `(description?: string, author?: string) => Promise<VizelVersionSnapshot \| null>` | Save a new version |
+| `restoreVersion` | `(versionId: string) => Promise<boolean>` | Restore a version |
+| `loadVersions` | `() => Promise<VizelVersionSnapshot[]>` | Load versions from storage |
+| `deleteVersion` | `(versionId: string) => Promise<void>` | Delete a version |
+| `clearVersions` | `() => Promise<void>` | Delete all versions |
+
 ---
 
 ## Components
 
+### VizelFindReplace
+
+Find & Replace panel component. This component renders when the Find & Replace extension is open.
+
+```svelte
+<script lang="ts">
+  import { VizelFindReplace } from '@vizel/svelte';
+</script>
+
+<VizelFindReplace
+  editor={editor.current}
+  class="my-find-replace"
+  onClose={() => console.log('Closed')}
+/>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor \| null` | - | Editor instance |
+| `class` | `string` | - | CSS class name |
+| `onClose` | `() => void` | - | Called when the panel closes |
+
 ### VizelEditor
 
-Renders the editor content area.
+This component renders the editor content area.
 
 ```svelte
 <VizelEditor editor={editor.current} class="my-editor" />
@@ -184,7 +319,7 @@ Renders the editor content area.
 
 ### VizelBubbleMenu
 
-Floating formatting bubble menu.
+This component renders a floating formatting bubble menu.
 
 ```svelte
 <VizelBubbleMenu 
@@ -208,7 +343,7 @@ Floating formatting bubble menu.
 
 ### VizelBubbleMenuDefault
 
-Default bubble menu with all formatting buttons.
+This component renders the default bubble menu with all formatting buttons.
 
 ```svelte
 <VizelBubbleMenuDefault 
@@ -226,7 +361,7 @@ Default bubble menu with all formatting buttons.
 
 ### VizelBubbleMenuButton
 
-Individual bubble menu button.
+This component renders an individual bubble menu button.
 
 ```svelte
 <VizelBubbleMenuButton
@@ -238,7 +373,7 @@ Individual bubble menu button.
 
 ### VizelBubbleMenuDivider
 
-Bubble menu divider.
+This component renders a bubble menu divider.
 
 ```svelte
 <VizelBubbleMenuDivider />
@@ -246,7 +381,7 @@ Bubble menu divider.
 
 ### VizelToolbar
 
-Fixed toolbar component.
+This component renders a fixed toolbar.
 
 ```svelte
 <script lang="ts">
@@ -267,7 +402,7 @@ Fixed toolbar component.
 
 ### VizelToolbarDefault
 
-Default toolbar content with grouped formatting buttons.
+This component renders the default toolbar content with grouped formatting buttons.
 
 ```svelte
 <VizelToolbarDefault editor={editor.current} actions={customActions} />
@@ -283,7 +418,7 @@ Default toolbar content with grouped formatting buttons.
 
 ### VizelToolbarButton
 
-Individual toolbar button.
+This component renders an individual toolbar button.
 
 ```svelte
 <VizelToolbarButton
@@ -309,7 +444,7 @@ Individual toolbar button.
 
 ### VizelToolbarDivider
 
-Divider between toolbar button groups.
+This component renders a divider between toolbar button groups.
 
 ```svelte
 <VizelToolbarDivider />
@@ -317,7 +452,7 @@ Divider between toolbar button groups.
 
 ### VizelThemeProvider
 
-Provides theme context.
+This component provides theme context to its children.
 
 ```svelte
 <VizelThemeProvider
@@ -340,7 +475,7 @@ Provides theme context.
 
 ### VizelSaveIndicator
 
-Displays save status.
+This component displays the save status.
 
 ```svelte
 <VizelSaveIndicator status={autoSave.status} lastSaved={autoSave.lastSaved} />
@@ -356,7 +491,7 @@ Displays save status.
 
 ### VizelPortal
 
-Renders content in a portal.
+This component renders its children in a portal.
 
 ```svelte
 <VizelPortal container={document.body}>
@@ -372,7 +507,7 @@ Renders content in a portal.
 
 ### VizelColorPicker
 
-Color selection component.
+This component renders a color selection interface.
 
 ```svelte
 <VizelColorPicker
@@ -385,7 +520,7 @@ Color selection component.
 
 ### VizelIconProvider
 
-Provides custom icons for Vizel components.
+This component provides custom icons for Vizel components.
 
 ```svelte
 <script lang="ts">
@@ -412,7 +547,7 @@ const icons: CustomIconMap = {
 
 ### VizelSlashMenu
 
-Slash command menu component.
+This component renders the slash command menu.
 
 ```svelte
 <VizelSlashMenu
@@ -428,7 +563,7 @@ Slash command menu component.
 
 ### createVizelSlashMenuRenderer
 
-Creates slash menu renderer for the SlashCommand extension.
+This function creates a slash menu renderer for the SlashCommand extension.
 
 ```typescript
 import { createVizelSlashMenuRenderer } from '@vizel/svelte';
@@ -490,7 +625,7 @@ const editor = createVizelEditor({
 
 ## Importing from @vizel/core and @tiptap/core
 
-Framework packages do not re-export from `@vizel/core`. Import directly:
+Framework packages do not re-export from `@vizel/core`. You must import directly:
 
 ```typescript
 // Framework-specific components and runes

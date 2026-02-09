@@ -106,7 +106,7 @@ All-in-one editor component with built-in bubble menu.
 
 ### createVizelEditor
 
-Creates and manages a Vizel editor instance using Svelte 5 runes.
+This rune creates and manages a Vizel editor instance using Svelte 5 reactivity.
 
 ```svelte
 <script lang="ts">
@@ -136,7 +136,7 @@ Returns `{ current: Editor | null }`. Access the editor via `editor.current`.
 
 ### createVizelState
 
-Forces component re-render on editor state changes.
+This rune forces a component re-render on editor state changes.
 
 ```svelte
 <script lang="ts">
@@ -158,7 +158,7 @@ Forces component re-render on editor state changes.
 
 ### createVizelAutoSave
 
-Automatically saves editor content.
+This rune automatically saves editor content.
 
 ```svelte
 <script lang="ts">
@@ -181,7 +181,7 @@ Automatically saves editor content.
 
 ### createVizelMarkdown
 
-Two-way Markdown synchronization with debouncing.
+This rune provides two-way Markdown synchronization with debouncing.
 
 ```svelte
 <script lang="ts">
@@ -210,7 +210,7 @@ Two-way Markdown synchronization with debouncing.
 
 ### getVizelTheme
 
-Access theme state within VizelThemeProvider context.
+This rune accesses theme state within `VizelThemeProvider` context.
 
 ```svelte
 <script lang="ts">
@@ -235,7 +235,7 @@ Access theme state within VizelThemeProvider context.
 
 ### VizelEditor
 
-Renders the editor content area.
+This component renders the editor content area.
 
 ```svelte
 <VizelEditor 
@@ -253,7 +253,7 @@ Renders the editor content area.
 
 ### VizelBubbleMenu
 
-Floating bubble menu on text selection.
+This component displays a floating bubble menu on text selection.
 
 ```svelte
 <VizelBubbleMenu 
@@ -278,7 +278,7 @@ Floating bubble menu on text selection.
 
 ### VizelThemeProvider
 
-Provides theme context.
+This component provides theme context.
 
 ```svelte
 <VizelThemeProvider 
@@ -301,7 +301,7 @@ Provides theme context.
 
 ### VizelSaveIndicator
 
-Displays save status.
+This component displays the save status.
 
 ```svelte
 <VizelSaveIndicator 
@@ -313,7 +313,7 @@ Displays save status.
 
 ### VizelPortal
 
-Renders children in a portal.
+This component renders children in a portal.
 
 ```svelte
 <VizelPortal container={document.body}>
@@ -496,7 +496,7 @@ Renders children in a portal.
 
 ## SSR/SvelteKit Considerations
 
-The editor is client-side only. Use `browser` check or `onMount`:
+The editor runs on the client side only. Use a `browser` check or `onMount`:
 
 ```svelte
 <script lang="ts">
