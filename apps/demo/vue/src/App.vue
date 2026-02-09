@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import type { Editor, JSONContent } from "@tiptap/core";
-import {
-  createVizelFindReplaceExtension,
-  getVizelEditorState,
-  setVizelMarkdown,
-} from "@vizel/core";
+import { createVizelFindReplaceExtension, setVizelMarkdown } from "@vizel/core";
 import {
   useVizelAutoSave,
-  useVizelState,
+  useVizelComment,
+  useVizelEditorState,
+  useVizelVersionHistory,
   Vizel,
   VizelFindReplace,
   VizelSaveIndicator,
@@ -26,30 +24,40 @@ const features = reactive({
   autoSave: true,
   stats: true,
   syncPanel: true,
+  comments: false,
+  history: false,
 });
 
-type PanelTab = "markdown" | "json";
+type PanelTab = "markdown" | "json" | "history" | "comments";
 const activeTab = ref<PanelTab>("markdown");
 const jsonInput = ref("");
 const markdownInput = ref("");
+const versionDescription = ref("");
+const commentText = ref("");
+const replyTexts = ref<Record<string, string>>({});
 
 // Store editor reference from Vizel component
 const editorRef = shallowRef<Editor | null>(null);
 
 // Track editor state for character/word count (only when stats enabled)
-const updateCount = useVizelState(() => (features.stats ? editorRef.value : null));
-const editorState = computed(() => {
-  void updateCount.value;
-  return features.stats
-    ? getVizelEditorState(editorRef.value)
-    : { characterCount: 0, wordCount: 0 };
-});
+const editorState = useVizelEditorState(() => (features.stats ? editorRef.value : null));
 
 // Auto-save functionality (only when autoSave enabled)
 const { status, lastSaved } = useVizelAutoSave(() => (features.autoSave ? editorRef.value : null), {
   debounceMs: 2000,
   storage: "localStorage",
   key: "vizel-demo-vue",
+});
+
+// Version History (only when history panel enabled)
+const versionHistory = useVizelVersionHistory(() => (features.history ? editorRef.value : null), {
+  key: "vizel-demo-vue-versions",
+  maxVersions: 20,
+});
+
+// Comments (only when comments panel enabled)
+const commentManager = useVizelComment(() => (features.comments ? editorRef.value : null), {
+  key: "vizel-demo-vue-comments",
 });
 
 // Find & Replace extension
@@ -90,6 +98,27 @@ function handleJsonChange(event: Event) {
     // Invalid JSON, ignore
   }
 }
+
+async function handleSaveVersion() {
+  if (!versionDescription.value.trim()) return;
+  await versionHistory.saveVersion(versionDescription.value.trim());
+  versionDescription.value = "";
+}
+
+async function handleAddComment() {
+  if (!commentText.value.trim()) return;
+  await commentManager.addComment(commentText.value.trim(), "Demo User");
+  commentText.value = "";
+}
+
+async function handleReply(commentId: string) {
+  const text = replyTexts.value[commentId]?.trim();
+  if (!text) return;
+  await commentManager.replyToComment(commentId, text, "Demo User");
+  replyTexts.value = { ...replyTexts.value, [commentId]: "" };
+}
+
+const showPanel = computed(() => features.syncPanel || features.history || features.comments);
 </script>
 
 <template>
@@ -135,6 +164,14 @@ function handleJsonChange(event: Event) {
             <input type="checkbox" v-model="features.syncPanel" />
             <span class="feature-toggle-label">Sync Panel</span>
           </label>
+          <label class="feature-toggle">
+            <input type="checkbox" v-model="features.comments" />
+            <span class="feature-toggle-label">Comments</span>
+          </label>
+          <label class="feature-toggle">
+            <input type="checkbox" v-model="features.history" />
+            <span class="feature-toggle-label">History</span>
+          </label>
         </div>
       </section>
 
@@ -154,6 +191,8 @@ function handleJsonChange(event: Event) {
                 embed: true,
                 details: true,
                 diagram: true,
+                wikiLink: true,
+                comment: true,
                 image: {
                   onUpload: mockUploadImage,
                   maxFileSize: 10 * 1024 * 1024,
@@ -182,10 +221,11 @@ function handleJsonChange(event: Event) {
           </div>
         </div>
 
-        <div v-if="features.syncPanel" class="panel-section">
+        <div v-if="showPanel" class="panel-section">
           <div class="panel-container">
             <div class="panel-tabs">
               <button
+                v-if="features.syncPanel"
                 type="button"
                 class="panel-tab"
                 :data-active="activeTab === 'markdown'"
@@ -194,6 +234,7 @@ function handleJsonChange(event: Event) {
                 Markdown
               </button>
               <button
+                v-if="features.syncPanel"
                 type="button"
                 class="panel-tab"
                 :data-active="activeTab === 'json'"
@@ -201,22 +242,158 @@ function handleJsonChange(event: Event) {
               >
                 JSON
               </button>
+              <button
+                v-if="features.history"
+                type="button"
+                class="panel-tab"
+                :data-active="activeTab === 'history'"
+                @click="activeTab = 'history'"
+              >
+                History
+              </button>
+              <button
+                v-if="features.comments"
+                type="button"
+                class="panel-tab"
+                :data-active="activeTab === 'comments'"
+                @click="activeTab = 'comments'"
+              >
+                Comments
+              </button>
             </div>
             <div class="panel-content">
               <textarea
-                v-if="activeTab === 'markdown'"
+                v-if="activeTab === 'markdown' && features.syncPanel"
                 class="panel-textarea"
                 :value="markdownInput"
                 placeholder="Edit Markdown here..."
                 @input="handleMarkdownChange"
               />
               <textarea
-                v-if="activeTab === 'json'"
+                v-if="activeTab === 'json' && features.syncPanel"
                 class="panel-textarea"
                 :value="jsonInput"
                 placeholder="Edit JSON here..."
                 @input="handleJsonChange"
               />
+
+              <!-- Version History -->
+              <template v-if="activeTab === 'history'">
+                <div class="panel-list">
+                  <div class="panel-action-bar">
+                    <input
+                      type="text"
+                      placeholder="Version description..."
+                      v-model="versionDescription"
+                      @keydown.enter="handleSaveVersion"
+                    />
+                    <button type="button" class="panel-action-btn" @click="handleSaveVersion">
+                      Save
+                    </button>
+                  </div>
+                  <div v-if="versionHistory.snapshots.value.length === 0" class="panel-list-empty">
+                    No versions saved yet
+                  </div>
+                  <div
+                    v-for="snapshot in versionHistory.snapshots.value"
+                    :key="snapshot.id"
+                    class="panel-item"
+                  >
+                    <div class="panel-item-header">
+                      <span class="panel-item-text">{{ snapshot.description || "Untitled" }}</span>
+                      <span class="panel-item-meta">
+                        {{ new Date(snapshot.timestamp).toLocaleString() }}
+                      </span>
+                    </div>
+                    <div class="panel-item-actions">
+                      <button type="button" class="panel-item-btn" @click="versionHistory.restoreVersion(snapshot.id)">
+                        Restore
+                      </button>
+                      <button type="button" class="panel-item-btn panel-item-btn--danger" @click="versionHistory.deleteVersion(snapshot.id)">
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              <!-- Comments -->
+              <template v-if="activeTab === 'comments'">
+                <div class="panel-list">
+                  <div class="panel-action-bar">
+                    <input
+                      type="text"
+                      placeholder="Select text, then add a comment..."
+                      v-model="commentText"
+                      @keydown.enter="handleAddComment"
+                    />
+                    <button type="button" class="panel-action-btn" @click="handleAddComment">
+                      Add
+                    </button>
+                  </div>
+                  <div v-if="commentManager.comments.value.length === 0" class="panel-list-empty">
+                    No comments yet
+                  </div>
+                  <div
+                    v-for="comment in commentManager.comments.value"
+                    :key="comment.id"
+                    :class="['panel-item', comment.resolved ? 'panel-item-resolved' : '']"
+                    role="button"
+                    tabindex="0"
+                    @click="commentManager.setActiveComment(comment.id)"
+                    @keydown.enter="commentManager.setActiveComment(comment.id)"
+                  >
+                    <div class="panel-item-header">
+                      <span class="panel-item-text">{{ comment.text }}</span>
+                      <span class="panel-item-meta">
+                        {{ comment.author ? comment.author + ' · ' : '' }}{{ new Date(comment.createdAt).toLocaleString() }}
+                      </span>
+                    </div>
+                    <div class="panel-item-actions">
+                      <button
+                        v-if="comment.resolved"
+                        type="button"
+                        class="panel-item-btn"
+                        @click.stop="commentManager.reopenComment(comment.id)"
+                      >
+                        Reopen
+                      </button>
+                      <button
+                        v-else
+                        type="button"
+                        class="panel-item-btn"
+                        @click.stop="commentManager.resolveComment(comment.id)"
+                      >
+                        Resolve
+                      </button>
+                      <button
+                        type="button"
+                        class="panel-item-btn panel-item-btn--danger"
+                        @click.stop="commentManager.removeComment(comment.id)"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div v-if="comment.replies.length > 0" class="panel-replies">
+                      <div v-for="reply in comment.replies" :key="reply.id" class="panel-reply">
+                        <span class="panel-reply-meta">
+                          {{ reply.author ? reply.author + ' · ' : '' }}{{ new Date(reply.createdAt).toLocaleString() }}
+                        </span>
+                        <div>{{ reply.text }}</div>
+                      </div>
+                    </div>
+                    <div class="panel-reply-input" @click.stop>
+                      <input
+                        placeholder="Reply..."
+                        :value="replyTexts[comment.id] || ''"
+                        @input="(e) => { replyTexts = { ...replyTexts, [comment.id]: (e.target as HTMLInputElement).value } }"
+                        @keydown.enter="handleReply(comment.id)"
+                      />
+                      <button type="button" @click="handleReply(comment.id)">Reply</button>
+                    </div>
+                  </div>
+                </div>
+              </template>
             </div>
           </div>
         </div>

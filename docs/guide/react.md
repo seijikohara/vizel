@@ -350,9 +350,7 @@ function SimpleMarkdownEditor() {
     <Vizel 
       initialMarkdown="# Hello World\n\nStart editing..."
       onUpdate={({ editor }) => {
-        // Get markdown using core utility
-        import { getVizelMarkdown } from '@vizel/core';
-        const md = getVizelMarkdown(editor);
+        const md = editor.getMarkdown();
         console.log(md);
       }}
     />

@@ -52,6 +52,11 @@ Each component must exist in all three frameworks with equivalent functionality:
 | VizelIcon | `.tsx` | `.vue` | `.svelte` |
 | VizelIconProvider | `.tsx` | `.vue` | `.svelte` |
 | VizelProvider | `.tsx` | `.vue` | `.svelte` |
+| VizelFindReplace | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbar | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbarButton | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbarDefault | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbarDivider | `.tsx` | `.vue` | `.svelte` |
 
 ### Props Interface
 
@@ -85,6 +90,9 @@ interface VizelBubbleMenuProps {
 | `useVizelContext` | `useVizelContext` | `getVizelContext` |
 | `useVizelIconContext` | `useVizelIconContext` | `getVizelIconContext` |
 | `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` |
+| `useVizelCollaboration` | `useVizelCollaboration` | `createVizelCollaboration` |
+| `useVizelComment` | `useVizelComment` | `createVizelComment` |
+| `useVizelVersionHistory` | `useVizelVersionHistory` | `createVizelVersionHistory` |
 
 ### Naming Conventions
 

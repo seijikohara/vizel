@@ -119,6 +119,7 @@ export {
   handleVizelImagePaste,
   searchVizelSlashCommands,
   VIZEL_DEFAULT_FILE_MIME_TYPES,
+  VIZEL_DEFAULT_IMAGE_MAX_FILE_SIZE,
   VIZEL_HIGHLIGHT_COLORS,
   // Table controls
   VIZEL_TABLE_MENU_ITEMS,

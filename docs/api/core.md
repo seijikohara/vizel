@@ -192,7 +192,7 @@ This function formats a date as relative time.
 import { formatVizelRelativeTime } from '@vizel/core';
 
 formatVizelRelativeTime(new Date(Date.now() - 60000));
-// "1 minute ago"
+// "1m ago"
 ```
 
 ---
@@ -228,7 +228,7 @@ This function applies a theme to the DOM.
 ```typescript
 import { applyVizelTheme } from '@vizel/core';
 
-applyVizelTheme('dark', document.documentElement);
+applyVizelTheme('dark', 'html');
 ```
 
 ### getVizelThemeInitScript
@@ -925,17 +925,18 @@ const ordered = resolveVizelPluginDependencies(plugins);
 
 ## Importing from Tiptap
 
-Vizel does not re-export Tiptap types and classes. Import them directly from `@tiptap/core`:
+For convenience, `@vizel/core` re-exports commonly used Tiptap types and classes: `Editor`, `Extensions`, `JSONContent`, `BubbleMenuPlugin`, `SuggestionOptions`, and `SuggestionProps`. You can import them from either `@vizel/core` or directly from `@tiptap/core`:
 
 ```typescript
-// Import Vizel types/utilities from @vizel/core
+// Option 1: Import from @vizel/core (convenience re-exports)
 import { createVizelExtensions, getVizelEditorState } from '@vizel/core';
-import type { VizelEditorOptions, VizelFeatureOptions } from '@vizel/core';
+import type { Editor, JSONContent, Extensions, VizelEditorOptions } from '@vizel/core';
 
-// Import Tiptap types/classes directly from @tiptap/core
-import { Editor } from '@tiptap/core';
-import type { JSONContent, Extensions } from '@tiptap/core';
+// Option 2: Import Tiptap types directly
+import type { Editor, JSONContent, Extensions } from '@tiptap/core';
 ```
+
+For types not re-exported by Vizel, import them directly from the relevant `@tiptap/*` package.
 
 ---
 

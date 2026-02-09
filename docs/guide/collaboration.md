@@ -59,7 +59,8 @@ import { WebsocketProvider } from "y-websocket";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import {
-  Vizel,
+  VizelEditor,
+  VizelBubbleMenu,
   useVizelEditor,
   useVizelCollaboration,
 } from "@vizel/react";
@@ -95,7 +96,8 @@ function CollaborativeEditor() {
         <span>{isSynced ? "Synced" : "Syncing..."}</span>
         <span>{peerCount} peer(s)</span>
       </div>
-      <Vizel editor={editor} />
+      <VizelEditor editor={editor} />
+      {editor && <VizelBubbleMenu editor={editor} />}
     </div>
   );
 }
@@ -108,7 +110,8 @@ import { WebsocketProvider } from "y-websocket";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import {
-  Vizel,
+  VizelEditor,
+  VizelBubbleMenu,
   useVizelEditor,
   useVizelCollaboration,
 } from "@vizel/vue";
@@ -146,7 +149,8 @@ const editor = useVizelEditor({
       <span>{{ isSynced ? "Synced" : "Syncing..." }}</span>
       <span>{{ peerCount }} peer(s)</span>
     </div>
-    <Vizel :editor="editor" />
+    <VizelEditor :editor="editor" />
+    <VizelBubbleMenu v-if="editor" :editor="editor" />
   </div>
 </template>
 ```
@@ -158,7 +162,8 @@ import { WebsocketProvider } from "y-websocket";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import {
-  Vizel,
+  VizelEditor,
+  VizelBubbleMenu,
   createVizelEditor,
   createVizelCollaboration,
 } from "@vizel/svelte";
@@ -195,7 +200,10 @@ const editor = createVizelEditor({
     <span>{collab.isSynced ? "Synced" : "Syncing..."}</span>
     <span>{collab.peerCount} peer(s)</span>
   </div>
-  <Vizel editor={editor.current} />
+  <VizelEditor editor={editor.current} />
+  {#if editor.current}
+    <VizelBubbleMenu editor={editor.current} />
+  {/if}
 </div>
 ```
 

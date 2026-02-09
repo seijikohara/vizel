@@ -8,52 +8,52 @@ Main configuration for all editor features.
 
 ```typescript
 interface VizelFeatureOptions {
-  /** Slash command menu */
-  slashCommand?: VizelSlashCommandOptions | false;
-  
-  /** Table editing */
-  table?: boolean;
-  
-  /** Link support */
+  /** Slash command menu (type "/" to open) */
+  slashCommand?: VizelSlashCommandOptions | boolean;
+
+  /** Table support with column/row controls */
+  table?: VizelTableOptions | boolean;
+
+  /** Link extension with autolink and paste support */
   link?: VizelLinkOptions | boolean;
-  
+
   /** Image upload and resize */
-  image?: VizelImageFeatureOptions | false;
-  
-  /** Markdown import/export */
+  image?: VizelImageFeatureOptions | boolean;
+
+  /** Markdown import/export support */
   markdown?: VizelMarkdownOptions | boolean;
-  
-  /** Task list support */
-  taskList?: VizelTaskListOptions | boolean;
-  
-  /** Character counting */
+
+  /** Task list (checkbox) support */
+  taskList?: VizelTaskListExtensionsOptions | boolean;
+
+  /** Character and word count tracking */
   characterCount?: VizelCharacterCountOptions | boolean;
-  
-  /** Text color and highlight */
+
+  /** Text color and highlight support */
   textColor?: VizelTextColorOptions | boolean;
-  
+
   /** Code block with syntax highlighting */
   codeBlock?: VizelCodeBlockOptions | boolean;
-  
-  /** Mathematics (LaTeX) */
+
+  /** Mathematics (LaTeX) support with KaTeX rendering */
   mathematics?: VizelMathematicsOptions | boolean;
-  
-  /** Drag handle for blocks */
+
+  /** Drag handle for block reordering */
   dragHandle?: VizelDragHandleOptions | boolean;
-  
-  /** URL embeds */
+
+  /** URL embedding with oEmbed/OGP support */
   embed?: VizelEmbedOptions | boolean;
-  
-  /** Collapsible details */
+
+  /** Collapsible content blocks (accordion) */
   details?: VizelDetailsOptions | boolean;
-  
-  /** Diagram support */
+
+  /** Diagram support (Mermaid, GraphViz) */
   diagram?: VizelDiagramOptions | boolean;
 
-  /** Wiki-style internal links ([[page-name]]) */
+  /** Wiki links ([[page-name]], [[page|display text]]) */
   wikiLink?: VizelWikiLinkOptions | boolean;
 
-  /** Comment/annotation marks */
+  /** Comment/annotation marks for collaborative review */
   comment?: VizelCommentMarkOptions | boolean;
 
   /** Real-time collaboration mode (disables History extension) */
@@ -69,7 +69,7 @@ interface VizelSlashCommandOptions {
   items?: VizelSlashCommandItem[];
   
   /** Suggestion configuration */
-  suggestion?: Record<string, unknown>;
+  suggestion?: Partial<SuggestionOptions<VizelSlashCommandItem>>;
 }
 
 interface VizelSlashCommandItem {
@@ -83,7 +83,7 @@ interface VizelSlashCommandItem {
   icon: VizelSlashCommandIconName;
   
   /** Command to execute */
-  command: (props: { editor: Editor; range: VizelRange }) => void;
+  command: (props: { editor: Editor; range: VizelSlashCommandRange }) => void;
   
   /** Search keywords */
   keywords?: string[];
@@ -135,11 +135,10 @@ interface VizelImageFeatureOptions {
   onUploadError?: (error: Error, file: File) => void;
 }
 
-interface ImageValidationError {
-  type: 'file-too-large' | 'invalid-type';
+interface VizelImageValidationError {
+  type: 'file_too_large' | 'invalid_type';
+  message: string;
   file: File;
-  maxSize?: number;
-  allowedTypes?: string[];
 }
 ```
 
@@ -268,9 +267,16 @@ interface VizelEmbedOptions {
 }
 
 interface VizelEmbedProvider {
+  /** Provider name (e.g., 'youtube', 'twitter') */
   name: string;
-  pattern: RegExp;
-  transform: (url: string, match: RegExpMatchArray) => VizelEmbedData;
+  /** URL patterns to match */
+  patterns: RegExp[];
+  /** oEmbed API endpoint (optional) */
+  oEmbedEndpoint?: string;
+  /** Whether the oEmbed endpoint supports CORS */
+  supportsCors?: boolean;
+  /** Transform function for URL (e.g., extract video ID) */
+  transform?: (url: string) => string;
 }
 ```
 
@@ -314,12 +320,12 @@ interface VizelDetailsOptions {
   detailsSummary?: DetailsSummaryOptions;
 }
 
-interface VizelTaskListOptions {
-  /** Task list container options */
-  taskList?: TaskListOptions;
+interface VizelTaskListExtensionsOptions {
+  /** Options for the task list extension */
+  taskList?: VizelTaskListOptions;
 
-  /** Task item options */
-  taskItem?: TaskItemOptions;
+  /** Options for the task item extension */
+  taskItem?: VizelTaskItemOptions;
 }
 ```
 
@@ -362,13 +368,15 @@ interface VizelWikiLinkSuggestion {
 
 ```typescript
 interface VizelCommentMarkOptions {
-  /** Enable comment marks (default: true) */
-  enabled?: boolean;
+  /** Additional HTML attributes for comment marks */
+  HTMLAttributes?: Record<string, string>;
+  /** Callback when a comment mark is clicked */
+  onCommentClick?: (commentId: string) => void;
 }
 ```
 
 ::: tip
-Comment mark options control the editor extension for highlighting commented text. For full comment management (storage, replies, resolution), use the `createVizelCommentHandlers` function from `@vizel/core` or the framework-specific hooks/composables/runes.
+Comment mark options control the editor extension for highlighting commented text. For full comment management (storage, replies, resolution), use the framework-specific hooks/composables/runes: `useVizelComment` (React/Vue) or `createVizelComment` (Svelte).
 :::
 
 ## Collaboration

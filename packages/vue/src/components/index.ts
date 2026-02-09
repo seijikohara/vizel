@@ -1,5 +1,3 @@
-// VizelBubbleMenu components
-
 // Vizel all-in-one component
 export { default as Vizel, type VizelProps, type VizelRef } from "./Vizel.vue";
 // VizelBubbleMenu components

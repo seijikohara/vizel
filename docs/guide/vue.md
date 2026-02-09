@@ -227,23 +227,36 @@ const { markdown, setMarkdown, isPending } = useVizelMarkdown(() => editor.value
 This composable accesses theme state within `VizelThemeProvider`.
 
 ```vue
+<!-- App.vue - VizelThemeProvider wraps the app -->
 <script setup lang="ts">
-import { useVizelTheme, VizelThemeProvider } from '@vizel/vue';
-
-const { theme, resolvedTheme, setTheme } = useVizelTheme();
-
-function toggleTheme() {
-  setTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark');
-}
+import { VizelThemeProvider } from '@vizel/vue';
+import ThemeToggle from './ThemeToggle.vue';
 </script>
 
 <template>
   <VizelThemeProvider defaultTheme="system">
     <Editor />
-    <button @click="toggleTheme">
-      {{ resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode' }}
-    </button>
+    <ThemeToggle />
   </VizelThemeProvider>
+</template>
+```
+
+```vue
+<!-- ThemeToggle.vue - useVizelTheme() must be called inside the provider -->
+<script setup lang="ts">
+import { useVizelTheme } from '@vizel/vue';
+
+const { resolvedTheme, setTheme } = useVizelTheme();
+
+function toggleTheme() {
+  setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+}
+</script>
+
+<template>
+  <button @click="toggleTheme">
+    {{ resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode' }}
+  </button>
 </template>
 ```
 

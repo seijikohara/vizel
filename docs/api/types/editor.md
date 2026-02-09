@@ -8,50 +8,57 @@ Main configuration options for creating an editor.
 
 ```typescript
 interface VizelEditorOptions {
-  /** Initial content in JSON format */
-  initialContent?: JSONContent;
-  
-  /** Initial content in Markdown format */
-  initialMarkdown?: string;
-  
-  /** Placeholder text when editor is empty */
-  placeholder?: string;
-  
-  /** Whether the editor is editable */
-  editable?: boolean;
-  
-  /** Auto focus behavior on mount */
-  autofocus?: boolean | 'start' | 'end' | 'all' | number;
-  
   /** Feature configuration */
   features?: VizelFeatureOptions;
-  
-  /** Additional Tiptap extensions */
-  extensions?: Extensions;
-  
+
+  /** Initial content in JSON format */
+  initialContent?: JSONContent;
+
+  /** Initial content in Markdown format */
+  initialMarkdown?: string;
+
+  /** Transform diagram code blocks on Markdown import (default: true) */
+  transformDiagramsOnImport?: boolean;
+
+  /** Placeholder text when editor is empty */
+  placeholder?: string;
+
+  /** Whether the editor is editable */
+  editable?: boolean;
+
+  /** Auto focus behavior on mount */
+  autofocus?: boolean | 'start' | 'end' | 'all' | number;
+
   /** Called when content changes */
   onUpdate?: (props: { editor: Editor }) => void;
-  
+
   /** Called when editor is created */
   onCreate?: (props: { editor: Editor }) => void;
-  
+
   /** Called when editor is destroyed */
   onDestroy?: () => void;
-  
+
   /** Called when selection changes */
   onSelectionUpdate?: (props: { editor: Editor }) => void;
-  
+
   /** Called when editor receives focus */
   onFocus?: (props: { editor: Editor }) => void;
-  
+
   /** Called when editor loses focus */
   onBlur?: (props: { editor: Editor }) => void;
+
+  /** Called when an error occurs (error is re-thrown after callback) */
+  onError?: (error: VizelError) => void;
 }
 ```
 
 ::: tip Markdown vs JSON
-If both `initialContent` and `initialMarkdown` are provided, `initialContent` takes precedence.
+If both `initialContent` and `initialMarkdown` are provided, `initialMarkdown` takes precedence.
 Using `initialMarkdown` is recommended for most use cases as it's more human-readable.
+:::
+
+::: info extensions
+The `extensions` property is available on `VizelCreateEditorOptions` (used by `useVizelEditor` / `createVizelEditor`), not on `VizelEditorOptions` directly. The `Vizel` component also accepts `extensions` as a prop.
 :::
 
 ## JSONContent
@@ -129,12 +136,12 @@ const state = getVizelEditorState(editor);
 console.log(`${state.characterCount} characters, ${state.wordCount} words`);
 ```
 
-## VizelRange
+## VizelSlashCommandRange
 
-Selection range type that commands use.
+Selection range type that slash commands use.
 
 ```typescript
-interface VizelRange {
+interface VizelSlashCommandRange {
   from: number;
   to: number;
 }
@@ -146,14 +153,30 @@ Data structure that represents embedded content.
 
 ```typescript
 interface VizelEmbedData {
-  type: 'iframe' | 'video' | 'image' | 'link';
+  /** Original URL */
   url: string;
-  title?: string;
-  description?: string;
-  thumbnail?: string;
-  width?: number;
-  height?: number;
+  /** Type of embed based on available data */
+  type: 'oembed' | 'ogp' | 'title' | 'link';
+  /** Provider name if detected */
+  provider?: string;
+  /** oEmbed HTML content */
   html?: string;
+  /** oEmbed width */
+  width?: number;
+  /** oEmbed height */
+  height?: number;
+  /** OGP/oEmbed title */
+  title?: string;
+  /** OGP/oEmbed description */
+  description?: string;
+  /** OGP/oEmbed image URL */
+  image?: string;
+  /** OGP site name */
+  siteName?: string;
+  /** Favicon URL */
+  favicon?: string;
+  /** Whether the embed is currently loading */
+  loading?: boolean;
 }
 ```
 
@@ -165,6 +188,8 @@ Options for Markdown synchronization hooks/composables/runes.
 interface VizelMarkdownSyncOptions {
   /** Debounce delay in milliseconds (default: 300) */
   debounceMs?: number;
+  /** Transform diagram code blocks when setting markdown (default: true) */
+  transformDiagrams?: boolean;
 }
 ```
 
@@ -190,18 +215,14 @@ interface VizelMarkdownSyncResult {
 These utility functions help you work with Markdown content.
 
 ```typescript
-import { 
-  getVizelMarkdown, 
-  setVizelMarkdown, 
-  parseVizelMarkdown 
-} from '@vizel/core';
-
-// Get Markdown from editor
-const markdown = getVizelMarkdown(editor);
+// Get Markdown from editor (preferred)
+const markdown = editor.getMarkdown();
 
 // Set editor content from Markdown
+import { setVizelMarkdown } from '@vizel/core';
 setVizelMarkdown(editor, '# Hello World');
 
 // Parse Markdown to JSONContent (without an editor)
+import { parseVizelMarkdown } from '@vizel/core';
 const json = parseVizelMarkdown('# Hello World');
 ```

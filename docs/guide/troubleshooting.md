@@ -120,8 +120,8 @@ const editor = useVizelEditor({
     image: {
       maxFileSize: 5 * 1024 * 1024, // 5MB
       onValidationError: (error) => {
-        if (error.type === 'file-too-large') {
-          alert(`File too large. Maximum size: ${error.maxFileSize} bytes`);
+        if (error.type === 'file_too_large') {
+          alert(`File too large: ${error.message}`);
         }
       },
     },
@@ -139,7 +139,7 @@ const editor = useVizelEditor({
     image: {
       allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
       onValidationError: (error) => {
-        if (error.type === 'invalid-type') {
+        if (error.type === 'invalid_type') {
           alert('Only JPEG, PNG, and WebP images are allowed');
         }
       },
