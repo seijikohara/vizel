@@ -8,11 +8,13 @@ The main configuration object passed to `useVizelEditor` (React/Vue) or `createV
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `initialContent` | `JSONContent` | Empty doc | Initial content in Tiptap JSON format |
-| `placeholder` | `string` | `"Type '/' for commands..."` | Placeholder text when editor is empty |
+| `initialContent` | `JSONContent` | - | Initial content in Tiptap JSON format |
+| `initialMarkdown` | `string` | - | Initial content in Markdown format. Takes precedence over `initialContent` if both are provided |
+| `placeholder` | `string` | - | Placeholder text when editor is empty |
 | `editable` | `boolean` | `true` | Whether the editor is editable |
 | `autofocus` | `boolean \| "start" \| "end" \| "all" \| number` | `false` | Auto focus behavior on mount |
 | `features` | `VizelFeatureOptions` | See [Features](/guide/features) | Feature configuration |
+| `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks to diagram nodes when importing Markdown |
 | `extensions` | `Extensions` | `[]` | Additional Tiptap extensions |
 
 ### Callbacks
@@ -25,6 +27,7 @@ The main configuration object passed to `useVizelEditor` (React/Vue) or `createV
 | `onSelectionUpdate` | `({ editor }) => void` | Fires when selection changes |
 | `onFocus` | `({ editor }) => void` | Fires when the editor receives focus |
 | `onBlur` | `({ editor }) => void` | Fires when the editor loses focus |
+| `onError` | `(error: VizelError) => void` | Fires when an error occurs during editor operations. The error is re-thrown after this callback |
 
 ### Example
 

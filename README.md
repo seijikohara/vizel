@@ -44,6 +44,14 @@
 - **Auto-save** - localStorage, sessionStorage, or custom backend
 - **Dark Mode** - System-aware theme switching
 - **Character Count** - Real-time character and word count
+- **Wiki Links** - `[[page-name]]` syntax for internal linking
+- **Find & Replace** - Search and replace with keyboard shortcuts
+- **Diagrams** - Mermaid and GraphViz diagram rendering
+- **Comments** - Text annotations for collaborative review
+- **Version History** - Document snapshots and restore
+- **Collaboration** - Real-time multi-user editing with Yjs
+- **Drag & Drop** - Block reordering with drag handle and Alt+Arrow keys
+- **Plugin System** - Extensible plugin architecture
 
 ## Packages
 
@@ -131,12 +139,16 @@ function App() {
 <script setup lang="ts">
 import { Vizel } from '@vizel/vue';
 import '@vizel/core/styles.css';
+
+function handleUpdate({ editor }: { editor: any }) {
+  console.log(editor.getJSON());
+}
 </script>
 
 <template>
   <Vizel
     placeholder="Type '/' for commands..."
-    @update="({ editor }) => console.log(editor.getJSON())"
+    @update="handleUpdate"
   />
 </template>
 ```
@@ -183,6 +195,52 @@ function Editor() {
 }
 ```
 
+```vue
+<!-- Vue -->
+<script setup lang="ts">
+import { VizelEditor, VizelBubbleMenu, useVizelEditor } from '@vizel/vue';
+import '@vizel/core/styles.css';
+
+const editor = useVizelEditor({
+  placeholder: "Type '/' for commands...",
+  features: {
+    image: {
+      onUpload: async (file) => 'https://example.com/image.png',
+    },
+  },
+});
+</script>
+
+<template>
+  <div>
+    <VizelEditor :editor="editor" />
+    <VizelBubbleMenu v-if="editor" :editor="editor" />
+  </div>
+</template>
+```
+
+```svelte
+<!-- Svelte -->
+<script lang="ts">
+  import { VizelEditor, VizelBubbleMenu, createVizelEditor } from '@vizel/svelte';
+  import '@vizel/core/styles.css';
+
+  const editor = createVizelEditor({
+    placeholder: "Type '/' for commands...",
+    features: {
+      image: {
+        onUpload: async (file) => 'https://example.com/image.png',
+      },
+    },
+  });
+</script>
+
+<VizelEditor editor={editor.current} />
+{#if editor.current}
+  <VizelBubbleMenu editor={editor.current} />
+{/if}
+```
+
 ## Configuration
 
 ### Vizel Component Props
@@ -198,11 +256,33 @@ function Editor() {
 | `class` / `className` | `string` | - | Custom CSS class |
 | `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
-| `enableEmbed` | `boolean` | - | Enable embed in bubble menu link editor |
+| `enableEmbed` | `boolean` | - | Enable oEmbed/OGP embed previews in the link editor |
+| `transformDiagramsOnImport` | `boolean` | - | Transform diagrams on Markdown import |
+| `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `onCreate` | `(props) => void` | - | Called when editor is created |
+| `onUpdate` | `(props) => void` | - | Called on content update |
+| `onSelectionUpdate` | `(props) => void` | - | Called on selection change |
+| `onFocus` | `(props) => void` | - | Called when editor gains focus |
+| `onBlur` | `(props) => void` | - | Called when editor loses focus |
+| `onDestroy` | `() => void` | - | Called when editor is destroyed |
+
+### Error Handling
+
+The `onError` callback is available through `useVizelEditor` (React), `useVizelEditor` (Vue), or `createVizelEditor` (Svelte). It is not a prop on the `Vizel` all-in-one component.
+
+```typescript
+const editor = useVizelEditor({
+  onError: (error) => {
+    console.error(`[${error.code}] ${error.message}`);
+  },
+});
+```
+
+> **Note:** After the callback is invoked, the error is re-thrown. Use this callback for logging or user notifications.
 
 ### Feature Options
 
-All major features are enabled by default:
+All major features are enabled by default except `collaboration` and `comment`:
 
 ```typescript
 // Using Vizel component
@@ -233,6 +313,9 @@ const editor = useVizelEditor({
     embed: true,           // enabled by default
     details: true,         // enabled by default
     diagram: true,         // enabled by default
+    wikiLink: true,        // enabled by default
+    comment: true,         // opt-in: must be explicitly enabled
+    // collaboration: true, // opt-in: must be explicitly enabled
   },
 });
 ```

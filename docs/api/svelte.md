@@ -134,6 +134,7 @@ const md = createVizelMarkdown(
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `debounceMs` | `number` | `300` | Debounce delay in milliseconds |
+| `transformDiagrams` | `boolean` | `true` | Transform diagram code blocks when setting markdown |
 
 **Returns:**
 

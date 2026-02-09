@@ -31,14 +31,18 @@ apps/demo/
 
 ### Initial Content
 
-Each demo includes initial content demonstrating:
+Each demo includes initial content from `apps/demo/shared/demo-content.md` demonstrating:
 
-- Heading levels
-- Text formatting (bold, italic, code)
-- Links
-- Lists (bullet, numbered)
-- Blockquotes
-- Feature descriptions
+- Heading levels and text formatting (bold, italic, code, strikethrough)
+- Links, lists (bullet, numbered, task), and blockquotes
+- Tables with column alignment
+- Code blocks with syntax highlighting
+- Mathematics (LaTeX inline and block)
+- Diagrams (Mermaid)
+- Embeds (YouTube, etc.)
+- Collapsible details blocks
+- Wiki links
+- Image upload and resize
 
 ## Consistency Across Frameworks
 
@@ -54,9 +58,9 @@ All three demos must maintain:
 | Element | Description |
 |---------|-------------|
 | Header | Framework logo, title, badge |
-| Features bar | Slash Commands, Bubble Menu, Tables, Links, Image Upload |
-| Editor container | Editor with BubbleMenu |
-| JSON Output | Collapsible JSON viewer |
+| Feature Toggles | Toolbar, Theme, Auto-save, Stats, Sync Panel |
+| Editor container | Editor with BubbleMenu and optional Toolbar |
+| Output Panel | Tabbed panel with Markdown and JSON output |
 | Footer | Built with @vizel/* |
 
 ## Dependencies

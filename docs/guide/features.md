@@ -75,15 +75,15 @@ Type `/` to open the command menu for block insertion.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `items` | `SlashCommandItem[]` | Custom command items |
+| `items` | `VizelSlashCommandItem[]` | Custom command items |
 | `suggestion` | `object` | Suggestion configuration |
 
 ### Custom Commands
 
 ```typescript
-import type { SlashCommandItem } from '@vizel/core';
+import type { VizelSlashCommandItem } from '@vizel/core';
 
-const customItems: SlashCommandItem[] = [
+const customItems: VizelSlashCommandItem[] = [
   {
     title: 'Custom Block',
     description: 'Insert a custom block',
@@ -112,10 +112,11 @@ const editor = useVizelEditor({
 
 | Group | Commands |
 |-------|----------|
-| Text | Paragraph, Heading 1-3, Quote, Code |
+| Text | Heading 1, Heading 2, Heading 3 |
 | Lists | Bullet List, Numbered List, Task List |
-| Media | Image, Horizontal Rule |
-| Advanced | Details, Embed, Diagram, Math Block |
+| Blocks | Quote, Divider, Details, Code Block, Table |
+| Media | Image, Upload Image, Embed |
+| Advanced | Math Equation, Inline Math, Mermaid Diagram, GraphViz Diagram |
 
 ---
 
@@ -161,9 +162,9 @@ const editor = useVizelEditor({
       maxFileSize: 5 * 1024 * 1024, // 5MB
       allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
       onValidationError: (error) => {
-        if (error.type === 'file-too-large') {
+        if (error.type === 'file_too_large') {
           alert('File is too large. Maximum size is 5MB.');
-        } else if (error.type === 'invalid-type') {
+        } else if (error.type === 'invalid_type') {
           alert('Invalid file type. Only JPEG, PNG, and WebP are allowed.');
         }
       },
@@ -251,16 +252,16 @@ This feature adds text color and background highlight support.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `textColors` | `ColorDefinition[]` | Custom text color palette |
-| `highlightColors` | `ColorDefinition[]` | Custom highlight color palette |
+| `textColors` | `VizelColorDefinition[]` | Custom text color palette |
+| `highlightColors` | `VizelColorDefinition[]` | Custom highlight color palette |
 | `multicolor` | `boolean` | Enable multicolor highlights |
 
 ### Custom Color Palette
 
 ```typescript
-import type { ColorDefinition } from '@vizel/core';
+import type { VizelColorDefinition } from '@vizel/core';
 
-const customColors: ColorDefinition[] = [
+const customColors: VizelColorDefinition[] = [
   { name: 'Brand', color: '#6366f1' },
   { name: 'Success', color: '#22c55e' },
   { name: 'Warning', color: '#f59e0b' },
@@ -319,6 +320,16 @@ editor.commands.setContent(
 );
 ```
 
+::: tip Recommended API
+Use `editor.getMarkdown()` for Markdown export:
+
+```typescript
+const md = editor.getMarkdown();
+```
+
+The `editor.storage.markdown.getMarkdown()` method is an internal storage accessor. Prefer `editor.getMarkdown()` for application code.
+:::
+
 ---
 
 ## Mathematics
@@ -366,7 +377,7 @@ This feature embeds content from URLs (YouTube, Vimeo, Twitter).
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `fetchEmbedData` | `Function` | Built-in | Custom fetch function |
-| `providers` | `EmbedProvider[]` | Default providers | Custom/additional providers |
+| `providers` | `VizelEmbedProvider[]` | Default providers | Custom/additional providers |
 | `pasteHandler` | `boolean` | `true` | Auto-embed pasted URLs |
 | `inline` | `boolean` | `false` | Inline vs block embeds |
 
@@ -384,17 +395,12 @@ This feature embeds content from URLs (YouTube, Vimeo, Twitter).
 ### Example: Custom Provider
 
 ```typescript
-import type { EmbedProvider } from '@vizel/core';
+import type { VizelEmbedProvider } from '@vizel/core';
 
-const customProvider: EmbedProvider = {
+const customProvider: VizelEmbedProvider = {
   name: 'MyService',
-  pattern: /^https?:\/\/myservice\.com\/embed\/(\w+)/,
-  transform: (url, match) => ({
-    type: 'iframe',
-    url: `https://myservice.com/embed/${match[1]}`,
-    width: 640,
-    height: 360,
-  }),
+  patterns: [/^https?:\/\/myservice\.com\/embed\/(\w+)/],
+  transform: (url) => `https://myservice.com/embed/${url.split('/').pop()}`,
 };
 
 const editor = useVizelEditor({

@@ -16,23 +16,72 @@ This package provides:
 - Type definitions shared across framework packages
 - Utility functions for editor configuration
 - CSS styles for editor components
+- Auto-save, theme, collaboration, comments, and version history utilities
+- Plugin system for extending functionality
+
+## Exports
+
+| Category | Examples |
+|----------|---------|
+| Types | `VizelEditorOptions`, `VizelFeatureOptions`, `VizelEditorState`, `VizelSlashCommandItem` |
+| Extensions | `createVizelExtensions()`, `resolveVizelFeatures()` |
+| Utilities | `getVizelEditorState()`, `getVizelMarkdown()`, `createVizelImageUploader()` |
+| Theme | `VIZEL_DEFAULT_THEME`, `resolveVizelTheme()` |
+| Auto-save | `createVizelAutoSaveHandlers()` |
+| Collaboration | `createVizelCollaborationHandlers()` |
+| Comments | `createVizelCommentHandlers()` |
+| Version History | `createVizelVersionHistoryHandlers()` |
+| Plugin System | `VizelPluginManager`, `validateVizelPlugin()` |
+| Constants | `VIZEL_TEXT_COLORS`, `VIZEL_HIGHLIGHT_COLORS`, `vizelDefaultSlashCommands` |
+
+## CSS Entry Points
+
+| Import | Description |
+|--------|-------------|
+| `@vizel/core/styles.css` | Full stylesheet (CSS variables + component styles) |
+| `@vizel/core/components.css` | Component styles only (for shadcn/ui integration) |
+| `@vizel/core/mathematics.css` | KaTeX styles for math rendering |
+
+## Extensions
+
+All extensions are enabled by default except `collaboration` and `comment`:
+
+| Extension | Description |
+|-----------|-------------|
+| Base | Headings, bold, italic, underline, strikethrough, lists, blockquotes |
+| SlashCommand | Type `/` to open command menu |
+| Table | Table editing with row/column controls |
+| Link | Autolink and paste URL detection |
+| Image | Upload, paste, drag-and-drop, resize |
+| CodeBlock | Syntax highlighting with lowlight (37+ languages) |
+| CharacterCount | Real-time character and word count |
+| TextColor | Text color and highlight |
+| TaskList | Checkbox task lists |
+| DragHandle | Block drag handle and Alt+Arrow keyboard shortcuts |
+| Markdown | Import/export with GitHub Flavored Markdown |
+| Mathematics | LaTeX equations with KaTeX |
+| Embed | oEmbed/OGP URL embedding |
+| Details | Collapsible content blocks |
+| Diagram | Mermaid and GraphViz diagrams |
+| WikiLink | `[[page-name]]` internal linking |
+| Comment | Text annotations for collaborative review |
 
 ## Usage
 
-This package is typically used as a dependency of framework-specific packages:
+This package is used as a dependency of framework-specific packages:
 
-- `@vizel/react` - React components
-- `@vizel/vue` - Vue 3 components
-- `@vizel/svelte` - Svelte 5 components
+- `@vizel/react` - React 19 components and hooks
+- `@vizel/vue` - Vue 3 components and composables
+- `@vizel/svelte` - Svelte 5 components and runes
 
 ### Direct Usage
 
 ```typescript
-import { resolveVizelFeatures, createVizelImageUploader } from "@vizel/core";
-import type { VizelEditorOptions, VizelFeatureOptions } from "@vizel/core";
+import { resolveVizelFeatures, createVizelImageUploader } from '@vizel/core';
+import type { VizelEditorOptions, VizelFeatureOptions } from '@vizel/core';
 
 // Import styles
-import "@vizel/core/styles.css";
+import '@vizel/core/styles.css';
 ```
 
 ## Documentation

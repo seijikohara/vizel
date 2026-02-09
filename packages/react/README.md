@@ -1,6 +1,6 @@
 # @vizel/react
 
-React components for Vizel block-based Markdown editor.
+React 19 components and hooks for Vizel block-based Markdown editor.
 
 ## Installation
 
@@ -22,7 +22,7 @@ import { Vizel } from "@vizel/react";
 import "@vizel/core/styles.css";
 
 function App() {
-  return <Vizel />;
+  return <Vizel placeholder="Type '/' for commands..." />;
 }
 ```
 
@@ -33,12 +33,16 @@ import { VizelEditor, VizelBubbleMenu, useVizelEditor } from "@vizel/react";
 import "@vizel/core/styles.css";
 
 function App() {
-  const editor = useVizelEditor();
+  const editor = useVizelEditor({
+    features: {
+      image: { onUpload: async (file) => "https://example.com/image.png" },
+    },
+  });
 
   return (
     <>
       <VizelEditor editor={editor} />
-      <VizelBubbleMenu editor={editor} />
+      {editor && <VizelBubbleMenu editor={editor} />}
     </>
   );
 }
@@ -51,12 +55,7 @@ import { useVizelEditor, useVizelMarkdown } from "@vizel/react";
 
 function App() {
   const editor = useVizelEditor();
-  const { getMarkdown, setMarkdown } = useVizelMarkdown(() => editor);
-
-  const handleExport = () => {
-    const markdown = getMarkdown();
-    console.log(markdown);
-  };
+  const { markdown, setMarkdown } = useVizelMarkdown(() => editor);
 
   return <VizelEditor editor={editor} />;
 }
@@ -66,20 +65,45 @@ function App() {
 
 | Component | Description |
 |-----------|-------------|
-| `Vizel` | All-in-one editor with bubble menu |
+| `Vizel` | All-in-one editor with bubble menu and optional toolbar |
 | `VizelEditor` | Editor component |
 | `VizelBubbleMenu` | Floating formatting toolbar |
+| `VizelBubbleMenuDefault` | Default bubble menu layout |
+| `VizelBubbleMenuButton` | Bubble menu button |
+| `VizelBubbleMenuDivider` | Bubble menu divider |
+| `VizelBubbleMenuColorPicker` | Bubble menu color picker |
 | `VizelSlashMenu` | Slash command menu |
+| `VizelSlashMenuItem` | Slash command menu item |
+| `VizelSlashMenuEmpty` | Slash command empty state |
+| `VizelToolbar` | Fixed toolbar |
+| `VizelToolbarDefault` | Default toolbar layout |
+| `VizelToolbarButton` | Toolbar button |
+| `VizelToolbarDivider` | Toolbar divider |
+| `VizelLinkEditor` | Link editing popover |
+| `VizelNodeSelector` | Node type selector |
+| `VizelColorPicker` | Color picker |
+| `VizelFindReplace` | Find and replace panel |
+| `VizelSaveIndicator` | Auto-save status indicator |
+| `VizelEmbedView` | Embed content viewer |
 | `VizelIconProvider` | Custom icon provider |
+| `VizelThemeProvider` | Theme provider |
+| `VizelProvider` | Editor context provider |
+| `VizelPortal` | Portal component |
 
 ## Hooks
 
 | Hook | Description |
 |------|-------------|
 | `useVizelEditor` | Create and manage editor instance |
-| `useVizelMarkdown` | Markdown import/export |
-| `useVizelAutoSave` | Auto-save functionality |
-| `useVizelState` | Editor state management |
+| `useVizelEditorState` | Track editor state changes |
+| `useVizelState` | Trigger re-renders on editor updates |
+| `useVizelMarkdown` | Two-way Markdown synchronization |
+| `useVizelAutoSave` | Auto-save to localStorage or custom backend |
+| `useVizelCollaboration` | Real-time collaboration management |
+| `useVizelComment` | Comment and annotation management |
+| `useVizelVersionHistory` | Document version history |
+| `useVizelContext` | Access editor from context |
+| `useVizelTheme` | Access theme from context |
 
 ## Documentation
 

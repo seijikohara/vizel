@@ -1,5 +1,3 @@
-// VizelBubbleMenu components
-
 // Vizel all-in-one component
 export { Vizel, type VizelProps, type VizelRef } from "./Vizel.tsx";
 // VizelBubbleMenu components

@@ -14,15 +14,15 @@ tests/
     ├── react/
     │   ├── specs/           # React test specs
     │   │   └── *.spec.tsx
-    │   └── playwright.config.ts
+    │   └── playwright-ct.config.ts
     ├── vue/
     │   ├── specs/           # Vue test specs
     │   │   └── *.spec.ts
-    │   └── playwright.config.ts
+    │   └── playwright-ct.config.ts
     └── svelte/
         ├── specs/           # Svelte test specs
         │   └── *.spec.ts
-        └── playwright.config.ts
+        └── playwright-ct.config.ts
 ```
 
 ## Commands

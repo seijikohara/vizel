@@ -312,8 +312,7 @@ You can access the editor content in multiple formats:
 const json = editor.getJSON();
 
 // Get Markdown content
-import { getVizelMarkdown } from '@vizel/core';
-const markdown = getVizelMarkdown(editor);
+const markdown = editor.getMarkdown();
 
 // Get HTML content
 const html = editor.getHTML();
@@ -418,30 +417,34 @@ let markdown = $state('# Hello World');
 
 ## Enabling Features
 
-You can enable optional features through the `features` option:
+All features are enabled by default except `collaboration` and `comment`. You can disable specific features by setting them to `false`, or pass an options object to configure them:
 
 ::: code-group
 
 ```tsx [React]
 const editor = useVizelEditor({
   features: {
-    // Enabled by default
+    // All features below are enabled by default.
+    // Set to false to disable, or pass options to configure.
     slashCommand: true,
     table: true,
-    image: true,
+    image: { onUpload: async (file) => 'https://example.com/image.png' },
     codeBlock: true,
     dragHandle: true,
     characterCount: true,
     textColor: true,
     taskList: true,
     link: true,
-
-    // Disabled by default - enable as needed
     markdown: true,
     mathematics: true,
     embed: true,
     details: true,
     diagram: true,
+    wikiLink: true,
+
+    // Opt-in: must be explicitly enabled
+    comment: true,
+    collaboration: true,
   },
 });
 ```
@@ -449,11 +452,10 @@ const editor = useVizelEditor({
 ```vue [Vue]
 const editor = useVizelEditor({
   features: {
-    markdown: true,
-    mathematics: true,
-    embed: true,
-    details: true,
-    diagram: true,
+    // Disable specific features
+    dragHandle: false,
+    // Configure with options
+    image: { onUpload: async (file) => 'https://example.com/image.png' },
   },
 });
 ```
@@ -461,11 +463,10 @@ const editor = useVizelEditor({
 ```svelte [Svelte]
 const editor = createVizelEditor({
   features: {
-    markdown: true,
-    mathematics: true,
-    embed: true,
-    details: true,
-    diagram: true,
+    // Disable specific features
+    dragHandle: false,
+    // Configure with options
+    image: { onUpload: async (file) => 'https://example.com/image.png' },
   },
 });
 ```
@@ -578,29 +579,52 @@ function ThemeToggle() {
 ```
 
 ```vue [Vue]
+<!-- App.vue - VizelThemeProvider wraps the app -->
 <script setup lang="ts">
-import { VizelThemeProvider, useVizelTheme } from '@vizel/vue';
-
-const { resolvedTheme, setTheme } = useVizelTheme();
-
-function toggleTheme() {
-  setTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark');
-}
+import { VizelThemeProvider } from '@vizel/vue';
+import ThemeToggle from './ThemeToggle.vue';
 </script>
 
 <template>
   <VizelThemeProvider defaultTheme="system" storageKey="my-theme">
     <Editor />
-    <button @click="toggleTheme">
-      {{ resolvedTheme === 'dark' ? '☀️' : '🌙' }}
-    </button>
+    <ThemeToggle />
   </VizelThemeProvider>
+</template>
+
+<!-- ThemeToggle.vue - useVizelTheme() must be called inside the provider -->
+<script setup lang="ts">
+import { useVizelTheme } from '@vizel/vue';
+
+const { resolvedTheme, setTheme } = useVizelTheme();
+
+function toggleTheme() {
+  setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+}
+</script>
+
+<template>
+  <button @click="toggleTheme">
+    {{ resolvedTheme === 'dark' ? '☀️' : '🌙' }}
+  </button>
 </template>
 ```
 
 ```svelte [Svelte]
+<!-- App.svelte - VizelThemeProvider wraps the app -->
 <script lang="ts">
-  import { VizelThemeProvider, getVizelTheme } from '@vizel/svelte';
+  import { VizelThemeProvider } from '@vizel/svelte';
+  import ThemeToggle from './ThemeToggle.svelte';
+</script>
+
+<VizelThemeProvider defaultTheme="system" storageKey="my-theme">
+  <Editor />
+  <ThemeToggle />
+</VizelThemeProvider>
+
+<!-- ThemeToggle.svelte - getVizelTheme() must be called inside the provider -->
+<script lang="ts">
+  import { getVizelTheme } from '@vizel/svelte';
 
   const theme = getVizelTheme();
 
@@ -609,12 +633,9 @@ function toggleTheme() {
   }
 </script>
 
-<VizelThemeProvider defaultTheme="system" storageKey="my-theme">
-  <Editor />
-  <button onclick={toggleTheme}>
-    {theme.resolvedTheme === 'dark' ? '☀️' : '🌙'}
-  </button>
-</VizelThemeProvider>
+<button onclick={toggleTheme}>
+  {theme.resolvedTheme === 'dark' ? '☀️' : '🌙'}
+</button>
 ```
 
 :::

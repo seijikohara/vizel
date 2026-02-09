@@ -1,12 +1,11 @@
 <script lang="ts">
-import {
-  createVizelFindReplaceExtension,
-  getVizelEditorState,
-  setVizelMarkdown,
-} from "@vizel/core";
+import type { Editor, JSONContent } from "@tiptap/core";
+import { createVizelFindReplaceExtension, setVizelMarkdown } from "@vizel/core";
 import {
   createVizelAutoSave,
-  createVizelState,
+  createVizelComment,
+  createVizelEditorState,
+  createVizelVersionHistory,
   Vizel,
   VizelFindReplace,
   VizelSaveIndicator,
@@ -17,10 +16,6 @@ import svelteLogo from "../../shared/logos/svelte.svg";
 import { mockUploadImage } from "../../shared/utils";
 import ThemeToggle from "./ThemeToggle.svelte";
 
-// Use local type definition to avoid version conflicts
-type VizelEditor = Parameters<typeof getVizelEditorState>[0];
-type JSONContent = Record<string, unknown>;
-
 // Feature toggles (all enabled by default)
 let features = $state({
   toolbar: true,
@@ -28,22 +23,23 @@ let features = $state({
   autoSave: true,
   stats: true,
   syncPanel: true,
+  comments: false,
+  history: false,
 });
 
-type PanelTab = "markdown" | "json";
+type PanelTab = "markdown" | "json" | "history" | "comments";
 let activeTab = $state<PanelTab>("markdown");
 let jsonInput = $state("");
 let markdownInput = $state("");
+let versionDescription = $state("");
+let commentText = $state("");
+let replyTexts = $state<Record<string, string>>({});
 
 // Store editor reference from Vizel component
-let editorRef: VizelEditor = $state(null);
+let editorRef: Editor | null = $state(null);
 
 // Track editor state for character/word count (only when stats enabled)
-const updateCount = createVizelState(() => (features.stats ? editorRef : null));
-const editorState = $derived.by(() => {
-  void updateCount.current;
-  return features.stats ? getVizelEditorState(editorRef) : { characterCount: 0, wordCount: 0 };
-});
+const editorState = createVizelEditorState(() => (features.stats ? editorRef : null));
 
 // Auto-save functionality (only when autoSave enabled)
 const autoSave = createVizelAutoSave(() => (features.autoSave ? editorRef : null), {
@@ -52,18 +48,31 @@ const autoSave = createVizelAutoSave(() => (features.autoSave ? editorRef : null
   key: "vizel-demo-svelte",
 });
 
+// Version History (only when history panel enabled)
+const versionHistory = createVizelVersionHistory(() => (features.history ? editorRef : null), {
+  key: "vizel-demo-svelte-versions",
+  maxVersions: 20,
+});
+
+// Comments (only when comments panel enabled)
+const commentManager = createVizelComment(() => (features.comments ? editorRef : null), {
+  key: "vizel-demo-svelte-comments",
+});
+
 // Find & Replace extension
 const findReplaceExtensions = [createVizelFindReplaceExtension()];
 
-function handleCreate({ editor }: { editor: NonNullable<VizelEditor> }) {
+const showPanel = $derived(features.syncPanel || features.history || features.comments);
+
+function handleCreate({ editor }: { editor: Editor }) {
   editorRef = editor;
   jsonInput = JSON.stringify(editor.getJSON(), null, 2);
-  markdownInput = (editor as { getMarkdown: () => string }).getMarkdown();
+  markdownInput = editor.getMarkdown();
 }
 
-function handleUpdate({ editor }: { editor: NonNullable<VizelEditor> }) {
+function handleUpdate({ editor }: { editor: Editor }) {
   jsonInput = JSON.stringify(editor.getJSON(), null, 2);
-  markdownInput = (editor as { getMarkdown: () => string }).getMarkdown();
+  markdownInput = editor.getMarkdown();
 }
 
 function handleMarkdownChange(event: Event) {
@@ -74,6 +83,25 @@ function handleMarkdownChange(event: Event) {
   if (editorRef) {
     setVizelMarkdown(editorRef, value);
   }
+}
+
+async function handleSaveVersion() {
+  if (!versionDescription.trim()) return;
+  await versionHistory.saveVersion(versionDescription.trim());
+  versionDescription = "";
+}
+
+async function handleAddComment() {
+  if (!commentText.trim()) return;
+  await commentManager.addComment(commentText.trim(), "Demo User");
+  commentText = "";
+}
+
+async function handleReply(commentId: string) {
+  const text = replyTexts[commentId]?.trim();
+  if (!text) return;
+  await commentManager.replyToComment(commentId, text, "Demo User");
+  replyTexts = { ...replyTexts, [commentId]: "" };
 }
 
 function handleJsonChange(event: Event) {
@@ -136,6 +164,14 @@ function handleJsonChange(event: Event) {
         <input type="checkbox" bind:checked={features.syncPanel} />
         <span class="feature-toggle-label">Sync Panel</span>
       </label>
+      <label class="feature-toggle">
+        <input type="checkbox" bind:checked={features.comments} />
+        <span class="feature-toggle-label">Comments</span>
+      </label>
+      <label class="feature-toggle">
+        <input type="checkbox" bind:checked={features.history} />
+        <span class="feature-toggle-label">History</span>
+      </label>
     </div>
   </section>
 
@@ -155,6 +191,8 @@ function handleJsonChange(event: Event) {
             embed: true,
             details: true,
             diagram: true,
+            wikiLink: true,
+            comment: true,
             image: {
               onUpload: mockUploadImage,
               maxFileSize: 10 * 1024 * 1024,
@@ -180,51 +218,179 @@ function handleJsonChange(event: Event) {
               {/if}
             {/if}
             {#if features.stats}
-              <span class="status-item">{editorState.characterCount} characters</span>
+              <span class="status-item">{editorState.current.characterCount} characters</span>
               <span class="status-divider">·</span>
-              <span class="status-item">{editorState.wordCount} words</span>
+              <span class="status-item">{editorState.current.wordCount} words</span>
             {/if}
           </div>
         {/if}
       </div>
     </div>
 
-    {#if features.syncPanel}
+    {#if showPanel}
       <div class="panel-section">
         <div class="panel-container">
           <div class="panel-tabs">
-            <button
-              type="button"
-              class="panel-tab"
-              data-active={activeTab === 'markdown'}
-              onclick={() => activeTab = 'markdown'}
-            >
-              Markdown
-            </button>
-            <button
-              type="button"
-              class="panel-tab"
-              data-active={activeTab === 'json'}
-              onclick={() => activeTab = 'json'}
-            >
-              JSON
-            </button>
+            {#if features.syncPanel}
+              <button
+                type="button"
+                class="panel-tab"
+                data-active={activeTab === 'markdown'}
+                onclick={() => activeTab = 'markdown'}
+              >
+                Markdown
+              </button>
+              <button
+                type="button"
+                class="panel-tab"
+                data-active={activeTab === 'json'}
+                onclick={() => activeTab = 'json'}
+              >
+                JSON
+              </button>
+            {/if}
+            {#if features.history}
+              <button
+                type="button"
+                class="panel-tab"
+                data-active={activeTab === 'history'}
+                onclick={() => activeTab = 'history'}
+              >
+                History
+              </button>
+            {/if}
+            {#if features.comments}
+              <button
+                type="button"
+                class="panel-tab"
+                data-active={activeTab === 'comments'}
+                onclick={() => activeTab = 'comments'}
+              >
+                Comments
+              </button>
+            {/if}
           </div>
           <div class="panel-content">
-            {#if activeTab === 'markdown'}
+            {#if activeTab === 'markdown' && features.syncPanel}
               <textarea
                 class="panel-textarea"
                 value={markdownInput}
                 placeholder="Edit Markdown here..."
                 oninput={handleMarkdownChange}
               ></textarea>
-            {:else if activeTab === 'json'}
+            {:else if activeTab === 'json' && features.syncPanel}
               <textarea
                 class="panel-textarea"
                 value={jsonInput}
                 placeholder="Edit JSON here..."
                 oninput={handleJsonChange}
               ></textarea>
+            {:else if activeTab === 'history'}
+              <div class="panel-list">
+                <div class="panel-action-bar">
+                  <input
+                    type="text"
+                    placeholder="Version description..."
+                    bind:value={versionDescription}
+                    onkeydown={(e) => e.key === 'Enter' && handleSaveVersion()}
+                  />
+                  <button type="button" class="panel-action-btn" onclick={handleSaveVersion}>
+                    Save
+                  </button>
+                </div>
+                {#if versionHistory.snapshots.length === 0}
+                  <div class="panel-list-empty">No versions saved yet</div>
+                {:else}
+                  {#each versionHistory.snapshots as snapshot (snapshot.id)}
+                    <div class="panel-item">
+                      <div class="panel-item-header">
+                        <span class="panel-item-text">{snapshot.description || "Untitled"}</span>
+                        <span class="panel-item-meta">
+                          {new Date(snapshot.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                      <div class="panel-item-actions">
+                        <button type="button" class="panel-item-btn" onclick={() => versionHistory.restoreVersion(snapshot.id)}>
+                          Restore
+                        </button>
+                        <button type="button" class="panel-item-btn panel-item-btn--danger" onclick={() => versionHistory.deleteVersion(snapshot.id)}>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  {/each}
+                {/if}
+              </div>
+            {:else if activeTab === 'comments'}
+              <div class="panel-list">
+                <div class="panel-action-bar">
+                  <input
+                    type="text"
+                    placeholder="Select text, then add a comment..."
+                    bind:value={commentText}
+                    onkeydown={(e) => e.key === 'Enter' && handleAddComment()}
+                  />
+                  <button type="button" class="panel-action-btn" onclick={handleAddComment}>
+                    Add
+                  </button>
+                </div>
+                {#if commentManager.comments.length === 0}
+                  <div class="panel-list-empty">No comments yet</div>
+                {:else}
+                  {#each commentManager.comments as comment (comment.id)}
+                    <div
+                      class="panel-item {comment.resolved ? 'panel-item-resolved' : ''}"
+                      onclick={() => commentManager.setActiveComment(comment.id)}
+                      onkeydown={(e) => e.key === 'Enter' && commentManager.setActiveComment(comment.id)}
+                      role="button"
+                      tabindex="0"
+                    >
+                      <div class="panel-item-header">
+                        <span class="panel-item-text">{comment.text}</span>
+                        <span class="panel-item-meta">
+                          {comment.author ? comment.author + ' · ' : ''}{new Date(comment.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+                      <div class="panel-item-actions">
+                        {#if comment.resolved}
+                          <button type="button" class="panel-item-btn" onclick={(e) => { e.stopPropagation(); commentManager.reopenComment(comment.id); }}>
+                            Reopen
+                          </button>
+                        {:else}
+                          <button type="button" class="panel-item-btn" onclick={(e) => { e.stopPropagation(); commentManager.resolveComment(comment.id); }}>
+                            Resolve
+                          </button>
+                        {/if}
+                        <button type="button" class="panel-item-btn panel-item-btn--danger" onclick={(e) => { e.stopPropagation(); commentManager.removeComment(comment.id); }}>
+                          Remove
+                        </button>
+                      </div>
+                      {#if comment.replies.length > 0}
+                        <div class="panel-replies">
+                          {#each comment.replies as reply (reply.id)}
+                            <div class="panel-reply">
+                              <span class="panel-reply-meta">
+                                {reply.author ? reply.author + ' · ' : ''}{new Date(reply.createdAt).toLocaleString()}
+                              </span>
+                              <div>{reply.text}</div>
+                            </div>
+                          {/each}
+                        </div>
+                      {/if}
+                      <!-- svelte-ignore a11y_click_events_have_key_events -->
+                      <div class="panel-reply-input" onclick={(e) => e.stopPropagation()}>
+                        <input
+                          placeholder="Reply..."
+                          value={replyTexts[comment.id] || ""}
+                          oninput={(e) => { replyTexts = { ...replyTexts, [comment.id]: (e.target as HTMLInputElement).value }; }}
+                          onkeydown={(e) => e.key === 'Enter' && handleReply(comment.id)}
+                        />
+                        <button type="button" onclick={() => handleReply(comment.id)}>Reply</button>
+                      </div>
+                    </div>
+                  {/each}
+                {/if}
+              </div>
             {/if}
           </div>
         </div>

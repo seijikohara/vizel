@@ -44,11 +44,23 @@ Heading.configure({
 
 | Category | Location | Description |
 |----------|----------|-------------|
-| Base | `extensions/starter-kit.ts` | Core text editing (Heading, Bold, etc.) |
+| Base | `extensions/base.ts` | Core text editing (Heading, Bold, Italic, etc.) |
+| SlashCommand | `extensions/slash-command.ts` | Slash command menu |
+| Table | `extensions/table.ts` | Table editing with row/column controls |
+| Link | `extensions/link.ts` | Link with autolink and paste support |
 | Image | `extensions/image.ts` | Image upload and resize |
-| Link | `extensions/link.ts` | Link handling |
-| Table | `extensions/table.ts` | Table support |
-| SlashCommand | `extensions/slash-command.ts` | Slash menu |
+| CodeBlock | `extensions/code-block-lowlight.ts` | Syntax-highlighted code blocks |
+| CharacterCount | `extensions/character-count.ts` | Character and word counting |
+| TextColor | `extensions/text-color.ts` | Text color and highlight |
+| TaskList | `extensions/task-list.ts` | Checkbox task lists |
+| DragHandle | `extensions/drag-handle.ts` | Block drag handle and keyboard reordering |
+| Markdown | `extensions/markdown.ts` | Markdown import/export |
+| Mathematics | `extensions/mathematics.ts` | LaTeX math with KaTeX |
+| Embed | `extensions/embed.ts` | URL embedding (oEmbed/OGP) |
+| Details | `extensions/details.ts` | Collapsible content blocks |
+| Diagram | `extensions/diagram.ts` | Mermaid and GraphViz diagrams |
+| WikiLink | `extensions/wiki-link.ts` | Wiki-style internal links |
+| Comment | `extensions/comment.ts` | Text annotations and comments |
 
 ## Dependencies
 

@@ -363,7 +363,7 @@ Type `/` anywhere to open the command menu. Available commands:
 | **Text** | Heading 1, Heading 2, Heading 3 |
 | **Lists** | Bullet List, Numbered List, Task List |
 | **Blocks** | Quote, Divider, Details, Code Block, Table |
-| **Media** | Image, Upload Image |
+| **Media** | Image, Upload Image, Embed |
 | **Advanced** | Math Equation, Inline Math, Mermaid, GraphViz |
 
 The menu supports fuzzy search - try typing `/todo` to find Task List.
@@ -389,6 +389,52 @@ The menu supports fuzzy search - try typing `/todo` to find Task List.
 | Redo | `⌘+Shift+Z` | `Ctrl+Shift+Z` |
 | Move Block Up | `Alt+↑` | `Alt+↑` |
 | Move Block Down | `Alt+↓` | `Alt+↓` |
+
+---
+
+## Wiki Links
+
+Wiki links create internal connections between documents. Use double brackets:
+
+- Basic link: [[getting-started]]
+- Link with display text: [[getting-started|Getting Started Guide]]
+
+Click a wiki link to navigate. Wiki links support autocomplete — type `[[` and start typing.
+
+---
+
+## Find & Replace
+
+Use keyboard shortcuts to search and replace text:
+
+- **Find**: `Cmd+F` (Mac) or `Ctrl+F` (Windows/Linux)
+- **Replace**: `Cmd+Shift+H` (Mac) or `Ctrl+Shift+H` (Windows/Linux)
+
+The find panel supports case-sensitive search and highlights all matches in the document.
+
+---
+
+## Comments
+
+Select any text and add a comment annotation for collaborative review. Comments support:
+
+- **Add Comment**: Select text, then use the Comments panel to add a note
+- **Reply**: Respond to existing comments in a thread
+- **Resolve/Reopen**: Mark comments as resolved or reopen them
+
+Toggle the Comments panel from the Features section to manage annotations.
+
+---
+
+## Version History
+
+Save snapshots of the document at any point. Version history supports:
+
+- **Save Version**: Capture the current state with an optional description
+- **Restore**: Revert the document to any previous version
+- **Delete**: Remove specific versions from history
+
+Toggle the History panel from the Features section to manage versions. All versions are stored in localStorage.
 
 ---
 
