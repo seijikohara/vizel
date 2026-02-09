@@ -1,6 +1,6 @@
 # Plugin System
 
-Vizel provides a plugin system that allows third-party developers to extend the editor with custom functionality in a structured and discoverable way.
+Vizel provides a plugin system that lets you extend the editor with custom functionality in a structured and discoverable way.
 
 ## Overview
 
@@ -93,7 +93,7 @@ interface VizelPlugin {
 
 ## Plugin Manager
 
-The `VizelPluginManager` class handles plugin registration, lifecycle, and extension aggregation.
+`VizelPluginManager` handles plugin registration, lifecycle, and extension aggregation.
 
 ### Methods
 
@@ -110,7 +110,7 @@ The `VizelPluginManager` class handles plugin registration, lifecycle, and exten
 
 ### Registration Order
 
-Plugins with dependencies must be registered after their dependencies:
+Register plugins with dependencies after their dependencies:
 
 ```typescript
 const plugins = new VizelPluginManager();
@@ -126,7 +126,7 @@ plugins.register(advancedPlugin); // has dependencies: ["base-plugin"]
 
 ### `onInstall`
 
-Called when the editor is connected via `setEditor()`, or immediately if the editor is already connected when `register()` is called.
+Runs when you connect the editor via `setEditor()`, or immediately if the editor is already connected when you call `register()`.
 
 ```typescript
 const myPlugin: VizelPlugin = {
@@ -141,7 +141,7 @@ const myPlugin: VizelPlugin = {
 
 ### `onUninstall`
 
-Called when the plugin is unregistered or when `destroy()` is called.
+Runs when you unregister the plugin or call `destroy()`.
 
 ```typescript
 const myPlugin: VizelPlugin = {
@@ -155,7 +155,7 @@ const myPlugin: VizelPlugin = {
 
 ### `onTransaction`
 
-Called on every editor transaction. Use this for reactive behavior like tracking changes or updating UI.
+Runs on every editor transaction. Use this for reactive behavior like tracking changes or updating UI.
 
 ```typescript
 const wordCountPlugin: VizelPlugin = {
@@ -170,12 +170,12 @@ const wordCountPlugin: VizelPlugin = {
 ```
 
 ::: warning
-`onTransaction` is called frequently. Keep handlers lightweight to avoid performance issues.
+`onTransaction` runs frequently. Keep handlers lightweight to avoid performance issues.
 :::
 
 ## Style Injection
 
-Plugin styles are automatically injected into `<head>` and cleaned up on unregistration.
+Vizel automatically injects plugin styles into `<head>` and cleans them up on unregistration.
 
 ```typescript
 const themedPlugin: VizelPlugin = {
@@ -194,19 +194,19 @@ const themedPlugin: VizelPlugin = {
 };
 ```
 
-Each plugin's styles are wrapped in a `<style>` element with id `vizel-plugin-style-{name}`, ensuring:
+Vizel wraps each plugin's styles in a `<style>` element with id `vizel-plugin-style-{name}`, ensuring:
 
 - No duplicate style injection
-- Clean removal when the plugin is unregistered
+- Clean removal when you unregister the plugin
 - Compatibility with Vizel's theming system
 
 ## Dependencies
 
 Plugins can declare dependencies on other plugins. The plugin system:
 
-- Verifies dependencies are registered before allowing registration
+- Verifies that dependencies are registered before allowing registration
 - Resolves dependency order when aggregating extensions via `getExtensions()`
-- Prevents unregistering plugins that others depend on
+- Prevents you from unregistering plugins that others depend on
 - Detects circular dependencies
 
 ```typescript
@@ -324,7 +324,7 @@ $effect(() => {
 
 ## Validation
 
-The plugin system validates plugins on registration:
+The plugin system validates each plugin on registration:
 
 | Check | Error |
 |-------|-------|

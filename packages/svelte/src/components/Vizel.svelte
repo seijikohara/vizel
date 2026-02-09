@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { Editor, JSONContent, VizelFeatureOptions } from "@vizel/core";
+import type { Editor, Extensions, JSONContent, VizelFeatureOptions } from "@vizel/core";
 import type { Snippet } from "svelte";
 
 /**
@@ -42,6 +42,8 @@ export interface VizelProps {
   autofocus?: boolean | "start" | "end" | "all" | number;
   /** Feature configuration */
   features?: VizelFeatureOptions;
+  /** Additional Tiptap extensions */
+  extensions?: Extensions;
   /** Custom class name for the editor container */
   class?: string;
   /** Whether to show the toolbar (default: false) */
@@ -123,6 +125,7 @@ const editorState = createVizelEditor({
   editable: restProps.editable ?? true,
   autofocus: restProps.autofocus ?? false,
   ...(restProps.features !== undefined && { features: restProps.features }),
+  ...(restProps.extensions !== undefined && { extensions: restProps.extensions }),
   onUpdate: wrappedOnUpdate,
   ...(restProps.onCreate !== undefined && { onCreate: restProps.onCreate }),
   ...(restProps.onDestroy !== undefined && { onDestroy: restProps.onDestroy }),

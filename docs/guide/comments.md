@@ -1,12 +1,12 @@
 # Comments & Annotations
 
-Vizel provides a comment/annotation system that allows users to add comments to specific text selections in the editor.
+Vizel provides a comment/annotation system that lets you add comments to specific text selections in the editor.
 
 ## Overview
 
 Comments enable:
 
-- **Annotate text** — add comments to any text selection
+- **Text annotation** — add comments to any text selection
 - **Reply threads** — discuss specific passages
 - **Resolve/reopen** — track comment status
 - **Storage flexibility** — use localStorage or a custom backend
@@ -126,7 +126,7 @@ function handleAddComment() {
 
 ## Enabling the Feature
 
-The comment feature is **disabled by default**. Enable it via `features.comment`:
+The comment feature is **disabled by default**. You can enable it via `features.comment`:
 
 ```typescript
 const editor = useVizelEditor({
@@ -258,7 +258,7 @@ In Vue, `comments`, `activeCommentId`, `isLoading`, and `error` are `ComputedRef
 
 ## Styling
 
-Comment highlights use the following CSS classes:
+Comment highlights use these CSS classes:
 
 | Class | Description |
 |-------|-------------|
@@ -283,7 +283,7 @@ Comment highlights use the following CSS classes:
 
 ## Core Handlers
 
-For advanced use cases, use the core handlers directly:
+For advanced use cases, you can use the core handlers directly:
 
 ```typescript
 import {

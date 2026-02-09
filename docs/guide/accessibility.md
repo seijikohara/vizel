@@ -1,9 +1,9 @@
 # Accessibility
 
-Vizel is built on Tiptap and ProseMirror, which provide a solid foundation for accessible rich text editing. This guide covers keyboard navigation, screen reader support, and best practices for building accessible applications with Vizel.
+Vizel builds on Tiptap and ProseMirror, which provide a solid foundation for accessible rich text editing. This guide covers keyboard navigation, screen reader support, and best practices for building accessible applications with Vizel.
 
 ::: info Note
-Vizel has not undergone a formal accessibility audit. The information below describes built-in capabilities and recommended practices, but does not constitute a WCAG conformance claim.
+Vizel has not undergone a formal accessibility audit. The information below describes built-in capabilities and recommended practices but does not constitute a WCAG conformance claim.
 :::
 
 ## Keyboard Navigation
@@ -91,7 +91,7 @@ Vizel has not undergone a formal accessibility audit. The information below desc
 
 ### ARIA Attributes
 
-Vizel's editor element uses the `contenteditable` attribute, which modern screen readers recognize as an editable region. For improved screen reader support, set ARIA attributes via `editorProps`:
+Vizel's editor element uses the `contenteditable` attribute, which modern screen readers recognize as an editable region. To improve screen reader support, set ARIA attributes via `editorProps`:
 
 ```typescript
 const editor = useVizelEditor({
@@ -109,7 +109,7 @@ const editor = useVizelEditor({
 Recommended ARIA attributes:
 
 - `role="textbox"` — Identifies the editor as a text input region
-- `aria-multiline="true"` — Indicates multi-line editing
+- `aria-multiline="true"` — Indicates that the editor supports multi-line editing
 - `aria-label` — Provides an accessible name for the editor
 
 ### Live Regions
@@ -127,7 +127,7 @@ For dynamic content like save indicators and slash menu results, use ARIA live r
 
 ### Announcing Content Changes
 
-When programmatically updating content, announce changes to screen readers:
+When you programmatically update content, announce changes to screen readers:
 
 ```typescript
 function announceChange(message: string) {
@@ -151,7 +151,7 @@ announceChange('Document content updated');
 
 ### Editor Focus
 
-The editor can be focused programmatically:
+You can focus the editor programmatically:
 
 ```typescript
 // Focus at the end of the document
@@ -166,7 +166,7 @@ editor.commands.focus(42);
 
 ### Skip Navigation
 
-Add a skip link before the editor for keyboard users:
+You can add a skip link before the editor for keyboard users:
 
 ```html
 <a href="#editor-content" class="sr-only focus:not-sr-only">
@@ -182,7 +182,7 @@ Add a skip link before the editor for keyboard users:
 
 ### Focus Trap Considerations
 
-Vizel does **not** trap focus. Users can `Tab` out of the editor to reach other page elements. If your application wraps the editor in a modal or dialog, implement focus trapping at the dialog level, not the editor level.
+Vizel does **not** trap focus. You can `Tab` out of the editor to reach other page elements. If your application wraps the editor in a modal or dialog, implement focus trapping at the dialog level, not the editor level.
 
 ---
 
@@ -190,7 +190,7 @@ Vizel does **not** trap focus. Users can `Tab` out of the editor to reach other 
 
 ### CSS Custom Properties
 
-Vizel uses CSS custom properties for all colors, which makes it compatible with high contrast modes. Override these variables to adjust contrast:
+Vizel uses CSS custom properties for all colors, which makes it compatible with high contrast modes. You can override these variables to adjust contrast:
 
 ```css
 /* High contrast overrides */
@@ -208,7 +208,7 @@ Vizel uses CSS custom properties for all colors, which makes it compatible with 
 
 ### Focus Indicators
 
-Ensure visible focus indicators are present. Vizel provides default focus styles, but you can enhance them:
+Vizel provides default focus styles, but you can enhance them to ensure visible focus indicators:
 
 ```css
 /* Enhanced focus indicators */
@@ -232,7 +232,7 @@ Vizel supports dark mode through CSS custom properties. See [Theming](/guide/the
 
 ## Custom Component Guidelines
 
-When building custom components that interact with Vizel, follow these accessibility guidelines.
+When you build custom components that interact with Vizel, follow these accessibility guidelines.
 
 ### Toolbar Buttons
 
@@ -250,8 +250,8 @@ When building custom components that interact with Vizel, follow these accessibi
 ```
 
 Key attributes:
-- `aria-pressed` — Reflects toggle state for formatting buttons
-- `aria-label` — Accessible name when button only contains an icon
+- `aria-pressed` — Reflects the toggle state for formatting buttons
+- `aria-label` — Provides an accessible name when the button contains only an icon
 - `title` — Shows the keyboard shortcut on hover
 
 ### Dropdown Menus
@@ -295,10 +295,10 @@ Key attributes:
 
 - [ ] **Keyboard only** — Navigate, edit, and format content using only the keyboard
 - [ ] **Screen reader** — Test with VoiceOver (macOS), NVDA (Windows), or Orca (Linux)
-- [ ] **Zoom** — Ensure the editor is usable at 200% zoom
+- [ ] **Zoom** — Verify the editor is usable at 200% zoom
 - [ ] **High contrast** — Test with the OS high-contrast mode enabled
-- [ ] **Reduced motion** — Verify animations respect `prefers-reduced-motion`
-- [ ] **Color contrast** — Check text and interactive elements meet 4.5:1 contrast ratio
+- [ ] **Reduced motion** — Verify that animations respect `prefers-reduced-motion`
+- [ ] **Color contrast** — Confirm that text and interactive elements meet 4.5:1 contrast ratio
 
 ### Reduced Motion
 
@@ -317,7 +317,7 @@ Respect the user's reduced motion preference:
 
 ### Automated Tools
 
-Use automated accessibility testing tools alongside manual testing:
+You can use automated accessibility testing tools alongside manual testing:
 
 - [axe-core](https://github.com/dequelabs/axe-core) — Automated accessibility testing engine
 - [Lighthouse](https://developer.chrome.com/docs/lighthouse/accessibility/) — Chrome DevTools accessibility audit

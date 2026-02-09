@@ -1,6 +1,6 @@
 # Real-Time Collaboration
 
-Vizel supports real-time collaborative editing using [Yjs](https://yjs.dev/), a CRDT-based framework that enables multiple users to edit the same document simultaneously without conflicts.
+Vizel supports real-time collaborative editing using [Yjs](https://yjs.dev/), a CRDT-based framework that lets multiple users edit the same document simultaneously without conflicts.
 
 ## Overview
 
@@ -20,7 +20,7 @@ Vizel supports real-time collaborative editing using [Yjs](https://yjs.dev/), a 
 ```
 
 Vizel provides:
-- **History exclusion** — Automatically disables the built-in History extension when collaboration is enabled (Yjs provides its own undo manager)
+- **History exclusion** — Automatically disables the built-in History extension when you enable collaboration (Yjs provides its own undo manager)
 - **State tracking** — Framework hooks/composables/runes for tracking connection status, sync state, and peer count
 - **Lifecycle management** — Automatic setup and cleanup of event listeners
 
@@ -40,7 +40,7 @@ Ensure your `@tiptap/extension-collaboration` version is compatible with the `@t
 
 ### 1. Start a Yjs WebSocket Server
 
-You need a Yjs-compatible WebSocket server for synchronization. The simplest option is `y-websocket`:
+You need a Yjs-compatible WebSocket server for synchronization. The simplest option uses `y-websocket`:
 
 ```bash
 npx y-websocket
@@ -205,17 +205,17 @@ const editor = createVizelEditor({
 
 ### Options
 
-The collaboration hooks accept these options:
+The collaboration hook/composable/rune accepts these options:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `enabled` | `boolean` | `true` | Enable collaboration state tracking |
 | `user` | `{ name, color }` | Required | Current user info for cursor display |
-| `onConnect` | `() => void` | — | Callback when connected to server |
-| `onDisconnect` | `() => void` | — | Callback when disconnected |
-| `onSynced` | `() => void` | — | Callback when initial sync completes |
-| `onError` | `(error) => void` | — | Callback when an error occurs |
-| `onPeersChange` | `(count) => void` | — | Callback when peer count changes |
+| `onConnect` | `() => void` | — | Runs when the client connects to the server |
+| `onDisconnect` | `() => void` | — | Runs when the client disconnects |
+| `onSynced` | `() => void` | — | Runs when initial sync completes |
+| `onError` | `(error) => void` | — | Runs when an error occurs |
+| `onPeersChange` | `(count) => void` | — | Runs when the peer count changes |
 
 ### Return Values
 
@@ -245,17 +245,17 @@ const editor = useVizelEditor({
 
 ### How Collaboration Works
 
-1. **CRDT (Conflict-free Replicated Data Type)** — Yjs uses CRDTs to merge concurrent edits without conflicts. Each client can edit independently, and changes are automatically merged.
+1. **CRDT (Conflict-free Replicated Data Type)** — Yjs uses CRDTs to merge concurrent edits without conflicts. Each client can edit independently, and Yjs automatically merges changes.
 
-2. **Awareness** — Yjs Awareness protocol tracks ephemeral state like cursor positions, user names, and colors. This is separate from the document and is not persisted.
+2. **Awareness** — The Yjs Awareness protocol tracks ephemeral state like cursor positions, user names, and colors. This state is separate from the document and is not persisted.
 
-3. **History** — When collaboration is enabled, the built-in Tiptap History extension must be disabled because Yjs provides `Y.UndoManager` which understands CRDT operations. The standard History extension would conflict with collaborative edits.
+3. **History** — When you enable collaboration, you must disable the built-in Tiptap History extension because Yjs provides `Y.UndoManager`, which understands CRDT operations. The standard History extension would conflict with collaborative edits.
 
 ### Offline Support
 
 Yjs automatically handles offline scenarios:
-- Edits made offline are stored locally
-- When reconnecting, changes are automatically synced and merged
+- Yjs stores edits made offline locally
+- When reconnecting, Yjs automatically syncs and merges changes
 - No data loss occurs even with extended offline periods
 
 ## Server Setup
@@ -319,20 +319,20 @@ Yjs supports multiple transport providers:
 
 **Problem**: Undo/redo behaves unexpectedly with collaboration enabled.
 
-**Solution**: Ensure `features.collaboration` is set to `true` in your editor options. This disables the built-in History extension that conflicts with Yjs's undo manager.
+**Solution**: Set `features.collaboration` to `true` in your editor options. This disables the built-in History extension that conflicts with Yjs's undo manager.
 
 ### Connection Issues
 
 **Problem**: WebSocket connection fails or keeps disconnecting.
 
 **Solution**:
-1. Verify the WebSocket server is running
+1. Verify that the WebSocket server is running
 2. Check that the server URL is correct (including protocol `ws://` or `wss://`)
-3. For production, ensure your reverse proxy supports WebSocket connections
+3. For production, confirm that your reverse proxy supports WebSocket connections
 4. Check CORS settings if the server is on a different origin
 
 ### Cursor Colors Not Showing
 
 **Problem**: Remote cursors appear but without colors.
 
-**Solution**: Ensure you pass the `user` object with both `name` and `color` properties to both `CollaborationCursor.configure()` and the collaboration hook.
+**Solution**: Pass the `user` object with both `name` and `color` properties to both `CollaborationCursor.configure()` and the collaboration hook/composable/rune.

@@ -5,6 +5,7 @@
 // This is the recommended way to use Vizel for most use cases.
 import {
   type Editor,
+  type Extensions,
   getVizelMarkdown,
   type JSONContent,
   setVizelMarkdown,
@@ -51,6 +52,8 @@ export interface VizelProps {
   autofocus?: boolean | "start" | "end" | "all" | number;
   /** Feature configuration */
   features?: VizelFeatureOptions;
+  /** Additional Tiptap extensions */
+  extensions?: Extensions;
   /** Custom class name for the editor container */
   class?: string;
   /** Whether to show the toolbar (default: false) */
@@ -105,6 +108,7 @@ const editor = useVizelEditor({
   editable: props.editable,
   autofocus: props.autofocus,
   ...(props.features !== undefined && { features: props.features }),
+  ...(props.extensions !== undefined && { extensions: props.extensions }),
   onUpdate: (e) => {
     emit("update", e);
     // Update markdown model if not updating from external change

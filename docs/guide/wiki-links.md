@@ -53,7 +53,7 @@ Type double brackets to create a wiki link:
 | `[[My Page]]` | Link to "My Page" with "My Page" as display text |
 | `[[My Page\|Custom Label]]` | Link to "My Page" with "Custom Label" as display text |
 
-The link is automatically created when you close the double brackets (`]]`).
+Vizel automatically creates the link when you close the double brackets (`]]`).
 
 ## Options
 
@@ -78,7 +78,7 @@ interface VizelWikiLinkOptions {
 
 ### `resolveLink`
 
-Converts a page name to a URL. Used for the `href` attribute on rendered links.
+Converts a page name to a URL. Vizel uses this value for the `href` attribute on rendered links.
 
 ```typescript
 {
@@ -90,7 +90,7 @@ Converts a page name to a URL. Used for the `href` attribute on rendered links.
 
 ### `pageExists`
 
-Determines if a linked page exists. Controls visual styling — existing pages get a solid underline, non-existing pages get a dashed underline with muted color.
+Determines if a linked page exists. This function controls visual styling: existing pages display a solid underline, and non-existing pages display a dashed underline with muted color.
 
 ```typescript
 const existingPages = new Set(["Getting Started", "API Reference", "FAQ"]);
@@ -104,7 +104,7 @@ const existingPages = new Set(["Getting Started", "API Reference", "FAQ"]);
 
 ### `onLinkClick`
 
-Intercepts wiki link clicks for client-side navigation. Without this, links follow standard browser navigation using the `href` from `resolveLink`.
+Intercepts wiki link clicks for client-side navigation. Without this callback, links follow standard browser navigation using the `href` from `resolveLink`.
 
 ```typescript
 {
@@ -119,7 +119,7 @@ Intercepts wiki link clicks for client-side navigation. Without this, links foll
 
 ### `getPageSuggestions`
 
-Provides autocomplete suggestions. This callback is available for future autocomplete UI integration.
+Provides autocomplete suggestions. You can use this callback for future autocomplete UI integration.
 
 ```typescript
 {
@@ -134,7 +134,7 @@ Provides autocomplete suggestions. This callback is available for future autocom
 
 ## Commands
 
-The wiki link extension adds two editor commands:
+The wiki link extension provides two editor commands:
 
 ```typescript
 // Insert a wiki link
@@ -149,7 +149,7 @@ editor.commands.unsetWikiLink();
 
 ## Styling
 
-Wiki links use the following CSS classes:
+Wiki links use these CSS classes:
 
 | Class | Description |
 |-------|-------------|
@@ -159,7 +159,7 @@ Wiki links use the following CSS classes:
 
 ### Custom Styling
 
-Override the default styles with CSS custom properties:
+You can override the default styles with CSS custom properties:
 
 ```css
 .vizel-wiki-link {
@@ -261,7 +261,7 @@ const editor = createVizelEditor({
 
 ### Standalone Extension
 
-For advanced setups, use the extension directly instead of the feature option:
+For advanced setups, you can use the extension directly instead of the feature option:
 
 ```typescript
 import { createVizelWikiLinkExtension } from "@vizel/core";
@@ -277,7 +277,7 @@ const editor = useVizelEditor({
 
 ### Backlink Tracking
 
-Track which pages link to a given page by inspecting the editor content:
+You can track which pages link to a given page by inspecting the editor content:
 
 ```typescript
 function getBacklinks(editor: Editor): string[] {

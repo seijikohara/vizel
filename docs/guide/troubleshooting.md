@@ -6,7 +6,7 @@ Common issues and solutions when using Vizel.
 
 ### CSS Not Loaded
 
-If the editor appears unstyled or broken, ensure CSS is imported:
+If the editor appears unstyled or broken, ensure you import the CSS:
 
 ```typescript
 // Import Vizel styles
@@ -21,7 +21,7 @@ import '@vizel/core/mathematics.css';
 
 ### Editor Instance is Null
 
-The editor hook/composable returns `null` until initialization completes:
+The editor hook/composable/rune returns `null` until initialization completes:
 
 ::: code-group
 
@@ -71,7 +71,7 @@ const editor = useVizelEditor({});
 
 ### Console Errors
 
-Check the browser console for initialization errors. Common issues include:
+Check your browser console for initialization errors. Common issues include:
 
 - Missing peer dependencies
 - Extension conflicts
@@ -83,7 +83,7 @@ Check the browser console for initialization errors. Common issues include:
 
 ### Upload Handler Not Configured
 
-By default, Vizel converts images to Base64. For production, configure a custom upload handler:
+By default, Vizel converts images to Base64. For production, you should configure a custom upload handler:
 
 ```typescript
 const editor = useVizelEditor({
@@ -112,7 +112,7 @@ const editor = useVizelEditor({
 
 ### File Size Exceeded
 
-Configure `maxFileSize` and handle validation errors:
+You can configure `maxFileSize` and handle validation errors:
 
 ```typescript
 const editor = useVizelEditor({
@@ -131,7 +131,7 @@ const editor = useVizelEditor({
 
 ### Invalid File Type
 
-Configure allowed MIME types:
+You can configure allowed MIME types:
 
 ```typescript
 const editor = useVizelEditor({
@@ -150,7 +150,7 @@ const editor = useVizelEditor({
 
 ### Network Errors
 
-Handle upload failures gracefully:
+You should handle upload failures gracefully:
 
 ```typescript
 const editor = useVizelEditor({
@@ -175,7 +175,7 @@ const editor = useVizelEditor({
 
 ### Auto-Save Too Frequent
 
-Increase debounce time for auto-save:
+You can increase the debounce time for auto-save:
 
 ```typescript
 import { useVizelAutoSave } from '@vizel/react';
@@ -191,9 +191,9 @@ useVizelAutoSave({
 
 ### Large Documents
 
-For large documents, consider:
+For large documents, consider the following approaches:
 
-1. **Disable unused features** to reduce bundle size and processing:
+1. **Disable unused features** to reduce bundle size and processing overhead:
 
 ```typescript
 const editor = useVizelEditor({
@@ -236,7 +236,7 @@ const editor = useVizelEditor({
 If typing feels slow:
 
 1. Check for expensive `onUpdate` handlers
-2. Debounce state updates
+2. Debounce your state updates
 3. Avoid synchronous JSON serialization on every keystroke
 
 ```typescript
@@ -264,7 +264,7 @@ onUpdate: ({ editor }) => {
 
 ### "Cannot read property 'commands' of null"
 
-The editor instance is not initialized. Always check for null:
+The editor instance is not yet initialized. Always check for null:
 
 ```typescript
 // Wrong
@@ -281,9 +281,9 @@ editor?.commands.setContent(content);
 
 ### "Maximum call stack size exceeded"
 
-Usually caused by:
+This error is usually caused by:
 
-1. **Circular content updates**: Avoid updating content inside `onUpdate`:
+1. **Circular content updates**: Do not update content inside `onUpdate`:
 
 ```typescript
 // Wrong: Causes infinite loop
@@ -299,11 +299,11 @@ const handleTransform = () => {
 };
 ```
 
-2. **Recursive component rendering**: Ensure proper dependency arrays in hooks.
+2. **Recursive component rendering**: Verify that you set proper dependency arrays in hooks.
 
 ### "Extension not found"
 
-Check that required features are enabled:
+Verify that you enabled the required features:
 
 ```typescript
 // Error when trying to use disabled feature
@@ -319,7 +319,7 @@ const editor = useVizelEditor({
 
 ### "Adding different instances of a keyed plugin"
 
-This error occurs when multiple instances of ProseMirror plugins are loaded. Common causes:
+This error occurs when multiple instances of the same ProseMirror plugin are loaded. Common causes:
 
 1. **Duplicate Tiptap packages** in dependencies:
 
@@ -331,7 +331,7 @@ npm ls @tiptap/core
 
 2. **Incorrect bundling** of @vizel/core:
 
-Ensure your bundler treats @tiptap/* as external. For Vite:
+Make sure your bundler treats @tiptap/* as external. For Vite:
 
 ```typescript
 // vite.config.ts
@@ -344,7 +344,7 @@ export default defineConfig({
 
 3. **Multiple editor instances** sharing extensions:
 
-Create fresh extension instances for each editor:
+You must create fresh extension instances for each editor:
 
 ```typescript
 // Wrong: Sharing extensions
@@ -367,7 +367,7 @@ const editor2 = useVizelEditor({
 
 ### React Hydration Errors
 
-When using SSR (Next.js, Remix), the editor must render client-side only:
+When you use SSR (Next.js, Remix), you must render the editor client-side only:
 
 ```tsx
 // Next.js
@@ -397,7 +397,7 @@ export default function Page() {
 
 ### Vue Reactivity Caveats
 
-The editor instance is wrapped in `shallowRef` for performance. Access `.value` when needed:
+The composable wraps the editor instance in `shallowRef` for performance. Access `.value` when needed:
 
 ```vue
 <script setup lang="ts">
@@ -428,7 +428,7 @@ const handleSave = () => {
 
 ### Svelte Compilation Errors
 
-Ensure you're using Svelte 5 with the `runes` feature:
+Make sure you use Svelte 5 with the `runes` feature:
 
 ```javascript
 // svelte.config.js
@@ -541,7 +541,7 @@ const editor = useVizelEditor({
 
 ## Getting Help
 
-If you encounter issues not covered here:
+If you encounter an issue not covered here:
 
 1. **Search existing issues**: [GitHub Issues](https://github.com/seijikohara/vizel/issues)
 2. **Check Tiptap documentation**: [Tiptap Docs](https://tiptap.dev/docs)

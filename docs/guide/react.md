@@ -106,7 +106,7 @@ import { Vizel } from '@vizel/react';
 
 ### useVizelEditor
 
-Creates and manages a Vizel editor instance.
+This hook creates and manages a Vizel editor instance.
 
 ```tsx
 import { useVizelEditor } from '@vizel/react';
@@ -134,11 +134,11 @@ See [Configuration](/guide/configuration) for full options.
 
 #### Return Value
 
-Returns `Editor | null`. The editor instance is `null` during SSR and before initialization.
+Returns `Editor | null`. The editor instance starts as `null` during SSR and before initialization.
 
 ### useVizelState
 
-Forces component re-render on editor state changes.
+This hook forces a component re-render on editor state changes.
 
 ```tsx
 import { useVizelState } from '@vizel/react';
@@ -161,7 +161,7 @@ function EditorStats({ editor }) {
 
 ### useVizelAutoSave
 
-Automatically saves editor content.
+This hook automatically saves editor content.
 
 ```tsx
 import { useVizelAutoSave, VizelEditor, VizelSaveIndicator } from '@vizel/react';
@@ -188,7 +188,7 @@ function Editor() {
 
 ### useVizelMarkdown
 
-Two-way Markdown synchronization with debouncing.
+This hook provides two-way Markdown synchronization with debouncing.
 
 ```tsx
 import { useVizelEditor, useVizelMarkdown, VizelEditor } from '@vizel/react';
@@ -222,7 +222,7 @@ function MarkdownEditor() {
 
 ### useVizelTheme
 
-Access theme state within VizelThemeProvider.
+This hook accesses theme state within `VizelThemeProvider`.
 
 ```tsx
 import { useVizelTheme, VizelThemeProvider } from '@vizel/react';
@@ -251,7 +251,7 @@ function App() {
 
 ### VizelEditor
 
-Renders the editor content area.
+This component renders the editor content area.
 
 ```tsx
 <VizelEditor 
@@ -269,7 +269,7 @@ Renders the editor content area.
 
 ### VizelBubbleMenu
 
-Floating bubble menu on text selection.
+This component displays a floating bubble menu on text selection.
 
 ```tsx
 <VizelBubbleMenu 
@@ -294,7 +294,7 @@ Floating bubble menu on text selection.
 
 ### VizelThemeProvider
 
-Provides theme context.
+This component provides theme context.
 
 ```tsx
 <VizelThemeProvider 
@@ -317,7 +317,7 @@ Provides theme context.
 
 ### VizelSaveIndicator
 
-Displays save status.
+This component displays the save status.
 
 ```tsx
 <VizelSaveIndicator 
@@ -329,7 +329,7 @@ Displays save status.
 
 ### VizelPortal
 
-Renders children in a portal.
+This component renders children in a portal.
 
 ```tsx
 <VizelPortal container={document.body}>
@@ -482,7 +482,7 @@ function CustomBubbleMenu({ editor }: { editor: Editor | null }) {
 
 ## SSR Considerations
 
-The editor is client-side only. Use dynamic import or check for browser:
+The editor runs on the client side only. Use dynamic import or check for the browser environment:
 
 ```tsx
 import dynamic from 'next/dynamic';

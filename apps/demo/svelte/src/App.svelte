@@ -1,9 +1,14 @@
 <script lang="ts">
-import { getVizelEditorState, setVizelMarkdown } from "@vizel/core";
+import {
+  createVizelFindReplaceExtension,
+  getVizelEditorState,
+  setVizelMarkdown,
+} from "@vizel/core";
 import {
   createVizelAutoSave,
   createVizelState,
   Vizel,
+  VizelFindReplace,
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/svelte";
@@ -46,6 +51,9 @@ const autoSave = createVizelAutoSave(() => (features.autoSave ? editorRef : null
   storage: "localStorage",
   key: "vizel-demo-svelte",
 });
+
+// Find & Replace extension
+const findReplaceExtensions = [createVizelFindReplaceExtension()];
 
 function handleCreate({ editor }: { editor: NonNullable<VizelEditor> }) {
   editorRef = editor;
@@ -140,6 +148,7 @@ function handleJsonChange(event: Event) {
           class="editor-content"
           showToolbar={features.toolbar}
           enableEmbed
+          extensions={findReplaceExtensions}
           features={{
             markdown: true,
             mathematics: true,
@@ -155,7 +164,13 @@ function handleJsonChange(event: Event) {
           }}
           onCreate={handleCreate}
           onUpdate={handleUpdate}
-        />
+        >
+          {#snippet children({ editor: snippetEditor })}
+            {#if snippetEditor}
+              <VizelFindReplace editor={snippetEditor} />
+            {/if}
+          {/snippet}
+        </Vizel>
         {#if features.autoSave || features.stats}
           <div class="status-bar">
             {#if features.autoSave}

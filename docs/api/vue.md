@@ -68,13 +68,13 @@ import '@vizel/core/styles.css';
 
 | Event | Payload | Description |
 |-------|---------|-------------|
-| `update` | `{ editor: Editor }` | Content updated |
-| `update:markdown` | `string` | Markdown content changed |
-| `create` | `{ editor: Editor }` | Editor created |
-| `destroy` | - | Editor destroyed |
-| `selectionUpdate` | `{ editor: Editor }` | Selection changed |
-| `focus` | `{ editor: Editor }` | Editor focused |
-| `blur` | `{ editor: Editor }` | Editor blurred |
+| `update` | `{ editor: Editor }` | Fires when content changes |
+| `update:markdown` | `string` | Fires when Markdown content changes |
+| `create` | `{ editor: Editor }` | Fires when the editor initializes |
+| `destroy` | - | Fires when the editor destroys |
+| `selectionUpdate` | `{ editor: Editor }` | Fires when the selection changes |
+| `focus` | `{ editor: Editor }` | Fires when the editor gains focus |
+| `blur` | `{ editor: Editor }` | Fires when the editor loses focus |
 
 ---
 
@@ -82,7 +82,7 @@ import '@vizel/core/styles.css';
 
 ### useVizelEditor
 
-Creates and manages a Vizel editor instance.
+This composable creates and manages a Vizel editor instance.
 
 ```typescript
 import { useVizelEditor } from '@vizel/vue';
@@ -94,7 +94,7 @@ const editor = useVizelEditor(options?: VizelEditorOptions);
 
 ### useVizelState
 
-Forces re-render on editor state changes.
+This composable forces a re-render on editor state changes.
 
 ```typescript
 import { useVizelState } from '@vizel/vue';
@@ -106,7 +106,7 @@ const updateCount = useVizelState(() => editor.value);
 
 ### useVizelEditorState
 
-Tracks specific editor state properties reactively.
+This composable tracks specific editor state properties reactively.
 
 ```typescript
 import { useVizelEditorState } from '@vizel/vue';
@@ -121,7 +121,7 @@ const isBold = useVizelEditorState(
 
 ### useVizelAutoSave
 
-Auto-saves editor content with debouncing.
+This composable auto-saves editor content with debouncing.
 
 ```typescript
 import { useVizelAutoSave } from '@vizel/vue';
@@ -137,15 +137,15 @@ const result = useVizelAutoSave(
 | Property | Type | Description |
 |----------|------|-------------|
 | `status` | `ComputedRef<VizelSaveStatus>` | Current save status |
-| `hasUnsavedChanges` | `ComputedRef<boolean>` | Has unsaved changes |
+| `hasUnsavedChanges` | `ComputedRef<boolean>` | Whether unsaved changes exist |
 | `lastSaved` | `ComputedRef<Date \| null>` | Last save timestamp |
 | `error` | `ComputedRef<Error \| null>` | Last error |
-| `save` | `() => Promise<void>` | Manual save function |
-| `restore` | `() => Promise<JSONContent \| null>` | Manual restore |
+| `save` | `() => Promise<void>` | Save content manually |
+| `restore` | `() => Promise<JSONContent \| null>` | Restore content manually |
 
 ### useVizelMarkdown
 
-Provides two-way Markdown synchronization with debouncing.
+This composable provides two-way Markdown synchronization with debouncing.
 
 ```typescript
 import { useVizelMarkdown } from '@vizel/vue';
@@ -172,7 +172,7 @@ const result = useVizelMarkdown(
 
 ### useVizelTheme
 
-Access theme state within VizelThemeProvider.
+This composable accesses theme state within VizelThemeProvider.
 
 ```typescript
 import { useVizelTheme } from '@vizel/vue';
@@ -189,13 +189,170 @@ const { theme, resolvedTheme, systemTheme, setTheme } = useVizelTheme();
 | `systemTheme` | `Ref<VizelResolvedTheme>` | System preference |
 | `setTheme` | `(theme: VizelTheme) => void` | Set theme function |
 
+### useVizelCollaboration
+
+This composable tracks real-time collaboration state with a Yjs provider.
+
+```typescript
+import { useVizelCollaboration } from '@vizel/vue';
+
+const {
+  isConnected,
+  isSynced,
+  peerCount,
+  error,
+  connect,
+  disconnect,
+  updateUser,
+} = useVizelCollaboration(
+  () => provider,
+  { user: { name: 'Alice', color: '#ff0000' } }
+);
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `getProvider` | `() => VizelYjsProvider \| null \| undefined` | Getter function for the Yjs provider |
+| `options` | `VizelCollaborationOptions` | Collaboration options including user info |
+
+**Returns:** `UseVizelCollaborationResult`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `isConnected` | `ComputedRef<boolean>` | Whether the editor is connected to the server |
+| `isSynced` | `ComputedRef<boolean>` | Whether initial sync is complete |
+| `peerCount` | `ComputedRef<number>` | Number of connected peers |
+| `error` | `ComputedRef<Error \| null>` | Last error |
+| `connect` | `() => void` | Connect to the server |
+| `disconnect` | `() => void` | Disconnect from the server |
+| `updateUser` | `(user: VizelCollaborationUser) => void` | Update user cursor info |
+
+### useVizelComment
+
+This composable manages document comments and annotations.
+
+```typescript
+import { useVizelComment } from '@vizel/vue';
+
+const {
+  comments,
+  activeCommentId,
+  isLoading,
+  error,
+  addComment,
+  removeComment,
+  resolveComment,
+  reopenComment,
+  replyToComment,
+  setActiveComment,
+  loadComments,
+  getCommentById,
+} = useVizelComment(() => editor.value, { key: 'my-comments' });
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `getEditor` | `() => Editor \| null \| undefined` | Getter function for the editor |
+| `options` | `VizelCommentOptions` | Comment configuration options |
+
+**Returns:** `UseVizelCommentResult`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `comments` | `ComputedRef<VizelComment[]>` | All stored comments (newest first) |
+| `activeCommentId` | `ComputedRef<string \| null>` | Currently active comment ID |
+| `isLoading` | `ComputedRef<boolean>` | Whether comments are loading |
+| `error` | `ComputedRef<Error \| null>` | Last error |
+| `addComment` | `(text: string, author?: string) => Promise<VizelComment \| null>` | Add a comment to the selection |
+| `removeComment` | `(commentId: string) => Promise<void>` | Remove a comment |
+| `resolveComment` | `(commentId: string) => Promise<boolean>` | Resolve a comment |
+| `reopenComment` | `(commentId: string) => Promise<boolean>` | Reopen a comment |
+| `replyToComment` | `(commentId: string, text: string, author?: string) => Promise<VizelCommentReply \| null>` | Reply to a comment |
+| `setActiveComment` | `(commentId: string \| null) => void` | Set the active comment |
+| `loadComments` | `() => Promise<VizelComment[]>` | Load comments from storage |
+| `getCommentById` | `(commentId: string) => VizelComment \| undefined` | Get a comment by ID |
+
+### useVizelVersionHistory
+
+This composable manages document version history with save, restore, and delete operations.
+
+```typescript
+import { useVizelVersionHistory } from '@vizel/vue';
+
+const {
+  snapshots,
+  isLoading,
+  error,
+  saveVersion,
+  restoreVersion,
+  loadVersions,
+  deleteVersion,
+  clearVersions,
+} = useVizelVersionHistory(() => editor.value, { maxVersions: 20 });
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `getEditor` | `() => Editor \| null \| undefined` | Getter function for the editor |
+| `options` | `VizelVersionHistoryOptions` | Version history configuration |
+
+**Returns:** `UseVizelVersionHistoryResult`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `snapshots` | `ComputedRef<VizelVersionSnapshot[]>` | All stored snapshots (newest first) |
+| `isLoading` | `ComputedRef<boolean>` | Whether history is loading |
+| `error` | `ComputedRef<Error \| null>` | Last error |
+| `saveVersion` | `(description?: string, author?: string) => Promise<VizelVersionSnapshot \| null>` | Save a new version |
+| `restoreVersion` | `(versionId: string) => Promise<boolean>` | Restore a version |
+| `loadVersions` | `() => Promise<VizelVersionSnapshot[]>` | Load versions from storage |
+| `deleteVersion` | `(versionId: string) => Promise<void>` | Delete a version |
+| `clearVersions` | `() => Promise<void>` | Delete all versions |
+
 ---
 
 ## Components
 
+### VizelFindReplace
+
+Find & Replace panel component. This component renders when the Find & Replace extension is open.
+
+```vue
+<script setup lang="ts">
+import { VizelFindReplace } from '@vizel/vue';
+</script>
+
+<template>
+  <VizelFindReplace
+    :editor="editor"
+    class="my-find-replace"
+    @close="() => console.log('Closed')"
+  />
+</template>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor \| null` | - | Editor instance |
+| `class` | `string` | - | CSS class name |
+
+**Events:**
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `close` | - | Fires when the panel closes |
+
 ### VizelEditor
 
-Renders the editor content area.
+This component renders the editor content area.
 
 ```vue
 <VizelEditor :editor="editor" class="my-editor" />
@@ -210,7 +367,7 @@ Renders the editor content area.
 
 ### VizelBubbleMenu
 
-Floating formatting bubble menu.
+This component renders a floating formatting bubble menu.
 
 ```vue
 <VizelBubbleMenu 
@@ -234,7 +391,7 @@ Floating formatting bubble menu.
 
 ### VizelBubbleMenuDefault
 
-Default bubble menu with all formatting buttons.
+This component renders the default bubble menu with all formatting buttons.
 
 ```vue
 <VizelBubbleMenuDefault 
@@ -252,7 +409,7 @@ Default bubble menu with all formatting buttons.
 
 ### VizelBubbleMenuButton
 
-Individual bubble menu button.
+This component renders an individual bubble menu button.
 
 ```vue
 <VizelBubbleMenuButton
@@ -264,7 +421,7 @@ Individual bubble menu button.
 
 ### VizelBubbleMenuDivider
 
-Bubble menu divider.
+This component renders a bubble menu divider.
 
 ```vue
 <VizelBubbleMenuDivider />
@@ -272,7 +429,7 @@ Bubble menu divider.
 
 ### VizelToolbar
 
-Fixed toolbar component.
+This component renders a fixed toolbar.
 
 ```vue
 <script setup lang="ts">
@@ -300,7 +457,7 @@ import { VizelToolbar } from '@vizel/vue';
 
 ### VizelToolbarDefault
 
-Default toolbar content with grouped formatting buttons.
+This component renders the default toolbar content with grouped formatting buttons.
 
 ```vue
 <VizelToolbarDefault :editor="editor" :actions="customActions" />
@@ -316,7 +473,7 @@ Default toolbar content with grouped formatting buttons.
 
 ### VizelToolbarButton
 
-Individual toolbar button.
+This component renders an individual toolbar button.
 
 ```vue
 <VizelToolbarButton
@@ -340,7 +497,7 @@ Individual toolbar button.
 
 ### VizelToolbarDivider
 
-Divider between toolbar button groups.
+This component renders a divider between toolbar button groups.
 
 ```vue
 <VizelToolbarDivider />
@@ -348,7 +505,7 @@ Divider between toolbar button groups.
 
 ### VizelThemeProvider
 
-Provides theme context.
+This component provides theme context to its children.
 
 ```vue
 <VizelThemeProvider
@@ -371,7 +528,7 @@ Provides theme context.
 
 ### VizelSaveIndicator
 
-Displays save status.
+This component displays the save status.
 
 ```vue
 <VizelSaveIndicator :status="status" :lastSaved="lastSaved" />
@@ -387,7 +544,7 @@ Displays save status.
 
 ### VizelPortal
 
-Renders content in a portal.
+This component renders its children in a portal.
 
 ```vue
 <VizelPortal :container="document.body">
@@ -403,7 +560,7 @@ Renders content in a portal.
 
 ### VizelColorPicker
 
-Color selection component.
+This component renders a color selection interface.
 
 ```vue
 <VizelColorPicker
@@ -416,7 +573,7 @@ Color selection component.
 
 ### VizelIconProvider
 
-Provides custom icons for Vizel components.
+This component provides custom icons for Vizel components.
 
 ```vue
 <script setup lang="ts">
@@ -450,7 +607,7 @@ const icons: CustomIconMap = {
 
 ### VizelSlashMenu
 
-Slash command menu component.
+This component renders the slash command menu.
 
 ```vue
 <VizelSlashMenu
@@ -466,7 +623,7 @@ Slash command menu component.
 
 ### createVizelSlashMenuRenderer
 
-Creates slash menu renderer for the SlashCommand extension.
+This function creates a slash menu renderer for the SlashCommand extension.
 
 ```typescript
 import { createVizelSlashMenuRenderer } from '@vizel/vue';
@@ -486,7 +643,7 @@ const editor = useVizelEditor({
 
 ## Importing from @vizel/core and @tiptap/core
 
-Framework packages do not re-export from `@vizel/core`. Import directly:
+Framework packages do not re-export from `@vizel/core`. You must import directly:
 
 ```typescript
 // Framework-specific components and composables

@@ -1,12 +1,12 @@
 # Performance Optimization
 
-Strategies for optimizing Vizel editor performance in production applications.
+This guide covers strategies for optimizing Vizel editor performance in production applications.
 
 ## Bundle Size Optimization
 
 ### Disable Unused Features
 
-All features are enabled by default. Disable features you don't use to reduce bundle size and extension processing:
+Vizel enables all features by default. Disable features you don't use to reduce bundle size and extension processing:
 
 ```typescript
 const editor = useVizelEditor({
@@ -23,7 +23,7 @@ const editor = useVizelEditor({
 
 ### Feature Size Impact
 
-Approximate sizes (minified + gzipped) of optional features:
+The following table shows approximate sizes (minified + gzipped) of optional features:
 
 | Feature | Approximate Size | Dependencies |
 |---------|-----------------|--------------|
@@ -38,7 +38,7 @@ Approximate sizes (minified + gzipped) of optional features:
 | `details` | ~2KB gzipped | Built-in |
 
 ::: tip Measurement
-Actual bundle sizes depend on your bundler configuration and tree-shaking. Use tools like [bundlephobia](https://bundlephobia.com/) or your bundler's analysis output to measure exact sizes:
+Actual bundle sizes depend on your bundler configuration and tree-shaking. You can use tools like [bundlephobia](https://bundlephobia.com/) or your bundler's analysis output to measure exact sizes:
 
 ```bash
 # Vite
@@ -51,9 +51,9 @@ npx webpack-bundle-analyzer
 
 ### Lazy Loading
 
-Vizel uses `createLazyLoader()` internally for optional dependencies like Mermaid. Diagram rendering is lazy-loaded on first use, so simply having the feature enabled doesn't add to initial load time.
+Vizel uses `createLazyLoader()` internally for optional dependencies like Mermaid. Vizel lazy-loads diagram rendering on first use, so simply having the feature enabled does not add to initial load time.
 
-For CSS, you can also lazy-load optional stylesheets:
+You can also lazy-load optional CSS stylesheets:
 
 ```typescript
 // Only import mathematics CSS when the feature is used
@@ -64,7 +64,7 @@ if (useMathematics) {
 
 ### Code Block Language Optimization
 
-By default, code blocks load all common languages. Limit to only the languages you need:
+By default, code blocks load all common languages. You can limit this to only the languages you need:
 
 ```typescript
 import { createLowlight } from 'lowlight';
@@ -99,7 +99,7 @@ const lowlight = createLowlight(common);
 
 ### Character Count Limits
 
-Use the character count feature to enforce document size limits:
+You can use the character count feature to enforce document size limits:
 
 ```typescript
 const editor = useVizelEditor({
@@ -113,7 +113,7 @@ const editor = useVizelEditor({
 
 ### Optimize onUpdate Handlers
 
-Avoid expensive operations on every keystroke:
+You should avoid expensive operations on every keystroke:
 
 ```typescript
 // Bad: Expensive serialization on every keystroke
@@ -223,7 +223,7 @@ const editor = useVizelEditor({
 
 ### Debounce Timing
 
-Choose a debounce value that balances responsiveness with performance:
+Choose a debounce value that balances responsiveness and performance:
 
 | Use Case | Recommended `debounceMs` |
 |----------|-------------------------|
@@ -248,9 +248,9 @@ See [Auto-Save](/guide/auto-save) for detailed configuration.
 
 ### React
 
-- Avoid creating a new `onUpdate` function on every render — use `useCallback` or define outside the component
-- Use `React.memo` for toolbar components that receive the editor instance
-- Do not store the entire editor state in React state — use `useVizelEditorState` for reactive state tracking
+- Avoid creating a new `onUpdate` function on every render. Use `useCallback` or define the function outside the component.
+- Wrap toolbar components that receive the editor instance with `React.memo`
+- Do not store the entire editor state in React state. Use the `useVizelEditorState` hook for reactive state tracking.
 
 ```tsx
 import { useVizelEditor, useVizelEditorState } from '@vizel/react';
@@ -272,8 +272,8 @@ function Editor() {
 
 ### Vue
 
-- Use `shallowRef` for the editor instance (this is done automatically by `useVizelEditor`)
-- Avoid `watch` with `deep: true` on the editor — use `useVizelEditorState` instead
+- Use `shallowRef` for the editor instance (`useVizelEditor` does this automatically)
+- Avoid `watch` with `deep: true` on the editor. Use the `useVizelEditorState` composable instead.
 - Use `computed` for derived values from editor state
 
 ```vue
@@ -290,8 +290,8 @@ const { characterCount, wordCount } = useVizelEditorState(() => editor.value);
 ### Svelte
 
 - Svelte 5 runes handle reactivity efficiently by default
-- Use `createVizelEditorState` for reactive state tracking
-- Avoid frequent `$effect` calls that read the editor state — batch updates
+- Use the `createVizelEditorState` rune for reactive state tracking
+- Avoid frequent `$effect` calls that read the editor state. Batch updates instead.
 
 ```svelte
 <script lang="ts">
@@ -310,15 +310,15 @@ const { characterCount, wordCount } = useVizelEditorState(() => editor.value);
 
 ## Production Checklist
 
-Before deploying to production, verify these optimizations:
+Before deploying to production, verify the following optimizations:
 
-- [ ] **Disable unused features** — Remove features not used in your application
-- [ ] **Optimize code block languages** — Only register languages you need
-- [ ] **Configure auto-save debouncing** — Set appropriate `debounceMs` for your use case
+- [ ] **Disable unused features** — Remove features your application does not use
+- [ ] **Optimize code block languages** — Register only the languages you need
+- [ ] **Configure auto-save debouncing** — Set an appropriate `debounceMs` for your use case
 - [ ] **Debounce onUpdate handlers** — Avoid expensive operations on every keystroke
 - [ ] **Set character count limits** — Prevent excessively large documents if applicable
-- [ ] **Lazy load optional CSS** — Only import `mathematics.css` if using math features
-- [ ] **Enable compression** — Ensure gzip or brotli compression is configured on your server
+- [ ] **Lazy load optional CSS** — Import `mathematics.css` only if you use math features
+- [ ] **Enable compression** — Configure gzip or brotli compression on your server
 - [ ] **Analyze bundle size** — Use bundle analysis tools to identify optimization opportunities
 - [ ] **Test with realistic content** — Profile with documents similar to production usage
 

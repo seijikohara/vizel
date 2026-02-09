@@ -1,6 +1,6 @@
 # Version History
 
-Vizel provides a version history system that allows users to save, view, and restore document snapshots.
+Vizel provides a version history system that lets you save, view, and restore document snapshots.
 
 ## Overview
 
@@ -132,7 +132,7 @@ interface VizelVersionHistoryOptions {
 
 ### `maxVersions`
 
-Limits the number of stored snapshots. When the limit is reached, the oldest snapshot is removed.
+Limits the number of stored snapshots. When the limit is reached, Vizel removes the oldest snapshot.
 
 ```typescript
 useVizelVersionHistory(() => editor, {
@@ -142,7 +142,7 @@ useVizelVersionHistory(() => editor, {
 
 ### `storage`
 
-Choose between built-in localStorage or a custom backend.
+You can choose between built-in localStorage or a custom backend.
 
 ```typescript
 // localStorage (default)
@@ -215,7 +215,7 @@ In Vue, `snapshots`, `isLoading`, and `error` are `ComputedRef` values — acces
 
 ## Core Handlers
 
-For advanced use cases, use the core handlers directly:
+For advanced use cases, you can use the core handlers directly:
 
 ```typescript
 import {

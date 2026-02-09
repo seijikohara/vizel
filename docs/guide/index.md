@@ -55,10 +55,10 @@ graph LR
 
 ### Development
 
-- **TypeScript** - Written in TypeScript with exported type definitions
-- **Multi-Framework** - Consistent APIs across React, Vue, and Svelte
-- **Extensible** - Built on Tiptap's extension architecture
-- **Tree-shakeable** - Packages support tree-shaking
+- **TypeScript** - Vizel uses TypeScript with exported type definitions
+- **Multi-Framework** - Vizel provides consistent APIs across React, Vue, and Svelte
+- **Extensible** - Vizel builds on Tiptap's extension architecture
+- **Tree-shakeable** - All packages support tree-shaking
 
 ## Package Architecture
 

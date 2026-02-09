@@ -106,17 +106,17 @@ import { Vizel } from '@vizel/vue';
 
 | Event | Payload | Description |
 |-------|---------|-------------|
-| `update` | `{ editor: Editor }` | Content updated |
-| `update:markdown` | `string` | Markdown content changed |
-| `create` | `{ editor: Editor }` | Editor created |
-| `focus` | `{ editor: Editor }` | Editor focused |
-| `blur` | `{ editor: Editor }` | Editor blurred |
+| `update` | `{ editor: Editor }` | Fires when content changes |
+| `update:markdown` | `string` | Fires when Markdown content changes |
+| `create` | `{ editor: Editor }` | Fires when the editor initializes |
+| `focus` | `{ editor: Editor }` | Fires when the editor gains focus |
+| `blur` | `{ editor: Editor }` | Fires when the editor loses focus |
 
 ## Composables
 
 ### useVizelEditor
 
-Creates and manages a Vizel editor instance.
+This composable creates and manages a Vizel editor instance.
 
 ```vue
 <script setup lang="ts">
@@ -142,11 +142,11 @@ See [Configuration](/guide/configuration) for full options.
 
 #### Return Value
 
-Returns `ShallowRef<Editor | null>`. The editor is `null` during SSR and before initialization.
+Returns `ShallowRef<Editor | null>`. The editor starts as `null` during SSR and before initialization.
 
 ### useVizelState
 
-Forces component re-render on editor state changes.
+This composable forces a component re-render on editor state changes.
 
 ```vue
 <script setup lang="ts">
@@ -168,7 +168,7 @@ useVizelState(() => props.editor);
 
 ### useVizelAutoSave
 
-Automatically saves editor content.
+This composable automatically saves editor content.
 
 ```vue
 <script setup lang="ts">
@@ -195,7 +195,7 @@ const { status, lastSaved, save, restore } = useVizelAutoSave(() => editor.value
 
 ### useVizelMarkdown
 
-Two-way Markdown synchronization with debouncing.
+This composable provides two-way Markdown synchronization with debouncing.
 
 ```vue
 <script setup lang="ts">
@@ -224,7 +224,7 @@ const { markdown, setMarkdown, isPending } = useVizelMarkdown(() => editor.value
 
 ### useVizelTheme
 
-Access theme state within VizelThemeProvider.
+This composable accesses theme state within `VizelThemeProvider`.
 
 ```vue
 <script setup lang="ts">
@@ -251,7 +251,7 @@ function toggleTheme() {
 
 ### VizelEditor
 
-Renders the editor content area.
+This component renders the editor content area.
 
 ```vue
 <VizelEditor 
@@ -269,7 +269,7 @@ Renders the editor content area.
 
 ### VizelBubbleMenu
 
-Floating bubble menu on text selection.
+This component displays a floating bubble menu on text selection.
 
 ```vue
 <VizelBubbleMenu 
@@ -294,7 +294,7 @@ Floating bubble menu on text selection.
 
 ### VizelThemeProvider
 
-Provides theme context.
+This component provides theme context.
 
 ```vue
 <VizelThemeProvider 
@@ -317,7 +317,7 @@ Provides theme context.
 
 ### VizelSaveIndicator
 
-Displays save status.
+This component displays the save status.
 
 ```vue
 <VizelSaveIndicator 
@@ -329,7 +329,7 @@ Displays save status.
 
 ### VizelPortal
 
-Renders children in a portal.
+This component renders children in a portal.
 
 ```vue
 <VizelPortal :container="document.body">
@@ -499,7 +499,7 @@ const editor = inject<ShallowRef<Editor | null>>('editor');
 
 ## SSR/Nuxt Considerations
 
-The editor is client-side only. Use `<ClientOnly>` in Nuxt:
+The editor runs on the client side only. Use `<ClientOnly>` in Nuxt:
 
 ```vue
 <template>

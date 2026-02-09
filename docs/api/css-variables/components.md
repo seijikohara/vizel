@@ -1,6 +1,6 @@
 # Component Variables
 
-Variables for editor, images, mathematics, and other components.
+CSS variables for the editor, images, mathematics, and other components.
 
 ## Editor
 

@@ -1,6 +1,6 @@
 # Typography Variables
 
-Font families, sizes, weights, line heights, and letter spacing.
+CSS variables for font families, sizes, weights, line heights, and letter spacing.
 
 ## Font Families
 

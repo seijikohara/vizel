@@ -49,6 +49,15 @@ interface VizelFeatureOptions {
   
   /** Diagram support */
   diagram?: VizelDiagramOptions | boolean;
+
+  /** Wiki-style internal links ([[page-name]]) */
+  wikiLink?: VizelWikiLinkOptions | boolean;
+
+  /** Comment/annotation marks */
+  comment?: VizelCommentMarkOptions | boolean;
+
+  /** Real-time collaboration mode (disables History extension) */
+  collaboration?: boolean;
 }
 ```
 
@@ -308,8 +317,77 @@ interface VizelDetailsOptions {
 interface VizelTaskListOptions {
   /** Task list container options */
   taskList?: TaskListOptions;
-  
+
   /** Task item options */
   taskItem?: TaskItemOptions;
 }
 ```
+
+## Wiki Link
+
+```typescript
+interface VizelWikiLinkOptions {
+  /** Resolve a page name to a URL (default: (p) => '#' + p) */
+  resolveLink?: (pageName: string) => string;
+
+  /** Check if a page exists for visual differentiation (default: () => true) */
+  pageExists?: (pageName: string) => boolean;
+
+  /** Get page suggestions for autocomplete */
+  getPageSuggestions?: (query: string) => VizelWikiLinkSuggestion[];
+
+  /** Callback when a wiki link is clicked */
+  onLinkClick?: (pageName: string, event: MouseEvent) => void;
+
+  /** CSS class for existing page links (default: 'vizel-wiki-link--existing') */
+  existingClass?: string;
+
+  /** CSS class for non-existing page links (default: 'vizel-wiki-link--new') */
+  newClass?: string;
+
+  /** Additional HTML attributes */
+  HTMLAttributes?: Record<string, unknown>;
+}
+
+interface VizelWikiLinkSuggestion {
+  /** Page name */
+  name: string;
+
+  /** Optional display label (defaults to name) */
+  label?: string;
+}
+```
+
+## Comment Mark
+
+```typescript
+interface VizelCommentMarkOptions {
+  /** Enable comment marks (default: true) */
+  enabled?: boolean;
+}
+```
+
+::: tip
+Comment mark options control the editor extension for highlighting commented text. For full comment management (storage, replies, resolution), use the `createVizelCommentHandlers` function from `@vizel/core` or the framework-specific hooks/composables/runes.
+:::
+
+## Collaboration
+
+The `collaboration` feature option is a boolean flag. Setting it to `true` disables the built-in History extension (since Yjs handles undo/redo via `y-undo`).
+
+```typescript
+// Enable collaboration mode
+const editor = useVizelEditor({
+  features: {
+    collaboration: true, // disables History extension
+  },
+  extensions: [
+    Collaboration.configure({ document: ydoc }),
+    CollaborationCursor.configure({ provider, user }),
+  ],
+});
+```
+
+::: warning
+You must install and configure `yjs`, a Yjs provider, `@tiptap/extension-collaboration`, and `@tiptap/extension-collaboration-cursor` separately. See the [Collaboration Guide](/guide/collaboration) for details.
+:::
