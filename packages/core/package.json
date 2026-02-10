@@ -136,7 +136,7 @@
     }
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.2.89",
+    "@iconify-json/lucide": "^1.2.90",
     "@iconify/utils": "^3.1.0",
     "@tiptap/extension-mention": "^3.19.0",
     "@tiptap/extension-subscript": "^3.19.0",

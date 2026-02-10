@@ -458,8 +458,8 @@ importers:
         version: 13.6.29
     devDependencies:
       '@iconify-json/lucide':
-        specifier: ^1.2.89
-        version: 1.2.89
+        specifier: ^1.2.90
+        version: 1.2.90
       '@iconify/utils':
         specifier: ^3.1.0
         version: 3.1.0
@@ -1387,8 +1387,8 @@ packages:
   '@hpcc-js/wasm-graphviz@1.21.0':
     resolution: {integrity: sha512-BQ06v/foSTxtwUyIdJYRz+S++/fHQuPVsFmX+pI3G66cANi1mQvsgToaN5deZ6ALEDUHsfHVMYlowNiimoET5g==}
 
-  '@iconify-json/lucide@1.2.89':
-    resolution: {integrity: sha512-9rZaJZn8VBls1KZnGaFTnqqZrUkd++XB3vy9WYIMgmHHgLxQMEZXg3V+oJSEeit0kCNr/OfDBmrDwuGl/LZulA==}
+  '@iconify-json/lucide@1.2.90':
+    resolution: {integrity: sha512-dPn1pRhfBa9KR+EVpdyM1Rvw3T36hCKYxd6TxK1ifffiNt0f5yXx8ZVhqnzPH4Vkz87yLMj5xFCXomNrnzd2kQ==}
 
   '@iconify-json/simple-icons@1.2.67':
     resolution: {integrity: sha512-RGJRwlxyup54L1UDAjCshy3ckX5zcvYIU74YLSnUgHGvqh6B4mvksbGNHAIEp7dZQ6cM13RZVT5KC07CmnFNew==}
@@ -4854,7 +4854,7 @@ snapshots:
 
   '@hpcc-js/wasm-graphviz@1.21.0': {}
 
-  '@iconify-json/lucide@1.2.89':
+  '@iconify-json/lucide@1.2.90':
     dependencies:
       '@iconify/types': 2.0.0
 
