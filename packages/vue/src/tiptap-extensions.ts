@@ -15,3 +15,5 @@ import "@tiptap/extension-italic";
 import "@tiptap/extension-strike";
 import "@tiptap/extension-text-style";
 import "@tiptap/extension-underline";
+import "@tiptap/extension-superscript";
+import "@tiptap/extension-subscript";

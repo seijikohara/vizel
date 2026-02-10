@@ -266,10 +266,53 @@ export async function createVizelCodeBlockExtension(
         }
         lineNumbersBtn.title = node.attrs.lineNumbers ? "Hide line numbers" : "Show line numbers";
 
-        // Append in order: toggle button, language input, datalist
+        // Helper to set trusted SVG icon content from the internal @iconify system
+        const setIconContent = (
+          el: HTMLElement,
+          icon: Parameters<typeof renderVizelIcon>[0],
+          size = 16
+        ) => {
+          // Safe: renderVizelIcon returns trusted SVG from bundled @iconify-json/lucide data
+          el.replaceChildren();
+          const template = document.createElement("template");
+          template.innerHTML = renderVizelIcon(icon, { width: size, height: size });
+          if (template.content.firstChild) {
+            el.appendChild(template.content.firstChild);
+          }
+        };
+
+        // Copy button
+        const copyBtn = document.createElement("button");
+        copyBtn.type = "button";
+        copyBtn.classList.add("vizel-code-block-copy-btn");
+        setIconContent(copyBtn, "copy");
+        copyBtn.title = "Copy code";
+
+        let copyTimeout: ReturnType<typeof setTimeout> | null = null;
+
+        copyBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const text = code.textContent || "";
+          navigator.clipboard.writeText(text).then(() => {
+            copyBtn.classList.add("copied");
+            setIconContent(copyBtn, "checkSmall");
+            copyBtn.title = "Copied!";
+            if (copyTimeout) clearTimeout(copyTimeout);
+            copyTimeout = setTimeout(() => {
+              copyBtn.classList.remove("copied");
+              setIconContent(copyBtn, "copy");
+              copyBtn.title = "Copy code";
+              copyTimeout = null;
+            }, 2000);
+          });
+        });
+
+        // Append in order: toggle button, language input, datalist, copy button
         toolbar.appendChild(lineNumbersBtn);
         toolbar.appendChild(languageInput);
         toolbar.appendChild(datalist);
+        toolbar.appendChild(copyBtn);
 
         // Code container with gutter and pre
         const codeContainer = document.createElement("div");
@@ -387,6 +430,10 @@ export async function createVizelCodeBlockExtension(
           ignoreMutation(mutation) {
             // Ignore mutations in non-editable parts
             return gutter.contains(mutation.target) || toolbar.contains(mutation.target);
+          },
+
+          destroy() {
+            if (copyTimeout) clearTimeout(copyTimeout);
           },
         };
       };

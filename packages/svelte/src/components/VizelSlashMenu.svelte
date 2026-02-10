@@ -153,7 +153,7 @@ export function onKeyDown(event: KeyboardEvent): boolean {
 }
 </script>
 
-<div class="vizel-slash-menu {className ?? ''}" data-vizel-slash-menu>
+<div class="vizel-slash-menu {className ?? ''}" data-vizel-slash-menu role="listbox" aria-label="Commands">
   {#if flatItems.length === 0}
     {#if renderEmpty}
       {@render renderEmpty()}

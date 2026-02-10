@@ -6,7 +6,7 @@ import { useVizelContextSafe } from "./VizelContext.ts";
 
 export interface VizelBubbleMenuProps {
   /** Override the editor from context */
-  editor?: Editor;
+  editor?: Editor | null;
   /** Custom class name for the menu container */
   class?: string;
   /** Whether to show the default formatting menu */
@@ -85,6 +85,8 @@ onBeforeUnmount(() => {
     ref="menuRef"
     :class="['vizel-bubble-menu', $props.class]"
     data-vizel-bubble-menu
+    role="toolbar"
+    aria-label="Text formatting"
     style="visibility: hidden"
   >
     <slot v-if="slots.default" />

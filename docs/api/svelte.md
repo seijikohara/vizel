@@ -461,7 +461,7 @@ This component provides theme context to its children.
   storageKey="vizel-theme"
   disableTransitionOnChange={false}
 >
-  <slot />
+  {@render children()}
 </VizelThemeProvider>
 ```
 

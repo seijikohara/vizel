@@ -2,6 +2,12 @@
  * Vizel Editor Styles
  *
  * Base styles for the Vizel editor.
+ *
+ * Content spacing uses `em` units (not design tokens) intentionally:
+ * em-based values scale proportionally with heading/body font sizes,
+ * preserving consistent typographic rhythm at any content zoom level.
+ * Design tokens use `rem` (fixed relative to root) and are reserved
+ * for UI chrome (toolbar, menus, panels).
  */
 
 @use "tokens" as *;
@@ -39,6 +45,25 @@
     font-size: 1.25em;
     font-weight: 600;
     line-height: 1.4;
+  }
+
+  h4 {
+    font-size: 1.125em;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  h5 {
+    font-size: 1em;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  h6 {
+    font-size: 0.875em;
+    font-weight: 600;
+    line-height: 1.5;
+    color: v("foreground-secondary");
   }
 
   p {

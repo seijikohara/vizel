@@ -28,6 +28,8 @@ const emit = defineEmits<{
       { 'is-selected': isSelected },
       $props.class,
     ]"
+    role="option"
+    :aria-selected="isSelected"
     :data-selected="isSelected || undefined"
     @click="emit('click')"
   >

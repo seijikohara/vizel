@@ -77,6 +77,7 @@ export const vizelDefaultToolbarActions = [
     isActive: (editor) => editor.isActive("strike"),
     isEnabled: (editor) => editor.can().toggleStrike(),
     run: (editor) => editor.chain().focus().toggleStrike().run(),
+    shortcut: "Mod+Shift+S",
   },
   {
     id: "underline",
@@ -107,6 +108,7 @@ export const vizelDefaultToolbarActions = [
     isActive: (editor) => editor.isActive("heading", { level: 1 }),
     isEnabled: (editor) => editor.can().toggleHeading({ level: 1 }),
     run: (editor) => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+    shortcut: "Mod+Alt+1",
   },
   {
     id: "heading2",
@@ -116,6 +118,7 @@ export const vizelDefaultToolbarActions = [
     isActive: (editor) => editor.isActive("heading", { level: 2 }),
     isEnabled: (editor) => editor.can().toggleHeading({ level: 2 }),
     run: (editor) => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+    shortcut: "Mod+Alt+2",
   },
   {
     id: "heading3",
@@ -125,6 +128,7 @@ export const vizelDefaultToolbarActions = [
     isActive: (editor) => editor.isActive("heading", { level: 3 }),
     isEnabled: (editor) => editor.can().toggleHeading({ level: 3 }),
     run: (editor) => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+    shortcut: "Mod+Alt+3",
   },
   // Lists
   {
@@ -135,6 +139,7 @@ export const vizelDefaultToolbarActions = [
     isActive: (editor) => editor.isActive("bulletList"),
     isEnabled: (editor) => editor.can().toggleBulletList(),
     run: (editor) => editor.chain().focus().toggleBulletList().run(),
+    shortcut: "Mod+Shift+8",
   },
   {
     id: "orderedList",
@@ -144,6 +149,7 @@ export const vizelDefaultToolbarActions = [
     isActive: (editor) => editor.isActive("orderedList"),
     isEnabled: (editor) => editor.can().toggleOrderedList(),
     run: (editor) => editor.chain().focus().toggleOrderedList().run(),
+    shortcut: "Mod+Shift+7",
   },
   {
     id: "taskList",
@@ -153,6 +159,7 @@ export const vizelDefaultToolbarActions = [
     isActive: (editor) => editor.isActive("taskList"),
     isEnabled: (editor) => editor.can().toggleTaskList(),
     run: (editor) => editor.chain().focus().toggleTaskList().run(),
+    shortcut: "Mod+Shift+9",
   },
   // Blocks
   {
@@ -163,6 +170,7 @@ export const vizelDefaultToolbarActions = [
     isActive: (editor) => editor.isActive("blockquote"),
     isEnabled: (editor) => editor.can().toggleBlockquote(),
     run: (editor) => editor.chain().focus().toggleBlockquote().run(),
+    shortcut: "Mod+Shift+B",
   },
   {
     id: "codeBlock",

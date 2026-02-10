@@ -77,6 +77,37 @@
     }
   }
 
+  &-copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-left: auto;
+    padding: 0;
+    background-color: transparent;
+    border: 1px solid v("code-block-button-border");
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    color: v("code-block-button-color");
+
+    svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    &:hover {
+      background-color: v("code-block-button-hover-bg");
+      color: v("code-block-button-hover-color");
+    }
+
+    &.copied {
+      border-color: v("primary");
+      color: v("primary");
+    }
+  }
+
   &-container {
     display: flex;
     overflow-x: auto;
@@ -235,7 +266,8 @@
       transition: none;
     }
 
-    &-line-numbers-toggle {
+    &-line-numbers-toggle,
+    &-copy-btn {
       transition: none;
 
       svg {

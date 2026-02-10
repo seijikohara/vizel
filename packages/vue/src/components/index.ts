@@ -48,6 +48,12 @@ export {
   default as VizelLinkEditor,
   type VizelLinkEditorProps,
 } from "./VizelLinkEditor.vue";
+// VizelMentionMenu component
+export {
+  default as VizelMentionMenu,
+  type VizelMentionMenuProps,
+  type VizelMentionMenuRef,
+} from "./VizelMentionMenu.vue";
 // VizelNodeSelector component
 export {
   default as VizelNodeSelector,
