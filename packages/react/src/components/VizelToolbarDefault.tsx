@@ -1,5 +1,6 @@
 import type { Editor } from "@vizel/core";
 import {
+  formatVizelTooltip,
   groupVizelToolbarActions,
   type VizelToolbarAction,
   vizelDefaultToolbarActions,
@@ -50,7 +51,7 @@ export function VizelToolbarDefault({
               onClick={() => action.run(editor)}
               isActive={action.isActive(editor)}
               disabled={!action.isEnabled(editor)}
-              title={action.shortcut ? `${action.label} (${action.shortcut})` : action.label}
+              title={formatVizelTooltip(action.label, action.shortcut)}
             >
               <VizelIcon name={action.icon} />
             </VizelToolbarButton>
