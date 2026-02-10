@@ -95,10 +95,15 @@ All-in-one editor component with built-in bubble menu.
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus |
 | `features` | `VizelFeatureOptions` | - | Feature options |
 | `class` | `string` | - | CSS class |
+| `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu |
 | `enableEmbed` | `boolean` | - | Enable embed in links |
+| `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks on import |
 | `onUpdate` | `Function` | - | Update callback |
 | `onCreate` | `Function` | - | Create callback |
+| `onDestroy` | `Function` | - | Destroy callback |
+| `onSelectionUpdate` | `Function` | - | Selection change callback |
 | `onFocus` | `Function` | - | Focus callback |
 | `onBlur` | `Function` | - | Blur callback |
 
@@ -155,6 +160,38 @@ This rune forces a component re-render on editor state changes.
   </div>
 {/if}
 ```
+
+### createVizelEditorState
+
+This rune returns computed editor state that updates reactively. It provides commonly needed properties like character count, word count, and undo/redo availability.
+
+```svelte
+<script lang="ts">
+  import { createVizelEditor, createVizelEditorState, VizelEditor } from '@vizel/svelte';
+
+  const editor = createVizelEditor();
+  const editorState = createVizelEditorState(() => editor.current);
+</script>
+
+<VizelEditor editor={editor.current} />
+<div class="status-bar">
+  <span>{editorState.current.characterCount} characters</span>
+  <span>{editorState.current.wordCount} words</span>
+</div>
+```
+
+#### Return Value
+
+Returns `{ readonly current: VizelEditorState }`:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `isFocused` | `boolean` | Whether the editor is focused |
+| `isEmpty` | `boolean` | Whether the editor is empty |
+| `canUndo` | `boolean` | Whether undo is available |
+| `canRedo` | `boolean` | Whether redo is available |
+| `characterCount` | `number` | Character count |
+| `wordCount` | `number` | Word count |
 
 ### createVizelAutoSave
 
@@ -286,7 +323,7 @@ This component provides theme context.
   storageKey="my-theme"
   disableTransitionOnChange={false}
 >
-  <slot />
+  {@render children()}
 </VizelThemeProvider>
 ```
 
@@ -319,6 +356,18 @@ This component renders children in a portal.
 <VizelPortal container={document.body}>
   <div class="my-overlay">Content</div>
 </VizelPortal>
+```
+
+### VizelIcon
+
+This component renders an icon from the icon context. It uses Iconify icon IDs by default, and can be customized via `VizelIconProvider`.
+
+```svelte
+<script lang="ts">
+  import { VizelIcon } from '@vizel/svelte';
+</script>
+
+<VizelIcon name="bold" class="my-icon" />
 ```
 
 ## Patterns
