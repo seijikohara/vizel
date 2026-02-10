@@ -17,6 +17,7 @@
 import type { Graphviz as GraphvizType } from "@hpcc-js/wasm-graphviz";
 import type { JSONContent, MarkdownToken, MarkdownTokenizer } from "@tiptap/core";
 import { mergeAttributes, Node } from "@tiptap/core";
+import DOMPurify from "dompurify";
 import type { MermaidConfig } from "mermaid";
 import { createLazyLoader } from "../utils/lazy-import.ts";
 
@@ -447,11 +448,13 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
           errorDiv.textContent = result.error;
           container.appendChild(errorDiv);
         } else {
-          // Mermaid defaults to securityLevel "strict" (sanitized SVG).
-          // GraphViz generates SVG from DOT without script execution.
-          // If custom mermaidConfig overrides securityLevel, the SVG
-          // may contain unsanitized content per the user's configuration.
-          container.innerHTML = result.svg;
+          // Sanitize SVG output with DOMPurify for defense-in-depth.
+          // Mermaid defaults to securityLevel "strict" but custom
+          // mermaidConfig can override it. DOMPurify strips scripts
+          // and event handlers while preserving SVG elements.
+          container.innerHTML = DOMPurify.sanitize(result.svg, {
+            USE_PROFILES: { svg: true, svgFilters: true },
+          });
         }
       };
 
