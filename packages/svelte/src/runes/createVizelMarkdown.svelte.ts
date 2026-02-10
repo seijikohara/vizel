@@ -115,26 +115,33 @@ export function createVizelMarkdown(
     }
 
     // Subscribe to editor updates
+    let rafId: number | null = null;
+
     const handleUpdate = () => {
       h.handleUpdate(editor);
       isPending = h.isPending();
 
+      // Cancel any existing rAF to prevent multiple concurrent loops
+      if (rafId !== null) cancelAnimationFrame(rafId);
+
       // Schedule state update after debounce
       const checkPending = () => {
         if (h.isPending()) {
-          requestAnimationFrame(checkPending);
+          rafId = requestAnimationFrame(checkPending);
         } else {
+          rafId = null;
           markdown = h.getMarkdown();
           isPending = false;
         }
       };
-      requestAnimationFrame(checkPending);
+      rafId = requestAnimationFrame(checkPending);
     };
 
     editor.on("update", handleUpdate);
 
     return () => {
       editor.off("update", handleUpdate);
+      if (rafId !== null) cancelAnimationFrame(rafId);
       handlers?.destroy();
     };
   });

@@ -118,20 +118,26 @@ export function useVizelMarkdown(
       }
 
       // Subscribe to editor updates (every time editor changes)
+      let rafId: number | null = null;
+
       const handleUpdate = () => {
         h.handleUpdate(editor);
         pendingState.value = h.isPending();
 
+        // Cancel any existing rAF to prevent multiple concurrent loops
+        if (rafId !== null) cancelAnimationFrame(rafId);
+
         // Schedule state update after debounce
         const checkPending = () => {
           if (h.isPending()) {
-            requestAnimationFrame(checkPending);
+            rafId = requestAnimationFrame(checkPending);
           } else {
+            rafId = null;
             markdown.value = h.getMarkdown();
             pendingState.value = false;
           }
         };
-        requestAnimationFrame(checkPending);
+        rafId = requestAnimationFrame(checkPending);
       };
 
       editor.on("update", handleUpdate);
@@ -139,6 +145,7 @@ export function useVizelMarkdown(
       // Cleanup when watch re-runs or component unmounts
       onCleanup(() => {
         editor.off("update", handleUpdate);
+        if (rafId !== null) cancelAnimationFrame(rafId);
       });
     },
     { immediate: true }
