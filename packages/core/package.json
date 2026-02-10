@@ -38,6 +38,9 @@
     "./components.css": "./dist/components.css",
     "./mathematics.css": "./dist/mathematics.css"
   },
+  "sideEffects": [
+    "*.css"
+  ],
   "files": [
     "dist"
   ],
