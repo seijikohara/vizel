@@ -82,6 +82,7 @@ const md = createVizelMarkdown(() => editor.current);
 | `VizelFindReplace` | Find and replace panel |
 | `VizelSaveIndicator` | Auto-save status indicator |
 | `VizelEmbedView` | Embed content viewer |
+| `VizelIcon` | Icon component |
 | `VizelIconProvider` | Custom icon provider |
 | `VizelThemeProvider` | Theme provider |
 | `VizelProvider` | Editor context provider |
@@ -100,7 +101,9 @@ const md = createVizelMarkdown(() => editor.current);
 | `createVizelComment` | Comment and annotation management |
 | `createVizelVersionHistory` | Document version history |
 | `getVizelContext` | Access editor from context |
+| `getVizelContextSafe` | Access editor from context (returns undefined outside provider) |
 | `getVizelTheme` | Access theme from context |
+| `getVizelIconContext` | Access icon context |
 
 ## Documentation
 

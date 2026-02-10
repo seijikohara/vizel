@@ -13,7 +13,7 @@ yarn add @vizel/vue
 ```
 
 ::: info Requirements
-- Vue 3.3+
+- Vue 3.4+
 :::
 
 ## Quick Start
@@ -99,8 +99,11 @@ import { Vizel } from '@vizel/vue';
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus |
 | `features` | `VizelFeatureOptions` | - | Feature options |
 | `class` | `string` | - | CSS class |
+| `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu |
 | `enableEmbed` | `boolean` | - | Enable embed in links |
+| `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks on import |
 
 #### Events
 
@@ -109,6 +112,8 @@ import { Vizel } from '@vizel/vue';
 | `update` | `{ editor: Editor }` | Fires when content changes |
 | `update:markdown` | `string` | Fires when Markdown content changes |
 | `create` | `{ editor: Editor }` | Fires when the editor initializes |
+| `destroy` | - | Fires when the editor destroys |
+| `selectionUpdate` | `{ editor: Editor }` | Fires when the selection changes |
 | `focus` | `{ editor: Editor }` | Fires when the editor gains focus |
 | `blur` | `{ editor: Editor }` | Fires when the editor loses focus |
 
@@ -165,6 +170,40 @@ useVizelState(() => props.editor);
   </div>
 </template>
 ```
+
+### useVizelEditorState
+
+This composable returns computed editor state that updates reactively. It provides commonly needed properties like character count, word count, and undo/redo availability.
+
+```vue
+<script setup lang="ts">
+import { useVizelEditor, useVizelEditorState, VizelEditor } from '@vizel/vue';
+
+const editor = useVizelEditor();
+const editorState = useVizelEditorState(() => editor.value);
+</script>
+
+<template>
+  <VizelEditor :editor="editor" />
+  <div class="status-bar">
+    <span>{{ editorState.characterCount }} characters</span>
+    <span>{{ editorState.wordCount }} words</span>
+  </div>
+</template>
+```
+
+#### Return Value
+
+Returns `ComputedRef<VizelEditorState>`:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `isFocused` | `boolean` | Whether the editor is focused |
+| `isEmpty` | `boolean` | Whether the editor is empty |
+| `canUndo` | `boolean` | Whether undo is available |
+| `canRedo` | `boolean` | Whether redo is available |
+| `characterCount` | `number` | Character count |
+| `wordCount` | `number` | Word count |
 
 ### useVizelAutoSave
 
@@ -348,6 +387,20 @@ This component renders children in a portal.
 <VizelPortal :container="document.body">
   <div class="my-overlay">Content</div>
 </VizelPortal>
+```
+
+### VizelIcon
+
+This component renders an icon from the icon context. It uses Iconify icon IDs by default, and can be customized via `VizelIconProvider`.
+
+```vue
+<script setup lang="ts">
+import { VizelIcon } from '@vizel/vue';
+</script>
+
+<template>
+  <VizelIcon name="bold" class="my-icon" />
+</template>
 ```
 
 ## Patterns
