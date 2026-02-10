@@ -27,8 +27,10 @@ let {
 
 let formElement: HTMLFormElement;
 let inputElement: HTMLInputElement;
-let currentHref = $derived(editor.getAttributes("link").href || "");
+let linkAttrs = $derived(editor.getAttributes("link"));
+let currentHref = $derived(linkAttrs.href || "");
 let url = $state(untrack(() => editor.getAttributes("link").href || ""));
+let openInNewTab = $state(untrack(() => editor.getAttributes("link").target === "_blank"));
 let asEmbed = $state(false);
 
 // Check if embed extension is available
@@ -92,7 +94,14 @@ function handleSubmit(e: Event) {
     // Remove the link first, then insert embed
     editor.chain().focus().unsetLink().setEmbed({ url: trimmedUrl }).run();
   } else {
-    editor.chain().focus().setLink({ href: trimmedUrl }).run();
+    editor
+      .chain()
+      .focus()
+      .setLink({
+        href: trimmedUrl,
+        target: openInNewTab ? "_blank" : null,
+      })
+      .run();
   }
   onclose?.();
 }
@@ -100,6 +109,13 @@ function handleSubmit(e: Event) {
 function handleRemove() {
   editor.chain().focus().unsetLink().run();
   onclose?.();
+}
+
+function handleVisit() {
+  const trimmedUrl = url.trim();
+  if (trimmedUrl) {
+    window.open(trimmedUrl, "_blank", "noopener,noreferrer");
+  }
 }
 </script>
 
@@ -115,8 +131,9 @@ function handleRemove() {
       type="url"
       placeholder="Enter URL..."
       class="vizel-link-input"
+      aria-label="Link URL"
     />
-    <button type="submit" class="vizel-link-button" title="Apply">
+    <button type="submit" class="vizel-link-button" title="Apply" aria-label="Apply link">
       <VizelIcon name="check" />
     </button>
     {#if currentHref}
@@ -124,9 +141,30 @@ function handleRemove() {
         type="button"
         class="vizel-link-button vizel-link-remove"
         title="Remove link"
+        aria-label="Remove link"
         onclick={handleRemove}
       >
         <VizelIcon name="x" />
+      </button>
+    {/if}
+  </div>
+  <div class="vizel-link-editor-options">
+    <label class="vizel-link-newtab-toggle">
+      <input
+        type="checkbox"
+        bind:checked={openInNewTab}
+      />
+      <span>Open in new tab</span>
+    </label>
+    {#if url.trim()}
+      <button
+        type="button"
+        class="vizel-link-visit"
+        title="Open URL in new tab"
+        onclick={handleVisit}
+      >
+        <VizelIcon name="externalLink" />
+        <span>Visit</span>
       </button>
     {/if}
   </div>

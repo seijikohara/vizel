@@ -117,26 +117,33 @@ export function useVizelMarkdown(
     const handlers = handlersRef.current;
     if (!handlers) return;
 
+    let rafId: number | null = null;
+
     const handleUpdate = () => {
       handlers.handleUpdate(editor);
       setIsPending(handlers.isPending());
 
+      // Cancel any pending rAF before scheduling a new one
+      if (rafId !== null) cancelAnimationFrame(rafId);
+
       // Schedule state update after debounce
       const checkPending = () => {
         if (handlers.isPending()) {
-          requestAnimationFrame(checkPending);
+          rafId = requestAnimationFrame(checkPending);
         } else {
+          rafId = null;
           setMarkdownState(handlers.getMarkdown());
           setIsPending(false);
         }
       };
-      requestAnimationFrame(checkPending);
+      rafId = requestAnimationFrame(checkPending);
     };
 
     editor.on("update", handleUpdate);
 
     return () => {
       editor.off("update", handleUpdate);
+      if (rafId !== null) cancelAnimationFrame(rafId);
     };
   }, [getEditor]);
 

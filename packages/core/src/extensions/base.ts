@@ -20,6 +20,7 @@ import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
 import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
+import { createVizelCalloutExtension } from "./callout.ts";
 import { createVizelCharacterCountExtension } from "./character-count.ts";
 import type { VizelCodeBlockOptions } from "./code-block-lowlight.ts";
 import { createVizelCommentExtension } from "./comment.ts";
@@ -35,12 +36,14 @@ import {
 import { createVizelLinkExtension } from "./link.ts";
 import { createVizelMarkdownExtension } from "./markdown.ts";
 import { createVizelMathematicsExtensions } from "./mathematics.ts";
+import { createVizelMentionExtension } from "./mention.ts";
 import {
   VizelSlashCommand,
   type VizelSlashCommandItem,
   vizelDefaultSlashCommands,
 } from "./slash-command.ts";
 import { createVizelTableExtensions } from "./table.ts";
+import { createVizelTableOfContentsExtension } from "./table-of-contents.ts";
 import { createVizelTaskListExtensions } from "./task-list.ts";
 import { createVizelTextColorExtensions } from "./text-color.ts";
 import { createVizelWikiLinkExtension } from "./wiki-link.ts";
@@ -69,7 +72,7 @@ export interface VizelExtensionsOptions {
 function createBaseExtensions(
   options: { headingLevels?: (1 | 2 | 3 | 4 | 5 | 6)[]; excludeHistory?: boolean } = {}
 ): Extensions {
-  const { headingLevels = [1, 2, 3], excludeHistory = false } = options;
+  const { headingLevels = [1, 2, 3, 4, 5, 6], excludeHistory = false } = options;
 
   const extensions: Extensions = [
     // Nodes
@@ -270,6 +273,16 @@ function addDiagramExtension(extensions: Extensions, features: VizelFeatureOptio
 }
 
 /**
+ * Add Table of Contents extension if enabled
+ */
+function addTableOfContentsExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.tableOfContents === false) return;
+
+  const tocOptions = typeof features.tableOfContents === "object" ? features.tableOfContents : {};
+  extensions.push(createVizelTableOfContentsExtension(tocOptions));
+}
+
+/**
  * Add Wiki Link extension if enabled (disabled by default)
  */
 function addWikiLinkExtension(extensions: Extensions, features: VizelFeatureOptions): void {
@@ -277,6 +290,26 @@ function addWikiLinkExtension(extensions: Extensions, features: VizelFeatureOpti
 
   const wikiLinkOptions = typeof features.wikiLink === "object" ? features.wikiLink : {};
   extensions.push(createVizelWikiLinkExtension(wikiLinkOptions));
+}
+
+/**
+ * Add Callout extension if enabled (enabled by default)
+ */
+function addCalloutExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.callout === false) return;
+
+  const calloutOptions = typeof features.callout === "object" ? features.callout : {};
+  extensions.push(createVizelCalloutExtension(calloutOptions));
+}
+
+/**
+ * Add Mention extension if enabled (disabled by default)
+ */
+function addMentionExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (!features.mention) return;
+
+  const mentionOptions = typeof features.mention === "object" ? features.mention : {};
+  extensions.push(createVizelMentionExtension(mentionOptions));
 }
 
 /**
@@ -339,7 +372,7 @@ export async function createVizelExtensions(
 ): Promise<Extensions> {
   const {
     placeholder = "Type '/' for commands...",
-    headingLevels = [1, 2, 3],
+    headingLevels = [1, 2, 3, 4, 5, 6],
     features = {},
   } = options;
 
@@ -375,9 +408,12 @@ export async function createVizelExtensions(
   addMathematicsExtension(extensions, features);
   addDragHandleExtension(extensions, features);
   addDetailsExtension(extensions, features);
+  addCalloutExtension(extensions, features);
   addEmbedExtension(extensions, features);
   addDiagramExtension(extensions, features);
+  addTableOfContentsExtension(extensions, features);
   addWikiLinkExtension(extensions, features);
+  addMentionExtension(extensions, features);
   addCommentExtension(extensions, features);
 
   // Add code block extension (async - lowlight is loaded dynamically)

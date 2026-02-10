@@ -176,7 +176,12 @@ export function VizelSlashMenu({
 
   if (flatItems.length === 0) {
     return (
-      <div className={`vizel-slash-menu ${className ?? ""}`} data-vizel-slash-menu="">
+      <div
+        className={`vizel-slash-menu ${className ?? ""}`}
+        data-vizel-slash-menu=""
+        role="listbox"
+        aria-label="Commands"
+      >
         {renderEmpty?.() ?? <VizelSlashMenuEmpty />}
       </div>
     );
@@ -186,7 +191,12 @@ export function VizelSlashMenu({
   let globalIndex = 0;
 
   return (
-    <div className={`vizel-slash-menu ${className ?? ""}`} data-vizel-slash-menu="">
+    <div
+      className={`vizel-slash-menu ${className ?? ""}`}
+      data-vizel-slash-menu=""
+      role="listbox"
+      aria-label="Commands"
+    >
       {groups.map((group) => {
         const groupItems = group.items.map((item) => {
           const index = globalIndex++;

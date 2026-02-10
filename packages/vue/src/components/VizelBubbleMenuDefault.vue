@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Editor } from "@vizel/core";
+import { type Editor, formatVizelTooltip } from "@vizel/core";
 import { computed, ref } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
 import VizelBubbleMenuButton from "./VizelBubbleMenuButton.vue";
@@ -65,7 +65,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="bold"
       :is-active="isBoldActive"
-      title="Bold (Cmd+B)"
+      :title="formatVizelTooltip('Bold', 'Mod+B')"
       @click="props.editor.chain().focus().toggleBold().run()"
     >
       <VizelIcon name="bold" />
@@ -73,7 +73,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="italic"
       :is-active="isItalicActive"
-      title="Italic (Cmd+I)"
+      :title="formatVizelTooltip('Italic', 'Mod+I')"
       @click="props.editor.chain().focus().toggleItalic().run()"
     >
       <VizelIcon name="italic" />
@@ -81,7 +81,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="strike"
       :is-active="isStrikeActive"
-      title="Strikethrough"
+      :title="formatVizelTooltip('Strikethrough', 'Mod+Shift+S')"
       @click="props.editor.chain().focus().toggleStrike().run()"
     >
       <VizelIcon name="strikethrough" />
@@ -89,7 +89,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="underline"
       :is-active="isUnderlineActive"
-      title="Underline (Cmd+U)"
+      :title="formatVizelTooltip('Underline', 'Mod+U')"
       @click="props.editor.chain().focus().toggleUnderline().run()"
     >
       <VizelIcon name="underline" />
@@ -97,7 +97,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="code"
       :is-active="isCodeActive"
-      title="Code (Cmd+E)"
+      :title="formatVizelTooltip('Code', 'Mod+E')"
       @click="props.editor.chain().focus().toggleCode().run()"
     >
       <VizelIcon name="code" />
@@ -106,7 +106,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="link"
       :is-active="isLinkActive"
-      title="Link (Cmd+K)"
+      :title="formatVizelTooltip('Link', 'Mod+K')"
       @click="showLinkEditor = true"
     >
       <VizelIcon name="link" />
