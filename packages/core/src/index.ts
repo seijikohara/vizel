@@ -117,6 +117,7 @@ export {
   groupVizelSlashCommands,
   handleVizelImageDrop,
   handleVizelImagePaste,
+  sanitizeVizelOembedHtml,
   searchVizelSlashCommands,
   VIZEL_DEFAULT_FILE_MIME_TYPES,
   VIZEL_DEFAULT_IMAGE_MAX_FILE_SIZE,

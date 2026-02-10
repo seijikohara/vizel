@@ -57,6 +57,7 @@ export {
   createVizelDefaultFetchEmbedData,
   createVizelEmbedExtension,
   detectVizelEmbedProvider,
+  sanitizeVizelOembedHtml,
   VizelEmbed,
   type VizelEmbedData,
   type VizelEmbedOptions,

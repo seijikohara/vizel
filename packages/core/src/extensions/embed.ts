@@ -382,6 +382,27 @@ export interface VizelEmbedOptions {
    * @param url - The URL that failed to fetch
    */
   onFetchError?: (error: Error, url: string) => void;
+  /**
+   * Custom HTML sanitizer for oEmbed content.
+   *
+   * By default, a built-in sanitizer strips `<script>`, `<style>`, event handlers,
+   * and `javascript:` URLs while preserving `<iframe>` and other oEmbed elements.
+   *
+   * For maximum security, provide DOMPurify:
+   *
+   * @example
+   * ```typescript
+   * import DOMPurify from 'dompurify';
+   *
+   * sanitize: (html) => DOMPurify.sanitize(html, {
+   *   ADD_TAGS: ['iframe'],
+   *   ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder'],
+   * })
+   * ```
+   *
+   * Set to `false` to disable sanitization (not recommended).
+   */
+  sanitize?: ((html: string) => string) | false;
 }
 
 declare module "@tiptap/core" {
@@ -400,6 +421,69 @@ declare module "@tiptap/core" {
 }
 
 // ============================================================================
+// HTML Sanitization
+// ============================================================================
+
+/** Elements removed entirely from oEmbed HTML */
+const DANGEROUS_ELEMENTS =
+  "script,style,link[rel=import],object,embed,applet,base,form,textarea,select,meta";
+
+/** Attributes considered dangerous (protocol-bearing) */
+const PROTOCOL_ATTRS = new Set(["href", "src", "action", "formaction", "xlink:href"]);
+
+/** Protocol prefixes that indicate script injection */
+const DANGEROUS_PROTOCOLS = ["javascript:", "data:text/html", "vbscript:"];
+
+/**
+ * Built-in HTML sanitizer for oEmbed content.
+ *
+ * Strips dangerous elements (`<script>`, `<style>`, `<object>`, etc.),
+ * event handler attributes (`on*`), and `javascript:` / `data:text/html` URLs
+ * while preserving `<iframe>` and other elements needed by oEmbed providers.
+ *
+ * For maximum security, use DOMPurify via the `sanitize` option.
+ *
+ * @param html - Raw HTML string from oEmbed response
+ * @returns Sanitized HTML string
+ *
+ * @example
+ * ```typescript
+ * const clean = sanitizeVizelOembedHtml('<div onclick="alert(1)">Hello</div>');
+ * // => '<div>Hello</div>'
+ * ```
+ */
+export function sanitizeVizelOembedHtml(html: string): string {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+
+  // Remove dangerous elements
+  for (const el of doc.querySelectorAll(DANGEROUS_ELEMENTS)) {
+    el.remove();
+  }
+
+  // Sanitize attributes on all remaining elements
+  for (const el of doc.querySelectorAll("*")) {
+    for (const attr of [...el.attributes]) {
+      // Remove event handler attributes (onclick, onerror, etc.)
+      if (attr.name.startsWith("on")) {
+        el.removeAttribute(attr.name);
+        continue;
+      }
+
+      // Remove dangerous protocol URLs
+      if (PROTOCOL_ATTRS.has(attr.name)) {
+        const value = attr.value.trim().toLowerCase();
+        if (DANGEROUS_PROTOCOLS.some((p) => value.startsWith(p))) {
+          el.removeAttribute(attr.name);
+        }
+      }
+    }
+  }
+
+  return doc.body.innerHTML;
+}
+
+// ============================================================================
 // NodeView Helper Functions
 // ============================================================================
 
@@ -414,15 +498,21 @@ function renderLoading(container: HTMLElement): void {
 }
 
 /**
- * Render oEmbed HTML content.
+ * Render sanitized oEmbed HTML content.
  *
- * Security: oEmbed HTML comes from trusted providers defined in
- * vizelDefaultEmbedProviders. Custom fetchEmbedData implementations
- * must sanitize HTML before returning. Consider adding DOMPurify
- * for defense-in-depth if handling untrusted providers.
+ * Uses the built-in sanitizer by default, stripping scripts, event handlers,
+ * and dangerous URLs. Users can provide a custom sanitizer (e.g., DOMPurify)
+ * via the `sanitize` option, or set it to `false` to disable (not recommended).
  */
-function renderOembed(container: HTMLElement, html: string): void {
-  container.innerHTML = html;
+function renderOembed(
+  container: HTMLElement,
+  html: string,
+  sanitize: ((html: string) => string) | false | undefined
+): void {
+  const sanitizer = sanitize === false ? null : (sanitize ?? sanitizeVizelOembedHtml);
+  const safeHtml = sanitizer ? sanitizer(html) : html;
+  // Sanitized HTML is safe to assign — the sanitizer strips dangerous content
+  container.innerHTML = safeHtml; // eslint-disable-line no-unsanitized/property
 }
 
 /**
@@ -749,6 +839,7 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
   },
 
   addNodeView() {
+    const sanitizeOption = this.options.sanitize;
     return ({ node, HTMLAttributes }) => {
       const dom = document.createElement("div");
       const contentDOM = document.createElement("div");
@@ -781,7 +872,7 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
         }
 
         if (node.attrs.type === "oembed" && node.attrs.html) {
-          renderOembed(contentDOM, node.attrs.html);
+          renderOembed(contentDOM, node.attrs.html, sanitizeOption);
           return;
         }
 
