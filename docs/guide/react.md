@@ -95,10 +95,15 @@ import { Vizel } from '@vizel/react';
 | `autofocus` | `boolean \| 'start' \| 'end' \| 'all' \| number` | - | Auto focus |
 | `features` | `VizelFeatureOptions` | - | Feature options |
 | `className` | `string` | - | CSS class |
+| `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu |
 | `enableEmbed` | `boolean` | - | Enable embed in links |
+| `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks on import |
 | `onUpdate` | `Function` | - | Update callback |
 | `onCreate` | `Function` | - | Create callback |
+| `onDestroy` | `Function` | - | Destroy callback |
+| `onSelectionUpdate` | `Function` | - | Selection change callback |
 | `onFocus` | `Function` | - | Focus callback |
 | `onBlur` | `Function` | - | Blur callback |
 
@@ -158,6 +163,43 @@ function EditorStats({ editor }) {
   );
 }
 ```
+
+### useVizelEditorState
+
+This hook returns computed editor state that updates reactively. It provides commonly needed properties like character count, word count, and undo/redo availability.
+
+```tsx
+import { useVizelEditor, useVizelEditorState, VizelEditor } from '@vizel/react';
+
+function Editor() {
+  const editor = useVizelEditor();
+  const { characterCount, wordCount, canUndo, canRedo, isFocused, isEmpty } =
+    useVizelEditorState(() => editor);
+
+  return (
+    <div>
+      <VizelEditor editor={editor} />
+      <div className="status-bar">
+        <span>{characterCount} characters</span>
+        <span>{wordCount} words</span>
+      </div>
+    </div>
+  );
+}
+```
+
+#### Return Value
+
+Returns `VizelEditorState`:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `isFocused` | `boolean` | Whether the editor is focused |
+| `isEmpty` | `boolean` | Whether the editor is empty |
+| `canUndo` | `boolean` | Whether undo is available |
+| `canRedo` | `boolean` | Whether redo is available |
+| `characterCount` | `number` | Character count |
+| `wordCount` | `number` | Word count |
 
 ### useVizelAutoSave
 
@@ -335,6 +377,16 @@ This component renders children in a portal.
 <VizelPortal container={document.body}>
   <div className="my-overlay">Content</div>
 </VizelPortal>
+```
+
+### VizelIcon
+
+This component renders an icon from the icon context. It uses Iconify icon IDs by default, and can be customized via `VizelIconProvider`.
+
+```tsx
+import { VizelIcon } from '@vizel/react';
+
+<VizelIcon name="bold" className="my-icon" />
 ```
 
 ## Patterns

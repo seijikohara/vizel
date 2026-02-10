@@ -33,6 +33,8 @@ const parts = $derived(splitVizelTextByMatches(item.title, titleMatches));
 <button
   type="button"
   class="vizel-slash-menu-item {isSelected ? 'is-selected' : ''} {className ?? ''}"
+  role="option"
+  aria-selected={isSelected}
   data-selected={isSelected || undefined}
   {onclick}
 >

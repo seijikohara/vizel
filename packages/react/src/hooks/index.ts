@@ -1,5 +1,6 @@
 // Re-export theme hooks for convenience (primary export is from components)
 export { useVizelTheme, useVizelThemeSafe } from "../components/VizelThemeProvider.tsx";
+export { createVizelMentionMenuRenderer } from "./createVizelMentionMenuRenderer.ts";
 export {
   createVizelSlashMenuRenderer,
   type VizelSlashMenuRendererOptions,

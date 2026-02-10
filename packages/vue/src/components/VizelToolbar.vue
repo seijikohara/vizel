@@ -22,7 +22,7 @@ const editor = computed(() => props.editor ?? getContextEditor?.() ?? null);
 </script>
 
 <template>
-  <div v-if="editor" :class="['vizel-toolbar', $props.class]" role="toolbar" aria-label="Formatting">
+  <div v-if="editor" :class="['vizel-toolbar', $props.class]" role="toolbar" aria-label="Formatting" aria-orientation="horizontal">
     <slot :editor="editor">
       <VizelToolbarDefault v-if="showDefaultToolbar" :editor="editor" />
     </slot>

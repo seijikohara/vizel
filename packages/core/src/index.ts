@@ -93,8 +93,12 @@ export {
   createVizelMarkdownExtension,
   // Mathematics (KaTeX)
   createVizelMathematicsExtensions,
+  // Mention
+  createVizelMentionExtension,
   // Table
   createVizelTableExtensions,
+  // Table of Contents
+  createVizelTableOfContentsExtension,
   // Task list
   createVizelTaskListExtensions,
   createVizelTextColorExtensions,
@@ -173,6 +177,8 @@ export {
   VizelMathBlock,
   type VizelMathematicsOptions,
   VizelMathInline,
+  type VizelMentionItem,
+  type VizelMentionOptions,
   type VizelNodeTypeOption,
   VizelResizableImage,
   type VizelResizableImageOptions,
@@ -189,12 +195,14 @@ export {
   type VizelTableControlsUIOptions,
   VizelTableHeader,
   type VizelTableMenuItem,
+  type VizelTableOfContentsOptions,
   type VizelTableOptions,
   VizelTableWithControls,
   type VizelTaskItemOptions,
   type VizelTaskListExtensionsOptions,
   type VizelTaskListOptions,
   type VizelTextColorOptions,
+  type VizelTOCHeading,
   type VizelUploadImageFn,
   VizelWikiLink,
   type VizelWikiLinkOptions,
@@ -302,6 +310,9 @@ export {
   // Suggestion container utilities
   createVizelSuggestionContainer,
   createVizelUploadEventHandler,
+  // Keyboard shortcut utilities
+  formatVizelShortcut,
+  formatVizelTooltip,
   getVizelEditorState,
   getVizelMarkdown,
   getVizelPortalContainer,
@@ -314,6 +325,7 @@ export {
   isRecord,
   isString,
   isVizelError,
+  isVizelMacPlatform,
   // Color utilities
   isVizelValidHexColor,
   mountToVizelPortal,

@@ -148,7 +148,7 @@ export function VizelFindReplace({ editor, className, onClose }: VizelFindReplac
           onKeyDown={handleKeyDown}
           aria-label="Find text"
         />
-        <span className="vizel-find-replace-count">
+        <span className="vizel-find-replace-count" aria-live="polite">
           {matchCount > 0 ? `${currentMatch}/${matchCount}` : "No results"}
         </span>
         <button
