@@ -72,6 +72,7 @@ const shouldShowTimestamp = computed(() => {
     :class="['vizel-save-indicator', `vizel-save-indicator--${props.status}`, $props.class]"
     role="status"
     aria-live="polite"
+    aria-atomic="true"
     data-vizel-save-indicator
   >
     <span class="vizel-save-indicator-icon" aria-hidden="true">

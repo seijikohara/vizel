@@ -15,9 +15,6 @@ importers:
       '@biomejs/biome':
         specifier: ^2.3.14
         version: 2.3.14
-      '@braintree/sanitize-url':
-        specifier: ^7.1.2
-        version: 7.1.2
       '@playwright/experimental-ct-react':
         specifier: ~1.57.0
         version: 1.57.0(@types/node@25.2.2)(sass@1.97.3)(vite@7.3.1(@types/node@25.2.2)(sass@1.97.3))
@@ -174,18 +171,6 @@ importers:
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
-      cytoscape:
-        specifier: ^3.33.1
-        version: 3.33.1
-      cytoscape-cose-bilkent:
-        specifier: ^4.1.0
-        version: 4.1.0(cytoscape@3.33.1)
-      dayjs:
-        specifier: ^1.11.19
-        version: 1.11.19
-      debug:
-        specifier: ^4.4.3
-        version: 4.4.3
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
@@ -452,7 +437,7 @@ importers:
         version: 3.19.0
       '@tiptap/suggestion':
         specifier: ^3.18.0
-        version: 3.18.0(@tiptap/core@3.19.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)
+        version: 3.19.0(@tiptap/core@3.19.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
@@ -478,6 +463,9 @@ importers:
       '@iconify/utils':
         specifier: ^3.1.0
         version: 3.1.0
+      '@tiptap/extension-mention':
+        specifier: ^3.19.0
+        version: 3.19.0(@tiptap/core@3.19.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)(@tiptap/suggestion@3.19.0(@tiptap/core@3.19.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0))
       vite:
         specifier: ^7.3.1
         version: 7.3.1(@types/node@25.2.2)(sass@1.97.3)
@@ -2128,6 +2116,13 @@ packages:
       '@tiptap/core': ^3.19.0
       '@tiptap/pm': ^3.19.0
 
+  '@tiptap/extension-mention@3.19.0':
+    resolution: {integrity: sha512-iBWX6mUouvDe9F75C2fJnFzvBFYVF8fcOa7UvzqWHRSCt8WxqSIp6C1B9Y0npP4TbIZySHzPV4NQQJhtmWwKww==}
+    peerDependencies:
+      '@tiptap/core': ^3.19.0
+      '@tiptap/pm': ^3.19.0
+      '@tiptap/suggestion': ^3.19.0
+
   '@tiptap/extension-node-range@3.16.0':
     resolution: {integrity: sha512-jCDyc/K+0Oe2TIdk3USKgFkkC1M9j/SenOl5JzbLU37dOuxn8umTTw2wUjRu+CKSUiG9RUxqfkUYNUhc0F+GPw==}
     peerDependencies:
@@ -2256,12 +2251,6 @@ packages:
 
   '@tiptap/pm@3.19.0':
     resolution: {integrity: sha512-789zcnM4a8OWzvbD2DL31d0wbSm9BVeO/R7PLQwLIGysDI3qzrcclyZ8yhqOEVuvPitRRwYLq+mY14jz7kY4cw==}
-
-  '@tiptap/suggestion@3.18.0':
-    resolution: {integrity: sha512-AxJfM34e6wFPKVsfyXSvHN1wBBiXIm65hUmY+newop+DMeOjsvkO7M6j7tzUR2Nnrh1AQEsVr6iR0UzO91PBSA==}
-    peerDependencies:
-      '@tiptap/core': ^3.19.0
-      '@tiptap/pm': ^3.19.0
 
   '@tiptap/suggestion@3.19.0':
     resolution: {integrity: sha512-tUZwMRFqTVPIo566ZmHNRteyZxJy2EE4FA+S3IeIUOOvY6AW0h1imhbpBO7sXV8CeEQvpa+2DWwLvy7L3vmstA==}
@@ -5588,6 +5577,12 @@ snapshots:
       '@tiptap/core': 3.19.0(@tiptap/pm@3.19.0)
       '@tiptap/pm': 3.19.0
 
+  '@tiptap/extension-mention@3.19.0(@tiptap/core@3.19.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)(@tiptap/suggestion@3.19.0(@tiptap/core@3.19.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0))':
+    dependencies:
+      '@tiptap/core': 3.19.0(@tiptap/pm@3.19.0)
+      '@tiptap/pm': 3.19.0
+      '@tiptap/suggestion': 3.19.0(@tiptap/core@3.19.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)
+
   '@tiptap/extension-node-range@3.16.0(@tiptap/core@3.19.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)':
     dependencies:
       '@tiptap/core': 3.19.0(@tiptap/pm@3.19.0)
@@ -5712,11 +5707,6 @@ snapshots:
       prosemirror-trailing-node: 3.0.0(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.5)
       prosemirror-transform: 1.11.0
       prosemirror-view: 1.41.5
-
-  '@tiptap/suggestion@3.18.0(@tiptap/core@3.19.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)':
-    dependencies:
-      '@tiptap/core': 3.19.0(@tiptap/pm@3.19.0)
-      '@tiptap/pm': 3.19.0
 
   '@tiptap/suggestion@3.19.0(@tiptap/core@3.19.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)':
     dependencies:

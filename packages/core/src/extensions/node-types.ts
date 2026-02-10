@@ -54,6 +54,27 @@ export const vizelDefaultNodeTypes = [
     command: (editor) => editor.chain().focus().setHeading({ level: 3 }).run(),
   },
   {
+    name: "heading4",
+    label: "Heading 4",
+    icon: "heading4",
+    isActive: (editor) => editor.isActive("heading", { level: 4 }),
+    command: (editor) => editor.chain().focus().setHeading({ level: 4 }).run(),
+  },
+  {
+    name: "heading5",
+    label: "Heading 5",
+    icon: "heading5",
+    isActive: (editor) => editor.isActive("heading", { level: 5 }),
+    command: (editor) => editor.chain().focus().setHeading({ level: 5 }).run(),
+  },
+  {
+    name: "heading6",
+    label: "Heading 6",
+    icon: "heading6",
+    isActive: (editor) => editor.isActive("heading", { level: 6 }),
+    command: (editor) => editor.chain().focus().setHeading({ level: 6 }).run(),
+  },
+  {
     name: "bulletList",
     label: "Bullet List",
     icon: "bulletList",
