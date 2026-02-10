@@ -43,7 +43,7 @@ This function creates the default set of Vizel extensions.
 ```typescript
 import { createVizelExtensions } from '@vizel/core';
 
-const extensions = createVizelExtensions({
+const extensions = await createVizelExtensions({
   placeholder: 'Start writing...',
   features: {
     markdown: true,
@@ -161,8 +161,11 @@ This function resolves feature options to extension configuration.
 import { resolveVizelFeatures } from '@vizel/core';
 
 const resolved = resolveVizelFeatures({
-  markdown: true,
-  mathematics: { katexOptions: { strict: false } },
+  features: {
+    markdown: true,
+    mathematics: { katexOptions: { strict: false } },
+  },
+  createSlashMenuRenderer: mySlashMenuRenderer,
 });
 ```
 
