@@ -77,7 +77,14 @@ export type VizelTableIconName =
 /**
  * Icon names used in UI components (SaveIndicator, etc.).
  */
-export type VizelUIIconName = "check" | "loader" | "circle" | "warning" | "chevronDown" | "x";
+export type VizelUIIconName =
+  | "check"
+  | "loader"
+  | "circle"
+  | "warning"
+  | "chevronDown"
+  | "externalLink"
+  | "x";
 
 /**
  * Icon names used in BubbleMenu toolbar.
@@ -204,6 +211,7 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   circle: "lucide:circle",
   warning: "lucide:alert-triangle",
   chevronDown: "lucide:chevron-down",
+  externalLink: "lucide:external-link",
   x: "lucide:x",
   // Toolbar
   undo: "lucide:undo-2",
