@@ -9,6 +9,9 @@
   },
   "description": "Svelte 5 components and runes for Vizel block-based Markdown editor",
   "license": "MIT",
+  "sideEffects": [
+    "./dist/iconRenderer.js"
+  ],
   "author": "Seiji Kohara",
   "homepage": "https://seijikohara.github.io/vizel/",
   "bugs": {

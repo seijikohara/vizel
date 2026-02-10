@@ -9,6 +9,9 @@
   },
   "description": "Framework-agnostic core for Vizel block-based Markdown editor built on Tiptap",
   "license": "MIT",
+  "sideEffects": [
+    "*.css"
+  ],
   "author": "Seiji Kohara",
   "homepage": "https://seijikohara.github.io/vizel/",
   "bugs": {

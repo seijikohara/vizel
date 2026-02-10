@@ -9,6 +9,10 @@
   },
   "description": "Vue 3 components and composables for Vizel block-based Markdown editor",
   "license": "MIT",
+  "sideEffects": [
+    "./dist/iconRenderer.js",
+    "./dist/tiptap-extensions.js"
+  ],
   "author": "Seiji Kohara",
   "homepage": "https://seijikohara.github.io/vizel/",
   "bugs": {
