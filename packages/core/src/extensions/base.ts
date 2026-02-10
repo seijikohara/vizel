@@ -36,6 +36,7 @@ import {
 import { createVizelLinkExtension } from "./link.ts";
 import { createVizelMarkdownExtension } from "./markdown.ts";
 import { createVizelMathematicsExtensions } from "./mathematics.ts";
+import { createVizelMentionExtension } from "./mention.ts";
 import {
   VizelSlashCommand,
   type VizelSlashCommandItem,
@@ -291,6 +292,16 @@ function addCalloutExtension(extensions: Extensions, features: VizelFeatureOptio
 }
 
 /**
+ * Add Mention extension if enabled (disabled by default)
+ */
+function addMentionExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (!features.mention) return;
+
+  const mentionOptions = typeof features.mention === "object" ? features.mention : {};
+  extensions.push(createVizelMentionExtension(mentionOptions));
+}
+
+/**
  * Add Comment extension if enabled (disabled by default)
  */
 function addCommentExtension(extensions: Extensions, features: VizelFeatureOptions): void {
@@ -390,6 +401,7 @@ export async function createVizelExtensions(
   addEmbedExtension(extensions, features);
   addDiagramExtension(extensions, features);
   addWikiLinkExtension(extensions, features);
+  addMentionExtension(extensions, features);
   addCommentExtension(extensions, features);
 
   // Add code block extension (async - lowlight is loaded dynamically)

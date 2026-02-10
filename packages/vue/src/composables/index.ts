@@ -1,3 +1,4 @@
+export { createVizelMentionMenuRenderer } from "./createVizelMentionMenuRenderer.ts";
 export {
   createVizelSlashMenuRenderer,
   type VizelSlashMenuRendererOptions,
