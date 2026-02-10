@@ -1,5 +1,12 @@
 // Base extensions
 export { createVizelExtensions, type VizelExtensionsOptions } from "./base.ts";
+// Callout / Admonition
+export {
+  createVizelCalloutExtension,
+  VizelCallout,
+  type VizelCalloutOptions,
+  type VizelCalloutType,
+} from "./callout.ts";
 // Character count
 export {
   createVizelCharacterCountExtension,

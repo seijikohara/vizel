@@ -302,6 +302,9 @@ export {
   // Suggestion container utilities
   createVizelSuggestionContainer,
   createVizelUploadEventHandler,
+  // Keyboard shortcut utilities
+  formatVizelShortcut,
+  formatVizelTooltip,
   getVizelEditorState,
   getVizelMarkdown,
   getVizelPortalContainer,
@@ -314,6 +317,7 @@ export {
   isRecord,
   isString,
   isVizelError,
+  isVizelMacPlatform,
   // Color utilities
   isVizelValidHexColor,
   mountToVizelPortal,

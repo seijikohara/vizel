@@ -1,4 +1,4 @@
-import type { Editor } from "@vizel/core";
+import { type Editor, formatVizelTooltip } from "@vizel/core";
 import { useState } from "react";
 import { useVizelState } from "../hooks/useVizelState.ts";
 import { VizelBubbleMenuButton } from "./VizelBubbleMenuButton.tsx";
@@ -53,7 +53,7 @@ export function VizelBubbleMenuDefault({
         action="bold"
         onClick={() => editor.chain().focus().toggleBold().run()}
         isActive={editor.isActive("bold")}
-        title="Bold (Cmd+B)"
+        title={formatVizelTooltip("Bold", "Mod+B")}
       >
         <VizelIcon name="bold" />
       </VizelBubbleMenuButton>
@@ -61,7 +61,7 @@ export function VizelBubbleMenuDefault({
         action="italic"
         onClick={() => editor.chain().focus().toggleItalic().run()}
         isActive={editor.isActive("italic")}
-        title="Italic (Cmd+I)"
+        title={formatVizelTooltip("Italic", "Mod+I")}
       >
         <VizelIcon name="italic" />
       </VizelBubbleMenuButton>
@@ -69,7 +69,7 @@ export function VizelBubbleMenuDefault({
         action="strike"
         onClick={() => editor.chain().focus().toggleStrike().run()}
         isActive={editor.isActive("strike")}
-        title="Strikethrough"
+        title={formatVizelTooltip("Strikethrough", "Mod+Shift+S")}
       >
         <VizelIcon name="strikethrough" />
       </VizelBubbleMenuButton>
@@ -77,7 +77,7 @@ export function VizelBubbleMenuDefault({
         action="underline"
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         isActive={editor.isActive("underline")}
-        title="Underline (Cmd+U)"
+        title={formatVizelTooltip("Underline", "Mod+U")}
       >
         <VizelIcon name="underline" />
       </VizelBubbleMenuButton>
@@ -85,7 +85,7 @@ export function VizelBubbleMenuDefault({
         action="code"
         onClick={() => editor.chain().focus().toggleCode().run()}
         isActive={editor.isActive("code")}
-        title="Code (Cmd+E)"
+        title={formatVizelTooltip("Code", "Mod+E")}
       >
         <VizelIcon name="code" />
       </VizelBubbleMenuButton>
@@ -94,7 +94,7 @@ export function VizelBubbleMenuDefault({
         action="link"
         onClick={() => setShowLinkEditor(true)}
         isActive={editor.isActive("link")}
-        title="Link (Cmd+K)"
+        title={formatVizelTooltip("Link", "Mod+K")}
       >
         <VizelIcon name="link" />
       </VizelBubbleMenuButton>
