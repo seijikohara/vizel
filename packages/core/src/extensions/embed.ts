@@ -10,6 +10,7 @@
 
 import { mergeAttributes, Node } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
+import DOMPurify from "dompurify";
 
 /**
  * Embed type based on available metadata
@@ -414,15 +415,16 @@ function renderLoading(container: HTMLElement): void {
 }
 
 /**
- * Render oEmbed HTML content.
+ * Render oEmbed HTML content with sanitization.
  *
- * Security: oEmbed HTML comes from trusted providers defined in
- * vizelDefaultEmbedProviders. Custom fetchEmbedData implementations
- * must sanitize HTML before returning. Consider adding DOMPurify
- * for defense-in-depth if handling untrusted providers.
+ * Uses DOMPurify to sanitize oEmbed HTML, allowing iframes (for
+ * YouTube, Vimeo, etc.) while stripping scripts and event handlers.
  */
 function renderOembed(container: HTMLElement, html: string): void {
-  container.innerHTML = html;
+  container.innerHTML = DOMPurify.sanitize(html, {
+    ADD_TAGS: ["iframe"],
+    ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
+  });
 }
 
 /**
