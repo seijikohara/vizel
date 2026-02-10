@@ -23,7 +23,7 @@
 
   &.ProseMirror-selectednode {
     outline: 2px solid v("primary");
-    outline-offset: 2px;
+    outline-offset: v("focus-ring-offset-outset");
     border-radius: v("radius-md");
   }
 

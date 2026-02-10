@@ -87,7 +87,7 @@
     &.vizel-math-selected {
       background-color: v("math-block-selected-bg");
       outline: 2px solid v("primary");
-      outline-offset: 2px;
+      outline-offset: v("focus-ring-offset-outset");
     }
 
     .vizel-math-render {

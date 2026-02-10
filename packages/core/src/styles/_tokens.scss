@@ -263,6 +263,10 @@ $components: (
   "resize-handle-width": 8px,
   "resize-handle-height": 48px,
 
+  // Focus ring
+  "focus-ring-offset-inset": -2px,
+  "focus-ring-offset-outset": 2px,
+
   // Portal
   "portal-base-z-index": 9999,
 );

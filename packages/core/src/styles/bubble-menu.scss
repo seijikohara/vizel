@@ -52,7 +52,7 @@
 
     &:focus-visible {
       outline: 2px solid v("primary");
-      outline-offset: -2px;
+      outline-offset: v("focus-ring-offset-inset");
     }
 
     &.is-active {
@@ -95,7 +95,7 @@
 
     &:focus-visible {
       outline: 2px solid v("primary");
-      outline-offset: -2px;
+      outline-offset: v("focus-ring-offset-inset");
     }
 
     &.has-color[data-action="textColor"] {
@@ -183,7 +183,7 @@
 
     &:focus-visible {
       outline: 2px solid v("primary");
-      outline-offset: 2px;
+      outline-offset: v("focus-ring-offset-outset");
       z-index: 2;
     }
 
@@ -308,7 +308,7 @@
 
     &:focus-visible {
       outline: 2px solid v("primary");
-      outline-offset: -2px;
+      outline-offset: v("focus-ring-offset-inset");
     }
   }
 
@@ -371,7 +371,7 @@
 
     &:focus-visible {
       outline: 2px solid v("primary");
-      outline-offset: -2px;
+      outline-offset: v("focus-ring-offset-inset");
     }
 
     &-icon {

@@ -40,7 +40,7 @@
     opacity: 1;
     pointer-events: auto;
     outline: 2px solid v("primary");
-    outline-offset: 1px;
+    outline-offset: v("focus-ring-offset-outset");
   }
 
   &.is-visible,
