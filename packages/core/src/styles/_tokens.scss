@@ -30,7 +30,10 @@ $light-colors: (
   "secondary-hover": oklch(0.446 0.043 257.281),
   "secondary-foreground": oklch(1 0 0),
 
-  // Background
+  // Background hierarchy:
+  //   background          — base editor surface
+  //   background-secondary — inset/recessed surfaces (sidebars, input fields)
+  //   background-tertiary  — raised/elevated surfaces (cards, hover states)
   "background": oklch(1 0 0),
   "background-secondary": oklch(0.985 0 0),
   "background-tertiary": oklch(0.967 0 0),
@@ -104,7 +107,10 @@ $dark-colors: (
   "secondary-hover": oklch(0.869 0.022 252.894),
   "secondary-foreground": oklch(0.21 0.006 285.885),
 
-  // Background
+  // Background hierarchy (dark mode):
+  //   background          — base editor surface (L=0.21)
+  //   background-secondary — inset/recessed surfaces (L=0.145, darker than base)
+  //   background-tertiary  — raised/elevated surfaces (L=0.279, lighter than base)
   "background": oklch(0.21 0.006 285.885),
   "background-secondary": oklch(0.145 0 0),
   "background-tertiary": oklch(0.279 0.041 260.031),
