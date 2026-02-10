@@ -17,7 +17,10 @@ import OrderedList from "@tiptap/extension-ordered-list";
 import Paragraph from "@tiptap/extension-paragraph";
 import Placeholder from "@tiptap/extension-placeholder";
 import Strike from "@tiptap/extension-strike";
+import Subscript from "@tiptap/extension-subscript";
+import Superscript from "@tiptap/extension-superscript";
 import Text from "@tiptap/extension-text";
+import Typography from "@tiptap/extension-typography";
 import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
 import { createVizelCalloutExtension } from "./callout.ts";
@@ -415,6 +418,17 @@ export async function createVizelExtensions(
   addWikiLinkExtension(extensions, features);
   addMentionExtension(extensions, features);
   addCommentExtension(extensions, features);
+
+  // Add typography marks
+  if (features.superscript !== false) {
+    extensions.push(Superscript);
+  }
+  if (features.subscript !== false) {
+    extensions.push(Subscript);
+  }
+  if (features.typography !== false) {
+    extensions.push(Typography);
+  }
 
   // Add code block extension (async - lowlight is loaded dynamically)
   await addCodeBlockExtension(extensions, features);

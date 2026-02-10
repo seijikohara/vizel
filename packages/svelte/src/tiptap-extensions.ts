@@ -18,5 +18,7 @@
 /// <reference types="@tiptap/extension-strike" />
 /// <reference types="@tiptap/extension-text-style" />
 /// <reference types="@tiptap/extension-underline" />
+/// <reference types="@tiptap/extension-superscript" />
+/// <reference types="@tiptap/extension-subscript" />
 
 export {};
