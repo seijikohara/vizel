@@ -131,8 +131,9 @@ export function VizelLinkEditor({
           onChange={(e) => setUrl(e.target.value)}
           placeholder="Enter URL..."
           className="vizel-link-input"
+          aria-label="Link URL"
         />
-        <button type="submit" className="vizel-link-button" title="Apply">
+        <button type="submit" className="vizel-link-button" title="Apply" aria-label="Apply link">
           <VizelIcon name="check" />
         </button>
         {currentHref && (
@@ -141,6 +142,7 @@ export function VizelLinkEditor({
             onClick={handleRemove}
             className="vizel-link-button vizel-link-remove"
             title="Remove link"
+            aria-label="Remove link"
           >
             <VizelIcon name="x" />
           </button>

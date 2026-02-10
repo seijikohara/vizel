@@ -139,7 +139,7 @@ function handleKeyDown(e: KeyboardEvent) {
         @keydown="handleKeyDown"
         aria-label="Find text"
       />
-      <span class="vizel-find-replace-count">
+      <span class="vizel-find-replace-count" aria-live="polite">
         {{ matchCount > 0 ? `${currentMatch}/${matchCount}` : 'No results' }}
       </span>
       <button

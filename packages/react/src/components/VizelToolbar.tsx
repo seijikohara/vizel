@@ -43,7 +43,12 @@ export function VizelToolbar({
   if (!editor) return null;
 
   return (
-    <div className={`vizel-toolbar ${className ?? ""}`} role="toolbar" aria-label="Formatting">
+    <div
+      className={`vizel-toolbar ${className ?? ""}`}
+      role="toolbar"
+      aria-label="Formatting"
+      aria-orientation="horizontal"
+    >
       {children ?? (showDefaultToolbar && <VizelToolbarDefault editor={editor} />)}
     </div>
   );

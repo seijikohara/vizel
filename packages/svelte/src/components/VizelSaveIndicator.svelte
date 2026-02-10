@@ -72,6 +72,7 @@ const shouldShowTimestamp = $derived(showTimestamp && lastSaved && relativeTime 
   class="vizel-save-indicator vizel-save-indicator--{status} {className ?? ''}"
   role="status"
   aria-live="polite"
+  aria-atomic="true"
   data-vizel-save-indicator
 >
   <span class="vizel-save-indicator-icon" aria-hidden="true">

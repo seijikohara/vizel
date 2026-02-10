@@ -151,7 +151,7 @@ function getGlobalIndex(groupIndex: number, itemIndex: number): number {
 </script>
 
 <template>
-  <div :class="['vizel-slash-menu', $props.class]" data-vizel-slash-menu>
+  <div :class="['vizel-slash-menu', $props.class]" data-vizel-slash-menu role="listbox" aria-label="Commands">
     <template v-if="flatItems.length === 0">
       <slot v-if="slots.empty" name="empty" />
       <VizelSlashMenuEmpty v-else />

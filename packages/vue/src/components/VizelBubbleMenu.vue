@@ -85,6 +85,8 @@ onBeforeUnmount(() => {
     ref="menuRef"
     :class="['vizel-bubble-menu', $props.class]"
     data-vizel-bubble-menu
+    role="toolbar"
+    aria-label="Text formatting"
     style="visibility: hidden"
   >
     <slot v-if="slots.default" />

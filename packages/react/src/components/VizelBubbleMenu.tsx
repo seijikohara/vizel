@@ -115,6 +115,8 @@ export function VizelBubbleMenu({
       ref={menuRef}
       className={`vizel-bubble-menu ${className ?? ""}`}
       data-vizel-bubble-menu=""
+      role="toolbar"
+      aria-label="Text formatting"
       style={{ visibility: "hidden" }}
     >
       {children ??
