@@ -38,6 +38,12 @@ export {
   VizelLinkEditor,
   type VizelLinkEditorProps,
 } from "./VizelLinkEditor.tsx";
+// VizelMentionMenu component
+export {
+  VizelMentionMenu,
+  type VizelMentionMenuProps,
+  type VizelMentionMenuRef,
+} from "./VizelMentionMenu.tsx";
 // VizelNodeSelector component
 export { VizelNodeSelector, type VizelNodeSelectorProps } from "./VizelNodeSelector.tsx";
 // Portal component

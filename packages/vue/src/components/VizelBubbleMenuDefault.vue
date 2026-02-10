@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Editor } from "@vizel/core";
+import { type Editor, formatVizelTooltip } from "@vizel/core";
 import { computed, ref } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
 import VizelBubbleMenuButton from "./VizelBubbleMenuButton.vue";
@@ -48,6 +48,21 @@ const isLinkActive = computed(() => {
   void editorStateVersion.value;
   return props.editor.isActive("link");
 });
+const isSuperscriptActive = computed(() => {
+  void editorStateVersion.value;
+  return props.editor.isActive("superscript");
+});
+const isSubscriptActive = computed(() => {
+  void editorStateVersion.value;
+  return props.editor.isActive("subscript");
+});
+
+const hasSuperscript = computed(() =>
+  props.editor.extensionManager.extensions.some((ext) => ext.name === "superscript")
+);
+const hasSubscript = computed(() =>
+  props.editor.extensionManager.extensions.some((ext) => ext.name === "subscript")
+);
 
 const showLinkEditor = ref(false);
 </script>
@@ -65,7 +80,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="bold"
       :is-active="isBoldActive"
-      title="Bold (Cmd+B)"
+      :title="formatVizelTooltip('Bold', 'Mod+B')"
       @click="props.editor.chain().focus().toggleBold().run()"
     >
       <VizelIcon name="bold" />
@@ -73,7 +88,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="italic"
       :is-active="isItalicActive"
-      title="Italic (Cmd+I)"
+      :title="formatVizelTooltip('Italic', 'Mod+I')"
       @click="props.editor.chain().focus().toggleItalic().run()"
     >
       <VizelIcon name="italic" />
@@ -81,7 +96,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="strike"
       :is-active="isStrikeActive"
-      title="Strikethrough"
+      :title="formatVizelTooltip('Strikethrough', 'Mod+Shift+S')"
       @click="props.editor.chain().focus().toggleStrike().run()"
     >
       <VizelIcon name="strikethrough" />
@@ -89,7 +104,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="underline"
       :is-active="isUnderlineActive"
-      title="Underline (Cmd+U)"
+      :title="formatVizelTooltip('Underline', 'Mod+U')"
       @click="props.editor.chain().focus().toggleUnderline().run()"
     >
       <VizelIcon name="underline" />
@@ -97,16 +112,34 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="code"
       :is-active="isCodeActive"
-      title="Code (Cmd+E)"
+      :title="formatVizelTooltip('Code', 'Mod+E')"
       @click="props.editor.chain().focus().toggleCode().run()"
     >
       <VizelIcon name="code" />
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
+      v-if="hasSuperscript"
+      action="superscript"
+      :is-active="isSuperscriptActive"
+      title="Superscript (Cmd+.)"
+      @click="props.editor.chain().focus().toggleSuperscript().run()"
+    >
+      <VizelIcon name="superscript" />
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
+      v-if="hasSubscript"
+      action="subscript"
+      :is-active="isSubscriptActive"
+      title="Subscript (Cmd+,)"
+      @click="props.editor.chain().focus().toggleSubscript().run()"
+    >
+      <VizelIcon name="subscript" />
     </VizelBubbleMenuButton>
     <VizelBubbleMenuDivider />
     <VizelBubbleMenuButton
       action="link"
       :is-active="isLinkActive"
-      title="Link (Cmd+K)"
+      :title="formatVizelTooltip('Link', 'Mod+K')"
       @click="showLinkEditor = true"
     >
       <VizelIcon name="link" />

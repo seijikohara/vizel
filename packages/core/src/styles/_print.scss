@@ -1,0 +1,97 @@
+/**
+ * Vizel Print Styles
+ *
+ * Optimizes editor output for print and PDF export.
+ * Hides interactive UI chrome and improves page-break behavior.
+ */
+
+@media print {
+  // Hide all interactive UI chrome
+  .vizel-toolbar,
+  .vizel-bubble-menu,
+  .vizel-slash-menu,
+  .vizel-drag-handle,
+  .vizel-save-indicator,
+  .vizel-find-replace {
+    display: none !important;
+  }
+
+  // Editor container: remove shadows and borders for clean print
+  .vizel-editor-container {
+    box-shadow: none;
+    border: none;
+  }
+
+  // Editor content: optimize for print
+  .vizel-editor {
+    padding: 0;
+  }
+
+  // Code blocks: avoid page breaks inside, optimize background
+  .vizel-code-block {
+    break-inside: avoid;
+    border: 1px solid oklch(0.827 0 0);
+
+    // Hide line number toggle button
+    .vizel-code-block-line-numbers-toggle {
+      display: none;
+    }
+  }
+
+  // Tables: avoid breaking rows across pages
+  .vizel-table {
+    break-inside: auto;
+
+    tr {
+      break-inside: avoid;
+    }
+
+    // Hide table controls
+    .vizel-table-column-controls,
+    .vizel-table-row-controls {
+      display: none;
+    }
+  }
+
+  // Images: constrain to page width, hide resize handles
+  .vizel-image-container {
+    break-inside: avoid;
+    max-width: 100%;
+
+    .vizel-image-resize-handle {
+      display: none;
+    }
+  }
+
+  // Blockquotes: avoid breaking
+  blockquote {
+    break-inside: avoid;
+  }
+
+  // Links: show URL for paper context
+  .vizel-editor a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: oklch(0.556 0 0);
+    word-break: break-all;
+  }
+
+  // Embeds: show URL instead of iframe
+  .vizel-embed {
+    break-inside: avoid;
+
+    iframe {
+      display: none;
+    }
+  }
+
+  // Mathematics: avoid breaking
+  .vizel-math-block {
+    break-inside: avoid;
+  }
+
+  // Diagrams: avoid breaking
+  .vizel-diagram {
+    break-inside: avoid;
+  }
+}

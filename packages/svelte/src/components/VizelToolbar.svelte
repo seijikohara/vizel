@@ -30,7 +30,7 @@ const editor = $derived(editorProp ?? contextEditor?.() ?? null);
 </script>
 
 {#if editor}
-  <div class="vizel-toolbar {className ?? ''}" role="toolbar" aria-label="Formatting">
+  <div class="vizel-toolbar {className ?? ''}" role="toolbar" aria-label="Formatting" aria-orientation="horizontal">
     {#if children}
       {@render children({ editor })}
     {:else if showDefaultToolbar}

@@ -55,6 +55,8 @@ export function VizelSlashMenuItem({
       type="button"
       className={`vizel-slash-menu-item ${isSelected ? "is-selected" : ""} ${className ?? ""}`}
       onClick={onClick}
+      role="option"
+      aria-selected={isSelected}
       data-selected={isSelected || undefined}
     >
       <span className="vizel-slash-menu-icon">

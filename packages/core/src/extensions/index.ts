@@ -1,5 +1,12 @@
 // Base extensions
 export { createVizelExtensions, type VizelExtensionsOptions } from "./base.ts";
+// Callout / Admonition
+export {
+  createVizelCalloutExtension,
+  VizelCallout,
+  type VizelCalloutOptions,
+  type VizelCalloutType,
+} from "./callout.ts";
 // Character count
 export {
   createVizelCharacterCountExtension,
@@ -123,14 +130,12 @@ export {
 
 // Link
 export { createVizelLinkExtension, type VizelLinkOptions } from "./link.ts";
-
 // Markdown
 export {
   createVizelMarkdownExtension,
   VizelMarkdown,
   type VizelMarkdownOptions,
 } from "./markdown.ts";
-
 // Mathematics (KaTeX)
 export {
   createVizelMathematicsExtensions,
@@ -138,6 +143,12 @@ export {
   type VizelMathematicsOptions,
   VizelMathInline,
 } from "./mathematics.ts";
+// Mention
+export {
+  createVizelMentionExtension,
+  type VizelMentionItem,
+  type VizelMentionOptions,
+} from "./mention.ts";
 
 // Node types
 export {
@@ -180,7 +191,12 @@ export {
   type VizelTableMenuItem,
   VizelTableWithControls,
 } from "./table-controls.ts";
-
+// Table of Contents
+export {
+  createVizelTableOfContentsExtension,
+  type VizelTableOfContentsOptions,
+  type VizelTOCHeading,
+} from "./table-of-contents.ts";
 // Task list
 export {
   createVizelTaskListExtensions,
@@ -198,6 +214,7 @@ export {
   type VizelColorDefinition,
   type VizelTextColorOptions,
 } from "./text-color.ts";
+
 // Wiki link
 export {
   createVizelWikiLinkExtension,
