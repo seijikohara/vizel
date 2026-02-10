@@ -72,6 +72,12 @@ export interface VizelFeatureOptions {
   diagram?: VizelDiagramOptions | boolean;
   /** Wiki links ([[page-name]], [[page|display text]]) for knowledge base use cases */
   wikiLink?: VizelWikiLinkOptions | boolean;
+  /** Superscript text formatting (Mod+.) */
+  superscript?: boolean;
+  /** Subscript text formatting (Mod+,) */
+  subscript?: boolean;
+  /** Typographic auto-conversions (smart quotes, em-dashes, ellipsis, fractions, etc.) */
+  typography?: boolean;
   /** Comment/annotation marks for collaborative review workflows */
   comment?: VizelCommentMarkOptions | boolean;
   /**

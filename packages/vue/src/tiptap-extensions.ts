@@ -13,5 +13,7 @@ import "@tiptap/extension-color";
 import "@tiptap/extension-highlight";
 import "@tiptap/extension-italic";
 import "@tiptap/extension-strike";
+import "@tiptap/extension-subscript";
+import "@tiptap/extension-superscript";
 import "@tiptap/extension-text-style";
 import "@tiptap/extension-underline";

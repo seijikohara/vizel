@@ -17,7 +17,10 @@ import OrderedList from "@tiptap/extension-ordered-list";
 import Paragraph from "@tiptap/extension-paragraph";
 import Placeholder from "@tiptap/extension-placeholder";
 import Strike from "@tiptap/extension-strike";
+import Subscript from "@tiptap/extension-subscript";
+import Superscript from "@tiptap/extension-superscript";
 import Text from "@tiptap/extension-text";
+import Typography from "@tiptap/extension-typography";
 import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
 import { createVizelCharacterCountExtension } from "./character-count.ts";
@@ -290,6 +293,30 @@ function addCommentExtension(extensions: Extensions, features: VizelFeatureOptio
 }
 
 /**
+ * Add Superscript extension if enabled (enabled by default)
+ */
+function addSuperscriptExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.superscript === false) return;
+  extensions.push(Superscript);
+}
+
+/**
+ * Add Subscript extension if enabled (enabled by default)
+ */
+function addSubscriptExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.subscript === false) return;
+  extensions.push(Subscript);
+}
+
+/**
+ * Add Typography extension if enabled (enabled by default)
+ */
+function addTypographyExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.typography === false) return;
+  extensions.push(Typography);
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * All features are enabled by default. Set any feature to `false` to disable it.
  *
@@ -379,6 +406,9 @@ export async function createVizelExtensions(
   addDiagramExtension(extensions, features);
   addWikiLinkExtension(extensions, features);
   addCommentExtension(extensions, features);
+  addSuperscriptExtension(extensions, features);
+  addSubscriptExtension(extensions, features);
+  addTypographyExtension(extensions, features);
 
   // Add code block extension (async - lowlight is loaded dynamically)
   await addCodeBlockExtension(extensions, features);

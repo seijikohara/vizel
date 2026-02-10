@@ -44,6 +44,14 @@ const isCodeActive = computed(() => {
   void editorStateVersion.value;
   return props.editor.isActive("code");
 });
+const isSuperscriptActive = computed(() => {
+  void editorStateVersion.value;
+  return props.editor.isActive("superscript");
+});
+const isSubscriptActive = computed(() => {
+  void editorStateVersion.value;
+  return props.editor.isActive("subscript");
+});
 const isLinkActive = computed(() => {
   void editorStateVersion.value;
   return props.editor.isActive("link");
@@ -101,6 +109,22 @@ const showLinkEditor = ref(false);
       @click="props.editor.chain().focus().toggleCode().run()"
     >
       <VizelIcon name="code" />
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
+      action="superscript"
+      :is-active="isSuperscriptActive"
+      title="Superscript (Cmd+.)"
+      @click="props.editor.chain().focus().toggleSuperscript().run()"
+    >
+      <VizelIcon name="superscript" />
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
+      action="subscript"
+      :is-active="isSubscriptActive"
+      title="Subscript (Cmd+,)"
+      @click="props.editor.chain().focus().toggleSubscript().run()"
+    >
+      <VizelIcon name="subscript" />
     </VizelBubbleMenuButton>
     <VizelBubbleMenuDivider />
     <VizelBubbleMenuButton

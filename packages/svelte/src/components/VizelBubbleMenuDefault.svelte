@@ -47,6 +47,14 @@ const isCodeActive = $derived.by(() => {
   void editorState.current;
   return editor.isActive("code");
 });
+const isSuperscriptActive = $derived.by(() => {
+  void editorState.current;
+  return editor.isActive("superscript");
+});
+const isSubscriptActive = $derived.by(() => {
+  void editorState.current;
+  return editor.isActive("subscript");
+});
 const isLinkActive = $derived.by(() => {
   void editorState.current;
   return editor.isActive("link");
@@ -98,6 +106,22 @@ const isLinkActive = $derived.by(() => {
       onclick={() => editor.chain().focus().toggleCode().run()}
     >
       <VizelIcon name="code" />
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
+      action="superscript"
+      isActive={isSuperscriptActive}
+      title="Superscript (Cmd+.)"
+      onclick={() => editor.chain().focus().toggleSuperscript().run()}
+    >
+      <VizelIcon name="superscript" />
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
+      action="subscript"
+      isActive={isSubscriptActive}
+      title="Subscript (Cmd+,)"
+      onclick={() => editor.chain().focus().toggleSubscript().run()}
+    >
+      <VizelIcon name="subscript" />
     </VizelBubbleMenuButton>
     <VizelBubbleMenuDivider />
     <VizelBubbleMenuButton

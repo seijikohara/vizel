@@ -82,6 +82,8 @@ export type VizelBubbleMenuIconName =
   | "strikethrough"
   | "underline"
   | "code"
+  | "superscript"
+  | "subscript"
   | "link"
   | "textColor"
   | "highlighter";
@@ -205,6 +207,8 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   strikethrough: "lucide:strikethrough",
   underline: "lucide:underline",
   code: "lucide:code",
+  superscript: "lucide:superscript",
+  subscript: "lucide:subscript",
   link: "lucide:link",
   textColor: "lucide:baseline",
   highlighter: "lucide:highlighter",

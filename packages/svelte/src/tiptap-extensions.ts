@@ -16,6 +16,8 @@
 /// <reference types="@tiptap/extension-highlight" />
 /// <reference types="@tiptap/extension-italic" />
 /// <reference types="@tiptap/extension-strike" />
+/// <reference types="@tiptap/extension-subscript" />
+/// <reference types="@tiptap/extension-superscript" />
 /// <reference types="@tiptap/extension-text-style" />
 /// <reference types="@tiptap/extension-underline" />
 
