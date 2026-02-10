@@ -417,7 +417,7 @@ let markdown = $state('# Hello World');
 
 ## Enabling Features
 
-All features are enabled by default except `collaboration` and `comment`. You can disable specific features by setting them to `false`, or pass an options object to configure them:
+All features are enabled by default except `collaboration`, `comment`, and `wikiLink`. You can disable specific features by setting them to `false`, or pass an options object to configure them:
 
 ::: code-group
 
@@ -440,9 +440,9 @@ const editor = useVizelEditor({
     embed: true,
     details: true,
     diagram: true,
-    wikiLink: true,
 
     // Opt-in: must be explicitly enabled
+    wikiLink: true,
     comment: true,
     collaboration: true,
   },

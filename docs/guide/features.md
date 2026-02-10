@@ -4,7 +4,7 @@ You can enable, disable, or customize each feature through the `features` option
 
 ## Feature Overview
 
-Vizel enables all features by default. Set any feature to `false` to disable it.
+Vizel enables most features by default. `collaboration`, `comment`, and `wikiLink` are opt-in and must be explicitly enabled.
 
 ```mermaid
 graph TB
@@ -23,10 +23,10 @@ graph TB
         Embed["Embeds"]
         Details["Details"]
         Diagram["Diagrams"]
-        WikiLink["Wiki Links"]
-        Comment["Comments"]
     end
     subgraph opt["Opt-in Features"]
+        WikiLink["Wiki Links"]
+        Comment["Comments"]
         Collaboration["Collaboration"]
     end
 ```
