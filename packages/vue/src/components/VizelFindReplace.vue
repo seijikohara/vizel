@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type Editor, getVizelFindReplaceState, type VizelFindReplaceState } from "@vizel/core";
-import { computed, onUnmounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 
 export interface VizelFindReplaceProps {
   /** The Tiptap editor instance */
@@ -48,7 +48,7 @@ watch(
   { immediate: true }
 );
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   props.editor?.off("transaction", updateState);
 });
 
