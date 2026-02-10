@@ -1,6 +1,13 @@
-import type { Editor, Extensions, JSONContent, VizelFeatureOptions } from "@vizel/core";
+import {
+  type Editor,
+  type Extensions,
+  getVizelMarkdown,
+  type JSONContent,
+  setVizelMarkdown,
+  type VizelFeatureOptions,
+} from "@vizel/core";
 import type { ReactNode, Ref } from "react";
-import { useImperativeHandle } from "react";
+import { useEffect, useImperativeHandle, useRef } from "react";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
 import { VizelBubbleMenu } from "./VizelBubbleMenu.tsx";
 import { VizelEditor } from "./VizelEditor.tsx";
@@ -48,6 +55,20 @@ export interface VizelProps {
   enableEmbed?: boolean;
   /** Custom bubble menu content */
   bubbleMenuContent?: ReactNode;
+  /**
+   * Controlled markdown value. When provided, the editor enters "controlled mode"
+   * where markdown content is synchronized bidirectionally.
+   * Use together with `onMarkdownChange` to handle updates.
+   *
+   * @example
+   * ```tsx
+   * const [md, setMd] = useState("# Hello");
+   * <Vizel markdown={md} onMarkdownChange={setMd} />
+   * ```
+   */
+  markdown?: string;
+  /** Callback when markdown content changes (controlled mode) */
+  onMarkdownChange?: (markdown: string) => void;
   /** Additional children to render inside the editor root */
   children?: ReactNode;
   /** Callback when content changes */
@@ -122,6 +143,8 @@ export function Vizel({
   showBubbleMenu = true,
   enableEmbed = false,
   bubbleMenuContent,
+  markdown,
+  onMarkdownChange,
   children,
   onUpdate,
   onCreate,
@@ -130,6 +153,9 @@ export function Vizel({
   onFocus,
   onBlur,
 }: VizelProps): ReactNode {
+  // Track whether we're currently updating from external markdown change
+  const isUpdatingFromMarkdownRef = useRef(false);
+
   const editor = useVizelEditor({
     ...(initialContent !== undefined && { initialContent }),
     ...(initialMarkdown !== undefined && { initialMarkdown }),
@@ -139,13 +165,33 @@ export function Vizel({
     autofocus,
     ...(features !== undefined && { features }),
     ...(extensions !== undefined && { extensions }),
-    ...(onUpdate !== undefined && { onUpdate }),
+    onUpdate: (e) => {
+      onUpdate?.(e);
+      // Sync markdown to parent if in controlled mode and not from external change
+      if (!isUpdatingFromMarkdownRef.current && markdown !== undefined && onMarkdownChange) {
+        onMarkdownChange(getVizelMarkdown(e.editor));
+      }
+    },
     ...(onCreate !== undefined && { onCreate }),
     ...(onDestroy !== undefined && { onDestroy }),
     ...(onSelectionUpdate !== undefined && { onSelectionUpdate }),
     ...(onFocus !== undefined && { onFocus }),
     ...(onBlur !== undefined && { onBlur }),
   });
+
+  // Watch for external markdown changes (controlled mode)
+  useEffect(() => {
+    if (markdown === undefined || !editor) return;
+
+    const currentMarkdown = getVizelMarkdown(editor);
+    if (markdown === currentMarkdown) return;
+
+    isUpdatingFromMarkdownRef.current = true;
+    setVizelMarkdown(editor, markdown, {
+      transformDiagrams: transformDiagramsOnImport,
+    });
+    isUpdatingFromMarkdownRef.current = false;
+  }, [markdown, editor, transformDiagramsOnImport]);
 
   // Expose editor instance via ref
   useImperativeHandle(
