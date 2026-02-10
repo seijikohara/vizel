@@ -13,6 +13,7 @@ export interface VizelToolbarDefaultProps {
 
 <script lang="ts">
 import {
+  formatVizelTooltip,
   groupVizelToolbarActions,
   vizelDefaultToolbarActions,
 } from "@vizel/core";
@@ -46,7 +47,7 @@ const groups = $derived.by(() => {
         action={action.id}
         isActive={action.isActive(editor)}
         disabled={!action.isEnabled(editor)}
-        title={action.shortcut ? `${action.label} (${action.shortcut})` : action.label}
+        title={formatVizelTooltip(action.label, action.shortcut)}
         onclick={() => action.run(editor)}
       >
         <VizelIcon name={action.icon} />
