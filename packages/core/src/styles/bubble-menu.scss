@@ -12,7 +12,7 @@
   border-radius: v("radius-lg");
   box-shadow: v("shadow-md");
   border: 1px solid v("border");
-  z-index: 50;
+  z-index: v("z-popover");
 
   &-toolbar {
     display: flex;
