@@ -9,7 +9,7 @@
   "dependencies": {
     "@vizel/core": "workspace:*",
     "@vizel/vue": "workspace:*",
-    "vue": "^3.5.27"
+    "vue": "^3.5.28"
   },
   "devDependencies": {
     "@hpcc-js/wasm-graphviz": "^1.21.0",
