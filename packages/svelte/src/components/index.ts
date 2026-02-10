@@ -75,6 +75,14 @@ export {
   type VizelLinkEditorProps,
 } from "./VizelLinkEditor.svelte";
 // ============================================================================
+// Vizel MentionMenu component
+// ============================================================================
+export {
+  default as VizelMentionMenu,
+  type VizelMentionMenuProps,
+  type VizelMentionMenuRef,
+} from "./VizelMentionMenu.svelte";
+// ============================================================================
 // Vizel NodeSelector component
 // ============================================================================
 export {

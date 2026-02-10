@@ -91,6 +91,39 @@ export const defaultSlashCommands: SlashCommandItem[] = [
       editor.chain().focus().deleteRange(range).setNode("heading", { level: 3 }).run();
     },
   },
+  {
+    title: "Heading 4",
+    description: "Extra-small heading",
+    icon: "heading4",
+    group: "Text",
+    keywords: ["h4", "header", "subsection"],
+    shortcut: "⌘⌥4",
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setNode("heading", { level: 4 }).run();
+    },
+  },
+  {
+    title: "Heading 5",
+    description: "Paragraph heading",
+    icon: "heading5",
+    group: "Text",
+    keywords: ["h5", "header", "minor"],
+    shortcut: "⌘⌥5",
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setNode("heading", { level: 5 }).run();
+    },
+  },
+  {
+    title: "Heading 6",
+    description: "Smallest heading",
+    icon: "heading6",
+    group: "Text",
+    keywords: ["h6", "header", "smallest"],
+    shortcut: "⌘⌥6",
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setNode("heading", { level: 6 }).run();
+    },
+  },
   // Lists group
   {
     title: "Bullet List",
@@ -158,6 +191,20 @@ export const defaultSlashCommands: SlashCommandItem[] = [
         return;
       }
       editor.chain().focus().deleteRange(range).setDetails().run();
+    },
+  },
+  {
+    title: "Callout",
+    description: "Insert a callout block (info, tip, warning)",
+    icon: "callout",
+    group: "Blocks",
+    keywords: ["callout", "admonition", "alert", "info", "warning", "danger", "tip", "note"],
+    command: ({ editor, range }) => {
+      // Check if callout extension is available
+      if (!editor.can().setCallout?.()) {
+        return;
+      }
+      editor.chain().focus().deleteRange(range).setCallout({ type: "info" }).run();
     },
   },
   {

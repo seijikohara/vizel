@@ -20,6 +20,7 @@ import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
 import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
+import { createVizelCalloutExtension } from "./callout.ts";
 import { createVizelCharacterCountExtension } from "./character-count.ts";
 import type { VizelCodeBlockOptions } from "./code-block-lowlight.ts";
 import { createVizelCommentExtension } from "./comment.ts";
@@ -35,6 +36,7 @@ import {
 import { createVizelLinkExtension } from "./link.ts";
 import { createVizelMarkdownExtension } from "./markdown.ts";
 import { createVizelMathematicsExtensions } from "./mathematics.ts";
+import { createVizelMentionExtension } from "./mention.ts";
 import {
   VizelSlashCommand,
   type VizelSlashCommandItem,
@@ -69,7 +71,7 @@ export interface VizelExtensionsOptions {
 function createBaseExtensions(
   options: { headingLevels?: (1 | 2 | 3 | 4 | 5 | 6)[]; excludeHistory?: boolean } = {}
 ): Extensions {
-  const { headingLevels = [1, 2, 3], excludeHistory = false } = options;
+  const { headingLevels = [1, 2, 3, 4, 5, 6], excludeHistory = false } = options;
 
   const extensions: Extensions = [
     // Nodes
@@ -280,6 +282,26 @@ function addWikiLinkExtension(extensions: Extensions, features: VizelFeatureOpti
 }
 
 /**
+ * Add Callout extension if enabled (enabled by default)
+ */
+function addCalloutExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.callout === false) return;
+
+  const calloutOptions = typeof features.callout === "object" ? features.callout : {};
+  extensions.push(createVizelCalloutExtension(calloutOptions));
+}
+
+/**
+ * Add Mention extension if enabled (disabled by default)
+ */
+function addMentionExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (!features.mention) return;
+
+  const mentionOptions = typeof features.mention === "object" ? features.mention : {};
+  extensions.push(createVizelMentionExtension(mentionOptions));
+}
+
+/**
  * Add Comment extension if enabled (disabled by default)
  */
 function addCommentExtension(extensions: Extensions, features: VizelFeatureOptions): void {
@@ -339,7 +361,7 @@ export async function createVizelExtensions(
 ): Promise<Extensions> {
   const {
     placeholder = "Type '/' for commands...",
-    headingLevels = [1, 2, 3],
+    headingLevels = [1, 2, 3, 4, 5, 6],
     features = {},
   } = options;
 
@@ -375,9 +397,11 @@ export async function createVizelExtensions(
   addMathematicsExtension(extensions, features);
   addDragHandleExtension(extensions, features);
   addDetailsExtension(extensions, features);
+  addCalloutExtension(extensions, features);
   addEmbedExtension(extensions, features);
   addDiagramExtension(extensions, features);
   addWikiLinkExtension(extensions, features);
+  addMentionExtension(extensions, features);
   addCommentExtension(extensions, features);
 
   // Add code block extension (async - lowlight is loaded dynamically)

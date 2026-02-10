@@ -22,8 +22,10 @@ const emit = defineEmits<{
 
 const formRef = ref<HTMLFormElement | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
-const currentHref = computed(() => props.editor.getAttributes("link").href || "");
+const linkAttrs = computed(() => props.editor.getAttributes("link"));
+const currentHref = computed(() => linkAttrs.value.href || "");
 const url = ref(currentHref.value);
+const openInNewTab = ref(linkAttrs.value.target === "_blank");
 const asEmbed = ref(false);
 
 // Check if embed extension is available
@@ -86,7 +88,14 @@ function handleSubmit(e: Event) {
     // Remove the link first, then insert embed
     props.editor.chain().focus().unsetLink().setEmbed({ url: trimmedUrl }).run();
   } else {
-    props.editor.chain().focus().setLink({ href: trimmedUrl }).run();
+    props.editor
+      .chain()
+      .focus()
+      .setLink({
+        href: trimmedUrl,
+        target: openInNewTab.value ? "_blank" : null,
+      })
+      .run();
   }
   emit("close");
 }
@@ -94,6 +103,13 @@ function handleSubmit(e: Event) {
 function handleRemove() {
   props.editor.chain().focus().unsetLink().run();
   emit("close");
+}
+
+function handleVisit() {
+  const trimmedUrl = url.value.trim();
+  if (trimmedUrl) {
+    window.open(trimmedUrl, "_blank", "noopener,noreferrer");
+  }
 }
 </script>
 
@@ -124,6 +140,25 @@ function handleRemove() {
         @click="handleRemove"
       >
         <VizelIcon name="x" />
+      </button>
+    </div>
+    <div class="vizel-link-editor-options">
+      <label class="vizel-link-newtab-toggle">
+        <input
+          v-model="openInNewTab"
+          type="checkbox"
+        />
+        <span>Open in new tab</span>
+      </label>
+      <button
+        v-if="url.trim()"
+        type="button"
+        class="vizel-link-visit"
+        title="Open URL in new tab"
+        @click="handleVisit"
+      >
+        <VizelIcon name="externalLink" />
+        <span>Visit</span>
       </button>
     </div>
     <div v-if="canEmbed && isEmbedProvider" class="vizel-link-editor-embed-toggle">

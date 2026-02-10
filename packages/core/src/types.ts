@@ -1,5 +1,6 @@
 import type { Editor, Extensions, JSONContent } from "@tiptap/core";
 import type { SuggestionOptions } from "@tiptap/suggestion";
+import type { VizelCalloutOptions } from "./extensions/callout.ts";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelCodeBlockOptions } from "./extensions/code-block-lowlight.ts";
 import type { VizelCommentMarkOptions } from "./extensions/comment.ts";
@@ -10,6 +11,7 @@ import type { VizelEmbedOptions } from "./extensions/embed.ts";
 import type { VizelLinkOptions } from "./extensions/link.ts";
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
+import type { VizelMentionOptions } from "./extensions/mention.ts";
 import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
@@ -68,10 +70,23 @@ export interface VizelFeatureOptions {
   embed?: VizelEmbedOptions | boolean;
   /** Collapsible content blocks (accordion) */
   details?: VizelDetailsOptions | boolean;
+  /** Callout / admonition blocks (info, warning, danger, tip, note) */
+  callout?: VizelCalloutOptions | boolean;
   /** Diagram support (Mermaid, GraphViz) */
   diagram?: VizelDiagramOptions | boolean;
   /** Wiki links ([[page-name]], [[page|display text]]) for knowledge base use cases */
   wikiLink?: VizelWikiLinkOptions | boolean;
+  /**
+   * @mention autocomplete for user mentions.
+   * Disabled by default — requires user-provided items function.
+   * @example
+   * ```ts
+   * mention: {
+   *   items: async (query) => users.filter(u => u.label.includes(query)),
+   * }
+   * ```
+   */
+  mention?: VizelMentionOptions | boolean;
   /** Comment/annotation marks for collaborative review workflows */
   comment?: VizelCommentMarkOptions | boolean;
   /**

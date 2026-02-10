@@ -30,6 +30,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "svelte": "./dist/index.js",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
