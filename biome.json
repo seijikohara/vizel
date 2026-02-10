@@ -300,14 +300,6 @@
       }
     },
     {
-      "includes": ["packages/tailwind/src/**/*.css"],
-      "css": {
-        "parser": {
-          "cssModules": false
-        }
-      }
-    },
-    {
       "includes": [
         "**/vite.config.ts",
         "**/svelte.config.js",
