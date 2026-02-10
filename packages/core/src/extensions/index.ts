@@ -191,7 +191,12 @@ export {
   type VizelTableMenuItem,
   VizelTableWithControls,
 } from "./table-controls.ts";
-
+// Table of Contents
+export {
+  createVizelTableOfContentsExtension,
+  type VizelTableOfContentsOptions,
+  type VizelTOCHeading,
+} from "./table-of-contents.ts";
 // Task list
 export {
   createVizelTaskListExtensions,
@@ -209,6 +214,7 @@ export {
   type VizelColorDefinition,
   type VizelTextColorOptions,
 } from "./text-color.ts";
+
 // Wiki link
 export {
   createVizelWikiLinkExtension,

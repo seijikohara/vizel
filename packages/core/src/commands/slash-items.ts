@@ -302,6 +302,20 @@ export const defaultSlashCommands: SlashCommandItem[] = [
       }
     },
   },
+  // Navigation group
+  {
+    title: "Table of Contents",
+    description: "Auto-generated list of headings",
+    icon: "tableOfContents",
+    group: "Navigation",
+    keywords: ["toc", "navigation", "outline", "headings", "contents", "index"],
+    command: ({ editor, range }) => {
+      if (typeof editor.commands.insertTableOfContents !== "function") {
+        return;
+      }
+      editor.chain().focus().deleteRange(range).insertTableOfContents().run();
+    },
+  },
   // Advanced group
   {
     title: "Math Equation",
@@ -364,7 +378,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
 /**
  * Default group order for display
  */
-export const defaultGroupOrder = ["Text", "Lists", "Blocks", "Media", "Advanced"];
+export const defaultGroupOrder = ["Text", "Lists", "Blocks", "Media", "Navigation", "Advanced"];
 
 /**
  * Fuse.js configuration for fuzzy search
