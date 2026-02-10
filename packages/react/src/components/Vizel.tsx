@@ -1,4 +1,4 @@
-import type { Editor, Extensions, JSONContent, VizelFeatureOptions } from "@vizel/core";
+import type { Editor, Extensions, JSONContent, VizelError, VizelFeatureOptions } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useImperativeHandle } from "react";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
@@ -62,6 +62,8 @@ export interface VizelProps {
   onFocus?: (props: { editor: Editor }) => void;
   /** Callback when editor loses focus */
   onBlur?: (props: { editor: Editor }) => void;
+  /** Callback when an error occurs in the editor */
+  onError?: (error: VizelError) => void;
 }
 
 export interface VizelRef {
@@ -129,6 +131,7 @@ export function Vizel({
   onSelectionUpdate,
   onFocus,
   onBlur,
+  onError,
 }: VizelProps): ReactNode {
   const editor = useVizelEditor({
     ...(initialContent !== undefined && { initialContent }),
@@ -145,6 +148,7 @@ export function Vizel({
     ...(onSelectionUpdate !== undefined && { onSelectionUpdate }),
     ...(onFocus !== undefined && { onFocus }),
     ...(onBlur !== undefined && { onBlur }),
+    ...(onError !== undefined && { onError }),
   });
 
   // Expose editor instance via ref

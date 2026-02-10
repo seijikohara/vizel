@@ -9,6 +9,7 @@ import {
   getVizelMarkdown,
   type JSONContent,
   setVizelMarkdown,
+  type VizelError,
   type VizelFeatureOptions,
 } from "@vizel/core";
 import { useSlots, watch } from "vue";
@@ -86,6 +87,8 @@ const emit = defineEmits<{
   focus: [{ editor: Editor }];
   /** Emitted when editor loses focus */
   blur: [{ editor: Editor }];
+  /** Emitted when an error occurs */
+  error: [VizelError];
 }>();
 
 /**
@@ -121,6 +124,7 @@ const editor = useVizelEditor({
   onSelectionUpdate: (e) => emit("selectionUpdate", e),
   onFocus: (e) => emit("focus", e),
   onBlur: (e) => emit("blur", e),
+  onError: (e) => emit("error", e),
 });
 
 // Watch for external markdown changes (v-model:markdown)

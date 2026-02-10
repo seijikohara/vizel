@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { Editor, Extensions, JSONContent, VizelFeatureOptions } from "@vizel/core";
+import type { Editor, Extensions, JSONContent, VizelError, VizelFeatureOptions } from "@vizel/core";
 import type { Snippet } from "svelte";
 
 /**
@@ -70,6 +70,8 @@ export interface VizelProps {
   onFocus?: (props: { editor: Editor }) => void;
   /** Callback when editor loses focus */
   onBlur?: (props: { editor: Editor }) => void;
+  /** Callback when an error occurs in the editor */
+  onError?: (error: VizelError) => void;
 }
 </script>
 
@@ -132,6 +134,7 @@ const editorState = createVizelEditor({
   ...(restProps.onSelectionUpdate !== undefined && { onSelectionUpdate: restProps.onSelectionUpdate }),
   ...(restProps.onFocus !== undefined && { onFocus: restProps.onFocus }),
   ...(restProps.onBlur !== undefined && { onBlur: restProps.onBlur }),
+  ...(restProps.onError !== undefined && { onError: restProps.onError }),
 });
 
 const editor = $derived(editorState.current);
