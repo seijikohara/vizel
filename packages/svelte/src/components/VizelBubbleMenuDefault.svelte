@@ -12,6 +12,7 @@ export interface VizelBubbleMenuDefaultProps {
 </script>
 
 <script lang="ts">
+import { formatVizelTooltip } from "@vizel/core";
 import { createVizelState } from "../runes/createVizelState.svelte.js";
 import VizelBubbleMenuButton from "./VizelBubbleMenuButton.svelte";
 import VizelBubbleMenuColorPicker from "./VizelBubbleMenuColorPicker.svelte";
@@ -62,7 +63,7 @@ const isLinkActive = $derived.by(() => {
     <VizelBubbleMenuButton
       action="bold"
       isActive={isBoldActive}
-      title="Bold (Cmd+B)"
+      title={formatVizelTooltip("Bold", "Mod+B")}
       onclick={() => editor.chain().focus().toggleBold().run()}
     >
       <VizelIcon name="bold" />
@@ -70,7 +71,7 @@ const isLinkActive = $derived.by(() => {
     <VizelBubbleMenuButton
       action="italic"
       isActive={isItalicActive}
-      title="Italic (Cmd+I)"
+      title={formatVizelTooltip("Italic", "Mod+I")}
       onclick={() => editor.chain().focus().toggleItalic().run()}
     >
       <VizelIcon name="italic" />
@@ -78,7 +79,7 @@ const isLinkActive = $derived.by(() => {
     <VizelBubbleMenuButton
       action="strike"
       isActive={isStrikeActive}
-      title="Strikethrough"
+      title={formatVizelTooltip("Strikethrough", "Mod+Shift+S")}
       onclick={() => editor.chain().focus().toggleStrike().run()}
     >
       <VizelIcon name="strikethrough" />
@@ -86,7 +87,7 @@ const isLinkActive = $derived.by(() => {
     <VizelBubbleMenuButton
       action="underline"
       isActive={isUnderlineActive}
-      title="Underline (Cmd+U)"
+      title={formatVizelTooltip("Underline", "Mod+U")}
       onclick={() => editor.chain().focus().toggleUnderline().run()}
     >
       <VizelIcon name="underline" />
@@ -94,7 +95,7 @@ const isLinkActive = $derived.by(() => {
     <VizelBubbleMenuButton
       action="code"
       isActive={isCodeActive}
-      title="Code (Cmd+E)"
+      title={formatVizelTooltip("Code", "Mod+E")}
       onclick={() => editor.chain().focus().toggleCode().run()}
     >
       <VizelIcon name="code" />
@@ -103,7 +104,7 @@ const isLinkActive = $derived.by(() => {
     <VizelBubbleMenuButton
       action="link"
       isActive={isLinkActive}
-      title="Link (Cmd+K)"
+      title={formatVizelTooltip("Link", "Mod+K")}
       onclick={() => (showLinkEditor = true)}
     >
       <VizelIcon name="link" />

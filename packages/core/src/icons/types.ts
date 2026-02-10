@@ -19,6 +19,9 @@ export type VizelSlashCommandIconName =
   | "heading1"
   | "heading2"
   | "heading3"
+  | "heading4"
+  | "heading5"
+  | "heading6"
   // Lists
   | "bulletList"
   | "orderedList"
@@ -47,6 +50,9 @@ export type VizelNodeTypeIconName =
   | "heading1"
   | "heading2"
   | "heading3"
+  | "heading4"
+  | "heading5"
+  | "heading6"
   | "bulletList"
   | "orderedList"
   | "taskList"
@@ -158,6 +164,9 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   heading1: "lucide:heading-1",
   heading2: "lucide:heading-2",
   heading3: "lucide:heading-3",
+  heading4: "lucide:heading-4",
+  heading5: "lucide:heading-5",
+  heading6: "lucide:heading-6",
   // Lists
   bulletList: "lucide:list",
   orderedList: "lucide:list-ordered",
