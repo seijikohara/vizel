@@ -41,3 +41,6 @@
 @use "wiki-link";
 @use "components/comment";
 @use "components/find-replace";
+
+/* Print optimization */
+@use "print";
