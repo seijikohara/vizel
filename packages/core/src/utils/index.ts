@@ -30,6 +30,8 @@ export {
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./errorHandling.ts";
+// Keyboard shortcut utilities
+export { formatVizelShortcut, formatVizelTooltip, isVizelMacPlatform } from "./keyboard.ts";
 // Lazy import utility
 export { createLazyLoader } from "./lazy-import.ts";
 // Markdown utilities

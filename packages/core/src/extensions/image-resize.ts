@@ -97,25 +97,15 @@ export const VizelResizableImage = Image.extend<VizelResizableImageOptions>({
       const leftHandle = document.createElement("div");
       leftHandle.setAttribute("data-resize-handle", "left");
       leftHandle.contentEditable = "false";
-      leftHandle.style.position = "absolute";
-      leftHandle.style.left = "4px";
-      leftHandle.style.top = "50%";
-      leftHandle.style.transform = "translateY(-50%)";
 
       // Create right handle
       const rightHandle = document.createElement("div");
       rightHandle.setAttribute("data-resize-handle", "right");
       rightHandle.contentEditable = "false";
-      rightHandle.style.position = "absolute";
-      rightHandle.style.right = "4px";
-      rightHandle.style.top = "50%";
-      rightHandle.style.transform = "translateY(-50%)";
 
       // Create dimension tooltip
       const tooltip = document.createElement("div");
       tooltip.setAttribute("data-resize-tooltip", "true");
-      tooltip.style.position = "absolute";
-      tooltip.style.display = "none";
 
       wrapper.appendChild(leftHandle);
       wrapper.appendChild(rightHandle);

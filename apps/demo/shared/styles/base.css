@@ -217,11 +217,18 @@ body {
 }
 
 .panel-section {
-  width: 400px;
+  width: 380px;
   flex-shrink: 0;
 }
 
-/* Responsive: Stack on mobile */
+/* Responsive: Narrow panel on smaller laptops */
+@media (max-width: 1280px) {
+  .panel-section {
+    width: 320px;
+  }
+}
+
+/* Responsive: Stack on mobile/tablet */
 @media (max-width: 1024px) {
   .main {
     flex-direction: column;
