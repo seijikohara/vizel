@@ -126,8 +126,9 @@ function handleVisit() {
         type="url"
         placeholder="Enter URL..."
         class="vizel-link-input"
+        aria-label="Link URL"
       />
-      <button type="submit" class="vizel-link-button" title="Apply">
+      <button type="submit" class="vizel-link-button" title="Apply" aria-label="Apply link">
         <VizelIcon name="check" />
       </button>
       <button
@@ -135,6 +136,7 @@ function handleVisit() {
         type="button"
         class="vizel-link-button vizel-link-remove"
         title="Remove link"
+        aria-label="Remove link"
         @click="handleRemove"
       >
         <VizelIcon name="x" />
