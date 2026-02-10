@@ -49,6 +49,10 @@ export {
   type VizelIconProviderProps,
   VizelLinkEditor,
   type VizelLinkEditorProps,
+  // MentionMenu
+  VizelMentionMenu,
+  type VizelMentionMenuProps,
+  type VizelMentionMenuRef,
   // NodeSelector
   VizelNodeSelector,
   type VizelNodeSelectorProps,
@@ -98,6 +102,7 @@ export {
   createVizelEditor,
   createVizelEditorState,
   createVizelMarkdown,
+  createVizelMentionMenuRenderer,
   createVizelSlashMenuRenderer,
   createVizelState,
   createVizelVersionHistory,

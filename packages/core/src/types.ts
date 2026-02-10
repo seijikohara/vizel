@@ -11,6 +11,7 @@ import type { VizelEmbedOptions } from "./extensions/embed.ts";
 import type { VizelLinkOptions } from "./extensions/link.ts";
 import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
+import type { VizelMentionOptions } from "./extensions/mention.ts";
 import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
@@ -75,6 +76,17 @@ export interface VizelFeatureOptions {
   diagram?: VizelDiagramOptions | boolean;
   /** Wiki links ([[page-name]], [[page|display text]]) for knowledge base use cases */
   wikiLink?: VizelWikiLinkOptions | boolean;
+  /**
+   * @mention autocomplete for user mentions.
+   * Disabled by default — requires user-provided items function.
+   * @example
+   * ```ts
+   * mention: {
+   *   items: async (query) => users.filter(u => u.label.includes(query)),
+   * }
+   * ```
+   */
+  mention?: VizelMentionOptions | boolean;
   /** Comment/annotation marks for collaborative review workflows */
   comment?: VizelCommentMarkOptions | boolean;
   /**

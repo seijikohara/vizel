@@ -130,14 +130,12 @@ export {
 
 // Link
 export { createVizelLinkExtension, type VizelLinkOptions } from "./link.ts";
-
 // Markdown
 export {
   createVizelMarkdownExtension,
   VizelMarkdown,
   type VizelMarkdownOptions,
 } from "./markdown.ts";
-
 // Mathematics (KaTeX)
 export {
   createVizelMathematicsExtensions,
@@ -145,6 +143,12 @@ export {
   type VizelMathematicsOptions,
   VizelMathInline,
 } from "./mathematics.ts";
+// Mention
+export {
+  createVizelMentionExtension,
+  type VizelMentionItem,
+  type VizelMentionOptions,
+} from "./mention.ts";
 
 // Node types
 export {

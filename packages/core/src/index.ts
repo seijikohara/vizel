@@ -93,6 +93,8 @@ export {
   createVizelMarkdownExtension,
   // Mathematics (KaTeX)
   createVizelMathematicsExtensions,
+  // Mention
+  createVizelMentionExtension,
   // Table
   createVizelTableExtensions,
   // Task list
@@ -173,6 +175,8 @@ export {
   VizelMathBlock,
   type VizelMathematicsOptions,
   VizelMathInline,
+  type VizelMentionItem,
+  type VizelMentionOptions,
   type VizelNodeTypeOption,
   VizelResizableImage,
   type VizelResizableImageOptions,
