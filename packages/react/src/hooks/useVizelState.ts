@@ -1,5 +1,5 @@
 import type { Editor } from "@vizel/core";
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer } from "react";
 
 /**
  * Hook that forces a re-render whenever the editor's state changes.
@@ -24,27 +24,17 @@ import { useEffect, useReducer, useRef } from "react";
  */
 export function useVizelState(getEditor: () => Editor | null | undefined): number {
   const [updateCount, forceUpdate] = useReducer((x: number) => x + 1, 0);
-  const editorRef = useRef<Editor | null>(null);
+  const editor = getEditor() ?? null;
 
   useEffect(() => {
-    const editor = getEditor() ?? null;
-
-    // Unsubscribe from previous editor if different
-    if (editorRef.current && editorRef.current !== editor) {
-      editorRef.current.off("transaction", forceUpdate);
-    }
-
-    editorRef.current = editor;
-
     if (!editor) return;
 
-    // Subscribe to transaction events to detect state changes
     editor.on("transaction", forceUpdate);
 
     return () => {
       editor.off("transaction", forceUpdate);
     };
-  });
+  }, [editor]);
 
   return updateCount;
 }
