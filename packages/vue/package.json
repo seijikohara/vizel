@@ -51,16 +51,18 @@
     "vue": "^3.4"
   },
   "devDependencies": {
-    "@vizel/core": "workspace:^",
     "@tiptap/extension-bold": "^3.19.0",
     "@tiptap/extension-code": "^3.19.0",
     "@tiptap/extension-color": "^3.19.0",
     "@tiptap/extension-highlight": "^3.19.0",
     "@tiptap/extension-italic": "^3.19.0",
     "@tiptap/extension-strike": "^3.19.0",
+    "@tiptap/extension-subscript": "^3.19.0",
+    "@tiptap/extension-superscript": "^3.19.0",
     "@tiptap/extension-text-style": "^3.19.0",
     "@tiptap/extension-underline": "^3.19.0",
     "@vitejs/plugin-vue": "^6.0.4",
+    "@vizel/core": "workspace:^",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4",
     "vue-tsc": "^3.2.4"

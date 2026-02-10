@@ -92,6 +92,12 @@ export interface VizelFeatureOptions {
   tableOfContents?: VizelTableOfContentsOptions | boolean;
   /** Comment/annotation marks for collaborative review workflows */
   comment?: VizelCommentMarkOptions | boolean;
+  /** Superscript mark (e.g., x²) */
+  superscript?: boolean;
+  /** Subscript mark (e.g., H₂O) */
+  subscript?: boolean;
+  /** Typography auto-conversion (smart quotes, em-dashes, ellipsis, etc.) */
+  typography?: boolean;
   /**
    * Real-time collaboration mode.
    * When enabled, the History extension is excluded (Yjs provides its own undo manager).

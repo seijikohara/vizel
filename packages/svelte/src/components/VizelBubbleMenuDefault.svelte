@@ -52,6 +52,17 @@ const isLinkActive = $derived.by(() => {
   void editorState.current;
   return editor.isActive("link");
 });
+const isSuperscriptActive = $derived.by(() => {
+  void editorState.current;
+  return editor.isActive("superscript");
+});
+const isSubscriptActive = $derived.by(() => {
+  void editorState.current;
+  return editor.isActive("subscript");
+});
+
+const hasSuperscript = $derived(editor.extensionManager.extensions.some((ext) => ext.name === "superscript"));
+const hasSubscript = $derived(editor.extensionManager.extensions.some((ext) => ext.name === "subscript"));
 </script>
 
 {#if showLinkEditor}
@@ -100,6 +111,26 @@ const isLinkActive = $derived.by(() => {
     >
       <VizelIcon name="code" />
     </VizelBubbleMenuButton>
+    {#if hasSuperscript}
+      <VizelBubbleMenuButton
+        action="superscript"
+        isActive={isSuperscriptActive}
+        title="Superscript (Cmd+.)"
+        onclick={() => editor.chain().focus().toggleSuperscript().run()}
+      >
+        <VizelIcon name="superscript" />
+      </VizelBubbleMenuButton>
+    {/if}
+    {#if hasSubscript}
+      <VizelBubbleMenuButton
+        action="subscript"
+        isActive={isSubscriptActive}
+        title="Subscript (Cmd+,)"
+        onclick={() => editor.chain().focus().toggleSubscript().run()}
+      >
+        <VizelIcon name="subscript" />
+      </VizelBubbleMenuButton>
+    {/if}
     <VizelBubbleMenuDivider />
     <VizelBubbleMenuButton
       action="link"

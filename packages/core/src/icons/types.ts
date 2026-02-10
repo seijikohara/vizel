@@ -101,7 +101,9 @@ export type VizelBubbleMenuIconName =
   | "code"
   | "link"
   | "textColor"
-  | "highlighter";
+  | "highlighter"
+  | "superscript"
+  | "subscript";
 
 /**
  * Icon names used in Toolbar.
@@ -235,6 +237,8 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   link: "lucide:link",
   textColor: "lucide:baseline",
   highlighter: "lucide:highlighter",
+  superscript: "lucide:superscript",
+  subscript: "lucide:subscript",
   // Internal (NodeView rendering)
   grip: "lucide:grip-vertical",
   plusSmall: "lucide:plus",

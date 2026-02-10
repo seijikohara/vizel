@@ -89,6 +89,26 @@ export function VizelBubbleMenuDefault({
       >
         <VizelIcon name="code" />
       </VizelBubbleMenuButton>
+      {editor.extensionManager.extensions.some((ext) => ext.name === "superscript") && (
+        <VizelBubbleMenuButton
+          action="superscript"
+          onClick={() => editor.chain().focus().toggleSuperscript().run()}
+          isActive={editor.isActive("superscript")}
+          title="Superscript (Cmd+.)"
+        >
+          <VizelIcon name="superscript" />
+        </VizelBubbleMenuButton>
+      )}
+      {editor.extensionManager.extensions.some((ext) => ext.name === "subscript") && (
+        <VizelBubbleMenuButton
+          action="subscript"
+          onClick={() => editor.chain().focus().toggleSubscript().run()}
+          isActive={editor.isActive("subscript")}
+          title="Subscript (Cmd+,)"
+        >
+          <VizelIcon name="subscript" />
+        </VizelBubbleMenuButton>
+      )}
       <VizelBubbleMenuDivider />
       <VizelBubbleMenuButton
         action="link"

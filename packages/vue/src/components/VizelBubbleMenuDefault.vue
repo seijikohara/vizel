@@ -48,6 +48,21 @@ const isLinkActive = computed(() => {
   void editorStateVersion.value;
   return props.editor.isActive("link");
 });
+const isSuperscriptActive = computed(() => {
+  void editorStateVersion.value;
+  return props.editor.isActive("superscript");
+});
+const isSubscriptActive = computed(() => {
+  void editorStateVersion.value;
+  return props.editor.isActive("subscript");
+});
+
+const hasSuperscript = computed(() =>
+  props.editor.extensionManager.extensions.some((ext) => ext.name === "superscript")
+);
+const hasSubscript = computed(() =>
+  props.editor.extensionManager.extensions.some((ext) => ext.name === "subscript")
+);
 
 const showLinkEditor = ref(false);
 </script>
@@ -101,6 +116,24 @@ const showLinkEditor = ref(false);
       @click="props.editor.chain().focus().toggleCode().run()"
     >
       <VizelIcon name="code" />
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
+      v-if="hasSuperscript"
+      action="superscript"
+      :is-active="isSuperscriptActive"
+      title="Superscript (Cmd+.)"
+      @click="props.editor.chain().focus().toggleSuperscript().run()"
+    >
+      <VizelIcon name="superscript" />
+    </VizelBubbleMenuButton>
+    <VizelBubbleMenuButton
+      v-if="hasSubscript"
+      action="subscript"
+      :is-active="isSubscriptActive"
+      title="Subscript (Cmd+,)"
+      @click="props.editor.chain().focus().toggleSubscript().run()"
+    >
+      <VizelIcon name="subscript" />
     </VizelBubbleMenuButton>
     <VizelBubbleMenuDivider />
     <VizelBubbleMenuButton
