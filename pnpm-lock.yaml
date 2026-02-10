@@ -15,9 +15,6 @@ importers:
       '@biomejs/biome':
         specifier: ^2.3.14
         version: 2.3.14
-      '@braintree/sanitize-url':
-        specifier: ^7.1.2
-        version: 7.1.2
       '@playwright/experimental-ct-react':
         specifier: ~1.57.0
         version: 1.57.0(@types/node@25.2.2)(sass@1.97.3)(vite@7.3.1(@types/node@25.2.2)(sass@1.97.3))
@@ -174,18 +171,6 @@ importers:
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
-      cytoscape:
-        specifier: ^3.33.1
-        version: 3.33.1
-      cytoscape-cose-bilkent:
-        specifier: ^4.1.0
-        version: 4.1.0(cytoscape@3.33.1)
-      dayjs:
-        specifier: ^1.11.19
-        version: 1.11.19
-      debug:
-        specifier: ^4.4.3
-        version: 4.4.3
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
