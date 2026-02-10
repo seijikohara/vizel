@@ -45,7 +45,7 @@ This package provides:
 
 ## Extensions
 
-All extensions are enabled by default except `collaboration` and `comment`:
+All extensions are enabled by default except `collaboration`, `comment`, and `wikiLink`:
 
 | Extension | Description |
 |-----------|-------------|
