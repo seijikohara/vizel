@@ -41,6 +41,25 @@
     line-height: 1.4;
   }
 
+  h4 {
+    font-size: 1.125em;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  h5 {
+    font-size: 1em;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  h6 {
+    font-size: 0.875em;
+    font-weight: 600;
+    line-height: 1.5;
+    color: v("foreground-secondary");
+  }
+
   p {
     line-height: 1.7;
   }
