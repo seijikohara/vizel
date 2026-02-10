@@ -20,6 +20,7 @@ import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
 import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
+import { createVizelCalloutExtension } from "./callout.ts";
 import { createVizelCharacterCountExtension } from "./character-count.ts";
 import type { VizelCodeBlockOptions } from "./code-block-lowlight.ts";
 import { createVizelCommentExtension } from "./comment.ts";
@@ -280,6 +281,16 @@ function addWikiLinkExtension(extensions: Extensions, features: VizelFeatureOpti
 }
 
 /**
+ * Add Callout extension if enabled (enabled by default)
+ */
+function addCalloutExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.callout === false) return;
+
+  const calloutOptions = typeof features.callout === "object" ? features.callout : {};
+  extensions.push(createVizelCalloutExtension(calloutOptions));
+}
+
+/**
  * Add Comment extension if enabled (disabled by default)
  */
 function addCommentExtension(extensions: Extensions, features: VizelFeatureOptions): void {
@@ -375,6 +386,7 @@ export async function createVizelExtensions(
   addMathematicsExtension(extensions, features);
   addDragHandleExtension(extensions, features);
   addDetailsExtension(extensions, features);
+  addCalloutExtension(extensions, features);
   addEmbedExtension(extensions, features);
   addDiagramExtension(extensions, features);
   addWikiLinkExtension(extensions, features);

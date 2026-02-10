@@ -1,5 +1,6 @@
 import type { Editor, Extensions, JSONContent } from "@tiptap/core";
 import type { SuggestionOptions } from "@tiptap/suggestion";
+import type { VizelCalloutOptions } from "./extensions/callout.ts";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelCodeBlockOptions } from "./extensions/code-block-lowlight.ts";
 import type { VizelCommentMarkOptions } from "./extensions/comment.ts";
@@ -68,6 +69,8 @@ export interface VizelFeatureOptions {
   embed?: VizelEmbedOptions | boolean;
   /** Collapsible content blocks (accordion) */
   details?: VizelDetailsOptions | boolean;
+  /** Callout / admonition blocks (info, warning, danger, tip, note) */
+  callout?: VizelCalloutOptions | boolean;
   /** Diagram support (Mermaid, GraphViz) */
   diagram?: VizelDiagramOptions | boolean;
   /** Wiki links ([[page-name]], [[page|display text]]) for knowledge base use cases */

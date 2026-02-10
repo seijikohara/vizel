@@ -1,0 +1,74 @@
+/**
+ * Vizel Callout / Admonition Styles
+ */
+
+@use "tokens" as *;
+
+.vizel-callout {
+  position: relative;
+  margin: 0.75em 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid v("primary");
+  border-radius: v("radius-md");
+  background: v("primary-bg");
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  // Selection ring
+  &.ProseMirror-selectednode {
+    outline: 2px solid v("primary");
+    outline-offset: 2px;
+  }
+
+  // Type variants
+  &--info {
+    border-left-color: v("primary");
+    background: v("primary-bg");
+  }
+
+  &--tip {
+    border-left-color: v("success");
+    background: v("success-bg");
+  }
+
+  &--warning {
+    border-left-color: v("warning");
+    background: v("warning-bg");
+  }
+
+  &--danger {
+    border-left-color: v("error");
+    background: v("error-bg");
+  }
+
+  &--note {
+    border-left-color: v("secondary");
+    background: oklch(0 0 0 / 0.04);
+  }
+}
+
+// Dark mode note variant
+[data-vizel-theme="dark"] .vizel-callout--note {
+  background: oklch(1 0 0 / 0.04);
+}
+
+@media print {
+  .vizel-callout {
+    break-inside: avoid;
+    border-left-width: 3px;
+  }
+}
