@@ -161,6 +161,20 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    title: "Callout",
+    description: "Insert a callout block (info, tip, warning)",
+    icon: "callout",
+    group: "Blocks",
+    keywords: ["callout", "admonition", "alert", "info", "warning", "danger", "tip", "note"],
+    command: ({ editor, range }) => {
+      // Check if callout extension is available
+      if (!editor.can().setCallout?.()) {
+        return;
+      }
+      editor.chain().focus().deleteRange(range).setCallout({ type: "info" }).run();
+    },
+  },
+  {
     title: "Code Block",
     description: "Insert a code snippet",
     icon: "codeBlock",

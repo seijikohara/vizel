@@ -27,6 +27,7 @@ export type VizelSlashCommandIconName =
   | "blockquote"
   | "horizontalRule"
   | "details"
+  | "callout"
   | "codeBlock"
   | "table"
   // Media
@@ -167,6 +168,7 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   blockquote: "lucide:quote",
   horizontalRule: "lucide:minus",
   details: "lucide:chevron-right",
+  callout: "lucide:message-square-warning",
   codeBlock: "lucide:code",
   table: "lucide:table",
   // Media
