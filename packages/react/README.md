@@ -85,6 +85,7 @@ function App() {
 | `VizelFindReplace` | Find and replace panel |
 | `VizelSaveIndicator` | Auto-save status indicator |
 | `VizelEmbedView` | Embed content viewer |
+| `VizelIcon` | Icon component |
 | `VizelIconProvider` | Custom icon provider |
 | `VizelThemeProvider` | Theme provider |
 | `VizelProvider` | Editor context provider |
@@ -103,7 +104,9 @@ function App() {
 | `useVizelComment` | Comment and annotation management |
 | `useVizelVersionHistory` | Document version history |
 | `useVizelContext` | Access editor from context |
+| `useVizelContextSafe` | Access editor from context (returns null outside provider) |
 | `useVizelTheme` | Access theme from context |
+| `useVizelIconContext` | Access icon context |
 
 ## Documentation
 

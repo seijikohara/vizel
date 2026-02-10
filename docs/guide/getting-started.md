@@ -35,7 +35,7 @@ yarn add @vizel/svelte
 ::: info Peer Dependencies
 Each framework package requires its respective framework as a peer dependency:
 - `@vizel/react` requires `react@^19` and `react-dom@^19`
-- `@vizel/vue` requires `vue@^3`
+- `@vizel/vue` requires `vue@^3.4`
 - `@vizel/svelte` requires `svelte@^5`
 :::
 
