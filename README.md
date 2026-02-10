@@ -29,27 +29,31 @@
 
 ## Features
 
-- **Text Formatting** - Bold, italic, underline, strikethrough, text color, highlight
+- **Text Formatting** - Bold, italic, underline, strikethrough, superscript, subscript, text color, highlight
+- **Typography** - Smart quotes, em dashes, and other typographic transformations
 - **Block Elements** - Headings (H1-H6), lists (bullet, numbered, task), blockquotes, horizontal rules
 - **Slash Commands** - Type `/` to insert blocks
 - **Floating Toolbar** - Inline formatting toolbar on text selection
 - **Fixed Toolbar** - Optional sticky toolbar with formatting buttons
 - **Tables** - Table editing with row/column controls
+- **Table of Contents** - Auto-collected heading navigation block
 - **Code Blocks** - Syntax highlighting with 37+ languages (190+ available)
 - **Images** - Drag & drop, paste, resize support
 - **Markdown** - Import/export Markdown content
 - **Mathematics** - LaTeX equations with KaTeX
 - **Embeds** - YouTube, Vimeo, Twitter, CodePen, Figma via oEmbed
 - **Details** - Collapsible content blocks
+- **Callout** - Info, warning, danger, tip, and note admonition blocks
 - **Auto-save** - localStorage, sessionStorage, or custom backend
 - **Dark Mode** - System-aware theme switching
 - **Character Count** - Real-time character and word count
-- **Wiki Links** - `[[page-name]]` syntax for internal linking
+- **Wiki Links** - `[[page-name]]` syntax for internal linking (opt-in)
+- **@Mention** - User mention autocomplete (opt-in)
 - **Find & Replace** - Search and replace with keyboard shortcuts
 - **Diagrams** - Mermaid and GraphViz diagram rendering
-- **Comments** - Text annotations for collaborative review
+- **Comments** - Text annotations for collaborative review (opt-in)
 - **Version History** - Document snapshots and restore
-- **Collaboration** - Real-time multi-user editing with Yjs
+- **Collaboration** - Real-time multi-user editing with Yjs (opt-in)
 - **Drag & Drop** - Block reordering with drag handle and Alt+Arrow keys
 - **Plugin System** - Extensible plugin architecture
 

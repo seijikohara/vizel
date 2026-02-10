@@ -45,13 +45,17 @@ This package provides:
 
 ## Extensions
 
-All extensions are enabled by default except `collaboration`, `comment`, and `wikiLink`:
+All extensions are enabled by default except `collaboration`, `comment`, `wikiLink`, and `mention`:
 
 | Extension | Description |
 |-----------|-------------|
-| Base | Headings, bold, italic, underline, strikethrough, lists, blockquotes |
+| Base | Headings (H1-H6), bold, italic, underline, strikethrough, lists, blockquotes |
+| Superscript | Superscript text formatting |
+| Subscript | Subscript text formatting |
+| Typography | Smart quotes, em dashes, and typographic transformations |
 | SlashCommand | Type `/` to open command menu |
 | Table | Table editing with row/column controls |
+| TableOfContents | Auto-collected heading navigation block |
 | Link | Autolink and paste URL detection |
 | Image | Upload, paste, drag-and-drop, resize |
 | CodeBlock | Syntax highlighting with lowlight (37+ languages) |
@@ -63,9 +67,11 @@ All extensions are enabled by default except `collaboration`, `comment`, and `wi
 | Mathematics | LaTeX equations with KaTeX |
 | Embed | oEmbed/OGP URL embedding |
 | Details | Collapsible content blocks |
+| Callout | Info, warning, danger, tip, and note admonition blocks |
 | Diagram | Mermaid and GraphViz diagrams |
-| WikiLink | `[[page-name]]` internal linking |
-| Comment | Text annotations for collaborative review |
+| WikiLink | `[[page-name]]` internal linking (opt-in) |
+| Mention | `@user` autocomplete (opt-in) |
+| Comment | Text annotations for collaborative review (opt-in) |
 
 ## Usage
 

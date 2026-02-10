@@ -11,6 +11,7 @@ graph TB
     subgraph default["All Features (Enabled by Default)"]
         SlashCommand["Slash Commands"]
         Table["Tables"]
+        ToC["Table of Contents"]
         Image["Images"]
         CodeBlock["Code Blocks"]
         DragHandle["Drag Handle"]
@@ -22,10 +23,15 @@ graph TB
         Math["Mathematics"]
         Embed["Embeds"]
         Details["Details"]
+        Callout["Callout"]
         Diagram["Diagrams"]
+        Superscript["Superscript"]
+        Subscript["Subscript"]
+        Typography["Typography"]
     end
     subgraph opt["Opt-in Features"]
         WikiLink["Wiki Links"]
+        Mention["@Mention"]
         Comment["Comments"]
         Collaboration["Collaboration"]
     end
@@ -35,6 +41,7 @@ graph TB
 |---------|-------------|
 | `slashCommand` | Slash command menu (type `/` to open) |
 | `table` | Table editing support |
+| `tableOfContents` | Auto-collected heading navigation block |
 | `image` | Image upload and resize |
 | `codeBlock` | Code blocks with syntax highlighting |
 | `dragHandle` | Drag handle for block reordering |
@@ -46,10 +53,15 @@ graph TB
 | `mathematics` | LaTeX math equations |
 | `embed` | URL embeds (YouTube, etc.) |
 | `details` | Collapsible content blocks |
+| `callout` | Info, warning, danger, tip, and note admonition blocks |
 | `diagram` | Mermaid/GraphViz diagrams |
-| `wikiLink` | Wiki-style internal links (`[[page-name]]`) |
-| `comment` | Text annotations and comments |
-| `collaboration` | Real-time collaboration mode (disables History) |
+| `superscript` | Superscript text formatting |
+| `subscript` | Subscript text formatting |
+| `typography` | Smart quotes, em dashes, and other typographic transformations |
+| `wikiLink` | Wiki-style internal links (`[[page-name]]`) — opt-in |
+| `mention` | `@user` autocomplete — opt-in |
+| `comment` | Text annotations and comments — opt-in |
+| `collaboration` | Real-time collaboration mode (disables History) — opt-in |
 
 ## Disabling Features
 
