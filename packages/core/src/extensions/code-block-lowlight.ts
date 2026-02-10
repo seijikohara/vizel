@@ -266,10 +266,35 @@ export async function createVizelCodeBlockExtension(
         }
         lineNumbersBtn.title = node.attrs.lineNumbers ? "Hide line numbers" : "Show line numbers";
 
-        // Append in order: toggle button, language input, datalist
+        // Copy to clipboard button
+        const copyBtn = document.createElement("button");
+        copyBtn.type = "button";
+        copyBtn.classList.add("vizel-code-block-copy-button");
+        copyBtn.title = "Copy code";
+        copyBtn.textContent = "Copy";
+
+        copyBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const text = code.textContent || "";
+          navigator.clipboard.writeText(text).then(() => {
+            copyBtn.textContent = "Copied!";
+            copyBtn.classList.add("copied");
+            setTimeout(() => {
+              copyBtn.textContent = "Copy";
+              copyBtn.classList.remove("copied");
+            }, 2000);
+          });
+        });
+
+        // Append in order: toggle button, language input, datalist, spacer, copy button
         toolbar.appendChild(lineNumbersBtn);
         toolbar.appendChild(languageInput);
         toolbar.appendChild(datalist);
+        const spacer = document.createElement("div");
+        spacer.style.flex = "1";
+        toolbar.appendChild(spacer);
+        toolbar.appendChild(copyBtn);
 
         // Code container with gutter and pre
         const codeContainer = document.createElement("div");
