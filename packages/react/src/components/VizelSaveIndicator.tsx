@@ -92,6 +92,7 @@ export function VizelSaveIndicator({
       className={`vizel-save-indicator vizel-save-indicator--${status} ${className ?? ""}`}
       role="status"
       aria-live="polite"
+      aria-atomic="true"
       data-vizel-save-indicator
     >
       <span className="vizel-save-indicator-icon" aria-hidden="true">

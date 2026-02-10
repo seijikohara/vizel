@@ -35,7 +35,7 @@ yarn add @vizel/svelte
 ::: info Peer Dependencies
 Each framework package requires its respective framework as a peer dependency:
 - `@vizel/react` requires `react@^19` and `react-dom@^19`
-- `@vizel/vue` requires `vue@^3`
+- `@vizel/vue` requires `vue@^3.4`
 - `@vizel/svelte` requires `svelte@^5`
 :::
 
@@ -417,7 +417,7 @@ let markdown = $state('# Hello World');
 
 ## Enabling Features
 
-All features are enabled by default except `collaboration` and `comment`. You can disable specific features by setting them to `false`, or pass an options object to configure them:
+All features are enabled by default except `collaboration`, `comment`, and `wikiLink`. You can disable specific features by setting them to `false`, or pass an options object to configure them:
 
 ::: code-group
 
@@ -474,6 +474,185 @@ const editor = createVizelEditor({
 :::
 
 See [Features](/guide/features) for detailed configuration of each feature.
+
+## Composition Patterns
+
+Vizel offers two composition patterns for integrating the editor into your application. Choose the one that best fits your needs.
+
+### Simple: All-in-One `<Vizel>` Component
+
+The `<Vizel>` component bundles the editor, bubble menu, and slash command menu into a single component. This is the recommended approach for most use cases where you need a standard editor with minimal configuration.
+
+**When to use:**
+- Quick setup with sensible defaults
+- Standard editor layout (editor + bubble menu)
+- Configuration via props without managing the editor instance directly
+
+::: code-group
+
+```tsx [React]
+import { Vizel } from '@vizel/react';
+import '@vizel/core/styles.css';
+
+function App() {
+  return (
+    <Vizel
+      initialMarkdown="# Hello World"
+      placeholder="Start writing..."
+      showToolbar
+      features={{ image: { onUpload: uploadImage } }}
+      onUpdate={({ editor }) => console.log(editor.getMarkdown())}
+    />
+  );
+}
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { Vizel } from '@vizel/vue';
+import '@vizel/core/styles.css';
+</script>
+
+<template>
+  <Vizel
+    initial-markdown="# Hello World"
+    placeholder="Start writing..."
+    :show-toolbar="true"
+    :features="{ image: { onUpload: uploadImage } }"
+    @update="({ editor }) => console.log(editor.getMarkdown())"
+  />
+</template>
+```
+
+```svelte [Svelte]
+<script lang="ts">
+import { Vizel } from '@vizel/svelte';
+import '@vizel/core/styles.css';
+</script>
+
+<Vizel
+  initialMarkdown="# Hello World"
+  placeholder="Start writing..."
+  showToolbar
+  features={{ image: { onUpload: uploadImage } }}
+  onUpdate={({ editor }) => console.log(editor.getMarkdown())}
+/>
+```
+
+:::
+
+### Advanced: Decomposed Components
+
+For full control over layout and behavior, create the editor instance yourself and compose individual components. This pattern uses `VizelProvider` to share the editor context with child components.
+
+**When to use:**
+- Custom layout (e.g., toolbar in a separate header, sidebar panels)
+- Multiple editors on the same page
+- Fine-grained control over which UI elements to render
+- Integrating editor state into your own components via context
+
+::: code-group
+
+```tsx [React]
+import {
+  VizelProvider,
+  VizelEditor,
+  VizelBubbleMenu,
+  VizelToolbar,
+  useVizelEditor,
+} from '@vizel/react';
+import '@vizel/core/styles.css';
+
+function App() {
+  const editor = useVizelEditor({
+    placeholder: "Start writing...",
+    features: { image: { onUpload: uploadImage } },
+    onUpdate: ({ editor }) => console.log(editor.getMarkdown()),
+  });
+
+  return (
+    <VizelProvider editor={editor}>
+      <header>
+        <VizelToolbar editor={editor} />
+      </header>
+      <main>
+        <VizelEditor editor={editor} />
+      </main>
+      {editor && <VizelBubbleMenu editor={editor} />}
+    </VizelProvider>
+  );
+}
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import {
+  VizelProvider,
+  VizelEditor,
+  VizelBubbleMenu,
+  VizelToolbar,
+  useVizelEditor,
+} from '@vizel/vue';
+import '@vizel/core/styles.css';
+
+const editor = useVizelEditor({
+  placeholder: "Start writing...",
+  features: { image: { onUpload: uploadImage } },
+  onUpdate: ({ editor }) => console.log(editor.getMarkdown()),
+});
+</script>
+
+<template>
+  <VizelProvider :editor="editor">
+    <header>
+      <VizelToolbar :editor="editor" />
+    </header>
+    <main>
+      <VizelEditor :editor="editor" />
+    </main>
+    <VizelBubbleMenu v-if="editor" :editor="editor" />
+  </VizelProvider>
+</template>
+```
+
+```svelte [Svelte]
+<script lang="ts">
+import {
+  VizelProvider,
+  VizelEditor,
+  VizelBubbleMenu,
+  VizelToolbar,
+  createVizelEditor,
+} from '@vizel/svelte';
+import '@vizel/core/styles.css';
+
+const editorState = createVizelEditor({
+  placeholder: "Start writing...",
+  features: { image: { onUpload: uploadImage } },
+  onUpdate: ({ editor }) => console.log(editor.getMarkdown()),
+});
+
+const editor = $derived(editorState.current);
+</script>
+
+<VizelProvider {editor}>
+  <header>
+    <VizelToolbar {editor} />
+  </header>
+  <main>
+    <VizelEditor {editor} />
+  </main>
+  {#if editor}
+    <VizelBubbleMenu {editor} />
+  {/if}
+</VizelProvider>
+```
+
+:::
+
+::: tip
+Components inside `VizelProvider` can also access the editor via the context API (`useVizelContext` in React/Vue, `getVizelContext` in Svelte) without passing the `editor` prop explicitly. Passing the prop directly is recommended for clarity and type safety.
+:::
 
 ## Image Upload
 

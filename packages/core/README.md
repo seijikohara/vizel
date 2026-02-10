@@ -32,6 +32,7 @@ This package provides:
 | Comments | `createVizelCommentHandlers()` |
 | Version History | `createVizelVersionHistoryHandlers()` |
 | Plugin System | `VizelPluginManager`, `validateVizelPlugin()` |
+| Find & Replace | `createVizelFindReplaceExtension()`, `getVizelFindReplaceState()`, `vizelFindReplacePluginKey` |
 | Constants | `VIZEL_TEXT_COLORS`, `VIZEL_HIGHLIGHT_COLORS`, `vizelDefaultSlashCommands` |
 
 ## CSS Entry Points
@@ -44,7 +45,7 @@ This package provides:
 
 ## Extensions
 
-All extensions are enabled by default except `collaboration` and `comment`:
+All extensions are enabled by default except `collaboration`, `comment`, and `wikiLink`:
 
 | Extension | Description |
 |-----------|-------------|

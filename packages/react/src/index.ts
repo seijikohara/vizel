@@ -52,6 +52,10 @@ export {
   type VizelIconProviderProps,
   VizelLinkEditor,
   type VizelLinkEditorProps,
+  // MentionMenu
+  VizelMentionMenu,
+  type VizelMentionMenuProps,
+  type VizelMentionMenuRef,
   // NodeSelector
   VizelNodeSelector,
   type VizelNodeSelectorProps,
@@ -89,6 +93,7 @@ export {
 
 // Hooks
 export {
+  createVizelMentionMenuRenderer,
   createVizelSlashMenuRenderer,
   type UseVizelAutoSaveResult,
   type UseVizelCollaborationResult,

@@ -19,6 +19,9 @@ export type VizelSlashCommandIconName =
   | "heading1"
   | "heading2"
   | "heading3"
+  | "heading4"
+  | "heading5"
+  | "heading6"
   // Lists
   | "bulletList"
   | "orderedList"
@@ -27,6 +30,7 @@ export type VizelSlashCommandIconName =
   | "blockquote"
   | "horizontalRule"
   | "details"
+  | "callout"
   | "codeBlock"
   | "table"
   // Media
@@ -37,7 +41,10 @@ export type VizelSlashCommandIconName =
   | "mathBlock"
   | "mathInline"
   | "mermaid"
-  | "graphviz";
+  | "graphviz"
+  | "mention"
+  // Navigation
+  | "tableOfContents";
 
 /**
  * Icon names used in node type selector.
@@ -47,6 +54,9 @@ export type VizelNodeTypeIconName =
   | "heading1"
   | "heading2"
   | "heading3"
+  | "heading4"
+  | "heading5"
+  | "heading6"
   | "bulletList"
   | "orderedList"
   | "taskList"
@@ -71,7 +81,14 @@ export type VizelTableIconName =
 /**
  * Icon names used in UI components (SaveIndicator, etc.).
  */
-export type VizelUIIconName = "check" | "loader" | "circle" | "warning" | "chevronDown" | "x";
+export type VizelUIIconName =
+  | "check"
+  | "loader"
+  | "circle"
+  | "warning"
+  | "chevronDown"
+  | "externalLink"
+  | "x";
 
 /**
  * Icon names used in BubbleMenu toolbar.
@@ -84,7 +101,9 @@ export type VizelBubbleMenuIconName =
   | "code"
   | "link"
   | "textColor"
-  | "highlighter";
+  | "highlighter"
+  | "superscript"
+  | "subscript";
 
 /**
  * Icon names used in Toolbar.
@@ -108,7 +127,9 @@ export type VizelInternalIconName =
   | "alignCenter"
   | "alignRight"
   // Code block icons
-  | "listOrdered";
+  | "listOrdered"
+  | "copy"
+  | "checkSmall";
 
 /**
  * All icon names used in Vizel.
@@ -158,6 +179,9 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   heading1: "lucide:heading-1",
   heading2: "lucide:heading-2",
   heading3: "lucide:heading-3",
+  heading4: "lucide:heading-4",
+  heading5: "lucide:heading-5",
+  heading6: "lucide:heading-6",
   // Lists
   bulletList: "lucide:list",
   orderedList: "lucide:list-ordered",
@@ -167,6 +191,7 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   blockquote: "lucide:quote",
   horizontalRule: "lucide:minus",
   details: "lucide:chevron-right",
+  callout: "lucide:message-square-warning",
   codeBlock: "lucide:code",
   table: "lucide:table",
   // Media
@@ -178,6 +203,9 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   mathInline: "lucide:superscript",
   mermaid: "lucide:git-graph",
   graphviz: "lucide:workflow",
+  mention: "lucide:at-sign",
+  // Navigation
+  tableOfContents: "lucide:list-tree",
   // Table controls
   arrowUp: "lucide:arrow-up",
   arrowDown: "lucide:arrow-down",
@@ -195,6 +223,7 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   circle: "lucide:circle",
   warning: "lucide:alert-triangle",
   chevronDown: "lucide:chevron-down",
+  externalLink: "lucide:external-link",
   x: "lucide:x",
   // Toolbar
   undo: "lucide:undo-2",
@@ -208,10 +237,14 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   link: "lucide:link",
   textColor: "lucide:baseline",
   highlighter: "lucide:highlighter",
+  superscript: "lucide:superscript",
+  subscript: "lucide:subscript",
   // Internal (NodeView rendering)
   grip: "lucide:grip-vertical",
   plusSmall: "lucide:plus",
   listOrdered: "lucide:list-ordered",
+  copy: "lucide:copy",
+  checkSmall: "lucide:check",
 };
 
 /**

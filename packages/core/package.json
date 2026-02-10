@@ -29,6 +29,9 @@
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "*.css"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -95,9 +98,10 @@
     "fuse.js": "^7.1.0",
     "katex": "^0.16.0",
     "lowlight": "^3.0.0",
+    "@tiptap/extension-mention": "^3.18.0",
     "mermaid": "^11.0.0",
-    "yjs": "^13.6.0",
-    "y-websocket": "^2.0.0"
+    "y-websocket": "^2.0.0",
+    "yjs": "^13.6.0"
   },
   "peerDependenciesMeta": {
     "@hpcc-js/wasm-graphviz": {
@@ -124,6 +128,9 @@
     "yjs": {
       "optional": true
     },
+    "@tiptap/extension-mention": {
+      "optional": true
+    },
     "y-websocket": {
       "optional": true
     }
@@ -131,6 +138,10 @@
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.89",
     "@iconify/utils": "^3.1.0",
+    "@tiptap/extension-mention": "^3.19.0",
+    "@tiptap/extension-subscript": "^3.19.0",
+    "@tiptap/extension-superscript": "^3.19.0",
+    "@tiptap/extension-typography": "^3.19.0",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4"
   }

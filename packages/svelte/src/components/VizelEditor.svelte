@@ -58,4 +58,6 @@ $effect(() => {
 });
 </script>
 
-<div bind:this={element} class={className} data-vizel-content></div>
+{#if editor}
+  <div bind:this={element} class={className} data-vizel-content></div>
+{/if}

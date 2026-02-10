@@ -282,7 +282,7 @@ const editor = useVizelEditor({
 
 ### Feature Options
 
-All major features are enabled by default except `collaboration` and `comment`:
+All major features are enabled by default except `collaboration`, `comment`, and `wikiLink`:
 
 ```typescript
 // Using Vizel component
@@ -313,7 +313,7 @@ const editor = useVizelEditor({
     embed: true,           // enabled by default
     details: true,         // enabled by default
     diagram: true,         // enabled by default
-    wikiLink: true,        // enabled by default
+    wikiLink: true,        // opt-in: must be explicitly enabled
     comment: true,         // opt-in: must be explicitly enabled
     // collaboration: true, // opt-in: must be explicitly enabled
   },
