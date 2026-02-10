@@ -43,6 +43,7 @@ import {
   vizelDefaultSlashCommands,
 } from "./slash-command.ts";
 import { createVizelTableExtensions } from "./table.ts";
+import { createVizelTableOfContentsExtension } from "./table-of-contents.ts";
 import { createVizelTaskListExtensions } from "./task-list.ts";
 import { createVizelTextColorExtensions } from "./text-color.ts";
 import { createVizelWikiLinkExtension } from "./wiki-link.ts";
@@ -272,6 +273,16 @@ function addDiagramExtension(extensions: Extensions, features: VizelFeatureOptio
 }
 
 /**
+ * Add Table of Contents extension if enabled
+ */
+function addTableOfContentsExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  if (features.tableOfContents === false) return;
+
+  const tocOptions = typeof features.tableOfContents === "object" ? features.tableOfContents : {};
+  extensions.push(createVizelTableOfContentsExtension(tocOptions));
+}
+
+/**
  * Add Wiki Link extension if enabled (disabled by default)
  */
 function addWikiLinkExtension(extensions: Extensions, features: VizelFeatureOptions): void {
@@ -400,6 +411,7 @@ export async function createVizelExtensions(
   addCalloutExtension(extensions, features);
   addEmbedExtension(extensions, features);
   addDiagramExtension(extensions, features);
+  addTableOfContentsExtension(extensions, features);
   addWikiLinkExtension(extensions, features);
   addMentionExtension(extensions, features);
   addCommentExtension(extensions, features);

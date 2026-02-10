@@ -42,7 +42,9 @@ export type VizelSlashCommandIconName =
   | "mathInline"
   | "mermaid"
   | "graphviz"
-  | "mention";
+  | "mention"
+  // Navigation
+  | "tableOfContents";
 
 /**
  * Icon names used in node type selector.
@@ -198,6 +200,8 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   mermaid: "lucide:git-graph",
   graphviz: "lucide:workflow",
   mention: "lucide:at-sign",
+  // Navigation
+  tableOfContents: "lucide:list-tree",
   // Table controls
   arrowUp: "lucide:arrow-up",
   arrowDown: "lucide:arrow-down",

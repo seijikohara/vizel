@@ -14,6 +14,7 @@ import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
 import type { VizelMentionOptions } from "./extensions/mention.ts";
 import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTableOptions } from "./extensions/table.ts";
+import type { VizelTableOfContentsOptions } from "./extensions/table-of-contents.ts";
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
 import type { VizelWikiLinkOptions } from "./extensions/wiki-link.ts";
@@ -87,6 +88,8 @@ export interface VizelFeatureOptions {
    * ```
    */
   mention?: VizelMentionOptions | boolean;
+  /** Table of Contents block that auto-collects headings */
+  tableOfContents?: VizelTableOfContentsOptions | boolean;
   /** Comment/annotation marks for collaborative review workflows */
   comment?: VizelCommentMarkOptions | boolean;
   /**

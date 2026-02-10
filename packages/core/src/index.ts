@@ -97,6 +97,8 @@ export {
   createVizelMentionExtension,
   // Table
   createVizelTableExtensions,
+  // Table of Contents
+  createVizelTableOfContentsExtension,
   // Task list
   createVizelTaskListExtensions,
   createVizelTextColorExtensions,
@@ -193,12 +195,14 @@ export {
   type VizelTableControlsUIOptions,
   VizelTableHeader,
   type VizelTableMenuItem,
+  type VizelTableOfContentsOptions,
   type VizelTableOptions,
   VizelTableWithControls,
   type VizelTaskItemOptions,
   type VizelTaskListExtensionsOptions,
   type VizelTaskListOptions,
   type VizelTextColorOptions,
+  type VizelTOCHeading,
   type VizelUploadImageFn,
   VizelWikiLink,
   type VizelWikiLinkOptions,
