@@ -51,8 +51,8 @@
     }
 
     &:focus-visible {
-      outline: 2px solid v("primary");
-      outline-offset: -2px;
+      outline: v("focus-ring-width") solid v("primary");
+      outline-offset: v("focus-ring-offset");
     }
 
     &.is-active {
@@ -94,8 +94,8 @@
     }
 
     &:focus-visible {
-      outline: 2px solid v("primary");
-      outline-offset: -2px;
+      outline: v("focus-ring-width") solid v("primary");
+      outline-offset: v("focus-ring-offset");
     }
 
     &.has-color[data-action="textColor"] {
@@ -182,8 +182,8 @@
     }
 
     &:focus-visible {
-      outline: 2px solid v("primary");
-      outline-offset: 2px;
+      outline: v("focus-ring-width") solid v("primary");
+      outline-offset: v("focus-ring-offset");
       z-index: 2;
     }
 
@@ -277,7 +277,7 @@
 
     &:disabled {
       background: v("foreground-muted");
-      opacity: 0.3;
+      opacity: v("disabled-opacity");
       cursor: not-allowed;
     }
   }
@@ -307,8 +307,8 @@
     }
 
     &:focus-visible {
-      outline: 2px solid v("primary");
-      outline-offset: -2px;
+      outline: v("focus-ring-width") solid v("primary");
+      outline-offset: v("focus-ring-offset");
     }
   }
 
@@ -370,8 +370,8 @@
     }
 
     &:focus-visible {
-      outline: 2px solid v("primary");
-      outline-offset: -2px;
+      outline: v("focus-ring-width") solid v("primary");
+      outline-offset: v("focus-ring-offset");
     }
 
     &-icon {

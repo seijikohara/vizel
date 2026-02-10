@@ -52,12 +52,12 @@
     }
 
     &:focus-visible {
-      outline: 2px solid v("primary");
-      outline-offset: -2px;
+      outline: v("focus-ring-width") solid v("primary");
+      outline-offset: v("focus-ring-offset");
     }
 
     &:disabled {
-      opacity: 0.35;
+      opacity: v("disabled-opacity");
       cursor: not-allowed;
     }
 
