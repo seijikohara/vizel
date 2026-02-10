@@ -34,6 +34,7 @@
 @use "code-block";
 @use "mathematics";
 @use "drag-handle";
+@use "callout";
 @use "details";
 @use "embed";
 @use "save-indicator";
@@ -41,3 +42,6 @@
 @use "wiki-link";
 @use "components/comment";
 @use "components/find-replace";
+
+/* Print optimization */
+@use "print";
