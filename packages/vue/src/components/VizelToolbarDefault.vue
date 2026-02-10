@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Editor } from "@vizel/core";
 import {
+  formatVizelTooltip,
   groupVizelToolbarActions,
   type VizelToolbarAction,
   vizelDefaultToolbarActions,
@@ -43,7 +44,7 @@ const groups = computed(() => {
         :action="action.id"
         :is-active="action.isActive(props.editor)"
         :disabled="!action.isEnabled(props.editor)"
-        :title="action.shortcut ? `${action.label} (${action.shortcut})` : action.label"
+        :title="formatVizelTooltip(action.label, action.shortcut)"
         @click="action.run(props.editor)"
       >
         <VizelIcon :name="action.icon" />

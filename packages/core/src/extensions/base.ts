@@ -70,7 +70,7 @@ export interface VizelExtensionsOptions {
 function createBaseExtensions(
   options: { headingLevels?: (1 | 2 | 3 | 4 | 5 | 6)[]; excludeHistory?: boolean } = {}
 ): Extensions {
-  const { headingLevels = [1, 2, 3], excludeHistory = false } = options;
+  const { headingLevels = [1, 2, 3, 4, 5, 6], excludeHistory = false } = options;
 
   const extensions: Extensions = [
     // Nodes
@@ -350,7 +350,7 @@ export async function createVizelExtensions(
 ): Promise<Extensions> {
   const {
     placeholder = "Type '/' for commands...",
-    headingLevels = [1, 2, 3],
+    headingLevels = [1, 2, 3, 4, 5, 6],
     features = {},
   } = options;
 
