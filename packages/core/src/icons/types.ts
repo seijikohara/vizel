@@ -108,7 +108,9 @@ export type VizelInternalIconName =
   | "alignCenter"
   | "alignRight"
   // Code block icons
-  | "listOrdered";
+  | "listOrdered"
+  | "copy"
+  | "checkSmall";
 
 /**
  * All icon names used in Vizel.
@@ -212,6 +214,8 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   grip: "lucide:grip-vertical",
   plusSmall: "lucide:plus",
   listOrdered: "lucide:list-ordered",
+  copy: "lucide:copy",
+  checkSmall: "lucide:check",
 };
 
 /**
