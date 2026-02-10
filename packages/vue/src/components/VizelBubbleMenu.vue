@@ -6,7 +6,7 @@ import { useVizelContextSafe } from "./VizelContext.ts";
 
 export interface VizelBubbleMenuProps {
   /** Override the editor from context */
-  editor?: Editor;
+  editor?: Editor | null;
   /** Custom class name for the menu container */
   class?: string;
   /** Whether to show the default formatting menu */
