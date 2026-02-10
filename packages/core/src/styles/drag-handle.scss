@@ -16,7 +16,7 @@
   border-radius: 0.25rem;
   background-color: transparent;
   color: v("muted-foreground");
-  opacity: 0.2;
+  opacity: 0.35;
   pointer-events: none;
   transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
   user-select: none;
@@ -48,6 +48,15 @@
   &.is-active {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  @media (pointer: coarse) {
+    opacity: 0.5;
+    pointer-events: auto;
+  }
+
+  @media (prefers-contrast: more) {
+    opacity: 1;
   }
 
   &[data-dragging="true"] {
