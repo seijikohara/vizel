@@ -129,7 +129,7 @@ interface VizelImageFeatureOptions {
   allowedTypes?: string[];
   
   /** Validation error callback */
-  onValidationError?: (error: ImageValidationError) => void;
+  onValidationError?: (error: VizelImageValidationError) => void;
   
   /** Upload error callback */
   onUploadError?: (error: Error, file: File) => void;

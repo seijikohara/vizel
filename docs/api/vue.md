@@ -185,9 +185,9 @@ const { theme, resolvedTheme, systemTheme, setTheme } = useVizelTheme();
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `theme` | `Ref<VizelTheme>` | Current theme setting |
-| `resolvedTheme` | `ComputedRef<VizelResolvedTheme>` | Resolved theme |
-| `systemTheme` | `Ref<VizelResolvedTheme>` | System preference |
+| `theme` | `VizelTheme` | Current theme setting |
+| `resolvedTheme` | `VizelResolvedTheme` | Resolved theme |
+| `systemTheme` | `VizelResolvedTheme` | System preference |
 | `setTheme` | `(theme: VizelTheme) => void` | Set theme function |
 
 ### useVizelCollaboration
