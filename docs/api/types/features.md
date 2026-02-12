@@ -47,11 +47,29 @@ interface VizelFeatureOptions {
   /** Collapsible content blocks (accordion) */
   details?: VizelDetailsOptions | boolean;
 
+  /** Callout/admonition blocks (info, warning, danger, tip, note) */
+  callout?: VizelCalloutOptions | boolean;
+
   /** Diagram support (Mermaid, GraphViz) */
   diagram?: VizelDiagramOptions | boolean;
 
   /** Wiki links ([[page-name]], [[page|display text]]) */
   wikiLink?: VizelWikiLinkOptions | boolean;
+
+  /** @mention autocomplete (disabled by default) */
+  mention?: VizelMentionOptions | boolean;
+
+  /** Table of Contents block that auto-collects headings */
+  tableOfContents?: VizelTableOfContentsOptions | boolean;
+
+  /** Superscript text formatting */
+  superscript?: boolean;
+
+  /** Subscript text formatting */
+  subscript?: boolean;
+
+  /** Typography transformations (smart quotes, em dashes) */
+  typography?: boolean;
 
   /** Comment/annotation marks for collaborative review */
   comment?: VizelCommentMarkOptions | boolean;

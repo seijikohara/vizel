@@ -58,6 +58,8 @@ export {
 export {
   // Text color
   addVizelRecentColor,
+  // Callout / Admonition
+  createVizelCalloutExtension,
   // Character count
   createVizelCharacterCountExtension,
   // Code block with syntax highlighting
@@ -129,6 +131,9 @@ export {
   VIZEL_TABLE_MENU_ITEMS,
   VIZEL_TEXT_COLORS,
   VizelBlockMoveKeymap,
+  VizelCallout,
+  type VizelCalloutOptions,
+  type VizelCalloutType,
   type VizelCharacterCountOptions,
   type VizelCharacterCountStorage,
   type VizelCodeBlockLanguage,
