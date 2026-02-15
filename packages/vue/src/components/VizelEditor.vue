@@ -19,7 +19,7 @@ const props = defineProps<VizelEditorProps>();
 
 const containerRef = ref<HTMLDivElement | null>(null);
 const getContextEditor = useVizelContextSafe();
-const editor = computed(() => props.editor ?? getContextEditor?.());
+const resolvedEditor = computed(() => props.editor ?? getContextEditor?.());
 
 // Expose container ref to parent component
 defineExpose<VizelExposed>({
@@ -29,7 +29,7 @@ defineExpose<VizelExposed>({
 });
 
 watch(
-  () => [editor.value, containerRef.value] as const,
+  () => [resolvedEditor.value, containerRef.value] as const,
   (
     [editorValue, container],
     oldValue?: readonly [Editor | null | undefined, HTMLDivElement | null]
@@ -56,5 +56,5 @@ watch(
 </script>
 
 <template>
-  <div v-if="editor" ref="containerRef" :class="$props.class" data-vizel-content />
+  <div v-if="resolvedEditor" ref="containerRef" :class="$props.class" data-vizel-content />
 </template>

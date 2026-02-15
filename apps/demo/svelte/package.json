@@ -9,7 +9,7 @@
   "dependencies": {
     "@vizel/core": "workspace:*",
     "@vizel/svelte": "workspace:*",
-    "svelte": "^5.50.2"
+    "svelte": "^5.51.2"
   },
   "devDependencies": {
     "@hpcc-js/wasm-graphviz": "^1.21.0",
