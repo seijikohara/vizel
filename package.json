@@ -40,7 +40,9 @@
   "pnpm": {
     "overrides": {
       "@tiptap/core": "$@tiptap/core",
-      "@tiptap/pm": "$@tiptap/pm"
+      "@tiptap/pm": "$@tiptap/pm",
+      "react": "$react",
+      "react-dom": "$react-dom"
     }
   },
   "devDependencies": {
