@@ -11,6 +11,7 @@ import {
   setVizelMarkdown,
   type VizelError,
   type VizelFeatureOptions,
+  type VizelMarkdownFlavor,
 } from "@vizel/core";
 import { useSlots, watch } from "vue";
 import { useVizelEditor } from "../composables/useVizelEditor.ts";
@@ -53,6 +54,12 @@ export interface VizelProps {
   autofocus?: boolean | "start" | "end" | "all" | number;
   /** Feature configuration */
   features?: VizelFeatureOptions;
+  /**
+   * Markdown output flavor.
+   * Controls how Markdown is serialized when exporting content.
+   * @default "gfm"
+   */
+  flavor?: VizelMarkdownFlavor;
   /** Additional Tiptap extensions */
   extensions?: Extensions;
   /** Custom class name for the editor container */
@@ -111,6 +118,7 @@ const editor = useVizelEditor({
   editable: props.editable,
   autofocus: props.autofocus,
   ...(props.features !== undefined && { features: props.features }),
+  ...(props.flavor !== undefined && { flavor: props.flavor }),
   ...(props.extensions !== undefined && { extensions: props.extensions }),
   onUpdate: (e) => {
     emit("update", e);

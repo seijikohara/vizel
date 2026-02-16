@@ -1,5 +1,12 @@
 <script lang="ts" module>
-import type { Editor, Extensions, JSONContent, VizelError, VizelFeatureOptions } from "@vizel/core";
+import type {
+  Editor,
+  Extensions,
+  JSONContent,
+  VizelError,
+  VizelFeatureOptions,
+  VizelMarkdownFlavor,
+} from "@vizel/core";
 import type { Snippet } from "svelte";
 
 /**
@@ -42,6 +49,12 @@ export interface VizelProps {
   autofocus?: boolean | "start" | "end" | "all" | number;
   /** Feature configuration */
   features?: VizelFeatureOptions;
+  /**
+   * Markdown output flavor.
+   * Controls how Markdown is serialized when exporting content.
+   * @default "gfm"
+   */
+  flavor?: VizelMarkdownFlavor;
   /** Additional Tiptap extensions */
   extensions?: Extensions;
   /** Custom class name for the editor container */
@@ -130,6 +143,7 @@ const editorState = createVizelEditor({
   editable: restProps.editable ?? true,
   autofocus: restProps.autofocus ?? false,
   ...(restProps.features !== undefined && { features: restProps.features }),
+  ...(restProps.flavor !== undefined && { flavor: restProps.flavor }),
   ...(restProps.extensions !== undefined && { extensions: restProps.extensions }),
   onUpdate: wrappedOnUpdate,
   ...(restProps.onCreate !== undefined && { onCreate: restProps.onCreate }),

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Editor, JSONContent } from "@tiptap/core";
+import type { VizelMarkdownFlavor } from "@vizel/core";
 import { createVizelFindReplaceExtension, setVizelMarkdown } from "@vizel/core";
 import {
   useVizelAutoSave,
@@ -27,6 +28,8 @@ const features = reactive({
   comments: false,
   history: false,
 });
+
+const flavor = ref<VizelMarkdownFlavor>("gfm");
 
 type PanelTab = "markdown" | "json" | "history" | "comments";
 const activeTab = ref<PanelTab>("markdown");
@@ -172,6 +175,15 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
             <input type="checkbox" v-model="features.history" />
             <span class="feature-toggle-label">History</span>
           </label>
+          <label class="feature-toggle">
+            <span class="feature-toggle-label">Flavor</span>
+            <select class="feature-select" v-model="flavor">
+              <option value="commonmark">CommonMark</option>
+              <option value="gfm">GFM</option>
+              <option value="obsidian">Obsidian</option>
+              <option value="docusaurus">Docusaurus</option>
+            </select>
+          </label>
         </div>
       </section>
 
@@ -183,6 +195,7 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
               autofocus="end"
               class="editor-content"
               :show-toolbar="features.toolbar"
+              :flavor="flavor"
               enable-embed
               :extensions="findReplaceExtensions"
               :features="{

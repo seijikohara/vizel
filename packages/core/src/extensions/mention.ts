@@ -6,7 +6,14 @@
  * items for suggestion filtering.
  */
 
-import type { Editor } from "@tiptap/core";
+import type {
+  Editor,
+  JSONContent,
+  MarkdownLexerConfiguration,
+  MarkdownParseHelpers,
+  MarkdownParseResult,
+  MarkdownToken,
+} from "@tiptap/core";
 import Mention from "@tiptap/extension-mention";
 import type { SuggestionOptions } from "@tiptap/suggestion";
 
@@ -99,7 +106,58 @@ export function createVizelMentionExtension(options: VizelMentionOptions = {}) {
     HTMLAttributes = {},
   } = options;
 
-  return Mention.configure({
+  const VizelMention = Mention.extend({
+    // Markdown serialization: @label
+    renderMarkdown(node) {
+      const jsonNode = node as JSONContent;
+      const label = jsonNode.attrs?.label ?? jsonNode.attrs?.id ?? "";
+      return `@${label}`;
+    },
+
+    // Markdown tokenizer: recognize @mention inline syntax
+    markdownTokenizer: {
+      name: "mention",
+      level: "inline" as const,
+
+      start(src: string) {
+        const idx = src.indexOf("@");
+        if (idx <= 0) return idx;
+        const prev = src[idx - 1];
+        if (prev && /\w/.test(prev)) return -1;
+        return idx;
+      },
+
+      tokenize(
+        src: string,
+        _tokens: MarkdownToken[],
+        _lexer: MarkdownLexerConfiguration
+      ): MarkdownToken | undefined {
+        const match = /^@([\w-]+)/.exec(src);
+        if (!match) return undefined;
+
+        return {
+          type: "mention",
+          raw: match[0],
+          mentionLabel: match[1] ?? "",
+        };
+      },
+    },
+
+    // Markdown parser: convert tokens to Tiptap JSON
+    parseMarkdown(token: MarkdownToken, _helpers: MarkdownParseHelpers): MarkdownParseResult {
+      const label = (token as MarkdownToken & { mentionLabel?: string }).mentionLabel ?? "";
+
+      return {
+        type: "mention",
+        attrs: {
+          id: label,
+          label,
+        },
+      };
+    },
+  });
+
+  return VizelMention.configure({
     HTMLAttributes: {
       class: "vizel-mention",
       ...HTMLAttributes,

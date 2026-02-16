@@ -1,3 +1,10 @@
+import type {
+  JSONContent,
+  MarkdownLexerConfiguration,
+  MarkdownParseHelpers,
+  MarkdownParseResult,
+  MarkdownToken,
+} from "@tiptap/core";
 import { InputRule, Mark, mergeAttributes } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 
@@ -61,6 +68,16 @@ export interface VizelWikiLinkOptions {
    * Additional HTML attributes to add to wiki links.
    */
   HTMLAttributes?: Record<string, unknown>;
+
+  /**
+   * Whether to serialize wiki links as `[[page]]` syntax in Markdown output.
+   * When `false`, wiki links are serialized as standard Markdown links `[text](wiki://page)`.
+   * Set automatically by `createVizelExtensions()` based on the editor's flavor:
+   * - `true` for Obsidian flavor
+   * - `false` for all other flavors
+   * @default false
+   */
+  serializeAsWikiLink?: boolean;
 }
 
 // =============================================================================
@@ -123,6 +140,7 @@ export const VizelWikiLink = Mark.create<VizelWikiLinkOptions>({
       existingClass: "vizel-wiki-link--existing",
       newClass: "vizel-wiki-link--new",
       HTMLAttributes: {},
+      serializeAsWikiLink: false,
     };
   },
 
@@ -238,6 +256,61 @@ export const VizelWikiLink = Mark.create<VizelWikiLinkOptions>({
       }),
     ];
   },
+
+  // Markdown serialization: default format (standard link).
+  // Flavor-aware serialization is provided by createVizelWikiLinkExtension() via .extend() closure.
+  renderMarkdown(node, helpers) {
+    const pageName = (node as JSONContent).attrs?.pageName ?? "";
+    const children = (node as JSONContent).content ?? [];
+    const text = children.length > 0 ? helpers.renderChildren(children) : pageName;
+    return `[${text || pageName}](wiki://${encodeURIComponent(pageName)})`;
+  },
+
+  // Markdown tokenizer: recognize [[page]] and [[page|text]] inline syntax
+  markdownTokenizer: {
+    name: "wikiLink",
+    level: "inline" as const,
+
+    start(src: string) {
+      return src.indexOf("[[");
+    },
+
+    tokenize(
+      src: string,
+      _tokens: MarkdownToken[],
+      _lexer: MarkdownLexerConfiguration
+    ): MarkdownToken | undefined {
+      const match = /^\[\[([^\]|]+?)(?:\|([^\]]+?))?\]\]/.exec(src);
+      if (!match) return undefined;
+
+      const pageName = match[1]?.trim() ?? "";
+      const displayText = match[2]?.trim() ?? pageName;
+
+      return {
+        type: "wikiLink",
+        raw: match[0],
+        pageName,
+        text: displayText,
+      };
+    },
+  },
+
+  // Markdown parser: convert tokens to Tiptap JSON
+  parseMarkdown(token: MarkdownToken, _helpers: MarkdownParseHelpers): MarkdownParseResult {
+    const pageName = (token as MarkdownToken & { pageName?: string }).pageName ?? "";
+    const text = (token as MarkdownToken & { text?: string }).text ?? pageName;
+
+    return {
+      type: "text",
+      text,
+      marks: [
+        {
+          type: "wikiLink",
+          attrs: { pageName },
+        },
+      ],
+    };
+  },
 });
 
 // =============================================================================
@@ -275,5 +348,23 @@ export const VizelWikiLink = Mark.create<VizelWikiLinkOptions>({
  * ```
  */
 export function createVizelWikiLinkExtension(options: VizelWikiLinkOptions = {}) {
-  return VizelWikiLink.configure(options);
+  const serializeAsWikiLink = options.serializeAsWikiLink ?? false;
+
+  // Use .extend() to capture serializeAsWikiLink in a closure for renderMarkdown,
+  // because `this.options` / `this.storage` are not accessible in the renderMarkdown context.
+  return VizelWikiLink.extend({
+    renderMarkdown(node, helpers) {
+      const pageName = (node as JSONContent).attrs?.pageName ?? "";
+      const children = (node as JSONContent).content ?? [];
+      const text = children.length > 0 ? helpers.renderChildren(children) : pageName;
+
+      if (serializeAsWikiLink) {
+        if (text && text !== pageName) {
+          return `[[${pageName}|${text}]]`;
+        }
+        return `[[${pageName}]]`;
+      }
+      return `[${text || pageName}](wiki://${encodeURIComponent(pageName)})`;
+    },
+  }).configure(options);
 }

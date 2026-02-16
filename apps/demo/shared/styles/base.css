@@ -202,6 +202,23 @@ body {
   user-select: none;
 }
 
+.feature-select {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.125rem 0.375rem;
+  border: 1px solid var(--demo-border);
+  border-radius: 4px;
+  background: var(--demo-surface);
+  color: var(--demo-text-strong);
+  cursor: pointer;
+  accent-color: var(--framework-color);
+}
+
+.feature-select:focus {
+  outline: 2px solid var(--framework-color);
+  outline-offset: -1px;
+}
+
 /* Main - Side by Side Layout */
 .main {
   display: flex;

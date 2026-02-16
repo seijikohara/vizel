@@ -63,6 +63,39 @@ graph TB
 | `comment` | Text annotations and comments — opt-in |
 | `collaboration` | Real-time collaboration mode (disables History) — opt-in |
 
+## Markdown Flavor Selection
+
+Vizel supports multiple Markdown output flavors to match the platform you are targeting. The `flavor` option controls how content is serialized when exporting Markdown; input parsing is always tolerant and accepts all formats regardless of the selected flavor.
+
+### Available Flavors
+
+| Flavor | Callout Output | WikiLink Output | Target Platforms |
+|--------|---------------|-----------------|------------------|
+| `"commonmark"` | Blockquote fallback | Standard link `[text](wiki://page)` | Stack Overflow, Reddit, email |
+| `"gfm"` (default) | GitHub Alerts `> [!NOTE]` | Standard link `[text](wiki://page)` | GitHub, GitLab, DEV.to |
+| `"obsidian"` | Obsidian Callouts `> [!note]` | `[[page]]` / `[[page\|text]]` | Obsidian, Logseq, Foam |
+| `"docusaurus"` | Directives `:::note` | Standard link `[text](wiki://page)` | Docusaurus, VitePress, Zenn, Qiita |
+
+### Usage
+
+```typescript
+const editor = useVizelEditor({
+  flavor: 'obsidian', // Default: 'gfm'
+});
+```
+
+### Extension-Specific Behavior
+
+- **Callout**: Serializes admonition blocks in the format matching the selected flavor. All four callout formats are parsed regardless of flavor.
+- **WikiLink**: When `flavor` is `"obsidian"`, wiki links serialize as `[[page]]` syntax. For all other flavors, they serialize as standard Markdown links `[text](wiki://page)`.
+- **Mention**: Always serializes as `@username` regardless of flavor.
+
+::: tip
+You can override the flavor-driven defaults for individual extensions. For example, set `wikiLink.serializeAsWikiLink` or `callout.markdownFormat` explicitly to override the flavor configuration.
+:::
+
+---
+
 ## Disabling Features
 
 Set a feature to `false` to disable it:

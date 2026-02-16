@@ -1,4 +1,5 @@
 import type { Editor, JSONContent } from "@tiptap/core";
+import type { VizelMarkdownFlavor } from "@vizel/core";
 import { createVizelFindReplaceExtension, setVizelMarkdown } from "@vizel/core";
 import {
   useVizelAutoSave,
@@ -70,6 +71,7 @@ function AppContent() {
     history: false,
   });
 
+  const [flavor, setFlavor] = useState<VizelMarkdownFlavor>("gfm");
   const [activeTab, setActiveTab] = useState<PanelTab>("markdown");
   const [jsonInput, setJsonInput] = useState("");
   const [markdownInput, setMarkdownInput] = useState("");
@@ -213,6 +215,29 @@ function AppContent() {
             checked={features.history}
             onChange={(v) => updateFeature("history", v)}
           />
+          <label className="feature-toggle">
+            <span className="feature-toggle-label">Flavor</span>
+            <select
+              className="feature-select"
+              value={flavor}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (
+                  value === "commonmark" ||
+                  value === "gfm" ||
+                  value === "obsidian" ||
+                  value === "docusaurus"
+                ) {
+                  setFlavor(value);
+                }
+              }}
+            >
+              <option value="commonmark">CommonMark</option>
+              <option value="gfm">GFM</option>
+              <option value="obsidian">Obsidian</option>
+              <option value="docusaurus">Docusaurus</option>
+            </select>
+          </label>
         </div>
       </section>
 
@@ -224,6 +249,7 @@ function AppContent() {
               autofocus="end"
               className="editor-content"
               showToolbar={features.toolbar}
+              flavor={flavor}
               enableEmbed
               extensions={findReplaceExtensions}
               features={{

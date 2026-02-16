@@ -339,21 +339,26 @@ export {
   registerVizelUploadEventHandler,
   removeVizelPortalContainer,
   resolveVizelFeatures,
+  // Markdown flavor utilities
+  resolveVizelFlavorConfig,
   setVizelMarkdown,
   // Text highlight utilities
   splitVizelTextByMatches,
   transformVizelDiagramCodeBlocks,
   unmountFromVizelPortal,
+  VIZEL_DEFAULT_FLAVOR,
   VIZEL_DEFAULT_MARKDOWN_DEBOUNCE_MS,
   VIZEL_PORTAL_ID,
   VIZEL_PORTAL_Z_INDEX,
   VIZEL_SUGGESTION_Z_INDEX,
   VIZEL_UPLOAD_IMAGE_EVENT,
+  type VizelCalloutMarkdownFormat,
   type VizelContentNode,
   type VizelCreateUploadEventHandlerOptions,
   type VizelDOMRectGetter,
   VizelError,
   type VizelErrorCode,
+  type VizelFlavorConfig,
   type VizelMarkdownSyncHandlers,
   type VizelMountPortalOptions,
   type VizelPortalLayer,
@@ -364,6 +369,8 @@ export {
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./utils/index.ts";
+// Re-export VizelMarkdownFlavor type from markdown-flavors utility
+export type { VizelMarkdownFlavor } from "./utils/markdown-flavors.ts";
 // =============================================================================
 // Version History
 // =============================================================================

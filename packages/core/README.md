@@ -73,6 +73,36 @@ All extensions are enabled by default except `collaboration`, `comment`, `wikiLi
 | Mention | `@user` autocomplete (opt-in) |
 | Comment | Text annotations for collaborative review (opt-in) |
 
+## Markdown Flavor
+
+Vizel supports multiple Markdown output flavors via the `flavor` option. The flavor controls how extensions serialize content (e.g., callout format, wiki link syntax). Input parsing is always tolerant and accepts all formats.
+
+| Flavor | Callout Output | WikiLink Output | Platforms |
+|--------|---------------|-----------------|-----------|
+| `"commonmark"` | Blockquote fallback | `[text](wiki://page)` | Stack Overflow, Reddit, email |
+| `"gfm"` (default) | `> [!NOTE]` | `[text](wiki://page)` | GitHub, GitLab, DEV.to |
+| `"obsidian"` | `> [!note]` | `[[page]]` | Obsidian, Logseq, Foam |
+| `"docusaurus"` | `:::note` | `[text](wiki://page)` | Docusaurus, VitePress, Zenn, Qiita |
+
+### API
+
+```typescript
+import {
+  resolveVizelFlavorConfig,
+  VIZEL_DEFAULT_FLAVOR,
+} from '@vizel/core';
+import type {
+  VizelMarkdownFlavor,
+  VizelFlavorConfig,
+  VizelCalloutMarkdownFormat,
+} from '@vizel/core';
+
+// Resolve flavor to config
+const config = resolveVizelFlavorConfig('obsidian');
+// config.calloutFormat === "obsidian-callouts"
+// config.wikiLinkSerialize === true
+```
+
 ## Usage
 
 This package is used as a dependency of framework-specific packages:
