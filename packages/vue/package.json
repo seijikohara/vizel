@@ -44,7 +44,7 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@iconify/vue": "^5"
+    "@iconify/vue": "^5.0.0"
   },
   "peerDependencies": {
     "@vizel/core": "^1.1.0",
