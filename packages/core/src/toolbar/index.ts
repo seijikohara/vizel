@@ -1,4 +1,5 @@
 export {
+  createVizelToolbarActions,
   groupVizelToolbarActions,
   type VizelToolbarAction,
   vizelDefaultToolbarActions,

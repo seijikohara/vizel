@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
+import type { SlashItemText, VizelLocale } from "../i18n/types.ts";
 import type { VizelSlashCommandIconName } from "../icons/types.ts";
 
 /**
@@ -379,6 +380,100 @@ export const defaultSlashCommands: SlashCommandItem[] = [
  * Default group order for display
  */
 export const defaultGroupOrder = ["Text", "Lists", "Blocks", "Media", "Navigation", "Advanced"];
+
+/** Mapping from icon name to slash menu locale key */
+const iconToLocaleKey: Record<string, keyof VizelLocale["slashMenu"]["items"]> = {
+  heading1: "heading1",
+  heading2: "heading2",
+  heading3: "heading3",
+  heading4: "heading4",
+  heading5: "heading5",
+  heading6: "heading6",
+  bulletList: "bulletList",
+  orderedList: "numberedList",
+  taskList: "taskList",
+  blockquote: "quote",
+  horizontalRule: "divider",
+  details: "details",
+  callout: "callout",
+  codeBlock: "codeBlock",
+  table: "table",
+  image: "image",
+  imageUpload: "uploadImage",
+  embed: "embed",
+  tableOfContents: "tableOfContents",
+  mathBlock: "mathEquation",
+  mathInline: "inlineMath",
+  mermaid: "mermaidDiagram",
+  graphviz: "graphvizDiagram",
+};
+
+/** Mapping from English group name to locale key */
+const groupToLocaleKey: Record<string, keyof VizelLocale["slashMenu"]["groups"]> = {
+  Text: "text",
+  Lists: "lists",
+  Blocks: "blocks",
+  Media: "media",
+  Navigation: "navigation",
+  Advanced: "advanced",
+};
+
+/**
+ * Create slash commands with locale-specific titles, descriptions, and groups.
+ * Also replaces window.prompt strings with localized versions.
+ */
+export function createVizelSlashCommands(locale: VizelLocale): SlashCommandItem[] {
+  const t = locale.slashMenu;
+
+  return defaultSlashCommands.map((item) => {
+    const localeKey = iconToLocaleKey[item.icon];
+    const text: SlashItemText | undefined = localeKey ? t.items[localeKey] : undefined;
+    const groupKey = item.group ? groupToLocaleKey[item.group] : undefined;
+    const localizedGroup = groupKey ? t.groups[groupKey] : item.group;
+
+    // For items with window.prompt, wrap the command to use locale strings
+    let { command } = item;
+    if (item.icon === "image") {
+      command = ({ editor, range }) => {
+        const url = window.prompt(t.enterImageUrl);
+        if (url) {
+          editor.chain().focus().deleteRange(range).setImage({ src: url }).run();
+        }
+      };
+    } else if (item.icon === "embed") {
+      command = ({ editor, range }) => {
+        const hasEmbedExtension = typeof editor.commands.setEmbed === "function";
+        if (!hasEmbedExtension) {
+          const url = window.prompt(t.enterUrl);
+          if (url) {
+            editor.chain().focus().deleteRange(range).setLink({ href: url }).run();
+          }
+          return;
+        }
+        const url = window.prompt(t.enterEmbedUrl);
+        if (url) {
+          editor.chain().focus().deleteRange(range).setEmbed({ url }).run();
+        }
+      };
+    }
+
+    return {
+      ...item,
+      title: text?.title ?? item.title,
+      description: text?.description ?? item.description,
+      ...(localizedGroup !== undefined && { group: localizedGroup }),
+      command,
+    };
+  });
+}
+
+/**
+ * Create group order array with locale-specific group names.
+ */
+export function createVizelSlashGroupOrder(locale: VizelLocale): string[] {
+  const g = locale.slashMenu.groups;
+  return [g.text, g.lists, g.blocks, g.media, g.navigation, g.advanced];
+}
 
 /**
  * Fuse.js configuration for fuzzy search

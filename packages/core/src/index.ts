@@ -58,6 +58,8 @@ export {
 export {
   // Text color
   addVizelRecentColor,
+  // Block menu (locale-aware)
+  createVizelBlockMenuActions,
   // Callout / Admonition
   createVizelCalloutExtension,
   // Character count
@@ -97,6 +99,11 @@ export {
   createVizelMathematicsExtensions,
   // Mention
   createVizelMentionExtension,
+  // Node types (locale-aware)
+  createVizelNodeTypes,
+  // Slash command (locale-aware)
+  createVizelSlashCommands,
+  createVizelSlashGroupOrder,
   // Table
   createVizelTableExtensions,
   // Table of Contents
@@ -107,13 +114,11 @@ export {
   createVizelWikiLinkExtension,
   detectVizelEmbedProvider,
   filterVizelFilesByMimeType,
-  // Slash command
   filterVizelSlashCommands,
   findVizelLanguage,
   flattenVizelSlashCommandGroups,
   type GraphvizEngine,
   getAllVizelLanguageIds,
-  // Node types
   getVizelActiveNodeType,
   getVizelCommentPluginState,
   getVizelFindReplaceState,
@@ -231,6 +236,17 @@ export {
   vizelWikiLinkPluginKey,
 } from "./extensions/index.ts";
 // =============================================================================
+// i18n
+// =============================================================================
+export {
+  createVizelLocale,
+  formatRelativeTimeWithLocale,
+  type SlashItemText,
+  type VizelLocale,
+  type VizelLocalePartial,
+  vizelEnLocale,
+} from "./i18n/index.ts";
+// =============================================================================
 // Icons
 // =============================================================================
 export {
@@ -287,6 +303,7 @@ export {
 // Toolbar
 // =============================================================================
 export {
+  createVizelToolbarActions,
   groupVizelToolbarActions,
   type VizelToolbarAction,
   vizelDefaultToolbarActions,

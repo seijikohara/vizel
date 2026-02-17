@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core";
 import type { Node } from "@tiptap/pm/model";
+import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelBlockMenuIconName } from "../icons/types.ts";
 import { type VizelNodeTypeOption, vizelDefaultNodeTypes } from "./node-types.ts";
 
@@ -92,6 +93,22 @@ export const vizelDefaultBlockMenuActions = [
     },
   },
 ] satisfies VizelBlockMenuAction[];
+
+/**
+ * Create block menu actions with locale-specific labels.
+ */
+export function createVizelBlockMenuActions(locale: VizelLocale): VizelBlockMenuAction[] {
+  const labels: Record<string, string> = {
+    delete: locale.blockMenu.delete,
+    duplicate: locale.blockMenu.duplicate,
+    copy: locale.blockMenu.copy,
+    cut: locale.blockMenu.cut,
+  };
+  return vizelDefaultBlockMenuActions.map((action) => ({
+    ...action,
+    label: labels[action.id] ?? action.label,
+  }));
+}
 
 /**
  * Get the "Turn into" node type options, filtering out the currently active type.

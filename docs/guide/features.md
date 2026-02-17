@@ -722,6 +722,153 @@ See the [Collaboration Guide](/guide/collaboration) for setup instructions.
 
 ---
 
+## Internationalization (i18n)
+
+Vizel provides full internationalization support. All UI strings (toolbar labels, slash menu items, block menu actions, find & replace, etc.) can be translated by passing a `VizelLocale` object.
+
+### Quick Start
+
+Pass a `locale` prop to the `Vizel` component or the editor hook/composable/rune:
+
+::: code-group
+
+```tsx [React]
+import { Vizel } from '@vizel/react';
+import type { VizelLocale } from '@vizel/core';
+import { createVizelLocale } from '@vizel/core';
+
+// Create a partial locale (only override what you need)
+const jaLocale = createVizelLocale({
+  toolbar: {
+    undo: '元に戻す',
+    redo: 'やり直す',
+    bold: '太字',
+    italic: '斜体',
+  },
+  slashMenu: {
+    noResults: '結果なし',
+    groups: { text: 'テキスト', lists: 'リスト', blocks: 'ブロック' },
+  },
+});
+
+<Vizel locale={jaLocale} />
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { Vizel } from '@vizel/vue';
+import { createVizelLocale } from '@vizel/core';
+
+const jaLocale = createVizelLocale({
+  toolbar: { undo: '元に戻す', redo: 'やり直す' },
+});
+</script>
+
+<template>
+  <Vizel :locale="jaLocale" />
+</template>
+```
+
+```svelte [Svelte]
+<script lang="ts">
+import { Vizel } from '@vizel/svelte';
+import { createVizelLocale } from '@vizel/core';
+
+const jaLocale = createVizelLocale({
+  toolbar: { undo: '元に戻す', redo: 'やり直す' },
+});
+</script>
+
+<Vizel locale={jaLocale} />
+```
+
+:::
+
+### Full Locale Override
+
+For a complete translation, provide a full `VizelLocale` object:
+
+```typescript
+import type { VizelLocale } from '@vizel/core';
+
+const myLocale: VizelLocale = {
+  toolbar: { undo: 'Undo', redo: 'Redo', /* ... all fields required */ },
+  nodeTypes: { text: 'Text', heading1: 'Heading 1', /* ... */ },
+  blockMenu: { label: 'Block menu', delete: 'Delete', /* ... */ },
+  slashMenu: { noResults: 'No results', groups: { /* ... */ }, items: { /* ... */ } },
+  findReplace: { label: 'Find and replace', findPlaceholder: 'Find...', /* ... */ },
+  codeBlock: { languagePlaceholder: 'Language', copyCode: 'Copy', copied: 'Copied!' },
+  dragHandle: { ariaLabel: 'Drag to reorder block' },
+  saveIndicator: { saved: 'Saved', saving: 'Saving...', unsaved: 'Unsaved', error: 'Error saving' },
+  nodeSelector: { changeBlockType: 'Change block type', blockTypes: 'Block types', currentBlockType: 'Current block type: {type}' },
+  relativeTime: { justNow: 'just now', secondsAgo: '{n}s ago', minutesAgo: '{n}m ago', hoursAgo: '{n}h ago', daysAgo: '{n}d ago' },
+};
+```
+
+### Partial Locale with `createVizelLocale()`
+
+Use `createVizelLocale()` to merge partial translations with the English defaults:
+
+```typescript
+import { createVizelLocale } from '@vizel/core';
+
+// Only override the fields you need — English defaults fill the rest
+const locale = createVizelLocale({
+  toolbar: {
+    bold: 'Fett',
+    italic: 'Kursiv',
+  },
+  slashMenu: {
+    noResults: 'Keine Ergebnisse',
+  },
+});
+```
+
+### Composition Pattern
+
+When using the decomposed component pattern, pass `locale` to the editor hook and to components that display UI strings:
+
+::: code-group
+
+```tsx [React]
+import { VizelEditor, VizelBubbleMenu, VizelToolbar, VizelBlockMenu, useVizelEditor } from '@vizel/react';
+
+const editor = useVizelEditor({ locale: myLocale });
+
+<VizelToolbar editor={editor} locale={myLocale} />
+<VizelEditor editor={editor} />
+<VizelBubbleMenu editor={editor} />
+<VizelBlockMenu locale={myLocale} />
+```
+
+```vue [Vue]
+<VizelToolbar :editor="editor" :locale="myLocale" />
+<VizelEditor :editor="editor" />
+<VizelBubbleMenu :editor="editor" />
+<VizelBlockMenu :locale="myLocale" />
+```
+
+```svelte [Svelte]
+<VizelToolbar {editor} locale={myLocale} />
+<VizelEditor {editor} />
+<VizelBubbleMenu {editor} />
+<VizelBlockMenu locale={myLocale} />
+```
+
+:::
+
+### Default Locale
+
+The English locale is available as `vizelEnLocale`:
+
+```typescript
+import { vizelEnLocale } from '@vizel/core';
+
+console.log(vizelEnLocale.toolbar.bold); // "Bold"
+```
+
+---
+
 ## Next Steps
 
 - [Wiki Links](/guide/wiki-links) - Wiki-style internal links

@@ -11,6 +11,7 @@ import {
   setVizelMarkdown,
   type VizelError,
   type VizelFeatureOptions,
+  type VizelLocale,
   type VizelMarkdownFlavor,
 } from "@vizel/core";
 import { useSlots, watch } from "vue";
@@ -61,6 +62,8 @@ export interface VizelProps {
    * @default "gfm"
    */
   flavor?: VizelMarkdownFlavor;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
   /** Additional Tiptap extensions */
   extensions?: Extensions;
   /** Custom class name for the editor container */
@@ -120,6 +123,7 @@ const editor = useVizelEditor({
   autofocus: props.autofocus,
   ...(props.features !== undefined && { features: props.features }),
   ...(props.flavor !== undefined && { flavor: props.flavor }),
+  ...(props.locale !== undefined && { locale: props.locale }),
   ...(props.extensions !== undefined && { extensions: props.extensions }),
   onUpdate: (e) => {
     emit("update", e);
@@ -178,7 +182,8 @@ defineExpose<VizelRef & { getEditor: () => Editor | null }>({
       <slot name="bubble-menu" :editor="editor" />
     </VizelBubbleMenu>
     <VizelBubbleMenu v-else-if="showBubbleMenu && editor" :editor="editor" :enable-embed="enableEmbed ?? false" />
-    <VizelBlockMenu />
+    <VizelBlockMenu v-if="props.locale" :locale="props.locale" />
+    <VizelBlockMenu v-else />
     <slot :editor="editor" />
   </div>
 </template>

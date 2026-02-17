@@ -1,4 +1,9 @@
-import { type Editor, getVizelFindReplaceState, type VizelFindReplaceState } from "@vizel/core";
+import {
+  type Editor,
+  getVizelFindReplaceState,
+  type VizelFindReplaceState,
+  type VizelLocale,
+} from "@vizel/core";
 import {
   type ChangeEvent,
   type KeyboardEvent,
@@ -13,6 +18,8 @@ export interface VizelFindReplaceProps {
   editor: Editor | null;
   /** Custom class name */
   className?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
   /** Callback when the panel is closed */
   onClose?: () => void;
 }
@@ -20,7 +27,8 @@ export interface VizelFindReplaceProps {
 /**
  * Find & Replace panel component for React
  */
-export function VizelFindReplace({ editor, className, onClose }: VizelFindReplaceProps) {
+export function VizelFindReplace({ editor, className, locale, onClose }: VizelFindReplaceProps) {
+  const t = locale?.findReplace;
   const [findText, setFindText] = useState("");
   const [replaceText, setReplaceText] = useState("");
   const [caseSensitive, setCaseSensitive] = useState(false);
@@ -135,29 +143,29 @@ export function VizelFindReplace({ editor, className, onClose }: VizelFindReplac
     <div
       className={`vizel-find-replace-panel ${className || ""}`}
       role="dialog"
-      aria-label="Find and Replace"
+      aria-label={t?.label ?? "Find and Replace"}
     >
       <div className="vizel-find-replace-row">
         <input
           ref={findInputRef}
           type="text"
           className="vizel-find-replace-input"
-          placeholder="Find..."
+          placeholder={t?.findPlaceholder ?? "Find..."}
           value={findText}
           onChange={handleFindInputChange}
           onKeyDown={handleKeyDown}
-          aria-label="Find text"
+          aria-label={t?.findTextAriaLabel ?? "Find text"}
         />
         <span className="vizel-find-replace-count" aria-live="polite">
-          {matchCount > 0 ? `${currentMatch}/${matchCount}` : "No results"}
+          {matchCount > 0 ? `${currentMatch}/${matchCount}` : (t?.noResults ?? "No results")}
         </span>
         <button
           type="button"
           className="vizel-find-replace-button"
           onClick={handleFindPrevious}
           disabled={matchCount === 0}
-          aria-label="Find previous"
-          title="Find previous (Shift+Enter)"
+          aria-label={t?.findPreviousAriaLabel ?? "Find previous"}
+          title={t?.findPreviousTitle ?? "Find previous (Shift+Enter)"}
         >
           ↑
         </button>
@@ -166,8 +174,8 @@ export function VizelFindReplace({ editor, className, onClose }: VizelFindReplac
           className="vizel-find-replace-button"
           onClick={handleFindNext}
           disabled={matchCount === 0}
-          aria-label="Find next"
-          title="Find next (Enter)"
+          aria-label={t?.findNextAriaLabel ?? "Find next"}
+          title={t?.findNextTitle ?? "Find next (Enter)"}
         >
           ↓
         </button>
@@ -175,8 +183,8 @@ export function VizelFindReplace({ editor, className, onClose }: VizelFindReplac
           type="button"
           className="vizel-find-replace-button"
           onClick={handleClose}
-          aria-label="Close"
-          title="Close (Escape)"
+          aria-label={t?.closeAriaLabel ?? "Close"}
+          title={t?.closeTitle ?? "Close (Escape)"}
         >
           ✕
         </button>
@@ -187,19 +195,19 @@ export function VizelFindReplace({ editor, className, onClose }: VizelFindReplac
           <input
             type="text"
             className="vizel-find-replace-input"
-            placeholder="Replace with..."
+            placeholder={t?.replacePlaceholder ?? "Replace with..."}
             value={replaceText}
             onChange={(e) => setReplaceText(e.target.value)}
             onKeyDown={handleKeyDown}
-            aria-label="Replace text"
+            aria-label={t?.replaceTextAriaLabel ?? "Replace text"}
           />
           <button
             type="button"
             className="vizel-find-replace-button"
             onClick={handleReplace}
             disabled={matchCount === 0}
-            aria-label="Replace"
-            title="Replace current match"
+            aria-label={t?.replaceAriaLabel ?? "Replace"}
+            title={t?.replaceTitle ?? "Replace current match"}
           >
             Replace
           </button>
@@ -208,8 +216,8 @@ export function VizelFindReplace({ editor, className, onClose }: VizelFindReplac
             className="vizel-find-replace-button vizel-find-replace-button--primary"
             onClick={handleReplaceAll}
             disabled={matchCount === 0}
-            aria-label="Replace all"
-            title="Replace all matches"
+            aria-label={t?.replaceAllAriaLabel ?? "Replace all"}
+            title={t?.replaceAllTitle ?? "Replace all matches"}
           >
             All
           </button>
@@ -219,7 +227,7 @@ export function VizelFindReplace({ editor, className, onClose }: VizelFindReplac
       <div className="vizel-find-replace-options">
         <label className="vizel-find-replace-checkbox">
           <input type="checkbox" checked={caseSensitive} onChange={handleCaseSensitiveChange} />
-          Case sensitive
+          {t?.caseSensitive ?? "Case sensitive"}
         </label>
       </div>
     </div>

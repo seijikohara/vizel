@@ -12,6 +12,7 @@
 import CodeBlockLowlight, {
   type CodeBlockLowlightOptions,
 } from "@tiptap/extension-code-block-lowlight";
+import type { VizelLocale } from "../i18n/types.ts";
 import { renderVizelIcon } from "../icons/types.ts";
 
 /**
@@ -49,6 +50,11 @@ export interface VizelCodeBlockOptions {
    * @default "common"
    */
   languages?: "common" | "all";
+  /**
+   * Locale for code block UI strings.
+   * If not provided, default English strings are used.
+   */
+  locale?: VizelLocale;
 }
 
 /**
@@ -159,6 +165,7 @@ export async function createVizelCodeBlockExtension(
     lineNumbers = false,
     lowlight: customLowlight,
     languages = "common",
+    locale,
   } = options;
 
   // Resolve lowlight instance
@@ -212,7 +219,7 @@ export async function createVizelCodeBlockExtension(
         languageInput.type = "text";
         languageInput.classList.add("vizel-code-block-language-input");
         languageInput.value = node.attrs.language || defaultLanguage;
-        languageInput.placeholder = "language";
+        languageInput.placeholder = locale?.codeBlock.languagePlaceholder ?? "language";
 
         const datalistId = `vizel-languages-${Math.random().toString(36).slice(2, 9)}`;
         const datalist = document.createElement("datalist");
@@ -264,7 +271,9 @@ export async function createVizelCodeBlockExtension(
         if (node.attrs.lineNumbers) {
           lineNumbersBtn.classList.add("active");
         }
-        lineNumbersBtn.title = node.attrs.lineNumbers ? "Hide line numbers" : "Show line numbers";
+        const hideLineNumbersLabel = locale?.codeBlock.hideLineNumbers ?? "Hide line numbers";
+        const showLineNumbersLabel = locale?.codeBlock.showLineNumbers ?? "Show line numbers";
+        lineNumbersBtn.title = node.attrs.lineNumbers ? hideLineNumbersLabel : showLineNumbersLabel;
 
         // Helper to set trusted SVG icon content from the internal @iconify system
         const setIconContent = (
@@ -282,11 +291,13 @@ export async function createVizelCodeBlockExtension(
         };
 
         // Copy button
+        const copyCodeLabel = locale?.codeBlock.copyCode ?? "Copy code";
+        const copiedLabel = locale?.codeBlock.copied ?? "Copied!";
         const copyBtn = document.createElement("button");
         copyBtn.type = "button";
         copyBtn.classList.add("vizel-code-block-copy-btn");
         setIconContent(copyBtn, "copy");
-        copyBtn.title = "Copy code";
+        copyBtn.title = copyCodeLabel;
 
         let copyTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -297,12 +308,12 @@ export async function createVizelCodeBlockExtension(
           navigator.clipboard.writeText(text).then(() => {
             copyBtn.classList.add("copied");
             setIconContent(copyBtn, "checkSmall");
-            copyBtn.title = "Copied!";
+            copyBtn.title = copiedLabel;
             if (copyTimeout) clearTimeout(copyTimeout);
             copyTimeout = setTimeout(() => {
               copyBtn.classList.remove("copied");
               setIconContent(copyBtn, "copy");
-              copyBtn.title = "Copy code";
+              copyBtn.title = copyCodeLabel;
               copyTimeout = null;
             }, 2000);
           });
@@ -397,7 +408,9 @@ export async function createVizelCodeBlockExtension(
           currentLineNumbers = enabled;
           dom.classList.toggle("vizel-code-block-line-numbers", enabled);
           lineNumbersBtn.classList.toggle("active", enabled);
-          lineNumbersBtn.title = enabled ? "Hide line numbers" : "Show line numbers";
+          const hideLabel = locale?.codeBlock.hideLineNumbers ?? "Hide line numbers";
+          const showLabel = locale?.codeBlock.showLineNumbers ?? "Show line numbers";
+          lineNumbersBtn.title = enabled ? hideLabel : showLabel;
         };
 
         return {

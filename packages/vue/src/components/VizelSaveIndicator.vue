@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatVizelRelativeTime, type VizelSaveStatus } from "@vizel/core";
+import { formatVizelRelativeTime, type VizelLocale, type VizelSaveStatus } from "@vizel/core";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -12,6 +12,8 @@ export interface VizelSaveIndicatorProps {
   showTimestamp?: boolean;
   /** Custom class name */
   class?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 const props = withDefaults(defineProps<VizelSaveIndicatorProps>(), {
@@ -23,7 +25,7 @@ let intervalId: ReturnType<typeof setInterval> | null = null;
 
 function updateTime() {
   if (props.lastSaved) {
-    relativeTime.value = formatVizelRelativeTime(props.lastSaved);
+    relativeTime.value = formatVizelRelativeTime(props.lastSaved, props.locale);
   } else {
     relativeTime.value = "";
   }
@@ -48,15 +50,16 @@ onBeforeUnmount(() => {
 });
 
 const statusText = computed(() => {
+  const t = props.locale?.saveIndicator;
   switch (props.status) {
     case "saved":
-      return "Saved";
+      return t?.saved ?? "Saved";
     case "saving":
-      return "Saving...";
+      return t?.saving ?? "Saving...";
     case "unsaved":
-      return "Unsaved";
+      return t?.unsaved ?? "Unsaved";
     case "error":
-      return "Error saving";
+      return t?.error ?? "Error saving";
     default:
       return "";
   }

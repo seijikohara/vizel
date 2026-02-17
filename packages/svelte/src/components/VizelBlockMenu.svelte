@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { VizelBlockMenuAction, VizelNodeTypeOption } from "@vizel/core";
+import type { VizelBlockMenuAction, VizelLocale, VizelNodeTypeOption } from "@vizel/core";
 
 export interface VizelBlockMenuProps {
   /** Custom block menu actions (replaces defaults) */
@@ -8,11 +8,15 @@ export interface VizelBlockMenuProps {
   nodeTypes?: VizelNodeTypeOption[];
   /** Additional class name */
   class?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 </script>
 
 <script lang="ts">
 import {
+  createVizelBlockMenuActions,
+  createVizelNodeTypes,
   groupVizelBlockMenuActions,
   getVizelTurnIntoOptions,
   VIZEL_BLOCK_MENU_EVENT,
@@ -28,10 +32,14 @@ interface BlockMenuState extends VizelBlockMenuOpenDetail {
 }
 
 let {
-  actions = vizelDefaultBlockMenuActions,
-  nodeTypes = vizelDefaultNodeTypes,
+  actions,
+  nodeTypes,
   class: className,
+  locale,
 }: VizelBlockMenuProps = $props();
+
+const effectiveActions = $derived(actions ?? (locale ? createVizelBlockMenuActions(locale) : vizelDefaultBlockMenuActions));
+const effectiveNodeTypes = $derived(nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes));
 
 let menuState = $state<BlockMenuState | null>(null);
 let showTurnInto = $state(false);
@@ -39,11 +47,11 @@ let menuRef = $state<HTMLDivElement | null>(null);
 let submenuRef = $state<HTMLDivElement | null>(null);
 
 const groups = $derived(
-  menuState ? groupVizelBlockMenuActions(actions) : [],
+  menuState ? groupVizelBlockMenuActions(effectiveActions) : [],
 );
 
 const turnIntoOptions = $derived(
-  menuState ? getVizelTurnIntoOptions(menuState.editor, nodeTypes) : [],
+  menuState ? getVizelTurnIntoOptions(menuState.editor, effectiveNodeTypes) : [],
 );
 
 function close() {
@@ -120,7 +128,7 @@ $effect(() => {
     class="vizel-block-menu {className ?? ''}"
     style="left: {menuState.x}px; top: {menuState.y}px;"
     role="menu"
-    aria-label="Block menu"
+    aria-label={locale?.blockMenu.label ?? "Block menu"}
     data-vizel-block-menu
   >
     {#each groups as group, groupIndex (groupIndex)}
@@ -160,7 +168,7 @@ $effect(() => {
       <span class="vizel-block-menu-item-icon">
         <VizelIcon name="arrowRightLeft" />
       </span>
-      <span class="vizel-block-menu-item-label">Turn into</span>
+      <span class="vizel-block-menu-item-label">{locale?.blockMenu.turnInto ?? "Turn into"}</span>
     </button>
 
     <!-- Turn into submenu -->
@@ -169,7 +177,7 @@ $effect(() => {
         bind:this={submenuRef}
         class="vizel-block-menu-submenu"
         role="menu"
-        aria-label="Turn into"
+        aria-label={locale?.blockMenu.turnInto ?? "Turn into"}
       >
         {#each turnIntoOptions as nodeType (nodeType.name)}
           <button

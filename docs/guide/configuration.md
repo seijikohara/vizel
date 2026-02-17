@@ -16,6 +16,7 @@ The main configuration object passed to `useVizelEditor` (React/Vue) or `createV
 | `features` | `VizelFeatureOptions` | See [Features](/guide/features) | Feature configuration |
 | `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks to diagram nodes when importing Markdown |
 | `extensions` | `Extensions` | `[]` | Additional Tiptap extensions |
+| `locale` | `VizelLocale` | English | Locale object for translating all UI strings. See [Internationalization](/guide/features#internationalization-i18n) |
 
 ### Callbacks
 

@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { VizelSaveStatus } from "@vizel/core";
+import type { VizelLocale, VizelSaveStatus } from "@vizel/core";
 
 export interface VizelSaveIndicatorProps {
   /** Current save status */
@@ -10,6 +10,8 @@ export interface VizelSaveIndicatorProps {
   showTimestamp?: boolean;
   /** Custom class name */
   class?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 </script>
 
@@ -22,13 +24,14 @@ let {
   lastSaved = null,
   showTimestamp = true,
   class: className,
+  locale,
 }: VizelSaveIndicatorProps = $props();
 
 let relativeTime = $state("");
 
 function updateTime() {
   if (lastSaved) {
-    relativeTime = formatVizelRelativeTime(lastSaved);
+    relativeTime = formatVizelRelativeTime(lastSaved, locale);
   } else {
     relativeTime = "";
   }
@@ -51,15 +54,16 @@ $effect(() => {
 });
 
 const statusText = $derived.by(() => {
+  const t = locale?.saveIndicator;
   switch (status) {
     case "saved":
-      return "Saved";
+      return t?.saved ?? "Saved";
     case "saving":
-      return "Saving...";
+      return t?.saving ?? "Saving...";
     case "unsaved":
-      return "Unsaved";
+      return t?.unsaved ?? "Unsaved";
     case "error":
-      return "Error saving";
+      return t?.error ?? "Error saving";
     default:
       return "";
   }

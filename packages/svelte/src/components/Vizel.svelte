@@ -5,6 +5,7 @@ import type {
   JSONContent,
   VizelError,
   VizelFeatureOptions,
+  VizelLocale,
   VizelMarkdownFlavor,
 } from "@vizel/core";
 import type { Snippet } from "svelte";
@@ -55,6 +56,8 @@ export interface VizelProps {
    * @default "gfm"
    */
   flavor?: VizelMarkdownFlavor;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
   /** Additional Tiptap extensions */
   extensions?: Extensions;
   /** Custom class name for the editor container */
@@ -145,6 +148,7 @@ const editorState = createVizelEditor({
   autofocus: restProps.autofocus ?? false,
   ...(restProps.features !== undefined && { features: restProps.features }),
   ...(restProps.flavor !== undefined && { flavor: restProps.flavor }),
+  ...(restProps.locale !== undefined && { locale: restProps.locale }),
   ...(restProps.extensions !== undefined && { extensions: restProps.extensions }),
   onUpdate: wrappedOnUpdate,
   ...(restProps.onCreate !== undefined && { onCreate: restProps.onCreate }),
@@ -192,7 +196,11 @@ $effect(() => {
   {:else if showBubbleMenu && editor}
     <VizelBubbleMenu {editor} {enableEmbed} />
   {/if}
-  <VizelBlockMenu />
+  {#if restProps.locale}
+    <VizelBlockMenu locale={restProps.locale} />
+  {:else}
+    <VizelBlockMenu />
+  {/if}
   {#if children}
     {@render children({ editor })}
   {/if}

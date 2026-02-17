@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import {
+  createVizelBlockMenuActions,
+  createVizelNodeTypes,
   getVizelTurnIntoOptions,
   groupVizelBlockMenuActions,
   VIZEL_BLOCK_MENU_EVENT,
   type VizelBlockMenuAction,
   type VizelBlockMenuOpenDetail,
+  type VizelLocale,
   type VizelNodeTypeOption,
   vizelDefaultBlockMenuActions,
   vizelDefaultNodeTypes,
@@ -19,6 +22,8 @@ export interface VizelBlockMenuProps {
   nodeTypes?: VizelNodeTypeOption[];
   /** Additional class name */
   class?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 interface BlockMenuState extends VizelBlockMenuOpenDetail {
@@ -26,20 +31,29 @@ interface BlockMenuState extends VizelBlockMenuOpenDetail {
   y: number;
 }
 
-const props = withDefaults(defineProps<VizelBlockMenuProps>(), {
-  actions: () => vizelDefaultBlockMenuActions,
-  nodeTypes: () => vizelDefaultNodeTypes,
-});
+const props = defineProps<VizelBlockMenuProps>();
+
+const effectiveActions = computed(
+  () =>
+    props.actions ??
+    (props.locale ? createVizelBlockMenuActions(props.locale) : vizelDefaultBlockMenuActions)
+);
+const effectiveNodeTypes = computed(
+  () =>
+    props.nodeTypes ?? (props.locale ? createVizelNodeTypes(props.locale) : vizelDefaultNodeTypes)
+);
 
 const menuState = shallowRef<BlockMenuState | null>(null);
 const showTurnInto = ref(false);
 const menuRef = ref<HTMLDivElement | null>(null);
 const submenuRef = ref<HTMLDivElement | null>(null);
 
-const groups = computed(() => (menuState.value ? groupVizelBlockMenuActions(props.actions) : []));
+const groups = computed(() =>
+  menuState.value ? groupVizelBlockMenuActions(effectiveActions.value) : []
+);
 
 const turnIntoOptions = computed(() =>
-  menuState.value ? getVizelTurnIntoOptions(menuState.value.editor, props.nodeTypes) : []
+  menuState.value ? getVizelTurnIntoOptions(menuState.value.editor, effectiveNodeTypes.value) : []
 );
 
 function close() {
@@ -139,7 +153,7 @@ onBeforeUnmount(() => {
     :class="['vizel-block-menu', $props.class]"
     :style="{ left: menuState.x + 'px', top: menuState.y + 'px' }"
     role="menu"
-    aria-label="Block menu"
+    :aria-label="props.locale?.blockMenu.label ?? 'Block menu'"
     data-vizel-block-menu
   >
     <template v-for="(group, groupIndex) in groups" :key="groupIndex">
@@ -175,7 +189,7 @@ onBeforeUnmount(() => {
       <span class="vizel-block-menu-item-icon">
         <VizelIcon name="arrowRightLeft" />
       </span>
-      <span class="vizel-block-menu-item-label">Turn into</span>
+      <span class="vizel-block-menu-item-label">{{ props.locale?.blockMenu.turnInto ?? 'Turn into' }}</span>
     </button>
 
     <!-- Turn into submenu -->
@@ -184,7 +198,7 @@ onBeforeUnmount(() => {
       ref="submenuRef"
       class="vizel-block-menu-submenu"
       role="menu"
-      aria-label="Turn into"
+      :aria-label="props.locale?.blockMenu.turnInto ?? 'Turn into'"
     >
       <button
         v-for="nodeType in turnIntoOptions"

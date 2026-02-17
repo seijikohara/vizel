@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { type Editor, getVizelFindReplaceState, type VizelFindReplaceState } from "@vizel/core";
+import {
+  type Editor,
+  getVizelFindReplaceState,
+  type VizelFindReplaceState,
+  type VizelLocale,
+} from "@vizel/core";
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 
 export interface VizelFindReplaceProps {
@@ -7,6 +12,8 @@ export interface VizelFindReplaceProps {
   editor: Editor | null;
   /** Custom class name */
   class?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 const props = defineProps<VizelFindReplaceProps>();
@@ -126,28 +133,28 @@ function handleKeyDown(e: KeyboardEvent) {
     v-if="isOpen"
     :class="['vizel-find-replace-panel', props.class]"
     role="dialog"
-    aria-label="Find and Replace"
+    :aria-label="props.locale?.findReplace.label ?? 'Find and Replace'"
   >
     <div class="vizel-find-replace-row">
       <input
         ref="findInputRef"
         type="text"
         class="vizel-find-replace-input"
-        placeholder="Find..."
+        :placeholder="props.locale?.findReplace.findPlaceholder ?? 'Find...'"
         :value="findText"
         @input="handleFindInputChange"
         @keydown="handleKeyDown"
-        aria-label="Find text"
+        :aria-label="props.locale?.findReplace.findTextAriaLabel ?? 'Find text'"
       />
       <span class="vizel-find-replace-count" aria-live="polite">
-        {{ matchCount > 0 ? `${currentMatch}/${matchCount}` : 'No results' }}
+        {{ matchCount > 0 ? `${currentMatch}/${matchCount}` : (props.locale?.findReplace.noResults ?? 'No results') }}
       </span>
       <button
         type="button"
         class="vizel-find-replace-button"
         :disabled="matchCount === 0"
-        aria-label="Find previous"
-        title="Find previous (Shift+Enter)"
+        :aria-label="props.locale?.findReplace.findPreviousAriaLabel ?? 'Find previous'"
+        :title="props.locale?.findReplace.findPreviousTitle ?? 'Find previous (Shift+Enter)'"
         @click="handleFindPrevious"
       >
         ↑
@@ -156,8 +163,8 @@ function handleKeyDown(e: KeyboardEvent) {
         type="button"
         class="vizel-find-replace-button"
         :disabled="matchCount === 0"
-        aria-label="Find next"
-        title="Find next (Enter)"
+        :aria-label="props.locale?.findReplace.findNextAriaLabel ?? 'Find next'"
+        :title="props.locale?.findReplace.findNextTitle ?? 'Find next (Enter)'"
         @click="handleFindNext"
       >
         ↓
@@ -165,8 +172,8 @@ function handleKeyDown(e: KeyboardEvent) {
       <button
         type="button"
         class="vizel-find-replace-button"
-        aria-label="Close"
-        title="Close (Escape)"
+        :aria-label="props.locale?.findReplace.closeAriaLabel ?? 'Close'"
+        :title="props.locale?.findReplace.closeTitle ?? 'Close (Escape)'"
         @click="handleClose"
       >
         ✕
@@ -177,30 +184,30 @@ function handleKeyDown(e: KeyboardEvent) {
       <input
         type="text"
         class="vizel-find-replace-input"
-        placeholder="Replace with..."
+        :placeholder="props.locale?.findReplace.replacePlaceholder ?? 'Replace with...'"
         v-model="replaceText"
         @keydown="handleKeyDown"
-        aria-label="Replace text"
+        :aria-label="props.locale?.findReplace.replaceTextAriaLabel ?? 'Replace text'"
       />
       <button
         type="button"
         class="vizel-find-replace-button"
         :disabled="matchCount === 0"
-        aria-label="Replace"
-        title="Replace current match"
+        :aria-label="props.locale?.findReplace.replaceAriaLabel ?? 'Replace'"
+        :title="props.locale?.findReplace.replaceTitle ?? 'Replace current match'"
         @click="handleReplace"
       >
-        Replace
+        {{ props.locale?.findReplace.replaceAriaLabel ?? 'Replace' }}
       </button>
       <button
         type="button"
         class="vizel-find-replace-button vizel-find-replace-button--primary"
         :disabled="matchCount === 0"
-        aria-label="Replace all"
-        title="Replace all matches"
+        :aria-label="props.locale?.findReplace.replaceAllAriaLabel ?? 'Replace all'"
+        :title="props.locale?.findReplace.replaceAllTitle ?? 'Replace all matches'"
         @click="handleReplaceAll"
       >
-        All
+        {{ props.locale?.findReplace.replaceAllAriaLabel ?? 'All' }}
       </button>
     </div>
 
@@ -211,7 +218,7 @@ function handleKeyDown(e: KeyboardEvent) {
           :checked="caseSensitive"
           @change="handleCaseSensitiveChange"
         />
-        Case sensitive
+        {{ props.locale?.findReplace.caseSensitive ?? 'Case sensitive' }}
       </label>
     </div>
   </div>

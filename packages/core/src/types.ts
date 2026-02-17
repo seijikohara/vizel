@@ -18,6 +18,7 @@ import type { VizelTableOfContentsOptions } from "./extensions/table-of-contents
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
 import type { VizelWikiLinkOptions } from "./extensions/wiki-link.ts";
+import type { VizelLocale } from "./i18n/types.ts";
 import type { VizelImageUploadPluginOptions } from "./plugins/image-upload.ts";
 import type { VizelError } from "./utils/errorHandling.ts";
 import type { VizelMarkdownFlavor } from "./utils/markdown-flavors.ts";
@@ -113,6 +114,12 @@ export interface VizelFeatureOptions {
 export interface VizelEditorOptions {
   /** Feature configuration */
   features?: VizelFeatureOptions;
+  /**
+   * Locale for UI strings.
+   * Defaults to English (`vizelEnLocale`).
+   * Use `createVizelLocale()` to merge partial translations with the default.
+   */
+  locale?: VizelLocale;
   /**
    * Markdown output flavor.
    * Controls how Markdown is serialized when exporting content.

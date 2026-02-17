@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelNodeTypeIconName } from "../icons/types.ts";
 
 /**
@@ -110,6 +111,30 @@ export const vizelDefaultNodeTypes = [
     command: (editor) => editor.chain().focus().toggleCodeBlock().run(),
   },
 ] satisfies VizelNodeTypeOption[];
+
+/**
+ * Create node type options with locale-specific labels.
+ */
+export function createVizelNodeTypes(locale: VizelLocale): VizelNodeTypeOption[] {
+  const labels: Record<string, string> = {
+    paragraph: locale.nodeTypes.text,
+    heading1: locale.nodeTypes.heading1,
+    heading2: locale.nodeTypes.heading2,
+    heading3: locale.nodeTypes.heading3,
+    heading4: locale.nodeTypes.heading4,
+    heading5: locale.nodeTypes.heading5,
+    heading6: locale.nodeTypes.heading6,
+    bulletList: locale.nodeTypes.bulletList,
+    orderedList: locale.nodeTypes.numberedList,
+    taskList: locale.nodeTypes.taskList,
+    blockquote: locale.nodeTypes.quote,
+    codeBlock: locale.nodeTypes.code,
+  };
+  return vizelDefaultNodeTypes.map((type) => ({
+    ...type,
+    label: labels[type.name] ?? type.label,
+  }));
+}
 
 /**
  * Get the currently active node type

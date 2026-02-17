@@ -22,6 +22,7 @@ import Superscript from "@tiptap/extension-superscript";
 import Text from "@tiptap/extension-text";
 import Typography from "@tiptap/extension-typography";
 import Underline from "@tiptap/extension-underline";
+import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelFeatureOptions } from "../types.ts";
 import type { VizelFlavorConfig, VizelMarkdownFlavor } from "../utils/markdown-flavors.ts";
 import { resolveVizelFlavorConfig } from "../utils/markdown-flavors.ts";
@@ -69,6 +70,11 @@ export interface VizelExtensionsOptions {
    * @default "gfm"
    */
   flavor?: VizelMarkdownFlavor;
+  /**
+   * Locale for editor UI strings.
+   * If not provided, default English strings are used.
+   */
+  locale?: VizelLocale;
 }
 
 /**
@@ -212,7 +218,8 @@ function addTextColorExtension(extensions: Extensions, features: VizelFeatureOpt
  */
 async function addCodeBlockExtension(
   extensions: Extensions,
-  features: VizelFeatureOptions
+  features: VizelFeatureOptions,
+  locale?: VizelLocale
 ): Promise<void> {
   // If codeBlock is explicitly set to false, don't add any code block extension
   if (features.codeBlock === false) {
@@ -226,10 +233,19 @@ async function addCodeBlockExtension(
   if (features.codeBlock === true || typeof features.codeBlock === "object") {
     const codeBlockOptions: VizelCodeBlockOptions =
       typeof features.codeBlock === "object" ? features.codeBlock : {};
-    extensions.push(...(await createVizelCodeBlockExtension(codeBlockOptions)));
+    extensions.push(
+      ...(await createVizelCodeBlockExtension({
+        ...codeBlockOptions,
+        ...(locale !== undefined && { locale }),
+      }))
+    );
   } else {
     // Default: use syntax highlighting with default options
-    extensions.push(...(await createVizelCodeBlockExtension()));
+    extensions.push(
+      ...(await createVizelCodeBlockExtension({
+        ...(locale !== undefined && { locale }),
+      }))
+    );
   }
 }
 
@@ -246,11 +262,20 @@ function addMathematicsExtension(extensions: Extensions, features: VizelFeatureO
 /**
  * Add Drag Handle extension if enabled
  */
-function addDragHandleExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+function addDragHandleExtension(
+  extensions: Extensions,
+  features: VizelFeatureOptions,
+  locale?: VizelLocale
+): void {
   if (features.dragHandle === false) return;
 
   const dragHandleOptions = typeof features.dragHandle === "object" ? features.dragHandle : {};
-  extensions.push(...createVizelDragHandleExtensions(dragHandleOptions));
+  extensions.push(
+    ...createVizelDragHandleExtensions({
+      ...dragHandleOptions,
+      ...(locale !== undefined && { locale }),
+    })
+  );
 }
 
 /**
@@ -406,6 +431,7 @@ export async function createVizelExtensions(
     headingLevels = [1, 2, 3, 4, 5, 6],
     features = {},
     flavor,
+    locale,
   } = options;
 
   const flavorConfig = resolveVizelFlavorConfig(flavor);
@@ -439,7 +465,7 @@ export async function createVizelExtensions(
   addCharacterCountExtension(extensions, features);
   addTextColorExtension(extensions, features);
   addMathematicsExtension(extensions, features);
-  addDragHandleExtension(extensions, features);
+  addDragHandleExtension(extensions, features, locale);
   addDetailsExtension(extensions, features);
   addCalloutExtension(extensions, features, flavorConfig);
   addEmbedExtension(extensions, features);
@@ -461,7 +487,7 @@ export async function createVizelExtensions(
   }
 
   // Add code block extension (async - lowlight is loaded dynamically)
-  await addCodeBlockExtension(extensions, features);
+  await addCodeBlockExtension(extensions, features, locale);
 
   return extensions;
 }
