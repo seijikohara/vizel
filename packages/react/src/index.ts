@@ -91,6 +91,10 @@ export {
   type VizelToolbarDefaultProps,
   VizelToolbarDivider,
   type VizelToolbarDividerProps,
+  VizelToolbarDropdown,
+  type VizelToolbarDropdownProps,
+  VizelToolbarOverflow,
+  type VizelToolbarOverflowProps,
   type VizelToolbarProps,
 } from "./components/index.ts";
 

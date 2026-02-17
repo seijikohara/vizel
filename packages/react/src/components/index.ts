@@ -79,3 +79,11 @@ export {
   VizelToolbarDivider,
   type VizelToolbarDividerProps,
 } from "./VizelToolbarDivider.tsx";
+export {
+  VizelToolbarDropdown,
+  type VizelToolbarDropdownProps,
+} from "./VizelToolbarDropdown.tsx";
+export {
+  VizelToolbarOverflow,
+  type VizelToolbarOverflowProps,
+} from "./VizelToolbarOverflow.tsx";

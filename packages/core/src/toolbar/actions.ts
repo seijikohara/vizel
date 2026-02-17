@@ -25,6 +25,39 @@ export interface VizelToolbarAction {
 }
 
 /**
+ * A dropdown toolbar action that groups multiple sub-actions.
+ * When clicked, displays a popover with the nested options.
+ */
+export interface VizelToolbarDropdownAction {
+  /** Unique action identifier */
+  id: string;
+  /** Display label for the dropdown trigger */
+  label: string;
+  /** Icon name for the dropdown trigger */
+  icon: VizelIconName;
+  /** Group identifier for visual separation */
+  group: string;
+  /** Marks this as a dropdown action */
+  type: "dropdown";
+  /** The nested actions to display in the dropdown */
+  options: VizelToolbarAction[];
+  /** Returns the currently active option to display in the trigger */
+  getActiveOption?: (editor: Editor) => VizelToolbarAction | undefined;
+}
+
+/**
+ * Union type for any toolbar item — either a simple action or a dropdown.
+ */
+export type VizelToolbarActionItem = VizelToolbarAction | VizelToolbarDropdownAction;
+
+/**
+ * Type guard to check if a toolbar item is a dropdown action.
+ */
+export const isVizelToolbarDropdownAction = (
+  item: VizelToolbarActionItem
+): item is VizelToolbarDropdownAction => "type" in item && item.type === "dropdown";
+
+/**
  * Default toolbar actions providing common formatting operations.
  */
 export const vizelDefaultToolbarActions = [
@@ -223,13 +256,14 @@ export function createVizelToolbarActions(locale: VizelLocale): VizelToolbarActi
 
 /**
  * Get toolbar actions grouped by their group identifier.
+ * Supports both simple actions and dropdown actions.
  */
 export function groupVizelToolbarActions(
-  actions: VizelToolbarAction[] = vizelDefaultToolbarActions
-): VizelToolbarAction[][] {
-  const groups: VizelToolbarAction[][] = [];
+  actions: VizelToolbarActionItem[] = vizelDefaultToolbarActions
+): VizelToolbarActionItem[][] {
+  const groups: VizelToolbarActionItem[][] = [];
   let currentGroup: string | null = null;
-  let currentActions: VizelToolbarAction[] = [];
+  let currentActions: VizelToolbarActionItem[] = [];
 
   for (const action of actions) {
     if (action.group !== currentGroup) {

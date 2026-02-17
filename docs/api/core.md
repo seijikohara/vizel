@@ -442,6 +442,47 @@ interface VizelToolbarAction {
 }
 ```
 
+### VizelToolbarDropdownAction
+
+Type definition for a dropdown toolbar action that groups multiple sub-actions.
+
+```typescript
+import type { VizelToolbarDropdownAction } from '@vizel/core';
+
+interface VizelToolbarDropdownAction {
+  id: string;
+  label: string;
+  icon: VizelIconName;
+  group: string;
+  type: 'dropdown';
+  options: VizelToolbarAction[];
+  getActiveOption?: (editor: Editor) => VizelToolbarAction | undefined;
+}
+```
+
+### VizelToolbarActionItem
+
+Union type for any toolbar item — either a simple action or a dropdown.
+
+```typescript
+import type { VizelToolbarActionItem } from '@vizel/core';
+
+type VizelToolbarActionItem = VizelToolbarAction | VizelToolbarDropdownAction;
+```
+
+### isVizelToolbarDropdownAction
+
+Type guard to check if a toolbar item is a dropdown action.
+
+```typescript
+import { isVizelToolbarDropdownAction } from '@vizel/core';
+
+if (isVizelToolbarDropdownAction(action)) {
+  // action is VizelToolbarDropdownAction
+  action.options.forEach(opt => /* ... */);
+}
+```
+
 ### vizelDefaultToolbarActions
 
 This constant provides the default toolbar actions including undo/redo, formatting, headings, lists, and blocks.
@@ -455,13 +496,13 @@ import { vizelDefaultToolbarActions } from '@vizel/core';
 
 ### groupVizelToolbarActions
 
-This function groups toolbar actions by their `group` property for rendering with dividers.
+This function groups toolbar actions by their `group` property for rendering with dividers. Supports both simple actions and dropdown actions.
 
 ```typescript
 import { groupVizelToolbarActions } from '@vizel/core';
 
 const groups = groupVizelToolbarActions(actions);
-// VizelToolbarAction[][] - each sub-array is a group
+// VizelToolbarActionItem[][] - each sub-array is a group
 ```
 
 ---

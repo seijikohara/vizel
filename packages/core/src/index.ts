@@ -305,7 +305,10 @@ export {
 export {
   createVizelToolbarActions,
   groupVizelToolbarActions,
+  isVizelToolbarDropdownAction,
   type VizelToolbarAction,
+  type VizelToolbarActionItem,
+  type VizelToolbarDropdownAction,
   vizelDefaultToolbarActions,
 } from "./toolbar/index.ts";
 // =============================================================================
