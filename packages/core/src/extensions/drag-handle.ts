@@ -7,6 +7,12 @@ import { VIZEL_BLOCK_MENU_EVENT, type VizelBlockMenuOpenDetail } from "./block-m
 
 export { DragHandle as VizelDragHandle };
 
+/** Node types that represent individual list items */
+const LIST_ITEM_NODE_TYPES = new Set(["listItem", "taskItem"]);
+
+/** Node types that represent list containers */
+const LIST_CONTAINER_NODE_TYPES = new Set(["bulletList", "orderedList", "taskList"]);
+
 export interface VizelDragHandleOptions {
   /**
    * Whether to show the drag handle
@@ -106,8 +112,13 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
       if (dragHandleElement) {
         if (node) {
           dragHandleElement.classList.add("is-visible");
+
+          // Add list-specific class for styling adjustments
+          const isListContainer = LIST_CONTAINER_NODE_TYPES.has(node.type.name);
+          const isListItem = LIST_ITEM_NODE_TYPES.has(node.type.name);
+          dragHandleElement.classList.toggle("is-list-target", isListContainer || isListItem);
         } else {
-          dragHandleElement.classList.remove("is-visible");
+          dragHandleElement.classList.remove("is-visible", "is-list-target");
         }
       }
     },

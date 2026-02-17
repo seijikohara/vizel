@@ -65,6 +65,16 @@
     pointer-events: auto;
   }
 
+  // Adjust handle size for list items to be less intrusive
+  &.is-list-target {
+    height: 1.25rem;
+
+    .vizel-drag-handle-grip svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
   &-grip {
     display: flex;
     align-items: center;
