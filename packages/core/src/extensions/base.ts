@@ -23,6 +23,8 @@ import Text from "@tiptap/extension-text";
 import Typography from "@tiptap/extension-typography";
 import Underline from "@tiptap/extension-underline";
 import type { VizelFeatureOptions } from "../types.ts";
+import type { VizelFlavorConfig, VizelMarkdownFlavor } from "../utils/markdown-flavors.ts";
+import { resolveVizelFlavorConfig } from "../utils/markdown-flavors.ts";
 import { createVizelCalloutExtension } from "./callout.ts";
 import { createVizelCharacterCountExtension } from "./character-count.ts";
 import type { VizelCodeBlockOptions } from "./code-block-lowlight.ts";
@@ -61,6 +63,12 @@ export interface VizelExtensionsOptions {
    * Set to false to disable a feature, or pass options to configure it.
    */
   features?: VizelFeatureOptions;
+  /**
+   * Markdown output flavor.
+   * Controls how extensions serialize their content to Markdown.
+   * @default "gfm"
+   */
+  flavor?: VizelMarkdownFlavor;
 }
 
 /**
@@ -286,23 +294,43 @@ function addTableOfContentsExtension(extensions: Extensions, features: VizelFeat
 }
 
 /**
- * Add Wiki Link extension if enabled (disabled by default)
+ * Add Wiki Link extension if enabled (disabled by default).
+ * Injects the flavor-specific serialization setting.
  */
-function addWikiLinkExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+function addWikiLinkExtension(
+  extensions: Extensions,
+  features: VizelFeatureOptions,
+  flavorConfig: VizelFlavorConfig
+): void {
   if (!features.wikiLink) return;
 
   const wikiLinkOptions = typeof features.wikiLink === "object" ? features.wikiLink : {};
-  extensions.push(createVizelWikiLinkExtension(wikiLinkOptions));
+  extensions.push(
+    createVizelWikiLinkExtension({
+      ...wikiLinkOptions,
+      serializeAsWikiLink: wikiLinkOptions.serializeAsWikiLink ?? flavorConfig.wikiLinkSerialize,
+    })
+  );
 }
 
 /**
- * Add Callout extension if enabled (enabled by default)
+ * Add Callout extension if enabled (enabled by default).
+ * Injects the flavor-specific markdown format.
  */
-function addCalloutExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+function addCalloutExtension(
+  extensions: Extensions,
+  features: VizelFeatureOptions,
+  flavorConfig: VizelFlavorConfig
+): void {
   if (features.callout === false) return;
 
   const calloutOptions = typeof features.callout === "object" ? features.callout : {};
-  extensions.push(createVizelCalloutExtension(calloutOptions));
+  extensions.push(
+    createVizelCalloutExtension({
+      ...calloutOptions,
+      markdownFormat: calloutOptions.markdownFormat ?? flavorConfig.calloutFormat,
+    })
+  );
 }
 
 /**
@@ -377,8 +405,10 @@ export async function createVizelExtensions(
     placeholder = "Type '/' for commands...",
     headingLevels = [1, 2, 3, 4, 5, 6],
     features = {},
+    flavor,
   } = options;
 
+  const flavorConfig = resolveVizelFlavorConfig(flavor);
   const excludeHistory = features.collaboration === true;
 
   const extensions: Extensions = [
@@ -411,11 +441,11 @@ export async function createVizelExtensions(
   addMathematicsExtension(extensions, features);
   addDragHandleExtension(extensions, features);
   addDetailsExtension(extensions, features);
-  addCalloutExtension(extensions, features);
+  addCalloutExtension(extensions, features, flavorConfig);
   addEmbedExtension(extensions, features);
   addDiagramExtension(extensions, features);
   addTableOfContentsExtension(extensions, features);
-  addWikiLinkExtension(extensions, features);
+  addWikiLinkExtension(extensions, features, flavorConfig);
   addMentionExtension(extensions, features);
   addCommentExtension(extensions, features);
 

@@ -6,6 +6,7 @@ import {
   setVizelMarkdown,
   type VizelError,
   type VizelFeatureOptions,
+  type VizelMarkdownFlavor,
 } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useEffect, useImperativeHandle, useRef } from "react";
@@ -42,6 +43,12 @@ export interface VizelProps {
   autofocus?: boolean | "start" | "end" | "all" | number;
   /** Feature configuration */
   features?: VizelFeatureOptions;
+  /**
+   * Markdown output flavor.
+   * Controls how Markdown is serialized when exporting content.
+   * @default "gfm"
+   */
+  flavor?: VizelMarkdownFlavor;
   /** Additional Tiptap extensions */
   extensions?: Extensions;
   /** Custom class name for the editor container */
@@ -145,6 +152,7 @@ export function Vizel({
   editable = true,
   autofocus = false,
   features,
+  flavor,
   extensions,
   className,
   showToolbar = false,
@@ -184,6 +192,7 @@ export function Vizel({
     editable,
     autofocus,
     ...(features !== undefined && { features }),
+    ...(flavor !== undefined && { flavor }),
     ...(extensions !== undefined && { extensions }),
     onUpdate: (e) => {
       onUpdateRef.current?.(e);

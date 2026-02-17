@@ -20,6 +20,7 @@ import type { VizelTextColorOptions } from "./extensions/text-color.ts";
 import type { VizelWikiLinkOptions } from "./extensions/wiki-link.ts";
 import type { VizelImageUploadPluginOptions } from "./plugins/image-upload.ts";
 import type { VizelError } from "./utils/errorHandling.ts";
+import type { VizelMarkdownFlavor } from "./utils/markdown-flavors.ts";
 
 /**
  * Slash command feature options
@@ -112,6 +113,19 @@ export interface VizelFeatureOptions {
 export interface VizelEditorOptions {
   /** Feature configuration */
   features?: VizelFeatureOptions;
+  /**
+   * Markdown output flavor.
+   * Controls how Markdown is serialized when exporting content.
+   *
+   * - `"commonmark"` — Standard CommonMark (callouts fall back to blockquotes)
+   * - `"gfm"` — GitHub Flavored Markdown with `> [!NOTE]` alerts (default)
+   * - `"obsidian"` — Obsidian-style `> [!note]` callouts and `[[wiki-links]]`
+   * - `"docusaurus"` — Docusaurus/VitePress `:::note` admonitions
+   *
+   * Input parsing is always tolerant: all callout formats are recognized regardless of flavor.
+   * @default "gfm"
+   */
+  flavor?: VizelMarkdownFlavor;
   /** Initial content in JSON format */
   initialContent?: JSONContent;
   /**

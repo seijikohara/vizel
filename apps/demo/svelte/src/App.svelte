@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { Editor, JSONContent } from "@tiptap/core";
+import type { VizelMarkdownFlavor } from "@vizel/core";
 import { createVizelFindReplaceExtension, setVizelMarkdown } from "@vizel/core";
 import {
   createVizelAutoSave,
@@ -26,6 +27,8 @@ let features = $state({
   comments: false,
   history: false,
 });
+
+let flavor = $state<VizelMarkdownFlavor>("gfm");
 
 type PanelTab = "markdown" | "json" | "history" | "comments";
 let activeTab = $state<PanelTab>("markdown");
@@ -172,6 +175,18 @@ function handleJsonChange(event: Event) {
         <input type="checkbox" bind:checked={features.history} />
         <span class="feature-toggle-label">History</span>
       </label>
+      <label class="feature-toggle">
+        <span class="feature-toggle-label">Flavor</span>
+        <select
+          class="feature-select"
+          bind:value={flavor}
+        >
+          <option value="commonmark">CommonMark</option>
+          <option value="gfm">GFM</option>
+          <option value="obsidian">Obsidian</option>
+          <option value="docusaurus">Docusaurus</option>
+        </select>
+      </label>
     </div>
   </section>
 
@@ -183,6 +198,7 @@ function handleJsonChange(event: Event) {
           autofocus="end"
           class="editor-content"
           showToolbar={features.toolbar}
+          {flavor}
           enableEmbed
           extensions={findReplaceExtensions}
           features={{

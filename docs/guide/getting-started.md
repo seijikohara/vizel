@@ -415,6 +415,34 @@ let markdown = $state('# Hello World');
 
 :::
 
+## Markdown Flavor
+
+Vizel supports multiple Markdown output flavors. The `flavor` option controls how content is serialized (e.g., callout format, wiki link syntax). Input parsing is always tolerant and accepts all formats.
+
+::: code-group
+
+```tsx [React]
+const editor = useVizelEditor({
+  flavor: 'obsidian', // 'commonmark' | 'gfm' (default) | 'obsidian' | 'docusaurus'
+});
+```
+
+```vue [Vue]
+const editor = useVizelEditor({
+  flavor: 'obsidian',
+});
+```
+
+```svelte [Svelte]
+const editor = createVizelEditor({
+  flavor: 'obsidian',
+});
+```
+
+:::
+
+See [Features - Markdown Flavor Selection](/guide/features#markdown-flavor-selection) for details on each flavor.
+
 ## Enabling Features
 
 All features are enabled by default except `collaboration`, `comment`, and `wikiLink`. You can disable specific features by setting them to `false`, or pass an options object to configure them:

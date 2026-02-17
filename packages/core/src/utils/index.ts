@@ -44,6 +44,14 @@ export {
   VIZEL_DEFAULT_MARKDOWN_DEBOUNCE_MS,
   type VizelMarkdownSyncHandlers,
 } from "./markdown.ts";
+// Markdown flavor utilities
+export {
+  resolveVizelFlavorConfig,
+  VIZEL_DEFAULT_FLAVOR,
+  type VizelCalloutMarkdownFormat,
+  type VizelFlavorConfig,
+  type VizelMarkdownFlavor,
+} from "./markdown-flavors.ts";
 // Portal utilities
 export {
   createVizelPortalElement,

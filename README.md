@@ -39,7 +39,7 @@
 - **Table of Contents** - Auto-collected heading navigation block
 - **Code Blocks** - Syntax highlighting with 37+ languages (190+ available)
 - **Images** - Drag & drop, paste, resize support
-- **Markdown** - Import/export Markdown content
+- **Markdown** - Import/export Markdown content with configurable flavor (CommonMark, GFM, Obsidian, Docusaurus)
 - **Mathematics** - LaTeX equations with KaTeX
 - **Embeds** - YouTube, Vimeo, Twitter, CodePen, Figma via oEmbed
 - **Details** - Collapsible content blocks
@@ -262,7 +262,9 @@ const editor = useVizelEditor({
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable oEmbed/OGP embed previews in the link editor |
 | `transformDiagramsOnImport` | `boolean` | - | Transform diagrams on Markdown import |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor (`"commonmark"`, `"gfm"`, `"obsidian"`, `"docusaurus"`) |
 | `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `onError` | `(error: VizelError) => void` | - | Called when an error occurs |
 | `onCreate` | `(props) => void` | - | Called when editor is created |
 | `onUpdate` | `(props) => void` | - | Called on content update |
 | `onSelectionUpdate` | `(props) => void` | - | Called on selection change |
@@ -272,9 +274,13 @@ const editor = useVizelEditor({
 
 ### Error Handling
 
-The `onError` callback is available through `useVizelEditor` (React), `useVizelEditor` (Vue), or `createVizelEditor` (Svelte). It is not a prop on the `Vizel` all-in-one component.
+The `onError` callback is available as a prop on the `Vizel` all-in-one component, or through `useVizelEditor` (React), `useVizelEditor` (Vue), or `createVizelEditor` (Svelte).
 
 ```typescript
+// Using Vizel component
+<Vizel onError={(error) => console.error(`[${error.code}] ${error.message}`)} />
+
+// Or using useVizelEditor hook
 const editor = useVizelEditor({
   onError: (error) => {
     console.error(`[${error.code}] ${error.message}`);
@@ -286,7 +292,7 @@ const editor = useVizelEditor({
 
 ### Feature Options
 
-All major features are enabled by default except `collaboration`, `comment`, and `wikiLink`:
+All major features are enabled by default except `collaboration`, `comment`, `mention`, and `wikiLink`:
 
 ```typescript
 // Using Vizel component
@@ -318,6 +324,7 @@ const editor = useVizelEditor({
     details: true,         // enabled by default
     diagram: true,         // enabled by default
     wikiLink: true,        // opt-in: must be explicitly enabled
+    mention: true,         // opt-in: must be explicitly enabled
     comment: true,         // opt-in: must be explicitly enabled
     // collaboration: true, // opt-in: must be explicitly enabled
   },

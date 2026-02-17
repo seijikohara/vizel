@@ -117,6 +117,45 @@ import type { VizelFeatureOptions } from '@vizel/core';
 
 See [Type Definitions](/api/types/features) for full interface.
 
+### VizelMarkdownFlavor
+
+```typescript
+import type { VizelMarkdownFlavor } from '@vizel/core';
+
+type VizelMarkdownFlavor = "commonmark" | "gfm" | "obsidian" | "docusaurus";
+```
+
+Supported Markdown output flavors. Controls how content is serialized when exporting Markdown. The default is `"gfm"`.
+
+### VizelFlavorConfig
+
+```typescript
+import type { VizelFlavorConfig } from '@vizel/core';
+
+interface VizelFlavorConfig {
+  /** How callout/admonition blocks are serialized */
+  calloutFormat: VizelCalloutMarkdownFormat;
+  /** Whether wiki links are serialized as [[page]] (true) or standard links (false) */
+  wikiLinkSerialize: boolean;
+}
+```
+
+Flavor-specific configuration resolved from a `VizelMarkdownFlavor`. Used internally by extensions to determine how to serialize Markdown.
+
+### VizelCalloutMarkdownFormat
+
+```typescript
+import type { VizelCalloutMarkdownFormat } from '@vizel/core';
+
+type VizelCalloutMarkdownFormat =
+  | "github-alerts"
+  | "obsidian-callouts"
+  | "directives"
+  | "blockquote-fallback";
+```
+
+Callout/admonition output format for Markdown serialization.
+
 ### JSONContent
 
 Tiptap's JSON content format. Import directly from `@tiptap/core`:
@@ -167,6 +206,23 @@ const resolved = resolveVizelFeatures({
   },
   createSlashMenuRenderer: mySlashMenuRenderer,
 });
+```
+
+### resolveVizelFlavorConfig
+
+This function resolves flavor-specific configuration from a Markdown flavor name.
+
+```typescript
+import { resolveVizelFlavorConfig } from '@vizel/core';
+
+const config = resolveVizelFlavorConfig('obsidian');
+// config.calloutFormat === "obsidian-callouts"
+// config.wikiLinkSerialize === true
+
+// Defaults to "gfm" when called without arguments
+const defaultConfig = resolveVizelFlavorConfig();
+// defaultConfig.calloutFormat === "github-alerts"
+// defaultConfig.wikiLinkSerialize === false
 ```
 
 ### getVizelEditorState
@@ -326,6 +382,15 @@ const provider = detectVizelEmbedProvider('https://www.youtube.com/watch?v=dQw4w
 ---
 
 ## Constants
+
+### VIZEL_DEFAULT_FLAVOR
+
+This constant defines the default Markdown output flavor.
+
+```typescript
+import { VIZEL_DEFAULT_FLAVOR } from '@vizel/core';
+// "gfm"
+```
 
 ### VIZEL_TEXT_COLORS
 
