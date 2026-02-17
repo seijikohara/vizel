@@ -15,6 +15,7 @@ import {
 } from "@vizel/core";
 import { useSlots, watch } from "vue";
 import { useVizelEditor } from "../composables/useVizelEditor.ts";
+import VizelBlockMenu from "./VizelBlockMenu.vue";
 import VizelBubbleMenu from "./VizelBubbleMenu.vue";
 import VizelEditor from "./VizelEditor.vue";
 import VizelToolbar from "./VizelToolbar.vue";
@@ -177,6 +178,7 @@ defineExpose<VizelRef & { getEditor: () => Editor | null }>({
       <slot name="bubble-menu" :editor="editor" />
     </VizelBubbleMenu>
     <VizelBubbleMenu v-else-if="showBubbleMenu && editor" :editor="editor" :enable-embed="enableEmbed ?? false" />
+    <VizelBlockMenu />
     <slot :editor="editor" />
   </div>
 </template>

@@ -366,6 +366,26 @@ This component renders the editor content area.
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | CSS class name |
 
+### VizelBlockMenu
+
+Block context menu that appears when clicking the drag handle.
+
+```vue
+<script setup>
+import { VizelBlockMenu } from '@vizel/vue';
+</script>
+
+<template>
+  <VizelBlockMenu />
+</template>
+```
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `actions` | `VizelBlockMenuAction[]` | `vizelDefaultBlockMenuActions` | Custom menu actions |
+| `nodeTypes` | `VizelNodeTypeOption[]` | `vizelDefaultNodeTypes` | Node types for "Turn into" submenu |
+| `class` | `string` | - | CSS class name |
+
 ### VizelBubbleMenu
 
 This component renders a floating formatting bubble menu.

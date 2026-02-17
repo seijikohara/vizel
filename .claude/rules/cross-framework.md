@@ -33,6 +33,7 @@ Each component must exist in all three frameworks with equivalent functionality:
 | Component | React | Vue | Svelte |
 |-----------|-------|-----|--------|
 | Vizel | `.tsx` | `.vue` | `.svelte` |
+| VizelBlockMenu | `.tsx` | `.vue` | `.svelte` |
 | VizelEditor | `.tsx` | `.vue` | `.svelte` |
 | VizelBubbleMenu | `.tsx` | `.vue` | `.svelte` |
 | VizelBubbleMenuDefault | `.tsx` | `.vue` | `.svelte` |

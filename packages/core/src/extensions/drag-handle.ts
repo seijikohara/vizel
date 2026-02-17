@@ -1,6 +1,8 @@
 import { Extension } from "@tiptap/core";
 import DragHandle from "@tiptap/extension-drag-handle";
+import type { Node as PmNode } from "@tiptap/pm/model";
 import { renderVizelIcon } from "../icons/types.ts";
+import { VIZEL_BLOCK_MENU_EVENT, type VizelBlockMenuOpenDetail } from "./block-menu.ts";
 
 export { DragHandle as VizelDragHandle };
 
@@ -12,9 +14,13 @@ export interface VizelDragHandleOptions {
   enabled?: boolean;
 }
 
+/** Threshold in pixels to distinguish click from drag */
+const CLICK_DRAG_THRESHOLD = 5;
+
 /**
  * Creates a DragHandle extension with default styling.
  * The drag handle appears on the left side of blocks when hovering.
+ * Clicking (not dragging) the handle opens the block menu.
  */
 export function createVizelDragHandleExtension(options: VizelDragHandleOptions = {}): Extension {
   const { enabled = true } = options;
@@ -23,8 +29,11 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
     return Extension.create({ name: "vizelDragHandleDisabled" });
   }
 
-  // Store reference to the element for use in onNodeChange
+  // Store references for onNodeChange and click handler
   let dragHandleElement: HTMLElement | null = null;
+  let currentNode: PmNode | null = null;
+  let currentPos = 0;
+  let currentEditor: import("@tiptap/core").Editor | null = null;
 
   return DragHandle.configure({
     render() {
@@ -32,21 +41,58 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
       element.classList.add("vizel-drag-handle");
       element.setAttribute("data-vizel-drag-handle", "");
       element.setAttribute("draggable", "true");
-      element.setAttribute("aria-label", "Drag to reorder block");
+      element.setAttribute("aria-label", "Drag to reorder block, click for menu");
       element.setAttribute("role", "button");
 
-      // Create grip icon (6 dots pattern)
+      // Create grip icon using safe template element approach
       const grip = document.createElement("div");
       grip.classList.add("vizel-drag-handle-grip");
-      grip.innerHTML = renderVizelIcon("grip", { width: 14, height: 14 });
+      const iconHtml = renderVizelIcon("grip", { width: 14, height: 14 });
+      const template = document.createElement("template");
+      template.innerHTML = iconHtml;
+      grip.appendChild(template.content);
       element.appendChild(grip);
 
-      // Store reference for onNodeChange callback
+      // Click vs drag detection
+      let startX = 0;
+      let startY = 0;
+      let isDrag = false;
+
+      element.addEventListener("mousedown", (e: MouseEvent) => {
+        startX = e.clientX;
+        startY = e.clientY;
+        isDrag = false;
+      });
+
+      element.addEventListener("mousemove", (e: MouseEvent) => {
+        if (Math.abs(e.clientX - startX) + Math.abs(e.clientY - startY) > CLICK_DRAG_THRESHOLD) {
+          isDrag = true;
+        }
+      });
+
+      element.addEventListener("mouseup", () => {
+        if (!isDrag && currentNode && currentEditor && dragHandleElement) {
+          const handleRect = dragHandleElement.getBoundingClientRect();
+          const detail: VizelBlockMenuOpenDetail = {
+            editor: currentEditor,
+            pos: currentPos,
+            node: currentNode,
+            handleRect,
+          };
+          document.dispatchEvent(new CustomEvent(VIZEL_BLOCK_MENU_EVENT, { detail }));
+        }
+      });
+
       dragHandleElement = element;
 
       return element;
     },
-    onNodeChange({ node }) {
+    onNodeChange({ node, editor, ...rest }) {
+      currentNode = node ?? null;
+      // The drag-handle plugin passes pos at runtime but the public type omits it
+      currentPos = (rest as { pos?: number }).pos ?? 0;
+      currentEditor = editor;
+
       // Toggle visibility class based on whether a node is being targeted
       if (dragHandleElement) {
         if (node) {

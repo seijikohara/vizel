@@ -18,6 +18,9 @@ export {
   useVizelIconContext,
   // Vizel all-in-one
   Vizel,
+  // BlockMenu
+  VizelBlockMenu,
+  type VizelBlockMenuProps,
   // BubbleMenu
   VizelBubbleMenu,
   VizelBubbleMenuButton,

@@ -3,6 +3,13 @@
 // ============================================================================
 export { default as Vizel, type VizelProps, type VizelRef } from "./Vizel.svelte";
 // ============================================================================
+// Vizel BlockMenu component
+// ============================================================================
+export {
+  default as VizelBlockMenu,
+  type VizelBlockMenuProps,
+} from "./VizelBlockMenu.svelte";
+// ============================================================================
 // Vizel BubbleMenu components
 // ============================================================================
 export {
