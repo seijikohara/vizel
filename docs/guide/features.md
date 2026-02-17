@@ -14,7 +14,7 @@ graph TB
         ToC["Table of Contents"]
         Image["Images"]
         CodeBlock["Code Blocks"]
-        DragHandle["Drag Handle"]
+        DragHandle["Drag Handle & Block Menu"]
         CharCount["Character Count"]
         TextColor["Text Color"]
         TaskList["Task Lists"]
@@ -613,6 +613,31 @@ const editor = useVizelEditor({
     },
   },
 });
+```
+
+### Block Menu
+
+Clicking the drag handle opens a context menu for the block. The menu provides:
+
+- **Delete** — Remove the block
+- **Duplicate** — Copy the block below
+- **Copy** / **Cut** — Clipboard operations
+- **Turn into** — Convert the block to a different type (heading, list, blockquote, etc.)
+
+The block menu is automatically included in the `Vizel` all-in-one component. When using the composition pattern (`VizelEditor` + `VizelBubbleMenu`), add `VizelBlockMenu` explicitly:
+
+```tsx
+// React
+import { VizelBlockMenu } from '@vizel/react';
+<VizelBlockMenu />
+
+// Vue
+import { VizelBlockMenu } from '@vizel/vue';
+<VizelBlockMenu />
+
+// Svelte
+import { VizelBlockMenu } from '@vizel/svelte';
+<VizelBlockMenu />
 ```
 
 ---

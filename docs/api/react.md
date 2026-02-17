@@ -353,6 +353,22 @@ import { VizelEditor } from '@vizel/react';
 | `editor` | `Editor \| null` | - | Editor instance |
 | `className` | `string` | - | CSS class name |
 
+### VizelBlockMenu
+
+Block context menu that appears when clicking the drag handle.
+
+```tsx
+import { VizelBlockMenu } from '@vizel/react';
+
+<VizelBlockMenu />
+```
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `actions` | `VizelBlockMenuAction[]` | `vizelDefaultBlockMenuActions` | Custom menu actions |
+| `nodeTypes` | `VizelNodeTypeOption[]` | `vizelDefaultNodeTypes` | Node types for "Turn into" submenu |
+| `className` | `string` | - | CSS class name |
+
 ### VizelBubbleMenu
 
 This component renders a floating formatting bubble menu.

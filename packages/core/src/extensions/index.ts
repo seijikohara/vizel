@@ -1,5 +1,14 @@
 // Base extensions
 export { createVizelExtensions, type VizelExtensionsOptions } from "./base.ts";
+// Block menu
+export {
+  getVizelTurnIntoOptions,
+  groupVizelBlockMenuActions,
+  VIZEL_BLOCK_MENU_EVENT,
+  type VizelBlockMenuAction,
+  type VizelBlockMenuOpenDetail,
+  vizelDefaultBlockMenuActions,
+} from "./block-menu.ts";
 // Callout / Admonition
 export {
   createVizelCalloutExtension,

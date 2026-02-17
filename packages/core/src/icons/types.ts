@@ -106,6 +106,16 @@ export type VizelBubbleMenuIconName =
   | "subscript";
 
 /**
+ * Icon names used in Block Menu.
+ */
+export type VizelBlockMenuIconName =
+  | "trash"
+  | "copyPlus"
+  | "clipboard"
+  | "scissors"
+  | "arrowRightLeft";
+
+/**
  * Icon names used in Toolbar.
  */
 export type VizelToolbarIconName = "undo" | "redo";
@@ -140,6 +150,7 @@ export type VizelIconName =
   | VizelTableIconName
   | VizelUIIconName
   | VizelBubbleMenuIconName
+  | VizelBlockMenuIconName
   | VizelToolbarIconName
   | VizelInternalIconName;
 
@@ -225,6 +236,12 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   chevronDown: "lucide:chevron-down",
   externalLink: "lucide:external-link",
   x: "lucide:x",
+  // Block Menu
+  trash: "lucide:trash-2",
+  copyPlus: "lucide:copy-plus",
+  clipboard: "lucide:clipboard",
+  scissors: "lucide:scissors",
+  arrowRightLeft: "lucide:arrow-right-left",
   // Toolbar
   undo: "lucide:undo-2",
   redo: "lucide:redo-2",

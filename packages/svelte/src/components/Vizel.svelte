@@ -97,6 +97,7 @@ export interface VizelProps {
 // This is the recommended way to use Vizel for most use cases.
 import { getVizelMarkdown, setVizelMarkdown } from "@vizel/core";
 import { createVizelEditor } from "../runes/createVizelEditor.svelte.js";
+import VizelBlockMenu from "./VizelBlockMenu.svelte";
 import VizelBubbleMenu from "./VizelBubbleMenu.svelte";
 import VizelEditor from "./VizelEditor.svelte";
 import VizelToolbar from "./VizelToolbar.svelte";
@@ -191,6 +192,7 @@ $effect(() => {
   {:else if showBubbleMenu && editor}
     <VizelBubbleMenu {editor} {enableEmbed} />
   {/if}
+  <VizelBlockMenu />
   {#if children}
     {@render children({ editor })}
   {/if}

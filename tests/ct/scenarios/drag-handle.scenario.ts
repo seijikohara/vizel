@@ -111,7 +111,7 @@ export async function testDragHandleAccessibility(component: Locator, page: Page
 
   // Check accessibility attributes
   await expect(dragHandle).toHaveAttribute("role", "button");
-  await expect(dragHandle).toHaveAttribute("aria-label", "Drag to reorder block");
+  await expect(dragHandle).toHaveAttribute("aria-label", "Drag to reorder block, click for menu");
   await expect(dragHandle).toHaveAttribute("draggable", "true");
 }
 

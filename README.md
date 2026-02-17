@@ -55,6 +55,7 @@
 - **Version History** - Document snapshots and restore
 - **Collaboration** - Real-time multi-user editing with Yjs (opt-in)
 - **Drag & Drop** - Block reordering with drag handle and Alt+Arrow keys
+- **Block Menu** - Context menu on drag handle click (delete, duplicate, turn into)
 - **Plugin System** - Extensible plugin architecture
 
 ## Packages

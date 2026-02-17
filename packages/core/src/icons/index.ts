@@ -12,6 +12,7 @@ export {
   renderVizelIcon,
   renderVizelIconSvg,
   setVizelIconRenderer,
+  type VizelBlockMenuIconName,
   type VizelBubbleMenuIconName,
   type VizelIconContextValue,
   type VizelIconName,

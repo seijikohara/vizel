@@ -11,6 +11,7 @@ import {
 import type { ReactNode, Ref } from "react";
 import { useEffect, useImperativeHandle, useRef } from "react";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
+import { VizelBlockMenu } from "./VizelBlockMenu.tsx";
 import { VizelBubbleMenu } from "./VizelBubbleMenu.tsx";
 import { VizelEditor } from "./VizelEditor.tsx";
 import { VizelToolbar } from "./VizelToolbar.tsx";
@@ -249,6 +250,7 @@ export function Vizel({
       {showBubbleMenu && editor && !bubbleMenuContent && (
         <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} />
       )}
+      <VizelBlockMenu />
       {children}
     </div>
   );
