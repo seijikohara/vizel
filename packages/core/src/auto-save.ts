@@ -1,4 +1,6 @@
 import type { Editor, JSONContent } from "@tiptap/core";
+import type { VizelLocale } from "./i18n/types.ts";
+import { formatRelativeTimeWithLocale } from "./i18n/utils.ts";
 
 /**
  * Storage backend type for auto-save
@@ -218,15 +220,27 @@ export function createVizelAutoSaveHandlers(
 }
 
 /**
- * Format relative time for display
+ * Format relative time for display.
+ *
+ * @param date - The date to format relative to now
+ * @param locale - Optional locale for translated time strings
  */
-export function formatVizelRelativeTime(date: Date): string {
+export function formatVizelRelativeTime(date: Date, locale?: VizelLocale): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffSec = Math.floor(diffMs / 1000);
   const diffMin = Math.floor(diffSec / 60);
   const diffHour = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHour / 24);
+
+  if (locale) {
+    const t = locale.relativeTime;
+    if (diffSec < 5) return t.justNow;
+    if (diffSec < 60) return formatRelativeTimeWithLocale(t.secondsAgo, diffSec);
+    if (diffMin < 60) return formatRelativeTimeWithLocale(t.minutesAgo, diffMin);
+    if (diffHour < 24) return formatRelativeTimeWithLocale(t.hoursAgo, diffHour);
+    return formatRelativeTimeWithLocale(t.daysAgo, diffDay);
+  }
 
   if (diffSec < 5) {
     return "Just now";

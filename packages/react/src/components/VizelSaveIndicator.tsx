@@ -1,4 +1,4 @@
-import { formatVizelRelativeTime, type VizelSaveStatus } from "@vizel/core";
+import { formatVizelRelativeTime, type VizelLocale, type VizelSaveStatus } from "@vizel/core";
 import { useEffect, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 
@@ -11,6 +11,8 @@ export interface VizelSaveIndicatorProps {
   showTimestamp?: boolean;
   /** Custom class name */
   className?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 /**
@@ -30,6 +32,7 @@ export function VizelSaveIndicator({
   lastSaved,
   showTimestamp = true,
   className,
+  locale,
 }: VizelSaveIndicatorProps) {
   const [relativeTime, setRelativeTime] = useState<string>("");
 
@@ -41,14 +44,14 @@ export function VizelSaveIndicator({
     }
 
     const updateTime = () => {
-      setRelativeTime(formatVizelRelativeTime(lastSaved));
+      setRelativeTime(formatVizelRelativeTime(lastSaved, locale));
     };
 
     updateTime();
     const interval = setInterval(updateTime, 10000);
 
     return () => clearInterval(interval);
-  }, [lastSaved]);
+  }, [lastSaved, locale]);
 
   const getStatusIcon = () => {
     switch (status) {
@@ -70,15 +73,16 @@ export function VizelSaveIndicator({
   };
 
   const getStatusText = () => {
+    const t = locale?.saveIndicator;
     switch (status) {
       case "saved":
-        return "Saved";
+        return t?.saved ?? "Saved";
       case "saving":
-        return "Saving...";
+        return t?.saving ?? "Saving...";
       case "unsaved":
-        return "Unsaved";
+        return t?.unsaved ?? "Unsaved";
       case "error":
-        return "Error saving";
+        return t?.error ?? "Error saving";
       default:
         return "";
     }

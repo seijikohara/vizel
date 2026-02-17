@@ -6,6 +6,7 @@ import {
   setVizelMarkdown,
   type VizelError,
   type VizelFeatureOptions,
+  type VizelLocale,
   type VizelMarkdownFlavor,
 } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
@@ -50,6 +51,8 @@ export interface VizelProps {
    * @default "gfm"
    */
   flavor?: VizelMarkdownFlavor;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
   /** Additional Tiptap extensions */
   extensions?: Extensions;
   /** Custom class name for the editor container */
@@ -154,6 +157,7 @@ export function Vizel({
   autofocus = false,
   features,
   flavor,
+  locale,
   extensions,
   className,
   showToolbar = false,
@@ -194,6 +198,7 @@ export function Vizel({
     autofocus,
     ...(features !== undefined && { features }),
     ...(flavor !== undefined && { flavor }),
+    ...(locale !== undefined && { locale }),
     ...(extensions !== undefined && { extensions }),
     onUpdate: (e) => {
       onUpdateRef.current?.(e);
@@ -250,7 +255,7 @@ export function Vizel({
       {showBubbleMenu && editor && !bubbleMenuContent && (
         <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} />
       )}
-      <VizelBlockMenu />
+      <VizelBlockMenu {...(locale !== undefined && { locale })} />
       {children}
     </div>
   );

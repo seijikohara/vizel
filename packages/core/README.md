@@ -33,6 +33,7 @@ This package provides:
 | Version History | `createVizelVersionHistoryHandlers()` |
 | Plugin System | `VizelPluginManager`, `validateVizelPlugin()` |
 | Find & Replace | `createVizelFindReplaceExtension()`, `getVizelFindReplaceState()`, `vizelFindReplacePluginKey` |
+| i18n | `VizelLocale`, `vizelEnLocale`, `createVizelLocale()` |
 | Constants | `VIZEL_TEXT_COLORS`, `VIZEL_HIGHLIGHT_COLORS`, `vizelDefaultSlashCommands` |
 
 ## CSS Entry Points

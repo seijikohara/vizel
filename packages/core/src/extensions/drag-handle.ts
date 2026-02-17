@@ -1,6 +1,7 @@
 import { Extension } from "@tiptap/core";
 import DragHandle from "@tiptap/extension-drag-handle";
 import type { Node as PmNode } from "@tiptap/pm/model";
+import type { VizelLocale } from "../i18n/types.ts";
 import { renderVizelIcon } from "../icons/types.ts";
 import { VIZEL_BLOCK_MENU_EVENT, type VizelBlockMenuOpenDetail } from "./block-menu.ts";
 
@@ -12,6 +13,11 @@ export interface VizelDragHandleOptions {
    * @default true
    */
   enabled?: boolean;
+  /**
+   * Locale for drag handle UI strings.
+   * If not provided, default English strings are used.
+   */
+  locale?: VizelLocale;
 }
 
 /** Threshold in pixels to distinguish click from drag */
@@ -23,7 +29,7 @@ const CLICK_DRAG_THRESHOLD = 5;
  * Clicking (not dragging) the handle opens the block menu.
  */
 export function createVizelDragHandleExtension(options: VizelDragHandleOptions = {}): Extension {
-  const { enabled = true } = options;
+  const { enabled = true, locale } = options;
 
   if (!enabled) {
     return Extension.create({ name: "vizelDragHandleDisabled" });
@@ -41,7 +47,10 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
       element.classList.add("vizel-drag-handle");
       element.setAttribute("data-vizel-drag-handle", "");
       element.setAttribute("draggable", "true");
-      element.setAttribute("aria-label", "Drag to reorder block, click for menu");
+      element.setAttribute(
+        "aria-label",
+        locale?.dragHandle.ariaLabel ?? "Drag to reorder block, click for menu"
+      );
       element.setAttribute("role", "button");
 
       // Create grip icon using safe template element approach

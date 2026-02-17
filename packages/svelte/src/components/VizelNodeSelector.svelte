@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { Editor, VizelNodeTypeOption } from "@vizel/core";
+import type { Editor, VizelLocale, VizelNodeTypeOption } from "@vizel/core";
 
 export interface VizelNodeSelectorProps {
   /** The editor instance */
@@ -8,15 +8,19 @@ export interface VizelNodeSelectorProps {
   nodeTypes?: VizelNodeTypeOption[];
   /** Custom class name */
   class?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 </script>
 
 <script lang="ts">
-import { vizelDefaultNodeTypes, getVizelActiveNodeType } from "@vizel/core";
+import { createVizelNodeTypes, vizelDefaultNodeTypes, getVizelActiveNodeType } from "@vizel/core";
 import { createVizelState } from "../runes/createVizelState.svelte.js";
 import VizelIcon from "./VizelIcon.svelte";
 
-let { editor, nodeTypes = vizelDefaultNodeTypes, class: className }: VizelNodeSelectorProps = $props();
+let { editor, nodeTypes, class: className, locale }: VizelNodeSelectorProps = $props();
+
+const effectiveNodeTypes = $derived(nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes));
 
 // Subscribe to editor state changes
 const editorState = createVizelState(() => editor);
@@ -28,10 +32,10 @@ let dropdownRef: HTMLDivElement | undefined = $state();
 
 const activeNodeType = $derived.by(() => {
   void editorState.current; // Trigger reactivity
-  return getVizelActiveNodeType(editor, nodeTypes);
+  return getVizelActiveNodeType(editor, effectiveNodeTypes);
 });
 
-const currentLabel = $derived(activeNodeType?.label ?? "Text");
+const currentLabel = $derived(activeNodeType?.label ?? (locale?.nodeTypes.text ?? "Text"));
 const currentIcon = $derived(activeNodeType?.icon ?? "paragraph");
 
 // Close dropdown when clicking outside
@@ -70,16 +74,16 @@ function handleKeyDown(event: KeyboardEvent) {
       break;
     case "ArrowDown":
       event.preventDefault();
-      focusedIndex = (focusedIndex + 1) % nodeTypes.length;
+      focusedIndex = (focusedIndex + 1) % effectiveNodeTypes.length;
       break;
     case "ArrowUp":
       event.preventDefault();
-      focusedIndex = (focusedIndex - 1 + nodeTypes.length) % nodeTypes.length;
+      focusedIndex = (focusedIndex - 1 + effectiveNodeTypes.length) % effectiveNodeTypes.length;
       break;
     case "Enter":
     case " ": {
       event.preventDefault();
-      const selectedNodeType = nodeTypes[focusedIndex];
+      const selectedNodeType = effectiveNodeTypes[focusedIndex];
       if (selectedNodeType) {
         handleSelectNodeType(selectedNodeType);
       }
@@ -91,7 +95,7 @@ function handleKeyDown(event: KeyboardEvent) {
       break;
     case "End":
       event.preventDefault();
-      focusedIndex = nodeTypes.length - 1;
+      focusedIndex = effectiveNodeTypes.length - 1;
       break;
     default:
       // Allow other keys to propagate
@@ -120,8 +124,8 @@ function isNodeTypeActive(nodeType: VizelNodeTypeOption): boolean {
     class="vizel-node-selector-trigger"
     aria-haspopup="listbox"
     aria-expanded={isOpen}
-    aria-label={`Current block type: ${currentLabel}`}
-    title="Change block type"
+    aria-label={(locale?.nodeSelector.currentBlockType ?? "Current block type: {type}").replace("{type}", currentLabel)}
+    title={locale?.nodeSelector.changeBlockType ?? "Change block type"}
     onclick={() => (isOpen = !isOpen)}
     onkeydown={handleKeyDown}
   >
@@ -139,12 +143,12 @@ function isNodeTypeActive(nodeType: VizelNodeTypeOption): boolean {
       bind:this={dropdownRef}
       class="vizel-node-selector-dropdown"
       role="listbox"
-      aria-label="Block types"
+      aria-label={locale?.nodeSelector.blockTypes ?? "Block types"}
       data-vizel-node-selector-dropdown
       tabindex="-1"
       onkeydown={handleKeyDown}
     >
-      {#each nodeTypes as nodeType, index}
+      {#each effectiveNodeTypes as nodeType, index}
         {@const active = isNodeTypeActive(nodeType)}
         {@const focused = index === focusedIndex}
         <button

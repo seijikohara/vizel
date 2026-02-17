@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelIconName } from "../icons/types.ts";
 
 /**
@@ -191,6 +192,34 @@ export const vizelDefaultToolbarActions = [
     run: (editor) => editor.chain().focus().setHorizontalRule().run(),
   },
 ] satisfies VizelToolbarAction[];
+
+/**
+ * Create toolbar actions with locale-specific labels.
+ */
+export function createVizelToolbarActions(locale: VizelLocale): VizelToolbarAction[] {
+  const labels: Record<string, string> = {
+    undo: locale.toolbar.undo,
+    redo: locale.toolbar.redo,
+    bold: locale.toolbar.bold,
+    italic: locale.toolbar.italic,
+    strike: locale.toolbar.strikethrough,
+    underline: locale.toolbar.underline,
+    code: locale.toolbar.code,
+    heading1: locale.toolbar.heading1,
+    heading2: locale.toolbar.heading2,
+    heading3: locale.toolbar.heading3,
+    bulletList: locale.toolbar.bulletList,
+    orderedList: locale.toolbar.numberedList,
+    taskList: locale.toolbar.taskList,
+    blockquote: locale.toolbar.quote,
+    codeBlock: locale.toolbar.codeBlock,
+    horizontalRule: locale.toolbar.horizontalRule,
+  };
+  return vizelDefaultToolbarActions.map((action) => ({
+    ...action,
+    label: labels[action.id] ?? action.label,
+  }));
+}
 
 /**
  * Get toolbar actions grouped by their group identifier.

@@ -1,7 +1,9 @@
 import type { Editor } from "@vizel/core";
 import {
+  createVizelToolbarActions,
   formatVizelTooltip,
   groupVizelToolbarActions,
+  type VizelLocale,
   type VizelToolbarAction,
   vizelDefaultToolbarActions,
 } from "@vizel/core";
@@ -16,6 +18,8 @@ export interface VizelToolbarDefaultProps {
   className?: string;
   /** Custom toolbar actions (defaults to vizelDefaultToolbarActions) */
   actions?: VizelToolbarAction[];
+  /** Locale for translated labels */
+  locale?: VizelLocale;
 }
 
 /**
@@ -32,12 +36,15 @@ export interface VizelToolbarDefaultProps {
 export function VizelToolbarDefault({
   editor,
   className,
-  actions = vizelDefaultToolbarActions,
+  actions,
+  locale,
 }: VizelToolbarDefaultProps) {
   // Subscribe to editor state changes to update active/enabled states
   useVizelState(() => editor);
 
-  const groups = groupVizelToolbarActions(actions);
+  const effectiveActions =
+    actions ?? (locale ? createVizelToolbarActions(locale) : vizelDefaultToolbarActions);
+  const groups = groupVizelToolbarActions(effectiveActions);
 
   return (
     <div className={`vizel-toolbar-content ${className ?? ""}`} data-vizel-toolbar="">

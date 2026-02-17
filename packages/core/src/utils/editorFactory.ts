@@ -63,6 +63,7 @@ export async function createVizelEditorInstance(
     autofocus = false,
     features,
     flavor,
+    locale,
     extensions: additionalExtensions = [],
     createSlashMenuRenderer,
     onUpdate,
@@ -98,6 +99,7 @@ export async function createVizelEditorInstance(
     ...(placeholder !== undefined && { placeholder }),
     ...(resolvedFeatures !== undefined && { features: resolvedFeatures }),
     ...(flavor !== undefined && { flavor }),
+    ...(locale !== undefined && { locale }),
   });
 
   // Create the editor instance

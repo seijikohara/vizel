@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { Editor, VizelToolbarAction } from "@vizel/core";
+import type { Editor, VizelLocale, VizelToolbarAction } from "@vizel/core";
 
 export interface VizelToolbarDefaultProps {
   /** The editor instance */
@@ -8,11 +8,14 @@ export interface VizelToolbarDefaultProps {
   class?: string;
   /** Custom toolbar actions (defaults to vizelDefaultToolbarActions) */
   actions?: VizelToolbarAction[];
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 </script>
 
 <script lang="ts">
 import {
+  createVizelToolbarActions,
   formatVizelTooltip,
   groupVizelToolbarActions,
   vizelDefaultToolbarActions,
@@ -25,15 +28,18 @@ import VizelToolbarDivider from "./VizelToolbarDivider.svelte";
 let {
   editor,
   class: className,
-  actions = vizelDefaultToolbarActions,
+  actions,
+  locale,
 }: VizelToolbarDefaultProps = $props();
+
+const effectiveActions = $derived(actions ?? (locale ? createVizelToolbarActions(locale) : vizelDefaultToolbarActions));
 
 // Subscribe to editor state changes to update active/enabled states
 const editorState = createVizelState(() => editor);
 
 const groups = $derived.by(() => {
   void editorState.current;
-  return groupVizelToolbarActions(actions);
+  return groupVizelToolbarActions(effectiveActions);
 });
 </script>
 

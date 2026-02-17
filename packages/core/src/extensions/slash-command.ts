@@ -1,6 +1,8 @@
 import { Extension } from "@tiptap/core";
 import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
 import {
+  createVizelSlashCommands,
+  createVizelSlashGroupOrder,
   filterSlashCommands as filterVizelSlashCommands,
   flattenSlashCommandGroups as flattenVizelSlashCommandGroups,
   groupSlashCommands as groupVizelSlashCommands,
@@ -68,4 +70,6 @@ export {
   type VizelSlashCommandItem,
   type VizelSlashCommandRange,
   type VizelSlashCommandSearchResult,
+  createVizelSlashCommands,
+  createVizelSlashGroupOrder,
 };

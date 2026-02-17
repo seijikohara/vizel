@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { Editor } from "@vizel/core";
 import {
+  createVizelToolbarActions,
   formatVizelTooltip,
   groupVizelToolbarActions,
+  type VizelLocale,
   type VizelToolbarAction,
   vizelDefaultToolbarActions,
 } from "@vizel/core";
@@ -19,18 +21,24 @@ export interface VizelToolbarDefaultProps {
   class?: string;
   /** Custom toolbar actions (defaults to vizelDefaultToolbarActions) */
   actions?: VizelToolbarAction[];
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
-const props = withDefaults(defineProps<VizelToolbarDefaultProps>(), {
-  actions: () => vizelDefaultToolbarActions,
-});
+const props = defineProps<VizelToolbarDefaultProps>();
+
+const effectiveActions = computed(
+  () =>
+    props.actions ??
+    (props.locale ? createVizelToolbarActions(props.locale) : vizelDefaultToolbarActions)
+);
 
 // Subscribe to editor state changes to update active/enabled states
 const editorStateVersion = useVizelState(() => props.editor);
 
 const groups = computed(() => {
   void editorStateVersion.value;
-  return groupVizelToolbarActions(props.actions);
+  return groupVizelToolbarActions(effectiveActions.value);
 });
 </script>
 

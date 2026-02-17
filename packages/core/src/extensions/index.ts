@@ -2,6 +2,7 @@
 export { createVizelExtensions, type VizelExtensionsOptions } from "./base.ts";
 // Block menu
 export {
+  createVizelBlockMenuActions,
   getVizelTurnIntoOptions,
   groupVizelBlockMenuActions,
   VIZEL_BLOCK_MENU_EVENT,
@@ -161,6 +162,7 @@ export {
 
 // Node types
 export {
+  createVizelNodeTypes,
   getVizelActiveNodeType,
   type VizelNodeTypeOption,
   vizelDefaultNodeTypes,
@@ -168,6 +170,8 @@ export {
 
 // Slash command
 export {
+  createVizelSlashCommands,
+  createVizelSlashGroupOrder,
   filterVizelSlashCommands,
   flattenVizelSlashCommandGroups,
   groupVizelSlashCommands,
