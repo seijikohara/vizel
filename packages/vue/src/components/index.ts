@@ -105,3 +105,11 @@ export {
   default as VizelToolbarDivider,
   type VizelToolbarDividerProps,
 } from "./VizelToolbarDivider.vue";
+export {
+  default as VizelToolbarDropdown,
+  type VizelToolbarDropdownProps,
+} from "./VizelToolbarDropdown.vue";
+export {
+  default as VizelToolbarOverflow,
+  type VizelToolbarOverflowProps,
+} from "./VizelToolbarOverflow.vue";

@@ -1,13 +1,13 @@
 <script lang="ts" module>
-import type { Editor, VizelLocale, VizelToolbarAction } from "@vizel/core";
+import type { Editor, VizelLocale, VizelToolbarActionItem } from "@vizel/core";
 
 export interface VizelToolbarDefaultProps {
   /** The editor instance */
   editor: Editor;
   /** Custom class name */
   class?: string;
-  /** Custom toolbar actions (defaults to vizelDefaultToolbarActions) */
-  actions?: VizelToolbarAction[];
+  /** Custom toolbar actions — supports both simple actions and dropdown actions */
+  actions?: VizelToolbarActionItem[];
   /** Locale for translated UI strings */
   locale?: VizelLocale;
 }
@@ -18,12 +18,14 @@ import {
   createVizelToolbarActions,
   formatVizelTooltip,
   groupVizelToolbarActions,
+  isVizelToolbarDropdownAction,
   vizelDefaultToolbarActions,
 } from "@vizel/core";
 import { createVizelState } from "../runes/createVizelState.svelte.js";
 import VizelIcon from "./VizelIcon.svelte";
 import VizelToolbarButton from "./VizelToolbarButton.svelte";
 import VizelToolbarDivider from "./VizelToolbarDivider.svelte";
+import VizelToolbarDropdown from "./VizelToolbarDropdown.svelte";
 
 let {
   editor,
@@ -49,15 +51,19 @@ const groups = $derived.by(() => {
       <VizelToolbarDivider />
     {/if}
     {#each group as action (action.id)}
-      <VizelToolbarButton
-        action={action.id}
-        isActive={action.isActive(editor)}
-        disabled={!action.isEnabled(editor)}
-        title={formatVizelTooltip(action.label, action.shortcut)}
-        onclick={() => action.run(editor)}
-      >
-        <VizelIcon name={action.icon} />
-      </VizelToolbarButton>
+      {#if isVizelToolbarDropdownAction(action)}
+        <VizelToolbarDropdown {editor} dropdown={action} />
+      {:else}
+        <VizelToolbarButton
+          action={action.id}
+          isActive={action.isActive(editor)}
+          disabled={!action.isEnabled(editor)}
+          title={formatVizelTooltip(action.label, action.shortcut)}
+          onclick={() => action.run(editor)}
+        >
+          <VizelIcon name={action.icon} />
+        </VizelToolbarButton>
+      {/if}
     {/each}
   {/each}
 </div>

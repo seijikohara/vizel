@@ -87,6 +87,7 @@ export type VizelUIIconName =
   | "circle"
   | "warning"
   | "chevronDown"
+  | "ellipsis"
   | "externalLink"
   | "x";
 
@@ -234,6 +235,7 @@ export const vizelDefaultIconIds: Record<VizelIconName, string> = {
   circle: "lucide:circle",
   warning: "lucide:alert-triangle",
   chevronDown: "lucide:chevron-down",
+  ellipsis: "lucide:ellipsis",
   externalLink: "lucide:external-link",
   x: "lucide:x",
   // Block Menu

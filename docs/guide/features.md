@@ -869,6 +869,148 @@ console.log(vizelEnLocale.toolbar.bold); // "Bold"
 
 ---
 
+## Toolbar Extensibility
+
+The toolbar supports custom actions, dropdown menus, and responsive overflow for narrow viewports.
+
+### Custom Toolbar Actions
+
+Pass an `actions` array to `VizelToolbarDefault` to customize the toolbar:
+
+::: code-group
+
+```tsx [React]
+import { VizelToolbar, VizelToolbarDefault } from '@vizel/react';
+import type { VizelToolbarActionItem } from '@vizel/core';
+import { vizelDefaultToolbarActions } from '@vizel/core';
+
+const myActions: VizelToolbarActionItem[] = [
+  ...vizelDefaultToolbarActions,
+  {
+    id: 'myAction',
+    label: 'My Action',
+    icon: 'bold',
+    group: 'custom',
+    isActive: () => false,
+    isEnabled: () => true,
+    run: (editor) => { /* custom logic */ },
+  },
+];
+
+<VizelToolbar>
+  <VizelToolbarDefault editor={editor} actions={myActions} />
+</VizelToolbar>
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { VizelToolbar, VizelToolbarDefault } from '@vizel/vue';
+import type { VizelToolbarActionItem } from '@vizel/core';
+import { vizelDefaultToolbarActions } from '@vizel/core';
+
+const myActions: VizelToolbarActionItem[] = [
+  ...vizelDefaultToolbarActions,
+  {
+    id: 'myAction',
+    label: 'My Action',
+    icon: 'bold',
+    group: 'custom',
+    isActive: () => false,
+    isEnabled: () => true,
+    run: (editor) => { /* custom logic */ },
+  },
+];
+</script>
+```
+
+```svelte [Svelte]
+<script lang="ts">
+import { VizelToolbar, VizelToolbarDefault } from '@vizel/svelte';
+import type { VizelToolbarActionItem } from '@vizel/core';
+import { vizelDefaultToolbarActions } from '@vizel/core';
+
+const myActions: VizelToolbarActionItem[] = [
+  ...vizelDefaultToolbarActions,
+  {
+    id: 'myAction',
+    label: 'My Action',
+    icon: 'bold',
+    group: 'custom',
+    isActive: () => false,
+    isEnabled: () => true,
+    run: (editor) => { /* custom logic */ },
+  },
+];
+</script>
+```
+
+:::
+
+### Dropdown Menus
+
+Group related actions into dropdown menus using `VizelToolbarDropdownAction`:
+
+```typescript
+import type { VizelToolbarDropdownAction } from '@vizel/core';
+
+const headingDropdown: VizelToolbarDropdownAction = {
+  id: 'headings',
+  label: 'Headings',
+  icon: 'heading1',
+  group: 'heading',
+  type: 'dropdown',
+  options: [
+    {
+      id: 'heading1',
+      label: 'Heading 1',
+      icon: 'heading1',
+      group: 'heading',
+      isActive: (editor) => editor.isActive('heading', { level: 1 }),
+      isEnabled: (editor) => editor.can().toggleHeading({ level: 1 }),
+      run: (editor) => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+      shortcut: 'Mod+Alt+1',
+    },
+    // ... more heading options
+  ],
+  getActiveOption: (editor) =>
+    // Return the currently active heading option to show in the trigger
+    options.find((opt) => opt.isActive(editor)),
+};
+```
+
+### Overflow Menu
+
+Use `VizelToolbarOverflow` to show hidden actions in a popover when the toolbar is narrow:
+
+::: code-group
+
+```tsx [React]
+import { VizelToolbar, VizelToolbarOverflow } from '@vizel/react';
+
+<VizelToolbar>
+  {/* Main toolbar buttons */}
+  <VizelToolbarOverflow editor={editor} actions={overflowActions} />
+</VizelToolbar>
+```
+
+```vue [Vue]
+<VizelToolbar>
+  <!-- Main toolbar buttons -->
+  <VizelToolbarOverflow :editor="editor" :actions="overflowActions" />
+</VizelToolbar>
+```
+
+```svelte [Svelte]
+<VizelToolbar>
+  <!-- Main toolbar buttons -->
+  <VizelToolbarOverflow {editor} actions={overflowActions} />
+</VizelToolbar>
+```
+
+:::
+
+---
+
 ## Next Steps
 
 - [Wiki Links](/guide/wiki-links) - Wiki-style internal links

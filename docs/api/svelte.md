@@ -433,7 +433,39 @@ This component renders the default toolbar content with grouped formatting butto
 |------|------|---------|-------------|
 | `editor` | `Editor` | - | Editor instance (required) |
 | `class` | `string` | - | CSS class name |
-| `actions` | `VizelToolbarAction[]` | `vizelDefaultToolbarActions` | Custom actions |
+| `actions` | `VizelToolbarActionItem[]` | `vizelDefaultToolbarActions` | Custom actions (supports dropdowns) |
+
+### VizelToolbarDropdown
+
+This component renders a dropdown toolbar button with a popover of nested actions.
+
+```svelte
+<VizelToolbarDropdown {editor} dropdown={headingDropdown} />
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor` | - | Editor instance (required) |
+| `dropdown` | `VizelToolbarDropdownAction` | - | Dropdown action definition (required) |
+| `class` | `string` | - | CSS class name |
+
+### VizelToolbarOverflow
+
+This component renders a "..." overflow button that shows hidden actions in a popover.
+
+```svelte
+<VizelToolbarOverflow {editor} actions={overflowActions} />
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor` | - | Editor instance (required) |
+| `actions` | `VizelToolbarActionItem[]` | - | Actions to show in overflow (required) |
+| `class` | `string` | - | CSS class name |
 
 ### VizelToolbarButton
 

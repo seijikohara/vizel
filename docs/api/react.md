@@ -469,7 +469,43 @@ import { VizelToolbarDefault } from '@vizel/react';
 |------|------|---------|-------------|
 | `editor` | `Editor` | - | Editor instance (required) |
 | `className` | `string` | - | CSS class name |
-| `actions` | `VizelToolbarAction[]` | `vizelDefaultToolbarActions` | Custom actions |
+| `actions` | `VizelToolbarActionItem[]` | `vizelDefaultToolbarActions` | Custom actions (supports dropdowns) |
+
+### VizelToolbarDropdown
+
+This component renders a dropdown toolbar button with a popover of nested actions.
+
+```tsx
+import { VizelToolbarDropdown } from '@vizel/react';
+
+<VizelToolbarDropdown editor={editor} dropdown={headingDropdown} />
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor` | - | Editor instance (required) |
+| `dropdown` | `VizelToolbarDropdownAction` | - | Dropdown action definition (required) |
+| `className` | `string` | - | CSS class name |
+
+### VizelToolbarOverflow
+
+This component renders a "..." overflow button that shows hidden actions in a popover.
+
+```tsx
+import { VizelToolbarOverflow } from '@vizel/react';
+
+<VizelToolbarOverflow editor={editor} actions={overflowActions} />
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `editor` | `Editor` | - | Editor instance (required) |
+| `actions` | `VizelToolbarActionItem[]` | - | Actions to show in overflow (required) |
+| `className` | `string` | - | CSS class name |
 
 ### VizelToolbarButton
 

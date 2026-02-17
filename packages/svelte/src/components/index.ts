@@ -159,3 +159,11 @@ export {
   default as VizelToolbarDivider,
   type VizelToolbarDividerProps,
 } from "./VizelToolbarDivider.svelte";
+export {
+  default as VizelToolbarDropdown,
+  type VizelToolbarDropdownProps,
+} from "./VizelToolbarDropdown.svelte";
+export {
+  default as VizelToolbarOverflow,
+  type VizelToolbarOverflowProps,
+} from "./VizelToolbarOverflow.svelte";
