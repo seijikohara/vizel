@@ -1,4 +1,4 @@
-import type { Extensions } from "@tiptap/core";
+import { Extension, type Extensions } from "@tiptap/core";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 
@@ -42,6 +42,24 @@ export interface VizelTaskListExtensionsOptions {
 }
 
 /**
+ * Keyboard shortcuts for task item indentation.
+ * Tab sinks a task item (makes it a child of the previous sibling),
+ * Shift+Tab lifts it out of the current nesting level.
+ *
+ * This complements ListKeymap which only handles regular listItem nodes.
+ */
+const VizelTaskItemKeymap = Extension.create({
+  name: "vizelTaskItemKeymap",
+
+  addKeyboardShortcuts() {
+    return {
+      Tab: () => this.editor.commands.sinkListItem("taskItem"),
+      "Shift-Tab": () => this.editor.commands.liftListItem("taskItem"),
+    };
+  },
+});
+
+/**
  * Creates task list extensions for checkbox/todo functionality.
  *
  * @example
@@ -76,6 +94,7 @@ export function createVizelTaskListExtensions(
         onReadOnlyChecked: taskItem.onReadOnlyChecked,
       }),
     }),
+    VizelTaskItemKeymap,
   ];
 }
 

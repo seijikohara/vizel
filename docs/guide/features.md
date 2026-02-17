@@ -568,7 +568,7 @@ const editor = useVizelEditor({
 
 ## Task Lists
 
-This feature adds checkbox task lists.
+This feature adds checkbox task lists with nested indentation support.
 
 ### Options
 
@@ -576,6 +576,17 @@ This feature adds checkbox task lists.
 |----------|------|-------------|
 | `taskList` | `TaskListOptions` | Task list container options |
 | `taskItem` | `TaskItemOptions` | Task item options |
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Tab` | Indent (nest) the current task item |
+| `Shift+Tab` | Outdent (un-nest) the current task item |
+| `Alt+↑` | Move the current task item up |
+| `Alt+↓` | Move the current task item down |
+
+These shortcuts also work for bullet lists and ordered lists.
 
 ### Example
 
@@ -595,13 +606,24 @@ const editor = useVizelEditor({
 
 ## Drag Handle
 
-This feature provides a handle for drag-and-drop block reordering.
+This feature provides a handle for drag-and-drop block reordering. It also adds keyboard shortcuts for moving blocks and list items.
 
 ### Options
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `enabled` | `boolean` | `true` | Show drag handle |
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Alt+↑` | Move the current block or list item up |
+| `Alt+↓` | Move the current block or list item down |
+| `Tab` | Indent (nest) a list item |
+| `Shift+Tab` | Outdent (un-nest) a list item |
+
+The drag handle is automatically positioned next to the hovered block. For list items, it adjusts its size to be less intrusive.
 
 ### Example
 
