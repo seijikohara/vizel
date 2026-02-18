@@ -7,7 +7,7 @@ import {
   VIZEL_TEXT_COLORS,
   type VizelColorDefinition,
 } from "@vizel/core";
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import VizelColorPicker from "./VizelColorPicker.vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -84,7 +84,7 @@ onMounted(() => {
   document.addEventListener("mousedown", handleClickOutside);
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   document.removeEventListener("mousedown", handleClickOutside);
 });
 

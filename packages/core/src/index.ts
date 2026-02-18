@@ -333,6 +333,8 @@ export {
   type CreateVizelEditorInstanceResult,
   // Editor helpers
   convertVizelCodeBlocksToDiagrams,
+  // Lazy import utility
+  createLazyLoader,
   // Editor factory
   createVizelEditorInstance,
   // Error handling
@@ -387,6 +389,7 @@ export {
   VizelError,
   type VizelErrorCode,
   type VizelFlavorConfig,
+  type VizelMarkdownFlavor,
   type VizelMarkdownSyncHandlers,
   type VizelMountPortalOptions,
   type VizelPortalLayer,
@@ -397,8 +400,6 @@ export {
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./utils/index.ts";
-// Re-export VizelMarkdownFlavor type from markdown-flavors utility
-export type { VizelMarkdownFlavor } from "./utils/markdown-flavors.ts";
 // =============================================================================
 // Version History
 // =============================================================================

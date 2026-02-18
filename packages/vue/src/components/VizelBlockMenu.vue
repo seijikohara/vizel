@@ -181,7 +181,7 @@ onBeforeUnmount(() => {
       type="button"
       class="vizel-block-menu-item vizel-block-menu-submenu-trigger"
       role="menuitem"
-      aria-haspopup="true"
+      aria-haspopup="menu"
       :aria-expanded="showTurnInto"
       @mouseenter="showTurnInto = true"
       @click="showTurnInto = !showTurnInto"

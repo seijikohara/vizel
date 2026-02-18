@@ -55,12 +55,17 @@ All-in-one editor component with built-in bubble menu. This is the recommended w
 | `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
+| `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks when importing markdown |
 | `onUpdate` | `({ editor }) => void` | - | Update callback |
 | `onCreate` | `({ editor }) => void` | - | Create callback |
 | `onDestroy` | `() => void` | - | Destroy callback |
 | `onSelectionUpdate` | `({ editor }) => void` | - | Selection change callback |
 | `onFocus` | `({ editor }) => void` | - | Focus callback |
 | `onBlur` | `({ editor }) => void` | - | Blur callback |
+| `onError` | `(error: VizelError) => void` | - | Error callback |
 
 ---
 

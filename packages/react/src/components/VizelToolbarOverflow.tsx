@@ -56,7 +56,7 @@ export function VizelToolbarOverflow({
         type="button"
         className="vizel-toolbar-overflow-trigger"
         onClick={() => setIsOpen((prev) => !prev)}
-        aria-haspopup="true"
+        aria-haspopup="menu"
         aria-expanded={isOpen}
         aria-label="More actions"
       >

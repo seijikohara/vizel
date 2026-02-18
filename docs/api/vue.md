@@ -57,6 +57,10 @@ import '@vizel/core/styles.css';
 | `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
+| `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks when importing markdown |
 
 **Slots:**
 
@@ -75,6 +79,7 @@ import '@vizel/core/styles.css';
 | `selectionUpdate` | `{ editor: Editor }` | Fires when the selection changes |
 | `focus` | `{ editor: Editor }` | Fires when the editor gains focus |
 | `blur` | `{ editor: Editor }` | Fires when the editor loses focus |
+| `error` | `VizelError` | Fires when an error occurs |
 
 ---
 
@@ -106,18 +111,16 @@ const updateCount = useVizelState(() => editor.value);
 
 ### useVizelEditorState
 
-This composable tracks specific editor state properties reactively.
+This composable returns a `VizelEditorState` object that reactively tracks editor state (bold, italic, heading level, etc.).
 
 ```typescript
 import { useVizelEditorState } from '@vizel/vue';
 
-const isBold = useVizelEditorState(
-  () => editor.value,
-  (editor) => editor.isActive('bold')
-);
+const state = useVizelEditorState(() => editor.value);
+// state.value.isBold, state.value.isItalic, state.value.headingLevel, etc.
 ```
 
-**Returns:** `ComputedRef` with the value returned by the selector function
+**Returns:** `ComputedRef<VizelEditorState>` — reactive computed ref with boolean flags for formatting state and current node info
 
 ### useVizelAutoSave
 

@@ -53,12 +53,19 @@ import '@vizel/core/styles.css';
 | `toolbarContent` | `ReactNode` | - | Custom toolbar content |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
+| `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks when importing markdown |
+| `markdown` | `string` | - | Controlled markdown content |
+| `onMarkdownChange` | `(markdown: string) => void` | - | Callback when markdown changes |
 | `onUpdate` | `({ editor }) => void` | - | Update callback |
 | `onCreate` | `({ editor }) => void` | - | Create callback |
 | `onDestroy` | `() => void` | - | Destroy callback |
 | `onSelectionUpdate` | `({ editor }) => void` | - | Selection change callback |
 | `onFocus` | `({ editor }) => void` | - | Focus callback |
 | `onBlur` | `({ editor }) => void` | - | Blur callback |
+| `onError` | `(error: VizelError) => void` | - | Error callback |
 
 ---
 
@@ -90,18 +97,16 @@ const updateCount = useVizelState(() => editor);
 
 ### useVizelEditorState
 
-This hook tracks specific editor state properties reactively.
+This hook returns a `VizelEditorState` object that reactively tracks editor state (bold, italic, heading level, etc.).
 
 ```tsx
 import { useVizelEditorState } from '@vizel/react';
 
-const isBold = useVizelEditorState(
-  () => editor,
-  (editor) => editor.isActive('bold')
-);
+const state = useVizelEditorState(() => editor);
+// state.isBold, state.isItalic, state.headingLevel, etc.
 ```
 
-**Returns:** The value returned by the selector function
+**Returns:** `VizelEditorState` — reactive object with boolean flags for formatting state and current node info
 
 ### useVizelAutoSave
 

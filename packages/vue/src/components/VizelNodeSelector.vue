@@ -7,7 +7,7 @@ import {
   type VizelNodeTypeOption,
   vizelDefaultNodeTypes,
 } from "@vizel/core";
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -58,7 +58,7 @@ onMounted(() => {
   document.addEventListener("mousedown", handleClickOutside);
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   document.removeEventListener("mousedown", handleClickOutside);
 });
 
@@ -139,7 +139,7 @@ function isNodeTypeActive(nodeType: VizelNodeTypeOption): boolean {
     <button
       type="button"
       class="vizel-node-selector-trigger"
-      :aria-haspopup="true"
+      aria-haspopup="listbox"
       :aria-expanded="isOpen"
       :aria-label="(props.locale?.nodeSelector.currentBlockType ?? 'Current block type: {type}').replace('{type}', currentLabel)"
       :title="props.locale?.nodeSelector.changeBlockType ?? 'Change block type'"

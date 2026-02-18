@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { detectVizelEmbedProvider, type Editor } from "@vizel/core";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelLinkEditorProps {
@@ -69,7 +69,7 @@ onMounted(() => {
   document.addEventListener("keydown", handleKeyDown, true);
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   document.removeEventListener("mousedown", handleClickOutside);
   document.removeEventListener("keydown", handleKeyDown, true);
 });

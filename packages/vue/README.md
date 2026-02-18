@@ -72,10 +72,14 @@ const { markdown, setMarkdown } = useVizelMarkdown(() => editor.value);
 | `VizelSlashMenu` | Slash command menu |
 | `VizelSlashMenuItem` | Slash command menu item |
 | `VizelSlashMenuEmpty` | Slash command empty state |
+| `VizelBlockMenu` | Block context menu (drag handle click) |
 | `VizelToolbar` | Fixed toolbar |
 | `VizelToolbarDefault` | Default toolbar layout |
 | `VizelToolbarButton` | Toolbar button |
 | `VizelToolbarDivider` | Toolbar divider |
+| `VizelToolbarDropdown` | Toolbar dropdown button |
+| `VizelToolbarOverflow` | Toolbar overflow menu |
+| `VizelMentionMenu` | @mention suggestion menu |
 | `VizelLinkEditor` | Link editing popover |
 | `VizelNodeSelector` | Node type selector |
 | `VizelColorPicker` | Color picker |

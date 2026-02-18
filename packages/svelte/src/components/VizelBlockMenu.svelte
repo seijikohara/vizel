@@ -160,7 +160,7 @@ $effect(() => {
       type="button"
       class="vizel-block-menu-item vizel-block-menu-submenu-trigger"
       role="menuitem"
-      aria-haspopup="true"
+      aria-haspopup="menu"
       aria-expanded={showTurnInto}
       onmouseenter={() => { showTurnInto = true; }}
       onclick={() => { showTurnInto = !showTurnInto; }}

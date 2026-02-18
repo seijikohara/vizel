@@ -2,13 +2,14 @@ import { vizelEnLocale } from "./en.ts";
 import type { VizelLocale, VizelLocalePartial } from "./types.ts";
 
 /**
- * Create a complete locale by merging partial translations with the default English locale.
+ * Create a complete locale by deep-merging partial translations with the default English locale.
+ * Supports overriding individual strings at any nesting depth.
  *
  * @example
  * ```typescript
  * const jaLocale = createVizelLocale({
  *   toolbar: { undo: "元に戻す", redo: "やり直し" },
- *   blockMenu: { delete: "削除", duplicate: "複製" },
+ *   slashMenu: { groups: { text: "テキスト" } }, // override only one group name
  * });
  * ```
  */
@@ -22,13 +23,45 @@ export function createVizelLocale(partial: VizelLocalePartial): VizelLocale {
       typeof defaultSection === "object" &&
       typeof overrideSection === "object"
     ) {
-      result[key] = { ...defaultSection, ...overrideSection };
+      result[key] = deepMergeSection(
+        defaultSection as Record<string, unknown>,
+        overrideSection as Record<string, unknown>
+      );
     } else {
       result[key] = defaultSection;
     }
   }
-  // All keys from vizelEnLocale are present in result
+  // Safe cast: all keys from vizelEnLocale are iterated and assigned,
+  // so result has the complete VizelLocale shape at runtime.
   return result as unknown as VizelLocale;
+}
+
+/** Deep merge a locale section (supports nested objects like slashMenu.groups). */
+function deepMergeSection(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>
+): Record<string, unknown> {
+  const result: Record<string, unknown> = { ...target };
+  for (const key of Object.keys(source)) {
+    const sourceVal = source[key];
+    const targetVal = target[key];
+    if (
+      sourceVal &&
+      typeof sourceVal === "object" &&
+      !Array.isArray(sourceVal) &&
+      targetVal &&
+      typeof targetVal === "object" &&
+      !Array.isArray(targetVal)
+    ) {
+      result[key] = deepMergeSection(
+        targetVal as Record<string, unknown>,
+        sourceVal as Record<string, unknown>
+      );
+    } else if (sourceVal !== undefined) {
+      result[key] = sourceVal;
+    }
+  }
+  return result;
 }
 
 /**

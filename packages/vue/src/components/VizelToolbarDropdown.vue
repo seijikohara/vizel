@@ -67,7 +67,7 @@ onBeforeUnmount(() => {
     <button
       type="button"
       class="vizel-toolbar-dropdown-trigger"
-      :aria-haspopup="true"
+      aria-haspopup="listbox"
       :aria-expanded="isOpen"
       :title="triggerLabel"
       @click="toggle"

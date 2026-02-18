@@ -157,7 +157,7 @@ export function VizelBlockMenu({
         type="button"
         className="vizel-block-menu-item vizel-block-menu-submenu-trigger"
         role="menuitem"
-        aria-haspopup="true"
+        aria-haspopup="menu"
         aria-expanded={showTurnInto}
         onMouseEnter={() => setShowTurnInto(true)}
         onClick={() => setShowTurnInto(!showTurnInto)}

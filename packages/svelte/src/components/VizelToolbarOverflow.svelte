@@ -68,7 +68,7 @@ $effect(() => {
     <button
       type="button"
       class="vizel-toolbar-overflow-trigger"
-      aria-haspopup="true"
+      aria-haspopup="menu"
       aria-expanded={isOpen}
       aria-label="More actions"
       onclick={toggle}

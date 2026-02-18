@@ -56,7 +56,7 @@ export function VizelToolbarDropdown({
         type="button"
         className="vizel-toolbar-dropdown-trigger"
         onClick={() => setIsOpen((prev) => !prev)}
-        aria-haspopup="true"
+        aria-haspopup="listbox"
         aria-expanded={isOpen}
         title={triggerLabel}
       >

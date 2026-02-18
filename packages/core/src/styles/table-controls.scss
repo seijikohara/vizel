@@ -131,7 +131,7 @@
   box-shadow: v("shadow-lg");
   min-width: 180px;
   padding: 4px;
-  z-index: 1000;
+  z-index: v("z-popover");
   overflow: hidden;
 
   &-divider {

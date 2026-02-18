@@ -37,11 +37,18 @@
 @use "task-list";
 @use "code-block";
 @use "mathematics";
+@use "block-menu";
 @use "drag-handle";
+@use "callout";
+@use "mention";
 @use "details";
 @use "embed";
 @use "save-indicator";
 @use "diagram";
+@use "table-of-contents";
 @use "wiki-link";
 @use "components/comment";
 @use "components/find-replace";
+
+/* Print optimization */
+@use "print";
