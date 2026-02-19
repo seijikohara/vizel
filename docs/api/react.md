@@ -53,12 +53,19 @@ import '@vizel/core/styles.css';
 | `toolbarContent` | `ReactNode` | - | Custom toolbar content |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
+| `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks when importing markdown |
+| `markdown` | `string` | - | Controlled markdown content |
+| `onMarkdownChange` | `(markdown: string) => void` | - | Callback when markdown changes |
 | `onUpdate` | `({ editor }) => void` | - | Update callback |
 | `onCreate` | `({ editor }) => void` | - | Create callback |
 | `onDestroy` | `() => void` | - | Destroy callback |
 | `onSelectionUpdate` | `({ editor }) => void` | - | Selection change callback |
 | `onFocus` | `({ editor }) => void` | - | Focus callback |
 | `onBlur` | `({ editor }) => void` | - | Blur callback |
+| `onError` | `(error: VizelError) => void` | - | Error callback |
 
 ---
 
@@ -90,18 +97,16 @@ const updateCount = useVizelState(() => editor);
 
 ### useVizelEditorState
 
-This hook tracks specific editor state properties reactively.
+This hook returns a `VizelEditorState` object that reactively tracks editor state (bold, italic, heading level, etc.).
 
 ```tsx
 import { useVizelEditorState } from '@vizel/react';
 
-const isBold = useVizelEditorState(
-  () => editor,
-  (editor) => editor.isActive('bold')
-);
+const state = useVizelEditorState(() => editor);
+// state.isBold, state.isItalic, state.headingLevel, etc.
 ```
 
-**Returns:** The value returned by the selector function
+**Returns:** `VizelEditorState` — reactive object with boolean flags for formatting state and current node info
 
 ### useVizelAutoSave
 
@@ -334,6 +339,7 @@ import { VizelFindReplace } from '@vizel/react';
 |------|------|---------|-------------|
 | `editor` | `Editor \| null` | - | Editor instance |
 | `className` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 | `onClose` | `() => void` | - | Called when the panel closes |
 
 ### VizelEditor
@@ -368,6 +374,7 @@ import { VizelBlockMenu } from '@vizel/react';
 | `actions` | `VizelBlockMenuAction[]` | `vizelDefaultBlockMenuActions` | Custom menu actions |
 | `nodeTypes` | `VizelNodeTypeOption[]` | `vizelDefaultNodeTypes` | Node types for "Turn into" submenu |
 | `className` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 
 ### VizelBubbleMenu
 
@@ -389,6 +396,11 @@ import { VizelBubbleMenu } from '@vizel/react';
 | `editor` | `Editor \| null` | - | Editor instance |
 | `className` | `string` | - | CSS class name |
 | `children` | `ReactNode` | - | Custom content |
+| `showDefaultMenu` | `boolean` | `true` | Show default formatting menu when no children |
+| `pluginKey` | `string` | - | Custom plugin key for the bubble menu |
+| `updateDelay` | `number` | - | Delay in ms before updating menu position |
+| `shouldShow` | `(props) => boolean` | - | Custom function to control menu visibility |
+| `enableEmbed` | `boolean` | - | Enable embed option in link editor |
 
 ### VizelBubbleMenuDefault
 
@@ -451,6 +463,7 @@ import { VizelToolbar } from '@vizel/react';
 | `editor` | `Editor \| null` | - | Editor instance (falls back to context) |
 | `className` | `string` | - | CSS class name |
 | `showDefaultToolbar` | `boolean` | `true` | Show default toolbar content |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 | `children` | `ReactNode` | - | Custom toolbar content |
 
 ### VizelToolbarDefault
@@ -469,6 +482,7 @@ import { VizelToolbarDefault } from '@vizel/react';
 |------|------|---------|-------------|
 | `editor` | `Editor` | - | Editor instance (required) |
 | `className` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 | `actions` | `VizelToolbarActionItem[]` | `vizelDefaultToolbarActions` | Custom actions (supports dropdowns) |
 
 ### VizelToolbarDropdown
@@ -506,6 +520,7 @@ import { VizelToolbarOverflow } from '@vizel/react';
 | `editor` | `Editor` | - | Editor instance (required) |
 | `actions` | `VizelToolbarActionItem[]` | - | Actions to show in overflow (required) |
 | `className` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 
 ### VizelToolbarButton
 

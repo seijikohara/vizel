@@ -452,8 +452,48 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
           // Mermaid defaults to securityLevel "strict" but custom
           // mermaidConfig can override it. DOMPurify strips scripts
           // and event handlers while preserving SVG elements.
+          //
+          // Mermaid v10+ flowcharts use <foreignObject> with HTML
+          // children (div, span) for labels. DOMPurify blocks this
+          // by default in 3 ways:
+          //   1. foreignobject not in svg allowed tags
+          //   2. foreignobject in DEFAULT_FORBID_CONTENTS (strips children)
+          //   3. foreignobject not in HTML_INTEGRATION_POINTS (namespace check fails for HTML children)
+          // All three must be resolved for flowchart labels to render.
           container.innerHTML = DOMPurify.sanitize(result.svg, {
-            USE_PROFILES: { svg: true, svgFilters: true },
+            USE_PROFILES: { svg: true, svgFilters: true, html: true },
+            ADD_TAGS: ["foreignobject"],
+            HTML_INTEGRATION_POINTS: {
+              foreignobject: true,
+              "annotation-xml": true,
+            },
+            FORBID_CONTENTS: [
+              "annotation-xml",
+              "audio",
+              "colgroup",
+              "desc",
+              // foreignobject intentionally omitted to preserve Mermaid labels
+              "head",
+              "iframe",
+              "math",
+              "mi",
+              "mn",
+              "mo",
+              "ms",
+              "mtext",
+              "noembed",
+              "noframes",
+              "noscript",
+              "plaintext",
+              "script",
+              "style",
+              "svg",
+              "template",
+              "thead",
+              "title",
+              "video",
+              "xmp",
+            ],
           });
         }
       };

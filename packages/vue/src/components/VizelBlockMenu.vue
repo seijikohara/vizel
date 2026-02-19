@@ -12,7 +12,7 @@ import {
   vizelDefaultBlockMenuActions,
   vizelDefaultNodeTypes,
 } from "@vizel/core";
-import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelBlockMenuProps {
@@ -57,8 +57,10 @@ const turnIntoOptions = computed(() =>
 );
 
 function close() {
+  const editor = menuState.value?.editor;
   menuState.value = null;
   showTurnInto.value = false;
+  editor?.view.dom.focus();
 }
 
 function handleAction(action: VizelBlockMenuAction) {
@@ -76,7 +78,8 @@ function handleTurnInto(nodeType: VizelNodeTypeOption) {
 }
 
 function handleOpen(e: Event) {
-  const detail = (e as CustomEvent<VizelBlockMenuOpenDetail>).detail;
+  if (!(e instanceof CustomEvent)) return;
+  const detail = e.detail as VizelBlockMenuOpenDetail;
   menuState.value = {
     ...detail,
     x: detail.handleRect.left,
@@ -85,6 +88,50 @@ function handleOpen(e: Event) {
   showTurnInto.value = false;
 }
 
+function handleMenuKeyDown(e: KeyboardEvent) {
+  if (!menuRef.value) return;
+
+  const items = Array.from(
+    menuRef.value.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not([disabled])')
+  );
+  if (items.length === 0) return;
+
+  const currentIndex = items.indexOf(document.activeElement as HTMLButtonElement);
+
+  switch (e.key) {
+    case "ArrowDown":
+      e.preventDefault();
+      items[(currentIndex + 1) % items.length]?.focus();
+      break;
+    case "ArrowUp":
+      e.preventDefault();
+      items[(currentIndex - 1 + items.length) % items.length]?.focus();
+      break;
+    case "Home":
+      e.preventDefault();
+      items[0]?.focus();
+      break;
+    case "End":
+      e.preventDefault();
+      items.at(-1)?.focus();
+      break;
+    default:
+      break;
+  }
+}
+
+// Focus first menuitem when menu opens
+watch(menuState, (state) => {
+  if (state) {
+    void nextTick(() => {
+      const firstItem = menuRef.value?.querySelector<HTMLButtonElement>(
+        '[role="menuitem"]:not([disabled])'
+      );
+      firstItem?.focus();
+    });
+  }
+});
+
 let outsideClickHandler: ((e: MouseEvent) => void) | null = null;
 let escapeHandler: ((e: KeyboardEvent) => void) | null = null;
 
@@ -92,11 +139,11 @@ function addCloseListeners() {
   removeCloseListeners();
 
   outsideClickHandler = (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
+    if (!(e.target instanceof Node)) return;
     if (
       menuRef.value &&
-      !menuRef.value.contains(target) &&
-      !(submenuRef.value && submenuRef.value.contains(target))
+      !menuRef.value.contains(e.target) &&
+      !submenuRef.value?.contains(e.target)
     ) {
       close();
     }
@@ -108,8 +155,12 @@ function addCloseListeners() {
     }
   };
 
-  document.addEventListener("mousedown", outsideClickHandler!);
-  document.addEventListener("keydown", escapeHandler!);
+  if (outsideClickHandler) {
+    document.addEventListener("mousedown", outsideClickHandler);
+  }
+  if (escapeHandler) {
+    document.addEventListener("keydown", escapeHandler);
+  }
 }
 
 function removeCloseListeners() {
@@ -155,6 +206,8 @@ onBeforeUnmount(() => {
     role="menu"
     :aria-label="props.locale?.blockMenu.label ?? 'Block menu'"
     data-vizel-block-menu
+    tabindex="-1"
+    @keydown="handleMenuKeyDown"
   >
     <template v-for="(group, groupIndex) in groups" :key="groupIndex">
       <div v-if="groupIndex > 0" class="vizel-block-menu-divider" />
@@ -181,7 +234,7 @@ onBeforeUnmount(() => {
       type="button"
       class="vizel-block-menu-item vizel-block-menu-submenu-trigger"
       role="menuitem"
-      aria-haspopup="true"
+      aria-haspopup="menu"
       :aria-expanded="showTurnInto"
       @mouseenter="showTurnInto = true"
       @click="showTurnInto = !showTurnInto"

@@ -1,66 +1,62 @@
-// Find & Replace styles
-// Highlight styles for search matches
+/**
+ * Find & Replace Styles
+ *
+ * Highlight styles for search matches and panel UI.
+ */
 
+@use "../tokens" as *;
+
+// Search match highlights — these use dedicated CSS custom properties
+// so users can customize match colors independently of the theme.
 .vizel-find-match {
-  background-color: var(--vizel-find-match-bg, rgba(255, 213, 0, 0.4));
-  border-radius: 2px;
+  background-color: var(--vizel-find-match-bg, oklch(0.85 0.15 85 / 0.4));
+  border-radius: v("radius-sm");
 }
 
 .vizel-find-current {
-  background-color: var(--vizel-find-current-bg, rgba(255, 150, 0, 0.6));
-  border-radius: 2px;
-  outline: 2px solid var(--vizel-find-current-outline, rgba(255, 120, 0, 0.8));
+  background-color: var(--vizel-find-current-bg, oklch(0.75 0.18 60 / 0.6));
+  border-radius: v("radius-sm");
+  outline: 2px solid var(--vizel-find-current-outline, oklch(0.7 0.2 50 / 0.8));
   outline-offset: -1px;
 }
 
-// Find & Replace panel styles
+// Find & Replace panel
 .vizel-find-replace-panel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  background-color: var(--vizel-find-replace-bg, var(--vizel-bg-primary, #ffffff));
-  border: 1px solid var(--vizel-find-replace-border, var(--vizel-border-color, #e0e0e0));
-  border-radius: 8px;
-  box-shadow: var(--vizel-find-replace-shadow, 0 4px 12px rgba(0, 0, 0, 0.15));
+  gap: v("spacing-2");
+  padding: v("spacing-3");
+  background-color: v("background");
+  border: 1px solid v("border");
+  border-radius: v("radius-lg");
+  box-shadow: v("shadow-md");
   min-width: 320px;
-
-  [data-vizel-theme="dark"] & {
-    background-color: var(--vizel-find-replace-bg, var(--vizel-bg-primary, #1e1e1e));
-    border-color: var(--vizel-find-replace-border, var(--vizel-border-color, #3e3e3e));
-  }
 }
 
 .vizel-find-replace-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: v("spacing-2");
 }
 
 .vizel-find-replace-input {
   flex: 1;
-  padding: 8px 12px;
-  font-size: 14px;
-  border: 1px solid var(--vizel-input-border, #d0d0d0);
-  border-radius: 4px;
-  background-color: var(--vizel-input-bg, #ffffff);
-  color: var(--vizel-text-primary, #1a1a1a);
+  padding: v("spacing-2") v("spacing-3");
+  font-size: v("font-size-sm");
+  border: 1px solid v("border");
+  border-radius: v("radius-sm");
+  background-color: v("background-secondary");
+  color: v("foreground");
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color v("transition-normal") ease;
 
   &:focus {
-    border-color: var(--vizel-primary, #6366f1);
-    box-shadow: 0 0 0 2px var(--vizel-primary-alpha, rgba(99, 102, 241, 0.2));
+    border-color: v("primary");
+    box-shadow: 0 0 0 2px v("primary-bg");
   }
 
   &::placeholder {
-    color: var(--vizel-text-muted, #9ca3af);
-  }
-
-  [data-vizel-theme="dark"] & {
-    background-color: var(--vizel-input-bg, #2d2d2d);
-    border-color: var(--vizel-input-border, #4a4a4a);
-    color: var(--vizel-text-primary, #e0e0e0);
+    color: v("muted-foreground");
   }
 }
 
@@ -68,54 +64,44 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: v("spacing-2");
   min-width: 32px;
   height: 32px;
-  font-size: 14px;
-  border: 1px solid var(--vizel-button-border, #d0d0d0);
-  border-radius: 4px;
-  background-color: var(--vizel-button-bg, #f5f5f5);
-  color: var(--vizel-text-primary, #1a1a1a);
+  font-size: v("font-size-sm");
+  border: 1px solid v("border");
+  border-radius: v("radius-sm");
+  background-color: v("background-tertiary");
+  color: v("foreground");
   cursor: pointer;
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease;
+    background-color v("transition-normal") ease,
+    border-color v("transition-normal") ease;
 
   &:hover:not(:disabled) {
-    background-color: var(--vizel-button-hover-bg, #e8e8e8);
-    border-color: var(--vizel-button-hover-border, #c0c0c0);
+    background-color: v("hover-bg");
+    border-color: v("border-hover");
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
-
-  [data-vizel-theme="dark"] & {
-    background-color: var(--vizel-button-bg, #3a3a3a);
-    border-color: var(--vizel-button-border, #4a4a4a);
-    color: var(--vizel-text-primary, #e0e0e0);
-
-    &:hover:not(:disabled) {
-      background-color: var(--vizel-button-hover-bg, #4a4a4a);
-    }
-  }
 }
 
 .vizel-find-replace-button--primary {
-  background-color: var(--vizel-primary, #6366f1);
-  border-color: var(--vizel-primary, #6366f1);
-  color: #ffffff;
+  background-color: v("primary");
+  border-color: v("primary");
+  color: v("primary-foreground");
 
   &:hover:not(:disabled) {
-    background-color: var(--vizel-primary-hover, #5558e3);
-    border-color: var(--vizel-primary-hover, #5558e3);
+    background-color: v("primary-hover");
+    border-color: v("primary-hover");
   }
 }
 
 .vizel-find-replace-count {
-  font-size: 13px;
-  color: var(--vizel-text-muted, #6b7280);
+  font-size: v("font-size-xs");
+  color: v("muted-foreground");
   white-space: nowrap;
   min-width: 60px;
   text-align: center;
@@ -124,38 +110,38 @@
 .vizel-find-replace-options {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--vizel-text-secondary, #4b5563);
+  gap: v("spacing-3");
+  font-size: v("font-size-xs");
+  color: v("foreground-secondary");
 }
 
 .vizel-find-replace-checkbox {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: v("spacing-1");
   cursor: pointer;
 
   input[type="checkbox"] {
     width: 16px;
     height: 16px;
     cursor: pointer;
-    accent-color: var(--vizel-primary, #6366f1);
+    accent-color: v("primary");
   }
 }
 
 .vizel-find-replace-close {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 4px;
+  top: v("spacing-2");
+  right: v("spacing-2");
+  padding: v("spacing-1");
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--vizel-text-muted, #6b7280);
-  border-radius: 4px;
-  transition: background-color 0.15s ease;
+  color: v("muted-foreground");
+  border-radius: v("radius-sm");
+  transition: background-color v("transition-normal") ease;
 
   &:hover {
-    background-color: var(--vizel-hover-bg, rgba(0, 0, 0, 0.05));
+    background-color: v("hover-bg");
   }
 }

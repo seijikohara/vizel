@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { Editor } from "@vizel/core";
+import type { Editor, VizelLocale } from "@vizel/core";
 import type { Snippet } from "svelte";
 
 export interface VizelToolbarProps {
@@ -11,6 +11,8 @@ export interface VizelToolbarProps {
   showDefaultToolbar?: boolean;
   /** Custom toolbar content */
   children?: Snippet<[{ editor: Editor }]>;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 </script>
 
@@ -23,6 +25,7 @@ let {
   class: className,
   showDefaultToolbar = true,
   children,
+  locale,
 }: VizelToolbarProps = $props();
 
 const contextEditor = getVizelContextSafe();
@@ -34,7 +37,7 @@ const editor = $derived(editorProp ?? contextEditor?.() ?? null);
     {#if children}
       {@render children({ editor })}
     {:else if showDefaultToolbar}
-      <VizelToolbarDefault {editor} />
+      <VizelToolbarDefault {editor} {...(locale ? { locale } : {})} />
     {/if}
   </div>
 {/if}

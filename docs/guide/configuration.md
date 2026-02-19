@@ -15,6 +15,7 @@ The main configuration object passed to `useVizelEditor` (React/Vue) or `createV
 | `autofocus` | `boolean \| "start" \| "end" \| "all" \| number` | `false` | Auto focus behavior on mount |
 | `features` | `VizelFeatureOptions` | See [Features](/guide/features) | Feature configuration |
 | `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks to diagram nodes when importing Markdown |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor. See [Markdown Flavor Selection](/guide/features#markdown-flavor-selection) |
 | `extensions` | `Extensions` | `[]` | Additional Tiptap extensions |
 | `locale` | `VizelLocale` | English | Locale object for translating all UI strings. See [Internationalization](/guide/features#internationalization-i18n) |
 
@@ -166,19 +167,17 @@ You can add additional Tiptap extensions alongside Vizel's defaults:
 
 ```typescript
 import { useVizelEditor } from '@vizel/react';
-import { Highlight } from '@tiptap/extension-highlight';
-import { Typography } from '@tiptap/extension-typography';
+import { TextAlign } from '@tiptap/extension-text-align';
 
 const editor = useVizelEditor({
   extensions: [
-    Highlight.configure({ multicolor: true }),
-    Typography,
+    TextAlign.configure({ types: ['heading', 'paragraph'] }),
   ],
 });
 ```
 
 ::: warning Extension Conflicts
-Be careful when you add extensions that might conflict with Vizel's built-in extensions. If you need to customize a built-in extension, disable the feature and add your own configuration.
+Be careful when you add extensions that might conflict with Vizel's built-in extensions. For example, `Typography` and `Highlight` are already included in Vizel. If you need to customize a built-in extension, disable the feature and add your own configuration.
 :::
 
 ## Editor State

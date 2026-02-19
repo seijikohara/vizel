@@ -24,6 +24,7 @@ export interface VizelLocale {
     quote: string;
     codeBlock: string;
     horizontalRule: string;
+    moreActions: string;
   };
 
   /** Node type selector labels */
@@ -178,10 +179,22 @@ export interface SlashItemText {
 }
 
 /**
- * Recursive partial type for locale overrides.
+ * Deep partial type — all nested properties become optional.
+ * Allows overriding individual strings at any nesting depth.
+ *
+ * @example
+ * ```typescript
+ * const partial: VizelLocalePartial = {
+ *   slashMenu: { groups: { text: "テキスト" } }, // only override one group name
+ * };
+ * ```
  */
 export type VizelLocalePartial = {
   [K in keyof VizelLocale]?: VizelLocale[K] extends object
-    ? { [P in keyof VizelLocale[K]]?: VizelLocale[K][P] }
+    ? {
+        [P in keyof VizelLocale[K]]?: VizelLocale[K][P] extends object
+          ? { [Q in keyof VizelLocale[K][P]]?: VizelLocale[K][P][Q] }
+          : VizelLocale[K][P];
+      }
     : VizelLocale[K];
 };

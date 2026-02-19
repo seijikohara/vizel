@@ -45,6 +45,7 @@ export function VizelNodeSelector({
   const [focusedIndex, setFocusedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const activeNodeType = getVizelActiveNodeType(editor, effectiveNodeTypes);
   const currentLabel = activeNodeType?.label ?? locale?.nodeTypes.text ?? "Text";
@@ -55,7 +56,8 @@ export function VizelNodeSelector({
     if (!isOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (!(event.target instanceof Node)) return;
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
@@ -86,6 +88,7 @@ export function VizelNodeSelector({
       case "Escape":
         event.preventDefault();
         setIsOpen(false);
+        triggerRef.current?.focus();
         break;
       case "ArrowDown":
         event.preventDefault();
@@ -123,6 +126,7 @@ export function VizelNodeSelector({
   const handleSelectNodeType = (nodeType: VizelNodeTypeOption) => {
     nodeType.command(editor);
     setIsOpen(false);
+    triggerRef.current?.focus();
   };
 
   return (
@@ -132,6 +136,7 @@ export function VizelNodeSelector({
       data-vizel-node-selector
     >
       <button
+        ref={triggerRef}
         type="button"
         className="vizel-node-selector-trigger"
         onClick={() => setIsOpen(!isOpen)}

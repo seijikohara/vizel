@@ -1,5 +1,5 @@
-import type { Editor, VizelToolbarActionItem } from "@vizel/core";
-import { formatVizelTooltip, isVizelToolbarDropdownAction } from "@vizel/core";
+import type { Editor, VizelLocale, VizelToolbarActionItem } from "@vizel/core";
+import { formatVizelTooltip, isVizelToolbarDropdownAction, vizelEnLocale } from "@vizel/core";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 import { VizelToolbarButton } from "./VizelToolbarButton.tsx";
@@ -9,6 +9,8 @@ export interface VizelToolbarOverflowProps {
   editor: Editor;
   actions: VizelToolbarActionItem[];
   className?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 /**
@@ -18,22 +20,31 @@ export function VizelToolbarOverflow({
   editor,
   actions,
   className,
+  locale,
 }: VizelToolbarOverflowProps): ReactNode {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const close = useCallback(() => setIsOpen(false), []);
+  const close = useCallback(() => {
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
 
     const handleClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (!(e.target instanceof Node)) return;
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
         close();
       }
     };
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+      if (e.key === "Escape") {
+        e.preventDefault();
+        close();
+      }
     };
 
     document.addEventListener("mousedown", handleClick);
@@ -53,18 +64,20 @@ export function VizelToolbarOverflow({
       data-vizel-toolbar-overflow=""
     >
       <button
+        ref={triggerRef}
         type="button"
         className="vizel-toolbar-overflow-trigger"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="true"
         aria-expanded={isOpen}
-        aria-label="More actions"
+        aria-label={locale?.toolbar.moreActions ?? vizelEnLocale.toolbar.moreActions}
       >
         <VizelIcon name="ellipsis" />
       </button>
 
       {isOpen && (
-        <div className="vizel-toolbar-overflow-popover" role="menu">
+        // biome-ignore lint/a11y/useSemanticElements: toolbar overflow popover groups buttons semantically, not a form fieldset
+        <div className="vizel-toolbar-overflow-popover" role="group">
           {actions.map((action) =>
             isVizelToolbarDropdownAction(action) ? (
               <VizelToolbarDropdown key={action.id} editor={editor} dropdown={action} />

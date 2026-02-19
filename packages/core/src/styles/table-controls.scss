@@ -43,7 +43,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
-  z-index: 10;
+  z-index: v("z-content-overlay");
   padding: 0;
 
   &:hover {
@@ -64,7 +64,7 @@
 
 .vizel-table-column-insert {
   transform: translateX(-50%);
-  z-index: 11;
+  z-index: calc(v("z-content-overlay") + 1);
 
   &:hover {
     transform: translateX(-50%) scale(1.1);
@@ -95,7 +95,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
-  z-index: 10;
+  z-index: v("z-content-overlay");
   padding: 0;
 
   &[style*="display: flex"] {
@@ -131,7 +131,7 @@
   box-shadow: v("shadow-lg");
   min-width: 180px;
   padding: 4px;
-  z-index: 1000;
+  z-index: v("z-popover");
   overflow: hidden;
 
   &-divider {

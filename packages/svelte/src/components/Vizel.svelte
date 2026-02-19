@@ -180,13 +180,13 @@ $effect(() => {
 
 <div class="vizel-root {className ?? ''}" data-vizel-root>
   {#if showToolbar && editor && toolbar}
-    <VizelToolbar {editor}>
+    <VizelToolbar {editor} {...(restProps.locale ? { locale: restProps.locale } : {})}>
       {#snippet children({ editor: e })}
         {@render toolbar({ editor: e })}
       {/snippet}
     </VizelToolbar>
   {:else if showToolbar && editor}
-    <VizelToolbar {editor} />
+    <VizelToolbar {editor} {...(restProps.locale ? { locale: restProps.locale } : {})} />
   {/if}
   <VizelEditor {editor} />
   {#if showBubbleMenu && editor && bubbleMenu}

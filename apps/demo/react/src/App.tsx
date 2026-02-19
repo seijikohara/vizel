@@ -12,10 +12,10 @@ import {
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/react";
-import { useCallback, useMemo, useState } from "react";
-import { initialMarkdown } from "../../shared/content";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getFlavorContent } from "../../shared/content";
 import reactLogo from "../../shared/logos/react.svg";
-import { mockUploadImage } from "../../shared/utils";
+import { mockMentionItems, mockUploadImage } from "../../shared/utils";
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useVizelTheme();
@@ -102,6 +102,17 @@ function AppContent() {
   const commentManager = useVizelComment(() => (features.comments ? editor : null), {
     key: "vizel-demo-react-comments",
   });
+
+  // Track previous flavor for content swap on change
+  const prevFlavorRef = useRef(flavor);
+
+  // Swap content when flavor changes
+  useEffect(() => {
+    if (flavor !== prevFlavorRef.current && editor) {
+      setVizelMarkdown(editor, getFlavorContent(flavor), { transformDiagrams: true });
+      prevFlavorRef.current = flavor;
+    }
+  }, [flavor, editor]);
 
   // Find & Replace extension (stable reference)
   const findReplaceExtensions = useMemo(() => [createVizelFindReplaceExtension()], []);
@@ -245,7 +256,7 @@ function AppContent() {
         <div className="editor-section">
           <div className="editor-container">
             <Vizel
-              initialMarkdown={initialMarkdown}
+              initialMarkdown={getFlavorContent(flavor)}
               autofocus="end"
               className="editor-content"
               showToolbar={features.toolbar}
@@ -260,6 +271,12 @@ function AppContent() {
                 diagram: true,
                 wikiLink: true,
                 comment: true,
+                callout: true,
+                tableOfContents: true,
+                superscript: true,
+                subscript: true,
+                typography: true,
+                mention: { items: mockMentionItems },
                 image: {
                   onUpload: mockUploadImage,
                   maxFileSize: 10 * 1024 * 1024, // 10MB

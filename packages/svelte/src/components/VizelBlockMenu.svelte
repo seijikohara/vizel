@@ -55,8 +55,10 @@ const turnIntoOptions = $derived(
 );
 
 function close() {
+  const editor = menuState?.editor;
   menuState = null;
   showTurnInto = false;
+  editor?.view.dom.focus();
 }
 
 function handleAction(action: VizelBlockMenuAction) {
@@ -73,10 +75,53 @@ function handleTurnInto(nodeType: VizelNodeTypeOption) {
   close();
 }
 
+function handleMenuKeyDown(e: KeyboardEvent) {
+  if (!menuRef) return;
+
+  const items = Array.from(
+    menuRef.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not([disabled])')
+  );
+  if (items.length === 0) return;
+
+  const currentIndex = items.indexOf(document.activeElement as HTMLButtonElement);
+
+  switch (e.key) {
+    case "ArrowDown":
+      e.preventDefault();
+      items[(currentIndex + 1) % items.length]?.focus();
+      break;
+    case "ArrowUp":
+      e.preventDefault();
+      items[(currentIndex - 1 + items.length) % items.length]?.focus();
+      break;
+    case "Home":
+      e.preventDefault();
+      items[0]?.focus();
+      break;
+    case "End":
+      e.preventDefault();
+      items.at(-1)?.focus();
+      break;
+    default:
+      break;
+  }
+}
+
+// Focus first menuitem when menu opens
+$effect(() => {
+  if (!menuState || !menuRef) return;
+  // Use tick to wait for DOM render
+  const firstItem = menuRef.querySelector<HTMLButtonElement>(
+    '[role="menuitem"]:not([disabled])'
+  );
+  firstItem?.focus();
+});
+
 // Manage event listeners
 $effect(() => {
   const handleOpen = (e: Event) => {
-    const detail = (e as CustomEvent<VizelBlockMenuOpenDetail>).detail;
+    if (!(e instanceof CustomEvent)) return;
+    const detail = e.detail as VizelBlockMenuOpenDetail;
     menuState = {
       ...detail,
       x: detail.handleRect.left,
@@ -96,11 +141,11 @@ $effect(() => {
   if (!menuState) return;
 
   const handleClick = (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
+    if (!(e.target instanceof Node)) return;
     if (
       menuRef &&
-      !menuRef.contains(target) &&
-      (!submenuRef || !submenuRef.contains(target))
+      !menuRef.contains(e.target) &&
+      (!submenuRef || !submenuRef.contains(e.target))
     ) {
       close();
     }
@@ -130,6 +175,8 @@ $effect(() => {
     role="menu"
     aria-label={locale?.blockMenu.label ?? "Block menu"}
     data-vizel-block-menu
+    tabindex="-1"
+    onkeydown={handleMenuKeyDown}
   >
     {#each groups as group, groupIndex (groupIndex)}
       {#if groupIndex > 0}
@@ -160,7 +207,7 @@ $effect(() => {
       type="button"
       class="vizel-block-menu-item vizel-block-menu-submenu-trigger"
       role="menuitem"
-      aria-haspopup="true"
+      aria-haspopup="menu"
       aria-expanded={showTurnInto}
       onmouseenter={() => { showTurnInto = true; }}
       onclick={() => { showTurnInto = !showTurnInto; }}

@@ -76,9 +76,8 @@ export const vizelDefaultBlockMenuActions = [
     icon: "clipboard",
     group: "clipboard",
     run: (editor, pos, _node) => {
-      // Select the block and copy to clipboard
       editor.chain().focus().setNodeSelection(pos).run();
-      document.execCommand("copy");
+      copySelectionToClipboard();
     },
   },
   {
@@ -87,9 +86,8 @@ export const vizelDefaultBlockMenuActions = [
     icon: "scissors",
     group: "clipboard",
     run: (editor, pos, _node) => {
-      // Select the block and cut
       editor.chain().focus().setNodeSelection(pos).run();
-      document.execCommand("cut");
+      cutSelectionToClipboard();
     },
   },
 ] satisfies VizelBlockMenuAction[];
@@ -146,4 +144,40 @@ export function groupVizelBlockMenuActions(
   }
 
   return groups;
+}
+
+/**
+ * Copy the current DOM selection to clipboard.
+ * Uses Clipboard API when available, falls back to execCommand.
+ */
+function copySelectionToClipboard(): void {
+  const selection = window.getSelection();
+  if (navigator.clipboard?.write && selection?.rangeCount) {
+    const range = selection.getRangeAt(0);
+    const fragment = range.cloneContents();
+    const container = document.createElement("div");
+    container.appendChild(fragment);
+    const html = container.innerHTML;
+    const text = selection.toString();
+    navigator.clipboard
+      .write([
+        new ClipboardItem({
+          "text/html": new Blob([html], { type: "text/html" }),
+          "text/plain": new Blob([text], { type: "text/plain" }),
+        }),
+      ])
+      .catch(() => {
+        document.execCommand("copy");
+      });
+  } else {
+    document.execCommand("copy");
+  }
+}
+
+/**
+ * Cut the current DOM selection to clipboard.
+ * Uses execCommand for atomic copy+delete behavior.
+ */
+function cutSelectionToClipboard(): void {
+  document.execCommand("cut");
 }

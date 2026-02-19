@@ -1,6 +1,5 @@
 import type { Editor } from "@tiptap/core";
 import type { IFuseOptions } from "fuse.js";
-import Fuse from "fuse.js";
 import type { SlashItemText, VizelLocale } from "../i18n/types.ts";
 import type { VizelSlashCommandIconName } from "../icons/types.ts";
 
@@ -490,18 +489,55 @@ const fuseOptions: IFuseOptions<SlashCommandItem> = {
   minMatchCharLength: 1,
 };
 
+/** Fuse.js search result (minimal interface for optional dynamic import) */
+interface FuseSearchResult {
+  item: SlashCommandItem;
+  score?: number;
+  matches?: ReadonlyArray<{
+    key?: string;
+    indices: ReadonlyArray<readonly [number, number]>;
+  }>;
+}
+
+/** Fuse.js instance (minimal interface for optional dynamic import) */
+interface FuseSearchable {
+  search(pattern: string): FuseSearchResult[];
+}
+
+/**
+ * Factory function for creating Fuse instances.
+ * Populated when fuse.js is dynamically loaded; null if unavailable.
+ */
+let createFuseInstance:
+  | ((items: SlashCommandItem[], options: IFuseOptions<SlashCommandItem>) => FuseSearchable)
+  | null = null;
+
+// fuse.js is an optional peerDependency — preload eagerly via dynamic import
+// so it's ready by the time the user opens the slash menu.
+void import("fuse.js").then(
+  (mod) => {
+    const Fuse = mod.default;
+    createFuseInstance = (items, options) => new Fuse(items, options);
+  },
+  () => {
+    // fuse.js not installed — fuzzy search unavailable, simple filtering used
+  }
+);
+
 /**
  * WeakMap cache for Fuse instances to avoid recreating on every search
  */
-const fuseCache = new WeakMap<SlashCommandItem[], Fuse<SlashCommandItem>>();
+const fuseCache = new WeakMap<SlashCommandItem[], FuseSearchable>();
 
 /**
- * Get or create a Fuse instance for the given items
+ * Get or create a Fuse instance for the given items.
+ * Returns null if fuse.js is not installed.
  */
-function getFuseInstance(items: SlashCommandItem[]): Fuse<SlashCommandItem> {
+function getFuseInstance(items: SlashCommandItem[]): FuseSearchable | null {
+  if (!createFuseInstance) return null;
   let fuse = fuseCache.get(items);
   if (!fuse) {
-    fuse = new Fuse(items, fuseOptions);
+    fuse = createFuseInstance(items, fuseOptions);
     fuseCache.set(items, fuse);
   }
   return fuse;
@@ -519,9 +555,18 @@ export function filterSlashCommands(items: SlashCommandItem[], query: string): S
   }
 
   const fuse = getFuseInstance(items);
-  const results = fuse.search(query);
+  if (fuse) {
+    return fuse.search(query).map((result) => result.item);
+  }
 
-  return results.map((result) => result.item);
+  // Fallback: case-insensitive substring match when fuse.js is unavailable
+  const q = query.toLowerCase();
+  return items.filter(
+    (item) =>
+      item.title.toLowerCase().includes(q) ||
+      item.description.toLowerCase().includes(q) ||
+      item.keywords?.some((kw) => kw.toLowerCase().includes(q))
+  );
 }
 
 /**
@@ -539,18 +584,29 @@ export function searchSlashCommands(
   }
 
   const fuse = getFuseInstance(items);
-  const results = fuse.search(query);
+  if (fuse) {
+    return fuse.search(query).map((result) => {
+      const titleMatch = result.matches?.find((m) => m.key === "title");
+      const titleMatches = titleMatch?.indices as [number, number][] | undefined;
 
-  return results.map((result) => {
-    const titleMatch = result.matches?.find((m) => m.key === "title");
-    const titleMatches = titleMatch?.indices as [number, number][] | undefined;
+      return {
+        item: result.item,
+        score: result.score ?? 0,
+        titleMatches,
+      };
+    });
+  }
 
-    return {
-      item: result.item,
-      score: result.score ?? 0,
-      titleMatches,
-    };
-  });
+  // Fallback: simple match when fuse.js is unavailable
+  const q = query.toLowerCase();
+  return items
+    .filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q) ||
+        item.keywords?.some((kw) => kw.toLowerCase().includes(q))
+    )
+    .map((item) => ({ item, score: 0 }));
 }
 
 /**

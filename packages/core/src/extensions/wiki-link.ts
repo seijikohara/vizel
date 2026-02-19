@@ -241,8 +241,8 @@ export const VizelWikiLink = Mark.create<VizelWikiLinkOptions>({
           handleClick: (_view, _pos, event) => {
             if (!onLinkClick) return false;
 
-            const target = event.target as HTMLElement;
-            const link = target.closest("a[data-wiki-link]");
+            if (!(event.target instanceof HTMLElement)) return false;
+            const link = event.target.closest("a[data-wiki-link]");
             if (!link) return false;
 
             const pageName = link.getAttribute("data-wiki-page");

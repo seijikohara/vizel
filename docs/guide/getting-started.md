@@ -445,7 +445,7 @@ See [Features - Markdown Flavor Selection](/guide/features#markdown-flavor-selec
 
 ## Enabling Features
 
-All features are enabled by default except `collaboration`, `comment`, and `wikiLink`. You can disable specific features by setting them to `false`, or pass an options object to configure them:
+All features are enabled by default except `collaboration`, `comment`, `mention`, and `wikiLink`. You can disable specific features by setting them to `false`, or pass an options object to configure them:
 
 ::: code-group
 

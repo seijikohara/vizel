@@ -1,3 +1,4 @@
+import type { Editor } from "@vizel/core";
 import {
   createVizelBlockMenuActions,
   createVizelNodeTypes,
@@ -48,16 +49,21 @@ export function VizelBlockMenu({
   const [showTurnInto, setShowTurnInto] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const submenuRef = useRef<HTMLDivElement>(null);
+  const menuEditorRef = useRef<Editor | null>(null);
 
   const close = useCallback(() => {
     setMenuState(null);
     setShowTurnInto(false);
+    menuEditorRef.current?.view.dom.focus();
+    menuEditorRef.current = null;
   }, []);
 
   // Listen for block menu open events from the drag handle
   useEffect(() => {
     const handler = (e: Event) => {
-      const detail = (e as CustomEvent<VizelBlockMenuOpenDetail>).detail;
+      if (!(e instanceof CustomEvent)) return;
+      const detail = e.detail as VizelBlockMenuOpenDetail;
+      menuEditorRef.current = detail.editor;
       setMenuState({
         ...detail,
         x: detail.handleRect.left,
@@ -70,16 +76,25 @@ export function VizelBlockMenu({
     return () => document.removeEventListener(VIZEL_BLOCK_MENU_EVENT, handler);
   }, []);
 
+  // Focus first menuitem when menu opens
+  useEffect(() => {
+    if (!(menuState && menuRef.current)) return;
+    const firstItem = menuRef.current.querySelector<HTMLButtonElement>(
+      '[role="menuitem"]:not([disabled])'
+    );
+    firstItem?.focus();
+  }, [menuState]);
+
   // Close on outside click
   useEffect(() => {
     if (!menuState) return;
 
     const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
+      if (!(e.target instanceof Node)) return;
       if (
         menuRef.current &&
-        !menuRef.current.contains(target) &&
-        !(submenuRef.current && submenuRef.current.contains(target))
+        !menuRef.current.contains(e.target) &&
+        !submenuRef.current?.contains(e.target)
       ) {
         close();
       }
@@ -111,6 +126,38 @@ export function VizelBlockMenu({
     close();
   };
 
+  const handleMenuKeyDown = (e: React.KeyboardEvent) => {
+    if (!menuRef.current) return;
+
+    const items = Array.from(
+      menuRef.current.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not([disabled])')
+    );
+    if (items.length === 0) return;
+
+    const currentIndex = items.indexOf(document.activeElement as HTMLButtonElement);
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        items[(currentIndex + 1) % items.length]?.focus();
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        items[(currentIndex - 1 + items.length) % items.length]?.focus();
+        break;
+      case "Home":
+        e.preventDefault();
+        items[0]?.focus();
+        break;
+      case "End":
+        e.preventDefault();
+        items.at(-1)?.focus();
+        break;
+      default:
+        break;
+    }
+  };
+
   const handleTurnInto = (nodeType: VizelNodeTypeOption) => {
     // Select the block first, then apply the transformation
     editor.chain().focus().setNodeSelection(pos).run();
@@ -126,6 +173,8 @@ export function VizelBlockMenu({
       role="menu"
       aria-label={locale?.blockMenu.label ?? "Block menu"}
       data-vizel-block-menu=""
+      tabIndex={-1}
+      onKeyDown={handleMenuKeyDown}
     >
       {groups.map((group, groupIndex) => (
         <div key={group[0]?.group}>
@@ -157,7 +206,7 @@ export function VizelBlockMenu({
         type="button"
         className="vizel-block-menu-item vizel-block-menu-submenu-trigger"
         role="menuitem"
-        aria-haspopup="true"
+        aria-haspopup="menu"
         aria-expanded={showTurnInto}
         onMouseEnter={() => setShowTurnInto(true)}
         onClick={() => setShowTurnInto(!showTurnInto)}

@@ -240,22 +240,30 @@ export function Vizel({
     [editor]
   );
 
+  const localeProps = locale !== undefined ? { locale } : {};
+
   return (
     <div className={`vizel-root ${className ?? ""}`} data-vizel-root="">
-      {showToolbar && editor && toolbarContent && (
-        <VizelToolbar editor={editor}>{toolbarContent}</VizelToolbar>
-      )}
-      {showToolbar && editor && !toolbarContent && <VizelToolbar editor={editor} />}
+      {showToolbar &&
+        editor &&
+        (toolbarContent ? (
+          <VizelToolbar editor={editor} {...localeProps}>
+            {toolbarContent}
+          </VizelToolbar>
+        ) : (
+          <VizelToolbar editor={editor} {...localeProps} />
+        ))}
       <VizelEditor editor={editor} />
-      {showBubbleMenu && editor && bubbleMenuContent && (
-        <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed}>
-          {bubbleMenuContent}
-        </VizelBubbleMenu>
-      )}
-      {showBubbleMenu && editor && !bubbleMenuContent && (
-        <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} />
-      )}
-      <VizelBlockMenu {...(locale !== undefined && { locale })} />
+      {showBubbleMenu &&
+        editor &&
+        (bubbleMenuContent ? (
+          <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed}>
+            {bubbleMenuContent}
+          </VizelBubbleMenu>
+        ) : (
+          <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} />
+        ))}
+      <VizelBlockMenu {...localeProps} />
       {children}
     </div>
   );

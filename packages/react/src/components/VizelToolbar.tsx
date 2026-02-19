@@ -1,4 +1,4 @@
-import type { Editor } from "@vizel/core";
+import type { Editor, VizelLocale } from "@vizel/core";
 import type { ReactNode } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelToolbarDefault } from "./VizelToolbarDefault.tsx";
@@ -12,6 +12,8 @@ export interface VizelToolbarProps {
   showDefaultToolbar?: boolean;
   /** Custom toolbar content. When provided, replaces the default toolbar. */
   children?: ReactNode;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 /**
@@ -36,6 +38,7 @@ export function VizelToolbar({
   className,
   showDefaultToolbar = true,
   children,
+  locale,
 }: VizelToolbarProps) {
   const context = useVizelContextSafe();
   const editor = editorProp ?? context?.editor ?? null;
@@ -49,7 +52,10 @@ export function VizelToolbar({
       aria-label="Formatting"
       aria-orientation="horizontal"
     >
-      {children ?? (showDefaultToolbar && <VizelToolbarDefault editor={editor} />)}
+      {children ??
+        (showDefaultToolbar && (
+          <VizelToolbarDefault editor={editor} {...(locale !== undefined && { locale })} />
+        ))}
     </div>
   );
 }

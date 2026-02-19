@@ -1,7 +1,7 @@
 import type { CustomIconMap, VizelIconContextValue } from "@vizel/core";
 import { getContext, setContext } from "svelte";
 
-const VIZEL_ICON_CONTEXT_KEY = Symbol("vizel-icon-context");
+export const VIZEL_ICON_CONTEXT_KEY = Symbol("vizel-icon-context");
 
 /**
  * Set custom icon mappings for child components.

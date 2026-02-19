@@ -55,12 +55,17 @@ All-in-one editor component with built-in bubble menu. This is the recommended w
 | `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
+| `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks when importing markdown |
 | `onUpdate` | `({ editor }) => void` | - | Update callback |
 | `onCreate` | `({ editor }) => void` | - | Create callback |
 | `onDestroy` | `() => void` | - | Destroy callback |
 | `onSelectionUpdate` | `({ editor }) => void` | - | Selection change callback |
 | `onFocus` | `({ editor }) => void` | - | Focus callback |
 | `onBlur` | `({ editor }) => void` | - | Blur callback |
+| `onError` | `(error: VizelError) => void` | - | Error callback |
 
 ---
 
@@ -301,6 +306,7 @@ Find & Replace panel component. This component renders when the Find & Replace e
 |------|------|---------|-------------|
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 | `onClose` | `() => void` | - | Called when the panel closes |
 
 ### VizelEditor
@@ -335,6 +341,7 @@ Block context menu that appears when clicking the drag handle.
 | `actions` | `VizelBlockMenuAction[]` | `vizelDefaultBlockMenuActions` | Custom menu actions |
 | `nodeTypes` | `VizelNodeTypeOption[]` | `vizelDefaultNodeTypes` | Node types for "Turn into" submenu |
 | `class` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 
 ### VizelBubbleMenu
 
@@ -353,6 +360,11 @@ This component renders a floating formatting bubble menu.
 |------|------|---------|-------------|
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | CSS class name |
+| `showDefaultMenu` | `boolean` | `true` | Show default formatting menu when no children |
+| `pluginKey` | `string` | - | Custom plugin key for the bubble menu |
+| `updateDelay` | `number` | - | Delay in ms before updating menu position |
+| `shouldShow` | `(props) => boolean` | - | Custom function to control menu visibility |
+| `enableEmbed` | `boolean` | - | Enable embed option in link editor |
 
 **Slots:**
 
@@ -417,6 +429,7 @@ This component renders a fixed toolbar.
 | `editor` | `Editor \| null` | - | Editor instance (falls back to context) |
 | `class` | `string` | - | CSS class name |
 | `showDefaultToolbar` | `boolean` | `true` | Show default toolbar content |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 | `children` | `Snippet<[{ editor: Editor }]>` | - | Custom toolbar content |
 
 ### VizelToolbarDefault
@@ -433,6 +446,7 @@ This component renders the default toolbar content with grouped formatting butto
 |------|------|---------|-------------|
 | `editor` | `Editor` | - | Editor instance (required) |
 | `class` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 | `actions` | `VizelToolbarActionItem[]` | `vizelDefaultToolbarActions` | Custom actions (supports dropdowns) |
 
 ### VizelToolbarDropdown
@@ -466,6 +480,7 @@ This component renders a "..." overflow button that shows hidden actions in a po
 | `editor` | `Editor` | - | Editor instance (required) |
 | `actions` | `VizelToolbarActionItem[]` | - | Actions to show in overflow (required) |
 | `class` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 
 ### VizelToolbarButton
 

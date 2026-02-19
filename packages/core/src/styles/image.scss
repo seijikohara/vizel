@@ -75,7 +75,7 @@
   opacity: 0;
   cursor: ew-resize;
   transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-  z-index: 10;
+  z-index: v("z-content-overlay");
   transform: translateY(-50%);
 
   &:hover {
@@ -115,7 +115,7 @@
   white-space: nowrap;
   pointer-events: none;
   box-shadow: 0 2px 8px oklch(0 0 0 / 0.15);
-  z-index: 20;
+  z-index: v("z-content-controls");
 }
 
 @keyframes vizel-spin {

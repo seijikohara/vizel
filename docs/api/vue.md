@@ -57,6 +57,10 @@ import '@vizel/core/styles.css';
 | `showToolbar` | `boolean` | `false` | Show fixed toolbar above editor |
 | `showBubbleMenu` | `boolean` | `true` | Show bubble menu on selection |
 | `enableEmbed` | `boolean` | - | Enable embed in link editor |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
+| `extensions` | `Extensions` | - | Additional Tiptap extensions |
+| `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks when importing markdown |
 
 **Slots:**
 
@@ -75,6 +79,7 @@ import '@vizel/core/styles.css';
 | `selectionUpdate` | `{ editor: Editor }` | Fires when the selection changes |
 | `focus` | `{ editor: Editor }` | Fires when the editor gains focus |
 | `blur` | `{ editor: Editor }` | Fires when the editor loses focus |
+| `error` | `VizelError` | Fires when an error occurs |
 
 ---
 
@@ -106,18 +111,16 @@ const updateCount = useVizelState(() => editor.value);
 
 ### useVizelEditorState
 
-This composable tracks specific editor state properties reactively.
+This composable returns a `VizelEditorState` object that reactively tracks editor state (bold, italic, heading level, etc.).
 
 ```typescript
 import { useVizelEditorState } from '@vizel/vue';
 
-const isBold = useVizelEditorState(
-  () => editor.value,
-  (editor) => editor.isActive('bold')
-);
+const state = useVizelEditorState(() => editor.value);
+// state.value.isBold, state.value.isItalic, state.value.headingLevel, etc.
 ```
 
-**Returns:** `ComputedRef` with the value returned by the selector function
+**Returns:** `ComputedRef<VizelEditorState>` — reactive computed ref with boolean flags for formatting state and current node info
 
 ### useVizelAutoSave
 
@@ -344,6 +347,7 @@ import { VizelFindReplace } from '@vizel/vue';
 |------|------|---------|-------------|
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 
 **Events:**
 
@@ -385,6 +389,7 @@ import { VizelBlockMenu } from '@vizel/vue';
 | `actions` | `VizelBlockMenuAction[]` | `vizelDefaultBlockMenuActions` | Custom menu actions |
 | `nodeTypes` | `VizelNodeTypeOption[]` | `vizelDefaultNodeTypes` | Node types for "Turn into" submenu |
 | `class` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 
 ### VizelBubbleMenu
 
@@ -403,6 +408,11 @@ This component renders a floating formatting bubble menu.
 |------|------|---------|-------------|
 | `editor` | `Editor \| null` | - | Editor instance |
 | `class` | `string` | - | CSS class name |
+| `showDefaultMenu` | `boolean` | `true` | Show default formatting menu when no children |
+| `pluginKey` | `string` | - | Custom plugin key for the bubble menu |
+| `updateDelay` | `number` | - | Delay in ms before updating menu position |
+| `shouldShow` | `(props) => boolean` | - | Custom function to control menu visibility |
+| `enableEmbed` | `boolean` | - | Enable embed option in link editor |
 
 **Slots:**
 
@@ -469,6 +479,7 @@ import { VizelToolbar } from '@vizel/vue';
 | `editor` | `Editor \| null` | - | Editor instance (falls back to context) |
 | `class` | `string` | - | CSS class name |
 | `showDefaultToolbar` | `boolean` | `true` | Show default toolbar content |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 
 **Slots:**
 
@@ -490,6 +501,7 @@ This component renders the default toolbar content with grouped formatting butto
 |------|------|---------|-------------|
 | `editor` | `Editor` | - | Editor instance (required) |
 | `class` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 | `actions` | `VizelToolbarActionItem[]` | `vizelDefaultToolbarActions` | Custom actions (supports dropdowns) |
 
 ### VizelToolbarDropdown
@@ -523,6 +535,7 @@ This component renders a "..." overflow button that shows hidden actions in a po
 | `editor` | `Editor` | - | Editor instance (required) |
 | `actions` | `VizelToolbarActionItem[]` | - | Actions to show in overflow (required) |
 | `class` | `string` | - | CSS class name |
+| `locale` | `VizelLocale` | - | Locale for translated UI strings |
 
 ### VizelToolbarButton
 

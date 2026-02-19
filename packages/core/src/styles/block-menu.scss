@@ -15,7 +15,7 @@
   box-shadow: v("shadow-lg");
   min-width: 180px;
   padding: 4px;
-  z-index: 100;
+  z-index: v("z-popover");
   overflow: hidden;
   animation: vizel-block-menu-enter 0.1s ease;
 
@@ -107,7 +107,7 @@
     box-shadow: v("shadow-lg");
     min-width: 160px;
     padding: 4px;
-    z-index: 101;
+    z-index: calc(v("z-popover") + 1);
     overflow: hidden;
     animation: vizel-block-menu-enter 0.1s ease;
   }

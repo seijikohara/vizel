@@ -1,6 +1,7 @@
 import { Extension } from "@tiptap/core";
 import DragHandle from "@tiptap/extension-drag-handle";
 import type { Node as PmNode } from "@tiptap/pm/model";
+import { vizelEnLocale } from "../i18n/en.ts";
 import type { VizelLocale } from "../i18n/types.ts";
 import { renderVizelIcon } from "../icons/types.ts";
 import { VIZEL_BLOCK_MENU_EVENT, type VizelBlockMenuOpenDetail } from "./block-menu.ts";
@@ -55,7 +56,7 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
       element.setAttribute("draggable", "true");
       element.setAttribute(
         "aria-label",
-        locale?.dragHandle.ariaLabel ?? "Drag to reorder block, click for menu"
+        locale?.dragHandle.ariaLabel ?? vizelEnLocale.dragHandle.ariaLabel
       );
       element.setAttribute("role", "button");
 

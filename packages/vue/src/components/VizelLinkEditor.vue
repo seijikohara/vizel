@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { detectVizelEmbedProvider, type Editor } from "@vizel/core";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelLinkEditorProps {
@@ -44,7 +44,8 @@ const isEmbedProvider = computed(() => {
 
 // Handle click outside to close
 function handleClickOutside(event: MouseEvent) {
-  if (formRef.value && !formRef.value.contains(event.target as Node)) {
+  if (!(event.target instanceof Node)) return;
+  if (formRef.value && !formRef.value.contains(event.target)) {
     emit("close");
   }
 }
@@ -69,7 +70,7 @@ onMounted(() => {
   document.addEventListener("keydown", handleKeyDown, true);
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   document.removeEventListener("mousedown", handleClickOutside);
   document.removeEventListener("keydown", handleKeyDown, true);
 });

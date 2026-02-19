@@ -12,10 +12,10 @@ import {
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/vue";
-import { computed, reactive, ref, shallowRef } from "vue";
-import { initialMarkdown } from "../../shared/content";
+import { computed, reactive, ref, shallowRef, watch } from "vue";
+import { getFlavorContent } from "../../shared/content";
 import vueLogo from "../../shared/logos/vue.svg";
-import { mockUploadImage } from "../../shared/utils";
+import { mockMentionItems, mockUploadImage } from "../../shared/utils";
 import ThemeToggle from "./ThemeToggle.vue";
 
 // Feature toggles (all enabled by default)
@@ -65,6 +65,13 @@ const commentManager = useVizelComment(() => (features.comments ? editorRef.valu
 
 // Find & Replace extension
 const findReplaceExtensions = [createVizelFindReplaceExtension()];
+
+// Swap content when flavor changes
+watch(flavor, (newFlavor) => {
+  if (editorRef.value) {
+    setVizelMarkdown(editorRef.value, getFlavorContent(newFlavor), { transformDiagrams: true });
+  }
+});
 
 function handleCreate({ editor }: { editor: Editor }) {
   editorRef.value = editor;
@@ -191,7 +198,7 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
         <div class="editor-section">
           <div class="editor-container">
             <Vizel
-              :initial-markdown="initialMarkdown"
+              :initial-markdown="getFlavorContent(flavor)"
               autofocus="end"
               class="editor-content"
               :show-toolbar="features.toolbar"
@@ -206,6 +213,12 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
                 diagram: true,
                 wikiLink: true,
                 comment: true,
+                callout: true,
+                tableOfContents: true,
+                superscript: true,
+                subscript: true,
+                typography: true,
+                mention: { items: mockMentionItems },
                 image: {
                   onUpload: mockUploadImage,
                   maxFileSize: 10 * 1024 * 1024,

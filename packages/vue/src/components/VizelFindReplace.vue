@@ -101,6 +101,7 @@ function handleClose() {
   }
   findText.value = "";
   replaceText.value = "";
+  props.editor?.view.dom.focus();
   emit("close");
 }
 
