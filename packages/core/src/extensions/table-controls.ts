@@ -253,7 +253,8 @@ function findHoveredColumn(
   if (cells.length === 0) return null;
 
   for (let i = 0; i < cells.length; i++) {
-    const cell = cells[i] as HTMLElement;
+    const cell = cells[i];
+    if (!(cell instanceof HTMLElement)) continue;
     const cellRect = cell.getBoundingClientRect();
     if (mouseX >= cellRect.left && mouseX <= cellRect.right) {
       // Return the center X position relative to the table
@@ -457,26 +458,33 @@ function createTableMenu(
     menu.appendChild(button);
   }
 
-  // Close on click outside
-  const handleClickOutside = (e: MouseEvent) => {
-    if (!menu.contains(e.target as Node)) {
-      onClose();
-      document.removeEventListener("click", handleClickOutside);
-    }
+  // Cleanup function removes all listeners
+  const cleanup = () => {
+    document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDown);
   };
 
-  // Delay adding listener to avoid immediate close
-  setTimeout(() => {
-    document.addEventListener("click", handleClickOutside);
-  }, 0);
+  // Close on click outside
+  const handleClickOutside = (e: MouseEvent) => {
+    if (!(e.target instanceof Node)) return;
+    if (!menu.contains(e.target)) {
+      cleanup();
+      onClose();
+    }
+  };
 
   // Close on escape
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
+      cleanup();
       onClose();
-      document.removeEventListener("keydown", handleKeyDown);
     }
   };
+
+  // Delay adding click listener to avoid immediate close
+  setTimeout(() => {
+    document.addEventListener("click", handleClickOutside);
+  }, 0);
   document.addEventListener("keydown", handleKeyDown);
 
   return menu;
@@ -786,8 +794,8 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
 
       // Cell context menu (right-click) for cell-specific operations like alignment
       const handleContextMenu = (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const cell = target.closest("td, th");
+        if (!(e.target instanceof HTMLElement)) return;
+        const cell = e.target.closest("td, th");
 
         if (!(cell && editor.isEditable)) return;
 

@@ -4,7 +4,7 @@ import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelLinkEditorProps {
   editor: Editor;
-  onClose: () => void;
+  onClose?: () => void;
   className?: string;
   /** Enable embed option (requires Embed extension) */
   enableEmbed?: boolean;
@@ -69,8 +69,9 @@ export function VizelLinkEditor({
   // Handle click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (formRef.current && !formRef.current.contains(event.target as Node)) {
-        onClose();
+      if (!(event.target instanceof Node)) return;
+      if (formRef.current && !formRef.current.contains(event.target)) {
+        onClose?.();
       }
     };
 
@@ -79,7 +80,7 @@ export function VizelLinkEditor({
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopImmediatePropagation();
-        onClose();
+        onClose?.();
       }
     };
 
@@ -104,7 +105,7 @@ export function VizelLinkEditor({
 
       if (!trimmedUrl) {
         editor.chain().focus().unsetLink().run();
-        onClose();
+        onClose?.();
         return;
       }
 
@@ -121,14 +122,14 @@ export function VizelLinkEditor({
           })
           .run();
       }
-      onClose();
+      onClose?.();
     },
     [editor, url, openInNewTab, asEmbed, canEmbed, onClose]
   );
 
   const handleRemove = useCallback(() => {
     editor.chain().focus().unsetLink().run();
-    onClose();
+    onClose?.();
   }, [editor, onClose]);
 
   const handleVisit = useCallback(() => {

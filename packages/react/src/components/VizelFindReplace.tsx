@@ -24,11 +24,34 @@ export interface VizelFindReplaceProps {
   onClose?: () => void;
 }
 
+/** Resolve FindReplace locale labels with English defaults. */
+function resolveFindReplaceLabels(t: VizelLocale["findReplace"] | undefined) {
+  return {
+    label: t?.label ?? "Find and Replace",
+    findPlaceholder: t?.findPlaceholder ?? "Find...",
+    findTextAriaLabel: t?.findTextAriaLabel ?? "Find text",
+    noResults: t?.noResults ?? "No results",
+    findPreviousAriaLabel: t?.findPreviousAriaLabel ?? "Find previous",
+    findPreviousTitle: t?.findPreviousTitle ?? "Find previous (Shift+Enter)",
+    findNextAriaLabel: t?.findNextAriaLabel ?? "Find next",
+    findNextTitle: t?.findNextTitle ?? "Find next (Enter)",
+    closeAriaLabel: t?.closeAriaLabel ?? "Close",
+    closeTitle: t?.closeTitle ?? "Close (Escape)",
+    replacePlaceholder: t?.replacePlaceholder ?? "Replace with...",
+    replaceTextAriaLabel: t?.replaceTextAriaLabel ?? "Replace text",
+    replaceAriaLabel: t?.replaceAriaLabel ?? "Replace",
+    replaceTitle: t?.replaceTitle ?? "Replace current match",
+    replaceAllAriaLabel: t?.replaceAllAriaLabel ?? "Replace all",
+    replaceAllTitle: t?.replaceAllTitle ?? "Replace all matches",
+    caseSensitive: t?.caseSensitive ?? "Case sensitive",
+  };
+}
+
 /**
  * Find & Replace panel component for React
  */
 export function VizelFindReplace({ editor, className, locale, onClose }: VizelFindReplaceProps) {
-  const t = locale?.findReplace;
+  const labels = resolveFindReplaceLabels(locale?.findReplace);
   const [findText, setFindText] = useState("");
   const [replaceText, setReplaceText] = useState("");
   const [caseSensitive, setCaseSensitive] = useState(false);
@@ -99,6 +122,7 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
     }
     setFindText("");
     setReplaceText("");
+    editor?.view.dom.focus();
     onClose?.();
   }, [editor, onClose]);
 
@@ -143,29 +167,29 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
     <div
       className={`vizel-find-replace-panel ${className || ""}`}
       role="dialog"
-      aria-label={t?.label ?? "Find and Replace"}
+      aria-label={labels.label}
     >
       <div className="vizel-find-replace-row">
         <input
           ref={findInputRef}
           type="text"
           className="vizel-find-replace-input"
-          placeholder={t?.findPlaceholder ?? "Find..."}
+          placeholder={labels.findPlaceholder}
           value={findText}
           onChange={handleFindInputChange}
           onKeyDown={handleKeyDown}
-          aria-label={t?.findTextAriaLabel ?? "Find text"}
+          aria-label={labels.findTextAriaLabel}
         />
         <span className="vizel-find-replace-count" aria-live="polite">
-          {matchCount > 0 ? `${currentMatch}/${matchCount}` : (t?.noResults ?? "No results")}
+          {matchCount > 0 ? `${currentMatch}/${matchCount}` : labels.noResults}
         </span>
         <button
           type="button"
           className="vizel-find-replace-button"
           onClick={handleFindPrevious}
           disabled={matchCount === 0}
-          aria-label={t?.findPreviousAriaLabel ?? "Find previous"}
-          title={t?.findPreviousTitle ?? "Find previous (Shift+Enter)"}
+          aria-label={labels.findPreviousAriaLabel}
+          title={labels.findPreviousTitle}
         >
           ↑
         </button>
@@ -174,8 +198,8 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
           className="vizel-find-replace-button"
           onClick={handleFindNext}
           disabled={matchCount === 0}
-          aria-label={t?.findNextAriaLabel ?? "Find next"}
-          title={t?.findNextTitle ?? "Find next (Enter)"}
+          aria-label={labels.findNextAriaLabel}
+          title={labels.findNextTitle}
         >
           ↓
         </button>
@@ -183,8 +207,8 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
           type="button"
           className="vizel-find-replace-button"
           onClick={handleClose}
-          aria-label={t?.closeAriaLabel ?? "Close"}
-          title={t?.closeTitle ?? "Close (Escape)"}
+          aria-label={labels.closeAriaLabel}
+          title={labels.closeTitle}
         >
           ✕
         </button>
@@ -195,19 +219,19 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
           <input
             type="text"
             className="vizel-find-replace-input"
-            placeholder={t?.replacePlaceholder ?? "Replace with..."}
+            placeholder={labels.replacePlaceholder}
             value={replaceText}
             onChange={(e) => setReplaceText(e.target.value)}
             onKeyDown={handleKeyDown}
-            aria-label={t?.replaceTextAriaLabel ?? "Replace text"}
+            aria-label={labels.replaceTextAriaLabel}
           />
           <button
             type="button"
             className="vizel-find-replace-button"
             onClick={handleReplace}
             disabled={matchCount === 0}
-            aria-label={t?.replaceAriaLabel ?? "Replace"}
-            title={t?.replaceTitle ?? "Replace current match"}
+            aria-label={labels.replaceAriaLabel}
+            title={labels.replaceTitle}
           >
             Replace
           </button>
@@ -216,8 +240,8 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
             className="vizel-find-replace-button vizel-find-replace-button--primary"
             onClick={handleReplaceAll}
             disabled={matchCount === 0}
-            aria-label={t?.replaceAllAriaLabel ?? "Replace all"}
-            title={t?.replaceAllTitle ?? "Replace all matches"}
+            aria-label={labels.replaceAllAriaLabel}
+            title={labels.replaceAllTitle}
           >
             All
           </button>
@@ -227,7 +251,7 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
       <div className="vizel-find-replace-options">
         <label className="vizel-find-replace-checkbox">
           <input type="checkbox" checked={caseSensitive} onChange={handleCaseSensitiveChange} />
-          {t?.caseSensitive ?? "Case sensitive"}
+          {labels.caseSensitive}
         </label>
       </div>
     </div>

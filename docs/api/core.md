@@ -96,6 +96,13 @@ const extensions = await createVizelExtensions({
 | `diagram` | `Diagram` |
 | `wikiLink` | `WikiLink` |
 | `comment` | `CommentMark` |
+| `callout` | `Callout` |
+| `mention` | `Mention` |
+| `tableOfContents` | `TableOfContents` |
+| `superscript` | `Superscript` |
+| `subscript` | `Subscript` |
+| `typography` | `Typography` |
+| `collaboration` | Yjs extensions (`Collaboration`, `CollaborationCursor`) |
 
 ---
 

@@ -383,12 +383,17 @@ export function renderVizelIconSvg(
     width: options?.width ?? 24,
   });
 
-  // Build SVG element
+  // Build SVG element with Lucide defaults (stroke-based icons)
   const attrs: string[] = [
     'xmlns="http://www.w3.org/2000/svg"',
     `width="${options?.width ?? 24}"`,
     `height="${options?.height ?? 24}"`,
     `viewBox="0 0 ${iconData.width ?? 24} ${iconData.height ?? 24}"`,
+    'fill="none"',
+    'stroke="currentColor"',
+    'stroke-width="2"',
+    'stroke-linecap="round"',
+    'stroke-linejoin="round"',
   ];
 
   // Add additional attributes from the result

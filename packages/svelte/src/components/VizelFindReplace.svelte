@@ -105,6 +105,7 @@ function handleClose() {
   }
   findText = "";
   replaceText = "";
+  editor?.view.dom.focus();
   onClose?.();
 }
 

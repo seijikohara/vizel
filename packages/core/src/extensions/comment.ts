@@ -183,8 +183,8 @@ export const VizelCommentMark = Mark.create<VizelCommentMarkOptions>({
 
         props: {
           handleClick: (_view, _pos, event) => {
-            const target = event.target as HTMLElement;
-            const commentEl = target.closest("[data-vizel-comment-id]");
+            if (!(event.target instanceof HTMLElement)) return false;
+            const commentEl = event.target.closest("[data-vizel-comment-id]");
             if (commentEl) {
               const commentId = commentEl.getAttribute("data-vizel-comment-id");
               if (commentId) {

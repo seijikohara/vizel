@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Editor, VizelToolbarActionItem } from "@vizel/core";
-import { formatVizelTooltip, isVizelToolbarDropdownAction } from "@vizel/core";
+import type { Editor, VizelLocale, VizelToolbarActionItem } from "@vizel/core";
+import { formatVizelTooltip, isVizelToolbarDropdownAction, vizelEnLocale } from "@vizel/core";
 import { onBeforeUnmount, ref, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 import VizelToolbarButton from "./VizelToolbarButton.vue";
@@ -10,15 +10,19 @@ export interface VizelToolbarOverflowProps {
   editor: Editor;
   actions: VizelToolbarActionItem[];
   class?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 const props = defineProps<VizelToolbarOverflowProps>();
 
 const isOpen = ref(false);
 const containerRef = ref<HTMLDivElement | null>(null);
+const triggerRef = ref<HTMLButtonElement | null>(null);
 
 function close() {
   isOpen.value = false;
+  triggerRef.value?.focus();
 }
 
 function toggle() {
@@ -33,13 +37,17 @@ function handleActionClick(action: VizelToolbarActionItem) {
 }
 
 function handleOutsideClick(e: MouseEvent) {
-  if (containerRef.value && !containerRef.value.contains(e.target as Node)) {
+  if (!(e.target instanceof Node)) return;
+  if (containerRef.value && !containerRef.value.contains(e.target)) {
     close();
   }
 }
 
 function handleKeydown(e: KeyboardEvent) {
-  if (e.key === "Escape") close();
+  if (e.key === "Escape") {
+    e.preventDefault();
+    close();
+  }
 }
 
 watch(isOpen, (open) => {
@@ -66,11 +74,12 @@ onBeforeUnmount(() => {
     data-vizel-toolbar-overflow
   >
     <button
+      ref="triggerRef"
       type="button"
       class="vizel-toolbar-overflow-trigger"
-      aria-haspopup="menu"
+      aria-haspopup="true"
       :aria-expanded="isOpen"
-      aria-label="More actions"
+      :aria-label="props.locale?.toolbar.moreActions ?? vizelEnLocale.toolbar.moreActions"
       @click="toggle"
     >
       <VizelIcon name="ellipsis" />
@@ -79,7 +88,7 @@ onBeforeUnmount(() => {
     <div
       v-if="isOpen"
       class="vizel-toolbar-overflow-popover"
-      role="menu"
+      role="group"
     >
       <template v-for="action in props.actions" :key="action.id">
         <VizelToolbarDropdown

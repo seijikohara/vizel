@@ -54,10 +54,13 @@ Each component must exist in all three frameworks with equivalent functionality:
 | VizelIconProvider | `.tsx` | `.vue` | `.svelte` |
 | VizelProvider | `.tsx` | `.vue` | `.svelte` |
 | VizelFindReplace | `.tsx` | `.vue` | `.svelte` |
+| VizelMentionMenu | `.tsx` | `.vue` | `.svelte` |
 | VizelToolbar | `.tsx` | `.vue` | `.svelte` |
 | VizelToolbarButton | `.tsx` | `.vue` | `.svelte` |
 | VizelToolbarDefault | `.tsx` | `.vue` | `.svelte` |
 | VizelToolbarDivider | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbarDropdown | `.tsx` | `.vue` | `.svelte` |
+| VizelToolbarOverflow | `.tsx` | `.vue` | `.svelte` |
 
 ### Props Interface
 

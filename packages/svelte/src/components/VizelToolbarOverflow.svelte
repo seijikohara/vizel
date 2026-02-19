@@ -1,15 +1,17 @@
 <script lang="ts" module>
-import type { Editor, VizelToolbarActionItem } from "@vizel/core";
+import type { Editor, VizelLocale, VizelToolbarActionItem } from "@vizel/core";
 
 export interface VizelToolbarOverflowProps {
   editor: Editor;
   actions: VizelToolbarActionItem[];
   class?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 </script>
 
 <script lang="ts">
-import { formatVizelTooltip, isVizelToolbarDropdownAction } from "@vizel/core";
+import { formatVizelTooltip, isVizelToolbarDropdownAction, vizelEnLocale } from "@vizel/core";
 import VizelIcon from "./VizelIcon.svelte";
 import VizelToolbarButton from "./VizelToolbarButton.svelte";
 import VizelToolbarDropdown from "./VizelToolbarDropdown.svelte";
@@ -18,13 +20,16 @@ let {
   editor,
   actions,
   class: className,
+  locale,
 }: VizelToolbarOverflowProps = $props();
 
 let isOpen = $state(false);
 let containerEl: HTMLDivElement | undefined = $state(undefined);
+let triggerEl: HTMLButtonElement | undefined = $state(undefined);
 
 function close() {
   isOpen = false;
+  triggerEl?.focus();
 }
 
 function toggle() {
@@ -42,12 +47,16 @@ $effect(() => {
   if (!isOpen) return;
 
   function handleClick(e: MouseEvent) {
-    if (containerEl && !containerEl.contains(e.target as Node)) {
+    if (!(e.target instanceof Node)) return;
+    if (containerEl && !containerEl.contains(e.target)) {
       close();
     }
   }
   function handleKey(e: KeyboardEvent) {
-    if (e.key === "Escape") close();
+    if (e.key === "Escape") {
+      e.preventDefault();
+      close();
+    }
   }
 
   document.addEventListener("mousedown", handleClick);
@@ -66,18 +75,19 @@ $effect(() => {
     data-vizel-toolbar-overflow
   >
     <button
+      bind:this={triggerEl}
       type="button"
       class="vizel-toolbar-overflow-trigger"
-      aria-haspopup="menu"
+      aria-haspopup="true"
       aria-expanded={isOpen}
-      aria-label="More actions"
+      aria-label={locale?.toolbar.moreActions ?? vizelEnLocale.toolbar.moreActions}
       onclick={toggle}
     >
       <VizelIcon name="ellipsis" />
     </button>
 
     {#if isOpen}
-      <div class="vizel-toolbar-overflow-popover" role="menu">
+      <div class="vizel-toolbar-overflow-popover" role="group">
         {#each actions as action (action.id)}
           {#if isVizelToolbarDropdownAction(action)}
             <VizelToolbarDropdown {editor} dropdown={action} />

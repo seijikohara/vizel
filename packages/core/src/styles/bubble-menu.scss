@@ -123,7 +123,7 @@
     box-shadow: v("shadow-md");
     border: 1px solid v("border");
     padding: 0.5rem;
-    z-index: 100;
+    z-index: v("z-popover");
     width: fit-content;
   }
 
@@ -340,7 +340,7 @@
     box-shadow: v("shadow-md");
     border: 1px solid v("border");
     padding: 0.25rem;
-    z-index: 100;
+    z-index: v("z-popover");
     min-width: 10rem;
   }
 

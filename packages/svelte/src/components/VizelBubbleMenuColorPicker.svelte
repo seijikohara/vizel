@@ -78,12 +78,14 @@ function handleColorChange(color: string) {
 }
 
 function handleClickOutside(event: MouseEvent) {
-  if (containerRef && !containerRef.contains(event.target as Node)) {
+  if (!(event.target instanceof Node)) return;
+  if (containerRef && !containerRef.contains(event.target)) {
     isOpen = false;
   }
 }
 
 $effect(() => {
+  if (!isOpen) return;
   document.addEventListener("mousedown", handleClickOutside);
   return () => {
     document.removeEventListener("mousedown", handleClickOutside);

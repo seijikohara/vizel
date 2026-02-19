@@ -143,6 +143,7 @@ export function createVizelMarkdown(
       editor.off("update", handleUpdate);
       if (rafId !== null) cancelAnimationFrame(rafId);
       handlers?.destroy();
+      handlers = null;
     };
   });
 

@@ -21,6 +21,7 @@ export const vizelEnLocale = {
     quote: "Quote",
     codeBlock: "Code Block",
     horizontalRule: "Horizontal Rule",
+    moreActions: "More actions",
   },
 
   nodeTypes: {

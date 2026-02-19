@@ -44,7 +44,8 @@ const isEmbedProvider = computed(() => {
 
 // Handle click outside to close
 function handleClickOutside(event: MouseEvent) {
-  if (formRef.value && !formRef.value.contains(event.target as Node)) {
+  if (!(event.target instanceof Node)) return;
+  if (formRef.value && !formRef.value.contains(event.target)) {
     emit("close");
   }
 }

@@ -24,6 +24,7 @@ export interface VizelLocale {
     quote: string;
     codeBlock: string;
     horizontalRule: string;
+    moreActions: string;
   };
 
   /** Node type selector labels */

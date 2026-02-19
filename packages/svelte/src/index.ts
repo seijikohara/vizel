@@ -7,8 +7,10 @@
 // Import Tiptap extension types for ChainedCommands augmentation
 import "./tiptap-extensions.js";
 
-// Initialize icon renderer (auto-registers with core)
-import "./iconRenderer.js";
+// Initialize icon renderer (inline to prevent tree-shaking in Vite library builds)
+import { initVizelIconRenderer } from "@vizel/core";
+
+initVizelIconRenderer();
 
 // Components
 export {

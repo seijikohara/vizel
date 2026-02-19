@@ -12,9 +12,9 @@ import {
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/svelte";
-import { initialMarkdown } from "../../shared/content";
+import { getFlavorContent } from "../../shared/content";
 import svelteLogo from "../../shared/logos/svelte.svg";
-import { mockUploadImage } from "../../shared/utils";
+import { mockMentionItems, mockUploadImage } from "../../shared/utils";
 import ThemeToggle from "./ThemeToggle.svelte";
 
 // Feature toggles (all enabled by default)
@@ -64,6 +64,15 @@ const commentManager = createVizelComment(() => (features.comments ? editorRef :
 
 // Find & Replace extension
 const findReplaceExtensions = [createVizelFindReplaceExtension()];
+
+// Swap content when flavor changes
+let prevFlavor = $state(flavor);
+$effect(() => {
+  if (flavor !== prevFlavor && editorRef) {
+    setVizelMarkdown(editorRef, getFlavorContent(flavor), { transformDiagrams: true });
+  }
+  prevFlavor = flavor;
+});
 
 const showPanel = $derived(features.syncPanel || features.history || features.comments);
 
@@ -194,7 +203,7 @@ function handleJsonChange(event: Event) {
     <div class="editor-section">
       <div class="editor-container">
         <Vizel
-          {initialMarkdown}
+          initialMarkdown={getFlavorContent(flavor)}
           autofocus="end"
           class="editor-content"
           showToolbar={features.toolbar}
@@ -209,6 +218,12 @@ function handleJsonChange(event: Event) {
             diagram: true,
             wikiLink: true,
             comment: true,
+            callout: true,
+            tableOfContents: true,
+            superscript: true,
+            subscript: true,
+            typography: true,
+            mention: { items: mockMentionItems },
             image: {
               onUpload: mockUploadImage,
               maxFileSize: 10 * 1024 * 1024,

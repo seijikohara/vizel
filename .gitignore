@@ -28,6 +28,10 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
+# TypeScript declaration build artifacts in source directories
+packages/*/src/**/*.d.ts
+packages/*/src/**/*.d.ts.map
+
 # VitePress
 docs/.vitepress/dist
 docs/.vitepress/cache

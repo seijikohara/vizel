@@ -249,6 +249,8 @@ $transitions: (
 /// Z-index tokens
 /// @type Map
 $z-index: (
+  "z-content-overlay": 10,
+  "z-content-controls": 20,
   "z-dropdown": 50,
   "z-sticky": 60,
   "z-fixed": 70,

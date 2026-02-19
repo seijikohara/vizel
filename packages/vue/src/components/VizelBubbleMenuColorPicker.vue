@@ -7,7 +7,7 @@ import {
   VIZEL_TEXT_COLORS,
   type VizelColorDefinition,
 } from "@vizel/core";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import VizelColorPicker from "./VizelColorPicker.vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -75,13 +75,18 @@ function handleColorChange(color: string) {
 }
 
 function handleClickOutside(event: MouseEvent) {
-  if (containerRef.value && !containerRef.value.contains(event.target as Node)) {
+  if (!(event.target instanceof Node)) return;
+  if (containerRef.value && !containerRef.value.contains(event.target)) {
     isOpen.value = false;
   }
 }
 
-onMounted(() => {
-  document.addEventListener("mousedown", handleClickOutside);
+watch(isOpen, (open) => {
+  if (open) {
+    document.addEventListener("mousedown", handleClickOutside);
+  } else {
+    document.removeEventListener("mousedown", handleClickOutside);
+  }
 });
 
 onBeforeUnmount(() => {

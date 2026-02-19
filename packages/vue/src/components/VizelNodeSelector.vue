@@ -7,7 +7,7 @@ import {
   type VizelNodeTypeOption,
   vizelDefaultNodeTypes,
 } from "@vizel/core";
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -36,6 +36,7 @@ const isOpen = ref(false);
 const focusedIndex = ref(0);
 const containerRef = ref<HTMLDivElement | null>(null);
 const dropdownRef = ref<HTMLDivElement | null>(null);
+const triggerRef = ref<HTMLButtonElement | null>(null);
 
 const activeNodeType = computed(() => {
   void editorStateVersion.value; // Trigger reactivity
@@ -49,13 +50,18 @@ const currentIcon = computed(() => activeNodeType.value?.icon ?? "paragraph");
 
 // Close dropdown when clicking outside
 function handleClickOutside(event: MouseEvent) {
-  if (containerRef.value && !containerRef.value.contains(event.target as Node)) {
+  if (!(event.target instanceof Node)) return;
+  if (containerRef.value && !containerRef.value.contains(event.target)) {
     isOpen.value = false;
   }
 }
 
-onMounted(() => {
-  document.addEventListener("mousedown", handleClickOutside);
+watch(isOpen, (open) => {
+  if (open) {
+    document.addEventListener("mousedown", handleClickOutside);
+  } else {
+    document.removeEventListener("mousedown", handleClickOutside);
+  }
 });
 
 onBeforeUnmount(() => {
@@ -85,6 +91,7 @@ function handleKeyDown(event: KeyboardEvent) {
     case "Escape":
       event.preventDefault();
       isOpen.value = false;
+      triggerRef.value?.focus();
       break;
     case "ArrowDown":
       event.preventDefault();
@@ -122,6 +129,7 @@ function handleKeyDown(event: KeyboardEvent) {
 function handleSelectNodeType(nodeType: VizelNodeTypeOption) {
   nodeType.command(props.editor);
   isOpen.value = false;
+  triggerRef.value?.focus();
 }
 
 function isNodeTypeActive(nodeType: VizelNodeTypeOption): boolean {
@@ -137,6 +145,7 @@ function isNodeTypeActive(nodeType: VizelNodeTypeOption): boolean {
     data-vizel-node-selector
   >
     <button
+      ref="triggerRef"
       type="button"
       class="vizel-node-selector-trigger"
       aria-haspopup="listbox"

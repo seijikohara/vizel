@@ -174,6 +174,15 @@ export async function createVizelCodeBlockExtension(
   // Cache the instance for utility functions
   activeLowlightInstance = lowlight;
 
+  // Pre-resolve locale labels to keep addNodeView closure complexity low
+  const codeBlockLabels = {
+    languagePlaceholder: locale?.codeBlock.languagePlaceholder ?? "language",
+    hideLineNumbers: locale?.codeBlock.hideLineNumbers ?? "Hide line numbers",
+    showLineNumbers: locale?.codeBlock.showLineNumbers ?? "Show line numbers",
+    copyCode: locale?.codeBlock.copyCode ?? "Copy code",
+    copied: locale?.codeBlock.copied ?? "Copied!",
+  };
+
   const extension = CodeBlockLowlight.extend({
     addAttributes() {
       return {
@@ -219,7 +228,7 @@ export async function createVizelCodeBlockExtension(
         languageInput.type = "text";
         languageInput.classList.add("vizel-code-block-language-input");
         languageInput.value = node.attrs.language || defaultLanguage;
-        languageInput.placeholder = locale?.codeBlock.languagePlaceholder ?? "language";
+        languageInput.placeholder = codeBlockLabels.languagePlaceholder;
 
         const datalistId = `vizel-languages-${Math.random().toString(36).slice(2, 9)}`;
         const datalist = document.createElement("datalist");
@@ -235,20 +244,17 @@ export async function createVizelCodeBlockExtension(
 
         const updateLanguage = () => {
           const pos = typeof getPos === "function" ? getPos() : null;
-          if (pos !== null && pos !== undefined) {
-            const newLanguage = languageInput.value.toLowerCase().trim() || defaultLanguage;
-            languageInput.value = newLanguage;
-            // Use setNodeMarkup to update the specific node at this position
-            const { tr } = editor.state;
-            const nodeAtPos = editor.state.doc.nodeAt(pos);
-            if (nodeAtPos) {
-              tr.setNodeMarkup(pos, undefined, {
-                ...nodeAtPos.attrs,
-                language: newLanguage,
-              });
-              editor.view.dispatch(tr);
-            }
-          }
+          if (pos == null) return;
+          const newLanguage = languageInput.value.toLowerCase().trim() || defaultLanguage;
+          languageInput.value = newLanguage;
+          const { tr } = editor.state;
+          const nodeAtPos = editor.state.doc.nodeAt(pos);
+          if (!nodeAtPos) return;
+          tr.setNodeMarkup(pos, undefined, {
+            ...nodeAtPos.attrs,
+            language: newLanguage,
+          });
+          editor.view.dispatch(tr);
         };
 
         languageInput.addEventListener("change", updateLanguage);
@@ -271,9 +277,9 @@ export async function createVizelCodeBlockExtension(
         if (node.attrs.lineNumbers) {
           lineNumbersBtn.classList.add("active");
         }
-        const hideLineNumbersLabel = locale?.codeBlock.hideLineNumbers ?? "Hide line numbers";
-        const showLineNumbersLabel = locale?.codeBlock.showLineNumbers ?? "Show line numbers";
-        lineNumbersBtn.title = node.attrs.lineNumbers ? hideLineNumbersLabel : showLineNumbersLabel;
+        lineNumbersBtn.title = node.attrs.lineNumbers
+          ? codeBlockLabels.hideLineNumbers
+          : codeBlockLabels.showLineNumbers;
 
         // Helper to set trusted SVG icon content from the internal @iconify system
         const setIconContent = (
@@ -291,13 +297,11 @@ export async function createVizelCodeBlockExtension(
         };
 
         // Copy button
-        const copyCodeLabel = locale?.codeBlock.copyCode ?? "Copy code";
-        const copiedLabel = locale?.codeBlock.copied ?? "Copied!";
         const copyBtn = document.createElement("button");
         copyBtn.type = "button";
         copyBtn.classList.add("vizel-code-block-copy-btn");
         setIconContent(copyBtn, "copy");
-        copyBtn.title = copyCodeLabel;
+        copyBtn.title = codeBlockLabels.copyCode;
 
         let copyTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -308,12 +312,12 @@ export async function createVizelCodeBlockExtension(
           navigator.clipboard.writeText(text).then(() => {
             copyBtn.classList.add("copied");
             setIconContent(copyBtn, "checkSmall");
-            copyBtn.title = copiedLabel;
+            copyBtn.title = codeBlockLabels.copied;
             if (copyTimeout) clearTimeout(copyTimeout);
             copyTimeout = setTimeout(() => {
               copyBtn.classList.remove("copied");
               setIconContent(copyBtn, "copy");
-              copyBtn.title = copyCodeLabel;
+              copyBtn.title = codeBlockLabels.copyCode;
               copyTimeout = null;
             }, 2000);
           });
@@ -382,19 +386,15 @@ export async function createVizelCodeBlockExtension(
           e.preventDefault();
           e.stopPropagation();
           const pos = typeof getPos === "function" ? getPos() : null;
-          if (pos !== null && pos !== undefined) {
-            const newValue = !currentLineNumbers;
-            // Use setNodeMarkup to update the specific node at this position
-            const { tr } = editor.state;
-            const nodeAtPos = editor.state.doc.nodeAt(pos);
-            if (nodeAtPos) {
-              tr.setNodeMarkup(pos, undefined, {
-                ...nodeAtPos.attrs,
-                lineNumbers: newValue,
-              });
-              editor.view.dispatch(tr);
-            }
-          }
+          if (pos == null) return;
+          const { tr } = editor.state;
+          const nodeAtPos = editor.state.doc.nodeAt(pos);
+          if (!nodeAtPos) return;
+          tr.setNodeMarkup(pos, undefined, {
+            ...nodeAtPos.attrs,
+            lineNumbers: !currentLineNumbers,
+          });
+          editor.view.dispatch(tr);
         });
 
         // Helper functions for update
@@ -408,9 +408,9 @@ export async function createVizelCodeBlockExtension(
           currentLineNumbers = enabled;
           dom.classList.toggle("vizel-code-block-line-numbers", enabled);
           lineNumbersBtn.classList.toggle("active", enabled);
-          const hideLabel = locale?.codeBlock.hideLineNumbers ?? "Hide line numbers";
-          const showLabel = locale?.codeBlock.showLineNumbers ?? "Show line numbers";
-          lineNumbersBtn.title = enabled ? hideLabel : showLabel;
+          lineNumbersBtn.title = enabled
+            ? codeBlockLabels.hideLineNumbers
+            : codeBlockLabels.showLineNumbers;
         };
 
         return {

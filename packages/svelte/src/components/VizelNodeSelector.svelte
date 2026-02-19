@@ -29,6 +29,7 @@ let isOpen = $state(false);
 let focusedIndex = $state(0);
 let containerRef: HTMLDivElement | undefined = $state();
 let dropdownRef: HTMLDivElement | undefined = $state();
+let triggerRef: HTMLButtonElement | undefined = $state();
 
 const activeNodeType = $derived.by(() => {
   void editorState.current; // Trigger reactivity
@@ -40,12 +41,14 @@ const currentIcon = $derived(activeNodeType?.icon ?? "paragraph");
 
 // Close dropdown when clicking outside
 function handleClickOutside(event: MouseEvent) {
-  if (containerRef && !containerRef.contains(event.target as Node)) {
+  if (!(event.target instanceof Node)) return;
+  if (containerRef && !containerRef.contains(event.target)) {
     isOpen = false;
   }
 }
 
 $effect(() => {
+  if (!isOpen) return;
   document.addEventListener("mousedown", handleClickOutside);
   return () => document.removeEventListener("mousedown", handleClickOutside);
 });
@@ -71,6 +74,7 @@ function handleKeyDown(event: KeyboardEvent) {
     case "Escape":
       event.preventDefault();
       isOpen = false;
+      triggerRef?.focus();
       break;
     case "ArrowDown":
       event.preventDefault();
@@ -106,6 +110,7 @@ function handleKeyDown(event: KeyboardEvent) {
 function handleSelectNodeType(nodeType: VizelNodeTypeOption) {
   nodeType.command(editor);
   isOpen = false;
+  triggerRef?.focus();
 }
 
 function isNodeTypeActive(nodeType: VizelNodeTypeOption): boolean {
@@ -120,6 +125,7 @@ function isNodeTypeActive(nodeType: VizelNodeTypeOption): boolean {
   data-vizel-node-selector
 >
   <button
+    bind:this={triggerRef}
     type="button"
     class="vizel-node-selector-trigger"
     aria-haspopup="listbox"
