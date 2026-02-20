@@ -199,6 +199,28 @@ type VizelResolvedTheme = 'light' | 'dark';
 
 ## Utilities
 
+### groupByConsecutiveField
+
+This function groups items into consecutive runs by a string field. Items with the same field value that appear sequentially are placed in the same group. Non-adjacent items with the same value are placed in separate groups.
+
+```typescript
+import { groupByConsecutiveField } from '@vizel/core';
+
+const items = [
+  { group: "a", name: "1" },
+  { group: "a", name: "2" },
+  { group: "b", name: "3" },
+  { group: "a", name: "4" },
+];
+
+const groups = groupByConsecutiveField(items, "group");
+// [
+//   [{ group: "a", name: "1" }, { group: "a", name: "2" }],
+//   [{ group: "b", name: "3" }],
+//   [{ group: "a", name: "4" }],
+// ]
+```
+
 ### resolveVizelFeatures
 
 This function resolves feature options to extension configuration.

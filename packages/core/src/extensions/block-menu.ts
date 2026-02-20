@@ -2,6 +2,7 @@ import type { Editor } from "@tiptap/core";
 import type { Node } from "@tiptap/pm/model";
 import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelBlockMenuIconName } from "../icons/types.ts";
+import { groupByConsecutiveField } from "../utils/groupByField.ts";
 import { type VizelNodeTypeOption, vizelDefaultNodeTypes } from "./node-types.ts";
 
 /**
@@ -124,26 +125,7 @@ export function getVizelTurnIntoOptions(
 export function groupVizelBlockMenuActions(
   actions: VizelBlockMenuAction[] = vizelDefaultBlockMenuActions
 ): VizelBlockMenuAction[][] {
-  const groups: VizelBlockMenuAction[][] = [];
-  let currentGroup: string | null = null;
-  let currentActions: VizelBlockMenuAction[] = [];
-
-  for (const action of actions) {
-    if (action.group !== currentGroup) {
-      if (currentActions.length > 0) {
-        groups.push(currentActions);
-      }
-      currentGroup = action.group;
-      currentActions = [];
-    }
-    currentActions.push(action);
-  }
-
-  if (currentActions.length > 0) {
-    groups.push(currentActions);
-  }
-
-  return groups;
+  return groupByConsecutiveField(actions, "group");
 }
 
 /**

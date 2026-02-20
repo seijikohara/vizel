@@ -351,6 +351,8 @@ export {
   getVizelEditorState,
   getVizelMarkdown,
   getVizelPortalContainer,
+  // Collection utilities
+  groupByConsecutiveField,
   handleVizelSuggestionEscape,
   // Type guard utilities
   hasFunction,
