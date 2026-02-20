@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BubbleMenuPlugin, type Editor } from "@vizel/core";
+import { BubbleMenuPlugin, type Editor, type VizelLocale } from "@vizel/core";
 import { computed, onBeforeUnmount, ref, useSlots, watch } from "vue";
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
@@ -19,6 +19,8 @@ export interface VizelBubbleMenuProps {
   shouldShow?: (props: { editor: Editor; from: number; to: number }) => boolean;
   /** Enable embed option in link editor (requires Embed extension) */
   enableEmbed?: boolean;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 const props = withDefaults(defineProps<VizelBubbleMenuProps>(), {
@@ -86,10 +88,10 @@ onBeforeUnmount(() => {
     :class="['vizel-bubble-menu', $props.class]"
     data-vizel-bubble-menu
     role="toolbar"
-    aria-label="Text formatting"
+    :aria-label="props.locale?.bubbleMenu?.ariaLabel ?? 'Text formatting'"
     style="visibility: hidden"
   >
     <slot v-if="slots.default" />
-    <VizelBubbleMenuDefault v-else-if="showDefaultMenu" :editor="editor" :enable-embed="props.enableEmbed" />
+    <VizelBubbleMenuDefault v-else-if="showDefaultMenu" :editor="editor" :enable-embed="props.enableEmbed" v-bind="props.locale ? { locale: props.locale } : {}" />
   </div>
 </template>

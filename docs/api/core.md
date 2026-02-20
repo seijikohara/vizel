@@ -1061,6 +1061,75 @@ const ordered = resolveVizelPluginDependencies(plugins);
 
 ---
 
+## Internationalization (i18n)
+
+### VizelLocale
+
+Type definition for all translatable UI strings. The locale is organized by component section:
+
+```typescript
+import type { VizelLocale } from '@vizel/core';
+```
+
+| Section | Description | Key Fields |
+|---------|-------------|------------|
+| `toolbar` | Toolbar button labels | `ariaLabel`, `undo`, `redo`, `bold`, `italic`, `strikethrough`, `underline`, `code`, `heading1`-`heading3`, `bulletList`, `numberedList`, `taskList`, `quote`, `codeBlock`, `horizontalRule`, `moreActions` |
+| `nodeTypes` | Node type selector labels | `text`, `heading1`-`heading6`, `bulletList`, `numberedList`, `taskList`, `quote`, `code` |
+| `blockMenu` | Block context menu | `label`, `delete`, `duplicate`, `copy`, `cut`, `turnInto` |
+| `slashMenu` | Slash command menu | `noResults`, `groups`, `items`, `enterImageUrl`, `enterUrl`, `enterEmbedUrl` |
+| `findReplace` | Find and replace panel | `label`, `findPlaceholder`, `replacePlaceholder`, `noResults`, and button labels |
+| `codeBlock` | Code block UI | `languagePlaceholder`, `hideLineNumbers`, `showLineNumbers`, `copyCode`, `copied` |
+| `dragHandle` | Drag handle | `ariaLabel` |
+| `saveIndicator` | Save indicator | `saved`, `saving`, `unsaved`, `error` |
+| `nodeSelector` | Node selector dropdown | `changeBlockType`, `blockTypes`, `currentBlockType` |
+| `relativeTime` | Relative time formatting | `justNow`, `secondsAgo`, `minutesAgo`, `hoursAgo`, `daysAgo` |
+| `bubbleMenu` | Bubble menu labels | `ariaLabel`, `bold`, `italic`, `strikethrough`, `underline`, `code`, `link`, `superscript`, `subscript` |
+| `colorPicker` | Color picker labels | `textColor`, `highlight`, `textColorPalette`, `highlightPalette`, `recent`, `hexPlaceholder`, `apply`, `applyAriaLabel` |
+| `linkEditor` | Link editor popup | `urlPlaceholder`, `apply`, `applyAriaLabel`, `removeLink`, `removeLinkAriaLabel`, `openInNewTab`, `visit`, `visitTitle`, `embedAsRichContent` |
+
+### vizelEnLocale
+
+The default English locale constant.
+
+```typescript
+import { vizelEnLocale } from '@vizel/core';
+
+console.log(vizelEnLocale.toolbar.bold); // "Bold"
+console.log(vizelEnLocale.bubbleMenu.superscript); // "Superscript"
+console.log(vizelEnLocale.colorPicker.textColor); // "Text Color"
+console.log(vizelEnLocale.linkEditor.urlPlaceholder); // "Enter URL..."
+```
+
+### createVizelLocale
+
+This function merges a partial locale with the English defaults, producing a complete `VizelLocale`.
+
+```typescript
+import { createVizelLocale } from '@vizel/core';
+
+const jaLocale = createVizelLocale({
+  toolbar: { ariaLabel: '書式設定', bold: '太字', italic: '斜体' },
+  bubbleMenu: { ariaLabel: 'テキスト書式', bold: '太字', italic: '斜体', link: 'リンク', superscript: '上付き', subscript: '下付き' },
+  colorPicker: { textColor: '文字色', highlight: 'ハイライト' },
+  linkEditor: { urlPlaceholder: 'URLを入力...', apply: '適用' },
+});
+```
+
+### VizelLocalePartial
+
+Deep partial type that makes all nested locale properties optional. Used as the parameter type for `createVizelLocale()`.
+
+```typescript
+import type { VizelLocalePartial } from '@vizel/core';
+
+const partial: VizelLocalePartial = {
+  bubbleMenu: { superscript: 'Hochgestellt' },
+  colorPicker: { textColor: 'Textfarbe' },
+};
+```
+
+---
+
 ## Importing from Tiptap
 
 For convenience, `@vizel/core` re-exports commonly used Tiptap types and classes: `Editor`, `Extensions`, `JSONContent`, `BubbleMenuPlugin`, `SuggestionOptions`, and `SuggestionProps`. You can import them from either `@vizel/core` or directly from `@tiptap/core`:

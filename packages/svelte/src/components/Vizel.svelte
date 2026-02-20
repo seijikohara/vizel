@@ -190,11 +190,11 @@ $effect(() => {
   {/if}
   <VizelEditor {editor} />
   {#if showBubbleMenu && editor && bubbleMenu}
-    <VizelBubbleMenu {editor} {enableEmbed}>
+    <VizelBubbleMenu {editor} {enableEmbed} {...(restProps.locale ? { locale: restProps.locale } : {})}>
       {@render bubbleMenu({ editor })}
     </VizelBubbleMenu>
   {:else if showBubbleMenu && editor}
-    <VizelBubbleMenu {editor} {enableEmbed} />
+    <VizelBubbleMenu {editor} {enableEmbed} {...(restProps.locale ? { locale: restProps.locale } : {})} />
   {/if}
   {#if restProps.locale}
     <VizelBlockMenu locale={restProps.locale} />

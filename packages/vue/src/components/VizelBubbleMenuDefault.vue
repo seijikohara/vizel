@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Editor, formatVizelTooltip } from "@vizel/core";
+import { type Editor, formatVizelTooltip, type VizelLocale } from "@vizel/core";
 import { computed, ref } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
 import VizelBubbleMenuButton from "./VizelBubbleMenuButton.vue";
@@ -16,6 +16,8 @@ export interface VizelBubbleMenuDefaultProps {
   class?: string;
   /** Enable embed option in link editor (requires Embed extension) */
   enableEmbed?: boolean;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 const props = defineProps<VizelBubbleMenuDefaultProps>();
@@ -72,6 +74,7 @@ const showLinkEditor = ref(false);
     v-if="showLinkEditor"
     :editor="props.editor"
     :enable-embed="props.enableEmbed"
+    v-bind="props.locale ? { locale: props.locale } : {}"
     @close="showLinkEditor = false"
   />
   <div v-else :class="['vizel-bubble-menu-toolbar', $props.class]">
@@ -80,7 +83,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="bold"
       :is-active="isBoldActive"
-      :title="formatVizelTooltip('Bold', 'Mod+B')"
+      :title="formatVizelTooltip(props.locale?.bubbleMenu?.bold ?? 'Bold', 'Mod+B')"
       @click="props.editor.chain().focus().toggleBold().run()"
     >
       <VizelIcon name="bold" />
@@ -88,7 +91,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="italic"
       :is-active="isItalicActive"
-      :title="formatVizelTooltip('Italic', 'Mod+I')"
+      :title="formatVizelTooltip(props.locale?.bubbleMenu?.italic ?? 'Italic', 'Mod+I')"
       @click="props.editor.chain().focus().toggleItalic().run()"
     >
       <VizelIcon name="italic" />
@@ -96,7 +99,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="strike"
       :is-active="isStrikeActive"
-      :title="formatVizelTooltip('Strikethrough', 'Mod+Shift+S')"
+      :title="formatVizelTooltip(props.locale?.bubbleMenu?.strikethrough ?? 'Strikethrough', 'Mod+Shift+S')"
       @click="props.editor.chain().focus().toggleStrike().run()"
     >
       <VizelIcon name="strikethrough" />
@@ -104,7 +107,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="underline"
       :is-active="isUnderlineActive"
-      :title="formatVizelTooltip('Underline', 'Mod+U')"
+      :title="formatVizelTooltip(props.locale?.bubbleMenu?.underline ?? 'Underline', 'Mod+U')"
       @click="props.editor.chain().focus().toggleUnderline().run()"
     >
       <VizelIcon name="underline" />
@@ -112,7 +115,7 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="code"
       :is-active="isCodeActive"
-      :title="formatVizelTooltip('Code', 'Mod+E')"
+      :title="formatVizelTooltip(props.locale?.bubbleMenu?.code ?? 'Code', 'Mod+E')"
       @click="props.editor.chain().focus().toggleCode().run()"
     >
       <VizelIcon name="code" />
@@ -121,7 +124,7 @@ const showLinkEditor = ref(false);
       v-if="hasSuperscript"
       action="superscript"
       :is-active="isSuperscriptActive"
-      title="Superscript (Cmd+.)"
+      :title="formatVizelTooltip(props.locale?.bubbleMenu?.superscript ?? 'Superscript', 'Cmd+.')"
       @click="props.editor.chain().focus().toggleSuperscript().run()"
     >
       <VizelIcon name="superscript" />
@@ -130,7 +133,7 @@ const showLinkEditor = ref(false);
       v-if="hasSubscript"
       action="subscript"
       :is-active="isSubscriptActive"
-      title="Subscript (Cmd+,)"
+      :title="formatVizelTooltip(props.locale?.bubbleMenu?.subscript ?? 'Subscript', 'Cmd+,')"
       @click="props.editor.chain().focus().toggleSubscript().run()"
     >
       <VizelIcon name="subscript" />
@@ -139,13 +142,13 @@ const showLinkEditor = ref(false);
     <VizelBubbleMenuButton
       action="link"
       :is-active="isLinkActive"
-      :title="formatVizelTooltip('Link', 'Mod+K')"
+      :title="formatVizelTooltip(props.locale?.bubbleMenu?.link ?? 'Link', 'Mod+K')"
       @click="showLinkEditor = true"
     >
       <VizelIcon name="link" />
     </VizelBubbleMenuButton>
     <VizelBubbleMenuDivider />
-    <VizelBubbleMenuColorPicker :editor="props.editor" type="textColor" />
-    <VizelBubbleMenuColorPicker :editor="props.editor" type="highlight" />
+    <VizelBubbleMenuColorPicker :editor="props.editor" type="textColor" v-bind="props.locale ? { locale: props.locale } : {}" />
+    <VizelBubbleMenuColorPicker :editor="props.editor" type="highlight" v-bind="props.locale ? { locale: props.locale } : {}" />
   </div>
 </template>

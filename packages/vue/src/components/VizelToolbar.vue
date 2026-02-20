@@ -24,7 +24,7 @@ const editor = computed(() => props.editor ?? getContextEditor?.() ?? null);
 </script>
 
 <template>
-  <div v-if="editor" :class="['vizel-toolbar', $props.class]" role="toolbar" aria-label="Formatting" aria-orientation="horizontal">
+  <div v-if="editor" :class="['vizel-toolbar', $props.class]" role="toolbar" :aria-label="props.locale?.toolbar?.ariaLabel ?? 'Formatting'" aria-orientation="horizontal">
     <slot :editor="editor">
       <VizelToolbarDefault v-if="showDefaultToolbar" :editor="editor" v-bind="props.locale ? { locale: props.locale } : {}" />
     </slot>

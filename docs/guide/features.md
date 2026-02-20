@@ -814,7 +814,7 @@ For a complete translation, provide a full `VizelLocale` object:
 import type { VizelLocale } from '@vizel/core';
 
 const myLocale: VizelLocale = {
-  toolbar: { undo: 'Undo', redo: 'Redo', /* ... all fields required */ },
+  toolbar: { ariaLabel: 'Formatting', undo: 'Undo', redo: 'Redo', /* ... all fields required */ },
   nodeTypes: { text: 'Text', heading1: 'Heading 1', /* ... */ },
   blockMenu: { label: 'Block menu', delete: 'Delete', /* ... */ },
   slashMenu: { noResults: 'No results', groups: { /* ... */ }, items: { /* ... */ } },
@@ -824,6 +824,9 @@ const myLocale: VizelLocale = {
   saveIndicator: { saved: 'Saved', saving: 'Saving...', unsaved: 'Unsaved', error: 'Error saving' },
   nodeSelector: { changeBlockType: 'Change block type', blockTypes: 'Block types', currentBlockType: 'Current block type: {type}' },
   relativeTime: { justNow: 'just now', secondsAgo: '{n}s ago', minutesAgo: '{n}m ago', hoursAgo: '{n}h ago', daysAgo: '{n}d ago' },
+  bubbleMenu: { ariaLabel: 'Text formatting', superscript: 'Superscript', subscript: 'Subscript' },
+  colorPicker: { textColor: 'Text Color', highlight: 'Highlight', textColorPalette: 'Text color palette', highlightPalette: 'Highlight color palette', recent: 'Recent', hexPlaceholder: '#000000', apply: 'Apply', applyAriaLabel: 'Apply custom color' },
+  linkEditor: { urlPlaceholder: 'Enter URL...', apply: 'Apply', applyAriaLabel: 'Apply link', removeLink: 'Remove link', removeLinkAriaLabel: 'Remove link', openInNewTab: 'Open in new tab', visit: 'Visit', visitTitle: 'Open URL in new tab', embedAsRichContent: 'Embed as rich content' },
 };
 ```
 
@@ -859,21 +862,21 @@ const editor = useVizelEditor({ locale: myLocale });
 
 <VizelToolbar editor={editor} locale={myLocale} />
 <VizelEditor editor={editor} />
-<VizelBubbleMenu editor={editor} />
+<VizelBubbleMenu editor={editor} locale={myLocale} />
 <VizelBlockMenu locale={myLocale} />
 ```
 
 ```vue [Vue]
 <VizelToolbar :editor="editor" :locale="myLocale" />
 <VizelEditor :editor="editor" />
-<VizelBubbleMenu :editor="editor" />
+<VizelBubbleMenu :editor="editor" :locale="myLocale" />
 <VizelBlockMenu :locale="myLocale" />
 ```
 
 ```svelte [Svelte]
 <VizelToolbar {editor} locale={myLocale} />
 <VizelEditor {editor} />
-<VizelBubbleMenu {editor} />
+<VizelBubbleMenu {editor} locale={myLocale} />
 <VizelBlockMenu locale={myLocale} />
 ```
 

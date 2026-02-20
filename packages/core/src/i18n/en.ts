@@ -5,6 +5,7 @@ import type { VizelLocale } from "./types.ts";
  */
 export const vizelEnLocale = {
   toolbar: {
+    ariaLabel: "Formatting",
     undo: "Undo",
     redo: "Redo",
     bold: "Bold",
@@ -145,5 +146,40 @@ export const vizelEnLocale = {
     minutesAgo: "{n}m ago",
     hoursAgo: "{n}h ago",
     daysAgo: "{n}d ago",
+  },
+
+  bubbleMenu: {
+    ariaLabel: "Text formatting",
+    bold: "Bold",
+    italic: "Italic",
+    strikethrough: "Strikethrough",
+    underline: "Underline",
+    code: "Code",
+    link: "Link",
+    superscript: "Superscript",
+    subscript: "Subscript",
+  },
+
+  colorPicker: {
+    textColor: "Text Color",
+    highlight: "Highlight",
+    textColorPalette: "Text color palette",
+    highlightPalette: "Highlight color palette",
+    recent: "Recent",
+    hexPlaceholder: "#000000",
+    apply: "Apply",
+    applyAriaLabel: "Apply custom color",
+  },
+
+  linkEditor: {
+    urlPlaceholder: "Enter URL...",
+    apply: "Apply",
+    applyAriaLabel: "Apply link",
+    removeLink: "Remove link",
+    removeLinkAriaLabel: "Remove link",
+    openInNewTab: "Open in new tab",
+    visit: "Visit",
+    visitTitle: "Open URL in new tab",
+    embedAsRichContent: "Embed as rich content",
   },
 } satisfies VizelLocale;

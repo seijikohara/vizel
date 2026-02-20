@@ -20,6 +20,14 @@ export interface VizelColorPickerProps {
   showRecentColors?: boolean;
   /** "None" option color values (e.g., ["transparent", "inherit"]) */
   noneValues?: string[];
+  /** Label for recent colors section */
+  recentLabel?: string;
+  /** Placeholder for hex input */
+  hexPlaceholder?: string;
+  /** Title for apply button */
+  applyTitle?: string;
+  /** Aria label for apply button */
+  applyAriaLabel?: string;
 }
 </script>
 
@@ -39,6 +47,10 @@ let {
   recentColors = [],
   showRecentColors = true,
   noneValues = ["transparent", "inherit"],
+  recentLabel = "Recent",
+  hexPlaceholder = "#000000",
+  applyTitle = "Apply",
+  applyAriaLabel = "Apply custom color",
 }: VizelColorPickerProps = $props();
 
 let inputValue = $state("");
@@ -184,7 +196,7 @@ const previewColor = $derived(isInputValid ? normalizeVizelHexColor(inputValue) 
   <!-- Recent colors -->
   {#if showRecentColors && recentColors.length > 0}
     <div class="vizel-color-picker-section">
-      <div class="vizel-color-picker-label">Recent</div>
+      <div class="vizel-color-picker-label">{recentLabel}</div>
       <div class="vizel-color-picker-recent">
         {#each recentColors as color, idx}
           <button
@@ -247,7 +259,7 @@ const previewColor = $derived(isInputValid ? normalizeVizelHexColor(inputValue) 
         bind:this={inputRef}
         type="text"
         class="vizel-color-picker-input"
-        placeholder="#000000"
+        placeholder={hexPlaceholder}
         value={inputValue}
         maxlength={7}
         aria-label="Custom color hex value"
@@ -258,8 +270,8 @@ const previewColor = $derived(isInputValid ? normalizeVizelHexColor(inputValue) 
         type="button"
         class="vizel-color-picker-apply"
         disabled={!isInputValid}
-        title="Apply"
-        aria-label="Apply custom color"
+        title={applyTitle}
+        aria-label={applyAriaLabel}
         onclick={handleInputSubmit}
       >
         <VizelIcon name="check" />

@@ -1,4 +1,4 @@
-import { detectVizelEmbedProvider, type Editor } from "@vizel/core";
+import { detectVizelEmbedProvider, type Editor, type VizelLocale } from "@vizel/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 
@@ -8,6 +8,8 @@ export interface VizelLinkEditorProps {
   className?: string;
   /** Enable embed option (requires Embed extension) */
   enableEmbed?: boolean;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 /**
@@ -38,6 +40,7 @@ export function VizelLinkEditor({
   onClose,
   className,
   enableEmbed = false,
+  locale,
 }: VizelLinkEditorProps) {
   const linkAttrs = editor.getAttributes("link");
   const currentHref = linkAttrs.href || "";
@@ -147,11 +150,16 @@ export function VizelLinkEditor({
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="Enter URL..."
+          placeholder={locale?.linkEditor?.urlPlaceholder ?? "Enter URL..."}
           className="vizel-link-input"
           aria-label="Link URL"
         />
-        <button type="submit" className="vizel-link-button" title="Apply" aria-label="Apply link">
+        <button
+          type="submit"
+          className="vizel-link-button"
+          title={locale?.linkEditor?.apply ?? "Apply"}
+          aria-label={locale?.linkEditor?.applyAriaLabel ?? "Apply link"}
+        >
           <VizelIcon name="check" />
         </button>
         {currentHref && (
@@ -159,8 +167,8 @@ export function VizelLinkEditor({
             type="button"
             onClick={handleRemove}
             className="vizel-link-button vizel-link-remove"
-            title="Remove link"
-            aria-label="Remove link"
+            title={locale?.linkEditor?.removeLink ?? "Remove link"}
+            aria-label={locale?.linkEditor?.removeLinkAriaLabel ?? "Remove link"}
           >
             <VizelIcon name="x" />
           </button>
@@ -173,17 +181,17 @@ export function VizelLinkEditor({
             checked={openInNewTab}
             onChange={(e) => setOpenInNewTab(e.target.checked)}
           />
-          <span>Open in new tab</span>
+          <span>{locale?.linkEditor?.openInNewTab ?? "Open in new tab"}</span>
         </label>
         {url.trim() && (
           <button
             type="button"
             onClick={handleVisit}
             className="vizel-link-visit"
-            title="Open URL in new tab"
+            title={locale?.linkEditor?.visitTitle ?? "Open URL in new tab"}
           >
             <VizelIcon name="externalLink" />
-            <span>Visit</span>
+            <span>{locale?.linkEditor?.visit ?? "Visit"}</span>
           </button>
         )}
       </div>
@@ -195,7 +203,9 @@ export function VizelLinkEditor({
             checked={asEmbed}
             onChange={(e) => setAsEmbed(e.target.checked)}
           />
-          <label htmlFor="vizel-embed-toggle">Embed as rich content</label>
+          <label htmlFor="vizel-embed-toggle">
+            {locale?.linkEditor?.embedAsRichContent ?? "Embed as rich content"}
+          </label>
         </div>
       )}
     </form>
