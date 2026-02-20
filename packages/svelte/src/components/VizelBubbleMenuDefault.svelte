@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { Editor } from "@vizel/core";
+import type { Editor, VizelLocale } from "@vizel/core";
 
 export interface VizelBubbleMenuDefaultProps {
   /** The editor instance */
@@ -8,6 +8,8 @@ export interface VizelBubbleMenuDefaultProps {
   class?: string;
   /** Enable embed option in link editor (requires Embed extension) */
   enableEmbed?: boolean;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 </script>
 
@@ -21,7 +23,7 @@ import VizelLinkEditor from "./VizelLinkEditor.svelte";
 import VizelIcon from "./VizelIcon.svelte";
 import VizelNodeSelector from "./VizelNodeSelector.svelte";
 
-let { editor, class: className, enableEmbed }: VizelBubbleMenuDefaultProps = $props();
+let { editor, class: className, enableEmbed, locale }: VizelBubbleMenuDefaultProps = $props();
 let showLinkEditor = $state(false);
 
 // Subscribe to editor state changes to update active states
@@ -66,7 +68,7 @@ const hasSubscript = $derived(editor.extensionManager.extensions.some((ext) => e
 </script>
 
 {#if showLinkEditor}
-  <VizelLinkEditor {editor} {...(enableEmbed ? { enableEmbed } : {})} onclose={() => (showLinkEditor = false)} />
+  <VizelLinkEditor {editor} {...(enableEmbed ? { enableEmbed } : {})} {...(locale ? { locale } : {})} onclose={() => (showLinkEditor = false)} />
 {:else}
   <div class="vizel-bubble-menu-toolbar {className ?? ''}">
     <VizelNodeSelector {editor} />
@@ -74,7 +76,7 @@ const hasSubscript = $derived(editor.extensionManager.extensions.some((ext) => e
     <VizelBubbleMenuButton
       action="bold"
       isActive={isBoldActive}
-      title={formatVizelTooltip("Bold", "Mod+B")}
+      title={formatVizelTooltip(locale?.bubbleMenu?.bold ?? "Bold", "Mod+B")}
       onclick={() => editor.chain().focus().toggleBold().run()}
     >
       <VizelIcon name="bold" />
@@ -82,7 +84,7 @@ const hasSubscript = $derived(editor.extensionManager.extensions.some((ext) => e
     <VizelBubbleMenuButton
       action="italic"
       isActive={isItalicActive}
-      title={formatVizelTooltip("Italic", "Mod+I")}
+      title={formatVizelTooltip(locale?.bubbleMenu?.italic ?? "Italic", "Mod+I")}
       onclick={() => editor.chain().focus().toggleItalic().run()}
     >
       <VizelIcon name="italic" />
@@ -90,7 +92,7 @@ const hasSubscript = $derived(editor.extensionManager.extensions.some((ext) => e
     <VizelBubbleMenuButton
       action="strike"
       isActive={isStrikeActive}
-      title={formatVizelTooltip("Strikethrough", "Mod+Shift+S")}
+      title={formatVizelTooltip(locale?.bubbleMenu?.strikethrough ?? "Strikethrough", "Mod+Shift+S")}
       onclick={() => editor.chain().focus().toggleStrike().run()}
     >
       <VizelIcon name="strikethrough" />
@@ -98,7 +100,7 @@ const hasSubscript = $derived(editor.extensionManager.extensions.some((ext) => e
     <VizelBubbleMenuButton
       action="underline"
       isActive={isUnderlineActive}
-      title={formatVizelTooltip("Underline", "Mod+U")}
+      title={formatVizelTooltip(locale?.bubbleMenu?.underline ?? "Underline", "Mod+U")}
       onclick={() => editor.chain().focus().toggleUnderline().run()}
     >
       <VizelIcon name="underline" />
@@ -106,7 +108,7 @@ const hasSubscript = $derived(editor.extensionManager.extensions.some((ext) => e
     <VizelBubbleMenuButton
       action="code"
       isActive={isCodeActive}
-      title={formatVizelTooltip("Code", "Mod+E")}
+      title={formatVizelTooltip(locale?.bubbleMenu?.code ?? "Code", "Mod+E")}
       onclick={() => editor.chain().focus().toggleCode().run()}
     >
       <VizelIcon name="code" />
@@ -115,7 +117,7 @@ const hasSubscript = $derived(editor.extensionManager.extensions.some((ext) => e
       <VizelBubbleMenuButton
         action="superscript"
         isActive={isSuperscriptActive}
-        title="Superscript (Cmd+.)"
+        title={formatVizelTooltip(locale?.bubbleMenu?.superscript ?? "Superscript", "Cmd+.")}
         onclick={() => editor.chain().focus().toggleSuperscript().run()}
       >
         <VizelIcon name="superscript" />
@@ -125,7 +127,7 @@ const hasSubscript = $derived(editor.extensionManager.extensions.some((ext) => e
       <VizelBubbleMenuButton
         action="subscript"
         isActive={isSubscriptActive}
-        title="Subscript (Cmd+,)"
+        title={formatVizelTooltip(locale?.bubbleMenu?.subscript ?? "Subscript", "Cmd+,")}
         onclick={() => editor.chain().focus().toggleSubscript().run()}
       >
         <VizelIcon name="subscript" />
@@ -135,13 +137,13 @@ const hasSubscript = $derived(editor.extensionManager.extensions.some((ext) => e
     <VizelBubbleMenuButton
       action="link"
       isActive={isLinkActive}
-      title={formatVizelTooltip("Link", "Mod+K")}
+      title={formatVizelTooltip(locale?.bubbleMenu?.link ?? "Link", "Mod+K")}
       onclick={() => (showLinkEditor = true)}
     >
       <VizelIcon name="link" />
     </VizelBubbleMenuButton>
     <VizelBubbleMenuDivider />
-    <VizelBubbleMenuColorPicker {editor} type="textColor" />
-    <VizelBubbleMenuColorPicker {editor} type="highlight" />
+    <VizelBubbleMenuColorPicker {editor} type="textColor" {...(locale ? { locale } : {})} />
+    <VizelBubbleMenuColorPicker {editor} type="highlight" {...(locale ? { locale } : {})} />
   </div>
 {/if}

@@ -25,6 +25,14 @@ export interface VizelColorPickerProps {
   showRecentColors?: boolean;
   /** "None" option color values (e.g., ["transparent", "inherit"]) */
   noneValues?: string[];
+  /** Label for recent colors section */
+  recentLabel?: string;
+  /** Placeholder for hex input */
+  hexPlaceholder?: string;
+  /** Title for apply button */
+  applyTitle?: string;
+  /** Aria label for apply button */
+  applyAriaLabel?: string;
 }
 
 const GRID_COLUMNS = 4;
@@ -43,6 +51,10 @@ export function VizelColorPicker({
   recentColors = [],
   showRecentColors = true,
   noneValues = DEFAULT_NONE_VALUES,
+  recentLabel = "Recent",
+  hexPlaceholder = "#000000",
+  applyTitle = "Apply",
+  applyAriaLabel = "Apply custom color",
 }: VizelColorPickerProps) {
   const [inputValue, setInputValue] = useState("");
   const [focusedIndex, setFocusedIndex] = useState(-1);
@@ -186,7 +198,7 @@ export function VizelColorPicker({
       {/* Recent colors */}
       {showRecentColors && recentColors.length > 0 && (
         <div className="vizel-color-picker-section">
-          <div className="vizel-color-picker-label">Recent</div>
+          <div className="vizel-color-picker-label">{recentLabel}</div>
           <div className="vizel-color-picker-recent">
             {recentColors.map((color, idx) => (
               <button
@@ -265,7 +277,7 @@ export function VizelColorPicker({
             ref={inputRef}
             type="text"
             className="vizel-color-picker-input"
-            placeholder="#000000"
+            placeholder={hexPlaceholder}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleInputKeyDown}
@@ -277,8 +289,8 @@ export function VizelColorPicker({
             className="vizel-color-picker-apply"
             onClick={handleInputSubmit}
             disabled={!isInputValid}
-            title="Apply"
-            aria-label="Apply custom color"
+            title={applyTitle}
+            aria-label={applyAriaLabel}
           >
             <VizelIcon name="check" />
           </button>

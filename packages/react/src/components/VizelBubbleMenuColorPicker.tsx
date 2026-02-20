@@ -5,6 +5,7 @@ import {
   VIZEL_HIGHLIGHT_COLORS,
   VIZEL_TEXT_COLORS,
   type VizelColorDefinition,
+  type VizelLocale,
 } from "@vizel/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { VizelColorPicker } from "./VizelColorPicker.tsx";
@@ -22,6 +23,8 @@ export interface VizelBubbleMenuColorPickerProps {
   allowCustomColor?: boolean;
   /** Enable recent colors (default: true) */
   showRecentColors?: boolean;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 /**
@@ -35,6 +38,7 @@ export function VizelBubbleMenuColorPicker({
   className,
   allowCustomColor = true,
   showRecentColors = true,
+  locale,
 }: VizelBubbleMenuColorPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [recentColors, setRecentColors] = useState<string[]>([]);
@@ -107,7 +111,11 @@ export function VizelBubbleMenuColorPicker({
         type="button"
         className={`vizel-bubble-menu-button vizel-color-picker-trigger ${currentColor ? "has-color" : ""}`}
         onClick={() => setIsOpen(!isOpen)}
-        title={isTextColor ? "Text Color" : "Highlight"}
+        title={
+          isTextColor
+            ? (locale?.colorPicker?.textColor ?? "Text Color")
+            : (locale?.colorPicker?.highlight ?? "Highlight")
+        }
         data-action={type}
         style={
           isTextColor
@@ -124,11 +132,19 @@ export function VizelBubbleMenuColorPicker({
             colors={colorPalette}
             value={currentColor}
             onChange={handleColorChange}
-            label={isTextColor ? "Text color palette" : "Highlight color palette"}
+            label={
+              isTextColor
+                ? (locale?.colorPicker?.textColorPalette ?? "Text color palette")
+                : (locale?.colorPicker?.highlightPalette ?? "Highlight color palette")
+            }
             allowCustomColor={allowCustomColor}
             recentColors={recentColors}
             showRecentColors={showRecentColors}
             noneValues={isTextColor ? ["inherit"] : ["transparent"]}
+            recentLabel={locale?.colorPicker?.recent ?? "Recent"}
+            hexPlaceholder={locale?.colorPicker?.hexPlaceholder ?? "#000000"}
+            applyTitle={locale?.colorPicker?.apply ?? "Apply"}
+            applyAriaLabel={locale?.colorPicker?.applyAriaLabel ?? "Apply custom color"}
           />
         </div>
       )}

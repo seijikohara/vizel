@@ -6,6 +6,7 @@ import {
   VIZEL_HIGHLIGHT_COLORS,
   VIZEL_TEXT_COLORS,
   type VizelColorDefinition,
+  type VizelLocale,
 } from "@vizel/core";
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import VizelColorPicker from "./VizelColorPicker.vue";
@@ -24,6 +25,8 @@ export interface VizelBubbleMenuColorPickerProps {
   allowCustomColor?: boolean;
   /** Enable recent colors (default: true) */
   showRecentColors?: boolean;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 const props = withDefaults(defineProps<VizelBubbleMenuColorPickerProps>(), {
@@ -110,7 +113,7 @@ function getTriggerStyle() {
     <button
       type="button"
       :class="['vizel-bubble-menu-button', 'vizel-color-picker-trigger', { 'has-color': currentColor }]"
-      :title="isTextColor ? 'Text Color' : 'Highlight'"
+      :title="isTextColor ? (props.locale?.colorPicker?.textColor ?? 'Text Color') : (props.locale?.colorPicker?.highlight ?? 'Highlight')"
       :data-action="props.type"
       :style="getTriggerStyle()"
       @click="isOpen = !isOpen"
@@ -123,11 +126,15 @@ function getTriggerStyle() {
       <VizelColorPicker
         :colors="colorPalette"
         :value="currentColor"
-        :label="isTextColor ? 'Text color palette' : 'Highlight color palette'"
+        :label="isTextColor ? (props.locale?.colorPicker?.textColorPalette ?? 'Text color palette') : (props.locale?.colorPicker?.highlightPalette ?? 'Highlight color palette')"
         :allow-custom-color="props.allowCustomColor"
         :recent-colors="recentColors"
         :show-recent-colors="props.showRecentColors"
         :none-values="noneValues"
+        :recent-label="props.locale?.colorPicker?.recent ?? 'Recent'"
+        :hex-placeholder="props.locale?.colorPicker?.hexPlaceholder ?? '#000000'"
+        :apply-title="props.locale?.colorPicker?.apply ?? 'Apply'"
+        :apply-aria-label="props.locale?.colorPicker?.applyAriaLabel ?? 'Apply custom color'"
         @change="handleColorChange"
       />
     </div>

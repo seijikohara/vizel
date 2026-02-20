@@ -331,6 +331,8 @@ export type {
 export {
   type CreateVizelEditorInstanceOptions,
   type CreateVizelEditorInstanceResult,
+  // Menu positioning utilities
+  clampMenuPosition,
   // Editor helpers
   convertVizelCodeBlocksToDiagrams,
   // Lazy import utility
@@ -351,6 +353,8 @@ export {
   getVizelEditorState,
   getVizelMarkdown,
   getVizelPortalContainer,
+  // Collection utilities
+  groupByConsecutiveField,
   handleVizelSuggestionEscape,
   // Type guard utilities
   hasFunction,
@@ -363,6 +367,7 @@ export {
   isVizelMacPlatform,
   // Color utilities
   isVizelValidHexColor,
+  type MenuPosition,
   mountToVizelPortal,
   normalizeVizelHexColor,
   parseVizelMarkdown,
@@ -372,6 +377,7 @@ export {
   // Markdown flavor utilities
   resolveVizelFlavorConfig,
   setVizelMarkdown,
+  shouldFlipSubmenu,
   // Text highlight utilities
   splitVizelTextByMatches,
   transformVizelDiagramCodeBlocks,

@@ -1,4 +1,4 @@
-import { BubbleMenuPlugin, type Editor } from "@vizel/core";
+import { BubbleMenuPlugin, type Editor, type VizelLocale } from "@vizel/core";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { VizelBubbleMenuDefault } from "./VizelBubbleMenuDefault.tsx";
@@ -21,6 +21,8 @@ export interface VizelBubbleMenuProps {
   shouldShow?: (props: { editor: Editor; from: number; to: number }) => boolean;
   /** Enable embed option in link editor (requires Embed extension) */
   enableEmbed?: boolean;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 /**
@@ -59,6 +61,7 @@ export function VizelBubbleMenu({
   updateDelay = 100,
   shouldShow,
   enableEmbed,
+  locale,
 }: VizelBubbleMenuProps) {
   const context = useVizelContextSafe();
   const editor = editorProp ?? context?.editor ?? null;
@@ -116,12 +119,16 @@ export function VizelBubbleMenu({
       className={`vizel-bubble-menu ${className ?? ""}`}
       data-vizel-bubble-menu=""
       role="toolbar"
-      aria-label="Text formatting"
+      aria-label={locale?.bubbleMenu?.ariaLabel ?? "Text formatting"}
       style={{ visibility: "hidden" }}
     >
       {children ??
         (showDefaultMenu && (
-          <VizelBubbleMenuDefault editor={editor} {...(enableEmbed ? { enableEmbed } : {})} />
+          <VizelBubbleMenuDefault
+            editor={editor}
+            {...(enableEmbed ? { enableEmbed } : {})}
+            {...(locale ? { locale } : {})}
+          />
         ))}
     </div>
   );

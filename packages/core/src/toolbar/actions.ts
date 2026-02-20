@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelIconName } from "../icons/types.ts";
+import { groupByConsecutiveField } from "../utils/groupByField.ts";
 
 /**
  * A single toolbar action definition.
@@ -261,24 +262,5 @@ export function createVizelToolbarActions(locale: VizelLocale): VizelToolbarActi
 export function groupVizelToolbarActions(
   actions: VizelToolbarActionItem[] = vizelDefaultToolbarActions
 ): VizelToolbarActionItem[][] {
-  const groups: VizelToolbarActionItem[][] = [];
-  let currentGroup: string | null = null;
-  let currentActions: VizelToolbarActionItem[] = [];
-
-  for (const action of actions) {
-    if (action.group !== currentGroup) {
-      if (currentActions.length > 0) {
-        groups.push(currentActions);
-      }
-      currentGroup = action.group;
-      currentActions = [];
-    }
-    currentActions.push(action);
-  }
-
-  if (currentActions.length > 0) {
-    groups.push(currentActions);
-  }
-
-  return groups;
+  return groupByConsecutiveField(actions, "group");
 }

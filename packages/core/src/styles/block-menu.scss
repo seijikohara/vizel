@@ -110,6 +110,13 @@
     z-index: calc(v("z-popover") + 1);
     overflow: hidden;
     animation: vizel-block-menu-enter 0.1s ease;
+
+    &--left {
+      left: auto;
+      right: 100%;
+      margin-left: 0;
+      margin-right: 4px;
+    }
   }
 }
 

@@ -49,7 +49,7 @@ export function VizelToolbar({
     <div
       className={`vizel-toolbar ${className ?? ""}`}
       role="toolbar"
-      aria-label="Formatting"
+      aria-label={locale?.toolbar?.ariaLabel ?? "Formatting"}
       aria-orientation="horizontal"
     >
       {children ??

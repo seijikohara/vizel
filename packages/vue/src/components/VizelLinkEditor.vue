@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { detectVizelEmbedProvider, type Editor } from "@vizel/core";
+import { detectVizelEmbedProvider, type Editor, type VizelLocale } from "@vizel/core";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -10,6 +10,8 @@ export interface VizelLinkEditorProps {
   class?: string;
   /** Enable embed option (requires Embed extension) */
   enableEmbed?: boolean;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 const props = withDefaults(defineProps<VizelLinkEditorProps>(), {
@@ -125,19 +127,19 @@ function handleVisit() {
         ref="inputRef"
         v-model="url"
         type="url"
-        placeholder="Enter URL..."
+        :placeholder="props.locale?.linkEditor?.urlPlaceholder ?? 'Enter URL...'"
         class="vizel-link-input"
         aria-label="Link URL"
       />
-      <button type="submit" class="vizel-link-button" title="Apply" aria-label="Apply link">
+      <button type="submit" class="vizel-link-button" :title="props.locale?.linkEditor?.apply ?? 'Apply'" :aria-label="props.locale?.linkEditor?.applyAriaLabel ?? 'Apply link'">
         <VizelIcon name="check" />
       </button>
       <button
         v-if="currentHref"
         type="button"
         class="vizel-link-button vizel-link-remove"
-        title="Remove link"
-        aria-label="Remove link"
+        :title="props.locale?.linkEditor?.removeLink ?? 'Remove link'"
+        :aria-label="props.locale?.linkEditor?.removeLinkAriaLabel ?? 'Remove link'"
         @click="handleRemove"
       >
         <VizelIcon name="x" />
@@ -149,17 +151,17 @@ function handleVisit() {
           v-model="openInNewTab"
           type="checkbox"
         />
-        <span>Open in new tab</span>
+        <span>{{ props.locale?.linkEditor?.openInNewTab ?? 'Open in new tab' }}</span>
       </label>
       <button
         v-if="url.trim()"
         type="button"
         class="vizel-link-visit"
-        title="Open URL in new tab"
+        :title="props.locale?.linkEditor?.visitTitle ?? 'Open URL in new tab'"
         @click="handleVisit"
       >
         <VizelIcon name="externalLink" />
-        <span>Visit</span>
+        <span>{{ props.locale?.linkEditor?.visit ?? 'Visit' }}</span>
       </button>
     </div>
     <div v-if="canEmbed && isEmbedProvider" class="vizel-link-editor-embed-toggle">
@@ -168,7 +170,7 @@ function handleVisit() {
         v-model="asEmbed"
         type="checkbox"
       />
-      <label for="vizel-embed-toggle">Embed as rich content</label>
+      <label for="vizel-embed-toggle">{{ props.locale?.linkEditor?.embedAsRichContent ?? 'Embed as rich content' }}</label>
     </div>
   </form>
 </template>

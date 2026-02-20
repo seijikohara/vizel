@@ -30,6 +30,8 @@ export {
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./errorHandling.ts";
+// Collection utilities
+export { groupByConsecutiveField } from "./groupByField.ts";
 // Keyboard shortcut utilities
 export { formatVizelShortcut, formatVizelTooltip, isVizelMacPlatform } from "./keyboard.ts";
 // Lazy import utility
@@ -52,6 +54,8 @@ export {
   type VizelFlavorConfig,
   type VizelMarkdownFlavor,
 } from "./markdown-flavors.ts";
+// Menu positioning utilities
+export { clampMenuPosition, type MenuPosition, shouldFlipSubmenu } from "./menuPositioning.ts";
 // Portal utilities
 export {
   createVizelPortalElement,

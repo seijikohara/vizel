@@ -257,11 +257,11 @@ export function Vizel({
       {showBubbleMenu &&
         editor &&
         (bubbleMenuContent ? (
-          <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed}>
+          <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} {...localeProps}>
             {bubbleMenuContent}
           </VizelBubbleMenu>
         ) : (
-          <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} />
+          <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} {...localeProps} />
         ))}
       <VizelBlockMenu {...localeProps} />
       {children}

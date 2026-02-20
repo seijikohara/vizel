@@ -8,6 +8,8 @@
 export interface VizelLocale {
   /** Toolbar button labels */
   toolbar: {
+    /** Aria label for the toolbar container */
+    ariaLabel: string;
     undo: string;
     redo: string;
     bold: string;
@@ -169,6 +171,70 @@ export interface VizelLocale {
     hoursAgo: string;
     /** e.g. "{n}d ago" */
     daysAgo: string;
+  };
+
+  /** Bubble menu labels */
+  bubbleMenu: {
+    /** Aria label for the bubble menu container */
+    ariaLabel: string;
+    /** Tooltip for bold button */
+    bold: string;
+    /** Tooltip for italic button */
+    italic: string;
+    /** Tooltip for strikethrough button */
+    strikethrough: string;
+    /** Tooltip for underline button */
+    underline: string;
+    /** Tooltip for code button */
+    code: string;
+    /** Tooltip for link button */
+    link: string;
+    /** Tooltip for superscript button */
+    superscript: string;
+    /** Tooltip for subscript button */
+    subscript: string;
+  };
+
+  /** Color picker labels used in bubble menu and standalone color picker */
+  colorPicker: {
+    /** Title for text color button */
+    textColor: string;
+    /** Title for highlight button */
+    highlight: string;
+    /** Aria label for text color palette */
+    textColorPalette: string;
+    /** Aria label for highlight palette */
+    highlightPalette: string;
+    /** "Recent" colors section label */
+    recent: string;
+    /** Hex input placeholder */
+    hexPlaceholder: string;
+    /** Apply button title */
+    apply: string;
+    /** Apply button aria label */
+    applyAriaLabel: string;
+  };
+
+  /** Link editor popup labels */
+  linkEditor: {
+    /** URL input placeholder */
+    urlPlaceholder: string;
+    /** Apply link button title */
+    apply: string;
+    /** Apply link button aria label */
+    applyAriaLabel: string;
+    /** Remove link button title */
+    removeLink: string;
+    /** Remove link button aria label */
+    removeLinkAriaLabel: string;
+    /** Open in new tab label */
+    openInNewTab: string;
+    /** Visit link label */
+    visit: string;
+    /** Visit link tooltip */
+    visitTitle: string;
+    /** Embed toggle label */
+    embedAsRichContent: string;
   };
 }
 

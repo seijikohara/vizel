@@ -15,15 +15,18 @@ export interface VizelBlockMenuProps {
 
 <script lang="ts">
 import {
+  clampMenuPosition,
   createVizelBlockMenuActions,
   createVizelNodeTypes,
   groupVizelBlockMenuActions,
   getVizelTurnIntoOptions,
+  shouldFlipSubmenu,
   VIZEL_BLOCK_MENU_EVENT,
   vizelDefaultBlockMenuActions,
   vizelDefaultNodeTypes,
   type VizelBlockMenuOpenDetail,
 } from "@vizel/core";
+import { tick } from "svelte";
 import VizelIcon from "./VizelIcon.svelte";
 
 interface BlockMenuState extends VizelBlockMenuOpenDetail {
@@ -43,6 +46,7 @@ const effectiveNodeTypes = $derived(nodeTypes ?? (locale ? createVizelNodeTypes(
 
 let menuState = $state<BlockMenuState | null>(null);
 let showTurnInto = $state(false);
+let submenuFlipped = $state(false);
 let menuRef = $state<HTMLDivElement | null>(null);
 let submenuRef = $state<HTMLDivElement | null>(null);
 
@@ -128,6 +132,14 @@ $effect(() => {
       y: detail.handleRect.bottom + 4,
     };
     showTurnInto = false;
+
+    // Clamp menu position to viewport after Svelte renders
+    void tick().then(() => {
+      const el = menuRef;
+      if (!el || !menuState) return;
+      const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
+      menuState = { ...menuState, x: clamped.x, y: clamped.y };
+    });
   };
 
   document.addEventListener(VIZEL_BLOCK_MENU_EVENT, handleOpen);
@@ -164,6 +176,20 @@ $effect(() => {
     document.removeEventListener("mousedown", handleClick);
     document.removeEventListener("keydown", handleKeyDown);
   };
+});
+
+// Detect whether the submenu should flip to the left side
+$effect(() => {
+  if (!showTurnInto || !menuRef) {
+    submenuFlipped = false;
+    return;
+  }
+  void tick().then(() => {
+    const parentRect = menuRef?.getBoundingClientRect();
+    if (parentRect) {
+      submenuFlipped = shouldFlipSubmenu(parentRect, 200);
+    }
+  });
 });
 </script>
 
@@ -222,7 +248,7 @@ $effect(() => {
     {#if showTurnInto && turnIntoOptions.length > 0}
       <div
         bind:this={submenuRef}
-        class="vizel-block-menu-submenu"
+        class="vizel-block-menu-submenu{submenuFlipped ? ' vizel-block-menu-submenu--left' : ''}"
         role="menu"
         aria-label={locale?.blockMenu.turnInto ?? "Turn into"}
       >

@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { Editor } from "@vizel/core";
+import type { Editor, VizelLocale } from "@vizel/core";
 import type { Snippet } from "svelte";
 
 export interface VizelBubbleMenuProps {
@@ -19,6 +19,8 @@ export interface VizelBubbleMenuProps {
   children?: Snippet;
   /** Enable embed option in link editor (requires Embed extension) */
   enableEmbed?: boolean;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 </script>
 
@@ -36,6 +38,7 @@ let {
   shouldShow,
   children,
   enableEmbed,
+  locale,
 }: VizelBubbleMenuProps = $props();
 
 const contextEditor = getVizelContextSafe();
@@ -86,13 +89,13 @@ $effect(() => {
     class="vizel-bubble-menu {className ?? ''}"
     data-vizel-bubble-menu
     role="toolbar"
-    aria-label="Text formatting"
+    aria-label={locale?.bubbleMenu?.ariaLabel ?? "Text formatting"}
     style="visibility: hidden"
   >
     {#if children}
       {@render children()}
     {:else if showDefaultMenu}
-      <VizelBubbleMenuDefault {editor} {...(enableEmbed ? { enableEmbed } : {})} />
+      <VizelBubbleMenuDefault {editor} {...(enableEmbed ? { enableEmbed } : {})} {...(locale ? { locale } : {})} />
     {/if}
   </div>
 {/if}

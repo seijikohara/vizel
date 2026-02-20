@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { Editor, VizelColorDefinition } from "@vizel/core";
+import type { Editor, VizelColorDefinition, VizelLocale } from "@vizel/core";
 
 export interface VizelBubbleMenuColorPickerProps {
   /** The editor instance */
@@ -14,6 +14,8 @@ export interface VizelBubbleMenuColorPickerProps {
   allowCustomColor?: boolean;
   /** Enable recent colors (default: true) */
   showRecentColors?: boolean;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 </script>
 
@@ -34,6 +36,7 @@ let {
   class: className,
   allowCustomColor = true,
   showRecentColors = true,
+  locale,
 }: VizelBubbleMenuColorPickerProps = $props();
 
 let isOpen = $state(false);
@@ -108,7 +111,7 @@ function getTriggerStyle(): string {
   <button
     type="button"
     class="vizel-bubble-menu-button vizel-color-picker-trigger {currentColor ? 'has-color' : ''}"
-    title={isTextColor ? "Text Color" : "Highlight"}
+    title={isTextColor ? (locale?.colorPicker?.textColor ?? "Text Color") : (locale?.colorPicker?.highlight ?? "Highlight")}
     data-action={type}
     style={getTriggerStyle()}
     onclick={() => (isOpen = !isOpen)}
@@ -125,11 +128,15 @@ function getTriggerStyle(): string {
       <VizelColorPicker
         colors={colorPalette}
         value={currentColor}
-        label={isTextColor ? "Text color palette" : "Highlight color palette"}
+        label={isTextColor ? (locale?.colorPicker?.textColorPalette ?? "Text color palette") : (locale?.colorPicker?.highlightPalette ?? "Highlight color palette")}
         {allowCustomColor}
         {recentColors}
         {showRecentColors}
         {noneValues}
+        recentLabel={locale?.colorPicker?.recent ?? "Recent"}
+        hexPlaceholder={locale?.colorPicker?.hexPlaceholder ?? "#000000"}
+        applyTitle={locale?.colorPicker?.apply ?? "Apply"}
+        applyAriaLabel={locale?.colorPicker?.applyAriaLabel ?? "Apply custom color"}
         onchange={handleColorChange}
       />
     </div>
