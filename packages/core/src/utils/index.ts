@@ -54,6 +54,8 @@ export {
   type VizelFlavorConfig,
   type VizelMarkdownFlavor,
 } from "./markdown-flavors.ts";
+// Menu positioning utilities
+export { clampMenuPosition, type MenuPosition, shouldFlipSubmenu } from "./menuPositioning.ts";
 // Portal utilities
 export {
   createVizelPortalElement,

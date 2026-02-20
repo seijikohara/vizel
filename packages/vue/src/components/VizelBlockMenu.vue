@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import {
+  clampMenuPosition,
   createVizelBlockMenuActions,
   createVizelNodeTypes,
   getVizelTurnIntoOptions,
   groupVizelBlockMenuActions,
+  shouldFlipSubmenu,
   VIZEL_BLOCK_MENU_EVENT,
   type VizelBlockMenuAction,
   type VizelBlockMenuOpenDetail,
@@ -45,6 +47,7 @@ const effectiveNodeTypes = computed(
 
 const menuState = shallowRef<BlockMenuState | null>(null);
 const showTurnInto = ref(false);
+const submenuFlipped = ref(false);
 const menuRef = ref<HTMLDivElement | null>(null);
 const submenuRef = ref<HTMLDivElement | null>(null);
 
@@ -86,6 +89,14 @@ function handleOpen(e: Event) {
     y: detail.handleRect.bottom + 4,
   };
   showTurnInto.value = false;
+
+  // Clamp menu position to viewport after Vue renders
+  void nextTick(() => {
+    const el = menuRef.value;
+    if (!(el && menuState.value)) return;
+    const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
+    menuState.value = { ...menuState.value, x: clamped.x, y: clamped.y };
+  });
 }
 
 function handleMenuKeyDown(e: KeyboardEvent) {
@@ -130,6 +141,20 @@ watch(menuState, (state) => {
       firstItem?.focus();
     });
   }
+});
+
+// Detect whether the submenu should flip to the left side
+watch(showTurnInto, (isOpen) => {
+  if (!(isOpen && menuRef.value)) {
+    submenuFlipped.value = false;
+    return;
+  }
+  void nextTick(() => {
+    const parentRect = menuRef.value?.getBoundingClientRect();
+    if (parentRect) {
+      submenuFlipped.value = shouldFlipSubmenu(parentRect, 200);
+    }
+  });
 });
 
 let outsideClickHandler: ((e: MouseEvent) => void) | null = null;
@@ -249,7 +274,7 @@ onBeforeUnmount(() => {
     <div
       v-if="showTurnInto && turnIntoOptions.length > 0"
       ref="submenuRef"
-      class="vizel-block-menu-submenu"
+      :class="['vizel-block-menu-submenu', { 'vizel-block-menu-submenu--left': submenuFlipped }]"
       role="menu"
       :aria-label="props.locale?.blockMenu.turnInto ?? 'Turn into'"
     >
