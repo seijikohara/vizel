@@ -64,7 +64,7 @@
     "@tiptap/extension-subscript": "^3.19.0",
     "@tiptap/extension-superscript": "^3.19.0",
     "@tiptap/extension-text-style": "^3.19.0",
-    "@tiptap/extension-underline": "^3.19.0",
+    "@tiptap/extension-underline": "^3.20.0",
     "@vizel/core": "workspace:^",
     "svelte-check": "^4.4.0"
   }
