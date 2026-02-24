@@ -60,7 +60,7 @@
     "@tiptap/extension-subscript": "^3.19.0",
     "@tiptap/extension-superscript": "^3.19.0",
     "@tiptap/extension-text-style": "^3.19.0",
-    "@tiptap/extension-underline": "^3.19.0",
+    "@tiptap/extension-underline": "^3.20.0",
     "@vitejs/plugin-vue": "^6.0.4",
     "@vizel/core": "workspace:^",
     "vite": "^7.3.1",
