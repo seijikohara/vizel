@@ -69,7 +69,7 @@
     "@tiptap/extension-file-handler": "^3.19.0",
     "@tiptap/extension-gapcursor": "^3.19.0",
     "@tiptap/extension-hard-break": "^3.19.0",
-    "@tiptap/extension-heading": "^3.19.0",
+    "@tiptap/extension-heading": "^3.20.0",
     "@tiptap/extension-highlight": "^3.19.0",
     "@tiptap/extension-history": "^3.19.0",
     "@tiptap/extension-horizontal-rule": "^3.19.0",
