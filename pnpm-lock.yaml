@@ -114,8 +114,8 @@ importers:
         specifier: ^3.19.0
         version: 3.19.0(@tiptap/extension-list@3.19.0(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0))
       '@tiptap/extension-paragraph':
-        specifier: ^3.19.0
-        version: 3.19.0(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))
+        specifier: ^3.20.1
+        version: 3.20.1(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))
       '@tiptap/extension-placeholder':
         specifier: ^3.19.0
         version: 3.19.0(@tiptap/extensions@3.19.0(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0))
@@ -2197,8 +2197,8 @@ packages:
     peerDependencies:
       '@tiptap/core': ^3.20.0
 
-  '@tiptap/extension-paragraph@3.19.0':
-    resolution: {integrity: sha512-xWa6gj82l5+AzdYyrSk9P4ynySaDzg/SlR1FarXE5yPXibYzpS95IWaVR0m2Qaz7Rrk+IiYOTGxGRxcHLOelNg==}
+  '@tiptap/extension-paragraph@3.20.1':
+    resolution: {integrity: sha512-QFrAtXNyv7JSnomMQc1nx5AnG9mMznfbYJAbdOQYVdbLtAzTfiTuNPNbQrufy5ZGtGaHxDCoaygu2QEfzaKG+Q==}
     peerDependencies:
       '@tiptap/core': ^3.20.0
 
@@ -5727,7 +5727,7 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.20.1(@tiptap/pm@3.20.1)
 
-  '@tiptap/extension-paragraph@3.19.0(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))':
+  '@tiptap/extension-paragraph@3.20.1(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))':
     dependencies:
       '@tiptap/core': 3.20.0(@tiptap/pm@3.19.0)
 
