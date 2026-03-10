@@ -102,8 +102,8 @@ importers:
         specifier: ^3.19.0
         version: 3.19.0(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))
       '@tiptap/extension-link':
-        specifier: ^3.19.0
-        version: 3.19.0(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)
+        specifier: ^3.20.1
+        version: 3.20.1(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)
       '@tiptap/extension-list-item':
         specifier: ^3.19.0
         version: 3.19.0(@tiptap/extension-list@3.19.0(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0))
@@ -2137,8 +2137,8 @@ packages:
       '@tiptap/core': ^3.20.0
       '@tiptap/pm': ^3.19.0
 
-  '@tiptap/extension-link@3.19.0':
-    resolution: {integrity: sha512-HEGDJnnCPfr7KWu7Dsq+eRRe/mBCsv6DuI+7fhOCLDJjjKzNgrX2abbo/zG3D/4lCVFaVb+qawgJubgqXR/Smw==}
+  '@tiptap/extension-link@3.20.1':
+    resolution: {integrity: sha512-oYTTIgsQMqpkSnJAuAc+UtIKMuI4lv9e1y4LfI1iYm6NkEUHhONppU59smhxHLzb3Ww7YpDffbp5IgDTAiJztA==}
     peerDependencies:
       '@tiptap/core': ^3.20.0
       '@tiptap/pm': ^3.19.0
@@ -5667,7 +5667,7 @@ snapshots:
       '@tiptap/pm': 3.20.1
       linkifyjs: 4.3.2
 
-  '@tiptap/extension-link@3.19.0(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)':
+  '@tiptap/extension-link@3.20.1(@tiptap/core@3.20.0(@tiptap/pm@3.19.0))(@tiptap/pm@3.19.0)':
     dependencies:
       '@tiptap/core': 3.20.0(@tiptap/pm@3.19.0)
       '@tiptap/pm': 3.19.0
