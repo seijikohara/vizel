@@ -90,7 +90,7 @@
     "@tiptap/extension-underline": "^3.20.0",
     "@tiptap/markdown": "^3.20.1",
     "@tiptap/pm": "^3.19.0",
-    "@tiptap/suggestion": "^3.19.0",
+    "@tiptap/suggestion": "^3.22.2",
     "@types/node": "^25.2.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
