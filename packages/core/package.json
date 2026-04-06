@@ -159,7 +159,7 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
-    "@tiptap/extension-list": "^3.19.0",
+    "@tiptap/extension-list": "^3.22.2",
     "@tiptap/extension-node-range": "^3.19.0",
     "@tiptap/extensions": "^3.19.0",
     "@tiptap/y-tiptap": "^3.0.2"
