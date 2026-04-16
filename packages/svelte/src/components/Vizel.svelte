@@ -124,6 +124,7 @@ let {
 let isUpdatingFromMarkdown = false;
 
 // Wrap onUpdate to sync markdown
+// svelte-ignore state_referenced_locally
 const originalOnUpdate = restProps.onUpdate;
 const wrappedOnUpdate = (e: { editor: import("@vizel/core").Editor }) => {
   originalOnUpdate?.(e);
@@ -139,6 +140,7 @@ const wrappedOnUpdate = (e: { editor: import("@vizel/core").Editor }) => {
 const initialTransformDiagrams = transformDiagramsOnImport;
 
 // Create editor with initial props - editor is intentionally created once
+// svelte-ignore state_referenced_locally
 const editorState = createVizelEditor({
   ...(restProps.initialContent !== undefined && { initialContent: restProps.initialContent }),
   ...(restProps.initialMarkdown !== undefined && { initialMarkdown: restProps.initialMarkdown }),

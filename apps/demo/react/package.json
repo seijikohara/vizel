@@ -13,13 +13,13 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "@hpcc-js/wasm-graphviz": "^1.21.0",
+    "@hpcc-js/wasm-graphviz": "^1.21.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.4",
-    "katex": "^0.16.28",
+    "@vitejs/plugin-react": "^5.2.0",
+    "katex": "^0.16.45",
     "lowlight": "^3.3.0",
-    "mermaid": "^11.12.2",
+    "mermaid": "^11.14.0",
     "vite": "^7.3.2"
   }
 }

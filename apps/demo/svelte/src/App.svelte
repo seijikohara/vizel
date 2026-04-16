@@ -66,6 +66,7 @@ const commentManager = createVizelComment(() => (features.comments ? editorRef :
 const findReplaceExtensions = [createVizelFindReplaceExtension()];
 
 // Swap content when flavor changes
+// svelte-ignore state_referenced_locally
 let prevFlavor = $state(flavor);
 $effect(() => {
   if (flavor !== prevFlavor && editorRef) {
@@ -409,7 +410,7 @@ function handleJsonChange(event: Event) {
                         </div>
                       {/if}
                       <!-- svelte-ignore a11y_click_events_have_key_events -->
-                      <div class="panel-reply-input" onclick={(e) => e.stopPropagation()}>
+                      <div role="none" class="panel-reply-input" onclick={(e) => e.stopPropagation()}>
                         <input
                           placeholder="Reply..."
                           value={replyTexts[comment.id] || ""}

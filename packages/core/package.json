@@ -148,20 +148,20 @@
     }
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.2.91",
+    "@iconify-json/lucide": "^1.2.102",
     "@iconify/utils": "^3.1.0",
-    "@tiptap/extension-mention": "^3.19.0",
-    "@tiptap/extension-subscript": "^3.19.0",
-    "@tiptap/extension-superscript": "^3.19.0",
-    "@tiptap/extension-typography": "^3.19.0",
-    "dompurify": "^3.3.2",
+    "@tiptap/extension-mention": "^3.22.3",
+    "@tiptap/extension-subscript": "^3.22.3",
+    "@tiptap/extension-superscript": "^3.22.3",
+    "@tiptap/extension-typography": "^3.22.3",
+    "dompurify": "^3.4.0",
     "vite": "^7.3.2",
     "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
-    "@tiptap/extension-list": "^3.19.0",
-    "@tiptap/extension-node-range": "^3.19.0",
-    "@tiptap/extensions": "^3.19.0",
-    "@tiptap/y-tiptap": "^3.0.2"
+    "@tiptap/extension-list": "^3.22.3",
+    "@tiptap/extension-node-range": "^3.22.3",
+    "@tiptap/extensions": "^3.22.3",
+    "@tiptap/y-tiptap": "^3.0.3"
   }
 }
