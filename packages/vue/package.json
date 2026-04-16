@@ -63,7 +63,7 @@
     "@tiptap/extension-underline": "^3.22.3",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vizel/core": "workspace:^",
-    "vite": "^7.3.2",
+    "vite": "^8.0.8",
     "vite-plugin-dts": "^4.5.4",
     "vue-tsc": "^3.2.6"
   }

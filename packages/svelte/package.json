@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@sveltejs/package": "^2.5.7",
-    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@tiptap/extension-bold": "^3.22.3",
     "@tiptap/extension-code": "^3.22.3",
     "@tiptap/extension-color": "^3.22.3",
