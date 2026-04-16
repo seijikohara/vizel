@@ -106,11 +106,7 @@ body {
 .header h1 {
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(
-    135deg,
-    var(--demo-text) 0%,
-    var(--demo-h1-gradient-end) 100%
-  );
+  background: linear-gradient(135deg, var(--demo-text) 0%, var(--demo-h1-gradient-end) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

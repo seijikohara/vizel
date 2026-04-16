@@ -97,13 +97,13 @@ export function useVizelMarkdown(
     const editor = getEditor();
     if (!editor || initialSetRef.current) return;
 
-    if (initialValue !== undefined) {
-      handlersRef.current?.setMarkdown(editor, initialValue);
-      setMarkdownState(initialValue);
-    } else {
+    if (initialValue === undefined) {
       // Get initial markdown from editor
       const currentMarkdown = getVizelMarkdown(editor);
       setMarkdownState(currentMarkdown);
+    } else {
+      handlersRef.current?.setMarkdown(editor, initialValue);
+      setMarkdownState(initialValue);
     }
 
     initialSetRef.current = true;

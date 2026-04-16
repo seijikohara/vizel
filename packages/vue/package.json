@@ -51,20 +51,20 @@
     "vue": "^3.4"
   },
   "devDependencies": {
-    "@tiptap/extension-bold": "^3.19.0",
-    "@tiptap/extension-code": "^3.19.0",
-    "@tiptap/extension-color": "^3.19.0",
-    "@tiptap/extension-highlight": "^3.19.0",
-    "@tiptap/extension-italic": "^3.19.0",
-    "@tiptap/extension-strike": "^3.20.1",
-    "@tiptap/extension-subscript": "^3.19.0",
-    "@tiptap/extension-superscript": "^3.19.0",
-    "@tiptap/extension-text-style": "^3.19.0",
-    "@tiptap/extension-underline": "^3.20.0",
-    "@vitejs/plugin-vue": "^6.0.4",
+    "@tiptap/extension-bold": "^3.22.3",
+    "@tiptap/extension-code": "^3.22.3",
+    "@tiptap/extension-color": "^3.22.3",
+    "@tiptap/extension-highlight": "^3.22.3",
+    "@tiptap/extension-italic": "^3.22.3",
+    "@tiptap/extension-strike": "^3.22.3",
+    "@tiptap/extension-subscript": "^3.22.3",
+    "@tiptap/extension-superscript": "^3.22.3",
+    "@tiptap/extension-text-style": "^3.22.3",
+    "@tiptap/extension-underline": "^3.22.3",
+    "@vitejs/plugin-vue": "^6.0.6",
     "@vizel/core": "workspace:^",
     "vite": "^7.3.2",
     "vite-plugin-dts": "^4.5.4",
-    "vue-tsc": "^3.2.4"
+    "vue-tsc": "^3.2.6"
   }
 }

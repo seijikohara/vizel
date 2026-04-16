@@ -104,12 +104,12 @@ export function createVizelMarkdown(
 
     // Initialize markdown on first editor availability
     if (!initialSet) {
-      if (initialValue !== undefined) {
-        h.setMarkdown(editor, initialValue);
-        markdown = initialValue;
-      } else {
+      if (initialValue === undefined) {
         // Get initial markdown from editor
         markdown = getVizelMarkdown(editor);
+      } else {
+        h.setMarkdown(editor, initialValue);
+        markdown = initialValue;
       }
       initialSet = true;
     }

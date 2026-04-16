@@ -240,7 +240,7 @@ export function Vizel({
     [editor]
   );
 
-  const localeProps = locale !== undefined ? { locale } : {};
+  const localeProps = locale === undefined ? {} : { locale };
 
   return (
     <div className={`vizel-root ${className ?? ""}`} data-vizel-root="">

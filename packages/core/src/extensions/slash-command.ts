@@ -60,8 +60,8 @@ export const VizelSlashCommand = Extension.create<VizelSlashCommandExtensionOpti
 });
 
 export {
-  vizelDefaultGroupOrder,
-  vizelDefaultSlashCommands,
+  createVizelSlashCommands,
+  createVizelSlashGroupOrder,
   filterVizelSlashCommands,
   flattenVizelSlashCommandGroups,
   groupVizelSlashCommands,
@@ -70,6 +70,6 @@ export {
   type VizelSlashCommandItem,
   type VizelSlashCommandRange,
   type VizelSlashCommandSearchResult,
-  createVizelSlashCommands,
-  createVizelSlashGroupOrder,
+  vizelDefaultGroupOrder,
+  vizelDefaultSlashCommands,
 };

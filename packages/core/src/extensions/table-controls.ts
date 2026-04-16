@@ -875,11 +875,11 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
   },
 });
 
-export {
-  VIZEL_TABLE_MENU_ITEMS,
-  ROW_MENU_ITEMS,
-  COLUMN_MENU_ITEMS_BASE,
-  CELL_MENU_ITEMS,
-  createColumnMenuItems,
-};
 export type { VizelTableMenuItem };
+export {
+  CELL_MENU_ITEMS,
+  COLUMN_MENU_ITEMS_BASE,
+  createColumnMenuItems,
+  ROW_MENU_ITEMS,
+  VIZEL_TABLE_MENU_ITEMS,
+};

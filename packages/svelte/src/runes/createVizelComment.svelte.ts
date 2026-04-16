@@ -106,7 +106,7 @@ export function createVizelComment(
 
     const editor = getEditor();
     if (editor && opts.enabled) {
-      handlers.loadComments();
+      void handlers.loadComments();
     }
 
     return () => {

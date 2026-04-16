@@ -304,8 +304,6 @@ export function createVizelImageUploadWithFileHandler(
   return [imageExtension, uploadExtension, fileHandlerExtension];
 }
 
-export { Image as VizelImage };
-
 // Re-export plugin utilities for advanced usage
 export {
   createVizelImageUploader,
@@ -319,3 +317,4 @@ export {
   type VizelUploadImageFn,
   validateVizelImageFile,
 } from "../plugins/image-upload.ts";
+export { Image as VizelImage };

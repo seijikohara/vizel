@@ -91,7 +91,6 @@ export function VizelSaveIndicator({
   const shouldShowTimestamp = showTimestamp && lastSaved && relativeTime && status === "saved";
 
   return (
-    // biome-ignore lint/a11y/useSemanticElements: role="status" is appropriate for non-form status announcements
     <div
       className={`vizel-save-indicator vizel-save-indicator--${status} ${className ?? ""}`}
       role="status"
