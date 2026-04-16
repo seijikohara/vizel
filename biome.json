@@ -318,6 +318,16 @@
       }
     },
     {
+      "includes": ["**/env.d.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["tests/ct/**/*"],
       "linter": {
         "rules": {
