@@ -31,6 +31,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # TypeScript declaration build artifacts in source directories
 packages/*/src/**/*.d.ts
 packages/*/src/**/*.d.ts.map
+!packages/*/src/env.d.ts
 
 # VitePress
 docs/.vitepress/dist

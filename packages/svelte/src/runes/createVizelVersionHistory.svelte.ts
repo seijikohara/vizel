@@ -76,7 +76,7 @@ export function createVizelVersionHistory(
     handlers = createVizelVersionHistoryHandlers(getEditor, opts, handleStateChange);
 
     if (editor && opts.enabled) {
-      handlers.loadVersions();
+      void handlers.loadVersions();
     }
 
     return () => {

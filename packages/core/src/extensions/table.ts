@@ -147,4 +147,4 @@ export function createVizelTableExtensions(options: VizelTableOptions = {}): Ext
 }
 
 // Export extended extensions with textAlign and Markdown support
-export { VizelTable, VizelTableCell, VizelTableHeader, type VizelTableCellAlignment };
+export { VizelTable, VizelTableCell, type VizelTableCellAlignment, VizelTableHeader };
