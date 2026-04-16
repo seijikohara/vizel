@@ -1,0 +1,102 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended"],
+  timezone: "Asia/Tokyo",
+  schedule: ["every weekend"],
+  semanticCommitType: "chore",
+  semanticCommitScope: "deps",
+  labels: ["dependencies"],
+  rangeStrategy: "auto",
+  platformAutomerge: true,
+  packageRules: [
+    // GitHub Actions
+    {
+      description: "Group GitHub Actions and use ci commit type",
+      matchManagers: ["github-actions"],
+      semanticCommitType: "ci",
+      groupName: "github-actions",
+      automerge: true,
+    },
+
+    // Tiptap (30+ packages)
+    {
+      description: "Group all Tiptap packages",
+      matchPackageNames: ["@tiptap/*"],
+      groupName: "tiptap",
+      automerge: true,
+      matchUpdateTypes: ["minor", "patch"],
+    },
+    {
+      description: "Group Tiptap major updates (manual review)",
+      matchPackageNames: ["@tiptap/*"],
+      groupName: "tiptap-major",
+      matchUpdateTypes: ["major"],
+    },
+
+    // Playwright
+    {
+      description: "Group Playwright packages with automerge",
+      matchPackageNames: ["playwright", "@playwright/*"],
+      groupName: "playwright",
+      automerge: true,
+    },
+
+    // Vite ecosystem
+    {
+      description: "Group Vite ecosystem",
+      matchPackageNames: [
+        "vite",
+        "@vitejs/*",
+        "vite-plugin-*",
+        "@sveltejs/vite-plugin-svelte",
+        "vitepress",
+        "vitepress-plugin-*",
+      ],
+      groupName: "vite",
+      automerge: true,
+      matchUpdateTypes: ["minor", "patch"],
+    },
+    {
+      description: "Group Vite major updates (manual review)",
+      matchPackageNames: [
+        "vite",
+        "@vitejs/*",
+        "vite-plugin-*",
+        "@sveltejs/vite-plugin-svelte",
+        "vitepress",
+        "vitepress-plugin-*",
+      ],
+      groupName: "vite-major",
+      matchUpdateTypes: ["major"],
+    },
+
+    // Iconify
+    {
+      description: "Group Iconify packages",
+      matchPackageNames: ["@iconify/*", "@iconify-json/*"],
+      groupName: "iconify",
+      automerge: true,
+    },
+
+    // TypeScript type definitions
+    {
+      description: "Group TypeScript type definitions",
+      matchPackageNames: ["@types/*"],
+      groupName: "type-definitions",
+      automerge: true,
+    },
+
+    // Default automerge rules
+    {
+      description: "Auto-merge patch updates",
+      matchUpdateTypes: ["patch"],
+      automerge: true,
+    },
+    {
+      description: "Auto-merge minor devDependency updates",
+      matchDepTypes: ["devDependencies"],
+      matchUpdateTypes: ["minor"],
+      automerge: true,
+    },
+  ],
+}
