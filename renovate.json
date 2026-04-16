@@ -24,9 +24,16 @@
       "matchUpdateTypes": ["minor", "patch"]
     },
     {
-      "description": "Group Playwright packages",
+      "description": "Group Tiptap major updates (manual review)",
+      "matchPackageNames": ["@tiptap/*"],
+      "groupName": "tiptap-major",
+      "matchUpdateTypes": ["major"]
+    },
+    {
+      "description": "Group Playwright packages with automerge",
       "matchPackageNames": ["playwright", "@playwright/*"],
-      "groupName": "playwright"
+      "groupName": "playwright",
+      "automerge": true
     },
     {
       "description": "Group Vite ecosystem",
@@ -43,11 +50,23 @@
       "matchUpdateTypes": ["minor", "patch"]
     },
     {
+      "description": "Group Vite major updates (manual review)",
+      "matchPackageNames": [
+        "vite",
+        "@vitejs/*",
+        "vite-plugin-*",
+        "@sveltejs/vite-plugin-svelte",
+        "vitepress",
+        "vitepress-plugin-*"
+      ],
+      "groupName": "vite-major",
+      "matchUpdateTypes": ["major"]
+    },
+    {
       "description": "Group Iconify packages",
       "matchPackageNames": ["@iconify/*", "@iconify-json/*"],
       "groupName": "iconify",
-      "automerge": true,
-      "matchUpdateTypes": ["minor", "patch"]
+      "automerge": true
     },
     {
       "description": "Group TypeScript type definitions",
