@@ -1,0 +1,70 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "Asia/Tokyo",
+  "schedule": ["every weekend"],
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "labels": ["dependencies"],
+  "rangeStrategy": "auto",
+  "platformAutomerge": true,
+  "packageRules": [
+    {
+      "description": "Group GitHub Actions and use ci commit type",
+      "matchManagers": ["github-actions"],
+      "semanticCommitType": "ci",
+      "groupName": "github-actions",
+      "automerge": true
+    },
+    {
+      "description": "Group all Tiptap packages",
+      "matchPackageNames": ["@tiptap/*"],
+      "groupName": "tiptap",
+      "automerge": true,
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Group Playwright packages",
+      "matchPackageNames": ["playwright", "@playwright/*"],
+      "groupName": "playwright"
+    },
+    {
+      "description": "Group Vite ecosystem",
+      "matchPackageNames": [
+        "vite",
+        "@vitejs/*",
+        "vite-plugin-*",
+        "@sveltejs/vite-plugin-svelte",
+        "vitepress",
+        "vitepress-plugin-*"
+      ],
+      "groupName": "vite",
+      "automerge": true,
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Group Iconify packages",
+      "matchPackageNames": ["@iconify/*", "@iconify-json/*"],
+      "groupName": "iconify",
+      "automerge": true,
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Group TypeScript type definitions",
+      "matchPackageNames": ["@types/*"],
+      "groupName": "type-definitions",
+      "automerge": true
+    },
+    {
+      "description": "Auto-merge patch updates",
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "description": "Auto-merge minor devDependency updates",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor"],
+      "automerge": true
+    }
+  ]
+}
