@@ -8,9 +8,19 @@ Vue 3 components and composables for Vizel block-based Markdown editor.
 npm install @vizel/vue
 ```
 
+`@vizel/core`, the required `@tiptap/*` packages, and ProseMirror are declared as peer dependencies and are installed automatically by npm 7+, pnpm, and yarn. Add them to your own `package.json` only if you want to pin specific versions. `@vizel/core` still appears in style imports because CSS cannot be re-exported across packages.
+
+Optional features require extra packages installed manually:
+
+- Code highlighting: `lowlight`
+- Math: `katex`
+- Diagrams: `mermaid`, `@hpcc-js/wasm-graphviz`
+- Collaboration: `yjs`, `y-websocket`
+
 ## Requirements
 
 - Vue 3.4+
+- Any ESM-compatible bundler (verified against Vite 8, Nuxt 3, esbuild)
 
 ## Usage
 

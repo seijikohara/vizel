@@ -4,9 +4,13 @@ Framework-agnostic core for Vizel block-based Markdown editor built on Tiptap.
 
 ## Installation
 
+If you already installed a framework adapter (`@vizel/react`, `@vizel/vue`, or `@vizel/svelte`), this package is already present in your dependency tree because framework adapters declare it as a peer dependency. Install it explicitly only when you use the framework-agnostic APIs directly:
+
 ```bash
 npm install @vizel/core
 ```
+
+Required `@tiptap/*` packages and ProseMirror are declared as peer dependencies and are installed automatically by npm 7+, pnpm, and yarn. Features that rely on optional peers (`lowlight` for code highlighting, `katex` for math, `mermaid` / `@hpcc-js/wasm-graphviz` for diagrams, `yjs` + `y-websocket` for collaboration) need those packages installed manually.
 
 ## Overview
 

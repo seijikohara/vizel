@@ -23,6 +23,7 @@ export default defineConfig({
       external: [
         "react",
         "react-dom",
+        "react-dom/client",
         "react/jsx-runtime",
         "@tiptap/core",
         "@vizel/core",

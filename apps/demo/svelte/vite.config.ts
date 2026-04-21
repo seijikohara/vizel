@@ -6,11 +6,4 @@ export default defineConfig({
   server: {
     port: 3002,
   },
-  optimizeDeps: {
-    exclude: ["@vizel/svelte"],
-    include: ["@vizel/svelte > @vizel/core", "@vizel/svelte > @iconify/svelte"],
-  },
-  ssr: {
-    noExternal: ["@vizel/svelte"],
-  },
 });

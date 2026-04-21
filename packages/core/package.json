@@ -131,18 +131,6 @@
     "yjs": {
       "optional": true
     },
-    "@tiptap/extension-mention": {
-      "optional": true
-    },
-    "@tiptap/extension-subscript": {
-      "optional": true
-    },
-    "@tiptap/extension-superscript": {
-      "optional": true
-    },
-    "@tiptap/extension-typography": {
-      "optional": true
-    },
     "y-websocket": {
       "optional": true
     }

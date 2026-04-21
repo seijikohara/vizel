@@ -13,7 +13,9 @@ yarn add @vizel/vue
 ```
 
 ::: info Requirements
-- Vue 3.4+
+- Vue 3.4+ (peer dependency)
+- `@vizel/core` and the required `@tiptap/*` packages are installed automatically as peer dependencies by npm 7+, pnpm, and yarn. You do not need to list them in your own `package.json` unless you want to pin a specific version.
+- Any ESM-compatible bundler (verified against Vite 8, Nuxt 3, esbuild).
 :::
 
 ## Quick Start
