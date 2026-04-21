@@ -110,7 +110,7 @@
     "react-dom": "19.2.5",
     "svelte": "^5.55.4",
     "typescript": "^6.0.3",
-    "vite": "^8.0.8",
+    "vite": "^8.0.9",
     "vitepress": "^1.6.4",
     "vitepress-plugin-mermaid": "^2.0.17",
     "vue": "^3.5.32"
