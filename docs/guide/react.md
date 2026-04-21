@@ -13,8 +13,9 @@ yarn add @vizel/react
 ```
 
 ::: info Requirements
-- React 19
-- React DOM 19
+- React 19, React DOM 19 (peer dependencies)
+- `@vizel/core` and the required `@tiptap/*` packages are installed automatically as peer dependencies by npm 7+, pnpm, and yarn. You do not need to list them in your own `package.json` unless you want to pin a specific version.
+- Any ESM-compatible bundler (verified against Vite 8, Next.js 15, esbuild).
 :::
 
 ## Quick Start

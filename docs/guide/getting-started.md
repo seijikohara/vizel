@@ -32,11 +32,18 @@ yarn add @vizel/svelte
 
 :::
 
-::: info Peer Dependencies
-Each framework package requires its respective framework as a peer dependency:
+::: info Peer dependencies
+Framework packages (`@vizel/react` / `@vizel/vue` / `@vizel/svelte`) are thin adapters over `@vizel/core`, `@tiptap/*`, and the framework itself. All of these are declared as peer dependencies and are installed automatically by npm 7+, pnpm, and yarn.
+
+You only need to list them explicitly in your own `package.json` if you want to pin a specific version. `@vizel/core` will still appear in style imports (for example `import "@vizel/core/styles.css"`) because CSS cannot be re-exported across packages.
+
+Framework requirements:
+
 - `@vizel/react` requires `react@^19` and `react-dom@^19`
 - `@vizel/vue` requires `vue@^3.4`
 - `@vizel/svelte` requires `svelte@^5`
+
+Optional features (`lowlight` for code highlighting, `katex` for math, `mermaid` / `@hpcc-js/wasm-graphviz` for diagrams, `yjs` + `y-websocket` for collaboration) are declared as optional peers. Install them only when you enable the corresponding feature.
 :::
 
 ## Quick Start
