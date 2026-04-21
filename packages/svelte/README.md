@@ -5,12 +5,17 @@ Svelte 5 components and runes for Vizel block-based Markdown editor.
 ## Installation
 
 ```bash
-npm install @vizel/svelte
+npm install @vizel/svelte @vizel/core
 ```
+
+The required Tiptap and ProseMirror peer dependencies are installed automatically by npm 7+. Features that rely on optional dependencies (code highlighting via `lowlight`, math via `katex`, diagrams via `mermaid` or `@hpcc-js/wasm-graphviz`, collaboration via `yjs` + `y-websocket`) need the corresponding package installed manually.
+
+Components are published as precompiled `.svelte.js` modules, so no special `optimizeDeps` or `ssr.noExternal` configuration is required on the consumer side.
 
 ## Requirements
 
 - Svelte 5+
+- Any ESM-compatible bundler (verified against Vite 8, SvelteKit 2)
 
 ## Usage
 

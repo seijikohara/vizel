@@ -5,13 +5,16 @@ React 19 components and hooks for Vizel block-based Markdown editor.
 ## Installation
 
 ```bash
-npm install @vizel/react
+npm install @vizel/react @vizel/core
 ```
+
+The required Tiptap and ProseMirror peer dependencies are installed automatically by npm 7+. Features that rely on optional dependencies (code highlighting via `lowlight`, math via `katex`, diagrams via `mermaid` or `@hpcc-js/wasm-graphviz`, collaboration via `yjs` + `y-websocket`) need the corresponding package installed manually.
 
 ## Requirements
 
 - React 19+
 - React DOM 19+
+- Any ESM-compatible bundler (verified against Vite 8, Next.js 15, esbuild)
 
 ## Usage
 

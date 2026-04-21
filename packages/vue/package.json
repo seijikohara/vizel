@@ -47,7 +47,7 @@
     "@iconify/vue": "^5.0.0"
   },
   "peerDependencies": {
-    "@vizel/core": "^1.1.0",
+    "@vizel/core": "workspace:^",
     "vue": "^3.4"
   },
   "devDependencies": {

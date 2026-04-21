@@ -339,6 +339,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["packages/*/scripts/**/*"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
     }
   ]
 }
