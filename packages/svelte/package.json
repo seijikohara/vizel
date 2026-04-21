@@ -36,16 +36,6 @@
       "types": "./dist/index.d.ts",
       "svelte": "./dist/index.js",
       "import": "./dist/index.js"
-    },
-    "./components": {
-      "types": "./dist/components/index.d.ts",
-      "svelte": "./dist/components/index.js",
-      "import": "./dist/components/index.js"
-    },
-    "./runes": {
-      "types": "./dist/runes/index.d.ts",
-      "svelte": "./dist/runes/index.js",
-      "import": "./dist/runes/index.js"
     }
   },
   "files": [
