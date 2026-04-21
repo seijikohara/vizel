@@ -6,7 +6,7 @@
  *
  * Users must install their own compatible versions of:
  * - `yjs` (^13.6.0)
- * - `y-websocket` (^2.0.0) or another Yjs provider
+ * - `y-websocket` (^2.0.0 || ^3.0.0) or another Yjs provider
  * - `@tiptap/extension-collaboration`
  * - `@tiptap/extension-collaboration-cursor`
  */
