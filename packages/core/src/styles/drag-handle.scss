@@ -75,6 +75,14 @@
     }
   }
 
+  // Bullet and ordered list items render their marker (bullet or number)
+  // in the parent list's padding area. Shift the handle further left so
+  // it sits outside the marker instead of overlapping it.
+  // The shift matches the list container's padding-inline-start (24px).
+  &.is-marker-list-target {
+    transform: translateX(-1.5rem);
+  }
+
   &-grip {
     display: flex;
     align-items: center;

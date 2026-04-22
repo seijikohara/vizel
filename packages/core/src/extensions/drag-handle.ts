@@ -118,13 +118,48 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
           const isListContainer = LIST_CONTAINER_NODE_TYPES.has(node.type.name);
           const isListItem = LIST_ITEM_NODE_TYPES.has(node.type.name);
           dragHandleElement.classList.toggle("is-list-target", isListContainer || isListItem);
+          // Bullet and ordered list items render their marker in the parent
+          // list's padding area, which the default left placement of the
+          // handle overlaps. Mark these items so CSS can shift the handle
+          // further left past the marker. Task items render their checkbox
+          // inside the li content and do not need the shift.
+          dragHandleElement.classList.toggle(
+            "is-marker-list-target",
+            node.type.name === "listItem"
+          );
         } else {
-          dragHandleElement.classList.remove("is-visible", "is-list-target");
+          dragHandleElement.classList.remove(
+            "is-visible",
+            "is-list-target",
+            "is-marker-list-target"
+          );
         }
       }
     },
     computePositionConfig: {
       placement: "left",
+    },
+    // Enable per-item dragging for nested content (list items, task items,
+    // and other nested blocks). Disable edge detection so the handle does
+    // not switch to the parent when the cursor approaches the left edge
+    // of a nested block; otherwise moving the mouse toward the handle
+    // itself (which sits to the left of the block) triggers the parent
+    // preference and swaps the handle out from under the cursor.
+    nested: {
+      edgeDetection: "none",
+    },
+    onElementDragEnd() {
+      // Tiptap's DragHandlePlugin (v3.22.x) does not clear its internal
+      // `currentNode` on drag end. When the user hovers the same node after
+      // dropping, the plugin's `targetNode !== currentNode` guard skips the
+      // showHandle() call and the inline `visibility: hidden` set during
+      // drag remains, leaving the handle invisible until the pointer moves
+      // to a different node. Dispatch a synthetic mouseleave on the editor
+      // view to force the plugin to reset `currentNode` so the next hover
+      // re-triggers detection.
+      const view = currentEditor?.view;
+      if (!view) return;
+      view.dom.dispatchEvent(new MouseEvent("mouseleave", { bubbles: false, cancelable: true }));
     },
   });
 }

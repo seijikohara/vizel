@@ -210,6 +210,142 @@ export async function testMoveTaskItemWithKeyboard(component: Locator, page: Pag
   await expect(taskItems.nth(1)).toContainText("Task one");
 }
 
+/**
+ * Drag the currently visible drag handle to a target locator.
+ * Hovers the source row first so the handle resolves to that row,
+ * then uses Playwright's synthetic HTML5 drag sequence to drop at
+ * the top of the target row (interpreted by ProseMirror as "before
+ * the target").
+ */
+async function dragHandleToRow(page: Page, sourceRow: Locator, targetRow: Locator): Promise<void> {
+  await sourceRow.hover();
+  const dragHandle = page.locator(".vizel-drag-handle");
+  await expect(dragHandle).toBeVisible({ timeout: 2000 });
+  await dragHandle.dragTo(targetRow, { targetPosition: { x: 20, y: 2 } });
+}
+
+/** Verify a bullet list item can be reordered via drag-and-drop */
+export async function testDragBulletListItemReorder(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  await page.keyboard.type("- First item");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Second item");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Third item");
+
+  const items = editor.locator("ul li");
+  await expect(items).toHaveCount(3);
+
+  // Drag the second item above the first
+  await dragHandleToRow(page, items.nth(1), items.nth(0));
+
+  // Order should now be: Second, First, Third
+  await expect(async () => {
+    await expect(items.nth(0)).toContainText("Second item", { timeout: 1000 });
+    await expect(items.nth(1)).toContainText("First item", { timeout: 1000 });
+    await expect(items.nth(2)).toContainText("Third item", { timeout: 1000 });
+  }).toPass({ timeout: 5000 });
+}
+
+/** Verify an ordered list item can be reordered and numbering follows */
+export async function testDragOrderedListItemReorder(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  await page.keyboard.type("1. First item");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Second item");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Third item");
+
+  const orderedList = editor.locator("ol");
+  await expect(orderedList).toBeVisible();
+  const items = orderedList.locator("li");
+  await expect(items).toHaveCount(3);
+
+  // Drag the third item above the first
+  await dragHandleToRow(page, items.nth(2), items.nth(0));
+
+  // DOM order reflects the new sequence; rendered numbering is handled
+  // by the browser via the <ol> element, so DOM order is the source of truth.
+  await expect(async () => {
+    await expect(items.nth(0)).toContainText("Third item", { timeout: 1000 });
+    await expect(items.nth(1)).toContainText("First item", { timeout: 1000 });
+    await expect(items.nth(2)).toContainText("Second item", { timeout: 1000 });
+  }).toPass({ timeout: 5000 });
+}
+
+/** Verify a task item can be reordered while preserving its checked state */
+export async function testDragTaskItemPreservesCheckState(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  await page.keyboard.type("/task");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Task one");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Task two");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Task three");
+
+  const items = editor.locator("ul[data-type='taskList'] li");
+  await expect(items).toHaveCount(3);
+
+  // Check the second task
+  const secondCheckbox = items.nth(1).locator("input[type='checkbox']");
+  await secondCheckbox.check();
+  await expect(secondCheckbox).toBeChecked();
+
+  // Drag the checked second task above the first
+  await dragHandleToRow(page, items.nth(1), items.nth(0));
+
+  // New first item should contain "Task two" and remain checked
+  await expect(async () => {
+    await expect(items.nth(0)).toContainText("Task two", { timeout: 1000 });
+    await expect(items.nth(0).locator("input[type='checkbox']")).toBeChecked({
+      timeout: 1000,
+    });
+    await expect(items.nth(1)).toContainText("Task one", { timeout: 1000 });
+  }).toPass({ timeout: 5000 });
+}
+
+/** Verify a nested list item can be reordered within its parent item */
+export async function testDragNestedListItemReorder(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  // Build: Parent / Child A (indented) / Child B (indented) / Child C (indented)
+  await page.keyboard.type("- Parent");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Tab");
+  await page.keyboard.type("Child A");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Child B");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Child C");
+
+  // Nested <ul> under the parent <li>
+  const nestedItems = editor.locator("ul li ul li");
+  await expect(nestedItems).toHaveCount(3);
+
+  // Drag "Child B" above "Child A"
+  await dragHandleToRow(page, nestedItems.nth(1), nestedItems.nth(0));
+
+  await expect(async () => {
+    await expect(nestedItems.nth(0)).toContainText("Child B", { timeout: 1000 });
+    await expect(nestedItems.nth(1)).toContainText("Child A", { timeout: 1000 });
+    await expect(nestedItems.nth(2)).toContainText("Child C", { timeout: 1000 });
+  }).toPass({ timeout: 5000 });
+}
+
 /** Verify drag handle appears on hover and hides when not hovering */
 export async function testDragHandleHoverBehavior(component: Locator, page: Page): Promise<void> {
   const editor = component.locator(".vizel-editor");
