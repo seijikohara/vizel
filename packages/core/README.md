@@ -54,7 +54,7 @@ All extensions are enabled by default except `collaboration`, `comment`, `wikiLi
 
 | Extension | Description |
 |-----------|-------------|
-| Base | Headings (H1-H6), bold, italic, underline, strikethrough, lists, blockquotes |
+| Base | Headings (H1-H3 by default, configurable up to H6), bold, italic, underline, strikethrough, lists, blockquotes |
 | Superscript | Superscript text formatting |
 | Subscript | Subscript text formatting |
 | Typography | Smart quotes, em dashes, and typographic transformations |
@@ -67,8 +67,8 @@ All extensions are enabled by default except `collaboration`, `comment`, `wikiLi
 | CharacterCount | Real-time character and word count |
 | TextColor | Text color and highlight |
 | TaskList | Checkbox task lists |
-| DragHandle | Block drag handle and Alt+Arrow keyboard shortcuts |
-| Markdown | Import/export with GitHub Flavored Markdown |
+| DragHandle | Per-item drag handle for every block (including individual list items at any nesting depth) plus `Alt+↑` / `Alt+↓` keyboard shortcuts |
+| Markdown | Import and export with configurable flavor (CommonMark, GFM, Obsidian, Docusaurus) |
 | Mathematics | LaTeX equations with KaTeX |
 | Embed | oEmbed/OGP URL embedding |
 | Details | Collapsible content blocks |

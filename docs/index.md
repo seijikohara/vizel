@@ -160,7 +160,7 @@ Select text to display the bubble menu:
 
 ### Drag & Drop
 
-Drag blocks by their handle to reorder content.
+Drag any block by its handle to reorder content. Every block has its own handle — including individual list items (bullet, ordered, task) at any nesting depth.
 
 ## Features
 

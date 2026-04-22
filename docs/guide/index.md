@@ -36,14 +36,14 @@ graph LR
 ### Text Editing
 
 - **Text Formatting** - Bold, italic, underline, strikethrough, text color, highlight
-- **Block Elements** - Headings (H1-H6), lists (bullet, numbered, task), blockquotes
+- **Block Elements** - Headings (H1-H3 by default, configurable up to H6), lists (bullet, numbered, task), blockquotes
 - **Code Blocks** - Syntax highlighting via [lowlight](https://github.com/wooorm/lowlight)
 
 ### Block-Based Editing
 
 - **Slash Commands** - Type `/` to insert blocks
 - **Bubble Menu** - Formatting menu on text selection
-- **Drag Handle** - Reorder blocks with drag and drop
+- **Drag Handle** - Per-item drag handle for every block, including individual list items at any nesting depth
 
 ### Media
 
@@ -100,8 +100,10 @@ graph TB
 
 ## Feature Comparison
 
-| Feature | Default | Optional |
-|---------|:-------:|:--------:|
+Most features are enabled by default. Opt-in features must be explicitly enabled in the `features` option.
+
+| Feature | Default | Opt-in |
+|---------|:-------:|:------:|
 | Text Formatting | :white_check_mark: | - |
 | Headings | :white_check_mark: | - |
 | Lists (Bullet, Numbered) | :white_check_mark: | - |
@@ -115,11 +117,18 @@ graph TB
 | Drag Handle | :white_check_mark: | - |
 | Character Count | :white_check_mark: | - |
 | Text Color / Highlight | :white_check_mark: | - |
-| Markdown Import/Export | - | :white_check_mark: |
-| Mathematics (LaTeX) | - | :white_check_mark: |
-| Embeds (oEmbed) | - | :white_check_mark: |
-| Collapsible Details | - | :white_check_mark: |
-| Diagrams (Mermaid) | - | :white_check_mark: |
+| Markdown Import/Export | :white_check_mark: | - |
+| Mathematics (LaTeX) | :white_check_mark: | - |
+| Embeds (oEmbed) | :white_check_mark: | - |
+| Collapsible Details | :white_check_mark: | - |
+| Callouts | :white_check_mark: | - |
+| Diagrams (Mermaid, GraphViz) | :white_check_mark: | - |
+| Superscript / Subscript | :white_check_mark: | - |
+| Typography | :white_check_mark: | - |
+| Wiki Links | - | :white_check_mark: |
+| @Mention | - | :white_check_mark: |
+| Comments | - | :white_check_mark: |
+| Collaboration (Yjs) | - | :white_check_mark: |
 
 ## Quick Start
 
