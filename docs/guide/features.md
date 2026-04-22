@@ -608,6 +608,8 @@ const editor = useVizelEditor({
 
 This feature provides a handle for drag-and-drop block reordering. It also adds keyboard shortcuts for moving blocks and list items.
 
+Every block gets its own handle — including individual list items (bullet, ordered, and task lists) at any nesting depth. Dragging a nested item moves only that item and preserves its descendants; numbering in ordered lists updates automatically, and task item checkbox state is preserved.
+
 ### Options
 
 | Property | Type | Default | Description |
@@ -623,7 +625,7 @@ This feature provides a handle for drag-and-drop block reordering. It also adds 
 | `Tab` | Indent (nest) a list item |
 | `Shift+Tab` | Outdent (un-nest) a list item |
 
-The drag handle is automatically positioned next to the hovered block. For list items, it adjusts its size to be less intrusive.
+The drag handle is automatically positioned next to the hovered block. For list items, the handle is shifted outside the list marker so it does not overlap the bullet or number, and its size is reduced to be less intrusive.
 
 ### Example
 

@@ -1,139 +1,170 @@
 # Vizel Editor
 
-A block-based visual editor for Markdown, supporting React 19, Vue 3, and Svelte 5.
+A block-based visual editor for Markdown built on Tiptap, with first-class
+support for React 19, Vue 3, and Svelte 5.
+
+Hover any block to reveal its drag handle on the left. Drag the handle to
+reorder blocks, or click it to open the block menu.
+
+---
+
+## Drag & Drop and Block Reordering
+
+Each block — paragraphs, headings, list items, and task items — exposes an
+independent drag handle. Use the scenarios below to verify reordering works
+across every block type and at every nesting depth.
+
+### Paragraphs and Headings
+
+This paragraph is a top-level block. Drag its handle to any position in the
+document, or use `Alt+↑` / `Alt+↓` to move it one step at a time.
+
+### Bullet List (Nested)
+
+- Top-level item A
+- Top-level item B
+  - Nested item B.1
+  - Nested item B.2
+    - Deeply nested B.2.a
+    - Deeply nested B.2.b
+  - Nested item B.3
+- Top-level item C
+
+Try dragging a deeply nested item: the handle stays anchored to that exact
+item even when the cursor approaches it, and the drop preserves the tree
+structure.
+
+### Ordered List (Nested, Renumbering)
+
+1. Initialize project
+2. Install dependencies
+   1. Core packages
+   2. Framework adapter
+   3. Optional features
+3. Configure extensions
+4. Build and deploy
+
+Drag any item up or down — the numbering updates automatically.
+
+### Task List (Nested, State Preservation)
+
+- [x] Bootstrap workspace
+- [x] Set up tooling
+  - [x] Linter
+  - [x] Formatter
+  - [ ] Type checker
+- [ ] Implement features
+  - [x] Editor core
+  - [ ] Collaboration
+    - [ ] Presence
+    - [ ] Cursor sync
+    - [ ] Conflict resolution
+- [ ] Ship release candidate
+
+Each checkbox state moves with its item during drag.
 
 ---
 
 ## Text Formatting
 
-GFM extends CommonMark with **additional formatting** options. Select text to see the *bubble menu* with formatting tools.
+Select any text to reveal the **bubble menu** with inline formatting options.
 
-- **Bold** -- `Cmd+B`
-- *Italic* -- `Cmd+I`
-- ~~Strikethrough~~ -- select and apply
-- <u>Underline</u> -- `Cmd+U`
-- `Inline code` -- backtick wrapping
-- Superscript: E = mc^2^
-- Subscript: H~2~O
+- **Bold** — `⌘B`
+- *Italic* — `⌘I`
+- <u>Underline</u> — `⌘U`
+- ~~Strikethrough~~ — bubble menu
+- `Inline code` — backtick syntax
+- Superscript: `E = mc²`, H^2^O
+- Subscript: H~2~O, CO~2~
 
-Combine formats: ***bold italic***, **`bold code`**, ~~*strikethrough italic*~~.
-
----
-
-## Table of Contents
-
-Insert a Table of Contents with `/toc` -- it auto-collects headings from the document.
+Combine formats: ***bold italic***, **`bold code`**, ~~*strike italic*~~.
 
 ---
 
-## Getting Started
+## Headings
 
-### Installation
+Use slash commands (`/heading`) or keyboard shortcuts:
 
-```bash
-npm install @vizel/core @vizel/react
-# or
-pnpm add @vizel/core @vizel/react
-```
+### Heading Level 3 — `⌘⌥3`
 
-### Quick Start
-
-```typescript
-import { Vizel } from "@vizel/react";
-import type { VizelFeatureOptions } from "@vizel/core";
-
-const features: VizelFeatureOptions = {
-  mathematics: true,
-  diagram: true,
-  embed: true,
-  callout: true,
-  superscript: true,
-  subscript: true,
-};
-
-function Editor() {
-  return (
-    <Vizel
-      initialMarkdown="# Hello World"
-      features={features}
-      showToolbar
-    />
-  );
-}
-```
-
----
-
-## Feature Overview
-
-### Supported Features
-
-| Feature | Status | Slash Command |
-|:--------|:------:|:-------------|
-| Text Formatting | ✅ | -- |
-| Headings (H1-H3) | ✅ | `/heading` |
-| Lists (Bullet, Numbered, Task) | ✅ | `/bullet`, `/number`, `/task` |
-| Tables | ✅ | `/table` |
-| Code Blocks | ✅ | `/code` |
-| Mathematics (KaTeX) | ✅ | `/math` |
-| Mermaid Diagrams | ✅ | `/mermaid` |
-| GraphViz Diagrams | ✅ | `/graphviz` |
-| Callouts | ✅ | `/callout` |
-| Image Upload | ✅ | `/image` |
-| Embeds (YouTube, etc.) | ✅ | `/embed` |
-| Collapsible Details | ✅ | `/details` |
-
-### Task List
-
-- [x] Core editor with Tiptap
-- [x] Slash command menu
-- [x] Bubble menu with formatting
-- [x] Multi-framework support
-- [ ] AI autocomplete integration
-- [ ] Real-time collaboration
-  - [ ] Yjs integration
-  - [ ] Cursor presence
-
----
-
-## Alerts
-
-> [!NOTE]
-> GFM Alerts are a GitHub-specific extension for callout blocks. They render as colored boxes on GitHub, GitLab, and DEV.to.
-
-> [!TIP]
-> Use slash commands by typing `/` anywhere in the editor. The menu supports fuzzy search -- try `/todo` to find Task List.
-
-> [!IMPORTANT]
-> Always install `@vizel/core` as a peer dependency alongside the framework package.
-
-> [!WARNING]
-> The `diagram` feature loads Mermaid and GraphViz libraries asynchronously. Ensure your bundler supports dynamic imports.
-
-> [!CAUTION]
-> Never expose editor content directly in the DOM without sanitization. Use `DOMPurify` for any HTML output.
-
----
-
-## Blockquotes
-
-> Vizel builds on Tiptap, the headless editor framework for the web.
->
-> It provides a complete editing experience with slash commands, inline formatting, and collaborative features.
+- `⌘⌥1` — Heading 1
+- `⌘⌥2` — Heading 2
+- `⌘⌥3` — Heading 3
 
 ---
 
 ## Links
 
-Links auto-detect when pasted: https://github.com/seijikohara/vizel
+URLs auto-link when pasted: https://github.com/seijikohara/vizel
 
-Use the bubble menu to [add custom links](https://vizel.dev) with display text.
+Custom display text via the bubble menu: [Vizel documentation](https://seijikohara.github.io/vizel/).
+
+Mention a teammate with `@`: @alice, @bob, or @carol trigger the mention menu.
+
+---
+
+## Blockquotes
+
+> Vizel keeps Tiptap's extensibility while adding block-level affordances
+> like drag handles, slash commands, and a bubble menu.
+>
+> Nested paragraphs inside a blockquote are individually draggable.
+
+---
+
+## GFM Alerts
+
+> [!NOTE]
+> GFM alerts render as styled callouts on GitHub, GitLab, and compatible
+> renderers. Vizel preserves them on round-trip.
+
+> [!TIP]
+> Press `/` anywhere to open the slash command menu. Fuzzy search is
+> enabled — `/todo` finds Task List.
+
+> [!IMPORTANT]
+> Install `@vizel/core` as a peer dependency alongside the framework
+> package (`@vizel/react`, `@vizel/vue`, or `@vizel/svelte`).
+
+> [!WARNING]
+> Mermaid and GraphViz extensions load asynchronously. Ensure your bundler
+> supports dynamic imports when enabling `features.diagram`.
+
+> [!CAUTION]
+> Never insert untrusted HTML into editor content. Sanitize with
+> `DOMPurify` before passing any external markup.
+
+---
+
+## Tables
+
+Hover a cell border to insert rows or columns. Column alignment is
+preserved through Markdown round-trips.
+
+| Feature          | Status | Slash Command        |
+|:-----------------|:------:|:---------------------|
+| Headings         |   ✅   | `/heading`           |
+| Bullet List      |   ✅   | `/bullet`            |
+| Ordered List    |   ✅   | `/number`            |
+| Task List        |   ✅   | `/task`              |
+| Tables           |   ✅   | `/table`             |
+| Code Block       |   ✅   | `/code`              |
+| Mathematics      |   ✅   | `/math`              |
+| Mermaid Diagram  |   ✅   | `/mermaid`           |
+| GraphViz Diagram |   ✅   | `/graphviz`          |
+| Callout          |   ✅   | `/callout`           |
+| Image Upload     |   ✅   | `/image`             |
+| Embed            |   ✅   | `/embed`             |
+| Details          |   ✅   | `/details`           |
 
 ---
 
 ## Code Blocks
 
-### React Component
+Syntax highlighting supports 100+ languages via Lowlight. Select a language
+from the dropdown or omit it for plain text.
+
+### TypeScript
 
 ```tsx
 import { Vizel, type VizelRef } from "@vizel/react";
@@ -150,7 +181,7 @@ function App() {
   return (
     <>
       <Vizel ref={ref} showToolbar />
-      <button onClick={handleSave}>Save</button>
+      <button type="button" onClick={handleSave}>Save</button>
     </>
   );
 }
@@ -173,39 +204,59 @@ class EditorConfig:
         return self.max_document_size > 0
 ```
 
+### SQL
+
+```sql
+SELECT
+    u.name,
+    COUNT(o.id) AS order_count,
+    SUM(o.total) AS total_spent
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+WHERE o.created_at >= '2026-01-01'
+GROUP BY u.id
+HAVING total_spent > 1000
+ORDER BY total_spent DESC;
+```
+
 ---
 
 ## Mathematics
 
-Inline: The quadratic formula $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$ solves $ax^2 + bx + c = 0$.
+Inline math: the quadratic formula $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
+solves $ax^2 + bx + c = 0$.
 
-Block equations:
+Block equations render in their own block and are individually draggable:
 
 $$
-\int_{0}^{\infty} e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
 $$
 
 $$
 \nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}
 $$
 
+$$
+\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}
+$$
+
 ---
 
 ## Diagrams
 
-### Architecture
+### Flowchart (Mermaid)
 
 ```mermaid
 flowchart TD
-    A[User Input] --> B{Valid?}
-    B -->|Yes| C[Process]
-    B -->|No| D[Show Error]
-    C --> E[Transform]
-    E --> F[Render Output]
+    A[User input] --> B{Valid?}
+    B -->|Yes| C[Process block]
+    B -->|No| D[Show error]
+    C --> E[Update document]
+    E --> F[Serialize Markdown]
     D --> A
 ```
 
-### Component Lifecycle
+### Sequence (Mermaid)
 
 ```mermaid
 sequenceDiagram
@@ -214,26 +265,26 @@ sequenceDiagram
     participant Tiptap
     participant DOM
 
-    App->>Vizel: Mount with props
-    Vizel->>Tiptap: Create editor
-    Tiptap->>DOM: Render ProseMirror
-    DOM-->>App: Editor ready (onCreate)
-    App->>Vizel: Update content
-    Vizel->>Tiptap: setContent()
-    Tiptap->>DOM: Re-render
-    DOM-->>App: Content updated (onUpdate)
+    App->>Vizel: mount(props)
+    Vizel->>Tiptap: createEditor(extensions)
+    Tiptap->>DOM: render ProseMirror view
+    DOM-->>App: onCreate(editor)
+    App->>Vizel: setContent(markdown)
+    Vizel->>Tiptap: commands.setContent()
+    Tiptap->>DOM: re-render
+    DOM-->>App: onUpdate({ editor })
 ```
 
-### Module Graph
+### Dependency Graph (GraphViz)
 
 ```dot
 digraph Vizel {
-    rankdir=TB
+    rankdir=LR
     node [shape=box, style="rounded,filled", fillcolor="#e8f0fe"]
 
-    Core [label="@vizel/core"]
+    Core  [label="@vizel/core"]
     React [label="@vizel/react"]
-    Vue [label="@vizel/vue"]
+    Vue   [label="@vizel/vue"]
     Svelte [label="@vizel/svelte"]
     Tiptap [label="@tiptap/core"]
 
@@ -248,10 +299,35 @@ digraph Vizel {
 
 ## Collapsible Details
 
+Details blocks contain editable content. Nested blocks inside them also
+expose drag handles.
+
 <details>
-<summary>Advanced Configuration</summary>
+<summary>Keyboard shortcuts</summary>
+
+| Action          | Mac          | Windows / Linux  |
+|:----------------|:-------------|:-----------------|
+| Bold            | `⌘B`         | `Ctrl+B`         |
+| Italic          | `⌘I`         | `Ctrl+I`         |
+| Underline       | `⌘U`         | `Ctrl+U`         |
+| Strikethrough   | `⌘⇧S`        | `Ctrl+Shift+S`   |
+| Heading 1 – 3   | `⌘⌥1..3`     | `Ctrl+Alt+1..3`  |
+| Code Block      | `⌘⌥C`        | `Ctrl+Alt+C`     |
+| Bullet List     | `⌘⇧8`        | `Ctrl+Shift+8`   |
+| Ordered List    | `⌘⇧7`        | `Ctrl+Shift+7`   |
+| Blockquote      | `⌘⇧B`        | `Ctrl+Shift+B`   |
+| Undo / Redo     | `⌘Z` / `⌘⇧Z` | `Ctrl+Z` / `⇧Z`  |
+| Find / Replace  | `⌘F` / `⌘⇧H` | `Ctrl+F` / `⇧H`  |
+| Move Block      | `⌥↑` / `⌥↓`  | `Alt+↑` / `Alt+↓`|
+
+</details>
+
+<details>
+<summary>Advanced feature configuration</summary>
 
 ```typescript
+import type { VizelFeatureOptions } from "@vizel/core";
+
 const features: VizelFeatureOptions = {
   codeBlock: {
     defaultLanguage: "typescript",
@@ -262,6 +338,9 @@ const features: VizelFeatureOptions = {
     onUpload: async (file) => uploadToS3(file),
     maxFileSize: 5 * 1024 * 1024,
   },
+  mathematics: true,
+  diagram: true,
+  embed: true,
   callout: true,
   superscript: true,
   subscript: true,
@@ -271,52 +350,31 @@ const features: VizelFeatureOptions = {
 
 </details>
 
-<details>
-<summary>Keyboard Shortcuts Reference</summary>
-
-| Action | Mac | Windows/Linux |
-|:-------|:----|:--------------|
-| Bold | `⌘+B` | `Ctrl+B` |
-| Italic | `⌘+I` | `Ctrl+I` |
-| Underline | `⌘+U` | `Ctrl+U` |
-| Strikethrough | `⌘+Shift+S` | `Ctrl+Shift+S` |
-| Heading 1 | `⌘+Alt+1` | `Ctrl+Alt+1` |
-| Heading 2 | `⌘+Alt+2` | `Ctrl+Alt+2` |
-| Heading 3 | `⌘+Alt+3` | `Ctrl+Alt+3` |
-| Code Block | `⌘+Alt+C` | `Ctrl+Alt+C` |
-| Bullet List | `⌘+Shift+8` | `Ctrl+Shift+8` |
-| Ordered List | `⌘+Shift+7` | `Ctrl+Shift+7` |
-| Task List | -- | -- |
-| Blockquote | `⌘+Shift+B` | `Ctrl+Shift+B` |
-| Undo | `⌘+Z` | `Ctrl+Z` |
-| Redo | `⌘+Shift+Z` | `Ctrl+Shift+Z` |
-| Find | `⌘+F` | `Ctrl+F` |
-| Replace | `⌘+Shift+H` | `Ctrl+Shift+H` |
-| Move Block Up | `Alt+↑` | `Alt+↑` |
-| Move Block Down | `Alt+↓` | `Alt+↓` |
-
-</details>
-
 ---
 
 ## Images
 
-Upload images via drag-and-drop, clipboard paste, or `/image` command:
+Upload via drag-and-drop, clipboard paste, or `/image`. Drag the side
+handles on a selected image to resize.
 
-![Editor Preview](https://placehold.co/600x300/e8f0fe/333333?text=Vizel+Editor+Preview)
-
----
-
-## Mentions
-
-Tag contributors with @alice, @bob, or @carol using the `@` trigger.
+![Editor preview](https://placehold.co/600x300/e8f0fe/333333?text=Vizel+Editor)
 
 ---
 
-## Drag & Drop
+## Editor Conveniences
 
-Hover over any block to reveal the drag handle. Reorder content by dragging or using **Alt+Arrow** shortcuts.
+- **Find and Replace** — `⌘F` opens the search panel; `⌘⇧H` adds the
+  replace field.
+- **Auto-save** — content persists to `localStorage` on every change; look
+  for the save indicator beneath the editor.
+- **Comments** — select text and add a threaded annotation (enable the
+  Comments panel).
+- **Version History** — snapshot the document at any point and restore or
+  delete versions (enable the History panel).
+- **Theme toggle** — switch between light, dark, and system themes from the
+  header; the editor and all components follow.
 
 ---
 
-*This GFM showcase demonstrates all Vizel features using GitHub Flavored Markdown syntax.*
+*Start editing anywhere to try the features. All blocks are draggable, the
+bubble menu follows text selections, and slash commands are one `/` away.*

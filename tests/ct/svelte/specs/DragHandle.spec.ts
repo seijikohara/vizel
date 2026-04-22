@@ -1,9 +1,13 @@
 import { test } from "@playwright/experimental-ct-svelte";
 import {
+  testDragBulletListItemReorder,
   testDragHandleAccessibility,
   testDragHandleHoverBehavior,
   testDragHandleIsClickable,
   testDragHandleVisibleOnHover,
+  testDragNestedListItemReorder,
+  testDragOrderedListItemReorder,
+  testDragTaskItemPreservesCheckState,
   testMoveBlockDownWithKeyboard,
   testMoveBlockUpWithKeyboard,
   testMoveHeadingWithKeyboard,
@@ -67,6 +71,28 @@ test.describe("DragHandle - Svelte", () => {
     test("moves task item with keyboard", async ({ mount, page }) => {
       const component = await mount(EditorFixture);
       await testMoveTaskItemWithKeyboard(component, page);
+    });
+  });
+
+  test.describe("Drag-and-Drop Reordering", () => {
+    test("reorders a bullet list item by dragging", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testDragBulletListItemReorder(component, page);
+    });
+
+    test("reorders an ordered list item by dragging", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testDragOrderedListItemReorder(component, page);
+    });
+
+    test("preserves task item checked state after drag", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testDragTaskItemPreservesCheckState(component, page);
+    });
+
+    test("reorders a nested list item by dragging", async ({ mount, page }) => {
+      const component = await mount(EditorFixture);
+      await testDragNestedListItemReorder(component, page);
     });
   });
 });

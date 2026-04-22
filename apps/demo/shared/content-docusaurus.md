@@ -1,89 +1,147 @@
 # Vizel API Reference
 
-Complete API documentation for the Vizel editor library -- covering core concepts, configuration, and framework integration...
+Complete API documentation for the Vizel editor library — covering core
+concepts, configuration, and framework integration. This document uses
+Docusaurus-flavor syntax (`:::admonition` directives).
+
+Hover any block to reveal its drag handle. Drag to reorder, or click the
+handle to open the block menu.
+
+---
+
+## Drag & Drop and Block Reordering
+
+Each block exposes an independent drag handle — including paragraphs,
+headings, list items, and task items. Use the scenarios below to verify
+reordering across block types and at every nesting depth.
+
+### Paragraphs and Headings
+
+This paragraph is a top-level block. Drag its handle anywhere in the
+document, or press `Alt+↑` / `Alt+↓` to move it one step at a time.
+
+### Bullet List (Nested)
+
+- Core concepts
+- Framework integration
+  - React bindings
+    - Hooks
+    - Components
+  - Vue bindings
+  - Svelte bindings
+- Extension authoring
+
+Drag a deeply nested item: the handle anchors to the exact item even as
+the cursor approaches, and the drop preserves the tree.
+
+### Ordered List (Nested, Renumbering)
+
+1. Install core and framework packages
+2. Configure features
+   1. Enable built-ins
+   2. Override defaults
+   3. Register custom extensions
+3. Wire up event handlers
+4. Ship to production
+
+Reorder any item and the numbering updates automatically.
+
+### Task List (Nested, State Preservation)
+
+- [x] Install `@vizel/core`
+- [x] Install framework adapter
+  - [x] React
+  - [ ] Vue
+  - [ ] Svelte
+- [ ] Configure features
+  - [x] Markdown round-trip
+  - [ ] Mathematics
+    - [x] Inline syntax
+    - [ ] Block syntax
+    - [ ] Custom renderer
+- [ ] Add custom toolbar actions
+
+Each checkbox state follows its item during drag.
 
 ---
 
 ## Text Formatting
 
-The editor supports standard Markdown formatting: **bold**, *italic*, ~~strikethrough~~, <u>underline</u>, and `inline code`.
+Select text to reveal the **bubble menu** with inline formatting options.
 
-Extended formatting includes superscript (e.g., 2^10^ = 1024) and subscript (e.g., H~2~SO~4~).
+- **Bold** — `⌘B`
+- *Italic* — `⌘I`
+- <u>Underline</u> — `⌘U`
+- ~~Strikethrough~~ — bubble menu
+- `Inline code` — backtick syntax
+- Superscript: 2^10^ = 1024
+- Subscript: H~2~SO~4~
 
-Combine formats as needed: ***bold italic***, **`bold code`**, ~~*strikethrough italic*~~.
+Combine formats: ***bold italic***, **`bold code`**, ~~*strike italic*~~.
 
 ---
 
-## Table of Contents
+## Headings
 
-Use `/toc` to insert an auto-generated Table of Contents for long documentation pages.
+Use slash commands (`/heading`) or keyboard shortcuts:
 
----
+### Heading Level 3 — `⌘⌥3`
 
-## Core Concepts
-
-### Editor Architecture
-
-The Vizel editor is built on three layers:
-
-- **@vizel/core** -- Framework-agnostic extensions and utilities
-- **@vizel/react** / **@vizel/vue** / **@vizel/svelte** -- Framework bindings
-- **@tiptap/core** -- Underlying ProseMirror abstraction
-
-### Feature Configuration
-
-1. Define features in `VizelFeatureOptions`
-2. Pass to the `Vizel` component via `features` prop
-   1. Boolean `true` enables with defaults
-   2. Object enables with custom options
-3. Extensions are loaded dynamically based on configuration
-
-### Implementation Checklist
-
-- [x] Install core and framework packages
-- [x] Configure feature options
-- [ ] Customize toolbar actions
-- [ ] Add event handlers
-  - [ ] `onUpdate` for content sync
-  - [ ] `onError` for error handling
+- `⌘⌥1` — Heading 1
+- `⌘⌥2` — Heading 2
+- `⌘⌥3` — Heading 3
 
 ---
 
 ## Admonitions
 
+Docusaurus-style admonitions use `:::type` fenced directive syntax. The
+format is supported by Docusaurus, VitePress, Zenn, and Qiita.
+
 :::note
-Docusaurus-style admonitions use `:::type` fenced directive syntax. This format is supported by Docusaurus, VitePress, Zenn, and Qiita.
+Admonitions render as colored boxes with icons in Docusaurus and compatible
+renderers. Vizel preserves them on Markdown round-trip.
 :::
 
 :::tip
-Use the `features` prop to enable only the extensions your application needs. This keeps the bundle size minimal.
+Enable only the extensions your application needs via the `features`
+prop. This keeps the bundle size minimal.
 :::
 
 :::info
-All Vizel extensions support Markdown round-tripping. Content can be exported as Markdown and re-imported without data loss.
+Every Vizel extension supports Markdown round-tripping — content can be
+exported and re-imported without data loss.
 :::
 
 :::warning
-The `diagram` feature requires async loading of Mermaid and Graphviz-WASM. Ensure your bundler supports code splitting for optimal performance.
+The `diagram` feature loads Mermaid and Graphviz-WASM asynchronously.
+Ensure your bundler supports code splitting for optimal performance.
 :::
 
 :::danger
-Never render raw HTML from user-generated Markdown without sanitization. Vizel uses DOMPurify internally for oEmbed and diagram output.
+Never render raw HTML from user-generated Markdown without sanitization.
+Vizel uses DOMPurify internally for oEmbed and diagram output.
 :::
 
 ---
 
 ## Blockquotes
 
-> Vizel aims to be the standard Markdown editor component for modern web frameworks -- providing a rich editing experience with zero configuration.
+> Vizel aims to be the standard Markdown editor component for modern web
+> frameworks, providing a rich editing experience with zero configuration
+> and predictable Markdown output.
 
 ---
 
 ## Links
 
-Auto-detected: https://docusaurus.io
+Auto-detected URLs: https://docusaurus.io.
 
-Documentation links: [Docusaurus Markdown Features](https://docusaurus.io/docs/markdown-features) provide the foundation for this flavor's syntax.
+Documentation links: the [Docusaurus Markdown features](https://docusaurus.io/docs/markdown-features)
+reference is the foundation for this flavor's syntax.
+
+Mention collaborators with `@`: @alice (PM), @bob (engineering),
+@dave (DevOps).
 
 ---
 
@@ -91,17 +149,17 @@ Documentation links: [Docusaurus Markdown Features](https://docusaurus.io/docs/m
 
 ### VizelFeatureOptions
 
-| Property | Type | Default | Description |
-|:---------|:----:|:-------:|:------------|
-| `markdown` | `boolean \| object` | `true` | Markdown import/export |
-| `mathematics` | `boolean \| object` | `true` | LaTeX math with KaTeX |
-| `diagram` | `boolean \| object` | `true` | Mermaid and GraphViz |
-| `callout` | `boolean \| object` | `true` | Admonition blocks |
-| `embed` | `boolean \| object` | `true` | URL embedding (oEmbed) |
-| `mention` | `object` | `false` | @mention autocomplete |
-| `superscript` | `boolean` | `true` | Superscript mark |
-| `subscript` | `boolean` | `true` | Subscript mark |
-| `typography` | `boolean` | `true` | Smart quotes, em-dashes |
+| Property       | Type                   | Default | Description              |
+|:---------------|:-----------------------|:-------:|:-------------------------|
+| `markdown`     | `boolean \| object`    | `true`  | Markdown import/export   |
+| `mathematics`  | `boolean \| object`    | `true`  | LaTeX math with KaTeX    |
+| `diagram`      | `boolean \| object`    | `true`  | Mermaid and GraphViz     |
+| `callout`      | `boolean \| object`    | `true`  | Admonition blocks        |
+| `embed`        | `boolean \| object`    | `true`  | URL embedding (oEmbed)   |
+| `mention`      | `object`               | `false` | `@`-mention autocomplete |
+| `superscript`  | `boolean`              | `true`  | Superscript mark         |
+| `subscript`    | `boolean`              | `true`  | Subscript mark           |
+| `typography`   | `boolean`              | `true`  | Smart quotes, em-dashes  |
 
 ### Editor Instance Methods
 
@@ -137,12 +195,12 @@ import { Vizel, type VizelRef } from "@vizel/react";
 import { useRef, useState } from "react";
 
 function DocumentEditor() {
-  const vizelRef = useRef<VizelRef>(null);
+  const ref = useRef<VizelRef>(null);
   const [markdown, setMarkdown] = useState("");
 
   return (
     <Vizel
-      ref={vizelRef}
+      ref={ref}
       markdown={markdown}
       onMarkdownChange={setMarkdown}
       features={{
@@ -178,7 +236,23 @@ const content = ref("# Documentation");
 </template>
 ```
 
-### Configuration Object
+### Svelte Integration
+
+```svelte
+<script lang="ts">
+  import { Vizel } from "@vizel/svelte";
+
+  let content = $state("# Documentation");
+</script>
+
+<Vizel
+  bind:markdown={content}
+  features={{ callout: true, mathematics: true }}
+  showToolbar
+/>
+```
+
+### Feature Configuration (JSON)
 
 ```json
 {
@@ -203,13 +277,17 @@ const content = ref("# Documentation");
 
 ## Mathematics
 
-Inline: The Euler-Lagrange equation $\frac{\partial L}{\partial q} - \frac{d}{dt}\frac{\partial L}{\partial \dot{q}} = 0$ governs classical mechanics.
+Inline: the Euler-Lagrange equation
+$\frac{\partial L}{\partial q} - \frac{d}{dt}\frac{\partial L}{\partial \dot{q}} = 0$
+governs classical mechanics.
 
-Block equations:
+Schrödinger equation:
 
 $$
 \hat{H}\psi = E\psi
 $$
+
+Standard Model Lagrangian (QED fragment):
 
 $$
 \mathcal{L} = \bar{\psi}(i\gamma^\mu \partial_\mu - m)\psi - \frac{1}{4}F_{\mu\nu}F^{\mu\nu}
@@ -219,7 +297,7 @@ $$
 
 ## Architecture Diagrams
 
-### Plugin System
+### Plugin System (Mermaid)
 
 ```mermaid
 flowchart TD
@@ -232,7 +310,7 @@ flowchart TD
     Core --> I18n[i18n System]
 ```
 
-### Data Flow
+### Data Flow (Mermaid Sequence)
 
 ```mermaid
 sequenceDiagram
@@ -242,26 +320,26 @@ sequenceDiagram
     participant O as Output
 
     U->>E: Type content
-    E->>E: ProseMirror state
+    E->>E: ProseMirror state update
     E->>S: getMarkdown()
     S->>S: Apply flavor config
     S->>O: Formatted Markdown
-    Note over S,O: Output format depends on flavor setting
+    Note over S,O: Output depends on flavor setting
 ```
 
-### Package Dependencies
+### Package Dependencies (GraphViz)
 
 ```dot
 digraph Packages {
     rankdir=LR
     node [shape=box, style="rounded,filled", fillcolor="#fff3e0"]
 
-    Core [label="@vizel/core", fillcolor="#ffe0b2"]
-    React [label="@vizel/react"]
-    Vue [label="@vizel/vue"]
+    Core   [label="@vizel/core", fillcolor="#ffe0b2"]
+    React  [label="@vizel/react"]
+    Vue    [label="@vizel/vue"]
     Svelte [label="@vizel/svelte"]
     Tiptap [label="@tiptap/*"]
-    PM [label="prosemirror-*"]
+    PM     [label="prosemirror-*"]
 
     React -> Core
     Vue -> Core
@@ -275,29 +353,35 @@ digraph Packages {
 
 ## Collapsible Details
 
+Details blocks hold editable content and their children are individually
+draggable.
+
 <details>
-<summary>Migration Guide (v1.x to v2.x)</summary>
+<summary>Migration guide (v1.x to v2.x)</summary>
 
 Breaking changes in v2.0:
 
-- `initialContent` renamed to `initialMarkdown` for clarity
-- `onContentChange` split into `onUpdate` and `onMarkdownChange`
-- Feature flags now use `VizelFeatureOptions` instead of individual props
-- Theme system requires `VizelThemeProvider` wrapper
+- `initialContent` renamed to `initialMarkdown` for clarity.
+- `onContentChange` split into `onUpdate` and `onMarkdownChange`.
+- Feature flags use `VizelFeatureOptions` instead of individual props.
+- The theme system requires a `VizelThemeProvider` wrapper.
 
 </details>
 
 <details>
 <summary>Troubleshooting</summary>
 
-**Q: Math equations not rendering?**
-Ensure `mathematics: true` is set in features. KaTeX is loaded asynchronously.
+**Math equations not rendering.**
+Ensure `mathematics: true` is set in `features`. KaTeX is loaded
+asynchronously.
 
-**Q: Diagrams show raw code?**
-Check that `diagram: true` is enabled. Mermaid and Graphviz-WASM load on demand.
+**Diagrams showing raw code.**
+Confirm `diagram: true` is enabled. Mermaid and Graphviz-WASM load on
+demand.
 
-**Q: Slash menu not appearing?**
-Type `/` at the start of an empty paragraph. The menu requires `slashCommand` feature (enabled by default).
+**Slash menu not appearing.**
+Type `/` at the start of an empty paragraph. The menu requires the
+`slashCommand` feature (enabled by default).
 
 </details>
 
@@ -305,39 +389,42 @@ Type `/` at the start of an empty paragraph. The menu requires `slashCommand` fe
 
 ## Images
 
-Upload images via the `/image` command or paste from clipboard:
+Upload via drag-and-drop, clipboard paste, or `/image`. Drag the side
+handles on a selected image to resize.
 
-![API Architecture](https://placehold.co/600x300/fff3e0/333333?text=API+Architecture+Overview)
-
----
-
-## Mentions
-
-Tag team members for documentation review: @alice (PM), @bob (Engineering), @dave (DevOps).
+![API architecture](https://placehold.co/600x300/fff3e0/333333?text=API+Architecture)
 
 ---
 
-## Editor Capabilities
+## Editor Conveniences
 
-### Drag & Drop
-
-Every block has a drag handle on hover. Reorder sections with drag-and-drop or **Alt+Arrow** keyboard shortcuts.
-
-### Find & Replace
-
-Use `Cmd+F` for search, `Cmd+Shift+H` for find and replace across the document.
+- **Find and Replace** — `⌘F` opens the search panel; `⌘⇧H` adds the
+  replace field.
+- **Auto-save** — content persists to `localStorage` on every change.
+- **Comments** — select text and attach a threaded annotation when the
+  Comments panel is enabled.
+- **Version History** — snapshot the document and restore any previous
+  version from the History panel.
+- **Theme toggle** — switch between light, dark, and system themes from
+  the header.
 
 ### Keyboard Shortcuts
 
-| Action | Mac | Windows/Linux |
-|:-------|:----|:--------------|
-| Bold | `⌘+B` | `Ctrl+B` |
-| Italic | `⌘+I` | `Ctrl+I` |
-| Heading 1 | `⌘+Alt+1` | `Ctrl+Alt+1` |
-| Code Block | `⌘+Alt+C` | `Ctrl+Alt+C` |
-| Undo | `⌘+Z` | `Ctrl+Z` |
-| Find | `⌘+F` | `Ctrl+F` |
+| Action          | Mac          | Windows / Linux  |
+|:----------------|:-------------|:-----------------|
+| Bold            | `⌘B`         | `Ctrl+B`         |
+| Italic          | `⌘I`         | `Ctrl+I`         |
+| Underline       | `⌘U`         | `Ctrl+U`         |
+| Heading 1 – 3   | `⌘⌥1..3`     | `Ctrl+Alt+1..3`  |
+| Code Block      | `⌘⌥C`        | `Ctrl+Alt+C`     |
+| Bullet List     | `⌘⇧8`        | `Ctrl+Shift+8`   |
+| Ordered List    | `⌘⇧7`        | `Ctrl+Shift+7`   |
+| Blockquote      | `⌘⇧B`        | `Ctrl+Shift+B`   |
+| Undo / Redo     | `⌘Z` / `⌘⇧Z` | `Ctrl+Z` / `⇧Z`  |
+| Find / Replace  | `⌘F` / `⌘⇧H` | `Ctrl+F` / `⇧H`  |
+| Move Block      | `⌥↑` / `⌥↓`  | `Alt+↑` / `Alt+↓`|
 
 ---
 
-*This Docusaurus-flavored content demonstrates admonition directives and API documentation patterns.*
+*This Docusaurus-flavored showcase demonstrates admonition directives and
+framework integration patterns while exercising every editor feature.*

@@ -1,85 +1,142 @@
 # Building a Modern Web Application
 
-A practical guide to architecting scalable web applications -- from concept to deployment...
+A practical guide to architecting scalable web applications — from initial
+concept to production deployment. This document uses standard CommonMark
+syntax to demonstrate every editor feature.
+
+Hover any block to reveal its drag handle. Drag to reorder, or click the
+handle to open the block menu.
+
+---
+
+## Drag & Drop and Block Reordering
+
+Each block in the document — paragraphs, headings, list items, and task
+items — exposes an independent drag handle. The scenarios below verify
+reordering across block types and at every nesting depth.
+
+### Paragraphs and Headings
+
+This paragraph is a top-level block. Drag its handle to any position in the
+document, or press `Alt+↑` / `Alt+↓` to move it one step.
+
+### Bullet List (Nested)
+
+- Specification phase
+- Implementation phase
+  - Frontend development
+  - Backend development
+    - API endpoints
+    - Database migrations
+  - Integration testing
+- Deployment phase
+
+Drag a deeply nested item: the handle anchors to that exact item even as
+the cursor approaches, and the drop preserves the tree.
+
+### Ordered List (Nested, Renumbering)
+
+1. Define requirements
+2. Design architecture
+   1. Frontend layer
+   2. Backend layer
+   3. Data layer
+3. Build and test
+4. Deploy to production
+
+Reorder any item and the numbering updates automatically.
+
+### Task List (Nested, State Preservation)
+
+- [x] Bootstrap repository
+- [x] Configure tooling
+  - [x] Linter
+  - [x] Formatter
+  - [ ] Pre-commit hooks
+- [ ] Implement features
+  - [x] User authentication
+  - [ ] Content management
+    - [ ] Create endpoint
+    - [ ] Update endpoint
+    - [ ] Delete endpoint
+- [ ] Ship release candidate
+
+Each checkbox state moves with its item during drag.
 
 ---
 
 ## Text Formatting
 
-CommonMark supports essential text formatting for **technical writing**. Use *emphasis* for introducing terms, **strong emphasis** for key concepts, and `inline code` for identifiers.
+Select text to reveal the **bubble menu** with inline formatting options.
 
-Advanced formatting includes ~~deprecated approaches~~, <u>underlined text</u>, superscript like x^2^ and subscript like H~2~O.
+- **Bold** — `⌘B`
+- *Italic* — `⌘I`
+- <u>Underline</u> — `⌘U`
+- ~~Strikethrough~~ — bubble menu
+- `Inline code` — backtick syntax
+- Superscript: x^2^ and 10^-3^
+- Subscript: H~2~O and CO~2~
 
-You can combine formats: ***bold and italic***, **`bold code`**, or ~~*strikethrough italic*~~.
-
----
-
-## Table of Contents
-
-Type `/toc` to insert a Table of Contents block that auto-collects all headings.
-
----
-
-## Architecture Overview
-
-### Frontend Layer
-
-The frontend communicates with the backend through a REST API. Consider using a component-based framework:
-
-- **React** -- Declarative UI with hooks
-- **Vue** -- Progressive framework with reactivity
-- **Svelte** -- Compile-time optimized components
-
-### Backend Layer
-
-1. API Gateway -- Request routing and rate limiting
-2. Service Layer -- Business logic encapsulation
-   1. Authentication Service
-   2. Data Processing Service
-3. Data Layer -- Database access and caching
-
-### Task Checklist
-
-- [x] Set up project scaffold
-- [x] Configure build pipeline
-- [ ] Implement authentication
-- [ ] Add API endpoints
-  - [ ] User management
-  - [ ] Content CRUD
+Combine formats: ***bold italic***, **`bold code`**, ~~*strike italic*~~.
 
 ---
 
-## Important Notes
+## Headings
 
-> **Note**: CommonMark does not have native callout syntax. This blockquote-based format is the standard fallback for informational notices.
+Use slash commands (`/heading`) or keyboard shortcuts:
 
-> **Warning**: Always validate user input on the server side, even when client-side validation is in place.
+### Heading Level 3 — `⌘⌥3`
 
-> **Tip**: Use environment variables for configuration values that change between deployments.
+- `⌘⌥1` — Heading 1
+- `⌘⌥2` — Heading 2
+- `⌘⌥3` — Heading 3
+
+---
+
+## Blockquotes
+
+> CommonMark does not have native callout syntax. Use blockquotes with
+> emphasis for informational notices.
+>
+> **Note.** Always validate user input on the server, even when
+> client-side validation exists.
+
+> **Warning.** Store configuration values that change between deployments
+> in environment variables — never commit them.
+
+> **Tip.** Use structured logging so events can be parsed and aggregated
+> by downstream tooling.
 
 ---
 
 ## Links and References
 
-External links are automatically detected: https://commonmark.org
+Links use standard Markdown syntax: [CommonMark specification](https://spec.commonmark.org/0.31.2/),
+[specification reference](https://spec.commonmark.org/), and URLs such as
+<https://commonmark.org> (autolink brackets).
 
-Use markdown syntax for [named links](https://spec.commonmark.org/). Reference the [CommonMark specification](https://spec.commonmark.org/0.31.2/) for edge cases.
-
----
-
-## Data Schema
-
-| Field | Type | Required | Description |
-|:------|:----:|:--------:|------------:|
-| `id` | UUID | Yes | Primary key |
-| `name` | string | Yes | Display name |
-| `email` | string | Yes | Unique email |
-| `role` | enum | No | User role |
-| `createdAt` | datetime | Yes | Creation timestamp |
+Mention teammates with `@`: @alice, @bob, or @carol trigger the mention
+menu when enabled.
 
 ---
 
-## Code Examples
+## Tables
+
+Column alignment is preserved through Markdown round-trips.
+
+| Field        | Type     | Required | Description           |
+|:-------------|:--------:|:--------:|----------------------:|
+| `id`         | UUID     |   Yes    | Primary key           |
+| `name`       | string   |   Yes    | Display name          |
+| `email`      | string   |   Yes    | Unique email address  |
+| `role`       | enum     |   No     | `admin`/`user`/`guest`|
+| `createdAt`  | datetime |   Yes    | Record creation time  |
+
+---
+
+## Code Blocks
+
+Syntax highlighting is provided by Lowlight (100+ languages).
 
 ### TypeScript API Handler
 
@@ -119,27 +176,40 @@ CREATE TABLE users (
 CREATE INDEX idx_users_email ON users(email);
 ```
 
+### Shell
+
+```bash
+pnpm install express prisma @prisma/client
+pnpm install -D typescript @types/express
+
+export NODE_ENV=production
+pnpm build && pnpm start
+```
+
 ---
 
 ## Mathematics
 
-Inline math: The time complexity is $O(n \log n)$ for merge sort.
+Inline: the time complexity of merge sort is $O(n \log n)$ and the space
+complexity is $O(n)$.
 
-Block equation for the sigmoid activation function:
+Sigmoid activation:
 
 $$
 \sigma(x) = \frac{1}{1 + e^{-x}}
 $$
 
-The cross-entropy loss function:
+Cross-entropy loss:
 
 $$
-L = -\sum_{i=1}^{N} y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i)
+L = -\sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]
 $$
 
 ---
 
-## System Architecture Diagram
+## Diagrams
+
+### System Architecture (Mermaid)
 
 ```mermaid
 flowchart TD
@@ -155,7 +225,7 @@ flowchart TD
     Worker --> DB
 ```
 
-### Request Flow
+### Request Flow (Mermaid Sequence)
 
 ```mermaid
 sequenceDiagram
@@ -173,9 +243,7 @@ sequenceDiagram
     A-->>C: 201 Created
 ```
 
----
-
-## Dependency Graph
+### Module Dependencies (GraphViz)
 
 ```dot
 digraph Dependencies {
@@ -196,14 +264,15 @@ digraph Dependencies {
 
 ## Collapsible Sections
 
-<details>
-<summary>Environment Setup</summary>
+Details blocks hold editable content and their children are individually
+draggable.
 
-Install the required dependencies:
+<details>
+<summary>Environment setup</summary>
 
 ```bash
-npm install express prisma @prisma/client
-npm install -D typescript @types/express
+pnpm install express prisma @prisma/client
+pnpm install -D typescript @types/express
 ```
 
 Create a `.env` file with your configuration values.
@@ -211,7 +280,7 @@ Create a `.env` file with your configuration values.
 </details>
 
 <details>
-<summary>Deployment Checklist</summary>
+<summary>Deployment checklist</summary>
 
 - Set `NODE_ENV=production`
 - Configure database connection string
@@ -225,38 +294,42 @@ Create a `.env` file with your configuration values.
 
 ## Images
 
-Drag and drop an image or type `/image` to upload:
+Upload via drag-and-drop, clipboard paste, or `/image`. Drag the side
+handles on a selected image to resize.
 
-![Architecture Overview](https://placehold.co/600x300/f0f4f8/333333?text=System+Architecture+Diagram)
-
----
-
-## Mentions
-
-Tag team members like @alice or @bob using the `@` symbol.
+![System architecture](https://placehold.co/600x300/f0f4f8/333333?text=System+Architecture)
 
 ---
 
-## Editor Features
+## Editor Conveniences
 
-### Drag & Drop
-
-Hover over any block to see the drag handle. Reorder blocks by dragging or using **Alt+Arrow** keys.
-
-### Find & Replace
-
-Press `Cmd+F` to find text, `Cmd+Shift+H` for find and replace.
+- **Find and Replace** — `⌘F` opens the search panel; `⌘⇧H` adds the
+  replace field.
+- **Auto-save** — content persists to `localStorage` on every change.
+- **Comments** — select text and attach a threaded annotation when the
+  Comments panel is enabled.
+- **Version History** — snapshot the document and restore any previous
+  version from the History panel.
+- **Theme toggle** — switch between light, dark, and system themes from
+  the header; the editor and all components follow.
 
 ### Keyboard Shortcuts
 
-| Action | Mac | Windows/Linux |
-|:-------|:----|:--------------|
-| Bold | `⌘+B` | `Ctrl+B` |
-| Italic | `⌘+I` | `Ctrl+I` |
-| Heading 1 | `⌘+Alt+1` | `Ctrl+Alt+1` |
-| Code Block | `⌘+Alt+C` | `Ctrl+Alt+C` |
-| Undo | `⌘+Z` | `Ctrl+Z` |
+| Action          | Mac          | Windows / Linux  |
+|:----------------|:-------------|:-----------------|
+| Bold            | `⌘B`         | `Ctrl+B`         |
+| Italic          | `⌘I`         | `Ctrl+I`         |
+| Underline       | `⌘U`         | `Ctrl+U`         |
+| Heading 1 – 3   | `⌘⌥1..3`     | `Ctrl+Alt+1..3`  |
+| Code Block      | `⌘⌥C`        | `Ctrl+Alt+C`     |
+| Bullet List     | `⌘⇧8`        | `Ctrl+Shift+8`   |
+| Ordered List    | `⌘⇧7`        | `Ctrl+Shift+7`   |
+| Blockquote      | `⌘⇧B`        | `Ctrl+Shift+B`   |
+| Undo / Redo     | `⌘Z` / `⌘⇧Z` | `Ctrl+Z` / `⇧Z`  |
+| Find / Replace  | `⌘F` / `⌘⇧H` | `Ctrl+F` / `⇧H`  |
+| Move Block      | `⌥↑` / `⌥↓`  | `Alt+↑` / `Alt+↓`|
 
 ---
 
-*This CommonMark content demonstrates all editor features using standard Markdown syntax.*
+*This CommonMark showcase demonstrates every editor feature using standard
+Markdown syntax.*
