@@ -44,7 +44,7 @@ graph TB
 | `tableOfContents` | Auto-collected heading navigation block |
 | `image` | Image upload and resize |
 | `codeBlock` | Code blocks with syntax highlighting |
-| `dragHandle` | Drag handle for block reordering |
+| `dragHandle` | Per-item drag handle for reordering blocks and list items |
 | `characterCount` | Character and word counting |
 | `textColor` | Text color and highlight |
 | `taskList` | Checkbox task lists |

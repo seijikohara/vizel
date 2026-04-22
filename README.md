@@ -31,7 +31,7 @@
 
 - **Text Formatting** - Bold, italic, underline, strikethrough, superscript, subscript, text color, highlight
 - **Typography** - Smart quotes, em dashes, and other typographic transformations
-- **Block Elements** - Headings (H1-H6), lists (bullet, numbered, task), blockquotes, horizontal rules
+- **Block Elements** - Headings (H1-H3 by default, configurable up to H6), lists (bullet, numbered, task), blockquotes, horizontal rules
 - **Slash Commands** - Type `/` to insert blocks
 - **Floating Toolbar** - Inline formatting toolbar on text selection
 - **Fixed Toolbar** - Optional sticky toolbar with formatting buttons
@@ -54,7 +54,7 @@
 - **Comments** - Text annotations for collaborative review (opt-in)
 - **Version History** - Document snapshots and restore
 - **Collaboration** - Real-time multi-user editing with Yjs (opt-in)
-- **Drag & Drop** - Block reordering with drag handle and Alt+Arrow keys
+- **Drag & Drop** - Per-item drag handle for every block, including individual bullet, ordered, and task list items at any nesting depth; `Alt+↑` / `Alt+↓` also reorder blocks and list items
 - **Block Menu** - Context menu on drag handle click (delete, duplicate, turn into)
 - **Plugin System** - Extensible plugin architecture
 

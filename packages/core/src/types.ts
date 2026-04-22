@@ -67,7 +67,11 @@ export interface VizelFeatureOptions {
   codeBlock?: VizelCodeBlockOptions | boolean;
   /** Mathematics (LaTeX) support with KaTeX rendering */
   mathematics?: VizelMathematicsOptions | boolean;
-  /** Drag handle for block reordering (includes Alt+Up/Down keyboard shortcuts) */
+  /**
+   * Per-item drag handle for reordering blocks and list items
+   * (bullet, ordered, task) at any nesting depth, with Alt+Up/Down
+   * keyboard shortcuts.
+   */
   dragHandle?: VizelDragHandleOptions | boolean;
   /** URL embedding with oEmbed/OGP support */
   embed?: VizelEmbedOptions | boolean;

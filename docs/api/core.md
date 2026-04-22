@@ -64,7 +64,7 @@ const extensions = await createVizelExtensions({
 | `Strike` | Strikethrough mark |
 | `Underline` | Underline mark |
 | `Code` | Inline code mark |
-| `Heading` | H1-H6 headings |
+| `Heading` | Headings (default levels: `[1, 2, 3]`, configurable up to 6) |
 | `BulletList` | Bullet list |
 | `OrderedList` | Numbered list |
 | `ListItem` | List item |
