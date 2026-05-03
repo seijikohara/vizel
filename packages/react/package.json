@@ -69,6 +69,6 @@
     "@vitejs/plugin-react": "^6.0.1",
     "@vizel/core": "workspace:^",
     "vite": "^8.0.9",
-    "vite-plugin-dts": "^4.5.4"
+    "vite-plugin-dts": "^5.0.0"
   }
 }
