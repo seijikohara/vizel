@@ -47,3 +47,8 @@ docs/.vitepress/cache
 playwright-report/
 test-results/
 blob-report/
+
+# Claude Code (local-only)
+.claude/settings.local.json
+.claude/worktrees/
+CLAUDE.local.md

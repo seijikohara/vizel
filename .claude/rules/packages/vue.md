@@ -1,49 +1,43 @@
 ---
-paths: packages/vue/**/*.{ts,vue}
+paths:
+  - "packages/vue/**/*.{ts,vue}"
 ---
 
-# @vizel/vue Package Guidelines
+# `@vizel/vue` Package
 
-See `cross-framework.md` for component/composable equivalence requirements.
+`@vizel/vue` provides Vue 3 components and composables. The package wraps `@vizel/core` and adds Vue-specific code only.
 
-## Package Purpose
+See `cross-framework.md` for component, composable, and props parity requirements.
 
-Vue 3 components and composables for Vizel editor.
-This package only contains Vue-specific wrappers around `@vizel/core`.
+## Component Structure
 
-## Component Development
-
-### Single File Component Structure
+Use the `<script setup lang="ts">` syntax.
 
 ```vue
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 import type { ComponentProps } from "./types";
 
-// Props definition
 const props = defineProps<{
   editor: Editor;
   class?: string;
 }>();
 
-// Emits definition
 const emit = defineEmits<{
   (e: "update", value: string): void;
 }>();
-
-// Component logic
 </script>
 
 <template>
-  <!-- Template -->
+  <!-- template -->
 </template>
 ```
 
-### Props Naming
+## Props
 
-- Use `class` for CSS class names (Vue convention)
-- Use `on*` prefix for event handler props
-- Export props types with component name
+- Use `class` for CSS class names (Vue convention).
+- Use the `on*` prefix for event handler props.
+- Export the props type alongside the component.
 
 ```typescript
 export interface BubbleMenuProps {
@@ -54,9 +48,9 @@ export interface BubbleMenuProps {
 
 ## Composables
 
-### useVizelEditor
+### `useVizelEditor`
 
-Primary composable for creating editor instances.
+`useVizelEditor` is the primary composable for creating an editor instance.
 
 ```typescript
 const editor = useVizelEditor({
@@ -71,37 +65,32 @@ const editor = useVizelEditor({
 
 ### Composable Conventions
 
-- Prefix with `use`
-- Return `ShallowRef<Editor | null>`
-- Use `onMounted` for DOM-dependent initialization
-- Use `onBeforeUnmount` for cleanup
-- Use `null` for uninitialized state (not `undefined`)
+- Prefix the function name with `use`.
+- Return `ShallowRef<Editor | null>`.
+- Initialize DOM-dependent code inside `onMounted`.
+- Run cleanup inside `onBeforeUnmount`.
+- Use `null` for the uninitialized state, never `undefined`.
 
-## Context (Provide/Inject)
+## Context (provide/inject)
 
-### VizelContext
-
-- Use `provide()` in VizelProvider
-- Use `inject()` in child components
-- Use `useVizelContext()` to access editor
-- Use `useVizelContextSafe()` for optional access
+- `VizelProvider` calls `provide()`.
+- Children call `inject()` through `useVizelContext()` for required access or `useVizelContextSafe()` for optional access.
 
 ```typescript
-// Access editor from context
-import { useVizelContext } from '@vizel/vue';
+import { useVizelContext } from "@vizel/vue";
 
 const { editor } = useVizelContext();
 ```
 
 ## Reactivity
 
-- Use `shallowRef` for Editor instance
-- Use `ref` for primitive values
-- Use `computed` for derived values
-- Avoid deep reactivity on Editor
+- Use `shallowRef` for the `Editor` instance.
+- Use `ref` for primitive values.
+- Use `computed` for derived values.
+- Avoid deep reactivity on the editor.
 
 ## Template Directives
 
-- Use `v-if` for conditional rendering
-- Use `:class` for dynamic classes
-- Use `@` for event handlers
+- Use `v-if` for conditional rendering.
+- Use `:class` for dynamic classes.
+- Use `@<event>` for event handlers.

@@ -1,45 +1,40 @@
 ---
-paths: packages/react/**/*.{ts,tsx}
+paths:
+  - "packages/react/**/*.{ts,tsx}"
 ---
 
-# @vizel/react Package Guidelines
+# `@vizel/react` Package
 
-See `cross-framework.md` for component/hook equivalence requirements.
+`@vizel/react` provides React 19 components and hooks. The package wraps `@vizel/core` and adds React-specific code only.
 
-## Package Purpose
+See `cross-framework.md` for component, hook, and props parity requirements.
 
-React 19 components and hooks for Vizel editor.
-This package only contains React-specific wrappers around `@vizel/core`.
+## Component Structure
 
-## Component Development
-
-### Component Structure
-
-React 19 no longer requires `forwardRef` - use `ref` as a regular prop:
+React 19 treats `ref` as a regular prop. Do not use `forwardRef`.
 
 ```typescript
-// Component file structure
 import { useImperativeHandle } from "react";
 
 export interface ComponentProps {
   ref?: React.Ref<RefType>;
-  // Props definition
+  // additional props
 }
 
 export function Component({ ref, ...props }: ComponentProps) {
   useImperativeHandle(ref, () => ({
-    // Exposed methods
+    // exposed methods
   }));
-  
-  // Implementation
+
+  // implementation
 }
 ```
 
-### Props Naming
+## Props
 
-- Use `className` for CSS class names
-- Use `on*` prefix for event handlers
-- Export props types with component name
+- Use `className` for CSS class names.
+- Use the `on*` prefix for event handler props.
+- Export the props type alongside the component.
 
 ```typescript
 export interface BubbleMenuProps {
@@ -51,9 +46,9 @@ export interface BubbleMenuProps {
 
 ## Hooks
 
-### useVizelEditor
+### `useVizelEditor`
 
-Primary hook for creating editor instances.
+`useVizelEditor` is the primary hook for creating an editor instance.
 
 ```typescript
 const editor = useVizelEditor({
@@ -68,21 +63,19 @@ const editor = useVizelEditor({
 
 ### Hook Conventions
 
-- Prefix with `use`
-- Return single value or object
-- Handle cleanup in useEffect
-- Use `null` for uninitialized state (not `undefined`)
+- Prefix the function name with `use`.
+- Return a single value or a single object.
+- Handle cleanup inside `useEffect`.
+- Use `null` for the uninitialized state, never `undefined`.
 
 ## Context
 
-### VizelContext
-
-- Provides editor instance to child components
-- Use `useVizelContext()` to access
-- Use `useVizelContextSafe()` for optional access
+- `VizelProvider` exposes the editor instance to descendants.
+- Consumers call `useVizelContext()` for required access.
+- Consumers call `useVizelContextSafe()` for optional access.
 
 ## Testing
 
-- Test with React 19
-- Verify SSR compatibility
-- Test keyboard navigation
+- Test against React 19.
+- Verify SSR compatibility.
+- Verify keyboard navigation.

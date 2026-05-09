@@ -1,19 +1,18 @@
 ---
-paths: packages/svelte/**/*.{ts,svelte}
+paths:
+  - "packages/svelte/**/*.{ts,svelte}"
+  - "packages/svelte/**/*.svelte.ts"
 ---
 
-# @vizel/svelte Package Guidelines
+# `@vizel/svelte` Package
 
-See `cross-framework.md` for component/rune equivalence requirements.
+`@vizel/svelte` provides Svelte 5 components and runes. The package wraps `@vizel/core` and adds Svelte-specific code only.
 
-## Package Purpose
-
-Svelte 5 components and runes for Vizel editor.
-This package only contains Svelte-specific wrappers around `@vizel/core`.
+See `cross-framework.md` for component, rune, and props parity requirements.
 
 ## Svelte 5 Runes
 
-This package uses Svelte 5 runes syntax:
+This package uses Svelte 5 runes.
 
 | Rune | Purpose |
 |------|---------|
@@ -22,16 +21,15 @@ This package uses Svelte 5 runes syntax:
 | `$effect` | Side effects |
 | `$props` | Component props |
 
-### Important: Svelte 5 mount() Behavior
+### `mount()` Behavior
 
-Svelte 5's `mount()` function does NOT support updating props after mount.
-To update component props, unmount and remount with new props:
+Svelte 5's `mount()` does NOT update props after mounting. To change props, unmount and remount.
 
 ```typescript
-// WRONG - props won't update
+// WRONG: props do not update.
 component.items = newItems;
 
-// CORRECT - remount with new props
+// CORRECT: remount with new props.
 unmount(component);
 component = mount(SlashMenu, {
   target: container,
@@ -39,9 +37,7 @@ component = mount(SlashMenu, {
 });
 ```
 
-## Component Development
-
-### Svelte 5 Component Structure
+## Component Structure
 
 ```svelte
 <script lang="ts">
@@ -55,34 +51,32 @@ interface Props {
 
 let { editor, class: className, children }: Props = $props();
 
-// Component logic with runes
 let isActive = $derived(editor?.isActive("bold") ?? false);
 </script>
 
-<!-- Template -->
 {#if children}
   {@render children()}
 {/if}
 ```
 
-### Props Naming
+## Props
 
-- Use `class` for CSS class names
-- Use `on*` prefix for event callbacks
-- Export props types with component name
+- Use `class` for CSS class names.
+- Use the `on*` prefix for event callbacks.
+- Export the props type alongside the component.
 
 ## Runes
 
 ### Naming Conventions
 
-Svelte runes follow Svelte-idiomatic naming (NOT React-style `use*`):
+Svelte runes use Svelte-idiomatic naming. Do not use the React-style `use*` prefix.
 
-- `create*` for factory functions that create reactive state
-- `get*` for context getters
+- `create*` for factories that produce reactive state.
+- `get*` for context getters.
 
-### createVizelEditor
+### `createVizelEditor`
 
-Primary rune for creating editor instances.
+`createVizelEditor` is the primary rune for creating an editor instance.
 
 ```typescript
 const editor = createVizelEditor({
@@ -94,68 +88,62 @@ const editor = createVizelEditor({
   onUpdate: ({ editor }) => {},
 });
 
-// Access editor with .current
+// Access the editor through `.current`.
 editor.current?.commands.setContent(content);
 ```
 
-### createVizelEditorState
+### `createVizelEditorState`
 
-Rune for tracking editor state changes.
+`createVizelEditorState` tracks editor state changes.
 
 ```typescript
 const updateCount = createVizelEditorState(() => editor.current);
-// Use updateCount.current to trigger reactivity
+// Read updateCount.current to trigger reactivity.
 ```
 
 ### Rune Conventions
 
-- File extension: `.svelte.ts`
-- Return object with getter: `{ get current() { return editor; } }`
-- Use `$effect` for lifecycle management (Svelte 5 pattern)
-- Initialize state with `$state<Editor | null>(null)`
+- Place runes in `*.svelte.ts` files.
+- Return an object with a `current` getter: `{ get current() { return editor; } }`.
+- Use `$effect` for lifecycle management (the Svelte 5 pattern).
+- Initialize state with `$state<Editor | null>(null)`.
 
 ```typescript
-// $effect replaces onMount/onDestroy
 $effect(() => {
-  // Setup code runs when component mounts
+  // Setup runs when the component mounts.
   return () => {
-    // Cleanup runs when component unmounts
+    // Cleanup runs when the component unmounts.
   };
 });
 ```
 
 ## Context
 
-### VizelContext
-
-- Use `setContext()` in VizelProvider
-- Use `getVizelContext()` to access editor
-- Use `getVizelContextSafe()` for optional access
+- `VizelProvider` calls `setContext()`.
+- Consumers call `getVizelContext()` for required access or `getVizelContextSafe()` for optional access.
 
 ```typescript
-import { getVizelContext } from '@vizel/svelte';
+import { getVizelContext } from "@vizel/svelte";
 
-// Get context
 const { editor } = getVizelContext();
 ```
 
 ## Event Handling
 
-- Use `onclick` (lowercase) for DOM events
-- Use `oncommand` for custom events
-- Avoid using `on:` directive (Svelte 4 syntax)
+- Use lowercase DOM events: `onclick`, `oninput`.
+- Avoid the Svelte 4 directive syntax (`on:click`).
 
 ```svelte
 <!-- Svelte 5 -->
 <button onclick={handleClick}>Click</button>
 
-<!-- NOT Svelte 4 -->
+<!-- Svelte 4 (do not use) -->
 <button on:click={handleClick}>Click</button>
 ```
 
-## Snippets (Svelte 5)
+## Snippets
 
-Use Snippets instead of slots:
+Use snippets instead of slots.
 
 ```svelte
 <script lang="ts">

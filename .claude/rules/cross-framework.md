@@ -1,34 +1,25 @@
 ---
-paths: packages/**/*
+paths:
+  - "packages/{react,vue,svelte}/**/*"
+  - "packages/core/src/types.ts"
 ---
 
 # Cross-Framework Consistency
 
-React, Vue, Svelte packages must maintain feature parity and consistent APIs.
+The React, Vue, and Svelte packages must maintain feature parity and consistent APIs.
 
-## Core Package Centralization
+## Source of Truth
 
-All framework-agnostic code belongs in `@vizel/core`:
+`@vizel/core` owns all framework-agnostic code. See `packages/core.md` for the centralization rules.
 
-| Category | Location | Examples |
-|----------|----------|----------|
-| Types | `core/src/types.ts` | `VizelEditorOptions`, `VizelFeatureOptions` |
-| Constants | `core/src/` | `VIZEL_UPLOAD_IMAGE_EVENT`, `VIZEL_TEXT_COLORS` |
-| Extensions | `core/src/extensions/` | `VizelSlashCommand`, `VizelImageResize` |
-| Utilities | `core/src/utils/` | `resolveVizelFeatures`, `createVizelImageUploader` |
-| Styles | `core/src/styles/` | All CSS |
+The framework packages do NOT re-export symbols from `@vizel/core`. Consumers import shared symbols directly:
 
-Framework packages only contain:
-- Framework-specific components
-- Framework-specific state management (hooks/composables/runes)
-
-**No re-exports**: Framework packages do NOT re-export from `@vizel/core`. Users import directly:
-- Vizel types/utilities from `@vizel/core`
-- Tiptap types (`JSONContent`, `Editor`, etc.) from `@tiptap/core`
+- Import Vizel types and utilities from `@vizel/core`.
+- Import Tiptap types (`JSONContent`, `Editor`, etc.) from `@tiptap/core`.
 
 ## Component Equivalence
 
-Each component must exist in all three frameworks with equivalent functionality:
+Each component must exist in all three framework packages with equivalent functionality.
 
 | Component | React | Vue | Svelte |
 |-----------|-------|-----|--------|
@@ -62,29 +53,29 @@ Each component must exist in all three frameworks with equivalent functionality:
 | VizelToolbarDropdown | `.tsx` | `.vue` | `.svelte` |
 | VizelToolbarOverflow | `.tsx` | `.vue` | `.svelte` |
 
-### Props Interface
+## Props Interface
 
-Props must be equivalent across frameworks:
+Each component exposes equivalent props across frameworks. React uses `className`. Vue and Svelte use `class`.
 
 ```typescript
-// All frameworks
 interface VizelEditorProps {
   editor?: Editor | null;
-  class?: string;  // Vue/Svelte use "class", React uses "className"
+  class?: string; // React: className
 }
 
 interface VizelBubbleMenuProps {
   editor?: Editor | null;
   class?: string;
-  children?: ...;  // Framework-specific child type
+  children?: ReactNode | VNode | Snippet; // framework-specific child type
 }
 ```
 
 ## State Management Equivalence
 
-| React | Vue | Svelte |
-|-------|-----|--------|
-| `hooks/` | `composables/` | `runes/` |
+Each framework exposes equivalent state primitives under its idiomatic naming.
+
+| React (`hooks/`) | Vue (`composables/`) | Svelte (`runes/`) |
+|------------------|----------------------|--------------------|
 | `useVizelEditor` | `useVizelEditor` | `createVizelEditor` |
 | `useVizelState` | `useVizelState` | `createVizelState` |
 | `useVizelEditorState` | `useVizelEditorState` | `createVizelEditorState` |
@@ -94,6 +85,7 @@ interface VizelBubbleMenuProps {
 | `useVizelContext` | `useVizelContext` | `getVizelContext` |
 | `useVizelIconContext` | `useVizelIconContext` | `getVizelIconContext` |
 | `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` |
+| `createVizelMentionMenuRenderer` | `createVizelMentionMenuRenderer` | `createVizelMentionMenuRenderer` |
 | `useVizelCollaboration` | `useVizelCollaboration` | `createVizelCollaboration` |
 | `useVizelComment` | `useVizelComment` | `createVizelComment` |
 | `useVizelVersionHistory` | `useVizelVersionHistory` | `createVizelVersionHistory` |
@@ -102,16 +94,16 @@ interface VizelBubbleMenuProps {
 
 Each framework follows its idiomatic naming:
 
-- **React**: `use*` prefix for hooks (React convention)
-- **Vue**: `use*` prefix for composables (Vue convention)
-- **Svelte**: `create*` for factory functions, `get*` for context getters (Svelte convention)
+- **React**: prefix hooks with `use`.
+- **Vue**: prefix composables with `use`.
+- **Svelte**: prefix factories with `create` and context getters with `get`.
 
 ### Options Interface
 
-All must accept identical options (defined in core):
+All packages accept identical options. Define the option types in `@vizel/core`:
 
 ```typescript
-// @vizel/core - shared type
+// @vizel/core
 interface VizelEditorOptions {
   extensions?: Extensions;
   // ...
@@ -124,20 +116,23 @@ interface VizelEditorOptions {
 |-------|-----|--------|
 | `Editor \| null` | `ShallowRef<Editor \| null>` | `{ get current(): Editor \| null }` |
 
+All hooks, composables, and runes accept editor accessors via the getter pattern: `() => editor`.
+
 ## Context API Equivalence
 
 | Feature | React | Vue | Svelte |
 |---------|-------|-----|--------|
 | Provider | `VizelProvider` | `VizelProvider` | `VizelProvider` |
-| Consumer | `useVizelContext()` | `useVizelContext()` | `getVizelContext()` |
-| Safe access | `useVizelContextSafe()` | `useVizelContextSafe()` | `getVizelContextSafe()` |
+| Consumer (required) | `useVizelContext()` | `useVizelContext()` | `getVizelContext()` |
+| Consumer (optional) | `useVizelContextSafe()` | `useVizelContextSafe()` | `getVizelContextSafe()` |
 
-## Adding New Features
+## Adding a New Feature
 
-When adding a feature:
+Follow this sequence to add a feature with consistent cross-framework support:
 
-1. Add shared logic/types to `@vizel/core`
-2. Implement in all three framework packages
-3. Ensure props/options are consistent
-4. Update all three demo apps
-5. Verify with `pnpm typecheck && pnpm build`
+1. Add shared logic and types to `@vizel/core`.
+2. Implement the feature in all three framework packages.
+3. Verify props, options, and return types match across frameworks.
+4. Update each demo app to exercise the feature.
+5. Add Playwright Component Tests with shared scenarios under `tests/ct/scenarios/`.
+6. Run `pnpm typecheck && pnpm build && pnpm test:ct`.

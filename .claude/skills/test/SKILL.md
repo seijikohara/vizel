@@ -1,19 +1,19 @@
 ---
 name: test
-description: Run E2E tests for React, Vue, and Svelte frameworks. Use when testing components, verifying changes, or before committing.
+description: Run E2E tests for React, Vue, and Svelte. Use when testing components, verifying changes, or before committing.
 ---
 
 # Test Runner
 
-Runs Playwright Component Tests across all frameworks.
+This skill runs Playwright Component Tests across the React, Vue, and Svelte frameworks. It also audits test coverage on request.
 
 ## When to Use
 
-- After implementing or modifying components
-- Before committing changes
-- When verifying cross-framework compatibility
-- When user asks to run tests
-- When checking test coverage
+- After implementing or modifying components.
+- Before committing changes.
+- When verifying cross-framework compatibility.
+- When the user asks to run tests.
+- When the user asks about test coverage.
 
 ## Quick Commands
 
@@ -25,11 +25,11 @@ Runs Playwright Component Tests across all frameworks.
 | `pnpm test:ct:vue` | Run Vue tests only |
 | `pnpm test:ct:svelte` | Run Svelte tests only |
 
-## Instructions
+## Process
 
 ### 1. Determine Test Scope
 
-Based on user request or changed files:
+Pick the test scope based on the changed paths.
 
 | Changed Path | Tests to Run |
 |--------------|--------------|
@@ -45,18 +45,21 @@ Based on user request or changed files:
 ### 2. Run Tests
 
 #### All Frameworks (Parallel)
+
 ```bash
 pnpm test:ct
 ```
 
-> **Note**: Parallel execution may cause timeout errors when running with all browsers due to resource contention. Use `--project=chromium` for faster, more reliable parallel runs.
+> Parallel runs can hit timeouts when all browsers run together. Use `--project=chromium` for a faster, more reliable parallel run.
 
 #### All Frameworks (Sequential)
+
 ```bash
 pnpm test:ct:seq
 ```
 
 #### Single Framework
+
 ```bash
 pnpm test:ct:react
 pnpm test:ct:vue
@@ -64,6 +67,7 @@ pnpm test:ct:svelte
 ```
 
 #### Specific Browser
+
 ```bash
 pnpm test:ct:react --project=chromium
 pnpm test:ct:react --project=firefox
@@ -71,11 +75,13 @@ pnpm test:ct:react --project=webkit
 ```
 
 #### Specific Test File
+
 ```bash
 pnpm test:ct:react tests/ct/react/specs/Editor.spec.tsx
 ```
 
-#### Debug Mode (Headed)
+#### Headed Mode (Visible Browser)
+
 ```bash
 pnpm test:ct:react --headed
 ```
@@ -83,6 +89,7 @@ pnpm test:ct:react --headed
 ### 3. Analyze Results
 
 #### Success Output
+
 ```
 Running X tests using Y workers
 
@@ -93,6 +100,7 @@ Running X tests using Y workers
 ```
 
 #### Failure Output
+
 ```
   ✗ ComponentName › test description (XXms)
     Error: expect(locator).toBeVisible()
@@ -112,22 +120,21 @@ Running X tests using Y workers
 - **Svelte**: ✅ X passed / ❌ Y failed
 
 ### Failures (if any)
+
 | Framework | Test | Error |
 |-----------|------|-------|
 | React | ComponentName › test | Error message |
 
 ### Next Steps
-- [ ] Fix failing tests
-- [ ] Run tests again
+- [ ] Fix failing tests.
+- [ ] Re-run the affected suite.
 ```
 
-## Coverage Check
+## Coverage Audit
 
-When user asks about test coverage, check if all components and hooks/composables/runes are covered by tests.
+When the user asks about coverage, verify that every component and every hook, composable, or rune has a corresponding test.
 
 ### 1. List Implementations
-
-Run these commands to list all implementations:
 
 ```bash
 # React
@@ -149,16 +156,14 @@ ls packages/svelte/src/runes/*.ts | xargs -I {} basename {} .ts
 ls tests/ct/react/specs/*.tsx tests/ct/vue/specs/*.ts tests/ct/svelte/specs/*.ts | xargs -I {} basename {}
 ```
 
-### 3. Check Coverage
-
-For each implementation, determine coverage status:
+### 3. Classify Coverage
 
 | Status | Meaning |
 |--------|---------|
-| ✅ Direct | Has dedicated test spec |
-| ✅ Indirect | Tested through parent component |
-| ⚠️ Style-only | Pure styling, may not need test |
-| ❌ Missing | Needs test |
+| ✅ Direct | Has a dedicated spec file |
+| ✅ Indirect | Tested through a parent component |
+| ⚠️ Style-only | Pure styling component; may not require a spec |
+| ❌ Missing | Requires a spec |
 
 ### 4. Coverage Report Format
 
@@ -181,17 +186,18 @@ For each implementation, determine coverage status:
 | useVizelEditorState | ❌ | ❌ | ❌ | Missing |
 
 ### Summary
-- Components: X/Y covered (Z%)
-- Hooks/Composables/Runes: X/Y covered (Z%)
+- Components: X/Y covered (Z%).
+- Hooks/Composables/Runes: X/Y covered (Z%).
 
 ### Recommendations
-- [ ] Add tests for missing items
-- [ ] Consider if style-only components need tests
+- [ ] Add tests for missing items.
+- [ ] Decide whether style-only components require tests.
 ```
 
 ## Troubleshooting
 
 ### Browser Not Installed
+
 ```bash
 pnpm exec playwright install chromium
 # or install all browsers
@@ -199,7 +205,9 @@ pnpm exec playwright install
 ```
 
 ### Test Timeout
-Increase timeout in test:
+
+Increase the timeout for the affected test:
+
 ```typescript
 test("slow test", async ({ mount, page }) => {
   test.setTimeout(30000); // 30 seconds
@@ -208,51 +216,59 @@ test("slow test", async ({ mount, page }) => {
 ```
 
 ### Parallel Execution Timeout
-When running all frameworks in parallel with all browsers, you may see timeout errors due to resource contention:
+
+Parallel runs across all frameworks and all browsers can fail with messages like:
+
 ```
 browserContext.newPage: Test timeout of 10000ms exceeded
 ```
 
-**Solutions:**
-1. Use single browser: `pnpm test:ct --project=chromium`
-2. Use sequential execution: `pnpm test:ct:seq`
-3. Reduce parallel workers in config (currently 50% CPU)
+Mitigation:
+
+1. Use a single browser: `pnpm test:ct --project=chromium`.
+2. Use sequential execution: `pnpm test:ct:seq`.
+3. Reduce the worker count in the config (currently 50% CPU).
 
 ### Element Not Found
-Check if element is rendered to `document.body` (portal):
+
+Check whether the element renders to `document.body` (a portal):
+
 ```typescript
-// Inside component
+// Inside the mount target.
 const element = component.locator(".selector");
 
-// Portal/popup (rendered to body)
+// Rendered to document.body.
 const popup = page.locator(".selector");
 ```
 
 ## Common Patterns
 
 ### Run Tests for Changed Files
+
 ```bash
-# Get changed files
+# List changed files.
 git diff --name-only HEAD~1
 
-# Run relevant tests based on changes
+# Run the relevant suite.
 pnpm test:ct:react  # if React files changed
 ```
 
-### Run Before Commit
+### Pre-commit Verification
+
 ```bash
-# Quick parallel check with single browser (recommended)
+# Quick parallel check with a single browser.
 pnpm test:ct --project=chromium
 
-# Or sequential check with single browser
+# Or a sequential check with a single browser.
 pnpm test:ct:seq --project=chromium
 ```
 
-### Full CI-like Test
+### Full CI-like Verification
+
 ```bash
-# All frameworks in parallel, all browsers
+# All frameworks in parallel, all browsers.
 pnpm test:ct
 
-# All frameworks sequentially, all browsers (more stable)
+# All frameworks sequentially, all browsers (more stable).
 pnpm test:ct:seq
 ```
