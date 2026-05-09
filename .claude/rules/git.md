@@ -1,10 +1,8 @@
-# Git Workflow and Conventions
+# Git Workflow
+
+This project uses Conventional Commits. The lefthook `commit-msg` hook validates each commit message.
 
 ## Commit Message Format
-
-Use Conventional Commits format. The commit message is validated by lefthook pre-commit hook.
-
-### Format
 
 ```
 <type>(<scope>): <description>
@@ -20,26 +18,34 @@ Use Conventional Commits format. The commit message is validated by lefthook pre
 |------|-------------|
 | `feat` | New feature |
 | `fix` | Bug fix |
-| `docs` | Documentation only changes |
-| `style` | Code style changes (formatting, semicolons, etc.) |
-| `refactor` | Code refactoring without feature or fix |
-| `perf` | Performance improvements |
-| `test` | Adding or updating tests |
+| `docs` | Documentation only |
+| `style` | Code style only (formatting, semicolons) |
+| `refactor` | Code change that is neither feature nor fix |
+| `perf` | Performance improvement |
+| `test` | Tests only |
 | `build` | Build system or external dependencies |
-| `ci` | CI configuration changes |
-| `chore` | Other changes (tooling, config, etc.) |
-| `revert` | Revert previous commit |
+| `ci` | CI configuration |
+| `chore` | Other changes (tooling, config) |
+| `revert` | Revert a previous commit |
 
 ### Scopes
 
 | Scope | Description |
 |-------|-------------|
-| `core` | @vizel/core package |
-| `react` | @vizel/react package |
-| `vue` | @vizel/vue package |
-| `svelte` | @vizel/svelte package |
+| `core` | `@vizel/core` package |
+| `react` | `@vizel/react` package |
+| `vue` | `@vizel/vue` package |
+| `svelte` | `@vizel/svelte` package |
 | `demo` | Demo applications |
-| (none) | Multiple packages or project-wide |
+| (none) | Multiple packages or project-wide changes |
+
+### Rules
+
+- Write commit messages in English.
+- Use the imperative mood ("add", not "added"; "fix", not "fixed").
+- Limit the subject line to 72 characters.
+- Do not end the subject line with a period.
+- Do not include AI-generated co-author or signature lines.
 
 ### Examples
 
@@ -51,68 +57,59 @@ docs: update README with installation instructions
 chore: update dependencies
 ```
 
-### Rules
-
-- Use English for commit messages
-- Use imperative mood ("add" not "added", "fix" not "fixed")
-- First line must be 72 characters or less
-- Do not end the subject line with a period
-- Do not include Claude Code signatures or co-author lines
-
-## Pull Request Format
+## Pull Requests
 
 ### Title
 
-Use the same format as commit messages:
+The PR title follows the commit message format:
 
 ```
 <type>(<scope>): <description>
 ```
 
-### Body
+### Body Template
 
 ```markdown
 ## Summary
 
-- Bullet points describing the changes
-- Focus on what and why, not how
+- Bullet points describing the changes.
+- Focus on what and why, not how.
 
 ## Breaking Changes (if applicable)
 
-- List any breaking changes
-- Include migration instructions
+- List breaking changes.
+- Include migration instructions.
 
 ## Test Plan
 
-- [x] Run lint (`pnpm lint`)
-- [x] Run typecheck (`pnpm typecheck`)
-- [x] Manual testing description
+- [x] Run `pnpm lint`.
+- [x] Run `pnpm typecheck`.
+- [x] Manual testing description.
 ```
 
 ### Rules
 
-- PR title must match the primary change type
-- Include Test Plan section with verification steps
-- Mark completed verification items with `[x]`
-- Use draft PR for work in progress
+- The PR title matches the primary change type.
+- The body includes a Test Plan with executable verification steps.
+- The author marks completed verification items with `[x]`.
+- The author marks the PR as draft while work is in progress.
 
 ## Branch Naming
 
-```
-<type>/<short-description>
-```
+Use the pattern `<type>/<short-description>`:
 
-Examples:
-- `feat/image-resize`
-- `fix/slash-menu-filtering`
-- `refactor/replace-starter-kit`
+```
+feat/image-resize
+fix/slash-menu-filtering
+refactor/replace-starter-kit
+```
 
 ## Pre-commit Hooks
 
-The project uses lefthook for Git hooks:
+Lefthook runs the following hooks. Always ensure they pass before pushing.
 
-- `pre-commit`: Biome lint/format, typecheck
-- `commit-msg`: Conventional Commits validation
-- `pre-push`: Full lint and typecheck
-
-Always ensure hooks pass before pushing.
+| Hook | Action |
+|------|--------|
+| `pre-commit` | Biome lint and format, TypeScript check |
+| `commit-msg` | Conventional Commits validation |
+| `pre-push` | Full lint and typecheck |

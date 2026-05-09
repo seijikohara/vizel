@@ -1,113 +1,133 @@
 ---
 name: lint-instructions
-description: Detect and fix violations of project instructions defined in .claude/rules/. Use when checking code compliance, reviewing changes, or when the user asks about instruction violations.
+description: Detect and fix violations of the project rules under .claude/rules/. Use before committing changes, after implementing a feature, or when the user asks to check rule compliance.
 ---
 
 # Instruction Linter
 
-Validates code against project-specific rules defined in `.claude/rules/`.
+This skill validates code against the project rules in `.claude/rules/`.
 
 ## When to Use
 
-- Before committing changes
-- After implementing a new feature
-- When reviewing code for compliance
-- When user asks to check instruction compliance
+- Before committing changes.
+- After implementing a feature.
+- During pull request preparation.
+- When the user asks to check rule compliance.
 
-## Instructions
+## Process
 
-### 1. Load All Rules
+### 1. Load the Rules
 
-Read all instruction files:
+Each rule under `.claude/rules/` declares a `paths:` frontmatter that scopes its automatic loading. This skill performs full compliance checks across the project, so it reads every rule file explicitly regardless of the current file scope.
 
+Read all rule files:
+
+- `.claude/rules/code-style.md`
+- `.claude/rules/cross-framework.md`
+- `.claude/rules/git.md`
+- `.claude/rules/testing.md`
+- `.claude/rules/demo.md`
+- `.claude/rules/packages/core.md`
+- `.claude/rules/packages/react.md`
+- `.claude/rules/packages/vue.md`
+- `.claude/rules/packages/svelte.md`
+
+### 2. Identify Changed Files
+
+```bash
+git diff --name-only HEAD~1
 ```
-.claude/rules/code-style.md
-.claude/rules/cross-framework.md
-.claude/rules/packages/core.md
-.claude/rules/packages/react.md
-.claude/rules/packages/vue.md
-.claude/rules/packages/svelte.md
-.claude/rules/demo.md
-```
 
-### 2. Check Categories
+### 3. Apply the Relevant Rules
 
-For each category, verify compliance:
+| Changed Path | Apply These Rules |
+|--------------|-------------------|
+| `packages/core/**` | `code-style.md`, `cross-framework.md`, `packages/core.md` |
+| `packages/react/**` | `code-style.md`, `cross-framework.md`, `packages/react.md` |
+| `packages/vue/**` | `code-style.md`, `cross-framework.md`, `packages/vue.md` |
+| `packages/svelte/**` | `code-style.md`, `cross-framework.md`, `packages/svelte.md` |
+| `apps/demo/**` | `code-style.md`, `demo.md` |
+| `tests/ct/**` | `code-style.md`, `testing.md` |
+| Commit message | `git.md` |
 
-#### Code Style (code-style.md)
-- [ ] Function declarations: exports use `function`, callbacks use arrows
-- [ ] Type safety: `satisfies` over type annotations, type guards over `as` casts
-- [ ] Documentation: JSDoc on public APIs
+### 4. Verify Each Category
 
-#### Cross-Framework (cross-framework.md)
-- [ ] Component parity: all components exist in React/Vue/Svelte
-- [ ] Props equivalence: same props interface across frameworks
-- [ ] Hook/Composable/Rune equivalence: same options, similar return types
-- [ ] Core centralization: shared types/constants/utils in @vizel/core
+For each applicable rule file, verify the following.
 
-#### Core Package (packages/core.md)
-- [ ] No framework dependencies (React, Vue, Svelte)
-- [ ] All shared types defined here
-- [ ] All constants defined here
+#### Code Style (`code-style.md`)
 
-#### Framework Packages (packages/react.md, vue.md, svelte.md)
-- [ ] Only framework-specific wrappers
-- [ ] Correct idioms (hooks vs composables vs runes)
-- [ ] Proper context usage
+- [ ] Exports use `function` declarations.
+- [ ] Callbacks use arrow functions.
+- [ ] Public APIs prefer `satisfies` over type annotations.
+- [ ] Type guards replace `as` casts.
+- [ ] Public APIs include JSDoc.
 
-### 3. Report Format
+#### Cross-Framework (`cross-framework.md`)
+
+- [ ] Each component exists in all three framework packages.
+- [ ] Props match across frameworks (allowing `class` versus `className`).
+- [ ] Hooks, composables, and runes share an option interface defined in `@vizel/core`.
+- [ ] No framework package re-exports symbols from `@vizel/core`.
+
+#### Core Package (`packages/core.md`)
+
+- [ ] No framework runtime dependencies.
+- [ ] Shared types and constants live here.
+- [ ] No usage of `@tiptap/starter-kit`.
+
+#### Framework Packages (`packages/{react,vue,svelte}.md`)
+
+- [ ] Idiomatic naming (hooks vs composables vs runes).
+- [ ] Correct context API usage.
+- [ ] No duplication of `@vizel/core` logic.
+
+#### Git (`git.md`)
+
+- [ ] The commit subject follows Conventional Commits.
+- [ ] The subject uses the imperative mood.
+- [ ] The subject is 72 characters or fewer.
+
+### 5. Report
+
+Use this format:
 
 ```markdown
 ## Instruction Compliance Report
 
 ### ✅ Passing
-- [rule]: [description]
+- <rule>: <description>
 
 ### ❌ Violations
-- [rule]: [file:line] - [issue description]
-  - **Fix**: [suggested fix]
+- <rule>: <file:line> — <issue>
+  - **Fix**: <suggested fix>
 
 ### ⚠️ Warnings
-- [rule]: [potential issue]
+- <rule>: <potential issue>
 ```
 
-### 4. Auto-Fix When Possible
+### 6. Apply Fixes
 
-For fixable violations:
-1. Show the violation
-2. Propose the fix
-3. Apply if user approves
+For each fixable violation:
 
-## Example Usage
+1. Show the violation.
+2. Propose the fix.
+3. Apply the fix after the user confirms.
 
-User: "Check if my changes follow the project rules"
+## Quick Checks
 
-1. Read recent git changes: `git diff --name-only HEAD~1`
-2. Load relevant rule files based on changed paths
-3. Check each changed file against applicable rules
-4. Report violations with fixes
-
-## Checklist Commands
-
-Quick checks to run:
-
-```bash
-# Biome handles: formatting, imports, exports, naming
-pnpm check
-
-# Type safety
-pnpm typecheck
-
-# Build verification
-pnpm build
-```
+| Command | Purpose |
+|---------|---------|
+| `pnpm check` | Auto-fix Biome violations (formatting, imports, exports, naming) |
+| `pnpm typecheck` | Verify type safety |
+| `pnpm build` | Verify the build succeeds |
 
 ## Common Violations
 
 | Violation | Rule | Fix |
 |-----------|------|-----|
-| `export const fn = () => {}` | code-style | Use `export function fn() {}` |
-| `data as Type` | code-style | Use type guard function |
-| Type in framework package | cross-framework | Move to @vizel/core |
-| Missing component in one framework | cross-framework | Add equivalent component |
-| `default export` | Biome | Use named export |
+| `export const fn = () => {}` | `code-style.md` | Use `export function fn() {}` |
+| `data as Type` | `code-style.md` | Add a type guard function |
+| Type defined inside a framework package | `cross-framework.md` | Move the type to `@vizel/core` |
+| Component missing in one framework | `cross-framework.md` | Add the equivalent component |
+| `default export` | Biome | Use a named export |
+| Re-export from `@vizel/core` in a framework package | `cross-framework.md` | Import directly from `@vizel/core` |

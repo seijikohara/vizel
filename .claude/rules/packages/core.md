@@ -1,52 +1,53 @@
 ---
-paths: packages/core/**/*.ts
+paths:
+  - "packages/core/**/*.{ts,scss,css}"
 ---
 
-# @vizel/core Package Guidelines
+# `@vizel/core` Package
 
-## Package Purpose
+The core package owns all framework-agnostic code. The framework packages wrap and extend the core, but never duplicate what it defines.
 
-The core package is the single source of truth for all framework-agnostic code.
-Framework packages (react/vue/svelte) only wrap and re-export from core.
+## Single Source of Truth
 
-### Must be in core
+The core package is the single source of truth for the following:
 
-- All TypeScript types and interfaces
-- All constants
-- All Tiptap extensions
-- All utility functions
-- All CSS styles
+| Category | Location | Examples |
+|----------|----------|----------|
+| Types | `core/src/types.ts` | `VizelEditorOptions`, `VizelFeatureOptions` |
+| Constants | `core/src/` | `VIZEL_UPLOAD_IMAGE_EVENT`, `VIZEL_TEXT_COLORS` |
+| Extensions | `core/src/extensions/` | `VizelSlashCommand`, `VizelImageResize` |
+| Utilities | `core/src/utils/` | `resolveVizelFeatures`, `createVizelImageUploader` |
+| Styles | `core/src/styles/` | All CSS |
 
-### Must NOT be in core
+The core package excludes:
 
-- Framework-specific components
-- Framework-specific state management (hooks/composables/runes)
-- Framework runtime dependencies
+- Framework-specific components.
+- Framework-specific state primitives (hooks, composables, runes).
+- Runtime dependencies on React, Vue, or Svelte.
 
 ## Extension Development
 
 ### Creating Extensions
 
-- Use individual tiptap extension packages (not @tiptap/starter-kit)
-- Configure extensions through `createVizelExtensions()`
-- Export extensions for advanced usage
+- Use individual `@tiptap/extension-*` packages. Do not depend on `@tiptap/starter-kit`.
+- Configure extensions through `createVizelExtensions()`.
+- Export each extension to support advanced consumer usage.
 
 ```typescript
 import Heading from "@tiptap/extension-heading";
 
-// Configure extension
 Heading.configure({
   levels: [1, 2, 3],
 });
 ```
 
-### Extension Categories
+### Extension Catalog
 
 | Category | Location | Description |
 |----------|----------|-------------|
-| Base | `extensions/base.ts` | Core text editing (Heading, Bold, Italic, etc.) |
+| Base | `extensions/base.ts` | Core text editing (heading, bold, italic, etc.) |
 | SlashCommand | `extensions/slash-command.ts` | Slash command menu |
-| Table | `extensions/table.ts` | Table editing with row/column controls |
+| Table | `extensions/table.ts` | Table editing with row and column controls |
 | Link | `extensions/link.ts` | Link with autolink and paste support |
 | Image | `extensions/image.ts` | Image upload and resize |
 | CodeBlock | `extensions/code-block-lowlight.ts` | Syntax-highlighted code blocks |
@@ -54,7 +55,7 @@ Heading.configure({
 | TextColor | `extensions/text-color.ts` | Text color and highlight |
 | TaskList | `extensions/task-list.ts` | Checkbox task lists |
 | DragHandle | `extensions/drag-handle.ts` | Block drag handle and keyboard reordering |
-| Markdown | `extensions/markdown.ts` | Markdown import/export |
+| Markdown | `extensions/markdown.ts` | Markdown import and export |
 | Mathematics | `extensions/mathematics.ts` | LaTeX math with KaTeX |
 | Embed | `extensions/embed.ts` | URL embedding (oEmbed/OGP) |
 | Details | `extensions/details.ts` | Collapsible content blocks |
@@ -64,58 +65,53 @@ Heading.configure({
 
 ## Dependencies
 
-### Allowed Dependencies
+### Allowed
 
-- @tiptap/* extension packages
-- @tiptap/core
-- @tiptap/pm
-- @tiptap/suggestion
+- `@tiptap/core`, `@tiptap/pm`, `@tiptap/suggestion`.
+- Individual `@tiptap/extension-*` packages.
 
-### Prohibited Dependencies
+### Prohibited
 
-- Framework-specific packages (React, Vue, Svelte)
-- @tiptap/starter-kit (use individual packages)
-- Runtime-only dependencies
+- Framework runtimes (React, Vue, Svelte).
+- `@tiptap/starter-kit` (use individual extensions instead).
+- Runtime-only dependencies that consumers must install separately.
 
 ## Build Configuration
 
-### vite.config.ts
-
-- External all @tiptap/* packages
-- Use ES module format
-- Preserve module structure
+The core package uses Vite. Externalize all `@tiptap/*` packages and emit ES modules.
 
 ```typescript
 external: [
   "@tiptap/core",
-  "@tiptap/extension-*",
+  /^@tiptap\/extension-/,
   "@tiptap/pm",
   "@tiptap/suggestion",
 ],
 ```
 
-## Exports
+## Public API
 
-### Public API (index.ts)
+`index.ts` exports the public API:
 
-- Export all extensions
-- Export all types with `type` prefix
-- Export utility functions
-- Alphabetical ordering
+- All extensions.
+- All public types (use the `type` modifier).
+- Utility functions.
+
+Order exports alphabetically.
 
 ### Naming Conventions
 
 | Pattern | Example |
 |---------|---------|
 | Options type | `VizelExtensionsOptions`, `VizelImageOptions` |
-| Create function | `createVizelExtensions()`, `createLinkExtension()` |
-| Extension | `SlashCommand`, `ImageResize` |
+| Factory function | `createVizelExtensions()`, `createLinkExtension()` |
+| Extension class | `SlashCommand`, `ImageResize` |
 
 ## CSS Styles
 
-Location: `src/styles/`
+CSS lives in `src/styles/`.
 
-- Use BEM-like naming: `.vizel-*`
-- Scope styles to Vizel components
-- Use CSS custom properties for theming
-- Document style dependencies in comments
+- Use BEM-like class names (`.vizel-*`).
+- Scope styles to Vizel components.
+- Use CSS custom properties for theming.
+- Document non-trivial style dependencies in comments.

@@ -1,60 +1,66 @@
 ---
-paths: "**/*.{ts,tsx,js,jsx,vue,svelte}"
+paths:
+  - "packages/**/*.{ts,tsx,vue,svelte}"
+  - "apps/**/*.{ts,tsx,vue,svelte}"
+  - "tests/**/*.{ts,tsx}"
 ---
 
-# Code Style Guidelines
+# Code Style
 
-Code formatting, imports, exports, and naming are enforced by Biome.
-Run `pnpm check` to auto-fix. This document covers guidelines Biome doesn't enforce.
+Biome enforces formatting, import order, export style, and naming. Run `pnpm check` to auto-fix Biome violations. This document covers the guidelines that Biome does not enforce.
 
 ## Language
 
-- Use English for all code, comments, and documentation
-- Use technical, accurate, and formal language
-- Avoid subjective or casual expressions
+- Write all code, comments, and documentation in English.
+- Use technical, accurate, and formal language.
+- Avoid subjective or casual expressions.
 
 ## TypeScript
 
 ### Type Definitions
 
-- Prefer explicit type annotations for function parameters and return types
-- Use `interface` for object shapes, `type` for unions and intersections
-- Export types that are part of the public API with `type` prefix
+- Annotate function parameters and return types explicitly.
+- Use `interface` for object shapes. Use `type` for unions and intersections.
+- Export public API types with the `type` modifier (`export type`).
 
 ### File Structure
 
-- One component/function per file
-- Co-locate related files (component + types + styles)
-- Use index.ts for public API exports
+- Place one component or function per file.
+- Co-locate related files (component, types, styles) in the same directory.
+- Use `index.ts` for public API exports.
 
-## Documentation
+### Documentation
 
-- Add JSDoc for public API functions and types
-- Include `@example` for complex usage
-- Prefer self-documenting code over comments
+- Add JSDoc to public API functions and types.
+- Include `@example` blocks for complex usage.
+- Prefer self-documenting code over comments.
 
 ## Function Declaration Style
 
-### Use `function` Declarations For
+### Use `function` Declarations
+
+Use `function` declarations for the following:
 
 - Exported functions (public API)
 - Top-level functions
 - Component definitions
-- Hooks / Composables / Runes
+- Hooks, composables, and runes
 
 ```typescript
-export function createEditor(options: EditorOptions): Editor { }
-export function useVizelEditor(options: Options): Editor | null { }
+export function createEditor(options: EditorOptions): Editor {}
+export function useVizelEditor(options: Options): Editor | null {}
 ```
 
-### Use Arrow Functions For
+### Use Arrow Functions
 
-- Callbacks (event handlers, promises)
-- Array methods (map, filter, reduce)
+Use arrow functions for the following:
+
+- Callbacks (event handlers, promise resolvers)
+- Array methods (`map`, `filter`, `reduce`)
 - Type guard functions
 
 ```typescript
-editor.on("update", ({ editor }) => { });
+editor.on("update", ({ editor }) => {});
 const filtered = items.filter((item) => item.active);
 const isItem = (v: unknown): v is Item =>
   typeof v === "object" && v !== null && "id" in v;
@@ -62,34 +68,34 @@ const isItem = (v: unknown): v is Item =>
 
 ## Type Safety
 
-### Use `satisfies` Operator
+### Prefer `satisfies` Over Type Annotations
 
-Use `satisfies` to type-check values while preserving inferred types.
+Use `satisfies` to type-check a value while preserving its inferred literal types.
 
 ```typescript
-// GOOD: preserves literal types
+// GOOD: preserves literal types.
 export const defaults = {
   enabled: true,
   minWidth: 100,
 } satisfies Options;
 
-// AVOID: loses literal type inference
-export const defaults: Options = { };
+// AVOID: loses literal type inference.
+export const defaults: Options = {};
 ```
 
-### Use Type Guards Instead of `as` Casts
+### Prefer Type Guards Over `as` Casts
 
-Replace `as` assertions with type guard functions for runtime safety.
+Replace `as` assertions with type guard functions to gain runtime safety.
 
 ```typescript
-// AVOID: unsafe cast
+// AVOID: unsafe cast.
 const action = data as Action | undefined;
 
-// GOOD: runtime validation
+// GOOD: runtime validation.
 const isAction = (v: unknown): v is Action =>
   typeof v === "object" && v !== null && "type" in v;
 
 if (isAction(data)) {
-  data.type; // safely narrowed
+  data.type; // narrowed safely
 }
 ```
