@@ -13,7 +13,7 @@
     "react-dom": "19.2.6"
   },
   "devDependencies": {
-    "@hpcc-js/wasm-graphviz": "^1.21.2",
+    "@hpcc-js/wasm-graphviz": "^1.21.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
