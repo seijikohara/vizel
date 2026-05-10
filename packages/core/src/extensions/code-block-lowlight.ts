@@ -459,5 +459,9 @@ export async function createVizelCodeBlockExtension(
   return [extension] as ReturnType<typeof CodeBlockLowlight.configure>[];
 }
 
-// Re-export the base extension for advanced customization
+/**
+ * Raw `@tiptap/extension-code-block-lowlight` extension, re-exported for
+ * advanced customization. Prefer {@link createVizelCodeBlockExtensions}
+ * unless you need direct access to the underlying Tiptap extension.
+ */
 export { CodeBlockLowlight };

@@ -70,7 +70,10 @@ export interface VizelCollaborationOptions {
   onDisconnect?: () => void;
   /** Callback when initial document sync completes */
   onSynced?: () => void;
-  /** Callback when an error occurs */
+  /**
+   * Callback when an error occurs. The error may be a `VizelError` — narrow
+   * with `isVizelError(error)` to access the structured `code` field.
+   */
   onError?: (error: Error) => void;
   /** Callback when the number of connected peers changes */
   onPeersChange?: (count: number) => void;

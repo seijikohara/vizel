@@ -1,4 +1,7 @@
 // Vizel all-in-one component
+
+// VizelThemeProvider component
+export { useVizelTheme, useVizelThemeSafe } from "../hooks/useVizelTheme.ts";
 export { Vizel, type VizelProps, type VizelRef } from "./Vizel.tsx";
 // VizelBlockMenu component
 export { VizelBlockMenu, type VizelBlockMenuProps } from "./VizelBlockMenu.tsx";
@@ -31,11 +34,8 @@ export { VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.tsx";
 export { VizelFindReplace, type VizelFindReplaceProps } from "./VizelFindReplace.tsx";
 // Icon component
 export { VizelIcon, type VizelIconProps } from "./VizelIcon.tsx";
-export {
-  useVizelIconContext,
-  VizelIconProvider,
-  type VizelIconProviderProps,
-} from "./VizelIconContext.tsx";
+export { useVizelIconContext } from "./VizelIconContext.tsx";
+export { VizelIconProvider, type VizelIconProviderProps } from "./VizelIconProvider.tsx";
 export {
   VizelLinkEditor,
   type VizelLinkEditorProps,
@@ -61,13 +61,7 @@ export {
 } from "./VizelSlashMenu.tsx";
 export { VizelSlashMenuEmpty, type VizelSlashMenuEmptyProps } from "./VizelSlashMenuEmpty.tsx";
 export { VizelSlashMenuItem, type VizelSlashMenuItemProps } from "./VizelSlashMenuItem.tsx";
-// VizelThemeProvider component
-export {
-  useVizelTheme,
-  useVizelThemeSafe,
-  VizelThemeProvider,
-  type VizelThemeProviderProps,
-} from "./VizelThemeProvider.tsx";
+export { VizelThemeProvider, type VizelThemeProviderProps } from "./VizelThemeProvider.tsx";
 // VizelToolbar components
 export { VizelToolbar, type VizelToolbarProps } from "./VizelToolbar.tsx";
 export { VizelToolbarButton, type VizelToolbarButtonProps } from "./VizelToolbarButton.tsx";

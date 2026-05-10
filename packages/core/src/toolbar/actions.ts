@@ -225,7 +225,7 @@ export const vizelDefaultToolbarActions = [
     isEnabled: (editor) => editor.can().setHorizontalRule(),
     run: (editor) => editor.chain().focus().setHorizontalRule().run(),
   },
-] satisfies VizelToolbarAction[];
+] as const satisfies readonly VizelToolbarAction[];
 
 /**
  * Create toolbar actions with locale-specific labels.
@@ -260,7 +260,7 @@ export function createVizelToolbarActions(locale: VizelLocale): VizelToolbarActi
  * Supports both simple actions and dropdown actions.
  */
 export function groupVizelToolbarActions(
-  actions: VizelToolbarActionItem[] = vizelDefaultToolbarActions
+  actions: readonly VizelToolbarActionItem[] = vizelDefaultToolbarActions
 ): VizelToolbarActionItem[][] {
   return groupByConsecutiveField(actions, "group");
 }

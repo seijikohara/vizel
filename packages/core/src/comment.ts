@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+import type { VizelStorageBackend } from "./storage.ts";
 
 // =============================================================================
 // Types
@@ -38,14 +39,11 @@ export interface VizelComment {
 
 /**
  * Storage backend for comments.
- * Use `"localStorage"` for built-in browser storage, or provide a custom backend.
+ *
+ * Aliased to the shared {@link VizelStorageBackend} so all features (auto-save,
+ * comments, version history) accept the same backend shape.
  */
-export type VizelCommentStorage =
-  | "localStorage"
-  | {
-      save: (comments: VizelComment[]) => void | Promise<void>;
-      load: () => VizelComment[] | null | Promise<VizelComment[] | null>;
-    };
+export type VizelCommentStorage = VizelStorageBackend<VizelComment[]>;
 
 /**
  * Configuration options for comment management
@@ -65,7 +63,10 @@ export interface VizelCommentOptions {
   onResolve?: (comment: VizelComment) => void;
   /** Callback when a comment is reopened */
   onReopen?: (comment: VizelComment) => void;
-  /** Callback when an error occurs */
+  /**
+   * Callback when an error occurs. The error may be a `VizelError` — narrow
+   * with `isVizelError(error)` to access the structured `code` field.
+   */
   onError?: (error: Error) => void;
 }
 
@@ -103,6 +104,18 @@ export const VIZEL_DEFAULT_COMMENT_OPTIONS = {
 /**
  * Creates a normalized storage backend for comments
  */
+const isVizelComment = (value: unknown): value is VizelComment => {
+  if (typeof value !== "object" || value === null) return false;
+  const record = value as Record<string, unknown>;
+  return (
+    typeof record.id === "string" &&
+    typeof record.text === "string" &&
+    typeof record.createdAt === "number" &&
+    typeof record.resolved === "boolean" &&
+    Array.isArray(record.replies)
+  );
+};
+
 export function getVizelCommentStorageBackend(
   storage: VizelCommentStorage,
   key: string
@@ -110,27 +123,30 @@ export function getVizelCommentStorageBackend(
   save: (comments: VizelComment[]) => Promise<void>;
   load: () => Promise<VizelComment[]>;
 } {
-  if (storage === "localStorage") {
+  if (storage === "localStorage" || storage === "sessionStorage") {
     return {
       save: (comments: VizelComment[]) => {
-        if (typeof localStorage === "undefined") return Promise.resolve();
-        localStorage.setItem(key, JSON.stringify(comments));
+        if (typeof window === "undefined") return Promise.resolve();
+        try {
+          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
+          storageObject.setItem(key, JSON.stringify(comments));
+        } catch {
+          return Promise.reject(new Error("Failed to write comments to web storage"));
+        }
         return Promise.resolve();
       },
       load: () => {
-        if (typeof localStorage === "undefined") return Promise.resolve([]);
-        const data = localStorage.getItem(key);
-        if (data) {
-          try {
-            const parsed = JSON.parse(data);
-            if (Array.isArray(parsed)) {
-              return Promise.resolve(parsed as VizelComment[]);
-            }
-          } catch {
-            // Invalid data, return empty
-          }
+        if (typeof window === "undefined") return Promise.resolve([]);
+        try {
+          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
+          const data = storageObject.getItem(key);
+          if (!data) return Promise.resolve([]);
+          const parsed: unknown = JSON.parse(data);
+          if (!Array.isArray(parsed)) return Promise.resolve([]);
+          return Promise.resolve(parsed.filter(isVizelComment));
+        } catch {
+          return Promise.resolve([]);
         }
-        return Promise.resolve([]);
       },
     };
   }
@@ -139,9 +155,7 @@ export function getVizelCommentStorageBackend(
     save: async (comments: VizelComment[]) => {
       await storage.save(comments);
     },
-    load: async () => {
-      return (await storage.load()) ?? [];
-    },
+    load: async () => (await storage.load()) ?? [],
   };
 }
 

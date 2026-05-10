@@ -181,10 +181,16 @@ export interface VizelImageUploadWithFileHandlerOptions extends VizelImageOption
 }
 
 /**
- * Create Image extension with upload support using @tiptap/extension-file-handler.
+ * Create Image extension with upload support using
+ * `@tiptap/extension-file-handler`.
  *
- * This is an alternative to createImageUploadExtension that uses the official
- * Tiptap FileHandler extension for more consistent file handling.
+ * This is an alternative to {@link createVizelImageUploadExtensions} that
+ * routes drop/paste through the official Tiptap FileHandler extension. Use
+ * one or the other — never both, since both register an extension named
+ * `imageUpload`.
+ *
+ * @beta The two image-upload entry points may be unified in a future minor
+ * release; see the issue tracker for the consolidation plan.
  *
  * @example
  * ```ts
@@ -317,4 +323,14 @@ export {
   type VizelUploadImageFn,
   validateVizelImageFile,
 } from "../plugins/image-upload.ts";
+/**
+ * Raw `@tiptap/extension-image` extension, re-exported for advanced usage.
+ *
+ * Prefer {@link createVizelImageExtension} or
+ * {@link createVizelImageUploadExtensions} unless you need direct access to
+ * the underlying Tiptap extension. Note that `VizelImage` and
+ * {@link VizelResizableImage} both register the schema node `"image"`; passing
+ * both to a single editor will cause Tiptap to throw a duplicate-node-name
+ * error.
+ */
 export { Image as VizelImage };

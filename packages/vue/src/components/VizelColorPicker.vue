@@ -9,7 +9,7 @@ import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelColorPickerProps {
   /** Color palette to display */
-  colors: VizelColorDefinition[];
+  colors: readonly VizelColorDefinition[];
   /**
    * Currently selected color (v-model supported)
    * @deprecated Use modelValue instead for v-model binding

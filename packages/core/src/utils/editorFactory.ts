@@ -30,15 +30,12 @@ export interface CreateVizelEditorInstanceResult {
 /**
  * Create a configured Vizel editor instance.
  *
- * This is the recommended way for framework packages to create editors.
- * It handles all common setup including:
- * - Resolving feature options
- * - Creating extensions
- * - Setting up initial content (JSON or Markdown)
- * - Configuring editor props and callbacks
- *
- * @param options - Editor configuration options
- * @returns The created editor instance and extracted options
+ * Intended for internal framework integrations. End users should prefer the
+ * framework primitives (`useVizelEditor` in `@vizel/react`/`@vizel/vue`,
+ * `createVizelEditor` in `@vizel/svelte`) which call this helper for them.
+ * The signature requires a `createSlashMenuRenderer` parameter that only
+ * framework packages can provide, and the function may change between minor
+ * releases.
  *
  * @example
  * ```typescript
@@ -73,6 +70,13 @@ export async function createVizelEditorInstance(
     onFocus,
     onBlur,
   } = options;
+
+  if (initialContent !== undefined && initialMarkdown !== undefined) {
+    console.warn(
+      "[Vizel] Both initialContent and initialMarkdown were provided. " +
+        "initialMarkdown takes precedence; initialContent will be ignored."
+    );
+  }
 
   // Resolve features with slash menu renderer
   const resolvedFeatures = resolveVizelFeatures({

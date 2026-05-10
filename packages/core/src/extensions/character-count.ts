@@ -3,10 +3,11 @@ import CharacterCount from "@tiptap/extension-character-count";
 
 export interface VizelCharacterCountOptions {
   /**
-   * The maximum number of characters allowed. Set to 0 or null for unlimited.
-   * @default null
+   * The maximum number of characters allowed. Omit (or pass `0`) to leave the
+   * count unlimited.
+   * @default undefined
    */
-  limit?: number | null;
+  limit?: number;
   /**
    * The counting mode.
    * - 'textSize': Count characters in the text content only
@@ -56,14 +57,18 @@ export interface VizelCharacterCountStorage {
 export function createVizelCharacterCountExtension(
   options: VizelCharacterCountOptions = {}
 ): Extension {
-  const { limit = null, mode = "textSize", wordCounter } = options;
+  const { limit, mode = "textSize", wordCounter } = options;
 
   return CharacterCount.configure({
-    limit,
+    limit: limit ?? null,
     mode,
     ...(wordCounter !== undefined && { wordCounter }),
   });
 }
 
-// Re-export for advanced usage
+/**
+ * Raw `@tiptap/extension-character-count` extension, re-exported for
+ * advanced usage. Prefer {@link createVizelCharacterCountExtension} unless
+ * you need direct access to the underlying Tiptap extension.
+ */
 export { CharacterCount };

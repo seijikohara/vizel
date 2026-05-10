@@ -16,11 +16,6 @@ export interface VizelDetailsNodeOptions {
    * HTML attributes to add to the details element
    */
   HTMLAttributes?: Record<string, unknown>;
-  /**
-   * Whether the details should be open by default
-   * @default false
-   */
-  openByDefault?: boolean;
 }
 
 /**
@@ -69,7 +64,7 @@ export interface VizelDetailsOptions {
  * import { createVizelDetailsExtensions } from '@vizel/core'
  *
  * const extensions = createVizelDetailsExtensions({
- *   details: { openByDefault: false }
+ *   details: { HTMLAttributes: { "data-testid": "details" } }
  * })
  * ```
  */
@@ -125,5 +120,10 @@ export function createVizelDetailsExtensions(options: VizelDetailsOptions = {}):
   ];
 }
 
-// Re-export for advanced usage
+/**
+ * Raw `@tiptap/extension-details` extensions, re-exported for advanced usage.
+ *
+ * Prefer {@link createVizelDetailsExtensions} unless you need direct access
+ * to the underlying Tiptap extensions.
+ */
 export { Details, DetailsContent, DetailsSummary };

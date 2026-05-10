@@ -13,6 +13,11 @@
     "noEmit": true,
 
     "strict": true,
+    // skipLibCheck is enabled because the @tiptap/* peer dependencies emit
+    // declaration files that occasionally conflict with each other across
+    // patch versions; turning it off would surface upstream errors that
+    // consumers of @vizel/* cannot fix here. This is a deliberate trade-off,
+    // not an oversight.
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,

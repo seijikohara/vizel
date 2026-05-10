@@ -249,5 +249,10 @@ export function createVizelImageFileHandlers(
   };
 }
 
-// Re-export the base FileHandler for advanced usage
+/**
+ * Raw `@tiptap/extension-file-handler` extension, re-exported for advanced
+ * usage. Prefer {@link createVizelFileHandlerExtension} or
+ * {@link createVizelImageFileHandlers} unless you need direct access to the
+ * underlying Tiptap extension.
+ */
 export { FileHandler };

@@ -39,7 +39,12 @@ import { getVizelIconContext } from "./VizelIconContext.js";
 const { name, customIcons, width, height, color, class: className }: VizelIconProps = $props();
 const { customIcons: contextIcons } = getVizelIconContext();
 
-const iconId = $derived(customIcons?.[name] ?? contextIcons?.[name] ?? vizelDefaultIconIds[name]);
+const iconId = $derived(
+  customIcons?.[name] ??
+    contextIcons?.[name] ??
+    vizelDefaultIconIds[name as keyof typeof vizelDefaultIconIds] ??
+    name
+);
 
 // Build props object excluding undefined values to satisfy exactOptionalPropertyTypes
 const iconProps = $derived.by(() => {
