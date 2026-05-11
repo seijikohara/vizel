@@ -1,8 +1,6 @@
 <script lang="ts" module>
-import type { VizelThemeProviderOptions, VizelThemeState } from "@vizel/core";
+import type { VizelThemeProviderOptions } from "@vizel/core";
 import type { Snippet } from "svelte";
-
-export const VIZEL_THEME_CONTEXT_KEY = Symbol("VizelThemeContext");
 
 export interface VizelThemeProviderProps extends VizelThemeProviderOptions {
   /** Children to render */
@@ -22,8 +20,10 @@ export interface VizelThemeProviderProps extends VizelThemeProviderOptions {
     storeVizelTheme,
     type VizelResolvedTheme,
     type VizelTheme,
+    type VizelThemeState,
   } from "@vizel/core";
   import { setContext } from "svelte";
+  import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext.ts";
 
   let {
     children,

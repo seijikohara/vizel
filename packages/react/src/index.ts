@@ -19,8 +19,6 @@ export {
   useVizelContext,
   useVizelContextSafe,
   useVizelIconContext,
-  useVizelTheme,
-  useVizelThemeSafe,
   // Vizel all-in-one
   Vizel,
   // BlockMenu
@@ -118,6 +116,8 @@ export {
   useVizelEditorState,
   useVizelMarkdown,
   useVizelState,
+  useVizelTheme,
+  useVizelThemeSafe,
   useVizelVersionHistory,
   type VizelSlashMenuRendererOptions,
 } from "./hooks/index.ts";

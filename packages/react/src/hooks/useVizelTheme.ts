@@ -22,13 +22,7 @@ export function useVizelTheme(): VizelThemeState {
   const context = useContext(VizelThemeContext);
 
   if (!context) {
-    throw new Error(
-      "[Vizel] useVizelTheme must be used within a VizelThemeProvider.\n" +
-        "Example:\n" +
-        "  <VizelThemeProvider>\n" +
-        "    <YourComponent />\n" +
-        "  </VizelThemeProvider>"
-    );
+    throw new Error("useVizelTheme must be used within a VizelThemeProvider");
   }
 
   return context;

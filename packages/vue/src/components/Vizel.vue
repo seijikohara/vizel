@@ -177,7 +177,7 @@ defineExpose<VizelRef & { getEditor: () => Editor | null }>({
       <slot name="toolbar" :editor="editor" />
     </VizelToolbar>
     <VizelToolbar v-else-if="showToolbar && editor" :editor="editor" v-bind="props.locale ? { locale: props.locale } : {}" />
-    <VizelEditor v-if="editor" :editor="editor" />
+    <VizelEditor :editor="editor" />
     <VizelBubbleMenu v-if="showBubbleMenu && editor && slots['bubble-menu']" :editor="editor" :enable-embed="enableEmbed ?? false" v-bind="props.locale ? { locale: props.locale } : {}">
       <slot name="bubble-menu" :editor="editor" />
     </VizelBubbleMenu>

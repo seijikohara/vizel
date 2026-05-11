@@ -1,7 +1,4 @@
 // Vizel all-in-one component
-
-// VizelThemeProvider component
-export { useVizelTheme, useVizelThemeSafe } from "../hooks/useVizelTheme.ts";
 export { Vizel, type VizelProps, type VizelRef } from "./Vizel.tsx";
 // VizelBlockMenu component
 export { VizelBlockMenu, type VizelBlockMenuProps } from "./VizelBlockMenu.tsx";

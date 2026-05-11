@@ -10,13 +10,8 @@ import VizelIcon from "./VizelIcon.vue";
 export interface VizelColorPickerProps {
   /** Color palette to display */
   colors: readonly VizelColorDefinition[];
-  /**
-   * Currently selected color (v-model supported)
-   * @deprecated Use modelValue instead for v-model binding
-   */
+  /** Currently selected color */
   value?: string;
-  /** Currently selected color for v-model binding */
-  modelValue?: string;
   /** Label for accessibility */
   label?: string;
   /** Custom class name */
@@ -52,14 +47,11 @@ const props = withDefaults(defineProps<VizelColorPickerProps>(), {
 });
 
 const emit = defineEmits<{
-  /** @deprecated Use update:modelValue for v-model binding */
+  /** Emitted when the selected color changes */
   change: [color: string];
-  /** Emitted when the selected color changes (v-model) */
-  "update:modelValue": [color: string];
 }>();
 
-// Support both value and modelValue for backwards compatibility
-const currentValue = computed(() => props.modelValue ?? props.value);
+const currentValue = computed(() => props.value);
 
 const GRID_COLUMNS = 4;
 
@@ -106,7 +98,6 @@ function isNoneValue(color: string): boolean {
 // Handle swatch selection
 function handleSelect(color: string) {
   emit("change", color);
-  emit("update:modelValue", color);
   inputValue.value = "";
 }
 
@@ -115,7 +106,6 @@ function handleInputSubmit() {
   const normalized = normalizeVizelHexColor(inputValue.value);
   if (isVizelValidHexColor(normalized)) {
     emit("change", normalized);
-    emit("update:modelValue", normalized);
     inputValue.value = "";
   }
 }

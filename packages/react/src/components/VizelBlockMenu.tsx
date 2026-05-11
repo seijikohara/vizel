@@ -19,9 +19,9 @@ import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelBlockMenuProps {
   /** Custom block menu actions (replaces defaults) */
-  actions?: VizelBlockMenuAction[];
+  actions?: readonly VizelBlockMenuAction[];
   /** Custom node types for "Turn into" submenu */
-  nodeTypes?: VizelNodeTypeOption[];
+  nodeTypes?: readonly VizelNodeTypeOption[];
   /** Additional class name */
   className?: string;
   /** Locale for translated UI strings */
