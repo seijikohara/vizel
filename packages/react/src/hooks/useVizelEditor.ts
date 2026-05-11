@@ -17,11 +17,6 @@ export type UseVizelEditorOptions = VizelCreateEditorOptions;
 /**
  * React hook to create and manage a Vizel editor instance.
  *
- * The editor is created once on mount using the initial options. Subsequent
- * option changes (other than callbacks) are ignored to avoid recreating the
- * underlying Tiptap instance. Callbacks are read through a ref so they always
- * reflect the latest render.
- *
  * @example
  * ```tsx
  * const editor = useVizelEditor({
@@ -51,11 +46,6 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
   const imageOptions = typeof features?.image === "object" ? features.image : {};
   const imageOptionsRef = useRef(imageOptions);
   imageOptionsRef.current = imageOptions;
-
-  // Refresh the latest onError on every render so callbacks observed during
-  // async editor initialization are not stale.
-  const onErrorRef = useRef(editorOptions.onError);
-  onErrorRef.current = editorOptions.onError;
 
   // Store options in ref to avoid recreating editor on every render
   const optionsRef = useRef({
@@ -91,11 +81,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
           context: "Editor initialization failed",
           code: "EDITOR_INIT_FAILED",
         });
-        // Notify the latest `onError` observer before rethrowing. `onError` is
-        // observation-only; the error is always rethrown so global handlers
-        // (Sentry, test runners' `unhandledrejection` listeners) can see
-        // initialization failures.
-        onErrorRef.current?.(vizelError);
+        opts.editorOptions.onError?.(vizelError);
         throw vizelError;
       }
     })();

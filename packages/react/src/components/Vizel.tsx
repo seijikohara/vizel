@@ -1,20 +1,60 @@
 import {
   type Editor,
+  type Extensions,
   getVizelMarkdown,
+  type JSONContent,
   setVizelMarkdown,
-  type VizelEditorOptions,
+  type VizelError,
+  type VizelFeatureOptions,
+  type VizelLocale,
+  type VizelMarkdownFlavor,
 } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useEffect, useImperativeHandle, useRef } from "react";
-import { type UseVizelEditorOptions, useVizelEditor } from "../hooks/useVizelEditor.ts";
+import { useVizelEditor } from "../hooks/useVizelEditor.ts";
 import { VizelBlockMenu } from "./VizelBlockMenu.tsx";
 import { VizelBubbleMenu } from "./VizelBubbleMenu.tsx";
 import { VizelEditor } from "./VizelEditor.tsx";
 import { VizelToolbar } from "./VizelToolbar.tsx";
 
-export interface VizelProps extends UseVizelEditorOptions {
+export interface VizelProps {
   /** Ref to access editor instance */
   ref?: Ref<VizelRef>;
+  /** Initial content in JSON format */
+  initialContent?: JSONContent;
+  /**
+   * Initial content in Markdown format.
+   * If both initialContent and initialMarkdown are provided, initialMarkdown takes precedence.
+   * @example
+   * ```tsx
+   * <Vizel initialMarkdown="# Hello World\n\nThis is **bold** text." />
+   * ```
+   */
+  initialMarkdown?: string;
+  /**
+   * Automatically transform diagram code blocks (mermaid, graphviz) to diagram nodes
+   * when importing markdown content. Only applies when initialMarkdown is provided.
+   * @default true
+   */
+  transformDiagramsOnImport?: boolean;
+  /** Placeholder text when editor is empty */
+  placeholder?: string;
+  /** Whether the editor is editable (default: true) */
+  editable?: boolean;
+  /** Auto focus on mount */
+  autofocus?: boolean | "start" | "end" | "all" | number;
+  /** Feature configuration */
+  features?: VizelFeatureOptions;
+  /**
+   * Markdown output flavor.
+   * Controls how Markdown is serialized when exporting content.
+   * @default "gfm"
+   */
+  flavor?: VizelMarkdownFlavor;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
+  /** Additional Tiptap extensions */
+  extensions?: Extensions;
   /** Custom class name for the editor container */
   className?: string;
   /** Whether to show the toolbar (default: false) */
@@ -46,15 +86,24 @@ export interface VizelProps extends UseVizelEditorOptions {
    * Use together with `markdown` for controlled mode.
    */
   onMarkdownChange?: (markdown: string) => void;
+  /** Callback when content changes */
+  onUpdate?: (props: { editor: Editor }) => void;
+  /** Callback when editor is created */
+  onCreate?: (props: { editor: Editor }) => void;
+  /** Callback when editor is destroyed */
+  onDestroy?: () => void;
+  /** Callback when selection changes */
+  onSelectionUpdate?: (props: { editor: Editor }) => void;
+  /** Callback when editor gets focus */
+  onFocus?: (props: { editor: Editor }) => void;
+  /** Callback when editor loses focus */
+  onBlur?: (props: { editor: Editor }) => void;
+  /**
+   * Callback when an error occurs during editor operations.
+   * Provides structured error information for logging or user feedback.
+   */
+  onError?: (error: VizelError) => void;
 }
-
-// Compile-time check: VizelProps must keep covering every field of
-// VizelEditorOptions, so the all-in-one component never silently lags behind
-// the underlying hook.
-type AssertVizelPropsCoversEditorOptions =
-  Required<VizelEditorOptions> extends Pick<VizelProps, keyof VizelEditorOptions> ? true : never;
-const ASSERT_VIZEL_PROPS_COVERS_EDITOR_OPTIONS = true satisfies AssertVizelPropsCoversEditorOptions;
-void ASSERT_VIZEL_PROPS_COVERS_EDITOR_OPTIONS;
 
 export interface VizelRef {
   /** The underlying Tiptap editor instance */
@@ -100,6 +149,16 @@ export interface VizelRef {
  */
 export function Vizel({
   ref,
+  initialContent,
+  initialMarkdown,
+  transformDiagramsOnImport = true,
+  placeholder,
+  editable = true,
+  autofocus = false,
+  features,
+  flavor,
+  locale,
+  extensions,
   className,
   showToolbar = false,
   toolbarContent,
@@ -110,9 +169,13 @@ export function Vizel({
   markdown,
   onMarkdownChange,
   onUpdate,
-  ...editorOptions
+  onCreate,
+  onDestroy,
+  onSelectionUpdate,
+  onFocus,
+  onBlur,
+  onError,
 }: VizelProps): ReactNode {
-  const { locale, transformDiagramsOnImport = true } = editorOptions;
   // Track whether we're currently updating from external markdown change
   const isUpdatingFromMarkdownRef = useRef(false);
 
@@ -127,7 +190,16 @@ export function Vizel({
   onUpdateRef.current = onUpdate;
 
   const editor = useVizelEditor({
-    ...editorOptions,
+    ...(initialContent !== undefined && { initialContent }),
+    ...(initialMarkdown !== undefined && { initialMarkdown }),
+    transformDiagramsOnImport,
+    ...(placeholder !== undefined && { placeholder }),
+    editable,
+    autofocus,
+    ...(features !== undefined && { features }),
+    ...(flavor !== undefined && { flavor }),
+    ...(locale !== undefined && { locale }),
+    ...(extensions !== undefined && { extensions }),
     onUpdate: (e) => {
       onUpdateRef.current?.(e);
       // Update markdown if not updating from external change
@@ -135,6 +207,12 @@ export function Vizel({
         onMarkdownChangeRef.current?.(getVizelMarkdown(e.editor));
       }
     },
+    ...(onCreate !== undefined && { onCreate }),
+    ...(onDestroy !== undefined && { onDestroy }),
+    ...(onSelectionUpdate !== undefined && { onSelectionUpdate }),
+    ...(onFocus !== undefined && { onFocus }),
+    ...(onBlur !== undefined && { onBlur }),
+    ...(onError !== undefined && { onError }),
   });
 
   // Watch for external markdown changes (controlled mode)
