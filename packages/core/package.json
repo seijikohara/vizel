@@ -146,7 +146,7 @@
     "fuse.js": "^7.3.0",
     "sass": "^1.99.0",
     "vite": "^8.0.9",
-    "vite-plugin-dts": "^4.5.4"
+    "vite-plugin-dts": "^5.0.0"
   },
   "dependencies": {
     "@tiptap/extension-list": "^3.22.4",
