@@ -42,6 +42,10 @@ export interface VizelIconProps extends Omit<ComponentProps<typeof IconifyIcon>,
  */
 export function VizelIcon({ name, customIcons, style, ...props }: VizelIconProps) {
   const { customIcons: contextIcons } = useVizelIconContext();
-  const iconId = customIcons?.[name] ?? contextIcons?.[name] ?? vizelDefaultIconIds[name];
+  const iconId =
+    customIcons?.[name] ??
+    contextIcons?.[name] ??
+    vizelDefaultIconIds[name as keyof typeof vizelDefaultIconIds] ??
+    name;
   return <IconifyIcon icon={iconId} style={{ pointerEvents: "none", ...style }} {...props} />;
 }

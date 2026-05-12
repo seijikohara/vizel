@@ -123,11 +123,10 @@ let {
 // Track whether we're currently updating from external markdown change
 let isUpdatingFromMarkdown = false;
 
-// Wrap onUpdate to sync markdown
-// svelte-ignore state_referenced_locally
-const originalOnUpdate = restProps.onUpdate;
+// Wrap onUpdate to sync markdown. Read restProps.onUpdate inside the
+// callback (not via a captured local) so later prop changes are picked up.
 const wrappedOnUpdate = (e: { editor: import("@vizel/core").Editor }) => {
-  originalOnUpdate?.(e);
+  restProps.onUpdate?.(e);
   // Update markdown binding if not updating from external change
   if (!isUpdatingFromMarkdown && markdown !== undefined) {
     markdown = getVizelMarkdown(e.editor);

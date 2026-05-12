@@ -19,7 +19,7 @@ export interface VizelToolbarDefaultProps {
   editor: Editor;
   className?: string;
   /** Custom toolbar actions — supports both simple actions and dropdown actions */
-  actions?: VizelToolbarActionItem[];
+  actions?: readonly VizelToolbarActionItem[];
   /** Locale for translated labels */
   locale?: VizelLocale;
 }
@@ -45,7 +45,7 @@ export function VizelToolbarDefault({
   // Subscribe to editor state changes to update active/enabled states
   useVizelState(() => editor);
 
-  const effectiveActions: VizelToolbarActionItem[] =
+  const effectiveActions: readonly VizelToolbarActionItem[] =
     actions ?? (locale ? createVizelToolbarActions(locale) : vizelDefaultToolbarActions);
   const groups = groupVizelToolbarActions(effectiveActions);
 

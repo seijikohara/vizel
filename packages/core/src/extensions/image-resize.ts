@@ -22,8 +22,15 @@ export interface VizelResizableImageOptions {
 /**
  * ResizableImage Extension
  *
- * Extends the base Image extension with resize handles.
- * Uses a NodeView to wrap images with draggable resize handles.
+ * Extends the base Image extension with resize handles. Uses a NodeView to
+ * wrap images with draggable resize handles.
+ *
+ * @remarks This extension registers the schema node `"image"`, the same node
+ * name as `VizelImage`. Pass only one of the two to the editor — passing
+ * both will cause Tiptap to throw a duplicate-node-name error.
+ *
+ * Prefer composing through {@link createVizelImageUploadExtensions} which
+ * handles the resize / non-resize choice for you.
  */
 export const VizelResizableImage = Image.extend<VizelResizableImageOptions>({
   name: "image",
@@ -179,9 +186,11 @@ export const VizelResizableImage = Image.extend<VizelResizableImageOptions>({
         document.body.style.cursor = "";
         document.body.style.userSelect = "";
 
-        // Update the node attributes - only save width, height is auto
+        // Update the node attributes - only save width, height is auto. The
+        // editor may have been destroyed mid-drag (e.g. component unmount), so
+        // guard against accessing commands on a torn-down instance.
         const pos = typeof getPos === "function" ? getPos() : null;
-        if (pos != null && editor.isEditable) {
+        if (pos != null && !editor.isDestroyed && editor.isEditable) {
           const newWidth = Math.round(img.offsetWidth);
 
           editor.commands.updateAttributes("image", {
@@ -225,6 +234,14 @@ export const VizelResizableImage = Image.extend<VizelResizableImageOptions>({
           // Clean up any lingering document listeners
           document.removeEventListener("mousemove", onMouseMove);
           document.removeEventListener("mouseup", onMouseUp);
+          // Restore body styles if the node view is destroyed mid-drag, so
+          // the document does not stay stuck with a resize cursor and
+          // disabled text selection.
+          if (isResizing) {
+            isResizing = false;
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+          }
         },
       };
     };

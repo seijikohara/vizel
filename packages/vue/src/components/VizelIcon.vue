@@ -34,7 +34,10 @@ const { customIcons: contextIcons } = useVizelIconContext();
 
 const iconId = computed(
   () =>
-    props.customIcons?.[props.name] ?? contextIcons?.[props.name] ?? vizelDefaultIconIds[props.name]
+    props.customIcons?.[props.name] ??
+    contextIcons?.[props.name] ??
+    vizelDefaultIconIds[props.name as keyof typeof vizelDefaultIconIds] ??
+    props.name
 );
 </script>
 

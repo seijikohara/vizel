@@ -30,8 +30,9 @@ export interface VizelIconProviderProps {
 
 const props = defineProps<VizelIconProviderProps>();
 
-// Provide icons to all descendants
-provideVizelIcons(props.icons);
+// Provide icons to all descendants. Wrap the prop access in a getter so the
+// injected context updates when `icons` changes after mount.
+provideVizelIcons(() => props.icons);
 </script>
 
 <template>

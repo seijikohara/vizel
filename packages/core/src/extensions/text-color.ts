@@ -4,19 +4,27 @@ import { Highlight } from "@tiptap/extension-highlight";
 import { TextStyle } from "@tiptap/extension-text-style";
 
 /**
+ * A CSS color value accepted by Vizel's color palettes. Either a hex literal
+ * (`#rgb`, `#rrggbb`, or `#rrggbbaa`), the keyword `"inherit"`, or
+ * `"transparent"`. Any other string is still accepted at runtime but loses
+ * autocompletion.
+ */
+export type VizelColorValue = `#${string}` | "inherit" | "transparent" | (string & {});
+
+/**
  * Color definition for text color and highlight
  */
 export interface VizelColorDefinition {
   /** Display name for the color */
   name: string;
   /** CSS color value */
-  color: string;
+  color: VizelColorValue;
 }
 
 /**
  * Extended text color palette with gradient-like arrangement
  */
-export const VIZEL_TEXT_COLORS: VizelColorDefinition[] = [
+export const VIZEL_TEXT_COLORS: readonly VizelColorDefinition[] = [
   // Row 1: Grayscale
   { name: "Default", color: "inherit" },
   { name: "Dark Gray", color: "#374151" },
@@ -47,7 +55,7 @@ export const VIZEL_TEXT_COLORS: VizelColorDefinition[] = [
 /**
  * Extended highlight color palette (lighter/pastel colors)
  */
-export const VIZEL_HIGHLIGHT_COLORS: VizelColorDefinition[] = [
+export const VIZEL_HIGHLIGHT_COLORS: readonly VizelColorDefinition[] = [
   // Row 1: Basics
   { name: "None", color: "transparent" },
   { name: "Light Gray", color: "#e5e7eb" },
@@ -88,7 +96,10 @@ export function getVizelRecentColors(type: "textColor" | "highlight"): string[] 
   if (typeof window === "undefined") return [];
   try {
     const stored = localStorage.getItem(`${RECENT_COLORS_KEY}-${type}`);
-    return stored ? JSON.parse(stored) : [];
+    if (!stored) return [];
+    const parsed: unknown = JSON.parse(stored);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is string => typeof item === "string");
   } catch {
     return [];
   }
@@ -116,9 +127,9 @@ export function addVizelRecentColor(type: "textColor" | "highlight", color: stri
  */
 export interface VizelTextColorOptions {
   /** Custom text color palette */
-  textColors?: VizelColorDefinition[];
+  textColors?: readonly VizelColorDefinition[];
   /** Custom highlight color palette */
-  highlightColors?: VizelColorDefinition[];
+  highlightColors?: readonly VizelColorDefinition[];
   /** Enable multicolor highlights (allows any color) */
   multicolor?: boolean;
 }

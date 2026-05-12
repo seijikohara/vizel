@@ -67,4 +67,9 @@ export function createVizelLinkExtension(options: VizelLinkOptions = {}) {
   });
 }
 
+/**
+ * Raw `@tiptap/extension-link` extension, re-exported for advanced usage.
+ * Prefer {@link createVizelLinkExtension} unless you need direct access to
+ * the underlying Tiptap extension.
+ */
 export { Link };

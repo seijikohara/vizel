@@ -60,7 +60,13 @@ export interface VizelLocale {
   slashMenu: {
     /** No results message */
     noResults: string;
-    /** Group names */
+    /**
+     * Group labels.
+     *
+     * The six built-in groups are required so the bundled commands always
+     * have a label. Additional string keys are accepted to label
+     * user-defined groups.
+     */
     groups: {
       text: string;
       lists: string;
@@ -68,6 +74,7 @@ export interface VizelLocale {
       media: string;
       navigation: string;
       advanced: string;
+      [customGroupName: string]: string;
     };
     /** Item titles and descriptions */
     items: {
@@ -255,12 +262,12 @@ export interface SlashItemText {
  * };
  * ```
  */
-export type VizelLocalePartial = {
-  [K in keyof VizelLocale]?: VizelLocale[K] extends object
-    ? {
-        [P in keyof VizelLocale[K]]?: VizelLocale[K][P] extends object
-          ? { [Q in keyof VizelLocale[K][P]]?: VizelLocale[K][P][Q] }
-          : VizelLocale[K][P];
-      }
-    : VizelLocale[K];
-};
+type VizelDeepPartial<T> = T extends (...args: never[]) => unknown
+  ? T
+  : T extends (infer U)[]
+    ? VizelDeepPartial<U>[]
+    : T extends object
+      ? { [K in keyof T]?: VizelDeepPartial<T[K]> }
+      : T;
+
+export type VizelLocalePartial = VizelDeepPartial<VizelLocale>;

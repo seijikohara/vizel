@@ -144,6 +144,10 @@ export type VizelInternalIconName =
 
 /**
  * All icon names used in Vizel.
+ *
+ * The intersection with `(string & {})` keeps the literal autocompletion
+ * provided by the union members while still allowing user-supplied icon ids
+ * resolved through `VizelIconProvider`.
  */
 export type VizelIconName =
   | VizelSlashCommandIconName
@@ -153,7 +157,8 @@ export type VizelIconName =
   | VizelBubbleMenuIconName
   | VizelBlockMenuIconName
   | VizelToolbarIconName
-  | VizelInternalIconName;
+  | VizelInternalIconName
+  | (string & {});
 
 /**
  * Custom icon mappings to override default Iconify icon IDs.
@@ -276,7 +281,12 @@ export function getVizelIconId(
   name: VizelIconName,
   customIcons?: Partial<Record<VizelIconName, string>>
 ): string {
-  return customIcons?.[name] ?? vizelDefaultIconIds[name];
+  // For user-supplied icon names (anything outside the built-in union), the
+  // default mapping is empty; assume the name itself is already a valid
+  // Iconify id (e.g. "ph:robot"), so fall back to it.
+  return (
+    customIcons?.[name] ?? vizelDefaultIconIds[name as keyof typeof vizelDefaultIconIds] ?? name
+  );
 }
 
 /**

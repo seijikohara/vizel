@@ -19,7 +19,7 @@
  * // => [[{ group: "a", ... }, { group: "a", ... }], [{ group: "b", ... }]]
  * ```
  */
-export function groupByConsecutiveField<T>(items: T[], field: keyof T & string): T[][] {
+export function groupByConsecutiveField<T>(items: readonly T[], field: keyof T & string): T[][] {
   const groups: T[][] = [];
   let currentValue: unknown = Symbol("initial");
   let currentGroup: T[] = [];

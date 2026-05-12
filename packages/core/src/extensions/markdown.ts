@@ -1,3 +1,4 @@
+import type { Extension } from "@tiptap/core";
 import { type MarkdownExtensionOptions, Markdown as TiptapMarkdown } from "@tiptap/markdown";
 
 /**
@@ -68,7 +69,7 @@ export interface VizelMarkdownOptions {
  */
 export function createVizelMarkdownExtension(
   options: VizelMarkdownOptions = {}
-): ReturnType<typeof TiptapMarkdown.configure> {
+): Extension<MarkdownExtensionOptions> {
   const { indentation = { style: "space", size: 2 }, gfm = true, breaks = false } = options;
 
   const markedOptions: MarkdownExtensionOptions["markedOptions"] = {
@@ -93,4 +94,10 @@ export function createVizelMarkdownExtension(
 export const VizelMarkdown = createVizelMarkdownExtension();
 
 // Re-export the extension type for advanced usage
+/**
+ * Raw `@tiptap/markdown` extension, re-exported for advanced usage.
+ *
+ * Prefer {@link createVizelMarkdownExtension} or {@link VizelMarkdown} unless
+ * you need to access the underlying Tiptap extension directly.
+ */
 export { TiptapMarkdown };

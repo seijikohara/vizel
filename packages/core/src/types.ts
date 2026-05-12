@@ -43,8 +43,17 @@ export interface VizelImageFeatureOptions extends Partial<VizelImageUploadPlugin
 
 /**
  * Feature configuration for Vizel editor.
- * All features are enabled by default.
- * Set to `true` to enable with defaults, `false` to disable, or pass options to configure.
+ *
+ * Each field accepts one of three forms:
+ *
+ * - `true` — enable the feature with default options (also the default when
+ *   the field is omitted, except for `mention` and `collaboration` which
+ *   default to `false`).
+ * - `false` — disable the feature.
+ * - an options object — enable the feature with custom options.
+ *
+ * The `true`/options-object forms are equivalent in behavior; the latter is
+ * preferred when overriding any non-default option.
  */
 export interface VizelFeatureOptions {
   /** Slash command menu (type "/" to open) */
@@ -137,11 +146,21 @@ export interface VizelEditorOptions {
    * @default "gfm"
    */
   flavor?: VizelMarkdownFlavor;
-  /** Initial content in JSON format */
+  /**
+   * Initial content in JSON format.
+   *
+   * Mutually exclusive with {@link VizelEditorOptions.initialMarkdown}. If
+   * both are provided, `initialMarkdown` wins and a warning is emitted at
+   * editor creation time.
+   */
   initialContent?: JSONContent;
   /**
    * Initial content in Markdown format.
-   * If both initialContent and initialMarkdown are provided, initialMarkdown takes precedence.
+   *
+   * Mutually exclusive with {@link VizelEditorOptions.initialContent}. If
+   * both are provided, `initialMarkdown` wins and a warning is emitted at
+   * editor creation time.
+   *
    * @example
    * ```typescript
    * const editor = useVizelEditor({
@@ -213,10 +232,15 @@ export interface VizelMarkdownSyncOptions {
 }
 
 /**
- * Result of Markdown synchronization
+ * Result of Markdown synchronization.
+ *
+ * Each framework-specific composable/hook/rune returns a result that
+ * structurally satisfies this interface (with framework-idiomatic reactive
+ * wrappers for `markdown` and `isPending`). The `flush` method is included
+ * so all frameworks expose the same surface.
  */
 export interface VizelMarkdownSyncResult {
-  /** Current markdown content (reactive) */
+  /** Current markdown content (reactive in framework wrappers) */
   markdown: string;
   /**
    * Set markdown content to the editor.
@@ -225,6 +249,8 @@ export interface VizelMarkdownSyncResult {
   setMarkdown: (markdown: string) => void;
   /** Whether markdown export is currently pending (debounced) */
   isPending: boolean;
+  /** Force any pending debounced markdown export to run immediately. */
+  flush: () => void;
 }
 
 /**

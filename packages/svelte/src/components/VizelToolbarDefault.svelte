@@ -7,7 +7,7 @@ export interface VizelToolbarDefaultProps {
   /** Custom class name */
   class?: string;
   /** Custom toolbar actions — supports both simple actions and dropdown actions */
-  actions?: VizelToolbarActionItem[];
+  actions?: readonly VizelToolbarActionItem[];
   /** Locale for translated UI strings */
   locale?: VizelLocale;
 }

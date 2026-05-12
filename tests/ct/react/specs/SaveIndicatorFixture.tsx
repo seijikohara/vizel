@@ -1,7 +1,8 @@
-import { type SaveStatus, VizelSaveIndicator } from "@vizel/react";
+import type { VizelSaveStatus } from "@vizel/core";
+import { VizelSaveIndicator } from "@vizel/react";
 
 interface SaveIndicatorFixtureProps {
-  status: SaveStatus;
+  status: VizelSaveStatus;
   lastSaved?: Date | null;
   showTimestamp?: boolean;
   className?: string;

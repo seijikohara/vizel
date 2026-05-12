@@ -37,7 +37,8 @@
     ".": {
       "types": "./dist/index.d.ts",
       "svelte": "./dist/index.js",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "files": [
@@ -56,18 +57,18 @@
   },
   "devDependencies": {
     "@sveltejs/package": "^2.5.7",
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
-    "@tiptap/extension-bold": "^3.22.4",
-    "@tiptap/extension-code": "^3.22.4",
-    "@tiptap/extension-color": "^3.22.4",
-    "@tiptap/extension-highlight": "^3.22.4",
-    "@tiptap/extension-italic": "^3.22.4",
-    "@tiptap/extension-strike": "^3.22.4",
-    "@tiptap/extension-subscript": "^3.22.4",
-    "@tiptap/extension-superscript": "^3.22.4",
-    "@tiptap/extension-text-style": "^3.22.4",
-    "@tiptap/extension-underline": "^3.22.4",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tiptap/extension-bold": "^3.23.1",
+    "@tiptap/extension-code": "^3.23.1",
+    "@tiptap/extension-color": "^3.23.1",
+    "@tiptap/extension-highlight": "^3.23.1",
+    "@tiptap/extension-italic": "^3.23.1",
+    "@tiptap/extension-strike": "^3.23.1",
+    "@tiptap/extension-subscript": "^3.23.1",
+    "@tiptap/extension-superscript": "^3.23.1",
+    "@tiptap/extension-text-style": "^3.23.1",
+    "@tiptap/extension-underline": "^3.23.1",
     "@vizel/core": "workspace:^",
-    "svelte-check": "^4.4.6"
+    "svelte-check": "^4.4.8"
   }
 }

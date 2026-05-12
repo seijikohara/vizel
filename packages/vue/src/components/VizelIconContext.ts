@@ -1,6 +1,6 @@
 import type { CustomIconMap, VizelIconContextValue } from "@vizel/core";
-import type { InjectionKey } from "vue";
-import { inject, provide } from "vue";
+import type { InjectionKey, MaybeRefOrGetter } from "vue";
+import { inject, provide, toValue } from "vue";
 
 /**
  * Injection key for icon context (internal use only).
@@ -10,6 +10,10 @@ const VIZEL_ICON_CONTEXT_KEY: InjectionKey<VizelIconContextValue> = Symbol("vize
 /**
  * Provide custom icon mappings to child components.
  * Call this in a parent component's setup to customize icons for all descendants.
+ *
+ * Accepts a plain value, a `Ref`, or a getter so the provided icons stay
+ * reactive when the source changes (for example when bound to a component
+ * prop).
  *
  * @example
  * ```vue
@@ -26,8 +30,12 @@ const VIZEL_ICON_CONTEXT_KEY: InjectionKey<VizelIconContextValue> = Symbol("vize
  * </script>
  * ```
  */
-export function provideVizelIcons(customIcons?: CustomIconMap): void {
-  provide(VIZEL_ICON_CONTEXT_KEY, { customIcons });
+export function provideVizelIcons(customIcons?: MaybeRefOrGetter<CustomIconMap | undefined>): void {
+  provide(VIZEL_ICON_CONTEXT_KEY, {
+    get customIcons() {
+      return toValue(customIcons);
+    },
+  });
 }
 
 /**

@@ -3,9 +3,9 @@ import type { VizelBlockMenuAction, VizelLocale, VizelNodeTypeOption } from "@vi
 
 export interface VizelBlockMenuProps {
   /** Custom block menu actions (replaces defaults) */
-  actions?: VizelBlockMenuAction[];
+  actions?: readonly VizelBlockMenuAction[];
   /** Custom node types for "Turn into" submenu */
-  nodeTypes?: VizelNodeTypeOption[];
+  nodeTypes?: readonly VizelNodeTypeOption[];
   /** Additional class name */
   class?: string;
   /** Locale for translated UI strings */

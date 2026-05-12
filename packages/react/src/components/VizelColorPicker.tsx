@@ -8,7 +8,7 @@ import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelColorPickerProps {
   /** Color palette to display */
-  colors: VizelColorDefinition[];
+  colors: readonly VizelColorDefinition[];
   /** Currently selected color */
   value?: string | undefined;
   /** Callback when color is selected */

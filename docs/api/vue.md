@@ -632,8 +632,8 @@ This component renders a color selection interface.
 <VizelColorPicker
   :colors="colors"
   :value="currentColor"
-  :recentColors="recentColors"
-  @update:value="setColor"
+  :recent-colors="recentColors"
+  @change="setColor"
 />
 ```
 

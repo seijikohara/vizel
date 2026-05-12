@@ -98,5 +98,10 @@ export function createVizelTaskListExtensions(
   ];
 }
 
-// Re-export for advanced usage
+/**
+ * Raw `@tiptap/extension-task-*` extensions, re-exported for advanced usage.
+ *
+ * Prefer {@link createVizelTaskListExtensions} unless you need direct access
+ * to the underlying Tiptap extensions.
+ */
 export { TaskItem, TaskList };

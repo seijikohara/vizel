@@ -1,4 +1,5 @@
 import type { Editor, JSONContent } from "@tiptap/core";
+import { isVizelJsonContent, type VizelStorageBackend } from "./storage.ts";
 
 // =============================================================================
 // Types
@@ -22,14 +23,11 @@ export interface VizelVersionSnapshot {
 
 /**
  * Storage backend for version history.
- * Use `"localStorage"` for built-in browser storage, or provide a custom backend.
+ *
+ * Aliased to the shared {@link VizelStorageBackend} so all features (auto-save,
+ * comments, version history) accept the same backend shape.
  */
-export type VizelVersionStorage =
-  | "localStorage"
-  | {
-      save: (snapshots: VizelVersionSnapshot[]) => void | Promise<void>;
-      load: () => VizelVersionSnapshot[] | null | Promise<VizelVersionSnapshot[] | null>;
-    };
+export type VizelVersionStorage = VizelStorageBackend<VizelVersionSnapshot[]>;
 
 /**
  * Configuration options for version history
@@ -45,7 +43,10 @@ export interface VizelVersionHistoryOptions {
   key?: string;
   /** Callback when a version is saved */
   onSave?: (snapshot: VizelVersionSnapshot) => void;
-  /** Callback when an error occurs */
+  /**
+   * Callback when an error occurs. The error may be a `VizelError` — narrow
+   * with `isVizelError(error)` to access the structured `code` field.
+   */
   onError?: (error: Error) => void;
   /** Callback when a version is restored */
   onRestore?: (snapshot: VizelVersionSnapshot) => void;
@@ -84,6 +85,16 @@ export const VIZEL_DEFAULT_VERSION_HISTORY_OPTIONS = {
 /**
  * Creates a normalized storage backend for version history
  */
+const isVizelVersionSnapshot = (value: unknown): value is VizelVersionSnapshot => {
+  if (typeof value !== "object" || value === null) return false;
+  const record = value as Record<string, unknown>;
+  return (
+    typeof record.id === "string" &&
+    typeof record.timestamp === "number" &&
+    isVizelJsonContent(record.content)
+  );
+};
+
 export function getVizelVersionStorageBackend(
   storage: VizelVersionStorage,
   key: string
@@ -91,27 +102,30 @@ export function getVizelVersionStorageBackend(
   save: (snapshots: VizelVersionSnapshot[]) => Promise<void>;
   load: () => Promise<VizelVersionSnapshot[]>;
 } {
-  if (storage === "localStorage") {
+  if (storage === "localStorage" || storage === "sessionStorage") {
     return {
       save: (snapshots: VizelVersionSnapshot[]) => {
-        if (typeof localStorage === "undefined") return Promise.resolve();
-        localStorage.setItem(key, JSON.stringify(snapshots));
+        if (typeof window === "undefined") return Promise.resolve();
+        try {
+          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
+          storageObject.setItem(key, JSON.stringify(snapshots));
+        } catch {
+          return Promise.reject(new Error("Failed to write version history to web storage"));
+        }
         return Promise.resolve();
       },
       load: () => {
-        if (typeof localStorage === "undefined") return Promise.resolve([]);
-        const data = localStorage.getItem(key);
-        if (data) {
-          try {
-            const parsed = JSON.parse(data);
-            if (Array.isArray(parsed)) {
-              return Promise.resolve(parsed as VizelVersionSnapshot[]);
-            }
-          } catch {
-            // Invalid data, return empty
-          }
+        if (typeof window === "undefined") return Promise.resolve([]);
+        try {
+          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
+          const data = storageObject.getItem(key);
+          if (!data) return Promise.resolve([]);
+          const parsed: unknown = JSON.parse(data);
+          if (!Array.isArray(parsed)) return Promise.resolve([]);
+          return Promise.resolve(parsed.filter(isVizelVersionSnapshot));
+        } catch {
+          return Promise.resolve([]);
         }
-        return Promise.resolve([]);
       },
     };
   }
@@ -121,10 +135,7 @@ export function getVizelVersionStorageBackend(
     save: async (snapshots: VizelVersionSnapshot[]) => {
       await storage.save(snapshots);
     },
-    load: async () => {
-      const result = await storage.load();
-      return result ?? [];
-    },
+    load: async () => (await storage.load()) ?? [],
   };
 }
 

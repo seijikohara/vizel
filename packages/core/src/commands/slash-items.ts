@@ -19,8 +19,13 @@ export interface SlashCommandItem {
   title: string;
   /** Description of the command */
   description: string;
-  /** Icon name (semantic name, rendered by framework packages) */
-  icon: VizelSlashCommandIconName;
+  /**
+   * Icon name (semantic name, rendered by framework packages).
+   *
+   * Built-in icons use {@link VizelSlashCommandIconName}. User-defined slash
+   * commands may pass any string id supported by their `VizelIconProvider`.
+   */
+  icon: VizelSlashCommandIconName | (string & {});
   /** Command to execute */
   command: (props: { editor: Editor; range: SlashCommandRange }) => void;
   /** Keyboard shortcut hint (e.g., "⌘B") */

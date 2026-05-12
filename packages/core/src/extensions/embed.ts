@@ -70,9 +70,12 @@ export interface VizelEmbedData {
 export type VizelFetchEmbedDataFn = (url: string) => Promise<VizelEmbedData>;
 
 /**
- * Default oEmbed providers
+ * Default oEmbed providers.
+ *
+ * The exported array is readonly so consumers cannot mutate the shared
+ * defaults. To extend the list, spread it into a new array.
  */
-export const vizelDefaultEmbedProviders: VizelEmbedProvider[] = [
+export const vizelDefaultEmbedProviders: readonly VizelEmbedProvider[] = [
   // Video - these providers support CORS on their oEmbed endpoints
   {
     name: "youtube",
@@ -182,7 +185,7 @@ export const vizelDefaultEmbedProviders: VizelEmbedProvider[] = [
  */
 export function detectVizelEmbedProvider(
   url: string,
-  providers: VizelEmbedProvider[] = vizelDefaultEmbedProviders
+  providers: readonly VizelEmbedProvider[] = vizelDefaultEmbedProviders
 ): VizelEmbedProvider | null {
   for (const provider of providers) {
     for (const pattern of provider.patterns) {
@@ -319,7 +322,7 @@ function oembedToEmbedData(
  * ```
  */
 export function createVizelDefaultFetchEmbedData(
-  providers: VizelEmbedProvider[] = vizelDefaultEmbedProviders
+  providers: readonly VizelEmbedProvider[] = vizelDefaultEmbedProviders
 ): VizelFetchEmbedDataFn {
   return async (url: string): Promise<VizelEmbedData> => {
     const provider = detectVizelEmbedProvider(url, providers);
@@ -368,7 +371,7 @@ export interface VizelEmbedOptions {
    */
   fetchEmbedData?: VizelFetchEmbedDataFn;
   /** Custom providers to add or override */
-  providers?: VizelEmbedProvider[];
+  providers?: readonly VizelEmbedProvider[];
   /** HTML attributes for the embed wrapper */
   HTMLAttributes?: Record<string, unknown>;
   /** Enable paste handler for URL detection */

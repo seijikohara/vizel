@@ -46,27 +46,27 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@iconify/vue": "^5.0.0"
+    "@iconify/vue": "^5.0.1"
   },
   "peerDependencies": {
     "@vizel/core": "workspace:^",
     "vue": "^3.4"
   },
   "devDependencies": {
-    "@tiptap/extension-bold": "^3.22.4",
-    "@tiptap/extension-code": "^3.22.4",
-    "@tiptap/extension-color": "^3.22.4",
-    "@tiptap/extension-highlight": "^3.22.4",
-    "@tiptap/extension-italic": "^3.22.4",
-    "@tiptap/extension-strike": "^3.22.4",
-    "@tiptap/extension-subscript": "^3.22.4",
-    "@tiptap/extension-superscript": "^3.22.4",
-    "@tiptap/extension-text-style": "^3.22.4",
-    "@tiptap/extension-underline": "^3.22.4",
+    "@tiptap/extension-bold": "^3.23.1",
+    "@tiptap/extension-code": "^3.23.1",
+    "@tiptap/extension-color": "^3.23.1",
+    "@tiptap/extension-highlight": "^3.23.1",
+    "@tiptap/extension-italic": "^3.23.1",
+    "@tiptap/extension-strike": "^3.23.1",
+    "@tiptap/extension-subscript": "^3.23.1",
+    "@tiptap/extension-superscript": "^3.23.1",
+    "@tiptap/extension-text-style": "^3.23.1",
+    "@tiptap/extension-underline": "^3.23.1",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vizel/core": "workspace:^",
-    "vite": "^8.0.9",
-    "vite-plugin-dts": "^4.5.4",
-    "vue-tsc": "^3.2.7"
+    "vite": "^8.0.11",
+    "vite-plugin-dts": "^5.0.0",
+    "vue-tsc": "^3.2.8"
   }
 }

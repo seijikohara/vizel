@@ -1,9 +1,9 @@
 import { VIZEL_HIGHLIGHT_COLORS, VIZEL_TEXT_COLORS } from "@vizel/core";
-import { type ColorPickerProps, VizelColorPicker } from "@vizel/react";
+import { VizelColorPicker, type VizelColorPickerProps } from "@vizel/react";
 import { useState } from "react";
 
 interface Props {
-  colors?: ColorPickerProps["colors"];
+  colors?: VizelColorPickerProps["colors"];
   value?: string;
   label?: string;
   className?: string;

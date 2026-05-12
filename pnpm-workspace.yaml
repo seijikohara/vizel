@@ -1,3 +1,12 @@
 packages:
   - "packages/*"
   - "apps/demo/*"
+
+# Approve post-install build scripts for trusted tooling dependencies.
+# pnpm 10+ disables build scripts by default; these packages need their
+# build/install hooks to run for native binaries and git hook setup.
+allowBuilds:
+  "@parcel/watcher": true
+  esbuild: true
+  lefthook: true
+  leveldown: true

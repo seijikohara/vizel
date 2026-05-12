@@ -91,7 +91,7 @@ export const vizelDefaultBlockMenuActions = [
       cutSelectionToClipboard();
     },
   },
-] satisfies VizelBlockMenuAction[];
+] as const satisfies readonly VizelBlockMenuAction[];
 
 /**
  * Create block menu actions with locale-specific labels.
@@ -114,7 +114,7 @@ export function createVizelBlockMenuActions(locale: VizelLocale): VizelBlockMenu
  */
 export function getVizelTurnIntoOptions(
   editor: Editor,
-  nodeTypes: VizelNodeTypeOption[] = vizelDefaultNodeTypes
+  nodeTypes: readonly VizelNodeTypeOption[] = vizelDefaultNodeTypes
 ): VizelNodeTypeOption[] {
   return nodeTypes.filter((type) => !type.isActive(editor));
 }
@@ -123,7 +123,7 @@ export function getVizelTurnIntoOptions(
  * Group block menu actions by their group identifier.
  */
 export function groupVizelBlockMenuActions(
-  actions: VizelBlockMenuAction[] = vizelDefaultBlockMenuActions
+  actions: readonly VizelBlockMenuAction[] = vizelDefaultBlockMenuActions
 ): VizelBlockMenuAction[][] {
   return groupByConsecutiveField(actions, "group");
 }

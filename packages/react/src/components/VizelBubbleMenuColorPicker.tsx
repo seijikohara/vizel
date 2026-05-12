@@ -16,7 +16,7 @@ export interface VizelBubbleMenuColorPickerProps {
   /** Color picker type */
   type: "textColor" | "highlight";
   /** Custom color palette */
-  colors?: VizelColorDefinition[];
+  colors?: readonly VizelColorDefinition[];
   /** Custom class name */
   className?: string;
   /** Enable custom color input (default: true) */

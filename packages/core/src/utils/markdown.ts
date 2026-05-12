@@ -66,16 +66,21 @@ export function getVizelMarkdown(editor: Editor | null | undefined): string {
  * Set markdown content to the editor.
  * Optionally transforms diagram code blocks to diagram nodes.
  *
+ * Returns `true` if the operation succeeded, `false` if the editor is missing
+ * or the markdown extension is not enabled. When `false` is returned, a
+ * warning is also emitted to the console.
+ *
  * @param editor - The editor instance
  * @param markdown - The markdown content to set
  * @param options - Options for setting content
+ * @returns Whether the markdown was applied to the editor
  */
 export function setVizelMarkdown(
   editor: Editor | null | undefined,
   markdown: string,
   options: { transformDiagrams?: boolean } = {}
-): void {
-  if (!editor) return;
+): boolean {
+  if (!editor) return false;
 
   const { transformDiagrams = true } = options;
 
@@ -83,7 +88,7 @@ export function setVizelMarkdown(
     console.warn(
       "[Vizel] Markdown extension is not enabled. Enable it via features.markdown option."
     );
-    return;
+    return false;
   }
 
   // Set content using markdown contentType
@@ -95,6 +100,8 @@ export function setVizelMarkdown(
   if (transformDiagrams) {
     convertVizelCodeBlocksToDiagrams(editor);
   }
+
+  return true;
 }
 
 /**

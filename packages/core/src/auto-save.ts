@@ -1,17 +1,9 @@
 import type { Editor, JSONContent } from "@tiptap/core";
 import type { VizelLocale } from "./i18n/types.ts";
 import { formatRelativeTimeWithLocale } from "./i18n/utils.ts";
+import { isVizelJsonContent, type VizelStorageBackend } from "./storage.ts";
 
-/**
- * Storage backend type for auto-save
- */
-export type VizelStorageBackend =
-  | "localStorage"
-  | "sessionStorage"
-  | {
-      save: (content: JSONContent) => void | Promise<void>;
-      load?: () => JSONContent | null | Promise<JSONContent | null>;
-    };
+export type { VizelStorageBackend } from "./storage.ts";
 
 /**
  * Auto-save configuration options
@@ -27,7 +19,10 @@ export interface VizelAutoSaveOptions {
   key?: string;
   /** Callback when content is saved */
   onSave?: (content: JSONContent) => void;
-  /** Callback when save fails */
+  /**
+   * Callback when save or restore fails. The error may be a `VizelError` —
+   * narrow with `isVizelError(error)` to access the structured `code` field.
+   */
   onError?: (error: Error) => void;
   /** Callback when restore is attempted */
   onRestore?: (content: JSONContent | null) => void;
@@ -102,22 +97,30 @@ export function getVizelStorageBackend(
   load: () => Promise<JSONContent | null>;
 } {
   if (storage === "localStorage" || storage === "sessionStorage") {
-    const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
     return {
       save: (content: JSONContent) => {
-        storageObject.setItem(key, JSON.stringify(content));
+        if (typeof window === "undefined") return Promise.resolve();
+        try {
+          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
+          storageObject.setItem(key, JSON.stringify(content));
+        } catch {
+          // Storage quota exceeded or access denied; surface via the caller's catch.
+          return Promise.reject(new Error("Failed to write to web storage"));
+        }
         return Promise.resolve();
       },
       load: () => {
-        const data = storageObject.getItem(key);
-        if (data) {
-          try {
-            return Promise.resolve(JSON.parse(data) as JSONContent);
-          } catch {
-            return Promise.resolve(null);
-          }
+        if (typeof window === "undefined") return Promise.resolve(null);
+        try {
+          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
+          const data = storageObject.getItem(key);
+          if (!data) return Promise.resolve(null);
+          const parsed: unknown = JSON.parse(data);
+          if (!isVizelJsonContent(parsed)) return Promise.resolve(null);
+          return Promise.resolve(parsed);
+        } catch {
+          return Promise.resolve(null);
         }
-        return Promise.resolve(null);
       },
     };
   }
@@ -127,12 +130,7 @@ export function getVizelStorageBackend(
     save: async (content: JSONContent) => {
       await storage.save(content);
     },
-    load: async () => {
-      if (storage.load) {
-        return await storage.load();
-      }
-      return null;
-    },
+    load: async () => await storage.load(),
   };
 }
 
@@ -205,7 +203,11 @@ export function createVizelAutoSaveHandlers(
       const content = await storageBackend.load();
       opts.onRestore?.(content);
       return content;
-    } catch {
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error(String(e));
+      onStateChange({ status: "error", error });
+      opts.onError?.(error);
+      opts.onRestore?.(null);
       return null;
     }
   };

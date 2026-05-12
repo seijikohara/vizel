@@ -3,7 +3,7 @@ import type { VizelColorDefinition } from "@vizel/core";
 
 export interface VizelColorPickerProps {
   /** Color palette to display */
-  colors: VizelColorDefinition[];
+  colors: readonly VizelColorDefinition[];
   /** Currently selected color */
   value?: string;
   /** Callback when color is selected */
