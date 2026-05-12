@@ -130,7 +130,7 @@ const editor = useVizelEditor({
   },
 });
 
-useVizelAutoSave(() => editor, {
+useVizelAutoSave(editor, {
   debounceMs: 2000,
   storage: 'localStorage',
   key: 'my-content',
@@ -259,7 +259,7 @@ function Editor() {
   const editor = useVizelEditor({});
 
   // Reactive state without manual onUpdate tracking
-  const { characterCount, wordCount } = useVizelEditorState(() => editor);
+  const { characterCount, wordCount } = useVizelEditorState(editor);
 
   return (
     <div>

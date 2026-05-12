@@ -19,8 +19,8 @@ const props = withDefaults(defineProps<VizelToolbarProps>(), {
   showDefaultToolbar: true,
 });
 
-const getContextEditor = useVizelContextSafe();
-const editor = computed(() => props.editor ?? getContextEditor?.() ?? null);
+const contextEditor = useVizelContextSafe();
+const editor = computed(() => props.editor ?? contextEditor?.value ?? null);
 </script>
 
 <template>

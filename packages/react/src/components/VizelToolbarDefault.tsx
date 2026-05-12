@@ -43,7 +43,7 @@ export function VizelToolbarDefault({
   locale,
 }: VizelToolbarDefaultProps) {
   // Subscribe to editor state changes to update active/enabled states
-  useVizelState(() => editor);
+  useVizelState(editor);
 
   const effectiveActions: readonly VizelToolbarActionItem[] =
     actions ?? (locale ? createVizelToolbarActions(locale) : vizelDefaultToolbarActions);

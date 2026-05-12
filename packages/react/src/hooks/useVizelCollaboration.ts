@@ -35,7 +35,7 @@ export interface UseVizelCollaborationResult {
  * sync state, and peer count. It does NOT create the Yjs document or provider —
  * users must create those themselves and pass them in.
  *
- * @param getProvider - Function that returns the Yjs provider instance
+ * @param provider - The Yjs provider instance (or `null` while it is still initializing)
  * @param options - Collaboration options including user info and callbacks
  * @returns Collaboration state and controls
  *
@@ -54,7 +54,7 @@ export interface UseVizelCollaborationResult {
  *   );
  *
  *   const { isConnected, peerCount } = useVizelCollaboration(
- *     () => provider,
+ *     provider,
  *     { user: { name: "Alice", color: "#ff0000" } }
  *   );
  *
@@ -79,7 +79,7 @@ export interface UseVizelCollaborationResult {
  * ```
  */
 export function useVizelCollaboration(
-  getProvider: () => VizelYjsProvider | null | undefined,
+  provider: VizelYjsProvider | null | undefined,
   options: VizelCollaborationOptions = { user: { name: "Anonymous", color: "#6366f1" } }
 ): UseVizelCollaborationResult {
   const optionsRef = useRef(options);
@@ -94,8 +94,10 @@ export function useVizelCollaboration(
     error: null,
   });
 
-  const getProviderRef = useRef(getProvider);
-  getProviderRef.current = getProvider;
+  // Keep a ref to the provider for the handlers so they always read the latest
+  // value without forcing a memo rebuild on every render.
+  const providerRef = useRef(provider);
+  providerRef.current = provider;
 
   const handleStateChange = useCallback((partial: Partial<VizelCollaborationState>) => {
     setState((prev) => ({ ...prev, ...partial }));
@@ -104,7 +106,7 @@ export function useVizelCollaboration(
   const handlers = useMemo(
     () =>
       createVizelCollaborationHandlers(
-        () => getProviderRef.current(),
+        () => providerRef.current,
         {
           enabled,
           user: options.user,
@@ -120,12 +122,11 @@ export function useVizelCollaboration(
   );
 
   useEffect(() => {
-    const provider = getProvider();
     if (!(provider && enabled)) {
       return;
     }
     return handlers.subscribe();
-  }, [getProvider, enabled, handlers]);
+  }, [provider, enabled, handlers]);
 
   const connect = useCallback(() => handlers.connect(), [handlers]);
   const disconnect = useCallback(() => handlers.disconnect(), [handlers]);

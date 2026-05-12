@@ -18,8 +18,8 @@ export interface VizelExposed {
 const props = defineProps<VizelEditorProps>();
 
 const containerRef = ref<HTMLDivElement | null>(null);
-const getContextEditor = useVizelContextSafe();
-const resolvedEditor = computed(() => props.editor ?? getContextEditor?.());
+const contextEditor = useVizelContextSafe();
+const resolvedEditor = computed(() => props.editor ?? contextEditor?.value ?? null);
 
 // Expose container ref to parent component
 defineExpose<VizelExposed>({

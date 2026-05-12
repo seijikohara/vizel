@@ -17,7 +17,6 @@ export {
   getVizelContext,
   getVizelContextSafe,
   getVizelIconContext,
-  setVizelIcons,
   // Vizel all-in-one
   Vizel,
   // BlockMenu

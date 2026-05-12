@@ -76,7 +76,7 @@ function CollaborativeEditor() {
 
   // Track collaboration state
   const { isConnected, isSynced, peerCount } = useVizelCollaboration(
-    () => provider,
+    provider,
     { user }
   );
 

@@ -69,7 +69,7 @@ export {
 // Vizel Icon component
 // ============================================================================
 export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.svelte";
-export { getVizelIconContext, setVizelIcons } from "./VizelIconContext.js";
+export { getVizelIconContext } from "./VizelIconContext.js";
 export {
   default as VizelIconProvider,
   type VizelIconProviderProps,

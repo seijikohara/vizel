@@ -6,7 +6,7 @@ import {
   VizelEditor,
   VizelProvider,
 } from "@vizel/react";
-import { useCallback, useRef, useState } from "react";
+import { useState } from "react";
 
 export interface UserFlowFixtureProps {
   mode?: "markdown" | "auto-save" | "default";
@@ -92,15 +92,7 @@ function MarkdownMode() {
 function AutoSaveMode({ storageKey }: { storageKey: string }) {
   const editor = useVizelEditor({});
 
-  // Use a ref + useCallback to keep the getter stable across re-renders,
-  // preventing useEffect cleanup from cancelling the debounced save.
-  // Depend on `editor` so the hook re-subscribes when editor initializes.
-  const editorRef = useRef(editor);
-  editorRef.current = editor;
-  // biome-ignore lint/correctness/useExhaustiveDependencies: editor triggers re-subscription in auto-save hook
-  const getEditor = useCallback(() => editorRef.current, [editor]);
-
-  const { status } = useVizelAutoSave(getEditor, {
+  const { status } = useVizelAutoSave(editor, {
     debounceMs: 50,
     storage: "localStorage",
     key: storageKey,

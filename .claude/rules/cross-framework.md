@@ -116,7 +116,25 @@ interface VizelEditorOptions {
 |-------|-----|--------|
 | `Editor \| null` | `ShallowRef<Editor \| null>` | `{ get current(): Editor \| null }` |
 
-All hooks, composables, and runes accept editor accessors via the getter pattern: `() => editor`.
+### Editor Accessor Convention
+
+Each framework accepts the editor in the shape that is idiomatic for its
+reactivity model.
+
+| Framework | Hook / composable / rune signature |
+|-----------|-----------------------------------|
+| React | `useVizelX(editor: Editor \| null \| undefined, options?)` — pass the editor value directly. React reads the variable each render, no getter indirection needed. |
+| Vue | `useVizelX(() => editor.value, options?)` — pass a getter that reads `.value` so the composable can track the `ShallowRef` across changes. |
+| Svelte | `createVizelX(() => editor.current, options?)` — pass a getter that reads `.current` so the rune can react inside `$effect`. |
+
+The cross-framework concept (`hook(editor, options)`) is identical; only the
+binding form differs to honor each framework's reactivity model.
+
+### Context Consumer Return Shape
+
+| React | Vue | Svelte |
+|-------|-----|--------|
+| `{ editor: Editor \| null }` | `ComputedRef<Editor \| null>` (both `useVizelContext()` and `useVizelContextSafe()`; the safe variant returns `null` outside a provider) | `{ get current(): Editor \| null }` |
 
 ## Context API Equivalence
 

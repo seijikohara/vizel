@@ -83,23 +83,23 @@ function AppContent() {
   const [editor, setEditor] = useState<Editor | null>(null);
 
   // Track editor state for character/word count (only when stats enabled)
-  const editorState = useVizelEditorState(() => (features.stats ? editor : null));
+  const editorState = useVizelEditorState(features.stats ? editor : null);
 
   // Auto-save functionality (only when autoSave enabled)
-  const { status, lastSaved } = useVizelAutoSave(() => (features.autoSave ? editor : null), {
+  const { status, lastSaved } = useVizelAutoSave(features.autoSave ? editor : null, {
     debounceMs: 2000,
     storage: "localStorage",
     key: "vizel-demo-react",
   });
 
   // Version History (only when history panel enabled)
-  const versionHistory = useVizelVersionHistory(() => (features.history ? editor : null), {
+  const versionHistory = useVizelVersionHistory(features.history ? editor : null, {
     key: "vizel-demo-react-versions",
     maxVersions: 20,
   });
 
   // Comments (only when comments panel enabled)
-  const commentManager = useVizelComment(() => (features.comments ? editor : null), {
+  const commentManager = useVizelComment(features.comments ? editor : null, {
     key: "vizel-demo-react-comments",
   });
 

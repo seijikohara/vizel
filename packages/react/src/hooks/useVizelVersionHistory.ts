@@ -33,7 +33,7 @@ export interface UseVizelVersionHistoryResult {
 /**
  * Hook for managing document version history.
  *
- * @param getEditor - Function that returns the editor instance
+ * @param editor - The editor instance (or `null` while it is still initializing)
  * @param options - Version history configuration options
  * @returns Version history state and controls
  *
@@ -42,7 +42,7 @@ export interface UseVizelVersionHistoryResult {
  * function Editor() {
  *   const editor = useVizelEditor({ ... });
  *   const { snapshots, saveVersion, restoreVersion } = useVizelVersionHistory(
- *     () => editor,
+ *     editor,
  *     { maxVersions: 20, key: 'my-doc-versions' }
  *   );
  *
@@ -64,7 +64,7 @@ export interface UseVizelVersionHistoryResult {
  * ```
  */
 export function useVizelVersionHistory(
-  getEditor: () => Editor | null | undefined,
+  editor: Editor | null | undefined,
   options: VizelVersionHistoryOptions = {}
 ): UseVizelVersionHistoryResult {
   const optionsRef = useRef(options);
@@ -81,8 +81,10 @@ export function useVizelVersionHistory(
     error: null,
   });
 
-  const getEditorRef = useRef(getEditor);
-  getEditorRef.current = getEditor;
+  // Keep a ref to the editor for the handlers so they always read the latest
+  // value without forcing a memo rebuild on every render.
+  const editorRef = useRef(editor);
+  editorRef.current = editor;
 
   const handleStateChange = useCallback((partial: Partial<VizelVersionHistoryState>) => {
     setState((prev) => ({ ...prev, ...partial }));
@@ -91,7 +93,7 @@ export function useVizelVersionHistory(
   const handlers = useMemo(
     () =>
       createVizelVersionHistoryHandlers(
-        () => getEditorRef.current(),
+        () => editorRef.current,
         {
           enabled,
           maxVersions,
@@ -105,9 +107,6 @@ export function useVizelVersionHistory(
       ),
     [enabled, maxVersions, storage, key, handleStateChange]
   );
-
-  // Track editor value (stable reference) instead of getEditor (unstable function)
-  const editor = getEditor();
 
   // Load versions when editor becomes available
   useEffect(() => {

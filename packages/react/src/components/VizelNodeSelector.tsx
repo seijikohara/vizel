@@ -39,7 +39,7 @@ export function VizelNodeSelector({
   const effectiveNodeTypes =
     nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes);
   // Subscribe to editor state changes
-  useVizelState(() => editor);
+  useVizelState(editor);
 
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
