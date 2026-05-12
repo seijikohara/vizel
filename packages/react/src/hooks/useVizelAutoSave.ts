@@ -104,9 +104,11 @@ export function useVizelAutoSave(
     [enabled, debounceMs, storage, key, handleStateChange]
   );
 
-  // Subscribe to editor updates
+  // Track editor value (stable reference) instead of getEditor (unstable function).
+  // Depending on getEditor causes the effect to tear down on every parent re-render,
+  // which cancels in-flight debounced saves and drops unsaved edits.
+  const editor = getEditor();
   useEffect(() => {
-    const editor = getEditor();
     if (!(editor && enabled)) return;
 
     editor.on("update", handlers.handleUpdate);
@@ -115,7 +117,7 @@ export function useVizelAutoSave(
       editor.off("update", handlers.handleUpdate);
       handlers.cancel();
     };
-  }, [getEditor, enabled, handlers]);
+  }, [editor, enabled, handlers]);
 
   const save = useCallback(async () => {
     await handlers.saveNow();

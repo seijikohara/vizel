@@ -20,11 +20,11 @@ export {
   type CreateVizelMarkdownResult,
   createVizelMarkdown,
 } from "./createVizelMarkdown.svelte.js";
-export { createVizelMentionMenuRenderer } from "./createVizelMentionMenuRenderer.js";
+export { createVizelMentionMenuRenderer } from "./createVizelMentionMenuRenderer.svelte.js";
 export {
   createVizelSlashMenuRenderer,
   type VizelSlashMenuRendererOptions,
-} from "./createVizelSlashMenuRenderer.js";
+} from "./createVizelSlashMenuRenderer.svelte.js";
 export { createVizelState } from "./createVizelState.svelte.js";
 export {
   type CreateVizelVersionHistoryResult,

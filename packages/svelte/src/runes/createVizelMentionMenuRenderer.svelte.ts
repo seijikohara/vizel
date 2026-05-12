@@ -7,20 +7,17 @@ import {
   type VizelSlashMenuRendererOptions,
 } from "@vizel/core";
 import { mount, unmount } from "svelte";
-import VizelMentionMenu from "../components/VizelMentionMenu.svelte";
+import VizelMentionMenu, { type VizelMentionMenuRef } from "../components/VizelMentionMenu.svelte";
 
 export type { VizelSlashMenuRendererOptions };
-
-interface MentionMenuRef {
-  onKeyDown: (event: KeyboardEvent) => boolean;
-}
-
-const isMentionMenuRef = (value: unknown): value is MentionMenuRef =>
-  typeof value === "object" && value !== null && "onKeyDown" in value;
 
 /**
  * Creates a suggestion render configuration for the Mention extension.
  * This handles the popup positioning and Svelte component lifecycle.
+ *
+ * The menu component is mounted once per suggestion session. Subsequent
+ * `onUpdate` calls mutate the reactive props in place so the menu rerenders
+ * without losing internal state like the selected index.
  *
  * @example
  * ```ts
@@ -43,42 +40,42 @@ export function createVizelMentionMenuRenderer(
     render: () => {
       let component: ReturnType<typeof mount> | null = null;
       let suggestionContainer: ReturnType<typeof createVizelSuggestionContainer> | null = null;
-      let items: VizelMentionItem[] = [];
-      let commandFn: ((item: VizelMentionItem) => void) | null = null;
-
-      const mountComponent = () => {
-        if (!suggestionContainer) return;
-        component = mount(VizelMentionMenu, {
-          target: suggestionContainer.menuContainer,
-          props: {
-            items,
-            ...(options.className !== undefined && { class: options.className }),
-            oncommand: (item: VizelMentionItem) => {
-              commandFn?.(item);
-            },
-          },
-        });
-      };
+      const menuState = $state<{
+        items: VizelMentionItem[];
+        oncommand: (item: VizelMentionItem) => void;
+      }>({
+        items: [],
+        oncommand: () => {
+          // initial no-op; replaced by Tiptap's `props.command` in onStart.
+        },
+      });
+      const menuRef: VizelMentionMenuRef = {};
 
       return {
         onStart: (props: SuggestionProps<VizelMentionItem>) => {
-          items = props.items;
-          commandFn = props.command;
+          menuState.items = props.items;
+          menuState.oncommand = props.command;
 
           suggestionContainer = createVizelSuggestionContainer();
-          mountComponent();
+          component = mount(VizelMentionMenu, {
+            target: suggestionContainer.menuContainer,
+            props: {
+              ...(options.className !== undefined && { class: options.className }),
+              get items() {
+                return menuState.items;
+              },
+              get oncommand() {
+                return menuState.oncommand;
+              },
+              ref: menuRef,
+            },
+          });
           suggestionContainer.updatePosition(props.clientRect);
         },
 
         onUpdate: (props: SuggestionProps<VizelMentionItem>) => {
-          items = props.items;
-          commandFn = props.command;
-
-          if (component && suggestionContainer) {
-            unmount(component);
-            mountComponent();
-          }
-
+          menuState.items = props.items;
+          menuState.oncommand = props.command;
           suggestionContainer?.updatePosition(props.clientRect);
         },
 
@@ -86,10 +83,7 @@ export function createVizelMentionMenuRenderer(
           if (handleVizelSuggestionEscape(props.event)) {
             return true;
           }
-          if (component && isMentionMenuRef(component)) {
-            return component.onKeyDown(props.event);
-          }
-          return false;
+          return menuRef.onKeyDown?.(props.event) ?? false;
         },
 
         onExit: () => {
@@ -99,6 +93,7 @@ export function createVizelMentionMenuRenderer(
           suggestionContainer?.destroy();
           component = null;
           suggestionContainer = null;
+          delete menuRef.onKeyDown;
         },
       };
     },

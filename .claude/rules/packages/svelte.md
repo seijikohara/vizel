@@ -56,6 +56,51 @@ import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext.ts";
 This applies to `.svelte` cross-file imports as well — use `.svelte.js`
 for runes living in `*.svelte.ts` files.
 
+## Exposing Imperative Handles to External Callers
+
+Svelte 5's `mount()` returns only the `<script module>` exports. Instance-script
+`export function`s are NOT reachable on the mounted component. When a component
+needs to expose imperative handles to a non-template caller (e.g. a Tiptap
+suggestion renderer), accept a mutable `ref` prop and assign methods into it.
+
+```svelte
+<!-- VizelSlashMenu.svelte -->
+<script lang="ts" module>
+export interface VizelSlashMenuRef {
+  onKeyDown?: (event: KeyboardEvent) => boolean;
+}
+export interface VizelSlashMenuProps {
+  // ...
+  ref?: VizelSlashMenuRef;
+}
+</script>
+
+<script lang="ts">
+let { ref, ...other }: VizelSlashMenuProps = $props();
+
+function onKeyDown(event: KeyboardEvent): boolean { /* ... */ }
+
+// svelte-ignore state_referenced_locally
+if (ref) {
+  // svelte-ignore state_referenced_locally
+  ref.onKeyDown = onKeyDown;
+}
+</script>
+```
+
+Caller side:
+
+```ts
+const menuRef: VizelSlashMenuRef = {};
+const component = mount(VizelSlashMenu, {
+  target: container,
+  props: { ref: menuRef /* , ... */ },
+});
+
+// Use as needed.
+menuRef.onKeyDown?.(event);
+```
+
 ## Component Structure
 
 ```svelte

@@ -140,10 +140,17 @@ export function createVizelMarkdown(
     editor.on("update", handleUpdate);
 
     return () => {
+      // Flush any pending debounced export before destroying so editor swaps
+      // do not drop unsynced markdown.
+      if (h.isPending()) {
+        h.flush(editor);
+        markdown = h.getMarkdown();
+      }
       editor.off("update", handleUpdate);
       if (rafId !== null) cancelAnimationFrame(rafId);
       handlers?.destroy();
       handlers = null;
+      isPending = false;
     };
   });
 
