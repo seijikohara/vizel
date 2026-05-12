@@ -16,7 +16,7 @@ export interface VizelSlashMenuProps {
   /** Ref to access menu methods */
   ref?: Ref<VizelSlashMenuRef>;
   items: VizelSlashCommandItem[];
-  command: (item: VizelSlashCommandItem) => void;
+  onSelect: (item: VizelSlashCommandItem) => void;
   /** Custom class name for the menu container */
   className?: string;
   /** Whether to show items grouped by category (default: true when not searching) */
@@ -54,7 +54,7 @@ export interface VizelSlashMenuProps {
 export function VizelSlashMenu({
   ref,
   items,
-  command,
+  onSelect,
   className,
   showGroups = true,
   renderItem,
@@ -95,10 +95,10 @@ export function VizelSlashMenu({
     (index: number) => {
       const item = flatItems[index];
       if (item) {
-        command(item);
+        onSelect(item);
       }
     },
-    [flatItems, command]
+    [flatItems, onSelect]
   );
 
   const upHandler = useCallback(() => {

@@ -8,7 +8,7 @@ export interface VizelMentionMenuRef {
 export interface VizelMentionMenuProps {
   items: VizelMentionItem[];
   class?: string;
-  oncommand?: (item: VizelMentionItem) => void;
+  onselect?: (item: VizelMentionItem) => void;
   /**
    * Mutable ref object the component populates with imperative handles
    * (notably `onKeyDown`). Pass an object; this component assigns to its
@@ -27,7 +27,7 @@ import { tick } from "svelte";
 let {
   items,
   class: className,
-  oncommand,
+  onselect,
   ref,
 }: VizelMentionMenuProps = $props();
 
@@ -59,7 +59,7 @@ function scrollToSelected() {
 function selectItem(index: number) {
   const item = items[index];
   if (item) {
-    oncommand?.(item);
+    onselect?.(item);
   }
 }
 

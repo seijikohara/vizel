@@ -11,8 +11,8 @@ export interface VizelSlashMenuProps {
   items: VizelSlashCommandItem[];
   /** Custom class name */
   class?: string;
-  /** Command handler */
-  oncommand?: (item: VizelSlashCommandItem) => void;
+  /** Selection handler invoked when an item is chosen */
+  onselect?: (item: VizelSlashCommandItem) => void;
   /** Whether to show items grouped by category (default: true when not searching) */
   showGroups?: boolean;
   /** Custom group order */
@@ -42,7 +42,7 @@ import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.svelte";
 let {
   items,
   class: className,
-  oncommand,
+  onselect,
   showGroups = true,
   groupOrder,
   renderItem,
@@ -93,7 +93,7 @@ $effect(() => {
 function selectItem(index: number) {
   const item = flatItems[index];
   if (item) {
-    oncommand?.(item);
+    onselect?.(item);
   }
 }
 

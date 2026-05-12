@@ -670,7 +670,7 @@ import { VizelSlashMenu } from '@vizel/react';
 
 <VizelSlashMenu
   items={items}
-  command={handleCommand}
+  onSelect={handleSelect}
   className="my-menu"
 />
 ```

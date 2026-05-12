@@ -58,7 +58,7 @@ export function createVizelSlashMenuRenderer(
                   items: items.value,
                   ...(options.className !== undefined && { class: options.className }),
                   ref: componentRef,
-                  onCommand: (item: VizelSlashCommandItem) => {
+                  onSelect: (item: VizelSlashCommandItem) => {
                     commandFn.value?.(item);
                   },
                 });

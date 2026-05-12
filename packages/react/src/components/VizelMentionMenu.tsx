@@ -12,7 +12,7 @@ export interface VizelMentionMenuProps {
   /** Mention items to display */
   items: VizelMentionItem[];
   /** Callback when an item is selected */
-  command: (item: VizelMentionItem) => void;
+  onSelect: (item: VizelMentionItem) => void;
   /** Custom class name for the menu container */
   className?: string;
 }
@@ -24,7 +24,7 @@ export interface VizelMentionMenuProps {
 export function VizelMentionMenu({
   ref,
   items,
-  command,
+  onSelect,
   className,
 }: VizelMentionMenuProps): ReactNode {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -52,10 +52,10 @@ export function VizelMentionMenu({
     (index: number) => {
       const item = items[index];
       if (item) {
-        command(item);
+        onSelect(item);
       }
     },
-    [items, command]
+    [items, onSelect]
   );
 
   const upHandler = useCallback(() => {

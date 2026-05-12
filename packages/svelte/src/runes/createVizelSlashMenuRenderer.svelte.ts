@@ -44,10 +44,10 @@ export function createVizelSlashMenuRenderer(
       // fields drives the component's reactivity instead of remounting.
       const menuState = $state<{
         items: VizelSlashCommandItem[];
-        oncommand: (item: VizelSlashCommandItem) => void;
+        onselect: (item: VizelSlashCommandItem) => void;
       }>({
         items: [],
-        oncommand: () => {
+        onselect: () => {
           // initial no-op; replaced by Tiptap's `props.command` in onStart.
         },
       });
@@ -59,7 +59,7 @@ export function createVizelSlashMenuRenderer(
       return {
         onStart: (props: SuggestionProps<VizelSlashCommandItem>) => {
           menuState.items = props.items;
-          menuState.oncommand = props.command;
+          menuState.onselect = props.command;
 
           suggestionContainer = createVizelSuggestionContainer();
           component = mount(VizelSlashMenu, {
@@ -69,8 +69,8 @@ export function createVizelSlashMenuRenderer(
               get items() {
                 return menuState.items;
               },
-              get oncommand() {
-                return menuState.oncommand;
+              get onselect() {
+                return menuState.onselect;
               },
               ref: menuRef,
             },
@@ -80,7 +80,7 @@ export function createVizelSlashMenuRenderer(
 
         onUpdate: (props: SuggestionProps<VizelSlashCommandItem>) => {
           menuState.items = props.items;
-          menuState.oncommand = props.command;
+          menuState.onselect = props.command;
           suggestionContainer?.updatePosition(props.clientRect);
         },
 

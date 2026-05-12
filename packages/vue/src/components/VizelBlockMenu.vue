@@ -3,6 +3,7 @@ import {
   clampMenuPosition,
   createVizelBlockMenuActions,
   createVizelNodeTypes,
+  type Editor,
   getVizelTurnIntoOptions,
   groupVizelBlockMenuActions,
   shouldFlipSubmenu,
@@ -15,9 +16,17 @@ import {
   vizelDefaultNodeTypes,
 } from "@vizel/core";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
+import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelBlockMenuProps {
+  /**
+   * Bind this menu to a specific editor. Falls back to the editor from
+   * `VizelProvider` context. When set (either way), the menu only reacts to
+   * drag-handle events from the bound editor, so multiple editors on the
+   * same page do not cross-trigger each other's menus.
+   */
+  editor?: Editor | null;
   /** Custom block menu actions (replaces defaults) */
   actions?: readonly VizelBlockMenuAction[];
   /** Custom node types for "Turn into" submenu */
@@ -34,6 +43,9 @@ interface BlockMenuState extends VizelBlockMenuOpenDetail {
 }
 
 const props = defineProps<VizelBlockMenuProps>();
+
+const contextEditor = useVizelContextSafe();
+const boundEditor = computed<Editor | null>(() => props.editor ?? contextEditor?.value ?? null);
 
 const effectiveActions = computed(
   () =>
@@ -83,6 +95,10 @@ function handleTurnInto(nodeType: VizelNodeTypeOption) {
 function handleOpen(e: Event) {
   if (!(e instanceof CustomEvent)) return;
   const detail = e.detail as VizelBlockMenuOpenDetail;
+  // When this menu is bound to an editor (via prop or VizelProvider
+  // context), ignore events from any other editor on the page. This
+  // prevents sibling editors from cross-triggering each other's menus.
+  if (boundEditor.value && detail.editor !== boundEditor.value) return;
   menuState.value = {
     ...detail,
     x: detail.handleRect.left,

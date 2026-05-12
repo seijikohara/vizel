@@ -678,7 +678,7 @@ This component renders the slash command menu.
 ```vue
 <VizelSlashMenu
   :items="items"
-  :command="handleCommand"
+  @select="handleSelect"
   class="my-menu"
 />
 ```
