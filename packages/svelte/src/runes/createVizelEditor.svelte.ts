@@ -87,11 +87,16 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
           context: "Editor initialization failed",
           code: "EDITOR_INIT_FAILED",
         });
-        // Notify the `onError` observer before rethrowing. `onError` is
-        // observation-only; the error is always rethrown so global handlers
-        // (Sentry, test runners' `unhandledrejection` listeners) can see
-        // initialization failures.
-        editorOptions.onError?.(vizelError);
+        const handler = editorOptions.onError;
+        if (handler) {
+          // When a handler is supplied, the consumer has opted in to handling
+          // the failure. Do not also rethrow; that turned the same error into
+          // a console-noisy unhandled rejection right after the handler ran.
+          handler(vizelError);
+          return;
+        }
+        // Otherwise rethrow so global handlers (Sentry, unhandledrejection
+        // listeners) can observe the initialization failure.
         throw vizelError;
       }
     })();

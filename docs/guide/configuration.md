@@ -29,7 +29,7 @@ The main configuration object passed to `useVizelEditor` (React/Vue) or `createV
 | `onSelectionUpdate` | `({ editor }) => void` | Fires when selection changes |
 | `onFocus` | `({ editor }) => void` | Fires when the editor receives focus |
 | `onBlur` | `({ editor }) => void` | Fires when the editor loses focus |
-| `onError` | `(error: VizelError) => void` | Fires when an error occurs during editor operations. The error is re-thrown after this callback |
+| `onError` | `(error: VizelError) => void` | Fires when an error occurs. Supplying this callback takes over the failure path; the editor hook does not also rethrow. Omit the callback to let global handlers (Sentry, `unhandledrejection`) observe failures. |
 
 ### Example
 

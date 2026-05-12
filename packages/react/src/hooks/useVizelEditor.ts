@@ -81,7 +81,16 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
           context: "Editor initialization failed",
           code: "EDITOR_INIT_FAILED",
         });
-        opts.editorOptions.onError?.(vizelError);
+        const handler = opts.editorOptions.onError;
+        if (handler) {
+          // When a handler is supplied, the consumer has opted in to handling
+          // the failure. Do not also rethrow; that turned the same error into
+          // a console-noisy unhandled rejection right after the handler ran.
+          handler(vizelError);
+          return;
+        }
+        // Otherwise rethrow so global handlers (Sentry, unhandledrejection
+        // listeners) can observe the initialization failure.
         throw vizelError;
       }
     })();

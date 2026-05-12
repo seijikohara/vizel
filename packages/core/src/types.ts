@@ -197,16 +197,23 @@ export interface VizelEditorOptions {
    * Callback when an error occurs during editor operations.
    * Provides structured error information for logging or user feedback.
    *
-   * Note: After this callback is invoked, the error is re-thrown to preserve
-   * existing error handling behavior. This callback is primarily for logging,
-   * analytics, or showing user notifications.
+   * Behavior:
+   * - When this callback is supplied, the consumer is treated as having
+   *   handled the failure. The hook/composable/rune does NOT also rethrow.
+   * - When this callback is omitted, the error is rethrown so global
+   *   handlers (Sentry, `window.onunhandledrejection`, test runners) can
+   *   observe initialization failures.
+   *
+   * Supply this callback only when you want to fully take over the error
+   * surface (e.g. translate to UI state, swallow during tests). Leave it
+   * unset to keep the default rethrow contract.
    *
    * @example
    * ```typescript
    * const editor = useVizelEditor({
    *   onError: (error) => {
    *     console.error(`[${error.code}] ${error.message}`);
-   *     // Optionally show user notification
+   *     setEditorError(error);
    *   },
    * });
    * ```
