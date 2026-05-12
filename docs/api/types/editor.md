@@ -47,7 +47,12 @@ interface VizelEditorOptions {
   /** Called when editor loses focus */
   onBlur?: (props: { editor: Editor }) => void;
 
-  /** Called when an error occurs (error is re-thrown after callback) */
+  /**
+   * Called when an error occurs. When this callback is set, the editor
+   * hook treats the failure as handled and does not also rethrow. Omit it
+   * to let global handlers (Sentry, `unhandledrejection`) observe the
+   * failure via a rejected promise.
+   */
   onError?: (error: VizelError) => void;
 }
 ```
