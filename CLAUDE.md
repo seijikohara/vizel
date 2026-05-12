@@ -22,6 +22,7 @@ Vizel is a block-based visual Markdown editor. The project ships Tiptap-based co
 | `packages/svelte/` | Svelte 5 components and runes |
 | `apps/demo/` | Demo applications, one per framework |
 | `tests/ct/` | Playwright Component Tests with shared scenarios |
+| `docs/` | VitePress documentation site published to GitHub Pages |
 
 ## Development Commands
 
@@ -39,6 +40,11 @@ Use Node.js LTS and pnpm. Invoke scripts with `pnpm <script>` and external binar
 | `pnpm test:ct` | Run all Playwright Component Tests in parallel |
 | `pnpm test:ct:seq` | Run all Playwright Component Tests sequentially |
 | `pnpm test:ct:react` / `test:ct:vue` / `test:ct:svelte` | Run tests for one framework |
+| `pnpm docs:dev` | Run the VitePress documentation site locally |
+| `pnpm docs:build` | Build the VitePress site and copy demo bundles into `docs/.vitepress/dist/demo/` |
+| `pnpm docs:preview` | Preview the built VitePress site |
+| `pnpm deps:check` | List outdated dependencies (read-only) |
+| `pnpm deps:update` | Bump dependencies via `taze major -r -w` and run `pnpm install` |
 
 ## Project Rules
 
