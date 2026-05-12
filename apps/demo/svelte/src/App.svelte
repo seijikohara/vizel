@@ -24,8 +24,8 @@ let features = $state({
   autoSave: true,
   stats: true,
   syncPanel: true,
-  comments: false,
-  history: false,
+  comments: true,
+  history: true,
 });
 
 let flavor = $state<VizelMarkdownFlavor>("gfm");
@@ -205,7 +205,7 @@ function handleJsonChange(event: Event) {
       <div class="editor-container">
         <Vizel
           initialMarkdown={getFlavorContent(flavor)}
-          autofocus="end"
+          autofocus="start"
           class="editor-content"
           showToolbar={features.toolbar}
           {flavor}
