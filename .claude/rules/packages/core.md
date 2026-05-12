@@ -76,6 +76,25 @@ Heading.configure({
 - `@tiptap/starter-kit` (use individual extensions instead).
 - Runtime-only dependencies that consumers must install separately.
 
+### Adding a Dependency With Post-Install Scripts
+
+pnpm 10+ refuses to run post-install / install scripts unless the
+package is explicitly approved. When a new dependency triggers an
+`ERR_PNPM_IGNORED_BUILDS` warning at install time, add it to the
+`allowBuilds` block of `pnpm-workspace.yaml` (at the repo root). Skipping
+this leaves the build scripts silently ignored — native binaries and
+git-hook installers will not run, and CI commands that exit on the
+warning will fail.
+
+```yaml
+# pnpm-workspace.yaml
+allowBuilds:
+  "@parcel/watcher": true
+  esbuild: true
+  lefthook: true
+  leveldown: true
+```
+
 ## Build Configuration
 
 The core package uses Vite. Externalize all `@tiptap/*` packages and emit ES modules.
