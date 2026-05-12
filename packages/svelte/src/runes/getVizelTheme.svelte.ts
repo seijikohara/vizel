@@ -1,6 +1,6 @@
 import type { VizelThemeState } from "@vizel/core";
 import { getContext } from "svelte";
-import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext.ts";
+import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext.js";
 
 /**
  * Get theme state and controls from context

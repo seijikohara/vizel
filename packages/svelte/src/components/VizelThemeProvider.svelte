@@ -23,7 +23,7 @@ export interface VizelThemeProviderProps extends VizelThemeProviderOptions {
     type VizelThemeState,
   } from "@vizel/core";
   import { setContext } from "svelte";
-  import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext.ts";
+  import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext.js";
 
   let {
     children,
