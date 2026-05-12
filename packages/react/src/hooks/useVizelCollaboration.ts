@@ -8,6 +8,15 @@ import {
 } from "@vizel/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+// Frozen default so the hook does not synthesize a fresh options literal on
+// every call (which would invalidate `useMemo` deps and tear down the
+// underlying handlers each render).
+const DEFAULT_USER: VizelCollaborationUser = Object.freeze({
+  name: "Anonymous",
+  color: "#6366f1",
+});
+const DEFAULT_OPTIONS: VizelCollaborationOptions = Object.freeze({ user: DEFAULT_USER });
+
 /**
  * Collaboration hook result
  */
@@ -80,7 +89,7 @@ export interface UseVizelCollaborationResult {
  */
 export function useVizelCollaboration(
   provider: VizelYjsProvider | null | undefined,
-  options: VizelCollaborationOptions = { user: { name: "Anonymous", color: "#6366f1" } }
+  options: VizelCollaborationOptions = DEFAULT_OPTIONS
 ): UseVizelCollaborationResult {
   const optionsRef = useRef(options);
   optionsRef.current = options;
@@ -103,13 +112,18 @@ export function useVizelCollaboration(
     setState((prev) => ({ ...prev, ...partial }));
   }, []);
 
+  // Depend on user primitives rather than the whole `options.user` object so
+  // consumers that pass a fresh object literal each render don't tear down
+  // and reattach the underlying collaboration provider.
+  const userName = options.user.name;
+  const userColor = options.user.color;
   const handlers = useMemo(
     () =>
       createVizelCollaborationHandlers(
         () => providerRef.current,
         {
           enabled,
-          user: options.user,
+          user: { name: userName, color: userColor },
           onConnect: () => optionsRef.current.onConnect?.(),
           onDisconnect: () => optionsRef.current.onDisconnect?.(),
           onSynced: () => optionsRef.current.onSynced?.(),
@@ -118,7 +132,7 @@ export function useVizelCollaboration(
         },
         handleStateChange
       ),
-    [enabled, options.user, handleStateChange]
+    [enabled, userName, userColor, handleStateChange]
   );
 
   useEffect(() => {

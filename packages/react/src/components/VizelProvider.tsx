@@ -30,7 +30,7 @@ export interface VizelProviderProps {
 export function VizelProvider({ editor, children, className }: VizelProviderProps) {
   return (
     <VizelInternalProvider editor={editor}>
-      <div className={className} data-vizel-root="">
+      <div className={`vizel-root ${className ?? ""}`.trim()} data-vizel-root="">
         {children}
       </div>
     </VizelInternalProvider>

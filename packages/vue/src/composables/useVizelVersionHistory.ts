@@ -6,7 +6,14 @@ import {
   type VizelVersionHistoryState,
   type VizelVersionSnapshot,
 } from "@vizel/core";
-import { type ComputedRef, computed, onBeforeUnmount, onMounted, reactive, watch } from "vue";
+import {
+  type ComputedRef,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  shallowReactive,
+  watch,
+} from "vue";
 
 /**
  * Version history composable result
@@ -56,7 +63,10 @@ export function useVizelVersionHistory(
 ): UseVizelVersionHistoryResult {
   const opts = { ...VIZEL_DEFAULT_VERSION_HISTORY_OPTIONS, ...options };
 
-  const state = reactive<VizelVersionHistoryState>({
+  // `shallowReactive` avoids deep-proxying `Date`/`Error` instances and
+  // snapshot arrays in the state shape. The fields are reassigned, never
+  // deeply mutated, so shallow reactivity is sufficient and cheaper.
+  const state = shallowReactive<VizelVersionHistoryState>({
     snapshots: [],
     isLoading: false,
     error: null,
