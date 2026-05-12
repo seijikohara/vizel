@@ -44,7 +44,7 @@ export function createVizelMentionMenuRenderer(
         root.render(
           createElement(VizelMentionMenu, {
             items,
-            command: commandFn,
+            onSelect: commandFn,
             ...(options.className !== undefined && { className: options.className }),
             ref: menuRef,
           })

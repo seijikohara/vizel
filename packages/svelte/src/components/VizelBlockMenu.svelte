@@ -1,7 +1,14 @@
 <script lang="ts" module>
-import type { VizelBlockMenuAction, VizelLocale, VizelNodeTypeOption } from "@vizel/core";
+import type { Editor, VizelBlockMenuAction, VizelLocale, VizelNodeTypeOption } from "@vizel/core";
 
 export interface VizelBlockMenuProps {
+  /**
+   * Bind this menu to a specific editor. Falls back to the editor from
+   * `VizelProvider` context. When set (either way), the menu only reacts to
+   * drag-handle events from the bound editor, so multiple editors on the
+   * same page do not cross-trigger each other's menus.
+   */
+  editor?: Editor | null;
   /** Custom block menu actions (replaces defaults) */
   actions?: readonly VizelBlockMenuAction[];
   /** Custom node types for "Turn into" submenu */
@@ -27,6 +34,7 @@ import {
   type VizelBlockMenuOpenDetail,
 } from "@vizel/core";
 import { tick } from "svelte";
+import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
 
 interface BlockMenuState extends VizelBlockMenuOpenDetail {
@@ -35,11 +43,15 @@ interface BlockMenuState extends VizelBlockMenuOpenDetail {
 }
 
 let {
+  editor: editorProp,
   actions,
   nodeTypes,
   class: className,
   locale,
 }: VizelBlockMenuProps = $props();
+
+const contextEditor = getVizelContextSafe();
+const boundEditor = $derived<Editor | null>(editorProp ?? contextEditor?.() ?? null);
 
 const effectiveActions = $derived(actions ?? (locale ? createVizelBlockMenuActions(locale) : vizelDefaultBlockMenuActions));
 const effectiveNodeTypes = $derived(nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes));
@@ -126,6 +138,10 @@ $effect(() => {
   const handleOpen = (e: Event) => {
     if (!(e instanceof CustomEvent)) return;
     const detail = e.detail as VizelBlockMenuOpenDetail;
+    // When this menu is bound to an editor (via prop or VizelProvider
+    // context), ignore events from any other editor on the page. This
+    // prevents sibling editors from cross-triggering each other's menus.
+    if (boundEditor && detail.editor !== boundEditor) return;
     menuState = {
       ...detail,
       x: detail.handleRect.left,

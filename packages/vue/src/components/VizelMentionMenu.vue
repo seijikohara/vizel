@@ -14,7 +14,7 @@ export interface VizelMentionMenuProps {
 const props = defineProps<VizelMentionMenuProps>();
 
 const emit = defineEmits<{
-  command: [item: VizelMentionItem];
+  select: [item: VizelMentionItem];
 }>();
 
 const selectedIndex = ref(0);
@@ -40,7 +40,7 @@ function scrollToSelected() {
 function selectItem(index: number) {
   const item = props.items[index];
   if (item) {
-    emit("command", item);
+    emit("select", item);
   }
 }
 

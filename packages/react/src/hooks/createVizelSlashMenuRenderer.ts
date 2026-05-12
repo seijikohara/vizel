@@ -46,7 +46,7 @@ export function createVizelSlashMenuRenderer(
         root.render(
           createElement(VizelSlashMenu, {
             items,
-            command: commandFn,
+            onSelect: commandFn,
             ...(options.className !== undefined && { className: options.className }),
             ref: menuRef,
           })

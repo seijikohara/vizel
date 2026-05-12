@@ -618,7 +618,7 @@ This component renders the slash command menu.
 ```svelte
 <VizelSlashMenu
   items={items}
-  command={handleCommand}
+  onselect={handleSelect}
   class="my-menu"
 />
 ```

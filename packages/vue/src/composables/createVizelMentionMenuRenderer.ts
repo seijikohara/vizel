@@ -56,7 +56,7 @@ export function createVizelMentionMenuRenderer(
                   items: items.value,
                   ...(options.className !== undefined && { class: options.className }),
                   ref: componentRef,
-                  onCommand: (item: VizelMentionItem) => {
+                  onSelect: (item: VizelMentionItem) => {
                     commandFn.value?.(item);
                   },
                 });

@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<VizelSlashMenuProps>(), {
 });
 
 const emit = defineEmits<{
-  command: [item: VizelSlashCommandItem];
+  select: [item: VizelSlashCommandItem];
 }>();
 
 const slots = useSlots();
@@ -74,7 +74,7 @@ watch(selectedIndex, async (newIndex) => {
 function selectItem(index: number) {
   const item = flatItems.value[index];
   if (item) {
-    emit("command", item);
+    emit("select", item);
   }
 }
 

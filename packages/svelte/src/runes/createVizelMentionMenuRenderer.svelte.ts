@@ -42,10 +42,10 @@ export function createVizelMentionMenuRenderer(
       let suggestionContainer: ReturnType<typeof createVizelSuggestionContainer> | null = null;
       const menuState = $state<{
         items: VizelMentionItem[];
-        oncommand: (item: VizelMentionItem) => void;
+        onselect: (item: VizelMentionItem) => void;
       }>({
         items: [],
-        oncommand: () => {
+        onselect: () => {
           // initial no-op; replaced by Tiptap's `props.command` in onStart.
         },
       });
@@ -54,7 +54,7 @@ export function createVizelMentionMenuRenderer(
       return {
         onStart: (props: SuggestionProps<VizelMentionItem>) => {
           menuState.items = props.items;
-          menuState.oncommand = props.command;
+          menuState.onselect = props.command;
 
           suggestionContainer = createVizelSuggestionContainer();
           component = mount(VizelMentionMenu, {
@@ -64,8 +64,8 @@ export function createVizelMentionMenuRenderer(
               get items() {
                 return menuState.items;
               },
-              get oncommand() {
-                return menuState.oncommand;
+              get onselect() {
+                return menuState.onselect;
               },
               ref: menuRef,
             },
@@ -75,7 +75,7 @@ export function createVizelMentionMenuRenderer(
 
         onUpdate: (props: SuggestionProps<VizelMentionItem>) => {
           menuState.items = props.items;
-          menuState.oncommand = props.command;
+          menuState.onselect = props.command;
           suggestionContainer?.updatePosition(props.clientRect);
         },
 

@@ -15,9 +15,17 @@ import {
   vizelDefaultNodeTypes,
 } from "@vizel/core";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelBlockMenuProps {
+  /**
+   * Bind this menu to a specific editor. Falls back to the editor from
+   * `VizelProvider` context. When set (either way), the menu only reacts to
+   * drag-handle events from the bound editor, so multiple editors on the
+   * same page do not cross-trigger each other's menus.
+   */
+  editor?: Editor | null;
   /** Custom block menu actions (replaces defaults) */
   actions?: readonly VizelBlockMenuAction[];
   /** Custom node types for "Turn into" submenu */
@@ -38,11 +46,14 @@ interface BlockMenuState extends VizelBlockMenuOpenDetail {
  * Renders via fixed positioning near the drag handle.
  */
 export function VizelBlockMenu({
+  editor: editorProp,
   actions,
   nodeTypes,
   className,
   locale,
 }: VizelBlockMenuProps): ReactNode {
+  const context = useVizelContextSafe();
+  const boundEditor: Editor | null = editorProp ?? context?.editor ?? null;
   const effectiveActions =
     actions ?? (locale ? createVizelBlockMenuActions(locale) : vizelDefaultBlockMenuActions);
   const effectiveNodeTypes =
@@ -66,6 +77,10 @@ export function VizelBlockMenu({
     const handler = (e: Event) => {
       if (!(e instanceof CustomEvent)) return;
       const detail = e.detail as VizelBlockMenuOpenDetail;
+      // When this menu is bound to an editor (via prop or VizelProvider
+      // context), ignore events from any other editor on the page. This
+      // prevents sibling editors from cross-triggering each other's menus.
+      if (boundEditor && detail.editor !== boundEditor) return;
       menuEditorRef.current = detail.editor;
       setMenuState({
         ...detail,
@@ -85,7 +100,7 @@ export function VizelBlockMenu({
 
     document.addEventListener(VIZEL_BLOCK_MENU_EVENT, handler);
     return () => document.removeEventListener(VIZEL_BLOCK_MENU_EVENT, handler);
-  }, []);
+  }, [boundEditor]);
 
   // Focus first menuitem when menu opens
   useEffect(() => {
