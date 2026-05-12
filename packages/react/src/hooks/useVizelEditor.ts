@@ -17,6 +17,22 @@ export type UseVizelEditorOptions = VizelCreateEditorOptions;
 /**
  * React hook to create and manage a Vizel editor instance.
  *
+ * ## Reactive vs mount-time options
+ *
+ * The Tiptap editor instance is created once on mount. To avoid expensive
+ * teardowns, most options are read once at mount and ignored on subsequent
+ * renders. The following options are an exception:
+ *
+ * - `editable` — propagated through `editor.setEditable()` whenever the prop
+ *   value changes.
+ * - All `on*` callbacks (`onUpdate`, `onError`, etc.) — read through a ref
+ *   each time they fire, so passing a fresh closure on every render is fine.
+ *
+ * Changing `initialContent`, `initialMarkdown`, `placeholder`, `features`,
+ * `extensions`, `flavor`, `locale`, or `autofocus` after mount has no effect.
+ * Use `editor.commands.setContent(...)` (or the corresponding feature command)
+ * to update the document after mount.
+ *
  * @example
  * ```tsx
  * const editor = useVizelEditor({
@@ -26,7 +42,7 @@ export type UseVizelEditorOptions = VizelCreateEditorOptions;
  *   },
  * });
  *
- * return <EditorContent editor={editor} />;
+ * return <VizelEditor editor={editor} />;
  * ```
  *
  * @example
@@ -110,6 +126,17 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
       getImageOptions: () => imageOptionsRef.current,
     });
   }, [editor]);
+
+  // Mirror the `editable` prop into the underlying editor. The constructor
+  // option is captured at mount; without this watcher consumers cannot
+  // toggle read-only mode after the editor exists.
+  const editable = editorOptions.editable ?? true;
+  useEffect(() => {
+    if (!editor) return;
+    if (editor.isEditable !== editable) {
+      editor.setEditable(editable);
+    }
+  }, [editor, editable]);
 
   return editor;
 }

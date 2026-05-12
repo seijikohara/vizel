@@ -7,14 +7,7 @@ import {
   type VizelAutoSaveState,
   type VizelSaveStatus,
 } from "@vizel/core";
-import {
-  type ComputedRef,
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  shallowReactive,
-  watch,
-} from "vue";
+import { type ComputedRef, computed, onBeforeUnmount, shallowReactive, watch } from "vue";
 
 /**
  * Auto-save composable result
@@ -108,16 +101,17 @@ export function useVizelAutoSave(
     currentEditor.on("update", handlers.handleUpdate);
   };
 
-  onMounted(() => {
-    subscribe();
-  });
-
-  // Watch for editor changes
+  // Single setup path: a `watch` with `immediate: true` fires once on mount
+  // (replacing the previous `onMounted` call) AND again when the editor
+  // reference changes. The earlier shape called `subscribe()` both in
+  // `onMounted` and in the watcher's first non-`immediate` run, producing
+  // two subscriptions on first non-null editor and an unnecessary teardown.
   watch(
     () => getEditor(),
     () => {
       subscribe();
-    }
+    },
+    { immediate: true }
   );
 
   onBeforeUnmount(() => {

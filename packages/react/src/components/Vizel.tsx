@@ -10,7 +10,7 @@ import {
   type VizelMarkdownFlavor,
 } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
-import { useEffect, useImperativeHandle, useRef } from "react";
+import { useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
 import { VizelBlockMenu } from "./VizelBlockMenu.tsx";
 import { VizelBubbleMenu } from "./VizelBubbleMenu.tsx";
@@ -179,15 +179,28 @@ export function Vizel({
   // Track whether we're currently updating from external markdown change
   const isUpdatingFromMarkdownRef = useRef(false);
 
-  // Keep refs for values accessed in the onUpdate closure to avoid stale captures.
-  // useVizelEditor only reads options once at mount time, so the onUpdate callback
-  // would otherwise permanently capture the initial markdown/onMarkdownChange values.
+  // Keep refs for every value accessed in the editor's lifecycle callbacks.
+  // `useVizelEditor` reads options once at mount, so without refs each
+  // callback would be frozen to the closure values from the first render —
+  // re-renders that pass a fresh handler would be silently ignored.
   const markdownRef = useRef(markdown);
   markdownRef.current = markdown;
   const onMarkdownChangeRef = useRef(onMarkdownChange);
   onMarkdownChangeRef.current = onMarkdownChange;
   const onUpdateRef = useRef(onUpdate);
   onUpdateRef.current = onUpdate;
+  const onCreateRef = useRef(onCreate);
+  onCreateRef.current = onCreate;
+  const onDestroyRef = useRef(onDestroy);
+  onDestroyRef.current = onDestroy;
+  const onSelectionUpdateRef = useRef(onSelectionUpdate);
+  onSelectionUpdateRef.current = onSelectionUpdate;
+  const onFocusRef = useRef(onFocus);
+  onFocusRef.current = onFocus;
+  const onBlurRef = useRef(onBlur);
+  onBlurRef.current = onBlur;
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
 
   const editor = useVizelEditor({
     ...(initialContent !== undefined && { initialContent }),
@@ -207,12 +220,12 @@ export function Vizel({
         onMarkdownChangeRef.current?.(getVizelMarkdown(e.editor));
       }
     },
-    ...(onCreate !== undefined && { onCreate }),
-    ...(onDestroy !== undefined && { onDestroy }),
-    ...(onSelectionUpdate !== undefined && { onSelectionUpdate }),
-    ...(onFocus !== undefined && { onFocus }),
-    ...(onBlur !== undefined && { onBlur }),
-    ...(onError !== undefined && { onError }),
+    onCreate: (e) => onCreateRef.current?.(e),
+    onDestroy: () => onDestroyRef.current?.(),
+    onSelectionUpdate: (e) => onSelectionUpdateRef.current?.(e),
+    onFocus: (e) => onFocusRef.current?.(e),
+    onBlur: (e) => onBlurRef.current?.(e),
+    onError: (e) => onErrorRef.current?.(e),
   });
 
   // Watch for external markdown changes (controlled mode)
@@ -240,7 +253,9 @@ export function Vizel({
     [editor]
   );
 
-  const localeProps = locale === undefined ? {} : { locale };
+  // Memoize so child components that compare prop identity (toolbar / bubble
+  // menu / block menu) don't see a fresh `localeProps` object on every render.
+  const localeProps = useMemo(() => (locale === undefined ? {} : { locale }), [locale]);
 
   return (
     <div className={`vizel-root ${className ?? ""}`} data-vizel-root="">

@@ -6,14 +6,7 @@ import {
   type VizelCollaborationUser,
   type VizelYjsProvider,
 } from "@vizel/core";
-import {
-  type ComputedRef,
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  shallowReactive,
-  watch,
-} from "vue";
+import { type ComputedRef, computed, onBeforeUnmount, shallowReactive, watch } from "vue";
 
 /**
  * Collaboration composable result
@@ -117,15 +110,17 @@ export function useVizelCollaboration(
     handlers = null;
   }
 
-  onMounted(() => {
-    setup();
-  });
-
+  // Single setup path: a `watch` with `immediate: true` fires once on mount
+  // (replacing the previous `onMounted` call) AND again when the provider
+  // reference changes. The earlier shape called `setup()` both in
+  // `onMounted` and in the watcher's first non-`immediate` run, producing
+  // two subscriptions on first non-null provider and an unnecessary teardown.
   watch(
     () => getProvider(),
     () => {
       setup();
-    }
+    },
+    { immediate: true }
   );
 
   onBeforeUnmount(() => {

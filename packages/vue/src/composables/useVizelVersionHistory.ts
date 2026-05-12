@@ -6,14 +6,7 @@ import {
   type VizelVersionHistoryState,
   type VizelVersionSnapshot,
 } from "@vizel/core";
-import {
-  type ComputedRef,
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  shallowReactive,
-  watch,
-} from "vue";
+import { type ComputedRef, computed, onBeforeUnmount, shallowReactive, watch } from "vue";
 
 /**
  * Version history composable result
@@ -88,15 +81,17 @@ export function useVizelVersionHistory(
     }
   }
 
-  onMounted(() => {
-    setup();
-  });
-
+  // Single setup path: a `watch` with `immediate: true` fires once on mount
+  // (replacing the previous `onMounted` call) AND again when the editor
+  // reference changes. The earlier shape called `setup()` both in
+  // `onMounted` and in the watcher's first non-`immediate` run, producing
+  // two subscriptions on first non-null editor and an unnecessary teardown.
   watch(
     () => getEditor(),
     () => {
       setup();
-    }
+    },
+    { immediate: true }
   );
 
   onBeforeUnmount(() => {
