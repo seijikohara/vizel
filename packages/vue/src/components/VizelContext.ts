@@ -33,12 +33,19 @@ export function useVizelContext(): ComputedRef<Editor | null> {
 }
 
 /**
- * Composable to access the editor getter from context.
- * Returns null if used outside of VizelProvider (does not throw).
+ * Composable to access the editor instance from VizelProvider context.
+ * Returns `null` if used outside a VizelProvider (does NOT throw).
  *
- * @returns A getter function that returns the editor, or null if outside VizelProvider
+ * Both `useVizelContext` and `useVizelContextSafe` return a
+ * `ComputedRef<Editor | null>` so destructuring / template usage is
+ * symmetric; the only difference is whether the absence of a provider
+ * is treated as fatal.
+ *
+ * @returns A computed ref of the editor, or `null` when no provider is present.
  */
-export function useVizelContextSafe(): (() => Editor | null) | null {
+export function useVizelContextSafe(): ComputedRef<Editor | null> | null {
   // Provide null as default to suppress Vue warning when used outside VizelProvider
-  return inject(VIZEL_CONTEXT_KEY, null);
+  const getEditor = inject(VIZEL_CONTEXT_KEY, null);
+  if (!getEditor) return null;
+  return computed(() => getEditor());
 }

@@ -156,18 +156,12 @@ watch(markdown, (newMarkdown) => {
   isUpdatingFromMarkdown = false;
 });
 
-// Expose editor instance for advanced use cases
-// Both `editor` property and `getEditor()` method are provided for compatibility
-defineExpose<VizelRef & { getEditor: () => Editor | null }>({
+// Expose editor instance for advanced use cases.
+defineExpose<VizelRef>({
   /** The underlying Tiptap editor instance */
   get editor() {
     return editor.value;
   },
-  /**
-   * Get the underlying Tiptap editor instance
-   * @deprecated Use the `editor` property instead
-   */
-  getEditor: () => editor.value,
 });
 </script>
 

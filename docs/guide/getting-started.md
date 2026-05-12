@@ -375,7 +375,7 @@ import { useVizelEditor, useVizelMarkdown, VizelEditor } from '@vizel/react';
 
 function Editor() {
   const editor = useVizelEditor();
-  const { markdown, setMarkdown, isPending } = useVizelMarkdown(() => editor);
+  const { markdown, setMarkdown, isPending } = useVizelMarkdown(editor);
   
   // markdown updates automatically when editor content changes
   // setMarkdown() updates editor content from markdown

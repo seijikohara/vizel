@@ -31,8 +31,8 @@ const props = withDefaults(defineProps<VizelBubbleMenuProps>(), {
 
 const slots = useSlots();
 const menuRef = ref<HTMLElement | null>(null);
-const getContextEditor = useVizelContextSafe();
-const editor = computed(() => props.editor ?? getContextEditor?.());
+const contextEditor = useVizelContextSafe();
+const editor = computed(() => props.editor ?? contextEditor?.value ?? null);
 
 // Handle Escape key to hide bubble menu by collapsing selection
 function handleKeyDown(event: KeyboardEvent) {

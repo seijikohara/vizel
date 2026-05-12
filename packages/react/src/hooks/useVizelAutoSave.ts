@@ -30,7 +30,7 @@ export interface UseVizelAutoSaveResult {
 /**
  * Hook for auto-saving editor content with debouncing.
  *
- * @param getEditor - Function that returns the editor instance
+ * @param editor - The editor instance (or `null` while it is still initializing)
  * @param options - Auto-save configuration options
  * @returns Auto-save state and controls
  *
@@ -38,7 +38,7 @@ export interface UseVizelAutoSaveResult {
  * ```tsx
  * function Editor() {
  *   const editor = useVizelEditor({ ... });
- *   const { status, lastSaved, save } = useVizelAutoSave(() => editor, {
+ *   const { status, lastSaved, save } = useVizelAutoSave(editor, {
  *     debounceMs: 2000,
  *     storage: 'localStorage',
  *     key: 'my-document',
@@ -46,15 +46,15 @@ export interface UseVizelAutoSaveResult {
  *
  *   return (
  *     <div>
- *       <EditorContent editor={editor} />
- *       <SaveIndicator status={status} lastSaved={lastSaved} />
+ *       <VizelEditor editor={editor} />
+ *       <VizelSaveIndicator status={status} lastSaved={lastSaved} />
  *     </div>
  *   );
  * }
  * ```
  */
 export function useVizelAutoSave(
-  getEditor: () => Editor | null | undefined,
+  editor: Editor | null | undefined,
   options: VizelAutoSaveOptions = {}
 ): UseVizelAutoSaveResult {
   // Store full options in ref to access callbacks without recreating handlers
@@ -75,9 +75,10 @@ export function useVizelAutoSave(
     error: null,
   });
 
-  // Keep a ref to the getEditor function for the handlers
-  const getEditorRef = useRef(getEditor);
-  getEditorRef.current = getEditor;
+  // Keep a ref to the editor for the handlers so they always read the latest
+  // value without forcing a memo rebuild on every render.
+  const editorRef = useRef(editor);
+  editorRef.current = editor;
 
   const handleStateChange = useCallback((partial: Partial<VizelAutoSaveState>) => {
     setState((prev) => ({ ...prev, ...partial }));
@@ -88,7 +89,7 @@ export function useVizelAutoSave(
   const handlers = useMemo(
     () =>
       createVizelAutoSaveHandlers(
-        () => getEditorRef.current(),
+        () => editorRef.current,
         {
           enabled,
           debounceMs,
@@ -104,10 +105,6 @@ export function useVizelAutoSave(
     [enabled, debounceMs, storage, key, handleStateChange]
   );
 
-  // Track editor value (stable reference) instead of getEditor (unstable function).
-  // Depending on getEditor causes the effect to tear down on every parent re-render,
-  // which cancels in-flight debounced saves and drops unsaved edits.
-  const editor = getEditor();
   useEffect(() => {
     if (!(editor && enabled)) return;
 

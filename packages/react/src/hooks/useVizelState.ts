@@ -6,13 +6,13 @@ import { useEffect, useReducer } from "react";
  * This is useful for components that need to reflect the current editor state
  * (e.g., formatting buttons that show active state).
  *
- * @param getEditor - A function that returns the editor instance
+ * @param editor - The editor instance (or `null` while it is still initializing)
  * @returns A number that changes on each editor state update (can be ignored)
  *
  * @example
  * ```tsx
  * function FormattingButtons({ editor }: { editor: Editor }) {
- *   useVizelState(() => editor);
+ *   useVizelState(editor);
  *   // Now editor.isActive() will be re-evaluated on each state change
  *   return (
  *     <button className={editor.isActive("bold") ? "active" : ""}>
@@ -22,9 +22,8 @@ import { useEffect, useReducer } from "react";
  * }
  * ```
  */
-export function useVizelState(getEditor: () => Editor | null | undefined): number {
+export function useVizelState(editor: Editor | null | undefined): number {
   const [updateCount, forceUpdate] = useReducer((x: number) => x + 1, 0);
-  const editor = getEditor() ?? null;
 
   useEffect(() => {
     if (!editor) return;

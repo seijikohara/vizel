@@ -22,7 +22,7 @@ export function VizelRefStateFixture({
   const [editor, setEditor] = useState<Editor | null>(null);
 
   // Track editor state for character/word count
-  useVizelState(() => editor);
+  useVizelState(editor);
   const editorState = getVizelEditorState(editor);
 
   return (

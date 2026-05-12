@@ -46,7 +46,7 @@ export interface UseVizelCommentResult {
 /**
  * Hook for managing document comments and annotations.
  *
- * @param getEditor - Function that returns the editor instance
+ * @param editor - The editor instance (or `null` while it is still initializing)
  * @param options - Comment configuration options
  * @returns Comment state and controls
  *
@@ -57,7 +57,7 @@ export interface UseVizelCommentResult {
  *     features: { comment: true },
  *   });
  *   const { comments, addComment, resolveComment, setActiveComment } =
- *     useVizelComment(() => editor, { key: "my-comments" });
+ *     useVizelComment(editor, { key: "my-comments" });
  *
  *   const handleAddComment = () => {
  *     const text = prompt("Enter comment:");
@@ -82,7 +82,7 @@ export interface UseVizelCommentResult {
  * ```
  */
 export function useVizelComment(
-  getEditor: () => Editor | null | undefined,
+  editor: Editor | null | undefined,
   options: VizelCommentOptions = {}
 ): UseVizelCommentResult {
   const optionsRef = useRef(options);
@@ -99,8 +99,10 @@ export function useVizelComment(
     error: null,
   });
 
-  const getEditorRef = useRef(getEditor);
-  getEditorRef.current = getEditor;
+  // Keep a ref to the editor for the handlers so they always read the latest
+  // value without forcing a memo rebuild on every render.
+  const editorRef = useRef(editor);
+  editorRef.current = editor;
 
   const handleStateChange = useCallback((partial: Partial<VizelCommentState>) => {
     setState((prev) => ({ ...prev, ...partial }));
@@ -109,7 +111,7 @@ export function useVizelComment(
   const handlers = useMemo(
     () =>
       createVizelCommentHandlers(
-        () => getEditorRef.current(),
+        () => editorRef.current,
         {
           enabled,
           storage,
@@ -125,8 +127,6 @@ export function useVizelComment(
     [enabled, storage, key, handleStateChange]
   );
 
-  // Track editor value (stable reference) instead of getEditor (unstable function)
-  const editor = getEditor();
   useEffect(() => {
     if (editor && enabled) {
       handlers.loadComments();

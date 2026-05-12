@@ -22,7 +22,7 @@ import { useVizelEditor, useVizelVersionHistory, VizelProvider, VizelEditor } fr
 function Editor() {
   const editor = useVizelEditor({});
   const { snapshots, saveVersion, restoreVersion, deleteVersion } =
-    useVizelVersionHistory(() => editor, {
+    useVizelVersionHistory(editor, {
       maxVersions: 20,
       key: "my-doc-versions",
     });
@@ -135,7 +135,7 @@ interface VizelVersionHistoryOptions {
 Limits the number of stored snapshots. When the limit is reached, Vizel removes the oldest snapshot.
 
 ```typescript
-useVizelVersionHistory(() => editor, {
+useVizelVersionHistory(editor, {
   maxVersions: 10, // Keep only the last 10 versions
 });
 ```
@@ -146,12 +146,12 @@ You can choose between built-in `localStorage`, `sessionStorage`, or a custom ba
 
 ```typescript
 // localStorage (default)
-useVizelVersionHistory(() => editor, {
+useVizelVersionHistory(editor, {
   storage: "localStorage",
 });
 
 // Custom backend (e.g., API)
-useVizelVersionHistory(() => editor, {
+useVizelVersionHistory(editor, {
   storage: {
     save: async (snapshots) => {
       await fetch("/api/versions", {

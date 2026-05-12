@@ -90,7 +90,7 @@ This hook forces a re-render on editor state changes.
 ```tsx
 import { useVizelState } from '@vizel/react';
 
-const updateCount = useVizelState(() => editor);
+const updateCount = useVizelState(editor);
 ```
 
 **Returns:** `number` (update count)
@@ -102,7 +102,7 @@ This hook returns a `VizelEditorState` object that reactively tracks editor stat
 ```tsx
 import { useVizelEditorState } from '@vizel/react';
 
-const state = useVizelEditorState(() => editor);
+const state = useVizelEditorState(editor);
 // state.isBold, state.isItalic, state.headingLevel, etc.
 ```
 
@@ -116,7 +116,7 @@ This hook auto-saves editor content with debouncing.
 import { useVizelAutoSave } from '@vizel/react';
 
 const result = useVizelAutoSave(
-  () => editor,
+  editor,
   options?: VizelAutoSaveOptions
 );
 ```
@@ -140,7 +140,7 @@ This hook provides two-way Markdown synchronization with debouncing.
 import { useVizelMarkdown } from '@vizel/react';
 
 const result = useVizelMarkdown(
-  () => editor,
+  editor,
   options?: VizelMarkdownSyncOptions
 );
 ```
@@ -205,7 +205,7 @@ const {
   disconnect,
   updateUser,
 } = useVizelCollaboration(
-  () => wsProvider,
+  wsProvider,
   { user: { name: 'Alice', color: '#ff0000' } }
 );
 ```
@@ -214,7 +214,7 @@ const {
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `getProvider` | `() => VizelYjsProvider \| null \| undefined` | Getter function for the Yjs provider |
+| `provider` | `VizelYjsProvider \| null \| undefined` | The Yjs provider instance |
 | `options` | `VizelCollaborationOptions` | Collaboration options including user info |
 
 **Returns:** `UseVizelCollaborationResult`
@@ -249,14 +249,14 @@ const {
   setActiveComment,
   loadComments,
   getCommentById,
-} = useVizelComment(() => editor, { key: 'my-comments' });
+} = useVizelComment(editor, { key: 'my-comments' });
 ```
 
 **Parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `getEditor` | `() => Editor \| null \| undefined` | Getter function for the editor |
+| `editor` | `Editor \| null \| undefined` | The editor instance |
 | `options` | `VizelCommentOptions` | Comment configuration options |
 
 **Returns:** `UseVizelCommentResult`
@@ -292,14 +292,14 @@ const {
   loadVersions,
   deleteVersion,
   clearVersions,
-} = useVizelVersionHistory(() => editor, { maxVersions: 20 });
+} = useVizelVersionHistory(editor, { maxVersions: 20 });
 ```
 
 **Parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `getEditor` | `() => Editor \| null \| undefined` | Getter function for the editor |
+| `editor` | `Editor \| null \| undefined` | The editor instance |
 | `options` | `VizelVersionHistoryOptions` | Version history configuration |
 
 **Returns:** `UseVizelVersionHistoryResult`

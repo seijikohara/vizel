@@ -207,7 +207,7 @@ console.log(state);
 import { useVizelState } from '@vizel/react';
 
 function EditorStatus({ editor }) {
-  const updateCount = useVizelState(() => editor);
+  const updateCount = useVizelState(editor);
   
   // Component re-renders on editor changes
   return (

@@ -24,7 +24,7 @@ function Editor() {
     features: { comment: true },
   });
   const { comments, addComment, resolveComment, removeComment, setActiveComment } =
-    useVizelComment(() => editor, {
+    useVizelComment(editor, {
       key: "my-doc-comments",
     });
 
@@ -175,7 +175,7 @@ interface VizelCommentOptions {
 Provide both `save` and `load` (both are required):
 
 ```typescript
-useVizelComment(() => editor, {
+useVizelComment(editor, {
   storage: {
     save: async (comments) => {
       await fetch("/api/comments", {
