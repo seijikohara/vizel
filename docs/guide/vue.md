@@ -426,6 +426,18 @@ const markdown = ref('# Hello World\n\nStart editing...');
 </template>
 ```
 
+#### Controlled vs uncontrolled
+
+| Mode | Props | Who owns the state | When to use |
+|------|-------|--------------------|-------------|
+| **Uncontrolled** | `:initial-markdown="..."` only | The editor | Standalone editor; observe edits via `@update`. |
+| **Controlled** | `v-model:markdown="..."` (or `:markdown` + `@update:markdown`) | The parent component | Sync with form state, persist to a remote store, drive the editor from another input. |
+
+Passing only `:markdown` without listening for `update:markdown` is
+treated as "set-once": the editor renders the initial value but later
+prop changes are ignored. Always use `v-model:markdown` (or both halves
+manually) when you intend two-way sync.
+
 ### Split View (WYSIWYG + Raw Markdown)
 
 ```vue

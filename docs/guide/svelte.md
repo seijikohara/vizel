@@ -390,6 +390,17 @@ This component renders an icon from the icon context. It uses Iconify icon IDs b
 <Vizel initialMarkdown="# Read Only Initial" />
 ```
 
+#### Controlled vs uncontrolled
+
+| Mode | Binding | Who owns the state | When to use |
+|------|---------|--------------------|-------------|
+| **Uncontrolled** | `initialMarkdown` only | The editor | Standalone editor; observe edits via `onUpdate`. |
+| **Controlled** | `bind:markdown={...}` (Svelte 5 `$bindable`) | The parent component | Sync with form state, persist to a remote store, drive the editor from another input. |
+
+Passing only `markdown={...}` (without `bind:`) is treated as
+"set-once": the editor renders the initial value but later prop
+changes are ignored. Use `bind:markdown` when you intend two-way sync.
+
 ### Split View (WYSIWYG + Raw Markdown)
 
 ```svelte

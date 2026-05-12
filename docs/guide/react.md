@@ -394,6 +394,21 @@ import { VizelIcon } from '@vizel/react';
 
 ### Working with Markdown
 
+#### Controlled vs uncontrolled
+
+`<Vizel>` accepts markdown in two modes that mirror React's familiar
+controlled-input pattern.
+
+| Mode | Props | Who owns the state | When to use |
+|------|-------|--------------------|-------------|
+| **Uncontrolled** | `initialMarkdown` only | The editor | Standalone editor; observe edits via `onUpdate`. |
+| **Controlled** | Both `markdown` AND `onMarkdownChange` | The parent component | Sync with form state, persist to a remote store, drive the editor from another input. |
+
+Passing only `markdown` without `onMarkdownChange` is treated as
+"set-once": the editor renders the initial value but later prop changes
+are ignored — exactly like a `<textarea value="..."/>` without `onChange`.
+Always pair the two props when you intend two-way sync.
+
 ```tsx
 import { Vizel } from '@vizel/react';
 

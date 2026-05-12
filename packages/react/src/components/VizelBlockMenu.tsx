@@ -14,7 +14,7 @@ import {
   vizelDefaultBlockMenuActions,
   vizelDefaultNodeTypes,
 } from "@vizel/core";
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
 
@@ -54,10 +54,18 @@ export function VizelBlockMenu({
 }: VizelBlockMenuProps): ReactNode {
   const context = useVizelContextSafe();
   const boundEditor: Editor | null = editorProp ?? context?.editor ?? null;
-  const effectiveActions =
-    actions ?? (locale ? createVizelBlockMenuActions(locale) : vizelDefaultBlockMenuActions);
-  const effectiveNodeTypes =
-    nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes);
+  // Memoize so locale-derived defaults aren't recomputed on every render.
+  // createVizelBlockMenuActions / createVizelNodeTypes build new arrays each
+  // call, which would invalidate downstream memos (groupVizelBlockMenuActions,
+  // getVizelTurnIntoOptions) needlessly.
+  const effectiveActions = useMemo(
+    () => actions ?? (locale ? createVizelBlockMenuActions(locale) : vizelDefaultBlockMenuActions),
+    [actions, locale]
+  );
+  const effectiveNodeTypes = useMemo(
+    () => nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes),
+    [nodeTypes, locale]
+  );
   const [menuState, setMenuState] = useState<BlockMenuState | null>(null);
   const [showTurnInto, setShowTurnInto] = useState(false);
   const [submenuFlipped, setSubmenuFlipped] = useState(false);
