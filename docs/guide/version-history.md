@@ -142,7 +142,7 @@ useVizelVersionHistory(() => editor, {
 
 ### `storage`
 
-You can choose between built-in localStorage or a custom backend.
+You can choose between built-in `localStorage`, `sessionStorage`, or a custom backend (both `save` and `load` are required for custom backends).
 
 ```typescript
 // localStorage (default)

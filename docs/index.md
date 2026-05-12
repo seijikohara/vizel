@@ -13,11 +13,14 @@ hero:
       text: Get Started
       link: /guide/getting-started
     - theme: alt
-      text: View on GitHub
-      link: https://github.com/seijikohara/vizel
+      text: Live Demo
+      link: /demo/
     - theme: alt
       text: API Reference
       link: /api/
+    - theme: alt
+      text: View on GitHub
+      link: https://github.com/seijikohara/vizel
 
 features:
   - title: Block-based Editing
@@ -138,6 +141,78 @@ import '@vizel/core/styles.css';
 ```
 
 :::
+
+## Try the Demo
+
+Each framework ships a live demo that exercises the full feature set:
+
+<div class="home-demo-links">
+  <a href="./demo/react/" target="_blank" rel="noopener" class="home-demo-link">
+    <img src="./public/react.svg" alt="" aria-hidden="true" class="home-demo-icon" />
+    <span class="home-demo-name">React 19</span>
+    <span class="home-demo-hint">@vizel/react</span>
+  </a>
+  <a href="./demo/vue/" target="_blank" rel="noopener" class="home-demo-link">
+    <img src="./public/vue.svg" alt="" aria-hidden="true" class="home-demo-icon" />
+    <span class="home-demo-name">Vue 3</span>
+    <span class="home-demo-hint">@vizel/vue</span>
+  </a>
+  <a href="./demo/svelte/" target="_blank" rel="noopener" class="home-demo-link">
+    <img src="./public/svelte.svg" alt="" aria-hidden="true" class="home-demo-icon" />
+    <span class="home-demo-name">Svelte 5</span>
+    <span class="home-demo-hint">@vizel/svelte</span>
+  </a>
+</div>
+
+<style>
+.home-demo-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.home-demo-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.2s;
+}
+
+.home-demo-link:hover {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
+  transform: translateY(-2px);
+}
+
+.home-demo-icon {
+  width: 56px;
+  height: 56px;
+}
+
+.home-demo-name {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--vp-c-text-1);
+}
+
+.home-demo-hint {
+  font-size: 0.85rem;
+  font-family: var(--vp-font-family-mono);
+  color: var(--vp-c-text-2);
+}
+
+@media (max-width: 640px) {
+  .home-demo-links {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
 
 ## Feature Highlights
 

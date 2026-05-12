@@ -108,7 +108,7 @@ const { status } = useVizelAutoSave(() => editor, {
 
 ### Custom Backend
 
-You can implement your own storage backend for server-side persistence:
+You can implement your own storage backend for server-side persistence. Both `save` and `load` are required:
 
 ```typescript
 const { status } = useVizelAutoSave(() => editor, {
