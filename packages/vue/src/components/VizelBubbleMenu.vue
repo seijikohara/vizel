@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { BubbleMenuPlugin, type Editor, type VizelLocale } from "@vizel/core";
-import { computed, onBeforeUnmount, ref, useSlots, watch } from "vue";
+import { computed, ref, useSlots, watch } from "vue";
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 
@@ -42,16 +42,15 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 }
 
+// Use `onCleanup` so every register/listen pair has a guaranteed teardown that
+// runs before the next watcher fire AND on unmount. The previous shape (manual
+// `oldElement` check + a separate `onBeforeUnmount`) double-registered the
+// ProseMirror plugin on the first editor-resolve because the initial early
+// return left `oldElement` permanently undefined.
 watch(
   [editor, menuRef],
-  ([editorValue, element], [, oldElement]) => {
+  ([editorValue, element], _old, onCleanup) => {
     if (!(editorValue && element)) return;
-
-    // Unregister old plugin if element changed
-    if (oldElement) {
-      editorValue.unregisterPlugin(props.pluginKey);
-      document.removeEventListener("keydown", handleKeyDown);
-    }
 
     const plugin = BubbleMenuPlugin({
       pluginKey: props.pluginKey,
@@ -69,16 +68,14 @@ watch(
 
     editorValue.registerPlugin(plugin);
     document.addEventListener("keydown", handleKeyDown);
+
+    onCleanup(() => {
+      editorValue.unregisterPlugin(props.pluginKey);
+      document.removeEventListener("keydown", handleKeyDown);
+    });
   },
   { immediate: true }
 );
-
-onBeforeUnmount(() => {
-  if (editor.value) {
-    editor.value.unregisterPlugin(props.pluginKey);
-  }
-  document.removeEventListener("keydown", handleKeyDown);
-});
 </script>
 
 <template>

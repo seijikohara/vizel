@@ -3,7 +3,7 @@ import type { VizelSlashCommandItem } from "@vizel/core";
 import type { Snippet } from "svelte";
 
 export interface VizelSlashMenuRef {
-  onKeyDown: (event: KeyboardEvent) => boolean;
+  onKeyDown?: (event: KeyboardEvent) => boolean;
 }
 
 export interface VizelSlashMenuProps {
@@ -21,6 +21,15 @@ export interface VizelSlashMenuProps {
   renderItem?: Snippet<[{ item: VizelSlashCommandItem; isSelected: boolean; onclick: () => void }]>;
   /** Custom empty state renderer */
   renderEmpty?: Snippet;
+  /**
+   * Mutable ref object the component populates with imperative handles
+   * (notably `onKeyDown`). Pass an object; this component assigns to its
+   * fields so callers can drive keyboard navigation from outside.
+   *
+   * Instance-script exports are not reachable through `mount()` in Svelte 5,
+   * so this ref-prop pattern is the way to expose imperative handles.
+   */
+  ref?: VizelSlashMenuRef;
 }
 </script>
 
@@ -38,6 +47,7 @@ let {
   groupOrder,
   renderItem,
   renderEmpty,
+  ref,
 }: VizelSlashMenuProps = $props();
 
 let selectedIndex = $state(0);
@@ -127,7 +137,7 @@ function getGlobalIndex(groupIndex: number, itemIndex: number): number {
   return index + itemIndex;
 }
 
-export function onKeyDown(event: KeyboardEvent): boolean {
+function onKeyDown(event: KeyboardEvent): boolean {
   if (event.key === "ArrowUp") {
     selectedIndex = (selectedIndex + flatItems.length - 1) % flatItems.length;
     return true;
@@ -150,6 +160,16 @@ export function onKeyDown(event: KeyboardEvent): boolean {
   }
 
   return false;
+}
+
+// Expose the keyboard handler through the optional ref prop so suggestion
+// renderers can invoke it without relying on `mount()` instance exports
+// (which only surface `<script module>` exports). The ref is a stable
+// object passed by the renderer; reading it once at setup is intentional.
+// svelte-ignore state_referenced_locally
+if (ref) {
+  // svelte-ignore state_referenced_locally
+  ref.onKeyDown = onKeyDown;
 }
 </script>
 

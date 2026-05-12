@@ -57,33 +57,39 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
   // Handle vizel:upload-image custom event from slash command
   let cleanupHandler: (() => void) | null = null;
 
-  onMounted(async () => {
-    try {
-      const result = await createVizelEditorInstance({
-        ...editorOptions,
-        ...(features !== undefined && { features }),
-        extensions: additionalExtensions,
-        createSlashMenuRenderer: createVizelSlashMenuRenderer,
-      });
+  onMounted(() => {
+    // Run async editor creation inside an IIFE so a throw becomes a quiet
+    // unhandled rejection on the IIFE's promise rather than bubbling out of
+    // `onMounted`'s awaited callback (which would mark the whole root
+    // component as failed). Mirrors the React/Svelte hook shape.
+    void (async () => {
+      try {
+        const result = await createVizelEditorInstance({
+          ...editorOptions,
+          ...(features !== undefined && { features }),
+          extensions: additionalExtensions,
+          createSlashMenuRenderer: createVizelSlashMenuRenderer,
+        });
 
-      editor.value = result.editor;
+        editor.value = result.editor;
 
-      cleanupHandler = registerVizelUploadEventHandler({
-        getEditor: () => editor.value,
-        getImageOptions: () => imageOptions,
-      });
-    } catch (error) {
-      const vizelError = wrapAsVizelError(error, {
-        context: "Editor initialization failed",
-        code: "EDITOR_INIT_FAILED",
-      });
-      // Notify the `onError` observer before rethrowing. `onError` is
-      // observation-only; the error is always rethrown so global handlers
-      // (Sentry, test runners' `unhandledrejection` listeners) can see
-      // initialization failures.
-      editorOptions.onError?.(vizelError);
-      throw vizelError;
-    }
+        cleanupHandler = registerVizelUploadEventHandler({
+          getEditor: () => editor.value,
+          getImageOptions: () => imageOptions,
+        });
+      } catch (error) {
+        const vizelError = wrapAsVizelError(error, {
+          context: "Editor initialization failed",
+          code: "EDITOR_INIT_FAILED",
+        });
+        // Notify the `onError` observer before rethrowing. `onError` is
+        // observation-only; the error is always rethrown so global handlers
+        // (Sentry, test runners' `unhandledrejection` listeners) can see
+        // initialization failures.
+        editorOptions.onError?.(vizelError);
+        throw vizelError;
+      }
+    })();
   });
 
   onBeforeUnmount(() => {
