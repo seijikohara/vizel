@@ -1,7 +1,7 @@
 {
   "name": "vizel",
   "private": true,
-  "packageManager": "pnpm@10.33.4",
+  "packageManager": "pnpm@11.1.0",
   "scripts": {
     "dev:react": "pnpm --filter @vizel/demo-react dev",
     "dev:vue": "pnpm --filter @vizel/demo-vue dev",
