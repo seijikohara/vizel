@@ -1,11 +1,10 @@
 import type { Editor } from "@vizel/core";
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 
-const NO_TICK = 0;
-const NO_OP_SUBSCRIBE = () => () => {
-  /* no-op unsubscribe when editor is null */
+const noSubscribe = () => () => {
+  /* no-op when editor is null */
 };
-const NO_OP_SNAPSHOT = () => NO_TICK;
+const noSnapshot = () => 0;
 
 /**
  * Hook that forces a re-render whenever the editor's state changes.
@@ -32,6 +31,12 @@ const NO_OP_SNAPSHOT = () => NO_TICK;
  * ```
  */
 export function useVizelState(editor: Editor | null | undefined): number {
+  // A stable tick counter incremented by the subscribe callback. Reading
+  // anything off `editor.view` here would either return a fresh object every
+  // call (state.tr) or throw before mount, breaking useSyncExternalStore's
+  // referential-stability contract and triggering an infinite render loop.
+  const tickRef = useRef(0);
+
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
       if (!editor) {
@@ -39,25 +44,23 @@ export function useVizelState(editor: Editor | null | undefined): number {
           /* no-op unsubscribe */
         };
       }
-      editor.on("transaction", onStoreChange);
+      const handler = () => {
+        tickRef.current = (tickRef.current + 1) | 0;
+        onStoreChange();
+      };
+      editor.on("transaction", handler);
       return () => {
-        editor.off("transaction", onStoreChange);
+        editor.off("transaction", handler);
       };
     },
     [editor]
   );
 
-  // The snapshot returns the editor's transaction count when available so
-  // identical-content re-renders return identical numbers (preventing
-  // useSyncExternalStore from looping).
-  const getSnapshot = useCallback(
-    () => (editor ? (editor.view?.state.tr.time ?? NO_TICK) : NO_TICK),
-    [editor]
-  );
+  const getSnapshot = useCallback(() => tickRef.current, []);
 
   return useSyncExternalStore(
-    editor ? subscribe : NO_OP_SUBSCRIBE,
-    editor ? getSnapshot : NO_OP_SNAPSHOT,
-    editor ? getSnapshot : NO_OP_SNAPSHOT
+    editor ? subscribe : noSubscribe,
+    editor ? getSnapshot : noSnapshot,
+    editor ? getSnapshot : noSnapshot
   );
 }
