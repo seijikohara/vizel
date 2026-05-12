@@ -172,6 +172,8 @@ interface VizelCommentOptions {
 
 ### Custom Storage Backend
 
+Provide both `save` and `load` (both are required):
+
 ```typescript
 useVizelComment(() => editor, {
   storage: {

@@ -25,8 +25,8 @@ const features = reactive({
   autoSave: true,
   stats: true,
   syncPanel: true,
-  comments: false,
-  history: false,
+  comments: true,
+  history: true,
 });
 
 const flavor = ref<VizelMarkdownFlavor>("gfm");
@@ -199,7 +199,7 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
           <div class="editor-container">
             <Vizel
               :initial-markdown="getFlavorContent(flavor)"
-              autofocus="end"
+              autofocus="start"
               class="editor-content"
               :show-toolbar="features.toolbar"
               :flavor="flavor"

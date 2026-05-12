@@ -67,8 +67,8 @@ function AppContent() {
     autoSave: true,
     stats: true,
     syncPanel: true,
-    comments: false,
-    history: false,
+    comments: true,
+    history: true,
   });
 
   const [flavor, setFlavor] = useState<VizelMarkdownFlavor>("gfm");
@@ -257,7 +257,7 @@ function AppContent() {
           <div className="editor-container">
             <Vizel
               initialMarkdown={getFlavorContent(flavor)}
-              autofocus="end"
+              autofocus="start"
               className="editor-content"
               showToolbar={features.toolbar}
               flavor={flavor}

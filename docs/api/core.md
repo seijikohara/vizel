@@ -778,7 +778,7 @@ import {
 | `VizelCommentReply` | Reply with id, text, author, createdAt |
 | `VizelCommentState` | State object containing comments, activeCommentId, isLoading, error |
 | `VizelCommentOptions` | Configuration for enabled, storage, key, and event callbacks |
-| `VizelCommentStorage` | `'localStorage'` or custom `{ save, load }` backend |
+| `VizelCommentStorage` | `'localStorage'`, `'sessionStorage'`, or a custom `{ save, load }` backend (both methods required) |
 
 ---
 
@@ -862,7 +862,7 @@ import { VIZEL_DEFAULT_VERSION_HISTORY_OPTIONS } from '@vizel/core';
 | `VizelVersionSnapshot` | Snapshot with id, content (JSONContent), timestamp, description, author |
 | `VizelVersionHistoryState` | State object containing snapshots, isLoading, error |
 | `VizelVersionHistoryOptions` | Configuration for enabled, maxVersions, storage, key, and callbacks |
-| `VizelVersionStorage` | `'localStorage'` or custom `{ save, load }` backend |
+| `VizelVersionStorage` | `'localStorage'`, `'sessionStorage'`, or a custom `{ save, load }` backend (both methods required) |
 
 #### Default Options
 
