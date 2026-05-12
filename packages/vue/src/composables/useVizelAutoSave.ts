@@ -7,7 +7,14 @@ import {
   type VizelAutoSaveState,
   type VizelSaveStatus,
 } from "@vizel/core";
-import { type ComputedRef, computed, onBeforeUnmount, onMounted, reactive, watch } from "vue";
+import {
+  type ComputedRef,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  shallowReactive,
+  watch,
+} from "vue";
 
 /**
  * Auto-save composable result
@@ -59,7 +66,10 @@ export function useVizelAutoSave(
 ): UseVizelAutoSaveResult {
   const opts = { ...VIZEL_DEFAULT_AUTO_SAVE_OPTIONS, ...options };
 
-  const state = reactive<VizelAutoSaveState>({
+  // `shallowReactive` avoids deep-proxying `Date`, `Error`, and similar
+  // containers in the state shape. The fields are reassigned, never deeply
+  // mutated, so shallow reactivity is sufficient and cheaper.
+  const state = shallowReactive<VizelAutoSaveState>({
     status: "saved",
     hasUnsavedChanges: false,
     lastSaved: null,

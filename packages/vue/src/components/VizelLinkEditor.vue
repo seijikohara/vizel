@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { detectVizelEmbedProvider, type Editor, type VizelLocale } from "@vizel/core";
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelLinkEditorProps {
@@ -64,10 +64,11 @@ function handleKeyDown(event: KeyboardEvent) {
 onMounted(() => {
   inputRef.value?.focus();
 
-  // Use setTimeout to avoid immediate trigger from the click that opened the editor
-  setTimeout(() => {
+  // Defer the outside-click listener until after the current event loop tick
+  // so the click that opened the editor doesn't immediately close it.
+  void nextTick(() => {
     document.addEventListener("mousedown", handleClickOutside);
-  }, 0);
+  });
   // Use capture phase so this handler runs before BubbleMenu's handler
   document.addEventListener("keydown", handleKeyDown, true);
 });

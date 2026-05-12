@@ -6,7 +6,14 @@ import {
   type VizelCollaborationUser,
   type VizelYjsProvider,
 } from "@vizel/core";
-import { type ComputedRef, computed, onBeforeUnmount, onMounted, reactive, watch } from "vue";
+import {
+  type ComputedRef,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  shallowReactive,
+  watch,
+} from "vue";
 
 /**
  * Collaboration composable result
@@ -75,7 +82,10 @@ export function useVizelCollaboration(
 ): UseVizelCollaborationResult {
   const enabled = options.enabled ?? VIZEL_DEFAULT_COLLABORATION_OPTIONS.enabled;
 
-  const state = reactive<VizelCollaborationState>({
+  // `shallowReactive` avoids deep-proxying `Error` and similar containers in
+  // the state shape. The fields are reassigned, never deeply mutated, so
+  // shallow reactivity is sufficient and cheaper.
+  const state = shallowReactive<VizelCollaborationState>({
     isConnected: false,
     isSynced: false,
     peerCount: 0,

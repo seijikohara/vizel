@@ -1,5 +1,5 @@
 import type { CustomIconMap } from "@vizel/core";
-import type { ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 import { VizelIconContext } from "./VizelIconContext.tsx";
 
 export interface VizelIconProviderProps {
@@ -51,7 +51,8 @@ export interface VizelIconProviderProps {
  * ```
  */
 export function VizelIconProvider({ icons, children }: VizelIconProviderProps) {
-  return (
-    <VizelIconContext.Provider value={{ customIcons: icons }}>{children}</VizelIconContext.Provider>
-  );
+  // Memoize the context value so descendants only re-render when `icons` changes
+  // rather than on every parent render.
+  const value = useMemo(() => ({ customIcons: icons }), [icons]);
+  return <VizelIconContext.Provider value={value}>{children}</VizelIconContext.Provider>;
 }

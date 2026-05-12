@@ -5,7 +5,7 @@ import {
   type VizelFindReplaceState,
   type VizelLocale,
 } from "@vizel/core";
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 
 export interface VizelFindReplaceProps {
   /** The Tiptap editor instance */
@@ -62,10 +62,10 @@ onBeforeUnmount(() => {
 // Focus input when panel opens
 watch(isOpen, (open) => {
   if (open) {
-    setTimeout(() => {
+    void nextTick(() => {
       findInputRef.value?.focus();
       findInputRef.value?.select();
-    }, 0);
+    });
   }
 });
 

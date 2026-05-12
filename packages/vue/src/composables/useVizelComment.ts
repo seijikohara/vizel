@@ -7,7 +7,7 @@ import {
   type VizelCommentReply,
   type VizelCommentState,
 } from "@vizel/core";
-import { type ComputedRef, computed, onMounted, reactive, watch } from "vue";
+import { type ComputedRef, computed, onMounted, shallowReactive, watch } from "vue";
 
 /**
  * Comment composable result
@@ -69,7 +69,10 @@ export function useVizelComment(
   const storage = options.storage ?? VIZEL_DEFAULT_COMMENT_OPTIONS.storage;
   const key = options.key ?? VIZEL_DEFAULT_COMMENT_OPTIONS.key;
 
-  const state = reactive<VizelCommentState>({
+  // `shallowReactive` avoids deep-proxying `Error` instances and comment
+  // arrays in the state shape. The fields are reassigned, never deeply
+  // mutated, so shallow reactivity is sufficient and cheaper.
+  const state = shallowReactive<VizelCommentState>({
     comments: [],
     activeCommentId: null,
     isLoading: false,

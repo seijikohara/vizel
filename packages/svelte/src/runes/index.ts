@@ -30,4 +30,4 @@ export {
   type CreateVizelVersionHistoryResult,
   createVizelVersionHistory,
 } from "./createVizelVersionHistory.svelte.js";
-export { getVizelTheme, getVizelThemeSafe } from "./getVizelTheme.svelte.js";
+export { getVizelTheme, getVizelThemeSafe } from "./getVizelTheme.js";
