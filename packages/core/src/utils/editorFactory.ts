@@ -7,6 +7,45 @@ import { resolveVizelFeatures, vizelDefaultEditorProps } from "./editorHelpers.t
 import { initializeVizelMarkdownContent } from "./markdown.ts";
 
 /**
+ * Re-apply the selection requested by the constructor's `autofocus` option
+ * after `setContent` has overridden it. Tiptap's `setContent` always lands
+ * the selection at the end of the new document and triggers `scrollIntoView`,
+ * which we have to undo for cases where the consumer asked for "start", "all",
+ * a numeric position, or no focus at all.
+ */
+function applyInitialSelection(editor: Editor, autofocus: VizelEditorOptions["autofocus"]): void {
+  const docSize = editor.state.doc.content.size;
+  if (autofocus === false || autofocus === undefined) {
+    // Consumer did not request focus. Put the selection at the very start and
+    // blur so the document does not scroll past the editor on mount.
+    editor.commands.setTextSelection(0);
+    editor.commands.blur();
+    return;
+  }
+  if (autofocus === "start") {
+    editor.commands.focus("start");
+    return;
+  }
+  if (autofocus === "end") {
+    editor.commands.focus("end");
+    return;
+  }
+  if (autofocus === "all") {
+    editor.commands.setTextSelection({ from: 0, to: docSize });
+    editor.commands.focus();
+    return;
+  }
+  if (typeof autofocus === "number") {
+    const clamped = Math.max(0, Math.min(autofocus, docSize));
+    editor.commands.focus(clamped);
+    return;
+  }
+  if (autofocus === true) {
+    editor.commands.focus("start");
+  }
+}
+
+/**
  * Options for creating a Vizel editor instance.
  * Extends VizelEditorOptions with additional framework-specific parameters.
  */
@@ -88,12 +127,17 @@ export async function createVizelEditorInstance(
   const imageOptions: VizelImageFeatureOptions =
     typeof features?.image === "object" ? features.image : {};
 
-  // Wrap onCreate to handle initialMarkdown
+  // Wrap onCreate to handle initialMarkdown. Tiptap's `setContent` resets the
+  // selection to the end of the new document and triggers a scroll-into-view,
+  // which silently overrides the constructor's `autofocus` option. Re-apply
+  // the selection (and the autofocus default of "no scroll") after the markdown
+  // has been loaded so the editor starts where the consumer asked.
   const wrappedOnCreate = initialMarkdown
     ? (props: { editor: Editor }) => {
         initializeVizelMarkdownContent(props.editor, initialMarkdown, {
           transformDiagrams: transformDiagramsOnImport,
         });
+        applyInitialSelection(props.editor, autofocus);
         onCreate?.(props);
       }
     : onCreate;
