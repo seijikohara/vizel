@@ -73,7 +73,7 @@ export function createVizelMentionMenuRenderer(
           if (handleVizelSuggestionEscape(props.event)) {
             return true;
           }
-          return menuRef.current?.onKeyDown(props) ?? false;
+          return menuRef.current?.onKeyDown(props.event) ?? false;
         },
 
         onExit: () => {

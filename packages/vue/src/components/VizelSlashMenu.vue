@@ -13,8 +13,13 @@ import VizelSlashMenuItem from "./VizelSlashMenuItem.vue";
  * Exposes keyboard navigation handler for parent components.
  */
 export interface VizelSlashMenuRef {
-  /** Handle keyboard navigation events (ArrowUp, ArrowDown, Enter, Tab) */
-  onKeyDown: (props: { event: KeyboardEvent }) => boolean;
+  /**
+   * Handle keyboard navigation events (ArrowUp, ArrowDown, Enter, Tab).
+   * Accepts a raw `KeyboardEvent`; cross-framework parity with React/Svelte
+   * was previously broken by a `{ event }` wrapper in the type declaration
+   * that never matched the underlying `defineExpose` shape.
+   */
+  onKeyDown: (event: KeyboardEvent) => boolean;
 }
 
 export interface VizelSlashMenuProps {

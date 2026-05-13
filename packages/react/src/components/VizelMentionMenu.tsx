@@ -3,7 +3,13 @@ import type { ReactNode, Ref } from "react";
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 export interface VizelMentionMenuRef {
-  onKeyDown: (props: { event: KeyboardEvent }) => boolean;
+  /**
+   * Handle keyboard navigation events.
+   * The renderer forwards the raw `KeyboardEvent`; the React component
+   * previously accepted `{ event }`. v2.0 unifies the signature across
+   * React/Vue/Svelte to the raw-event form.
+   */
+  onKeyDown: (event: KeyboardEvent) => boolean;
 }
 
 export interface VizelMentionMenuProps {
@@ -71,7 +77,7 @@ export function VizelMentionMenu({
   }, [selectItem, selectedIndex]);
 
   useImperativeHandle(ref, () => ({
-    onKeyDown: ({ event }) => {
+    onKeyDown: (event) => {
       if (event.key === "ArrowUp") {
         upHandler();
         return true;

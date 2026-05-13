@@ -151,6 +151,24 @@ wrapper, prepending the consumer-supplied class. The `.vizel-root` selector
 scopes all CSS custom properties (`--vizel-*`), so omitting the class would
 break theming for any descendant that depends on those variables.
 
+## Suggestion Menu Ref Convention
+
+`VizelSlashMenu` and `VizelMentionMenu` expose keyboard control to the
+Tiptap suggestion renderer through an imperative `onKeyDown` handle. The
+signature is identical in all three frameworks:
+
+```typescript
+type VizelSlashMenuRef = { onKeyDown: (event: KeyboardEvent) => boolean };
+type VizelMentionMenuRef = { onKeyDown: (event: KeyboardEvent) => boolean };
+```
+
+The renderer unwraps the `KeyboardEvent` from Tiptap's `{ event }` payload
+before forwarding. Components accept the raw event so the same ref shape
+works across React (`useImperativeHandle`), Vue (`defineExpose`), and
+Svelte (ref-prop pattern). The previous React/Vue declarations used a
+`{ event }` wrapper that did not match the underlying implementation;
+v2.0 collapses them to the raw-event form.
+
 ## Reactive vs Mount-time Editor Options
 
 `useVizelEditor` / `createVizelEditor` create the Tiptap instance once on

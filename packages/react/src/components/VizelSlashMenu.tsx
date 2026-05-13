@@ -9,7 +9,13 @@ import { VizelSlashMenuEmpty } from "./VizelSlashMenuEmpty.tsx";
 import { VizelSlashMenuItem, type VizelSlashMenuItemProps } from "./VizelSlashMenuItem.tsx";
 
 export interface VizelSlashMenuRef {
-  onKeyDown: (props: { event: KeyboardEvent }) => boolean;
+  /**
+   * Handle keyboard navigation events.
+   * The renderer forwards the raw `KeyboardEvent`; the React component
+   * previously accepted `{ event }`. v2.0 unifies the signature across
+   * React/Vue/Svelte to the raw-event form.
+   */
+  onKeyDown: (event: KeyboardEvent) => boolean;
 }
 
 export interface VizelSlashMenuProps {
@@ -148,7 +154,7 @@ export function VizelSlashMenu({
   }, [groups]);
 
   useImperativeHandle(ref, () => ({
-    onKeyDown: ({ event }) => {
+    onKeyDown: (event) => {
       if (event.key === "ArrowUp") {
         upHandler();
         return true;
