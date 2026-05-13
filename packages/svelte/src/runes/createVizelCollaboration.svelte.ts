@@ -92,15 +92,21 @@ export function createVizelCollaboration(
 
   $effect(() => {
     const provider = getProvider();
-    handlers = createVizelCollaborationHandlers(getProvider, options, handleStateChange);
-
-    let unsubscribe: (() => void) | undefined;
-    if (provider && enabled) {
-      unsubscribe = handlers.subscribe();
+    // Only instantiate handlers once the provider is available. The previous
+    // shape recreated handlers on every effect re-run (including the null →
+    // null transition that fires before the provider is constructed), which
+    // wasted allocation and made the `connect/disconnect/updateUser` methods
+    // briefly point at a different `handlers` instance every cycle.
+    if (!(provider && enabled)) {
+      handlers = null;
+      return;
     }
 
+    handlers = createVizelCollaborationHandlers(getProvider, options, handleStateChange);
+    const unsubscribe = handlers.subscribe();
+
     return () => {
-      unsubscribe?.();
+      unsubscribe();
       handlers = null;
     };
   });

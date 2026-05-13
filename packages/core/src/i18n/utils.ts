@@ -2,6 +2,40 @@ import { vizelEnLocale } from "./en.ts";
 import type { VizelLocale, VizelLocalePartial } from "./types.ts";
 
 /**
+ * Resolve FindReplace locale labels with English defaults.
+ *
+ * Returns a complete labels object even when the caller supplies a partial
+ * locale or no locale at all. Framework components consume this helper to
+ * avoid hand-writing `?? "Find..."` fallbacks inline.
+ */
+export function resolveVizelFindReplaceLabels(
+  partial: VizelLocale["findReplace"] | undefined
+): VizelLocale["findReplace"] {
+  return {
+    label: partial?.label ?? vizelEnLocale.findReplace.label,
+    findPlaceholder: partial?.findPlaceholder ?? vizelEnLocale.findReplace.findPlaceholder,
+    replacePlaceholder: partial?.replacePlaceholder ?? vizelEnLocale.findReplace.replacePlaceholder,
+    noResults: partial?.noResults ?? vizelEnLocale.findReplace.noResults,
+    findTextAriaLabel: partial?.findTextAriaLabel ?? vizelEnLocale.findReplace.findTextAriaLabel,
+    replaceTextAriaLabel:
+      partial?.replaceTextAriaLabel ?? vizelEnLocale.findReplace.replaceTextAriaLabel,
+    findPreviousAriaLabel:
+      partial?.findPreviousAriaLabel ?? vizelEnLocale.findReplace.findPreviousAriaLabel,
+    findPreviousTitle: partial?.findPreviousTitle ?? vizelEnLocale.findReplace.findPreviousTitle,
+    findNextAriaLabel: partial?.findNextAriaLabel ?? vizelEnLocale.findReplace.findNextAriaLabel,
+    findNextTitle: partial?.findNextTitle ?? vizelEnLocale.findReplace.findNextTitle,
+    replaceAriaLabel: partial?.replaceAriaLabel ?? vizelEnLocale.findReplace.replaceAriaLabel,
+    replaceTitle: partial?.replaceTitle ?? vizelEnLocale.findReplace.replaceTitle,
+    replaceAllAriaLabel:
+      partial?.replaceAllAriaLabel ?? vizelEnLocale.findReplace.replaceAllAriaLabel,
+    replaceAllTitle: partial?.replaceAllTitle ?? vizelEnLocale.findReplace.replaceAllTitle,
+    caseSensitive: partial?.caseSensitive ?? vizelEnLocale.findReplace.caseSensitive,
+    closeAriaLabel: partial?.closeAriaLabel ?? vizelEnLocale.findReplace.closeAriaLabel,
+    closeTitle: partial?.closeTitle ?? vizelEnLocale.findReplace.closeTitle,
+  };
+}
+
+/**
  * Create a complete locale by deep-merging partial translations with the default English locale.
  * Supports overriding individual strings at any nesting depth.
  *

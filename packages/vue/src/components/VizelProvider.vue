@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Editor } from "@vizel/core";
-import { provide } from "vue";
+import { computed, provide } from "vue";
 import { VIZEL_CONTEXT_KEY } from "./VizelContext.ts";
 
 export interface VizelProviderProps {
@@ -13,10 +13,14 @@ export interface VizelProviderProps {
 const props = defineProps<VizelProviderProps>();
 
 provide(VIZEL_CONTEXT_KEY, () => props.editor);
+
+// Always emit the `vizel-root` class so consumers get the CSS variable scope
+// for free (.vizel-root { --vizel-* }). Matches the React provider behavior.
+const rootClass = computed(() => (props.class ? `vizel-root ${props.class}` : "vizel-root"));
 </script>
 
 <template>
-  <div :class="$props.class" data-vizel-root>
+  <div :class="rootClass" data-vizel-root>
     <slot />
   </div>
 </template>
