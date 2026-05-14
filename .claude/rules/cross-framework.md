@@ -144,6 +144,27 @@ binding form differs to honor each framework's reactivity model.
 | Consumer (required) | `useVizelContext()` | `useVizelContext()` | `getVizelContext()` |
 | Consumer (optional) | `useVizelContextSafe()` | `useVizelContextSafe()` | `getVizelContextSafe()` |
 
+### Provider Root Class
+
+`VizelProvider` in every framework renders a `<div class="vizel-root" data-vizel-root>`
+wrapper, prepending the consumer-supplied class. The `.vizel-root` selector
+scopes all CSS custom properties (`--vizel-*`), so omitting the class would
+break theming for any descendant that depends on those variables.
+
+## Reactive vs Mount-time Editor Options
+
+`useVizelEditor` / `createVizelEditor` create the Tiptap instance once on
+mount. Most options (`initialContent`, `initialMarkdown`, `placeholder`,
+`features`, `extensions`, `flavor`, `locale`, `autofocus`) are captured at
+that point and cannot be changed via prop updates.
+
+The single exception is `editable`, which all three frameworks mirror through
+`editor.setEditable()` whenever the prop changes after mount. Toggle this to
+switch the editor between read-write and read-only modes.
+
+To change other options at runtime, use the corresponding Tiptap command
+(`editor.commands.setContent(...)`, `editor.commands.focus(...)`, etc.).
+
 ## Adding a New Feature
 
 Follow this sequence to add a feature with consistent cross-framework support:

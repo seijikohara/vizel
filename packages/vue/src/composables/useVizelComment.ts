@@ -7,7 +7,7 @@ import {
   type VizelCommentReply,
   type VizelCommentState,
 } from "@vizel/core";
-import { type ComputedRef, computed, onMounted, shallowReactive, watch } from "vue";
+import { type ComputedRef, computed, shallowReactive, watch } from "vue";
 
 /**
  * Comment composable result
@@ -83,7 +83,12 @@ export function useVizelComment(
     Object.assign(state, partial);
   };
 
-  let handlers = createVizelCommentHandlers(
+  // Comment handlers use `getEditor` lazily, so editor swaps are handled
+  // automatically without re-instantiating them. Options are captured at
+  // composable call time (consistent with how `useVizelEditor` treats its
+  // options as mount-time); a previous `watch` on options never fired because
+  // the destructured locals aren't reactive, and has been removed.
+  const handlers = createVizelCommentHandlers(
     getEditor,
     {
       enabled,
@@ -98,38 +103,20 @@ export function useVizelComment(
     handleStateChange
   );
 
+  // Single load path: `immediate: true` covers the initial mount AND every
+  // subsequent editor swap. The previous shape split this into `onMounted`
+  // plus a non-immediate `watch`, which left the initial fire dependent on
+  // the editor being non-null inside `onMounted` (a race with async editor
+  // creation in `useVizelEditor`).
   watch(
-    () => ({ enabled, storage, key }),
-    () => {
-      handlers = createVizelCommentHandlers(
-        getEditor,
-        {
-          enabled,
-          storage,
-          key,
-          onAdd: (comment) => options.onAdd?.(comment),
-          onRemove: (id) => options.onRemove?.(id),
-          onResolve: (comment) => options.onResolve?.(comment),
-          onReopen: (comment) => options.onReopen?.(comment),
-          onError: (error) => options.onError?.(error),
-        },
-        handleStateChange
-      );
-    }
+    getEditor,
+    (editor) => {
+      if (editor && enabled) {
+        void handlers.loadComments();
+      }
+    },
+    { immediate: true }
   );
-
-  onMounted(() => {
-    const editor = getEditor();
-    if (editor && enabled) {
-      void handlers.loadComments();
-    }
-  });
-
-  watch(getEditor, (editor) => {
-    if (editor && enabled) {
-      void handlers.loadComments();
-    }
-  });
 
   return {
     comments: computed(() => state.comments),

@@ -26,6 +26,7 @@ export interface VizelBubbleMenuProps {
 
 <script lang="ts">
 import { BubbleMenuPlugin } from "@vizel/core";
+import { untrack } from "svelte";
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.svelte";
 import { getVizelContextSafe } from "./VizelContext.js";
 
@@ -60,13 +61,19 @@ $effect(() => {
   const currentEditor = editor;
   const currentPluginKey = pluginKey;
 
+  // Capture `shouldShow` without tracking so value updates flow through the
+  // wrapper closure (read lazily, outside any reactive context) without
+  // re-registering the plugin. Matches the React `shouldShowRef` pattern.
+  const initialShouldShow = untrack(() => shouldShow);
+
   const plugin = BubbleMenuPlugin({
     pluginKey: currentPluginKey,
     editor: currentEditor,
     element: menuElement,
     updateDelay,
-    ...(shouldShow && {
-      shouldShow: ({ editor: e, from, to }) => shouldShow({ editor: e as Editor, from, to }),
+    ...(initialShouldShow && {
+      shouldShow: ({ editor: e, from, to }) =>
+        shouldShow?.({ editor: e as Editor, from, to }) ?? false,
     }),
     options: {
       placement: "top",

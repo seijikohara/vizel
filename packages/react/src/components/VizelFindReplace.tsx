@@ -1,6 +1,7 @@
 import {
   type Editor,
   getVizelFindReplaceState,
+  resolveVizelFindReplaceLabels,
   type VizelFindReplaceState,
   type VizelLocale,
 } from "@vizel/core";
@@ -24,34 +25,11 @@ export interface VizelFindReplaceProps {
   onClose?: () => void;
 }
 
-/** Resolve FindReplace locale labels with English defaults. */
-function resolveFindReplaceLabels(t: VizelLocale["findReplace"] | undefined) {
-  return {
-    label: t?.label ?? "Find and Replace",
-    findPlaceholder: t?.findPlaceholder ?? "Find...",
-    findTextAriaLabel: t?.findTextAriaLabel ?? "Find text",
-    noResults: t?.noResults ?? "No results",
-    findPreviousAriaLabel: t?.findPreviousAriaLabel ?? "Find previous",
-    findPreviousTitle: t?.findPreviousTitle ?? "Find previous (Shift+Enter)",
-    findNextAriaLabel: t?.findNextAriaLabel ?? "Find next",
-    findNextTitle: t?.findNextTitle ?? "Find next (Enter)",
-    closeAriaLabel: t?.closeAriaLabel ?? "Close",
-    closeTitle: t?.closeTitle ?? "Close (Escape)",
-    replacePlaceholder: t?.replacePlaceholder ?? "Replace with...",
-    replaceTextAriaLabel: t?.replaceTextAriaLabel ?? "Replace text",
-    replaceAriaLabel: t?.replaceAriaLabel ?? "Replace",
-    replaceTitle: t?.replaceTitle ?? "Replace current match",
-    replaceAllAriaLabel: t?.replaceAllAriaLabel ?? "Replace all",
-    replaceAllTitle: t?.replaceAllTitle ?? "Replace all matches",
-    caseSensitive: t?.caseSensitive ?? "Case sensitive",
-  };
-}
-
 /**
  * Find & Replace panel component for React
  */
 export function VizelFindReplace({ editor, className, locale, onClose }: VizelFindReplaceProps) {
-  const labels = resolveFindReplaceLabels(locale?.findReplace);
+  const labels = resolveVizelFindReplaceLabels(locale?.findReplace);
   const [findText, setFindText] = useState("");
   const [replaceText, setReplaceText] = useState("");
   const [caseSensitive, setCaseSensitive] = useState(false);

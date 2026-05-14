@@ -27,44 +27,54 @@ export interface VizelPortalProps {
     disabled = false,
   }: VizelPortalProps = $props();
 
-  // Create portal action that moves content to the portal container
-  function portal(node: HTMLElement) {
+  let host = $state<HTMLDivElement | null>(null);
+  let wrapper = $state<HTMLDivElement | null>(null);
+
+  // Mount/unmount the portal wrapper.
+  // The previous shape used a `use:portal` action whose closure captured
+  // `layer`/`className` at action creation, so prop changes never propagated.
+  // Splitting the lifecycle from the attribute updates restores cross-FW
+  // parity with React/Vue, where reactive updates to layer/className flow
+  // through without remounting the portal contents.
+  $effect(() => {
+    if (disabled || !host) return;
+
+    const node = host;
     const container = getVizelPortalContainer();
+    const w = document.createElement("div");
+    w.style.position = "absolute";
+    w.style.top = "0";
+    w.style.left = "0";
 
-    // Create wrapper element
-    const wrapper = document.createElement("div");
-    wrapper.setAttribute("data-vizel-portal-layer", layer);
-    if (className) {
-      wrapper.className = className;
-    }
-    wrapper.style.position = "absolute";
-    wrapper.style.top = "0";
-    wrapper.style.left = "0";
-    wrapper.style.zIndex = String(VIZEL_PORTAL_Z_INDEX[layer]);
-
-    // Move node's children to wrapper
     while (node.firstChild) {
-      wrapper.appendChild(node.firstChild);
+      w.appendChild(node.firstChild);
     }
+    container.appendChild(w);
+    wrapper = w;
 
-    container.appendChild(wrapper);
-
-    return {
-      destroy() {
-        // Move content back to original location for cleanup
-        while (wrapper.firstChild) {
-          node.appendChild(wrapper.firstChild);
-        }
-        wrapper.remove();
-      },
+    return () => {
+      while (w.firstChild) {
+        node.appendChild(w.firstChild);
+      }
+      w.remove();
+      wrapper = null;
     };
-  }
+  });
+
+  // Reactive attribute updates. Reads `layer` and `className` so any change
+  // re-runs without re-mounting the wrapper.
+  $effect(() => {
+    if (!wrapper) return;
+    wrapper.setAttribute("data-vizel-portal-layer", layer);
+    wrapper.style.zIndex = String(VIZEL_PORTAL_Z_INDEX[layer]);
+    wrapper.className = className ?? "";
+  });
 </script>
 
 {#if disabled}
   {@render children()}
 {:else}
-  <div use:portal>
+  <div bind:this={host}>
     {@render children()}
   </div>
 {/if}

@@ -243,6 +243,7 @@ export {
 export {
   createVizelLocale,
   formatRelativeTimeWithLocale,
+  resolveVizelFindReplaceLabels,
   type SlashItemText,
   type VizelLocale,
   type VizelLocalePartial,

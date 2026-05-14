@@ -145,6 +145,13 @@ export function useVizelMarkdown(
     editor.on("update", handleUpdate);
 
     return () => {
+      // Flush any pending debounced export before detaching so editor swaps
+      // (or unmount) do not drop unsynced markdown. Matches the Svelte rune.
+      if (handlers.isPending()) {
+        handlers.flush(editor);
+        setMarkdownState(handlers.getMarkdown());
+        setIsPending(false);
+      }
       editor.off("update", handleUpdate);
       if (rafId !== null) cancelAnimationFrame(rafId);
     };

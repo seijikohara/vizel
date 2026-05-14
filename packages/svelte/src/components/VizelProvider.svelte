@@ -19,8 +19,12 @@ import { VIZEL_CONTEXT_KEY } from "./VizelContext.js";
 let { editor, class: className, children }: VizelProviderProps = $props();
 
 setContext(VIZEL_CONTEXT_KEY, () => editor);
+
+// Always emit the `vizel-root` class so consumers get the CSS variable scope
+// for free (.vizel-root { --vizel-* }). Matches the React provider behavior.
+const rootClass = $derived(className ? `vizel-root ${className}` : "vizel-root");
 </script>
 
-<div class={className} data-vizel-root>
+<div class={rootClass} data-vizel-root>
   {@render children()}
 </div>
