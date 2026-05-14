@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { formatVizelRelativeTime, type VizelLocale, type VizelSaveStatus } from "@vizel/core";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import {
+  createVizelRelativeTimeTicker,
+  resolveVizelSaveIndicatorView,
+  type VizelLocale,
+  type VizelSaveStatus,
+} from "@vizel/core";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelSaveIndicatorProps {
@@ -21,53 +26,32 @@ const props = withDefaults(defineProps<VizelSaveIndicatorProps>(), {
 });
 
 const relativeTime = ref("");
-let intervalId: ReturnType<typeof setInterval> | null = null;
-
-function updateTime() {
-  if (props.lastSaved) {
-    relativeTime.value = formatVizelRelativeTime(props.lastSaved, props.locale);
-  } else {
-    relativeTime.value = "";
-  }
-}
+let stopTicker: (() => void) | null = null;
 
 onMounted(() => {
-  updateTime();
-  intervalId = setInterval(updateTime, 10000);
+  stopTicker = createVizelRelativeTimeTicker({
+    getDate: () => props.lastSaved,
+    getLocale: () => props.locale,
+    onTick: (text) => {
+      relativeTime.value = text;
+    },
+  });
 });
-
-watch(
-  () => props.lastSaved,
-  () => {
-    updateTime();
-  }
-);
 
 onBeforeUnmount(() => {
-  if (intervalId) {
-    clearInterval(intervalId);
-  }
+  stopTicker?.();
+  stopTicker = null;
 });
 
-const statusText = computed(() => {
-  const t = props.locale?.saveIndicator;
-  switch (props.status) {
-    case "saved":
-      return t?.saved ?? "Saved";
-    case "saving":
-      return t?.saving ?? "Saving...";
-    case "unsaved":
-      return t?.unsaved ?? "Unsaved";
-    case "error":
-      return t?.error ?? "Error saving";
-    default:
-      return "";
-  }
-});
-
-const shouldShowTimestamp = computed(() => {
-  return props.showTimestamp && props.lastSaved && relativeTime.value && props.status === "saved";
-});
+const view = computed(() =>
+  resolveVizelSaveIndicatorView(
+    props.status,
+    props.locale,
+    props.lastSaved ?? null,
+    relativeTime.value,
+    props.showTimestamp
+  )
+);
 </script>
 
 <template>
@@ -79,22 +63,12 @@ const shouldShowTimestamp = computed(() => {
     data-vizel-save-indicator
   >
     <span class="vizel-save-indicator-icon" aria-hidden="true">
-      <template v-if="props.status === 'saved'">
-        <VizelIcon name="check" />
-      </template>
-      <template v-else-if="props.status === 'saving'">
-        <span class="vizel-save-indicator-spinner" aria-hidden="true">
-          <VizelIcon name="loader" />
-        </span>
-      </template>
-      <template v-else-if="props.status === 'unsaved'">
-        <VizelIcon name="circle" />
-      </template>
-      <template v-else-if="props.status === 'error'">
-        <VizelIcon name="warning" />
-      </template>
+      <span v-if="view.isSpinner" class="vizel-save-indicator-spinner" aria-hidden="true">
+        <VizelIcon :name="view.iconName" />
+      </span>
+      <VizelIcon v-else :name="view.iconName" />
     </span>
-    <span class="vizel-save-indicator-text">{{ statusText }}</span>
-    <span v-if="shouldShowTimestamp" class="vizel-save-indicator-timestamp">{{ relativeTime }}</span>
+    <span class="vizel-save-indicator-text">{{ view.text }}</span>
+    <span v-if="view.shouldShowTimestamp" class="vizel-save-indicator-timestamp">{{ relativeTime }}</span>
   </div>
 </template>

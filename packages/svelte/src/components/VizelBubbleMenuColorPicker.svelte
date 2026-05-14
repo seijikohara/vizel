@@ -21,7 +21,7 @@ export interface VizelBubbleMenuColorPickerProps {
 
 <script lang="ts">
 import {
-  addVizelRecentColor,
+  applyVizelColorToEditor,
   getVizelRecentColors,
   VIZEL_HIGHLIGHT_COLORS,
   VIZEL_TEXT_COLORS,
@@ -64,19 +64,7 @@ $effect(() => {
 });
 
 function handleColorChange(color: string) {
-  if (type === "textColor") {
-    if (color === "inherit") {
-      editor.chain().focus().unsetColor().run();
-    } else {
-      editor.chain().focus().setColor(color).run();
-      addVizelRecentColor(type, color);
-    }
-  } else if (color === "transparent") {
-    editor.chain().focus().unsetHighlight().run();
-  } else {
-    editor.chain().focus().toggleHighlight({ color }).run();
-    addVizelRecentColor(type, color);
-  }
+  applyVizelColorToEditor(editor, type, color);
   isOpen = false;
 }
 

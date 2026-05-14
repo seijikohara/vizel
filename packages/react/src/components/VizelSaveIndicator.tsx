@@ -1,5 +1,10 @@
-import { formatVizelRelativeTime, type VizelLocale, type VizelSaveStatus } from "@vizel/core";
-import { useEffect, useState } from "react";
+import {
+  createVizelRelativeTimeTicker,
+  resolveVizelSaveIndicatorView,
+  type VizelLocale,
+  type VizelSaveStatus,
+} from "@vizel/core";
+import { useEffect, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelSaveIndicatorProps {
@@ -18,13 +23,14 @@ export interface VizelSaveIndicatorProps {
 /**
  * Visual indicator for the current save state of the editor.
  *
+ * The status → display mapping (icon, text, timestamp visibility) lives in
+ * `@vizel/core`'s `resolveVizelSaveIndicatorView`. The relative-time interval
+ * comes from `createVizelRelativeTimeTicker`. The component is just the
+ * React-flavored binding.
+ *
  * @example
  * ```tsx
- * <VizelSaveIndicator
- *   status={status}
- *   lastSaved={lastSaved}
- *   showTimestamp
- * />
+ * <VizelSaveIndicator status={status} lastSaved={lastSaved} showTimestamp />
  * ```
  */
 export function VizelSaveIndicator({
@@ -36,59 +42,30 @@ export function VizelSaveIndicator({
 }: VizelSaveIndicatorProps) {
   const [relativeTime, setRelativeTime] = useState<string>("");
 
-  // Update relative time every 10 seconds
-  useEffect(() => {
-    if (!lastSaved) {
-      setRelativeTime("");
-      return;
-    }
+  // Keep the latest `lastSaved`/`locale` accessible from the ticker callback
+  // without rebuilding the interval on every render.
+  const lastSavedRef = useRef(lastSaved);
+  lastSavedRef.current = lastSaved;
+  const localeRef = useRef(locale);
+  localeRef.current = locale;
 
-    const updateTime = () => {
-      setRelativeTime(formatVizelRelativeTime(lastSaved, locale));
-    };
+  useEffect(
+    () =>
+      createVizelRelativeTimeTicker({
+        getDate: () => lastSavedRef.current,
+        getLocale: () => localeRef.current,
+        onTick: setRelativeTime,
+      }),
+    []
+  );
 
-    updateTime();
-    const interval = setInterval(updateTime, 10000);
-
-    return () => clearInterval(interval);
-  }, [lastSaved, locale]);
-
-  const getStatusIcon = () => {
-    switch (status) {
-      case "saved":
-        return <VizelIcon name="check" />;
-      case "saving":
-        return (
-          <span className="vizel-save-indicator-spinner" aria-hidden="true">
-            <VizelIcon name="loader" />
-          </span>
-        );
-      case "unsaved":
-        return <VizelIcon name="circle" />;
-      case "error":
-        return <VizelIcon name="warning" />;
-      default:
-        return null;
-    }
-  };
-
-  const getStatusText = () => {
-    const t = locale?.saveIndicator;
-    switch (status) {
-      case "saved":
-        return t?.saved ?? "Saved";
-      case "saving":
-        return t?.saving ?? "Saving...";
-      case "unsaved":
-        return t?.unsaved ?? "Unsaved";
-      case "error":
-        return t?.error ?? "Error saving";
-      default:
-        return "";
-    }
-  };
-
-  const shouldShowTimestamp = showTimestamp && lastSaved && relativeTime && status === "saved";
+  const view = resolveVizelSaveIndicatorView(
+    status,
+    locale,
+    lastSaved,
+    relativeTime,
+    showTimestamp
+  );
 
   return (
     <div
@@ -99,10 +76,16 @@ export function VizelSaveIndicator({
       data-vizel-save-indicator
     >
       <span className="vizel-save-indicator-icon" aria-hidden="true">
-        {getStatusIcon()}
+        {view.isSpinner ? (
+          <span className="vizel-save-indicator-spinner" aria-hidden="true">
+            <VizelIcon name={view.iconName} />
+          </span>
+        ) : (
+          <VizelIcon name={view.iconName} />
+        )}
       </span>
-      <span className="vizel-save-indicator-text">{getStatusText()}</span>
-      {shouldShowTimestamp && (
+      <span className="vizel-save-indicator-text">{view.text}</span>
+      {view.shouldShowTimestamp && (
         <span className="vizel-save-indicator-timestamp">{relativeTime}</span>
       )}
     </div>

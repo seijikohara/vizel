@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  addVizelRecentColor,
+  applyVizelColorToEditor,
   type Editor,
   getVizelRecentColors,
   VIZEL_HIGHLIGHT_COLORS,
@@ -61,19 +61,7 @@ watch(isOpen, (open) => {
 });
 
 function handleColorChange(color: string) {
-  if (props.type === "textColor") {
-    if (color === "inherit") {
-      props.editor.chain().focus().unsetColor().run();
-    } else {
-      props.editor.chain().focus().setColor(color).run();
-      addVizelRecentColor(props.type, color);
-    }
-  } else if (color === "transparent") {
-    props.editor.chain().focus().unsetHighlight().run();
-  } else {
-    props.editor.chain().focus().toggleHighlight({ color }).run();
-    addVizelRecentColor(props.type, color);
-  }
+  applyVizelColorToEditor(props.editor, props.type, color);
   isOpen.value = false;
 }
 
