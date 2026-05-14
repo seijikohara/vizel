@@ -4,6 +4,7 @@ import { createVizelExtensions } from "../extensions/base.ts";
 import type { VizelSlashCommandItem } from "../extensions/slash-command.ts";
 import type { VizelEditorOptions, VizelImageFeatureOptions } from "../types.ts";
 import { resolveVizelFeatures, vizelDefaultEditorProps } from "./editorHelpers.ts";
+import { createVizelError } from "./errorHandling.ts";
 import { initializeVizelMarkdownContent } from "./markdown.ts";
 
 /**
@@ -111,9 +112,13 @@ export async function createVizelEditorInstance(
   } = options;
 
   if (initialContent !== undefined && initialMarkdown !== undefined) {
-    console.warn(
-      "[Vizel] Both initialContent and initialMarkdown were provided. " +
-        "initialMarkdown takes precedence; initialContent will be ignored."
+    // Programming error: the two options are mutually exclusive. Throwing
+    // (instead of warning + silently picking one) ensures the misuse is
+    // caught on the first run rather than masked behind a `console.warn`
+    // a consumer might never see in production.
+    throw createVizelError(
+      "INVALID_CONFIG",
+      "Cannot supply both `initialContent` and `initialMarkdown` to the editor. Pick one."
     );
   }
 
