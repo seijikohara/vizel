@@ -87,12 +87,20 @@ if (ref) {
 }
 </script>
 
-<div class="vizel-mention-menu {className ?? ''}" data-vizel-mention-menu>
+<!-- svelte-ignore a11y_aria_activedescendant_has_tabindex -->
+<div
+  class="vizel-mention-menu {className ?? ''}"
+  data-vizel-mention-menu
+  role="listbox"
+  aria-label="Mentions"
+  aria-activedescendant={items[selectedIndex]?.id ? `vizel-mention-${items[selectedIndex]?.id}` : undefined}
+>
   {#if items.length === 0}
     <div class="vizel-mention-menu-empty">No results</div>
   {:else}
     {#each items as item, index (item.id)}
       <div
+        id="vizel-mention-{item.id}"
         bind:this={itemRefs[index]}
         class="vizel-mention-menu-item {index === selectedIndex ? 'is-selected' : ''}"
         role="option"

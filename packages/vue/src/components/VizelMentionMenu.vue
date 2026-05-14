@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { resolveVizelListNavigation, type VizelMentionItem } from "@vizel/core";
-import { nextTick, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 
 export interface VizelMentionMenuRef {
   onKeyDown: (event: KeyboardEvent) => boolean;
@@ -19,6 +19,11 @@ const emit = defineEmits<{
 
 const selectedIndex = ref(0);
 const itemRefs = ref<(HTMLElement | null)[]>([]);
+
+const activeOptionId = computed(() => {
+  const item = props.items[selectedIndex.value];
+  return item ? `vizel-mention-${item.id}` : undefined;
+});
 
 watch(
   () => props.items,
@@ -63,6 +68,9 @@ defineExpose<VizelMentionMenuRef>({ onKeyDown });
   <div
     :class="['vizel-mention-menu', props.class]"
     data-vizel-mention-menu
+    role="listbox"
+    aria-label="Mentions"
+    :aria-activedescendant="activeOptionId"
   >
     <div v-if="items.length === 0" class="vizel-mention-menu-empty">
       No results
@@ -71,6 +79,7 @@ defineExpose<VizelMentionMenuRef>({ onKeyDown });
       <div
         v-for="(item, index) in items"
         :key="item.id"
+        :id="`vizel-mention-${item.id}`"
         :ref="(el) => { itemRefs[index] = el as HTMLElement | null }"
         :class="['vizel-mention-menu-item', { 'is-selected': index === selectedIndex }]"
         role="option"
