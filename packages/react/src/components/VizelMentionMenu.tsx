@@ -89,13 +89,24 @@ export function VizelMentionMenu({
     );
   }
 
+  const activeOptionId = items[selectedIndex]
+    ? `vizel-mention-${items[selectedIndex].id}`
+    : undefined;
+
   return (
-    <div className={`vizel-mention-menu ${className ?? ""}`} data-vizel-mention-menu="">
+    <div
+      className={`vizel-mention-menu ${className ?? ""}`}
+      data-vizel-mention-menu=""
+      role="listbox"
+      aria-label="Mentions"
+      {...(activeOptionId && { "aria-activedescendant": activeOptionId })}
+    >
       {items.map((item, index) => {
         const isSelected = index === selectedIndex;
         return (
           <div
             key={item.id}
+            id={`vizel-mention-${item.id}`}
             ref={(el) => {
               itemRefs.current[index] = el;
             }}
