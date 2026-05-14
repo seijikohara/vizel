@@ -1,10 +1,12 @@
-import type { Editor } from "@vizel/core";
+import { createVizelEditorTransactionStore, type Editor } from "@vizel/core";
 import { onBeforeUnmount, type Ref, ref, watch } from "vue";
 
 /**
  * Composable that forces a re-render whenever the editor's state changes.
- * This is useful for components that need to reflect the current editor state
- * (e.g., formatting buttons that show active state).
+ *
+ * Wraps `@vizel/core`'s `createVizelEditorTransactionStore` so the
+ * subscribe/version-counter mechanics are shared with the React and
+ * Svelte adapters.
  *
  * @param getEditor - A function that returns the editor instance
  * @returns A ref that changes on each editor state update (can be ignored)
@@ -22,40 +24,27 @@ import { onBeforeUnmount, type Ref, ref, watch } from "vue";
  */
 export function useVizelState(getEditor: () => Editor | null | undefined): Ref<number> {
   const updateCount = ref(0);
-  let currentEditor: Editor | null = null;
+  let unsubscribe: (() => void) | null = null;
 
-  function handleTransaction() {
-    updateCount.value++;
-  }
-
-  function subscribe(editor: Editor | null | undefined) {
-    // Unsubscribe from previous editor if different
-    if (currentEditor && currentEditor !== editor) {
-      currentEditor.off("transaction", handleTransaction);
-    }
-
-    currentEditor = editor ?? null;
-
-    // Subscribe to new editor
-    if (currentEditor) {
-      currentEditor.on("transaction", handleTransaction);
-    }
-  }
-
-  // Watch for editor changes and resubscribe
   watch(
     getEditor,
     (editor) => {
-      subscribe(editor);
+      unsubscribe?.();
+      if (!editor) {
+        unsubscribe = null;
+        return;
+      }
+      const store = createVizelEditorTransactionStore(() => editor);
+      unsubscribe = store.subscribe(() => {
+        updateCount.value = store.getVersion();
+      });
     },
     { immediate: true }
   );
 
-  // Cleanup on unmount
   onBeforeUnmount(() => {
-    if (currentEditor) {
-      currentEditor.off("transaction", handleTransaction);
-    }
+    unsubscribe?.();
+    unsubscribe = null;
   });
 
   return updateCount;

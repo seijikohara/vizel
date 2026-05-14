@@ -283,6 +283,20 @@ export {
   vizelDefaultIconIds,
 } from "./icons/index.ts";
 // =============================================================================
+// Interactions
+// =============================================================================
+export {
+  createVizelDismissibleController,
+  createVizelEditorSubscription,
+  createVizelEditorTransactionStore,
+  resolveVizelGridNavigation,
+  resolveVizelListNavigation,
+  type VizelDismissibleControllerOptions,
+  type VizelEditorEventName,
+  type VizelEditorSubscriptionOptions,
+  type VizelEditorTransactionStore,
+} from "./interactions/index.ts";
+// =============================================================================
 // Plugin System
 // =============================================================================
 export {

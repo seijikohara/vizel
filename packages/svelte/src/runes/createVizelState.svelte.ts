@@ -1,9 +1,11 @@
-import type { Editor } from "@vizel/core";
+import { createVizelEditorTransactionStore, type Editor } from "@vizel/core";
 
 /**
  * Rune that forces a re-render whenever the editor's state changes.
- * This is useful for components that need to reflect the current editor state
- * (e.g., formatting buttons that show active state).
+ *
+ * Wraps `@vizel/core`'s `createVizelEditorTransactionStore` so the
+ * subscribe/version-counter mechanics are shared with the React and
+ * Vue adapters.
  *
  * @param getEditor - A function that returns the editor instance
  * @returns An object with a `current` getter for the update count
@@ -21,36 +23,15 @@ export function createVizelState(getEditor: () => Editor | null | undefined): {
   readonly current: number;
 } {
   let updateCount = $state(0);
-  let currentEditor: Editor | null = null;
 
-  function handleTransaction() {
-    updateCount++;
-  }
-
-  function subscribe(editor: Editor | null | undefined) {
-    // Unsubscribe from previous editor
-    if (currentEditor) {
-      currentEditor.off("transaction", handleTransaction);
-    }
-
-    currentEditor = editor ?? null;
-
-    // Subscribe to new editor
-    if (currentEditor) {
-      currentEditor.on("transaction", handleTransaction);
-    }
-  }
-
-  // Use $effect to watch for editor changes - $effect cleanup handles unmount
   $effect(() => {
     const editor = getEditor();
-    subscribe(editor);
-
-    return () => {
-      if (currentEditor) {
-        currentEditor.off("transaction", handleTransaction);
-      }
-    };
+    if (!editor) return;
+    const store = createVizelEditorTransactionStore(() => editor);
+    const unsubscribe = store.subscribe(() => {
+      updateCount = store.getVersion();
+    });
+    return unsubscribe;
   });
 
   return {
