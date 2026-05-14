@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { VizelMentionItem } from "@vizel/core";
+import { resolveVizelListNavigation, type VizelMentionItem } from "@vizel/core";
 import { nextTick, ref, watch } from "vue";
 
 export interface VizelMentionMenuRef {
@@ -45,21 +45,15 @@ function selectItem(index: number) {
 }
 
 function onKeyDown(event: KeyboardEvent): boolean {
-  if (event.key === "ArrowUp") {
-    selectedIndex.value = (selectedIndex.value + props.items.length - 1) % props.items.length;
-    scrollToSelected();
-    return true;
-  }
-  if (event.key === "ArrowDown") {
-    selectedIndex.value = (selectedIndex.value + 1) % props.items.length;
-    scrollToSelected();
-    return true;
-  }
   if (event.key === "Enter") {
     selectItem(selectedIndex.value);
     return true;
   }
-  return false;
+  const next = resolveVizelListNavigation(event.key, selectedIndex.value, props.items.length);
+  if (next === null) return false;
+  selectedIndex.value = next;
+  scrollToSelected();
+  return true;
 }
 
 defineExpose<VizelMentionMenuRef>({ onKeyDown });

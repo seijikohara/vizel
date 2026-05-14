@@ -1,4 +1,4 @@
-import type { VizelMentionItem } from "@vizel/core";
+import { resolveVizelListNavigation, type VizelMentionItem } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 
@@ -64,33 +64,20 @@ export function VizelMentionMenu({
     [items, onSelect]
   );
 
-  const upHandler = useCallback(() => {
-    setSelectedIndex((index) => (index + items.length - 1) % items.length);
-  }, [items.length]);
-
-  const downHandler = useCallback(() => {
-    setSelectedIndex((index) => (index + 1) % items.length);
-  }, [items.length]);
-
   const enterHandler = useCallback(() => {
     selectItem(selectedIndex);
   }, [selectItem, selectedIndex]);
 
   useImperativeHandle(ref, () => ({
     onKeyDown: (event) => {
-      if (event.key === "ArrowUp") {
-        upHandler();
-        return true;
-      }
-      if (event.key === "ArrowDown") {
-        downHandler();
-        return true;
-      }
       if (event.key === "Enter") {
         enterHandler();
         return true;
       }
-      return false;
+      const next = resolveVizelListNavigation(event.key, selectedIndex, items.length);
+      if (next === null) return false;
+      setSelectedIndex(next);
+      return true;
     },
   }));
 

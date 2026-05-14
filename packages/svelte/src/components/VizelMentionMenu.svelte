@@ -22,6 +22,7 @@ export interface VizelMentionMenuProps {
 </script>
 
 <script lang="ts">
+import { resolveVizelListNavigation } from "@vizel/core";
 import { tick } from "svelte";
 
 let {
@@ -64,21 +65,15 @@ function selectItem(index: number) {
 }
 
 function onKeyDown(event: KeyboardEvent): boolean {
-  if (event.key === "ArrowUp") {
-    selectedIndex = (selectedIndex + items.length - 1) % items.length;
-    scrollToSelected();
-    return true;
-  }
-  if (event.key === "ArrowDown") {
-    selectedIndex = (selectedIndex + 1) % items.length;
-    scrollToSelected();
-    return true;
-  }
   if (event.key === "Enter") {
     selectItem(selectedIndex);
     return true;
   }
-  return false;
+  const next = resolveVizelListNavigation(event.key, selectedIndex, items.length);
+  if (next === null) return false;
+  selectedIndex = next;
+  scrollToSelected();
+  return true;
 }
 
 // Expose the keyboard handler through the optional ref prop so suggestion
