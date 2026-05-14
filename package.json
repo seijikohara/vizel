@@ -109,7 +109,7 @@
     "playwright": "~1.58.2",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "svelte": "^5.55.5",
+    "svelte": "^5.55.7",
     "typescript": "^6.0.3",
     "vite": "^8.0.12",
     "vitepress": "^2.0.0-alpha.17",
