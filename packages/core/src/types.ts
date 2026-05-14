@@ -177,9 +177,23 @@ export interface VizelEditorOptions {
   transformDiagramsOnImport?: boolean;
   /** Placeholder text when editor is empty */
   placeholder?: string;
-  /** Whether the editor is editable */
+  /**
+   * Whether the editor accepts user input.
+   * Toggle at runtime to switch between read-write and read-only modes;
+   * the framework hooks/composables/runes propagate the change through
+   * `editor.setEditable()` automatically.
+   * @default true
+   */
   editable?: boolean;
-  /** Auto focus on mount */
+  /**
+   * Auto focus on mount.
+   * - `false` (default) — do not focus.
+   * - `true` — focus and place the cursor at the end of the document.
+   * - `"start"` / `"end"` / `"all"` — focus with the corresponding selection.
+   * - `number` — focus and place the cursor at that document position
+   *   (clamped to `[0, docSize]`).
+   * @default false
+   */
   autofocus?: boolean | "start" | "end" | "all" | number;
   /** Callback when content changes */
   onUpdate?: (props: { editor: Editor }) => void;

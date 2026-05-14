@@ -14,7 +14,7 @@ import {
   type VizelThemeState,
 } from "@vizel/core";
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
-import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext";
+import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext.ts";
 
 export interface VizelThemeProviderProps extends VizelThemeProviderOptions {}
 
