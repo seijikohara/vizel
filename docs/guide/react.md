@@ -372,13 +372,21 @@ This component displays the save status.
 
 ### VizelPortal
 
-This component renders children in a portal.
+Render children outside the editor's DOM hierarchy, into the shared Vizel portal container at the document body level. Used internally for menus, dropdowns, and bubble menus so floating UI stacks correctly above the editor content.
 
 ```tsx
-<VizelPortal container={document.body}>
+<VizelPortal layer="dropdown">
   <div className="my-overlay">Content</div>
 </VizelPortal>
 ```
+
+Props:
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `layer` | `VizelPortalLayer` | `"dropdown"` | Z-index layer (`"dropdown"`, `"popover"`, `"modal"`, `"toast"`). |
+| `className` | `string` | — | Class applied to the portal wrapper element. |
+| `disabled` | `boolean` | `false` | When `true`, renders children in place (no portal). Useful for SSR / debugging. |
 
 ### VizelIcon
 
