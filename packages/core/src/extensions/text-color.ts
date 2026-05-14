@@ -1,4 +1,4 @@
-import type { Extensions } from "@tiptap/core";
+import type { Editor, Extensions } from "@tiptap/core";
 import { Color } from "@tiptap/extension-color";
 import { Highlight } from "@tiptap/extension-highlight";
 import { TextStyle } from "@tiptap/extension-text-style";
@@ -120,6 +120,46 @@ export function addVizelRecentColor(type: "textColor" | "highlight", color: stri
   } catch {
     // Ignore localStorage errors
   }
+}
+
+/**
+ * Apply a color to the current selection.
+ *
+ * Routes through the appropriate Tiptap command and special-cases the
+ * "remove" sentinels (`"inherit"` for text color, `"transparent"` for
+ * highlight). Concrete colors are also recorded via `addVizelRecentColor`.
+ *
+ * Framework components consume this helper instead of hand-coding the
+ * `editor.chain().focus().setColor(...)` / `toggleHighlight(...)` plumbing
+ * three times. The behavior is intentionally identical to the previous
+ * per-framework copies.
+ *
+ * @example
+ * ```ts
+ * applyVizelColorToEditor(editor, "textColor", "#FF0000");
+ * applyVizelColorToEditor(editor, "highlight", "transparent"); // unsets
+ * ```
+ */
+export function applyVizelColorToEditor(
+  editor: Editor,
+  type: "textColor" | "highlight",
+  color: string
+): void {
+  if (type === "textColor") {
+    if (color === "inherit") {
+      editor.chain().focus().unsetColor().run();
+      return;
+    }
+    editor.chain().focus().setColor(color).run();
+    addVizelRecentColor(type, color);
+    return;
+  }
+  if (color === "transparent") {
+    editor.chain().focus().unsetHighlight().run();
+    return;
+  }
+  editor.chain().focus().toggleHighlight({ color }).run();
+  addVizelRecentColor(type, color);
 }
 
 /**

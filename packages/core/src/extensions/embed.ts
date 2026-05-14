@@ -946,3 +946,111 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
 export function createVizelEmbedExtension(options: VizelEmbedOptions = {}) {
   return VizelEmbed.configure(options);
 }
+
+// =============================================================================
+// Embed View Helpers
+// =============================================================================
+
+/**
+ * Re-parent any `<script>` tags inside an oEmbed container so the browser
+ * actually executes them (innerHTML-inserted scripts are inert).
+ *
+ * Optionally invokes provider-specific bootstrap (Twitter widgets) when
+ * the provider is `"twitter"`. Framework `VizelEmbedView` components call
+ * this helper after their effect runs.
+ */
+export function loadVizelEmbedScripts(container: HTMLElement, provider?: string): void {
+  const scripts = container.querySelectorAll("script");
+  for (const oldScript of scripts) {
+    const newScript = document.createElement("script");
+    for (const attr of Array.from(oldScript.attributes)) {
+      newScript.setAttribute(attr.name, attr.value);
+    }
+    if (oldScript.textContent) {
+      newScript.textContent = oldScript.textContent;
+    }
+    oldScript.parentNode?.replaceChild(newScript, oldScript);
+  }
+
+  if (provider === "twitter" && typeof window !== "undefined" && "twttr" in window) {
+    const twttr = (window as { twttr?: { widgets?: { load?: (el?: HTMLElement) => void } } }).twttr;
+    twttr?.widgets?.load?.(container);
+  }
+}
+
+/**
+ * Discriminated view-model for {@link VizelEmbedView}.
+ *
+ * Each variant maps to one of the four render branches (oEmbed,
+ * OGP, title-link, plain-link) plus the loading state. Framework
+ * components consume the resolved variant and only have to render
+ * each branch's tree once.
+ */
+export type VizelEmbedViewModel =
+  | { kind: "loading"; provider: string | undefined }
+  | {
+      kind: "oembed";
+      provider: string | undefined;
+      html: string;
+      isVideo: boolean;
+    }
+  | {
+      kind: "ogp";
+      provider: string | undefined;
+      url: string;
+      title: string | undefined;
+      description: string | undefined;
+      image: string | undefined;
+      favicon: string | undefined;
+      siteName: string | undefined;
+      hostname: string;
+    }
+  | { kind: "title"; provider: string | undefined; url: string; title: string }
+  | { kind: "link"; provider: string | undefined; url: string };
+
+const VIDEO_PROVIDERS: readonly string[] = ["youtube", "vimeo", "loom", "tiktok"];
+
+/**
+ * Resolve an {@link VizelEmbedData} into the variant-shaped view-model.
+ *
+ * Encodes the same fallback chain previously hand-coded in each framework's
+ * `VizelEmbedView`: loading → oEmbed → OGP → title-link → plain-link.
+ */
+export function resolveVizelEmbedView(data: VizelEmbedData): VizelEmbedViewModel {
+  if (data.loading) {
+    return { kind: "loading", provider: data.provider };
+  }
+  if (data.type === "oembed" && data.html) {
+    return {
+      kind: "oembed",
+      provider: data.provider,
+      html: data.html,
+      isVideo: VIDEO_PROVIDERS.includes(data.provider ?? ""),
+    };
+  }
+  if (data.type === "ogp") {
+    return {
+      kind: "ogp",
+      provider: data.provider,
+      url: data.url,
+      title: data.title,
+      description: data.description,
+      image: data.image,
+      favicon: data.favicon,
+      siteName: data.siteName,
+      hostname: safeHostname(data.url),
+    };
+  }
+  if (data.type === "title" && data.title) {
+    return { kind: "title", provider: data.provider, url: data.url, title: data.title };
+  }
+  return { kind: "link", provider: data.provider, url: data.url };
+}
+
+function safeHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}

@@ -74,11 +74,14 @@ export {
   createVizelDefaultFetchEmbedData,
   createVizelEmbedExtension,
   detectVizelEmbedProvider,
+  loadVizelEmbedScripts,
+  resolveVizelEmbedView,
   VizelEmbed,
   type VizelEmbedData,
   type VizelEmbedOptions,
   type VizelEmbedProvider,
   type VizelEmbedType,
+  type VizelEmbedViewModel,
   type VizelFetchEmbedDataFn,
   vizelDefaultEmbedProviders,
   vizelEmbedPastePluginKey,
@@ -220,6 +223,7 @@ export {
 // Text color
 export {
   addVizelRecentColor,
+  applyVizelColorToEditor,
   createVizelTextColorExtensions,
   getVizelRecentColors,
   VIZEL_HIGHLIGHT_COLORS,

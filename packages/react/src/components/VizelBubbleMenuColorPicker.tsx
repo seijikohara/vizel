@@ -1,5 +1,5 @@
 import {
-  addVizelRecentColor,
+  applyVizelColorToEditor,
   type Editor,
   getVizelRecentColors,
   VIZEL_HIGHLIGHT_COLORS,
@@ -64,22 +64,11 @@ export function VizelBubbleMenuColorPicker({
     }
   }, [isOpen, showRecentColors, type]);
 
-  // Apply color to editor
+  // Apply color to editor (centralized in @vizel/core to keep behavior parity
+  // across React/Vue/Svelte).
   const handleColorChange = useCallback(
     (color: string) => {
-      if (type === "textColor") {
-        if (color === "inherit") {
-          editor.chain().focus().unsetColor().run();
-        } else {
-          editor.chain().focus().setColor(color).run();
-          addVizelRecentColor(type, color);
-        }
-      } else if (color === "transparent") {
-        editor.chain().focus().unsetHighlight().run();
-      } else {
-        editor.chain().focus().toggleHighlight({ color }).run();
-        addVizelRecentColor(type, color);
-      }
+      applyVizelColorToEditor(editor, type, color);
       setIsOpen(false);
     },
     [editor, type]

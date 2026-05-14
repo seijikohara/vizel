@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { VizelEmbedData } from "@vizel/core";
+import { loadVizelEmbedScripts, resolveVizelEmbedView, type VizelEmbedData } from "@vizel/core";
 import { computed, onMounted, ref, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -16,6 +16,8 @@ const props = defineProps<VizelEmbedViewProps>();
 
 const containerRef = ref<HTMLDivElement | null>(null);
 
+const view = computed(() => resolveVizelEmbedView(props.data));
+
 const baseClass = computed(() => {
   const classes = ["vizel-embed"];
   if (props.data.loading) classes.push("is-loading");
@@ -24,133 +26,88 @@ const baseClass = computed(() => {
   return classes.join(" ");
 });
 
-const isVideo = computed(() => {
-  return ["youtube", "vimeo", "loom", "tiktok"].includes(props.data.provider ?? "");
-});
-
-const hasImage = computed(() => Boolean(props.data.image));
-
-const hostname = computed(() => {
-  try {
-    return new URL(props.data.url).hostname;
-  } catch {
-    return props.data.url;
-  }
-});
-
-// Handle oEmbed scripts (Twitter, Instagram, etc.)
 function loadScripts() {
-  if (props.data.type === "oembed" && props.data.html && containerRef.value) {
-    const scripts = containerRef.value.querySelectorAll("script");
-    for (const script of scripts) {
-      const newScript = document.createElement("script");
-      if (script.src) {
-        newScript.src = script.src;
-      } else {
-        newScript.textContent = script.textContent;
-      }
-      script.parentNode?.replaceChild(newScript, script);
-    }
-
-    // Load Twitter widgets if present
-    if (props.data.provider === "twitter" && "twttr" in window) {
-      (window as { twttr?: { widgets?: { load?: () => void } } }).twttr?.widgets?.load?.();
-    }
+  if (view.value.kind === "oembed" && containerRef.value) {
+    loadVizelEmbedScripts(containerRef.value, view.value.provider);
   }
 }
 
 onMounted(loadScripts);
-watch(() => [props.data.type, props.data.html], loadScripts);
+watch(view, loadScripts);
 </script>
 
 <template>
-  <!-- Loading state -->
-  <div
-    v-if="data.loading"
-    :class="baseClass"
-    data-embed-type="loading"
-    :data-embed-provider="data.provider"
-  >
-    <div class="vizel-embed-loading">
-      <div class="vizel-embed-loading-spinner" />
-      <span>Loading embed...</span>
-    </div>
-  </div>
-
-  <!-- oEmbed (rich embed) -->
-  <div
-    v-else-if="data.type === 'oembed' && data.html"
-    ref="containerRef"
-    :class="baseClass"
-    data-embed-type="oembed"
-    :data-embed-provider="data.provider"
-  >
-    <div
-      :class="isVideo ? 'vizel-embed-video' : 'vizel-embed-oembed'"
-      v-html="data.html"
-    />
-  </div>
-
-  <!-- OGP card -->
-  <div
-    v-else-if="data.type === 'ogp'"
-    :class="baseClass"
-    data-embed-type="ogp"
-    :data-embed-provider="data.provider"
-  >
-    <a
-      :href="data.url"
-      target="_blank"
-      rel="noopener noreferrer"
-      :class="['vizel-embed-card', hasImage ? 'vizel-embed-card-horizontal' : '']"
-    >
-      <img
-        v-if="hasImage"
-        :src="data.image"
-        alt=""
-        class="vizel-embed-card-image"
-        loading="lazy"
-      />
-      <div class="vizel-embed-card-content">
-        <div v-if="data.siteName || data.favicon" class="vizel-embed-card-site">
-          <img
-            v-if="data.favicon"
-            :src="data.favicon"
-            alt=""
-            class="vizel-embed-card-favicon"
-          />
-          <span v-if="data.siteName">{{ data.siteName }}</span>
-        </div>
-        <div v-if="data.title" class="vizel-embed-card-title">{{ data.title }}</div>
-        <div v-if="data.description" class="vizel-embed-card-description">{{ data.description }}</div>
-        <div class="vizel-embed-card-url">{{ hostname }}</div>
+  <template v-if="view.kind === 'loading'">
+    <div :class="baseClass" data-embed-type="loading" :data-embed-provider="view.provider">
+      <div class="vizel-embed-loading">
+        <div class="vizel-embed-loading-spinner" />
+        <span>Loading embed...</span>
       </div>
-    </a>
-  </div>
+    </div>
+  </template>
 
-  <!-- Title link -->
-  <div
-    v-else-if="data.type === 'title' && data.title"
-    :class="baseClass"
-    data-embed-type="title"
-    :data-embed-provider="data.provider"
-  >
-    <a :href="data.url" target="_blank" rel="noopener noreferrer" class="vizel-embed-link">
-      <span class="vizel-embed-link-icon"><VizelIcon name="link" /></span>
-      <span class="vizel-embed-link-text">{{ data.title }}</span>
-    </a>
-  </div>
+  <template v-else-if="view.kind === 'oembed'">
+    <div
+      ref="containerRef"
+      :class="baseClass"
+      data-embed-type="oembed"
+      :data-embed-provider="view.provider"
+    >
+      <div
+        :class="view.isVideo ? 'vizel-embed-video' : 'vizel-embed-oembed'"
+        v-html="view.html"
+      />
+    </div>
+  </template>
 
-  <!-- Plain link (fallback) -->
-  <div
-    v-else
-    :class="baseClass"
-    data-embed-type="link"
-    :data-embed-provider="data.provider"
-  >
-    <a :href="data.url" target="_blank" rel="noopener noreferrer" class="vizel-embed-link">
-      <span class="vizel-embed-link-icon"><VizelIcon name="link" /></span>
-      <span class="vizel-embed-link-text">{{ data.url }}</span>
-    </a>
-  </div>
+  <template v-else-if="view.kind === 'ogp'">
+    <div :class="baseClass" data-embed-type="ogp" :data-embed-provider="view.provider">
+      <a
+        :href="view.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        :class="['vizel-embed-card', view.image ? 'vizel-embed-card-horizontal' : '']"
+      >
+        <img
+          v-if="view.image"
+          :src="view.image"
+          alt=""
+          class="vizel-embed-card-image"
+          loading="lazy"
+        />
+        <div class="vizel-embed-card-content">
+          <div v-if="view.siteName || view.favicon" class="vizel-embed-card-site">
+            <img
+              v-if="view.favicon"
+              :src="view.favicon"
+              alt=""
+              class="vizel-embed-card-favicon"
+            />
+            <span v-if="view.siteName">{{ view.siteName }}</span>
+          </div>
+          <div v-if="view.title" class="vizel-embed-card-title">{{ view.title }}</div>
+          <div v-if="view.description" class="vizel-embed-card-description">{{ view.description }}</div>
+          <div class="vizel-embed-card-url">{{ view.hostname }}</div>
+        </div>
+      </a>
+    </div>
+  </template>
+
+  <template v-else-if="view.kind === 'title'">
+    <div :class="baseClass" data-embed-type="title" :data-embed-provider="view.provider">
+      <a :href="view.url" target="_blank" rel="noopener noreferrer" class="vizel-embed-link">
+        <span class="vizel-embed-link-icon"><VizelIcon name="link" /></span>
+        <span class="vizel-embed-link-text">{{ view.title }}</span>
+      </a>
+    </div>
+  </template>
+
+  <template v-else>
+    <div :class="baseClass" data-embed-type="link" :data-embed-provider="view.provider">
+      <a :href="view.url" target="_blank" rel="noopener noreferrer" class="vizel-embed-link">
+        <span class="vizel-embed-link-icon"><VizelIcon name="link" /></span>
+        <span class="vizel-embed-link-text">{{ view.url }}</span>
+      </a>
+    </div>
+  </template>
 </template>

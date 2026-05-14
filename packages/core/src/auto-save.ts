@@ -258,3 +258,111 @@ export function formatVizelRelativeTime(date: Date, locale?: VizelLocale): strin
   }
   return `${diffDay}d ago`;
 }
+
+/**
+ * Options for {@link createVizelRelativeTimeTicker}.
+ */
+export interface VizelRelativeTimeTickerOptions {
+  /** Returns the reference date. `null`/`undefined` is rendered as an empty string. */
+  getDate: () => Date | null | undefined;
+  /** Returns the active locale (optional, called per tick). */
+  getLocale?: () => VizelLocale | undefined;
+  /** Tick interval in milliseconds (default: 10000). */
+  intervalMs?: number;
+  /** Called with the formatted string on every tick (and once synchronously). */
+  onTick: (text: string) => void;
+}
+
+/**
+ * Start a relative-time interval ticker.
+ *
+ * Calls `onTick` once synchronously with the current relative-time string,
+ * then on every `intervalMs` boundary until the returned dispose function
+ * fires. Framework components wrap this in their effect primitive instead
+ * of reimplementing the `setInterval`/`clearInterval` pair.
+ */
+export function createVizelRelativeTimeTicker(options: VizelRelativeTimeTickerOptions): () => void {
+  const { getDate, getLocale, intervalMs = 10000, onTick } = options;
+
+  const emit = () => {
+    const date = getDate();
+    onTick(date ? formatVizelRelativeTime(date, getLocale?.()) : "");
+  };
+
+  emit();
+  const id = setInterval(emit, intervalMs);
+  return () => clearInterval(id);
+}
+
+/**
+ * Resolved view-model for {@link VizelSaveIndicator}.
+ *
+ * Captures the status → display mapping so each framework only has to
+ * render the icon and text once, instead of hand-writing a `switch`
+ * inside both `<script>` and template.
+ */
+export interface VizelSaveIndicatorView {
+  /** Name of the {@link VizelIcon} to render. */
+  iconName: "check" | "loader" | "circle" | "warning";
+  /** Whether the icon should be wrapped in the `vizel-save-indicator-spinner` element. */
+  isSpinner: boolean;
+  /** Localized status text. */
+  text: string;
+  /** Whether to render the relative timestamp span. */
+  shouldShowTimestamp: boolean;
+}
+
+/**
+ * Resolve the icon, text, and timestamp visibility for a {@link VizelSaveStatus}.
+ *
+ * Pure function consumed by framework `VizelSaveIndicator` components.
+ *
+ * @param status - Current save status.
+ * @param locale - Optional locale providing translated status strings.
+ * @param lastSaved - Last successful save timestamp (for visibility check).
+ * @param relativeTime - Pre-computed relative-time string (empty when none).
+ * @param showTimestamp - Whether the consumer requested timestamp display.
+ */
+export function resolveVizelSaveIndicatorView(
+  status: VizelSaveStatus,
+  locale: VizelLocale | undefined,
+  lastSaved: Date | null | undefined,
+  relativeTime: string,
+  showTimestamp: boolean
+): VizelSaveIndicatorView {
+  const t = locale?.saveIndicator;
+  switch (status) {
+    case "saved":
+      return {
+        iconName: "check",
+        isSpinner: false,
+        text: t?.saved ?? "Saved",
+        shouldShowTimestamp: Boolean(showTimestamp && lastSaved && relativeTime),
+      };
+    case "saving":
+      return {
+        iconName: "loader",
+        isSpinner: true,
+        text: t?.saving ?? "Saving...",
+        shouldShowTimestamp: false,
+      };
+    case "unsaved":
+      return {
+        iconName: "circle",
+        isSpinner: false,
+        text: t?.unsaved ?? "Unsaved",
+        shouldShowTimestamp: false,
+      };
+    case "error":
+      return {
+        iconName: "warning",
+        isSpinner: false,
+        text: t?.error ?? "Error saving",
+        shouldShowTimestamp: false,
+      };
+    default: {
+      const exhaustive: never = status;
+      return exhaustive;
+    }
+  }
+}

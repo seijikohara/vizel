@@ -19,11 +19,15 @@ export type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 // =============================================================================
 export {
   createVizelAutoSaveHandlers,
+  createVizelRelativeTimeTicker,
   formatVizelRelativeTime,
   getVizelStorageBackend,
+  resolveVizelSaveIndicatorView,
   VIZEL_DEFAULT_AUTO_SAVE_OPTIONS,
   type VizelAutoSaveOptions,
   type VizelAutoSaveState,
+  type VizelRelativeTimeTickerOptions,
+  type VizelSaveIndicatorView,
   type VizelSaveStatus,
   type VizelStorageBackend,
 } from "./auto-save.ts";
@@ -60,6 +64,7 @@ export {
 export {
   // Text color
   addVizelRecentColor,
+  applyVizelColorToEditor,
   // Block menu (locale-aware)
   createVizelBlockMenuActions,
   // Callout / Admonition
@@ -133,6 +138,8 @@ export {
   groupVizelSlashCommands,
   handleVizelImageDrop,
   handleVizelImagePaste,
+  loadVizelEmbedScripts,
+  resolveVizelEmbedView,
   searchVizelSlashCommands,
   VIZEL_BLOCK_MENU_EVENT,
   VIZEL_DEFAULT_FILE_MIME_TYPES,
@@ -169,6 +176,7 @@ export {
   type VizelEmbedOptions,
   type VizelEmbedProvider,
   type VizelEmbedType,
+  type VizelEmbedViewModel,
   type VizelExtensionsOptions,
   type VizelFetchEmbedDataFn,
   type VizelFileHandlerError,
