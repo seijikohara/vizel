@@ -14,7 +14,7 @@ import {
   type VizelLocale,
   type VizelMarkdownFlavor,
 } from "@vizel/core";
-import { useSlots, watch } from "vue";
+import { computed, useSlots, watch } from "vue";
 import { useVizelEditor } from "../composables/useVizelEditor.ts";
 import VizelBlockMenu from "./VizelBlockMenu.vue";
 import VizelBubbleMenu from "./VizelBubbleMenu.vue";
@@ -163,21 +163,25 @@ defineExpose<VizelRef>({
     return editor.value;
   },
 });
+
+// Memoize the `locale`-bound props object so toolbar / bubble-menu /
+// block-menu children don't see a fresh identity each render, matching
+// the React component's `useMemo(localeProps, [locale])` shape.
+const localeProps = computed(() => (props.locale ? { locale: props.locale } : {}));
 </script>
 
 <template>
   <div :class="['vizel-root', $props.class]" data-vizel-root>
-    <VizelToolbar v-if="showToolbar && editor && slots['toolbar']" :editor="editor" v-bind="props.locale ? { locale: props.locale } : {}">
+    <VizelToolbar v-if="showToolbar && editor && slots['toolbar']" :editor="editor" v-bind="localeProps">
       <slot name="toolbar" :editor="editor" />
     </VizelToolbar>
-    <VizelToolbar v-else-if="showToolbar && editor" :editor="editor" v-bind="props.locale ? { locale: props.locale } : {}" />
+    <VizelToolbar v-else-if="showToolbar && editor" :editor="editor" v-bind="localeProps" />
     <VizelEditor :editor="editor" />
-    <VizelBubbleMenu v-if="showBubbleMenu && editor && slots['bubble-menu']" :editor="editor" :enable-embed="enableEmbed ?? false" v-bind="props.locale ? { locale: props.locale } : {}">
+    <VizelBubbleMenu v-if="showBubbleMenu && editor && slots['bubble-menu']" :editor="editor" :enable-embed="enableEmbed ?? false" v-bind="localeProps">
       <slot name="bubble-menu" :editor="editor" />
     </VizelBubbleMenu>
-    <VizelBubbleMenu v-else-if="showBubbleMenu && editor" :editor="editor" :enable-embed="enableEmbed ?? false" v-bind="props.locale ? { locale: props.locale } : {}" />
-    <VizelBlockMenu v-if="props.locale" :locale="props.locale" />
-    <VizelBlockMenu v-else />
+    <VizelBubbleMenu v-else-if="showBubbleMenu && editor" :editor="editor" :enable-embed="enableEmbed ?? false" v-bind="localeProps" />
+    <VizelBlockMenu v-bind="localeProps" />
     <slot :editor="editor" />
   </div>
 </template>

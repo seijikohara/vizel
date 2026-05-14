@@ -14,7 +14,7 @@ import {
   type VizelThemeState,
 } from "@vizel/core";
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
-import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext";
+import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext.ts";
 
 export interface VizelThemeProviderProps extends VizelThemeProviderOptions {}
 
@@ -61,10 +61,17 @@ onMounted(() => {
   });
 });
 
-// Watch for resolved theme changes
-watch(resolvedTheme, (newResolvedTheme) => {
-  applyVizelTheme(newResolvedTheme, props.targetSelector, props.disableTransitionOnChange);
-});
+// Re-apply the theme whenever ANY input changes: the resolved theme,
+// the target selector, or the transition-disable flag. The previous
+// watcher only tracked `resolvedTheme`, so changing `targetSelector` or
+// `disableTransitionOnChange` after mount had no effect (drift from the
+// React `VizelThemeProvider`, which lists all three as effect deps).
+watch(
+  [resolvedTheme, () => props.targetSelector, () => props.disableTransitionOnChange],
+  ([newResolvedTheme, targetSelector, disableTransitionOnChange]) => {
+    applyVizelTheme(newResolvedTheme, targetSelector, disableTransitionOnChange);
+  }
+);
 
 onBeforeUnmount(() => {
   if (cleanup) {
