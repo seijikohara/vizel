@@ -225,7 +225,8 @@ export function VizelBlockMenu({
       onKeyDown={handleMenuKeyDown}
     >
       {groups.map((group, groupIndex) => (
-        <div key={group[0]?.group}>
+        // biome-ignore lint/suspicious/noArrayIndexKey: groups are derived from a stable action list whose ordering is fixed at locale resolution time; the first-item `group` string we used before collided for two groups whose first member landed in the same category. Matches the Vue/Svelte block-menu key strategy.
+        <div key={groupIndex}>
           {groupIndex > 0 && <div className="vizel-block-menu-divider" />}
           {group.map((action) => (
             <button
