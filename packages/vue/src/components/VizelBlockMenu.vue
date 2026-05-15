@@ -2,6 +2,7 @@
 import {
   clampMenuPosition,
   createVizelBlockMenuActions,
+  createVizelDismissibleController,
   createVizelNodeTypes,
   type Editor,
   getVizelTurnIntoOptions,
@@ -173,57 +174,18 @@ watch(showTurnInto, (isOpen) => {
   });
 });
 
-let outsideClickHandler: ((e: MouseEvent) => void) | null = null;
-let escapeHandler: ((e: KeyboardEvent) => void) | null = null;
-
-function addCloseListeners() {
-  removeCloseListeners();
-
-  outsideClickHandler = (e: MouseEvent) => {
-    if (!(e.target instanceof Node)) return;
-    if (
-      menuRef.value &&
-      !menuRef.value.contains(e.target) &&
-      !submenuRef.value?.contains(e.target)
-    ) {
-      close();
-    }
-  };
-
-  escapeHandler = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      close();
-    }
-  };
-
-  if (outsideClickHandler) {
-    document.addEventListener("mousedown", outsideClickHandler);
-  }
-  if (escapeHandler) {
-    document.addEventListener("keydown", escapeHandler);
-  }
-}
-
-function removeCloseListeners() {
-  if (outsideClickHandler) {
-    document.removeEventListener("mousedown", outsideClickHandler);
-    outsideClickHandler = null;
-  }
-  if (escapeHandler) {
-    document.removeEventListener("keydown", escapeHandler);
-    escapeHandler = null;
-  }
-}
-
-// Watch menuState to manage close listeners
+// Manage outside-click + Escape dismissal declaratively through the shared
+// `createVizelDismissibleController` helper. Cleanup runs automatically
+// when the menu closes (via the `onCleanup` argument) and on unmount.
 watch(
   menuState,
-  (state) => {
-    if (state) {
-      addCloseListeners();
-    } else {
-      removeCloseListeners();
-    }
+  (state, _prev, onCleanup) => {
+    if (!state) return;
+    const dispose = createVizelDismissibleController({
+      getElements: () => [menuRef.value, submenuRef.value],
+      onDismiss: close,
+    });
+    onCleanup(dispose);
   },
   { flush: "post" }
 );
@@ -234,7 +196,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener(VIZEL_BLOCK_MENU_EVENT, handleOpen);
-  removeCloseListeners();
 });
 </script>
 
