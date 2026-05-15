@@ -1,4 +1,4 @@
-import type { Editor } from "@vizel/core";
+import { type Editor, mountVizelEditorView } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useEffect, useImperativeHandle, useRef } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";
@@ -54,24 +54,8 @@ export function VizelEditor({ ref, editor: editorProp, className }: VizelEditorP
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!(editor && container)) {
-      return;
-    }
-
-    // Mount the editor's DOM view to the container element
-    container.appendChild(editor.view.dom);
-
-    // Update editable state
-    editor.view.setProps({
-      editable: () => editor?.isEditable ?? false,
-    });
-
-    // Cleanup: remove DOM element when editor changes or unmounts
-    return () => {
-      if (editor.view.dom.parentNode === container) {
-        container.removeChild(editor.view.dom);
-      }
-    };
+    if (!(editor && container)) return;
+    return mountVizelEditorView(editor, container);
   }, [editor]);
 
   if (!editor) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Editor } from "@vizel/core";
-import { computed, ref, watch } from "vue";
+import { type Editor, mountVizelEditorView } from "@vizel/core";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 
 export interface VizelEditorProps {
@@ -28,31 +28,24 @@ defineExpose<VizelExposed>({
   },
 });
 
+let dispose: (() => void) | null = null;
+
 watch(
   () => [resolvedEditor.value, containerRef.value] as const,
-  (
-    [editorValue, container],
-    oldValue?: readonly [Editor | null | undefined, HTMLDivElement | null]
-  ) => {
-    // Cleanup: remove DOM from previous container if editor or container changed
-    const prevEditor = oldValue?.[0];
-    const prevContainer = oldValue?.[1];
-    if (prevEditor && prevContainer && prevEditor.view.dom.parentNode === prevContainer) {
-      prevContainer.removeChild(prevEditor.view.dom);
-    }
-
+  ([editorValue, container]) => {
+    dispose?.();
+    dispose = null;
     if (editorValue && container) {
-      // Mount the editor's DOM view to the container element
-      container.appendChild(editorValue.view.dom);
-
-      // Update editable state
-      editorValue.view.setProps({
-        editable: () => editorValue?.isEditable ?? false,
-      });
+      dispose = mountVizelEditorView(editorValue, container);
     }
   },
   { immediate: true }
 );
+
+onBeforeUnmount(() => {
+  dispose?.();
+  dispose = null;
+});
 </script>
 
 <template>

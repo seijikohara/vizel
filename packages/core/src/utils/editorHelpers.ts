@@ -7,6 +7,36 @@ import type { VizelSlashCommandItem } from "../extensions/slash-command.ts";
 import type { VizelEditorState, VizelFeatureOptions, VizelImageFeatureOptions } from "../types.ts";
 
 /**
+ * Mount a Tiptap editor's `view.dom` into a container element and return a
+ * disposer that removes it.
+ *
+ * Each framework's `VizelEditor` component previously hand-wrote the same
+ * three-step pattern:
+ *
+ * 1. `container.appendChild(editor.view.dom)`
+ * 2. `editor.view.setProps({ editable: () => editor.isEditable })`
+ * 3. Cleanup that removes the DOM only if it is still parented to `container`
+ *    (so swapping the editor or container does not yank a node that has
+ *    already been re-parented elsewhere).
+ *
+ * Lifting this into core keeps the three adapters as thin lifecycle wrappers
+ * and ensures behavior parity across React, Vue, and Svelte.
+ *
+ * @returns A disposer that detaches the editor view from the container.
+ */
+export function mountVizelEditorView(editor: Editor, container: HTMLElement): () => void {
+  container.appendChild(editor.view.dom);
+  editor.view.setProps({
+    editable: () => editor.isEditable,
+  });
+  return () => {
+    if (editor.view.dom.parentNode === container) {
+      container.removeChild(editor.view.dom);
+    }
+  };
+}
+
+/**
  * JSON content type for Tiptap documents
  */
 export interface VizelContentNode {

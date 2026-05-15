@@ -22,6 +22,7 @@ export interface VizelEditorProps {
 </script>
 
 <script lang="ts">
+import { mountVizelEditorView } from "@vizel/core";
 import { getVizelContextSafe } from "./VizelContext.js";
 
 let { editor: editorProp, class: className, ref }: VizelEditorProps = $props();
@@ -39,27 +40,8 @@ $effect(() => {
 });
 
 $effect(() => {
-  if (!editor || !element) {
-    return;
-  }
-
-  const currentEditor = editor;
-  const currentElement = element;
-
-  // Mount the editor's DOM view to the container element
-  currentElement.appendChild(currentEditor.view.dom);
-
-  // Update editable state
-  currentEditor.view.setProps({
-    editable: () => currentEditor?.isEditable ?? false,
-  });
-
-  // Cleanup: remove DOM element when editor changes or unmounts
-  return () => {
-    if (currentEditor.view.dom.parentNode === currentElement) {
-      currentElement.removeChild(currentEditor.view.dom);
-    }
-  };
+  if (!editor || !element) return;
+  return mountVizelEditorView(editor, element);
 });
 </script>
 
