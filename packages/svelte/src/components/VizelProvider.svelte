@@ -14,11 +14,20 @@ export interface VizelProviderProps {
 
 <script lang="ts">
 import { setContext } from "svelte";
-import { VIZEL_CONTEXT_KEY } from "./VizelContext.js";
+import { type VizelContextAccessor, VIZEL_CONTEXT_KEY } from "./VizelContext.js";
 
 let { editor, class: className, children }: VizelProviderProps = $props();
 
-setContext(VIZEL_CONTEXT_KEY, () => editor);
+// Provide a reactive accessor whose `current` getter reads the latest
+// `editor` prop. Consumers in reactive contexts (`$derived`, `$effect`,
+// templates) re-evaluate whenever the editor changes — same shape as a
+// `$state` rune surface, idiomatic for Svelte 5.
+const accessor: VizelContextAccessor = {
+  get current() {
+    return editor;
+  },
+};
+setContext(VIZEL_CONTEXT_KEY, accessor);
 
 // Always emit the `vizel-root` class so consumers get the CSS variable scope
 // for free (.vizel-root { --vizel-* }). Matches the React provider behavior.

@@ -29,7 +29,7 @@ let {
 }: VizelToolbarProps = $props();
 
 const contextEditor = getVizelContextSafe();
-const editor = $derived(editorProp ?? contextEditor?.() ?? null);
+const editor = $derived(editorProp ?? contextEditor?.current ?? null);
 </script>
 
 {#if editor}

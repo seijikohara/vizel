@@ -28,7 +28,7 @@ import { getVizelContextSafe } from "./VizelContext.js";
 let { editor: editorProp, class: className, ref }: VizelEditorProps = $props();
 
 const contextEditor = getVizelContextSafe();
-const editor = $derived(editorProp ?? contextEditor?.());
+const editor = $derived(editorProp ?? contextEditor?.current);
 
 let element: HTMLDivElement | null = $state(null);
 
