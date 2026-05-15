@@ -95,6 +95,11 @@ export const vizelEnLocale = {
     enterEmbedUrl: "Enter URL to embed:",
   },
 
+  mentionMenu: {
+    ariaLabel: "Mentions",
+    noResults: "No results",
+  },
+
   findReplace: {
     label: "Find and Replace",
     findPlaceholder: "Find...",

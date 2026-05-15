@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { resolveVizelListNavigation, type VizelMentionItem } from "@vizel/core";
+import { resolveVizelListNavigation, type VizelLocale, type VizelMentionItem } from "@vizel/core";
 import { computed, nextTick, ref, watch } from "vue";
 
 export interface VizelMentionMenuRef {
@@ -9,6 +9,8 @@ export interface VizelMentionMenuRef {
 export interface VizelMentionMenuProps {
   items: VizelMentionItem[];
   class?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 const props = defineProps<VizelMentionMenuProps>();
@@ -69,11 +71,11 @@ defineExpose<VizelMentionMenuRef>({ onKeyDown });
     :class="['vizel-mention-menu', props.class]"
     data-vizel-mention-menu
     role="listbox"
-    aria-label="Mentions"
+    :aria-label="props.locale?.mentionMenu?.ariaLabel ?? 'Mentions'"
     :aria-activedescendant="activeOptionId"
   >
     <div v-if="items.length === 0" class="vizel-mention-menu-empty">
-      No results
+      {{ props.locale?.mentionMenu?.noResults ?? 'No results' }}
     </div>
     <template v-else>
       <div

@@ -1,4 +1,4 @@
-import { resolveVizelListNavigation, type VizelMentionItem } from "@vizel/core";
+import { resolveVizelListNavigation, type VizelLocale, type VizelMentionItem } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 
@@ -21,6 +21,8 @@ export interface VizelMentionMenuProps {
   onSelect: (item: VizelMentionItem) => void;
   /** Custom class name for the menu container */
   className?: string;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
 }
 
 /**
@@ -32,6 +34,7 @@ export function VizelMentionMenu({
   items,
   onSelect,
   className,
+  locale,
 }: VizelMentionMenuProps): ReactNode {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -81,10 +84,18 @@ export function VizelMentionMenu({
     },
   }));
 
+  const ariaLabel = locale?.mentionMenu?.ariaLabel ?? "Mentions";
+  const noResultsText = locale?.mentionMenu?.noResults ?? "No results";
+
   if (items.length === 0) {
     return (
-      <div className={`vizel-mention-menu ${className ?? ""}`} data-vizel-mention-menu="">
-        <div className="vizel-mention-menu-empty">No results</div>
+      <div
+        className={`vizel-mention-menu ${className ?? ""}`}
+        data-vizel-mention-menu=""
+        role="listbox"
+        aria-label={ariaLabel}
+      >
+        <div className="vizel-mention-menu-empty">{noResultsText}</div>
       </div>
     );
   }
@@ -98,7 +109,7 @@ export function VizelMentionMenu({
       className={`vizel-mention-menu ${className ?? ""}`}
       data-vizel-mention-menu=""
       role="listbox"
-      aria-label="Mentions"
+      aria-label={ariaLabel}
       {...(activeOptionId && { "aria-activedescendant": activeOptionId })}
     >
       {items.map((item, index) => {

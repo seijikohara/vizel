@@ -106,18 +106,29 @@ import { Vizel } from '@vizel/vue';
 | `enableEmbed` | `boolean` | - | Enable embed in links |
 | `extensions` | `Extensions` | - | Additional Tiptap extensions |
 | `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks on import |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor (`"commonmark"`, `"gfm"`, `"obsidian"`, `"docusaurus"`). |
+| `locale` | `VizelLocale` | - | Localized UI strings. Use `createVizelLocale()` to merge a partial override with the English default. |
+
+#### Slots
+
+| Slot | Slot props | Description |
+|------|------------|-------------|
+| `toolbar` | `{ editor }` | Custom toolbar content. Renders inside `<VizelToolbar>` when `showToolbar` is true. |
+| `bubble-menu` | `{ editor }` | Custom bubble-menu content. Renders inside `<VizelBubbleMenu>` when `showBubbleMenu` is true. |
+| default | `{ editor }` | Additional content rendered inside the editor root. |
 
 #### Events
 
 | Event | Payload | Description |
 |-------|---------|-------------|
 | `update` | `{ editor: Editor }` | Fires when content changes |
-| `update:markdown` | `string` | Fires when Markdown content changes |
+| `update:markdown` | `string` | Fires when Markdown content changes (paired with `v-model:markdown`) |
 | `create` | `{ editor: Editor }` | Fires when the editor initializes |
 | `destroy` | - | Fires when the editor destroys |
 | `selectionUpdate` | `{ editor: Editor }` | Fires when the selection changes |
 | `focus` | `{ editor: Editor }` | Fires when the editor gains focus |
 | `blur` | `{ editor: Editor }` | Fires when the editor loses focus |
+| `error` | `VizelError` | Fires when an editor operation surfaces a `VizelError`. Narrow with `isVizelError(error)` to inspect the structured `code` field. |
 
 ## Composables
 

@@ -222,6 +222,15 @@ export function createVizelMarkdownSyncHandlers(
 
   const handleUpdate = (editor: Editor): void => {
     if (debounceMs === 0) {
+      // Cancel any in-flight debounced timer so `pending` doesn't stay true
+      // after a subsequent `debounceMs === 0` call. The previous shape left
+      // a stale `setTimeout` running, which made `isPending()` lie about
+      // the export status.
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      pending = false;
       currentMarkdown = getVizelMarkdown(editor);
       return;
     }
