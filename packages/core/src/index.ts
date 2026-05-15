@@ -310,16 +310,22 @@ export {
 // UI Skeletons
 // =============================================================================
 export {
+  applyVizelLinkEdit,
   buildVizelBlockMenuSkeleton,
+  buildVizelLinkEditorViewState,
   buildVizelMentionMenuSkeleton,
   buildVizelNodeSelectorSkeleton,
   buildVizelSlashMenuSkeleton,
   buildVizelToolbarDropdownSkeleton,
   getNextVizelSlashMenuGroupIndex,
+  resolveVizelLinkEditorLabels,
   type VizelBlockMenuItemView,
   type VizelBlockMenuSpec,
   type VizelBlockMenuSubmenuTriggerSpec,
   type VizelBlockMenuTurnIntoItemView,
+  type VizelLinkEditorLabels,
+  type VizelLinkEditorViewState,
+  type VizelLinkSubmitParams,
   type VizelMentionItemView,
   type VizelMenuItemAttrs,
   type VizelMenuItemSpec,
