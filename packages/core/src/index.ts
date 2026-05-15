@@ -394,6 +394,7 @@ export {
   isVizelValidHexColor,
   type MenuPosition,
   mountToVizelPortal,
+  mountVizelEditorView,
   normalizeVizelHexColor,
   parseVizelMarkdown,
   registerVizelUploadEventHandler,

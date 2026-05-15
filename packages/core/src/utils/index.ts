@@ -12,6 +12,7 @@ export {
   convertVizelCodeBlocksToDiagrams,
   createVizelUploadEventHandler,
   getVizelEditorState,
+  mountVizelEditorView,
   registerVizelUploadEventHandler,
   resolveVizelFeatures,
   transformVizelDiagramCodeBlocks,
