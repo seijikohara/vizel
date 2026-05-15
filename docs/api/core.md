@@ -283,6 +283,188 @@ formatVizelRelativeTime(new Date(Date.now() - 60000));
 // "1m ago"
 ```
 
+### createVizelRelativeTimeTicker
+
+Start an interval ticker that emits a relative-time string every `intervalMs` (default 10000) and once synchronously. Returns a disposer.
+
+```typescript
+import { createVizelRelativeTimeTicker } from '@vizel/core';
+
+const stop = createVizelRelativeTimeTicker({
+  getDate: () => lastSaved,
+  getLocale: () => locale,
+  onTick: (text) => { relativeTime = text; },
+});
+
+// Call stop() in your framework's cleanup hook.
+```
+
+### resolveVizelSaveIndicatorView
+
+Pure resolver that maps `(status, locale, lastSaved, relativeTime, showTimestamp)` to a view-model object `{ iconName, isSpinner, text, shouldShowTimestamp }`. Consumed by every framework's `VizelSaveIndicator`.
+
+### applyVizelColorToEditor
+
+Apply a color to the current selection. Routes through the appropriate Tiptap command and special-cases the `"inherit"` / `"transparent"` remove sentinels. Concrete colors are also recorded as recent picks.
+
+```typescript
+import { applyVizelColorToEditor } from '@vizel/core';
+
+applyVizelColorToEditor(editor, "textColor", "#FF0000");
+applyVizelColorToEditor(editor, "highlight", "transparent"); // unsets
+```
+
+### loadVizelEmbedScripts
+
+Re-parent any `<script>` tags inside an oEmbed container so the browser actually executes them (innerHTML-inserted scripts are inert). Invokes the Twitter widgets bootstrap when the provider is `"twitter"`.
+
+```typescript
+import { loadVizelEmbedScripts } from '@vizel/core';
+
+loadVizelEmbedScripts(containerEl, data.provider);
+```
+
+### resolveVizelEmbedView
+
+Resolve a `VizelEmbedData` value into a discriminated union view-model covering the five render branches (loading, oEmbed, OGP, title-link, plain-link). Framework components iterate the resolved variant.
+
+```typescript
+import { resolveVizelEmbedView, type VizelEmbedViewModel } from '@vizel/core';
+
+const view = resolveVizelEmbedView(data);
+switch (view.kind) {
+  case "loading": /* ... */ break;
+  case "oembed": /* view.html, view.isVideo */ break;
+  case "ogp": /* view.url, view.title, view.image, ... */ break;
+  case "title": /* view.url, view.title */ break;
+  case "link": /* view.url */ break;
+}
+```
+
+### resolveVizelFindReplaceLabels
+
+Returns a complete labels object for the find/replace UI, falling back to English defaults whenever the supplied partial locale omits a key.
+
+```typescript
+import { resolveVizelFindReplaceLabels } from '@vizel/core';
+
+const labels = resolveVizelFindReplaceLabels(locale?.findReplace);
+// labels.label, labels.findPlaceholder, labels.replaceAriaLabel, ...
+```
+
+### mountVizelEditorView
+
+Append a Tiptap editor's `view.dom` into a container element, mirror `isEditable`, and return a disposer that removes the DOM only when it is still parented to the container.
+
+```typescript
+import { mountVizelEditorView } from '@vizel/core';
+
+const dispose = mountVizelEditorView(editor, containerEl);
+// dispose() on unmount or editor swap.
+```
+
+---
+
+## Bubble-menu actions
+
+These exports mirror the toolbar-action helpers and drive every framework's `VizelBubbleMenuDefault`.
+
+### VizelBubbleMenuAction
+
+```typescript
+interface VizelBubbleMenuAction {
+  id: string;
+  label: string;
+  icon: VizelIconName;
+  group: string;
+  isActive: (editor: Editor) => boolean;
+  run: (editor: Editor) => void;
+  shortcut: string;
+  /** Optional precondition: drop the action when this extension is absent. */
+  requiresExtension?: string;
+}
+```
+
+### createVizelBubbleMenuActions
+
+Returns the default action list with locale-resolved labels (or English defaults when the locale is omitted).
+
+```typescript
+import { createVizelBubbleMenuActions } from '@vizel/core';
+
+const actions = createVizelBubbleMenuActions(locale);
+// [{ id: "bold", label: "Bold", icon: "bold", shortcut: "Mod+B", ... }, ...]
+```
+
+### filterVizelBubbleMenuActions
+
+Filters actions down to those whose `requiresExtension` precondition is satisfied by the supplied editor.
+
+```typescript
+import { filterVizelBubbleMenuActions } from '@vizel/core';
+
+const usable = filterVizelBubbleMenuActions(actions, editor);
+```
+
+### groupVizelBubbleMenuActions
+
+Groups actions for visual separation in the bubble menu (mirrors `groupVizelToolbarActions`).
+
+---
+
+## Interactions (framework-agnostic primitives)
+
+These exports live under `@vizel/core/interactions` and provide the state-machine + event-subscription primitives the React, Vue, and Svelte adapters share. They return plain objects with subscribe callbacks — no framework runtime imports.
+
+### createVizelEditorTransactionStore
+
+Returns `{ subscribe(cb), getVersion() }` that ticks a monotonically-incremented version counter on every Tiptap `transaction` event. Frameworks wire this into their reactivity primitive (`useSyncExternalStore`, `ref`, `$state`).
+
+```typescript
+import { createVizelEditorTransactionStore } from '@vizel/core';
+
+const store = createVizelEditorTransactionStore(() => editor);
+const unsubscribe = store.subscribe(() => { /* re-render */ });
+```
+
+### createVizelDismissibleController
+
+Attaches `mousedown` / `keydown` listeners that dismiss when the user clicks outside the supplied elements or presses Escape. Returns a disposer.
+
+```typescript
+import { createVizelDismissibleController } from '@vizel/core';
+
+const dispose = createVizelDismissibleController({
+  getElements: () => [popoverEl, triggerEl],
+  onDismiss: () => setOpen(false),
+});
+```
+
+### resolveVizelListNavigation / resolveVizelGridNavigation
+
+Pure resolvers that map a key (`ArrowUp` / `ArrowDown` / `Home` / `End`, plus `ArrowLeft` / `ArrowRight` for the grid variant) and the current index to the next focused index, or `null` when the key isn't handled.
+
+```typescript
+import { resolveVizelListNavigation, resolveVizelGridNavigation } from '@vizel/core';
+
+const next = resolveVizelListNavigation(event.key, selectedIndex, items.length);
+if (next !== null) setSelectedIndex(next);
+```
+
+### createVizelEditorSubscription
+
+Attach a Tiptap editor event listener with a clean disposer; supports an optional `fireImmediately` flag.
+
+```typescript
+import { createVizelEditorSubscription } from '@vizel/core';
+
+const dispose = createVizelEditorSubscription({
+  getEditor: () => editor,
+  event: "update",
+  handler: () => { /* ... */ },
+});
+```
+
 ---
 
 ## Theme Utilities
