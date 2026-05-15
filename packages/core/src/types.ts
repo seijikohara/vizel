@@ -293,12 +293,24 @@ export interface VizelEditorState {
 }
 
 /**
- * Options for creating a slash menu renderer
+ * Options shared by every Tiptap suggestion renderer (slash menu, mention
+ * menu, future suggestion-driven surfaces).
+ *
+ * Renamed from `VizelSlashMenuRendererOptions` in v2.0 because the same
+ * shape is reused by `createVizelMentionMenuRenderer`. The old name is
+ * still exported as a deprecated alias for one minor cycle.
  */
-export interface VizelSlashMenuRendererOptions {
+export interface VizelSuggestionRendererOptions {
   /** Custom class name for the menu */
   className?: string;
 }
+
+/**
+ * @deprecated Use {@link VizelSuggestionRendererOptions} instead.
+ * Kept as a type alias for one minor cycle so existing consumers can
+ * migrate without an immediate type error. The shape is identical.
+ */
+export type VizelSlashMenuRendererOptions = VizelSuggestionRendererOptions;
 
 /**
  * Options for creating a Vizel editor instance with framework hooks/composables/runes.

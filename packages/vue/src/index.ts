@@ -117,5 +117,5 @@ export {
   useVizelTheme,
   useVizelThemeSafe,
   useVizelVersionHistory,
-  type VizelSlashMenuRendererOptions,
+  type VizelSuggestionRendererOptions,
 } from "./composables/index.ts";

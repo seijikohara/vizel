@@ -23,7 +23,7 @@ export {
 export { createVizelMentionMenuRenderer } from "./createVizelMentionMenuRenderer.svelte.js";
 export {
   createVizelSlashMenuRenderer,
-  type VizelSlashMenuRendererOptions,
+  type VizelSuggestionRendererOptions,
 } from "./createVizelSlashMenuRenderer.svelte.js";
 export { createVizelState } from "./createVizelState.svelte.js";
 export {
