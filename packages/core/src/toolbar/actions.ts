@@ -264,3 +264,179 @@ export function groupVizelToolbarActions(
 ): VizelToolbarActionItem[][] {
   return groupByConsecutiveField(actions, "group");
 }
+
+// =============================================================================
+// Bubble menu actions
+// =============================================================================
+
+/**
+ * A single bubble-menu action definition.
+ *
+ * Similar to {@link VizelToolbarAction} but specialised for the inline
+ * bubble menu surface: bound to a Tiptap mark name, with a tooltip
+ * shortcut and an optional extension-name precondition (so actions
+ * tied to extensions a consumer hasn't enabled don't show up).
+ */
+export interface VizelBubbleMenuAction {
+  /** Unique action identifier (stable across locale changes). */
+  id: string;
+  /** Localized label (used for `title` / `aria-label`). */
+  label: string;
+  /** Icon name from the Vizel icon system. */
+  icon: VizelIconName;
+  /** Group identifier for visual separation (dividers between groups). */
+  group: string;
+  /** Returns true when the action is currently applied to the selection. */
+  isActive: (editor: Editor) => boolean;
+  /** Executes the toggle command. */
+  run: (editor: Editor) => void;
+  /** Keyboard shortcut label for the tooltip (e.g. `"Mod+B"`). */
+  shortcut: string;
+  /**
+   * If set, the action is only emitted when an extension with this name
+   * is registered on the editor. Lets `superscript` / `subscript` opt
+   * out cleanly when the consumer didn't enable those features.
+   */
+  requiresExtension?: string;
+}
+
+const VIZEL_BUBBLE_MENU_DEFAULT_ACTIONS = [
+  {
+    id: "bold",
+    label: "Bold",
+    icon: "bold",
+    group: "marks",
+    isActive: (editor) => editor.isActive("bold"),
+    run: (editor) => editor.chain().focus().toggleBold().run(),
+    shortcut: "Mod+B",
+  },
+  {
+    id: "italic",
+    label: "Italic",
+    icon: "italic",
+    group: "marks",
+    isActive: (editor) => editor.isActive("italic"),
+    run: (editor) => editor.chain().focus().toggleItalic().run(),
+    shortcut: "Mod+I",
+  },
+  {
+    id: "strike",
+    label: "Strikethrough",
+    icon: "strikethrough",
+    group: "marks",
+    isActive: (editor) => editor.isActive("strike"),
+    run: (editor) => editor.chain().focus().toggleStrike().run(),
+    shortcut: "Mod+Shift+S",
+  },
+  {
+    id: "underline",
+    label: "Underline",
+    icon: "underline",
+    group: "marks",
+    isActive: (editor) => editor.isActive("underline"),
+    run: (editor) => editor.chain().focus().toggleUnderline().run(),
+    shortcut: "Mod+U",
+  },
+  {
+    id: "code",
+    label: "Code",
+    icon: "code",
+    group: "marks",
+    isActive: (editor) => editor.isActive("code"),
+    run: (editor) => editor.chain().focus().toggleCode().run(),
+    shortcut: "Mod+E",
+  },
+  {
+    id: "superscript",
+    label: "Superscript",
+    icon: "superscript",
+    group: "marks",
+    isActive: (editor) => editor.isActive("superscript"),
+    run: (editor) => editor.chain().focus().toggleSuperscript().run(),
+    shortcut: "Cmd+.",
+    requiresExtension: "superscript",
+  },
+  {
+    id: "subscript",
+    label: "Subscript",
+    icon: "subscript",
+    group: "marks",
+    isActive: (editor) => editor.isActive("subscript"),
+    run: (editor) => editor.chain().focus().toggleSubscript().run(),
+    shortcut: "Cmd+,",
+    requiresExtension: "subscript",
+  },
+  {
+    id: "link",
+    label: "Link",
+    icon: "link",
+    group: "link",
+    isActive: (editor) => editor.isActive("link"),
+    // The `run` for "link" intentionally doesn't toggle the mark — clicking
+    // the bubble-menu link button opens the link editor. Frameworks override
+    // this in their component to drive their own modal state. Provided here
+    // so consumers iterating the list have a stable id and label.
+    run: () => {
+      /* overridden by VizelBubbleMenuDefault to open the link editor */
+    },
+    shortcut: "Mod+K",
+  },
+] as const satisfies readonly VizelBubbleMenuAction[];
+
+/** Default bubble-menu actions, locale-resolved. */
+export const vizelDefaultBubbleMenuActions: readonly VizelBubbleMenuAction[] =
+  VIZEL_BUBBLE_MENU_DEFAULT_ACTIONS;
+
+/**
+ * Create bubble-menu actions with locale-specific labels.
+ *
+ * Mirrors {@link createVizelToolbarActions}. Consumers that want to add or
+ * filter actions can `.filter` / `.concat` on the returned array; the
+ * built-in set is exposed as `vizelDefaultBubbleMenuActions` for the
+ * pure-default case.
+ *
+ * `locale` is optional — when `undefined`, the actions keep their built-in
+ * English labels (suitable for components that allow consumers to omit a
+ * locale entirely).
+ */
+export function createVizelBubbleMenuActions(locale?: VizelLocale): VizelBubbleMenuAction[] {
+  if (!locale) return vizelDefaultBubbleMenuActions.map((action) => ({ ...action }));
+  const labels: Record<string, string> = {
+    bold: locale.bubbleMenu.bold,
+    italic: locale.bubbleMenu.italic,
+    strike: locale.bubbleMenu.strikethrough,
+    underline: locale.bubbleMenu.underline,
+    code: locale.bubbleMenu.code,
+    superscript: locale.bubbleMenu.superscript,
+    subscript: locale.bubbleMenu.subscript,
+    link: locale.bubbleMenu.link,
+  };
+  return vizelDefaultBubbleMenuActions.map((action) => ({
+    ...action,
+    label: labels[action.id] ?? action.label,
+  }));
+}
+
+/**
+ * Filter bubble-menu actions down to the ones whose `requiresExtension`
+ * precondition is satisfied by the supplied editor. Returns the original
+ * list when no actions declare a precondition.
+ */
+export function filterVizelBubbleMenuActions(
+  actions: readonly VizelBubbleMenuAction[],
+  editor: Editor
+): VizelBubbleMenuAction[] {
+  return actions.filter((action) => {
+    if (!action.requiresExtension) return true;
+    return editor.extensionManager.extensions.some((ext) => ext.name === action.requiresExtension);
+  });
+}
+
+/**
+ * Group bubble-menu actions by their group identifier for visual separation.
+ */
+export function groupVizelBubbleMenuActions(
+  actions: readonly VizelBubbleMenuAction[]
+): VizelBubbleMenuAction[][] {
+  return groupByConsecutiveField(actions, "group");
+}
