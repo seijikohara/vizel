@@ -1,5 +1,13 @@
-import { type Editor, formatVizelTooltip, type VizelLocale } from "@vizel/core";
-import { useState } from "react";
+import {
+  createVizelBubbleMenuActions,
+  type Editor,
+  filterVizelBubbleMenuActions,
+  formatVizelTooltip,
+  groupVizelBubbleMenuActions,
+  type VizelBubbleMenuAction,
+  type VizelLocale,
+} from "@vizel/core";
+import { useMemo, useState } from "react";
 import { useVizelState } from "../hooks/useVizelState.ts";
 import { VizelBubbleMenuButton } from "./VizelBubbleMenuButton.tsx";
 import { VizelBubbleMenuColorPicker } from "./VizelBubbleMenuColorPicker.tsx";
@@ -19,14 +27,11 @@ export interface VizelBubbleMenuDefaultProps {
 
 /**
  * The default menu content for VizelBubbleMenu.
- * Provides formatting buttons for bold, italic, strikethrough, code, and link.
  *
- * @example
- * ```tsx
- * <VizelBubbleMenu>
- *   <VizelBubbleMenuDefault editor={editor} />
- * </VizelBubbleMenu>
- * ```
+ * Renders an iterated list of mark-toggle buttons driven by
+ * `createVizelBubbleMenuActions` from `@vizel/core`. The `link` action
+ * is plucked out and rendered specially because its activation opens the
+ * link editor instead of running a Tiptap command.
  */
 export function VizelBubbleMenuDefault({
   editor,
@@ -34,9 +39,19 @@ export function VizelBubbleMenuDefault({
   enableEmbed,
   locale,
 }: VizelBubbleMenuDefaultProps) {
-  // Subscribe to editor state changes to update active states
+  // Subscribe to editor state changes so isActive() reflects the latest state.
   useVizelState(editor);
   const [showLinkEditor, setShowLinkEditor] = useState(false);
+
+  const { markGroups, linkAction } = useMemo(() => {
+    const all = filterVizelBubbleMenuActions(createVizelBubbleMenuActions(locale), editor);
+    const link = all.find((a) => a.id === "link");
+    const marks = all.filter((a) => a.id !== "link");
+    return {
+      markGroups: groupVizelBubbleMenuActions(marks),
+      linkAction: link,
+    };
+  }, [locale, editor]);
 
   if (showLinkEditor) {
     return (
@@ -49,82 +64,42 @@ export function VizelBubbleMenuDefault({
     );
   }
 
+  const renderAction = (action: VizelBubbleMenuAction) => (
+    <VizelBubbleMenuButton
+      key={action.id}
+      action={action.id}
+      onClick={() => action.run(editor)}
+      isActive={action.isActive(editor)}
+      title={formatVizelTooltip(action.label, action.shortcut)}
+    >
+      <VizelIcon name={action.icon} />
+    </VizelBubbleMenuButton>
+  );
+
   return (
     <div className={`vizel-bubble-menu-toolbar ${className ?? ""}`}>
       <VizelNodeSelector editor={editor} />
       <VizelBubbleMenuDivider />
-      <VizelBubbleMenuButton
-        action="bold"
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        isActive={editor.isActive("bold")}
-        title={formatVizelTooltip(locale?.bubbleMenu?.bold ?? "Bold", "Mod+B")}
-      >
-        <VizelIcon name="bold" />
-      </VizelBubbleMenuButton>
-      <VizelBubbleMenuButton
-        action="italic"
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        isActive={editor.isActive("italic")}
-        title={formatVizelTooltip(locale?.bubbleMenu?.italic ?? "Italic", "Mod+I")}
-      >
-        <VizelIcon name="italic" />
-      </VizelBubbleMenuButton>
-      <VizelBubbleMenuButton
-        action="strike"
-        onClick={() => editor.chain().focus().toggleStrike().run()}
-        isActive={editor.isActive("strike")}
-        title={formatVizelTooltip(
-          locale?.bubbleMenu?.strikethrough ?? "Strikethrough",
-          "Mod+Shift+S"
-        )}
-      >
-        <VizelIcon name="strikethrough" />
-      </VizelBubbleMenuButton>
-      <VizelBubbleMenuButton
-        action="underline"
-        onClick={() => editor.chain().focus().toggleUnderline().run()}
-        isActive={editor.isActive("underline")}
-        title={formatVizelTooltip(locale?.bubbleMenu?.underline ?? "Underline", "Mod+U")}
-      >
-        <VizelIcon name="underline" />
-      </VizelBubbleMenuButton>
-      <VizelBubbleMenuButton
-        action="code"
-        onClick={() => editor.chain().focus().toggleCode().run()}
-        isActive={editor.isActive("code")}
-        title={formatVizelTooltip(locale?.bubbleMenu?.code ?? "Code", "Mod+E")}
-      >
-        <VizelIcon name="code" />
-      </VizelBubbleMenuButton>
-      {editor.extensionManager.extensions.some((ext) => ext.name === "superscript") && (
-        <VizelBubbleMenuButton
-          action="superscript"
-          onClick={() => editor.chain().focus().toggleSuperscript().run()}
-          isActive={editor.isActive("superscript")}
-          title={formatVizelTooltip(locale?.bubbleMenu?.superscript ?? "Superscript", "Cmd+.")}
-        >
-          <VizelIcon name="superscript" />
-        </VizelBubbleMenuButton>
+      {markGroups.map((group, groupIndex) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: groups are derived from the stable action list whose ordering is fixed at locale resolution time
+        <div key={`group-${groupIndex}`} style={{ display: "contents" }}>
+          {groupIndex > 0 && <VizelBubbleMenuDivider />}
+          {group.map(renderAction)}
+        </div>
+      ))}
+      {linkAction && (
+        <>
+          <VizelBubbleMenuDivider />
+          <VizelBubbleMenuButton
+            action={linkAction.id}
+            onClick={() => setShowLinkEditor(true)}
+            isActive={linkAction.isActive(editor)}
+            title={formatVizelTooltip(linkAction.label, linkAction.shortcut)}
+          >
+            <VizelIcon name={linkAction.icon} />
+          </VizelBubbleMenuButton>
+        </>
       )}
-      {editor.extensionManager.extensions.some((ext) => ext.name === "subscript") && (
-        <VizelBubbleMenuButton
-          action="subscript"
-          onClick={() => editor.chain().focus().toggleSubscript().run()}
-          isActive={editor.isActive("subscript")}
-          title={formatVizelTooltip(locale?.bubbleMenu?.subscript ?? "Subscript", "Cmd+,")}
-        >
-          <VizelIcon name="subscript" />
-        </VizelBubbleMenuButton>
-      )}
-      <VizelBubbleMenuDivider />
-      <VizelBubbleMenuButton
-        action="link"
-        onClick={() => setShowLinkEditor(true)}
-        isActive={editor.isActive("link")}
-        title={formatVizelTooltip(locale?.bubbleMenu?.link ?? "Link", "Mod+K")}
-      >
-        <VizelIcon name="link" />
-      </VizelBubbleMenuButton>
       <VizelBubbleMenuDivider />
       <VizelBubbleMenuColorPicker
         editor={editor}

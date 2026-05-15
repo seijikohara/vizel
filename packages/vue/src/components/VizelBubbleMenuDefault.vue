@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { type Editor, formatVizelTooltip, type VizelLocale } from "@vizel/core";
+import {
+  createVizelBubbleMenuActions,
+  type Editor,
+  filterVizelBubbleMenuActions,
+  formatVizelTooltip,
+  groupVizelBubbleMenuActions,
+  type VizelLocale,
+} from "@vizel/core";
 import { computed, ref } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
 import VizelBubbleMenuButton from "./VizelBubbleMenuButton.vue";
@@ -22,49 +29,27 @@ export interface VizelBubbleMenuDefaultProps {
 
 const props = defineProps<VizelBubbleMenuDefaultProps>();
 
-// Subscribe to editor state changes to update active states
+// Subscribe to editor state changes so derived isActive flags refresh.
 const editorStateVersion = useVizelState(() => props.editor);
 
-// Create computed properties that depend on editorStateVersion to trigger re-renders
-const isBoldActive = computed(() => {
-  void editorStateVersion.value; // Trigger reactivity
-  return props.editor.isActive("bold");
-});
-const isItalicActive = computed(() => {
-  void editorStateVersion.value;
-  return props.editor.isActive("italic");
-});
-const isStrikeActive = computed(() => {
-  void editorStateVersion.value;
-  return props.editor.isActive("strike");
-});
-const isUnderlineActive = computed(() => {
-  void editorStateVersion.value;
-  return props.editor.isActive("underline");
-});
-const isCodeActive = computed(() => {
-  void editorStateVersion.value;
-  return props.editor.isActive("code");
-});
-const isLinkActive = computed(() => {
-  void editorStateVersion.value;
-  return props.editor.isActive("link");
-});
-const isSuperscriptActive = computed(() => {
-  void editorStateVersion.value;
-  return props.editor.isActive("superscript");
-});
-const isSubscriptActive = computed(() => {
-  void editorStateVersion.value;
-  return props.editor.isActive("subscript");
-});
+const filteredActions = computed(() =>
+  filterVizelBubbleMenuActions(createVizelBubbleMenuActions(props.locale), props.editor)
+);
+const linkAction = computed(() => filteredActions.value.find((a) => a.id === "link"));
+const markGroups = computed(() =>
+  groupVizelBubbleMenuActions(filteredActions.value.filter((a) => a.id !== "link"))
+);
 
-const hasSuperscript = computed(() =>
-  props.editor.extensionManager.extensions.some((ext) => ext.name === "superscript")
-);
-const hasSubscript = computed(() =>
-  props.editor.extensionManager.extensions.some((ext) => ext.name === "subscript")
-);
+// `isActive` reads from the editor state; tying it to `editorStateVersion`
+// (a Ref that ticks on every transaction) is what triggers a re-render when
+// the selection changes. The value itself is discarded.
+const isActive = computed(() => {
+  void editorStateVersion.value;
+  return (actionId: string) => {
+    const action = filteredActions.value.find((a) => a.id === actionId);
+    return action ? action.isActive(props.editor) : false;
+  };
+});
 
 const showLinkEditor = ref(false);
 </script>
@@ -80,73 +65,30 @@ const showLinkEditor = ref(false);
   <div v-else :class="['vizel-bubble-menu-toolbar', $props.class]">
     <VizelNodeSelector :editor="props.editor" />
     <VizelBubbleMenuDivider />
-    <VizelBubbleMenuButton
-      action="bold"
-      :is-active="isBoldActive"
-      :title="formatVizelTooltip(props.locale?.bubbleMenu?.bold ?? 'Bold', 'Mod+B')"
-      @click="props.editor.chain().focus().toggleBold().run()"
-    >
-      <VizelIcon name="bold" />
-    </VizelBubbleMenuButton>
-    <VizelBubbleMenuButton
-      action="italic"
-      :is-active="isItalicActive"
-      :title="formatVizelTooltip(props.locale?.bubbleMenu?.italic ?? 'Italic', 'Mod+I')"
-      @click="props.editor.chain().focus().toggleItalic().run()"
-    >
-      <VizelIcon name="italic" />
-    </VizelBubbleMenuButton>
-    <VizelBubbleMenuButton
-      action="strike"
-      :is-active="isStrikeActive"
-      :title="formatVizelTooltip(props.locale?.bubbleMenu?.strikethrough ?? 'Strikethrough', 'Mod+Shift+S')"
-      @click="props.editor.chain().focus().toggleStrike().run()"
-    >
-      <VizelIcon name="strikethrough" />
-    </VizelBubbleMenuButton>
-    <VizelBubbleMenuButton
-      action="underline"
-      :is-active="isUnderlineActive"
-      :title="formatVizelTooltip(props.locale?.bubbleMenu?.underline ?? 'Underline', 'Mod+U')"
-      @click="props.editor.chain().focus().toggleUnderline().run()"
-    >
-      <VizelIcon name="underline" />
-    </VizelBubbleMenuButton>
-    <VizelBubbleMenuButton
-      action="code"
-      :is-active="isCodeActive"
-      :title="formatVizelTooltip(props.locale?.bubbleMenu?.code ?? 'Code', 'Mod+E')"
-      @click="props.editor.chain().focus().toggleCode().run()"
-    >
-      <VizelIcon name="code" />
-    </VizelBubbleMenuButton>
-    <VizelBubbleMenuButton
-      v-if="hasSuperscript"
-      action="superscript"
-      :is-active="isSuperscriptActive"
-      :title="formatVizelTooltip(props.locale?.bubbleMenu?.superscript ?? 'Superscript', 'Cmd+.')"
-      @click="props.editor.chain().focus().toggleSuperscript().run()"
-    >
-      <VizelIcon name="superscript" />
-    </VizelBubbleMenuButton>
-    <VizelBubbleMenuButton
-      v-if="hasSubscript"
-      action="subscript"
-      :is-active="isSubscriptActive"
-      :title="formatVizelTooltip(props.locale?.bubbleMenu?.subscript ?? 'Subscript', 'Cmd+,')"
-      @click="props.editor.chain().focus().toggleSubscript().run()"
-    >
-      <VizelIcon name="subscript" />
-    </VizelBubbleMenuButton>
-    <VizelBubbleMenuDivider />
-    <VizelBubbleMenuButton
-      action="link"
-      :is-active="isLinkActive"
-      :title="formatVizelTooltip(props.locale?.bubbleMenu?.link ?? 'Link', 'Mod+K')"
-      @click="showLinkEditor = true"
-    >
-      <VizelIcon name="link" />
-    </VizelBubbleMenuButton>
+    <template v-for="(group, groupIndex) in markGroups" :key="`group-${groupIndex}`">
+      <VizelBubbleMenuDivider v-if="groupIndex > 0" />
+      <VizelBubbleMenuButton
+        v-for="action in group"
+        :key="action.id"
+        :action="action.id"
+        :is-active="isActive(action.id)"
+        :title="formatVizelTooltip(action.label, action.shortcut)"
+        @click="action.run(props.editor)"
+      >
+        <VizelIcon :name="action.icon" />
+      </VizelBubbleMenuButton>
+    </template>
+    <template v-if="linkAction">
+      <VizelBubbleMenuDivider />
+      <VizelBubbleMenuButton
+        :action="linkAction.id"
+        :is-active="isActive(linkAction.id)"
+        :title="formatVizelTooltip(linkAction.label, linkAction.shortcut)"
+        @click="showLinkEditor = true"
+      >
+        <VizelIcon :name="linkAction.icon" />
+      </VizelBubbleMenuButton>
+    </template>
     <VizelBubbleMenuDivider />
     <VizelBubbleMenuColorPicker :editor="props.editor" type="textColor" v-bind="props.locale ? { locale: props.locale } : {}" />
     <VizelBubbleMenuColorPicker :editor="props.editor" type="highlight" v-bind="props.locale ? { locale: props.locale } : {}" />
