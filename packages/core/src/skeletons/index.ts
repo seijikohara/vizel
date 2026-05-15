@@ -6,6 +6,11 @@ export {
   type VizelBlockMenuTurnIntoItemView,
 } from "./block-menu.ts";
 export {
+  buildVizelFindReplaceViewState,
+  buildVizelFindReplaceViewStateFromLocale,
+  type VizelFindReplaceViewState,
+} from "./find-replace.ts";
+export {
   applyVizelLinkEdit,
   buildVizelLinkEditorViewState,
   resolveVizelLinkEditorLabels,

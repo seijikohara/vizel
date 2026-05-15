@@ -1,4 +1,5 @@
 import {
+  buildVizelFindReplaceViewState,
   type Editor,
   getVizelFindReplaceState,
   resolveVizelFindReplaceLabels,
@@ -10,6 +11,7 @@ import {
   type KeyboardEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -133,13 +135,14 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
     [handleFindNext, handleFindPrevious, handleClose]
   );
 
-  if (!state?.isOpen) {
+  const view = useMemo(
+    () => buildVizelFindReplaceViewState(state, labels.noResults),
+    [state, labels.noResults]
+  );
+
+  if (!view.isOpen) {
     return null;
   }
-
-  const matchCount = state.matches.length;
-  const currentMatch = state.activeIndex >= 0 ? state.activeIndex + 1 : 0;
-  const isReplaceMode = state.mode === "replace";
 
   return (
     <div
@@ -159,13 +162,13 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
           aria-label={labels.findTextAriaLabel}
         />
         <span className="vizel-find-replace-count" aria-live="polite">
-          {matchCount > 0 ? `${currentMatch}/${matchCount}` : labels.noResults}
+          {view.matchCountDisplay}
         </span>
         <button
           type="button"
           className="vizel-find-replace-button"
           onClick={handleFindPrevious}
-          disabled={matchCount === 0}
+          disabled={view.isDisabled}
           aria-label={labels.findPreviousAriaLabel}
           title={labels.findPreviousTitle}
         >
@@ -175,7 +178,7 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
           type="button"
           className="vizel-find-replace-button"
           onClick={handleFindNext}
-          disabled={matchCount === 0}
+          disabled={view.isDisabled}
           aria-label={labels.findNextAriaLabel}
           title={labels.findNextTitle}
         >
@@ -192,7 +195,7 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
         </button>
       </div>
 
-      {isReplaceMode && (
+      {view.isReplaceMode && (
         <div className="vizel-find-replace-row">
           <input
             type="text"
@@ -207,7 +210,7 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
             type="button"
             className="vizel-find-replace-button"
             onClick={handleReplace}
-            disabled={matchCount === 0}
+            disabled={view.isDisabled}
             aria-label={labels.replaceAriaLabel}
             title={labels.replaceTitle}
           >
@@ -217,7 +220,7 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
             type="button"
             className="vizel-find-replace-button vizel-find-replace-button--primary"
             onClick={handleReplaceAll}
-            disabled={matchCount === 0}
+            disabled={view.isDisabled}
             aria-label={labels.replaceAllAriaLabel}
             title={labels.replaceAllTitle}
           >
