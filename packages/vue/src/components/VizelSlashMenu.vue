@@ -172,7 +172,7 @@ function getGlobalIndex(groupIndex: number, itemIndex: number): number {
           <div class="vizel-slash-menu-group-header">{{ group.name }}</div>
           <div
             v-for="(item, itemIndex) in group.items"
-            :key="item.title"
+            :key="item.id"
             :ref="(el) => (itemRefs[getGlobalIndex(groupIndex, itemIndex)] = el as HTMLElement)"
           >
             <slot
@@ -194,7 +194,7 @@ function getGlobalIndex(groupIndex: number, itemIndex: number): number {
         <template v-else>
           <div
             v-for="(item, itemIndex) in group.items"
-            :key="item.title"
+            :key="item.id"
             :ref="(el) => (itemRefs[getGlobalIndex(groupIndex, itemIndex)] = el as HTMLElement)"
           >
             <slot

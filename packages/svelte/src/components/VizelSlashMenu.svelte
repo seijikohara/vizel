@@ -186,7 +186,7 @@ if (ref) {
         <!-- Group with header -->
         <div class="vizel-slash-menu-group" data-vizel-slash-menu-group>
           <div class="vizel-slash-menu-group-header">{group.name}</div>
-          {#each group.items as item, itemIndex (item.title)}
+          {#each group.items as item, itemIndex (item.id)}
             {@const globalIdx = getGlobalIndex(groupIndex, itemIndex)}
             <div bind:this={itemRefs[globalIdx]}>
               {#if renderItem}
@@ -207,7 +207,7 @@ if (ref) {
         </div>
       {:else}
         <!-- Items without group header -->
-        {#each group.items as item, itemIndex (item.title)}
+        {#each group.items as item, itemIndex (item.id)}
           {@const globalIdx = getGlobalIndex(groupIndex, itemIndex)}
           <div bind:this={itemRefs[globalIdx]}>
             {#if renderItem}

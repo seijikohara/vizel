@@ -212,7 +212,7 @@ export function VizelSlashMenu({
           if (renderItem) {
             return (
               <div
-                key={item.title}
+                key={item.id}
                 ref={(el) => {
                   itemRefs.current[index] = el;
                 }}
@@ -224,7 +224,7 @@ export function VizelSlashMenu({
 
           return (
             <div
-              key={item.title}
+              key={item.id}
               ref={(el) => {
                 itemRefs.current[index] = el;
               }}
