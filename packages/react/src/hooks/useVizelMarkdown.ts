@@ -38,7 +38,7 @@ export interface UseVizelMarkdownResult {
 /**
  * React hook for bidirectional Markdown synchronization with the editor.
  *
- * @param editor - The editor instance (or `null` while it is still initializing)
+ * @param editor - The editor instance, or `null`/`undefined` while it is still initializing.
  * @param options - Sync options
  * @returns Markdown state and control functions
  *

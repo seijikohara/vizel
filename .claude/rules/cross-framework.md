@@ -201,6 +201,31 @@ switch the editor between read-write and read-only modes.
 To change other options at runtime, use the corresponding Tiptap command
 (`editor.commands.setContent(...)`, `editor.commands.focus(...)`, etc.).
 
+## State Subscription Convention
+
+The `useVizelState` / `createVizelState` primitives in every framework
+wrap `createVizelEditorTransactionStore` from `@vizel/core`. They
+**increment a monotonic version counter** on every Tiptap `transaction`
+event and surface that counter through the framework's native
+reactivity primitive.
+
+The counter value itself is intentionally meaningless — the hook
+exists to force a re-render so that subsequent `editor.isActive(...)`
+or `editor.state.*` reads happen against the latest snapshot. Reading
+`editor.state.tr` directly inside `useSyncExternalStore`'s
+`getSnapshot` would return a fresh `Transaction` on every call (it is
+a getter that constructs new instances), so React tears down the
+subscription with an infinite loop. The version-counter indirection
+is the only stable shape that satisfies React's referential-stability
+contract while still triggering on every transaction.
+
+Consumers typically ignore the return value:
+
+```tsx
+useVizelState(editor); // just subscribe, throw away the tick
+return <button className={editor.isActive("bold") ? "active" : ""} />;
+```
+
 ## Adding a New Feature
 
 Follow this sequence to add a feature with consistent cross-framework support:
