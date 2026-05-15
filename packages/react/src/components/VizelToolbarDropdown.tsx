@@ -1,6 +1,6 @@
 import type { Editor, VizelToolbarDropdownAction } from "@vizel/core";
-import { formatVizelTooltip } from "@vizel/core";
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { buildVizelToolbarDropdownSkeleton, formatVizelTooltip } from "@vizel/core";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelToolbarDropdownProps {
@@ -11,6 +11,11 @@ export interface VizelToolbarDropdownProps {
 
 /**
  * A dropdown toolbar button that shows a popover with nested actions.
+ *
+ * DOM/ARIA scaffolding (trigger + listbox popover) comes from
+ * `@vizel/core`'s `buildVizelToolbarDropdownSkeleton`. The component
+ * owns popover open/close state, outside-click + Escape dismissal,
+ * keyboard navigation, and binding `onClick` to each option's `run`.
  */
 export function VizelToolbarDropdown({
   editor,
@@ -21,10 +26,6 @@ export function VizelToolbarDropdown({
   const [focusedIndex, setFocusedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-
-  const activeOption = dropdown.getActiveOption?.(editor);
-  const triggerIcon = activeOption?.icon ?? dropdown.icon;
-  const triggerLabel = activeOption?.label ?? dropdown.label;
 
   const close = useCallback(() => {
     setIsOpen(false);
@@ -55,10 +56,14 @@ export function VizelToolbarDropdown({
     };
   }, [isOpen, close]);
 
-  // Reset focused index when opening
   useEffect(() => {
     if (isOpen) setFocusedIndex(0);
   }, [isOpen]);
+
+  const spec = useMemo(
+    () => buildVizelToolbarDropdownSkeleton(dropdown, editor, isOpen, focusedIndex),
+    [dropdown, editor, isOpen, focusedIndex]
+  );
 
   const optionCount = dropdown.options.length;
 
@@ -115,11 +120,11 @@ export function VizelToolbarDropdown({
         className="vizel-toolbar-dropdown-trigger"
         onClick={() => setIsOpen((prev) => !prev)}
         onKeyDown={handleTriggerKeyDown}
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-        title={triggerLabel}
+        aria-haspopup={spec.trigger.attrs["aria-haspopup"]}
+        aria-expanded={spec.trigger.attrs["aria-expanded"]}
+        title={spec.trigger.label}
       >
-        <VizelIcon name={triggerIcon} />
+        <VizelIcon name={spec.trigger.iconName} />
         <span className="vizel-toolbar-dropdown-chevron">
           <VizelIcon name="chevronDown" />
         </span>
@@ -129,34 +134,35 @@ export function VizelToolbarDropdown({
         <div
           className="vizel-toolbar-dropdown-popover"
           role="listbox"
-          aria-label={dropdown.label}
-          aria-activedescendant={`vizel-dropdown-${dropdown.id}-${dropdown.options[focusedIndex]?.id}`}
-          tabIndex={0}
+          aria-label={spec.popover.root["aria-label"]}
+          {...(spec.popover.root["aria-activedescendant"] && {
+            "aria-activedescendant": spec.popover.root["aria-activedescendant"],
+          })}
+          tabIndex={spec.popover.root.tabIndex}
           onKeyDown={handleListKeyDown}
         >
-          {dropdown.options.map((option, index) => {
-            const active = option.isActive(editor);
-            return (
+          {spec.popover.sections.flatMap((section) =>
+            section.items.map((slot) => (
               <button
-                key={option.id}
-                id={`vizel-dropdown-${dropdown.id}-${option.id}`}
+                key={slot.key}
+                id={slot.attrs.id}
                 type="button"
                 role="option"
-                aria-selected={active}
-                className={`vizel-toolbar-dropdown-option ${active ? "is-active" : ""} ${index === focusedIndex ? "is-focused" : ""}`}
+                aria-selected={slot.attrs["aria-selected"]}
+                className={`vizel-toolbar-dropdown-option ${slot.data.isActive ? "is-active" : ""} ${slot.data.isFocused ? "is-focused" : ""}`}
                 onClick={() => {
-                  option.run(editor);
+                  slot.data.option.run(editor);
                   close();
                 }}
-                disabled={!option.isEnabled(editor)}
-                title={formatVizelTooltip(option.label, option.shortcut)}
-                tabIndex={-1}
+                disabled={!slot.data.isEnabled}
+                title={formatVizelTooltip(slot.data.option.label, slot.data.option.shortcut)}
+                tabIndex={slot.attrs.tabIndex}
               >
-                <VizelIcon name={option.icon} />
-                <span>{option.label}</span>
+                <VizelIcon name={slot.data.option.icon} />
+                <span>{slot.data.option.label}</span>
               </button>
-            );
-          })}
+            ))
+          )}
         </div>
       )}
     </div>

@@ -9,7 +9,7 @@ export interface VizelToolbarDropdownProps {
 </script>
 
 <script lang="ts">
-import { formatVizelTooltip } from "@vizel/core";
+import { buildVizelToolbarDropdownSkeleton, formatVizelTooltip } from "@vizel/core";
 import VizelIcon from "./VizelIcon.svelte";
 
 let {
@@ -23,9 +23,9 @@ let focusedIndex = $state(0);
 let containerEl: HTMLDivElement | undefined = $state(undefined);
 let triggerEl: HTMLButtonElement | undefined = $state(undefined);
 
-const activeOption = $derived(dropdown.getActiveOption?.(editor));
-const triggerIcon = $derived(activeOption?.icon ?? dropdown.icon);
-const triggerLabel = $derived(activeOption?.label ?? dropdown.label);
+const spec = $derived(
+  buildVizelToolbarDropdownSkeleton(dropdown, editor, isOpen, focusedIndex)
+);
 
 function close() {
   isOpen = false;
@@ -119,13 +119,13 @@ $effect(() => {
     bind:this={triggerEl}
     type="button"
     class="vizel-toolbar-dropdown-trigger"
-    aria-haspopup="listbox"
-    aria-expanded={isOpen}
-    title={triggerLabel}
+    aria-haspopup={spec.trigger.attrs["aria-haspopup"]}
+    aria-expanded={spec.trigger.attrs["aria-expanded"]}
+    title={spec.trigger.label}
     onclick={toggle}
     onkeydown={handleTriggerKeyDown}
   >
-    <VizelIcon name={triggerIcon} />
+    <VizelIcon name={spec.trigger.iconName} />
     <span class="vizel-toolbar-dropdown-chevron">
       <VizelIcon name="chevronDown" />
     </span>
@@ -135,26 +135,28 @@ $effect(() => {
     <div
       class="vizel-toolbar-dropdown-popover"
       role="listbox"
-      aria-label={dropdown.label}
-      aria-activedescendant={`vizel-dropdown-${dropdown.id}-${dropdown.options[focusedIndex]?.id}`}
-      tabindex="0"
+      aria-label={spec.popover.root["aria-label"]}
+      aria-activedescendant={spec.popover.root["aria-activedescendant"]}
+      tabindex={spec.popover.root.tabIndex}
       onkeydown={handleListKeyDown}
     >
-      {#each dropdown.options as option, index (option.id)}
-        <button
-          id={`vizel-dropdown-${dropdown.id}-${option.id}`}
-          type="button"
-          role="option"
-          aria-selected={option.isActive(editor)}
-          class="vizel-toolbar-dropdown-option {option.isActive(editor) ? 'is-active' : ''} {index === focusedIndex ? 'is-focused' : ''}"
-          disabled={!option.isEnabled(editor)}
-          title={formatVizelTooltip(option.label, option.shortcut)}
-          tabindex={-1}
-          onclick={() => handleOptionClick(option)}
-        >
-          <VizelIcon name={option.icon} />
-          <span>{option.label}</span>
-        </button>
+      {#each spec.popover.sections as section (section.key)}
+        {#each section.items as slot (slot.key)}
+          <button
+            id={slot.attrs.id}
+            type="button"
+            role="option"
+            aria-selected={slot.attrs["aria-selected"]}
+            class="vizel-toolbar-dropdown-option {slot.data.isActive ? 'is-active' : ''} {slot.data.isFocused ? 'is-focused' : ''}"
+            disabled={!slot.data.isEnabled}
+            title={formatVizelTooltip(slot.data.option.label, slot.data.option.shortcut)}
+            tabindex={slot.attrs.tabIndex}
+            onclick={() => handleOptionClick(slot.data.option)}
+          >
+            <VizelIcon name={slot.data.option.icon} />
+            <span>{slot.data.option.label}</span>
+          </button>
+        {/each}
       {/each}
     </div>
   {/if}
