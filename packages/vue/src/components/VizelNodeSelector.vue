@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {
+  buildVizelNodeSelectorSkeleton,
   createVizelNodeTypes,
   type Editor,
-  getVizelActiveNodeType,
   type VizelLocale,
   type VizelNodeTypeOption,
   vizelDefaultNodeTypes,
@@ -29,7 +29,6 @@ const effectiveNodeTypes = computed(
     props.nodeTypes ?? (props.locale ? createVizelNodeTypes(props.locale) : vizelDefaultNodeTypes)
 );
 
-// Subscribe to editor state changes
 const editorStateVersion = useVizelState(() => props.editor);
 
 const isOpen = ref(false);
@@ -38,17 +37,17 @@ const containerRef = ref<HTMLDivElement | null>(null);
 const dropdownRef = ref<HTMLDivElement | null>(null);
 const triggerRef = ref<HTMLButtonElement | null>(null);
 
-const activeNodeType = computed(() => {
-  void editorStateVersion.value; // Trigger reactivity
-  return getVizelActiveNodeType(props.editor, effectiveNodeTypes.value);
+const spec = computed(() => {
+  void editorStateVersion.value;
+  return buildVizelNodeSelectorSkeleton(
+    props.editor,
+    effectiveNodeTypes.value,
+    isOpen.value,
+    focusedIndex.value,
+    props.locale
+  );
 });
 
-const currentLabel = computed(
-  () => activeNodeType.value?.label ?? props.locale?.nodeTypes.text ?? "Text"
-);
-const currentIcon = computed(() => activeNodeType.value?.icon ?? "paragraph");
-
-// Close dropdown when clicking outside
 function handleClickOutside(event: MouseEvent) {
   if (!(event.target instanceof Node)) return;
   if (containerRef.value && !containerRef.value.contains(event.target)) {
@@ -68,7 +67,6 @@ onBeforeUnmount(() => {
   document.removeEventListener("mousedown", handleClickOutside);
 });
 
-// Focus the dropdown when it opens to ensure keyboard navigation works
 watch(isOpen, (newValue) => {
   if (newValue) {
     void nextTick(() => {
@@ -121,7 +119,6 @@ function handleKeyDown(event: KeyboardEvent) {
       focusedIndex.value = effectiveNodeTypes.value.length - 1;
       break;
     default:
-      // Allow other keys to propagate
       break;
   }
 }
@@ -130,11 +127,6 @@ function handleSelectNodeType(nodeType: VizelNodeTypeOption) {
   nodeType.command(props.editor);
   isOpen.value = false;
   triggerRef.value?.focus();
-}
-
-function isNodeTypeActive(nodeType: VizelNodeTypeOption): boolean {
-  void editorStateVersion.value; // Trigger reactivity
-  return nodeType.isActive(props.editor);
 }
 </script>
 
@@ -148,17 +140,17 @@ function isNodeTypeActive(nodeType: VizelNodeTypeOption): boolean {
       ref="triggerRef"
       type="button"
       class="vizel-node-selector-trigger"
-      aria-haspopup="listbox"
-      :aria-expanded="isOpen"
-      :aria-label="(props.locale?.nodeSelector.currentBlockType ?? 'Current block type: {type}').replace('{type}', currentLabel)"
-      :title="props.locale?.nodeSelector.changeBlockType ?? 'Change block type'"
+      :aria-haspopup="spec.trigger.attrs['aria-haspopup']"
+      :aria-expanded="spec.trigger.attrs['aria-expanded']"
+      :aria-label="spec.trigger.ariaLabel"
+      :title="spec.trigger.title"
       @click="isOpen = !isOpen"
       @keydown="handleKeyDown"
     >
       <span class="vizel-node-selector-icon">
-        <VizelIcon :name="currentIcon" />
+        <VizelIcon :name="spec.trigger.iconName" />
       </span>
-      <span class="vizel-node-selector-label">{{ currentLabel }}</span>
+      <span class="vizel-node-selector-label">{{ spec.trigger.label }}</span>
       <span class="vizel-node-selector-chevron" aria-hidden="true">
         <VizelIcon name="chevronDown" />
       </span>
@@ -169,38 +161,40 @@ function isNodeTypeActive(nodeType: VizelNodeTypeOption): boolean {
       ref="dropdownRef"
       class="vizel-node-selector-dropdown"
       role="listbox"
-      :aria-label="props.locale?.nodeSelector.blockTypes ?? 'Block types'"
+      :aria-label="spec.popover.root['aria-label']"
       data-vizel-node-selector-dropdown
-      tabindex="-1"
+      :tabindex="spec.popover.root.tabIndex"
       @keydown="handleKeyDown"
     >
-      <button
-        v-for="(nodeType, index) in effectiveNodeTypes"
-        :key="nodeType.name"
-        type="button"
-        role="option"
-        :aria-selected="isNodeTypeActive(nodeType)"
-        :class="[
-          'vizel-node-selector-option',
-          { 'is-active': isNodeTypeActive(nodeType) },
-          { 'is-focused': index === focusedIndex },
-        ]"
-        :tabindex="index === focusedIndex ? 0 : -1"
-        @click="handleSelectNodeType(nodeType)"
-        @mouseenter="focusedIndex = index"
-      >
-        <span class="vizel-node-selector-option-icon">
-          <VizelIcon :name="nodeType.icon" />
-        </span>
-        <span class="vizel-node-selector-option-label">{{ nodeType.label }}</span>
-        <span
-          v-if="isNodeTypeActive(nodeType)"
-          class="vizel-node-selector-check"
-          aria-hidden="true"
+      <template v-for="section in spec.popover.sections" :key="section.key">
+        <button
+          v-for="slot in section.items"
+          :key="slot.key"
+          type="button"
+          role="option"
+          :aria-selected="slot.attrs['aria-selected']"
+          :class="[
+            'vizel-node-selector-option',
+            { 'is-active': slot.data.isActive },
+            { 'is-focused': slot.data.isFocused },
+          ]"
+          :tabindex="slot.attrs.tabIndex"
+          @click="handleSelectNodeType(slot.data.nodeType)"
+          @mouseenter="focusedIndex = slot.index"
         >
-          <VizelIcon name="check" />
-        </span>
-      </button>
+          <span class="vizel-node-selector-option-icon">
+            <VizelIcon :name="slot.data.nodeType.icon" />
+          </span>
+          <span class="vizel-node-selector-option-label">{{ slot.data.nodeType.label }}</span>
+          <span
+            v-if="slot.data.isActive"
+            class="vizel-node-selector-check"
+            aria-hidden="true"
+          >
+            <VizelIcon name="check" />
+          </span>
+        </button>
+      </template>
     </div>
   </div>
 </template>

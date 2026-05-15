@@ -312,6 +312,7 @@ export {
 export {
   buildVizelBlockMenuSkeleton,
   buildVizelMentionMenuSkeleton,
+  buildVizelNodeSelectorSkeleton,
   buildVizelSlashMenuSkeleton,
   buildVizelToolbarDropdownSkeleton,
   getNextVizelSlashMenuGroupIndex,
@@ -325,6 +326,9 @@ export {
   type VizelMenuRootAttrs,
   type VizelMenuSectionSpec,
   type VizelMenuSpec,
+  type VizelNodeSelectorItemView,
+  type VizelNodeSelectorSpec,
+  type VizelNodeSelectorTriggerSpec,
   type VizelSlashItemView,
   type VizelSlashMenuSkeletonOptions,
   type VizelToolbarDropdownItemView,
