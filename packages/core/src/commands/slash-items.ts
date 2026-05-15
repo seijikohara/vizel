@@ -15,6 +15,15 @@ export interface SlashCommandRange {
  * Extended slash command item with enhanced features
  */
 export interface SlashCommandItem {
+  /**
+   * Stable identifier used as the React/Vue/Svelte list `key` and as the
+   * action lookup key. Must be unique within a single slash menu.
+   *
+   * The built-in items use camelCase ids (`heading1`, `bulletList`,
+   * `codeBlock`, etc.). Custom commands should adopt the same convention
+   * so they remain stable across locale-translated `title` changes.
+   */
+  id: string;
   /** Display title */
   title: string;
   /** Description of the command */
@@ -64,6 +73,7 @@ export interface SlashCommandSearchResult {
 export const defaultSlashCommands: SlashCommandItem[] = [
   // Text group
   {
+    id: "heading1",
     title: "Heading 1",
     description: "Large section heading",
     icon: "heading1",
@@ -75,6 +85,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "heading2",
     title: "Heading 2",
     description: "Medium section heading",
     icon: "heading2",
@@ -86,6 +97,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "heading3",
     title: "Heading 3",
     description: "Small section heading",
     icon: "heading3",
@@ -97,6 +109,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "heading4",
     title: "Heading 4",
     description: "Extra-small heading",
     icon: "heading4",
@@ -108,6 +121,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "heading5",
     title: "Heading 5",
     description: "Paragraph heading",
     icon: "heading5",
@@ -119,6 +133,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "heading6",
     title: "Heading 6",
     description: "Smallest heading",
     icon: "heading6",
@@ -131,6 +146,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   },
   // Lists group
   {
+    id: "bulletList",
     title: "Bullet List",
     description: "Create a simple bullet list",
     icon: "bulletList",
@@ -142,6 +158,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "numberedList",
     title: "Numbered List",
     description: "Create a numbered list",
     icon: "orderedList",
@@ -153,6 +170,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "taskList",
     title: "Task List",
     description: "Create a task list with checkboxes",
     icon: "taskList",
@@ -164,6 +182,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   },
   // Blocks group
   {
+    id: "quote",
     title: "Quote",
     description: "Capture a quote",
     icon: "blockquote",
@@ -175,6 +194,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "divider",
     title: "Divider",
     description: "Insert a horizontal divider",
     icon: "horizontalRule",
@@ -185,6 +205,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "details",
     title: "Details",
     description: "Collapsible content block",
     icon: "details",
@@ -199,6 +220,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "callout",
     title: "Callout",
     description: "Insert a callout block (info, tip, warning)",
     icon: "callout",
@@ -213,6 +235,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "codeBlock",
     title: "Code Block",
     description: "Insert a code snippet",
     icon: "codeBlock",
@@ -224,6 +247,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "table",
     title: "Table",
     description: "Insert a table",
     icon: "table",
@@ -240,6 +264,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   },
   // Media group
   {
+    id: "image",
     title: "Image",
     description: "Insert an image from URL",
     icon: "image",
@@ -253,6 +278,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "uploadImage",
     title: "Upload Image",
     description: "Upload an image from your device",
     icon: "imageUpload",
@@ -284,6 +310,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "embed",
     title: "Embed",
     description: "Embed a URL (YouTube, Twitter, etc.)",
     icon: "embed",
@@ -309,6 +336,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   },
   // Navigation group
   {
+    id: "tableOfContents",
     title: "Table of Contents",
     description: "Auto-generated list of headings",
     icon: "tableOfContents",
@@ -323,6 +351,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
   },
   // Advanced group
   {
+    id: "mathEquation",
     title: "Math Equation",
     description: "Insert a mathematical expression",
     icon: "mathBlock",
@@ -337,6 +366,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "inlineMath",
     title: "Inline Math",
     description: "Insert an inline math expression",
     icon: "mathInline",
@@ -351,6 +381,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "mermaidDiagram",
     title: "Mermaid Diagram",
     description: "Insert a Mermaid diagram",
     icon: "mermaid",
@@ -365,6 +396,7 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     },
   },
   {
+    id: "graphvizDiagram",
     title: "GraphViz Diagram",
     description: "Insert a GraphViz (DOT) diagram",
     icon: "graphviz",
