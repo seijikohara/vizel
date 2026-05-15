@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { detectVizelEmbedProvider, type Editor, type VizelLocale } from "@vizel/core";
+import {
+  applyVizelLinkEdit,
+  buildVizelLinkEditorViewState,
+  type Editor,
+  resolveVizelLinkEditorLabels,
+  type VizelLocale,
+} from "@vizel/core";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -24,27 +30,17 @@ const emit = defineEmits<{
 
 const formRef = ref<HTMLFormElement | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
-const linkAttrs = computed(() => props.editor.getAttributes("link"));
-const currentHref = computed(() => linkAttrs.value.href || "");
-const url = ref(currentHref.value);
-const openInNewTab = ref(linkAttrs.value.target === "_blank");
+
+const labels = computed(() => resolveVizelLinkEditorLabels(props.locale));
+const initialState = buildVizelLinkEditorViewState(props.editor, "", props.enableEmbed);
+const url = ref(initialState.initialUrl);
+const openInNewTab = ref(initialState.initialOpenInNewTab);
 const asEmbed = ref(false);
 
-// Check if embed extension is available
-const canEmbed = computed(() => {
-  if (!props.enableEmbed) return false;
-  // Check if embed extension is loaded
-  const extensionManager = props.editor.extensionManager;
-  return extensionManager.extensions.some((ext) => ext.name === "embed");
-});
+const viewState = computed(() =>
+  buildVizelLinkEditorViewState(props.editor, url.value, props.enableEmbed)
+);
 
-// Check if URL is a known embed provider
-const isEmbedProvider = computed(() => {
-  if (!url.value.trim()) return false;
-  return detectVizelEmbedProvider(url.value.trim()) !== null;
-});
-
-// Handle click outside to close
 function handleClickOutside(event: MouseEvent) {
   if (!(event.target instanceof Node)) return;
   if (formRef.value && !formRef.value.contains(event.target)) {
@@ -52,7 +48,6 @@ function handleClickOutside(event: MouseEvent) {
   }
 }
 
-// Handle Escape key to close
 function handleKeyDown(event: KeyboardEvent) {
   if (event.key === "Escape") {
     event.preventDefault();
@@ -64,12 +59,9 @@ function handleKeyDown(event: KeyboardEvent) {
 onMounted(() => {
   inputRef.value?.focus();
 
-  // Defer the outside-click listener until after the current event loop tick
-  // so the click that opened the editor doesn't immediately close it.
   void nextTick(() => {
     document.addEventListener("mousedown", handleClickOutside);
   });
-  // Use capture phase so this handler runs before BubbleMenu's handler
   document.addEventListener("keydown", handleKeyDown, true);
 });
 
@@ -80,27 +72,11 @@ onBeforeUnmount(() => {
 
 function handleSubmit(e: Event) {
   e.preventDefault();
-  const trimmedUrl = url.value.trim();
-
-  if (!trimmedUrl) {
-    props.editor.chain().focus().unsetLink().run();
-    emit("close");
-    return;
-  }
-
-  if (asEmbed.value && canEmbed.value) {
-    // Remove the link first, then insert embed
-    props.editor.chain().focus().unsetLink().setEmbed({ url: trimmedUrl }).run();
-  } else {
-    props.editor
-      .chain()
-      .focus()
-      .setLink({
-        href: trimmedUrl,
-        target: openInNewTab.value ? "_blank" : null,
-      })
-      .run();
-  }
+  applyVizelLinkEdit(
+    props.editor,
+    { url: url.value, openInNewTab: openInNewTab.value, asEmbed: asEmbed.value },
+    viewState.value.canEmbed
+  );
   emit("close");
 }
 
@@ -128,19 +104,24 @@ function handleVisit() {
         ref="inputRef"
         v-model="url"
         type="url"
-        :placeholder="props.locale?.linkEditor?.urlPlaceholder ?? 'Enter URL...'"
+        :placeholder="labels.urlPlaceholder"
         class="vizel-link-input"
-        aria-label="Link URL"
+        :aria-label="labels.urlAriaLabel"
       />
-      <button type="submit" class="vizel-link-button" :title="props.locale?.linkEditor?.apply ?? 'Apply'" :aria-label="props.locale?.linkEditor?.applyAriaLabel ?? 'Apply link'">
+      <button
+        type="submit"
+        class="vizel-link-button"
+        :title="labels.apply"
+        :aria-label="labels.applyAriaLabel"
+      >
         <VizelIcon name="check" />
       </button>
       <button
-        v-if="currentHref"
+        v-if="viewState.showRemoveButton"
         type="button"
         class="vizel-link-button vizel-link-remove"
-        :title="props.locale?.linkEditor?.removeLink ?? 'Remove link'"
-        :aria-label="props.locale?.linkEditor?.removeLinkAriaLabel ?? 'Remove link'"
+        :title="labels.removeLink"
+        :aria-label="labels.removeLinkAriaLabel"
         @click="handleRemove"
       >
         <VizelIcon name="x" />
@@ -152,26 +133,26 @@ function handleVisit() {
           v-model="openInNewTab"
           type="checkbox"
         />
-        <span>{{ props.locale?.linkEditor?.openInNewTab ?? 'Open in new tab' }}</span>
+        <span>{{ labels.openInNewTab }}</span>
       </label>
       <button
-        v-if="url.trim()"
+        v-if="viewState.showVisitButton"
         type="button"
         class="vizel-link-visit"
-        :title="props.locale?.linkEditor?.visitTitle ?? 'Open URL in new tab'"
+        :title="labels.visitTitle"
         @click="handleVisit"
       >
         <VizelIcon name="externalLink" />
-        <span>{{ props.locale?.linkEditor?.visit ?? 'Visit' }}</span>
+        <span>{{ labels.visit }}</span>
       </button>
     </div>
-    <div v-if="canEmbed && isEmbedProvider" class="vizel-link-editor-embed-toggle">
+    <div v-if="viewState.showEmbedToggle" class="vizel-link-editor-embed-toggle">
       <input
         id="vizel-embed-toggle"
         v-model="asEmbed"
         type="checkbox"
       />
-      <label for="vizel-embed-toggle">{{ props.locale?.linkEditor?.embedAsRichContent ?? 'Embed as rich content' }}</label>
+      <label for="vizel-embed-toggle">{{ labels.embedAsRichContent }}</label>
     </div>
   </form>
 </template>

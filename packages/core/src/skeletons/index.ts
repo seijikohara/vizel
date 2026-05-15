@@ -6,6 +6,14 @@ export {
   type VizelBlockMenuTurnIntoItemView,
 } from "./block-menu.ts";
 export {
+  applyVizelLinkEdit,
+  buildVizelLinkEditorViewState,
+  resolveVizelLinkEditorLabels,
+  type VizelLinkEditorLabels,
+  type VizelLinkEditorViewState,
+  type VizelLinkSubmitParams,
+} from "./link-editor.ts";
+export {
   buildVizelMentionMenuSkeleton,
   type VizelMentionItemView,
 } from "./mention-menu.ts";

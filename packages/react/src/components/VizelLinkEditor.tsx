@@ -1,4 +1,10 @@
-import { detectVizelEmbedProvider, type Editor, type VizelLocale } from "@vizel/core";
+import {
+  applyVizelLinkEdit,
+  buildVizelLinkEditorViewState,
+  type Editor,
+  resolveVizelLinkEditorLabels,
+  type VizelLocale,
+} from "@vizel/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 
@@ -14,26 +20,11 @@ export interface VizelLinkEditorProps {
 
 /**
  * A link editor component for editing hyperlinks in the VizelBubbleMenu.
- * Provides an input field for URL entry, open-in-new-tab toggle, visit button,
- * and buttons to apply or remove the link.
- * Optionally supports converting links to embeds when the Embed extension is loaded.
  *
- * @example
- * ```tsx
- * const [showLinkEditor, setShowLinkEditor] = useState(false);
- *
- * {showLinkEditor ? (
- *   <VizelLinkEditor
- *     editor={editor}
- *     onClose={() => setShowLinkEditor(false)}
- *     enableEmbed
- *   />
- * ) : (
- *   <VizelBubbleMenuButton onClick={() => setShowLinkEditor(true)}>
- *     Link
- *   </VizelBubbleMenuButton>
- * )}
- * ```
+ * Localized labels, view-state derivation (initial values from the link
+ * mark, embed-toggle visibility, etc.), and the editor-command logic
+ * for applying the form come from `@vizel/core`'s link-editor
+ * skeleton helpers. The component owns input state and event wiring.
  */
 export function VizelLinkEditor({
   editor,
@@ -42,34 +33,26 @@ export function VizelLinkEditor({
   enableEmbed = false,
   locale,
 }: VizelLinkEditorProps) {
-  const linkAttrs = editor.getAttributes("link");
-  const currentHref = linkAttrs.href || "";
-  const [url, setUrl] = useState(currentHref);
-  const [openInNewTab, setOpenInNewTab] = useState(linkAttrs.target === "_blank");
+  const labels = useMemo(() => resolveVizelLinkEditorLabels(locale), [locale]);
+  const initialState = useMemo(
+    () => buildVizelLinkEditorViewState(editor, "", enableEmbed),
+    [editor, enableEmbed]
+  );
+  const [url, setUrl] = useState(initialState.initialUrl);
+  const [openInNewTab, setOpenInNewTab] = useState(initialState.initialOpenInNewTab);
   const [asEmbed, setAsEmbed] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Check if embed extension is available
-  const canEmbed = useMemo(() => {
-    if (!enableEmbed) return false;
-    // Check if setEmbed command exists (embed extension is loaded)
-    const extensionManager = editor.extensionManager;
-    return extensionManager.extensions.some((ext) => ext.name === "embed");
-  }, [editor, enableEmbed]);
+  const viewState = useMemo(
+    () => buildVizelLinkEditorViewState(editor, url, enableEmbed),
+    [editor, url, enableEmbed]
+  );
 
-  // Check if URL is a known embed provider
-  const isEmbedProvider = useMemo(() => {
-    if (!url.trim()) return false;
-    return detectVizelEmbedProvider(url.trim()) !== null;
-  }, [url]);
-
-  // Auto-focus input on mount
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  // Handle click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (!(event.target instanceof Node)) return;
@@ -78,7 +61,6 @@ export function VizelLinkEditor({
       }
     };
 
-    // Handle Escape key to close
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -87,11 +69,9 @@ export function VizelLinkEditor({
       }
     };
 
-    // Use setTimeout to avoid immediate trigger from the click that opened the editor
     const timeoutId = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
     }, 0);
-    // Use capture phase so this handler runs before VizelBubbleMenu's handler
     document.addEventListener("keydown", handleKeyDown, true);
 
     return () => {
@@ -104,30 +84,10 @@ export function VizelLinkEditor({
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      const trimmedUrl = url.trim();
-
-      if (!trimmedUrl) {
-        editor.chain().focus().unsetLink().run();
-        onClose?.();
-        return;
-      }
-
-      if (asEmbed && canEmbed) {
-        // Remove the link first, then insert embed
-        editor.chain().focus().unsetLink().setEmbed({ url: trimmedUrl }).run();
-      } else {
-        editor
-          .chain()
-          .focus()
-          .setLink({
-            href: trimmedUrl,
-            target: openInNewTab ? "_blank" : null,
-          })
-          .run();
-      }
+      applyVizelLinkEdit(editor, { url, openInNewTab, asEmbed }, viewState.canEmbed);
       onClose?.();
     },
-    [editor, url, openInNewTab, asEmbed, canEmbed, onClose]
+    [editor, url, openInNewTab, asEmbed, viewState.canEmbed, onClose]
   );
 
   const handleRemove = useCallback(() => {
@@ -150,25 +110,25 @@ export function VizelLinkEditor({
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder={locale?.linkEditor?.urlPlaceholder ?? "Enter URL..."}
+          placeholder={labels.urlPlaceholder}
           className="vizel-link-input"
-          aria-label="Link URL"
+          aria-label={labels.urlAriaLabel}
         />
         <button
           type="submit"
           className="vizel-link-button"
-          title={locale?.linkEditor?.apply ?? "Apply"}
-          aria-label={locale?.linkEditor?.applyAriaLabel ?? "Apply link"}
+          title={labels.apply}
+          aria-label={labels.applyAriaLabel}
         >
           <VizelIcon name="check" />
         </button>
-        {currentHref && (
+        {viewState.showRemoveButton && (
           <button
             type="button"
             onClick={handleRemove}
             className="vizel-link-button vizel-link-remove"
-            title={locale?.linkEditor?.removeLink ?? "Remove link"}
-            aria-label={locale?.linkEditor?.removeLinkAriaLabel ?? "Remove link"}
+            title={labels.removeLink}
+            aria-label={labels.removeLinkAriaLabel}
           >
             <VizelIcon name="x" />
           </button>
@@ -181,21 +141,21 @@ export function VizelLinkEditor({
             checked={openInNewTab}
             onChange={(e) => setOpenInNewTab(e.target.checked)}
           />
-          <span>{locale?.linkEditor?.openInNewTab ?? "Open in new tab"}</span>
+          <span>{labels.openInNewTab}</span>
         </label>
-        {url.trim() && (
+        {viewState.showVisitButton && (
           <button
             type="button"
             onClick={handleVisit}
             className="vizel-link-visit"
-            title={locale?.linkEditor?.visitTitle ?? "Open URL in new tab"}
+            title={labels.visitTitle}
           >
             <VizelIcon name="externalLink" />
-            <span>{locale?.linkEditor?.visit ?? "Visit"}</span>
+            <span>{labels.visit}</span>
           </button>
         )}
       </div>
-      {canEmbed && isEmbedProvider && (
+      {viewState.showEmbedToggle && (
         <div className="vizel-link-editor-embed-toggle">
           <input
             type="checkbox"
@@ -203,9 +163,7 @@ export function VizelLinkEditor({
             checked={asEmbed}
             onChange={(e) => setAsEmbed(e.target.checked)}
           />
-          <label htmlFor="vizel-embed-toggle">
-            {locale?.linkEditor?.embedAsRichContent ?? "Embed as rich content"}
-          </label>
+          <label htmlFor="vizel-embed-toggle">{labels.embedAsRichContent}</label>
         </div>
       )}
     </form>
