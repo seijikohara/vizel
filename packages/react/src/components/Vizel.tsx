@@ -60,14 +60,24 @@ export interface VizelProps {
   className?: string;
   /** Whether to show the toolbar (default: false) */
   showToolbar?: boolean;
-  /** Custom toolbar content */
-  toolbarContent?: ReactNode;
+  /**
+   * Custom toolbar content as a render prop.
+   * Receives the bound editor instance so the consumer can drive Tiptap
+   * commands from custom controls. Mirrors the Vue `<slot name="toolbar"
+   * :editor>` and the Svelte `toolbar: Snippet<[{ editor }]>`.
+   */
+  toolbarContent?: (props: { editor: Editor }) => ReactNode;
   /** Whether to show the bubble menu (default: true) */
   showBubbleMenu?: boolean;
   /** Enable embed option in bubble menu link editor (requires Embed extension) */
   enableEmbed?: boolean;
-  /** Custom bubble menu content */
-  bubbleMenuContent?: ReactNode;
+  /**
+   * Custom bubble menu content as a render prop.
+   * Receives the bound editor instance so the consumer can drive Tiptap
+   * commands from custom controls. Mirrors the Vue `<slot name="bubble-menu"
+   * :editor>` and the Svelte `bubbleMenu: Snippet<[{ editor }]>`.
+   */
+  bubbleMenuContent?: (props: { editor: Editor }) => ReactNode;
   /** Additional children to render inside the editor root */
   children?: ReactNode;
   /**
@@ -255,7 +265,7 @@ export function Vizel({
         editor &&
         (toolbarContent ? (
           <VizelToolbar editor={editor} {...localeProps}>
-            {toolbarContent}
+            {toolbarContent({ editor })}
           </VizelToolbar>
         ) : (
           <VizelToolbar editor={editor} {...localeProps} />
@@ -265,7 +275,7 @@ export function Vizel({
         editor &&
         (bubbleMenuContent ? (
           <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} {...localeProps}>
-            {bubbleMenuContent}
+            {bubbleMenuContent({ editor })}
           </VizelBubbleMenu>
         ) : (
           <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} {...localeProps} />

@@ -104,8 +104,8 @@ import { Vizel } from '@vizel/react';
 | `markdown` | `string` | - | Controlled-mode Markdown value. Pair with `onMarkdownChange` to drive the editor from external state. |
 | `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor (`"commonmark"`, `"gfm"`, `"obsidian"`, `"docusaurus"`). |
 | `locale` | `VizelLocale` | - | Localized UI strings. Use `createVizelLocale()` to merge a partial override with the English default. |
-| `toolbarContent` | `ReactNode` | - | Custom toolbar content. When provided alongside `showToolbar`, replaces the default toolbar body. |
-| `bubbleMenuContent` | `ReactNode` | - | Custom bubble-menu content. When provided alongside `showBubbleMenu`, replaces the default body. |
+| `toolbarContent` | `(props: { editor }) => ReactNode` | - | Custom toolbar content as a render prop. The bound editor is passed in so the callback can drive Tiptap commands. Mirrors the Vue `<slot name="toolbar" :editor>` and Svelte `toolbar: Snippet<[{ editor }]>`. |
+| `bubbleMenuContent` | `(props: { editor }) => ReactNode` | - | Custom bubble-menu content as a render prop. Same shape as `toolbarContent`. |
 | `ref` | `Ref<VizelRef>` | - | Forwarded ref exposing the underlying `Editor` instance. |
 | `onMarkdownChange` | `(markdown: string) => void` | - | Fired when editor content changes in controlled mode (use with `markdown`). |
 | `onUpdate` | `(props: { editor }) => void` | - | Update callback |
