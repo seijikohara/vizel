@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  buildVizelFindReplaceViewState,
   type Editor,
   getVizelFindReplaceState,
   resolveVizelFindReplaceLabels,
@@ -29,13 +30,9 @@ const caseSensitive = ref(false);
 const state = ref<VizelFindReplaceState | null>(null);
 const findInputRef = ref<HTMLInputElement | null>(null);
 
-const matchCount = computed(() => state.value?.matches.length ?? 0);
-const currentMatch = computed(() =>
-  state.value && state.value.activeIndex >= 0 ? state.value.activeIndex + 1 : 0
-);
-const isReplaceMode = computed(() => state.value?.mode === "replace");
-const isOpen = computed(() => state.value?.isOpen ?? false);
 const labels = computed(() => resolveVizelFindReplaceLabels(props.locale?.findReplace));
+const view = computed(() => buildVizelFindReplaceViewState(state.value, labels.value.noResults));
+const isOpen = computed(() => view.value.isOpen);
 
 function updateState() {
   if (props.editor) {
@@ -150,12 +147,12 @@ function handleKeyDown(e: KeyboardEvent) {
         :aria-label="labels.findTextAriaLabel"
       />
       <span class="vizel-find-replace-count" aria-live="polite">
-        {{ matchCount > 0 ? `${currentMatch}/${matchCount}` : labels.noResults }}
+        {{ view.matchCountDisplay }}
       </span>
       <button
         type="button"
         class="vizel-find-replace-button"
-        :disabled="matchCount === 0"
+        :disabled="view.isDisabled"
         :aria-label="labels.findPreviousAriaLabel"
         :title="labels.findPreviousTitle"
         @click="handleFindPrevious"
@@ -165,7 +162,7 @@ function handleKeyDown(e: KeyboardEvent) {
       <button
         type="button"
         class="vizel-find-replace-button"
-        :disabled="matchCount === 0"
+        :disabled="view.isDisabled"
         :aria-label="labels.findNextAriaLabel"
         :title="labels.findNextTitle"
         @click="handleFindNext"
@@ -183,7 +180,7 @@ function handleKeyDown(e: KeyboardEvent) {
       </button>
     </div>
 
-    <div v-if="isReplaceMode" class="vizel-find-replace-row">
+    <div v-if="view.isReplaceMode" class="vizel-find-replace-row">
       <input
         type="text"
         class="vizel-find-replace-input"
@@ -195,7 +192,7 @@ function handleKeyDown(e: KeyboardEvent) {
       <button
         type="button"
         class="vizel-find-replace-button"
-        :disabled="matchCount === 0"
+        :disabled="view.isDisabled"
         :aria-label="labels.replaceAriaLabel"
         :title="labels.replaceTitle"
         @click="handleReplace"
@@ -205,7 +202,7 @@ function handleKeyDown(e: KeyboardEvent) {
       <button
         type="button"
         class="vizel-find-replace-button vizel-find-replace-button--primary"
-        :disabled="matchCount === 0"
+        :disabled="view.isDisabled"
         :aria-label="labels.replaceAllAriaLabel"
         :title="labels.replaceAllTitle"
         @click="handleReplaceAll"

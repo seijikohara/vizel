@@ -312,6 +312,8 @@ export {
 export {
   applyVizelLinkEdit,
   buildVizelBlockMenuSkeleton,
+  buildVizelFindReplaceViewState,
+  buildVizelFindReplaceViewStateFromLocale,
   buildVizelLinkEditorViewState,
   buildVizelMentionMenuSkeleton,
   buildVizelNodeSelectorSkeleton,
@@ -323,6 +325,7 @@ export {
   type VizelBlockMenuSpec,
   type VizelBlockMenuSubmenuTriggerSpec,
   type VizelBlockMenuTurnIntoItemView,
+  type VizelFindReplaceViewState,
   type VizelLinkEditorLabels,
   type VizelLinkEditorViewState,
   type VizelLinkSubmitParams,
