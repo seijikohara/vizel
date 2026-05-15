@@ -43,7 +43,7 @@ let {
 }: VizelBubbleMenuProps = $props();
 
 const contextEditor = getVizelContextSafe();
-const editor = $derived(editorProp ?? contextEditor?.());
+const editor = $derived(editorProp ?? contextEditor?.current);
 
 let menuElement = $state<HTMLElement | null>(null);
 

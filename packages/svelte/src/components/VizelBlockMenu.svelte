@@ -51,7 +51,7 @@ let {
 }: VizelBlockMenuProps = $props();
 
 const contextEditor = getVizelContextSafe();
-const boundEditor = $derived<Editor | null>(editorProp ?? contextEditor?.() ?? null);
+const boundEditor = $derived<Editor | null>(editorProp ?? contextEditor?.current ?? null);
 
 const effectiveActions = $derived(actions ?? (locale ? createVizelBlockMenuActions(locale) : vizelDefaultBlockMenuActions));
 const effectiveNodeTypes = $derived(nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes));

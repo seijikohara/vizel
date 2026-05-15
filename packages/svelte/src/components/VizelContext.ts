@@ -4,7 +4,21 @@ import { getContext } from "svelte";
 export const VIZEL_CONTEXT_KEY = Symbol("vizel-editor");
 
 /**
- * Get the editor instance from VizelProvider context.
+ * Reactive accessor object returned by {@link getVizelContext} and
+ * {@link getVizelContextSafe}.
+ *
+ * Reading `.current` from inside a reactive context (`$derived`, `$effect`,
+ * a template expression) registers the read as a dependency, so the
+ * consumer re-evaluates whenever the provided editor changes. Mirrors the
+ * Svelte 5 idiom for exposing runes through plain objects.
+ */
+export interface VizelContextAccessor {
+  /** The currently provided editor instance, or `null` when not ready. */
+  readonly current: Editor | null;
+}
+
+/**
+ * Get the editor instance accessor from VizelProvider context.
  *
  * @throws Error if used outside of VizelProvider
  *
@@ -13,26 +27,30 @@ export const VIZEL_CONTEXT_KEY = Symbol("vizel-editor");
  * <script lang="ts">
  * import { getVizelContext } from '@vizel/svelte';
  *
- * const getEditor = getVizelContext();
+ * const context = getVizelContext();
  * </script>
  *
- * <button onclick={() => getEditor()?.chain().focus().toggleBold().run()}>
+ * <button onclick={() => context.current?.chain().focus().toggleBold().run()}>
  *   Bold
  * </button>
  * ```
  */
-export function getVizelContext(): () => Editor | null {
-  const getEditor = getContext<(() => Editor | null) | undefined>(VIZEL_CONTEXT_KEY);
-  if (!getEditor) {
+export function getVizelContext(): VizelContextAccessor {
+  const accessor = getContext<VizelContextAccessor | undefined>(VIZEL_CONTEXT_KEY);
+  if (!accessor) {
     throw new Error("getVizelContext must be used within a VizelProvider");
   }
-  return getEditor;
+  return accessor;
 }
 
 /**
- * Get the editor instance from context.
- * Returns undefined if used outside of VizelProvider (does not throw).
+ * Get the editor instance accessor from context.
+ *
+ * Returns `undefined` when called outside of `VizelProvider` (does not
+ * throw). Mirrors {@link getVizelContext} but is non-throwing so optional
+ * consumers (e.g. components that work both inside and outside a provider)
+ * can fall back gracefully.
  */
-export function getVizelContextSafe(): (() => Editor | null) | undefined {
-  return getContext<(() => Editor | null) | undefined>(VIZEL_CONTEXT_KEY);
+export function getVizelContextSafe(): VizelContextAccessor | undefined {
+  return getContext<VizelContextAccessor | undefined>(VIZEL_CONTEXT_KEY);
 }
