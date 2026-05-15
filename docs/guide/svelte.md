@@ -102,12 +102,17 @@ All-in-one editor component with built-in bubble menu.
 | `enableEmbed` | `boolean` | - | Enable embed in links |
 | `extensions` | `Extensions` | - | Additional Tiptap extensions |
 | `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks on import |
-| `onUpdate` | `Function` | - | Update callback |
-| `onCreate` | `Function` | - | Create callback |
-| `onDestroy` | `Function` | - | Destroy callback |
-| `onSelectionUpdate` | `Function` | - | Selection change callback |
-| `onFocus` | `Function` | - | Focus callback |
-| `onBlur` | `Function` | - | Blur callback |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor (`"commonmark"`, `"gfm"`, `"obsidian"`, `"docusaurus"`). |
+| `locale` | `VizelLocale` | - | Localized UI strings. Use `createVizelLocale()` to merge a partial override with the English default. |
+| `toolbar` | `Snippet<[{ editor }]>` | - | Custom toolbar snippet rendered inside `<VizelToolbar>` when `showToolbar` is true. |
+| `bubbleMenu` | `Snippet<[{ editor }]>` | - | Custom bubble-menu snippet rendered inside `<VizelBubbleMenu>` when `showBubbleMenu` is true. |
+| `onUpdate` | `(props: { editor }) => void` | - | Update callback |
+| `onCreate` | `(props: { editor }) => void` | - | Create callback |
+| `onDestroy` | `() => void` | - | Destroy callback |
+| `onSelectionUpdate` | `(props: { editor }) => void` | - | Selection change callback |
+| `onFocus` | `(props: { editor }) => void` | - | Focus callback |
+| `onBlur` | `(props: { editor }) => void` | - | Blur callback |
+| `onError` | `(error: VizelError) => void` | - | Fired when an editor operation surfaces a `VizelError`. Narrow with `isVizelError(error)` to inspect the structured `code` field. |
 
 ## Runes
 

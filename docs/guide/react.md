@@ -101,12 +101,20 @@ import { Vizel } from '@vizel/react';
 | `enableEmbed` | `boolean` | - | Enable embed in links |
 | `extensions` | `Extensions` | - | Additional Tiptap extensions |
 | `transformDiagramsOnImport` | `boolean` | `true` | Transform diagram code blocks on import |
-| `onUpdate` | `Function` | - | Update callback |
-| `onCreate` | `Function` | - | Create callback |
-| `onDestroy` | `Function` | - | Destroy callback |
-| `onSelectionUpdate` | `Function` | - | Selection change callback |
-| `onFocus` | `Function` | - | Focus callback |
-| `onBlur` | `Function` | - | Blur callback |
+| `markdown` | `string` | - | Controlled-mode Markdown value. Pair with `onMarkdownChange` to drive the editor from external state. |
+| `flavor` | `VizelMarkdownFlavor` | `"gfm"` | Markdown output flavor (`"commonmark"`, `"gfm"`, `"obsidian"`, `"docusaurus"`). |
+| `locale` | `VizelLocale` | - | Localized UI strings. Use `createVizelLocale()` to merge a partial override with the English default. |
+| `toolbarContent` | `ReactNode` | - | Custom toolbar content. When provided alongside `showToolbar`, replaces the default toolbar body. |
+| `bubbleMenuContent` | `ReactNode` | - | Custom bubble-menu content. When provided alongside `showBubbleMenu`, replaces the default body. |
+| `ref` | `Ref<VizelRef>` | - | Forwarded ref exposing the underlying `Editor` instance. |
+| `onMarkdownChange` | `(markdown: string) => void` | - | Fired when editor content changes in controlled mode (use with `markdown`). |
+| `onUpdate` | `(props: { editor }) => void` | - | Update callback |
+| `onCreate` | `(props: { editor }) => void` | - | Create callback |
+| `onDestroy` | `() => void` | - | Destroy callback |
+| `onSelectionUpdate` | `(props: { editor }) => void` | - | Selection change callback |
+| `onFocus` | `(props: { editor }) => void` | - | Focus callback |
+| `onBlur` | `(props: { editor }) => void` | - | Blur callback |
+| `onError` | `(error: VizelError) => void` | - | Fired when an editor operation surfaces a `VizelError`. Narrow with `isVizelError(error)` to inspect the structured `code` field. |
 
 ## Hooks
 

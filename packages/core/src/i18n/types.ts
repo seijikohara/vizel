@@ -110,6 +110,14 @@ export interface VizelLocale {
     enterEmbedUrl: string;
   };
 
+  /** Mention autocomplete menu */
+  mentionMenu: {
+    /** Menu container aria-label */
+    ariaLabel: string;
+    /** Message shown when no mention candidates match the query */
+    noResults: string;
+  };
+
   /** Find and replace panel */
   findReplace: {
     /** Panel aria-label */

@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { VizelMentionItem } from "@vizel/core";
+import type { VizelLocale, VizelMentionItem } from "@vizel/core";
 
 export interface VizelMentionMenuRef {
   onKeyDown?: (event: KeyboardEvent) => boolean;
@@ -9,6 +9,8 @@ export interface VizelMentionMenuProps {
   items: VizelMentionItem[];
   class?: string;
   onselect?: (item: VizelMentionItem) => void;
+  /** Locale for translated UI strings */
+  locale?: VizelLocale;
   /**
    * Mutable ref object the component populates with imperative handles
    * (notably `onKeyDown`). Pass an object; this component assigns to its
@@ -29,6 +31,7 @@ let {
   items,
   class: className,
   onselect,
+  locale,
   ref,
 }: VizelMentionMenuProps = $props();
 
@@ -92,11 +95,11 @@ if (ref) {
   class="vizel-mention-menu {className ?? ''}"
   data-vizel-mention-menu
   role="listbox"
-  aria-label="Mentions"
+  aria-label={locale?.mentionMenu?.ariaLabel ?? "Mentions"}
   aria-activedescendant={items[selectedIndex]?.id ? `vizel-mention-${items[selectedIndex]?.id}` : undefined}
 >
   {#if items.length === 0}
-    <div class="vizel-mention-menu-empty">No results</div>
+    <div class="vizel-mention-menu-empty">{locale?.mentionMenu?.noResults ?? "No results"}</div>
   {:else}
     {#each items as item, index (item.id)}
       <div
