@@ -304,19 +304,25 @@ function App() {
 
 This component renders the editor content area.
 
+When wrapped in a `VizelProvider`, the `editor` prop is optional — the component falls back to the editor injected through context. Pass `editor` explicitly to bind a specific instance (useful when multiple editors live on the same page).
+
 ```tsx
-<VizelEditor 
-  editor={editor} 
-  className="my-editor"
-/>
+// With provider context
+<VizelProvider editor={editor}>
+  <VizelEditor className="my-editor" />
+</VizelProvider>
+
+// Or explicitly
+<VizelEditor editor={editor} className="my-editor" />
 ```
 
 #### Props
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `editor` | `Editor \| null` | Editor instance |
+| `editor` | `Editor \| null` | Editor instance. Defaults to the value provided by `VizelProvider` when omitted. |
 | `className` | `string` | Custom class name |
+| `ref` | `Ref<VizelExposed>` | Forwarded ref exposing the container DOM element. |
 
 ### VizelBubbleMenu
 

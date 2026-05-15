@@ -70,6 +70,24 @@ interface VizelBubbleMenuProps {
 }
 ```
 
+### Custom Item Renderers
+
+Components that iterate a list (e.g. `VizelSlashMenu`, `VizelMentionMenu`)
+expose an item-level customization seam through whatever the framework's
+idiomatic slot mechanism is. Consumers may swap the rendering of a
+single item, but the menu container's structure, keyboard handlers, and
+ARIA wiring stay owned by the component.
+
+| Framework | API form |
+|-----------|----------|
+| React | `renderItem?: (item, state) => ReactNode` prop |
+| Vue | `<slot name="item" :item="..." :is-selected="..." />` |
+| Svelte | `renderItem?: Snippet<[{ item, isSelected, onclick }]>` |
+
+The cross-framework concept is identical — give the consumer the item
+data plus the selection state and let them return a node — only the
+binding form differs to honor each framework's slot idiom.
+
 ## State Management Equivalence
 
 Each framework exposes equivalent state primitives under its idiomatic naming.
