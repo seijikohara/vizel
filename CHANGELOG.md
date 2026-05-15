@@ -4,7 +4,7 @@ All notable changes to Vizel are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2026-05-15
 
 This release is the v2.x rework that aligns React, Vue, and Svelte adapters
 around a shared, framework-agnostic core. Behavior remains backwards-compatible
@@ -67,6 +67,36 @@ context APIs by hand.
 - `createVizelBubbleMenuActions(locale)` + `filterVizelBubbleMenuActions` +
   `groupVizelBubbleMenuActions` + `vizelDefaultBubbleMenuActions` —
   bubble-menu action list, mirroring the existing toolbar-actions shape.
+- `@vizel/core/skeletons/` module exposing declarative UI scaffolding
+  for the menu and form components. Each framework's component is now a
+  thin transformer that maps the spec to its native template:
+  - `VizelMenuSpec<TData>` — generic spec describing root container ARIA,
+    sections (optionally headed), and per-item attrs (`role`, `id`,
+    `aria-selected`, `aria-haspopup`, `aria-expanded`, `tabIndex`).
+  - `buildVizelMentionMenuSkeleton(items, selectedIndex, locale)` —
+    flat listbox spec for `@vizel/{react,vue,svelte}` `VizelMentionMenu`.
+  - `buildVizelSlashMenuSkeleton(items, selectedIndex, options)` +
+    `getNextVizelSlashMenuGroupIndex(spec, currentIndex)` — grouped
+    listbox spec for `VizelSlashMenu` plus the Tab-to-next-group
+    navigation helper.
+  - `buildVizelBlockMenuSkeleton(actions, turnIntoOptions, showTurnInto,
+    locale)` — main menu + submenu trigger + submenu spec for
+    `VizelBlockMenu`.
+  - `buildVizelToolbarDropdownSkeleton(dropdown, editor, isOpen,
+    focusedIndex)` — trigger + listbox-popover spec for
+    `VizelToolbarDropdown`.
+  - `buildVizelNodeSelectorSkeleton(editor, nodeTypes, isOpen,
+    focusedIndex, locale)` — trigger + listbox-popover spec for
+    `VizelNodeSelector` with active-node-type detection and locale-aware
+    aria-label template.
+  - `resolveVizelLinkEditorLabels(locale)` +
+    `buildVizelLinkEditorViewState(editor, url, enableEmbed)` +
+    `applyVizelLinkEdit(editor, params, canEmbed)` — labels, derived
+    visibility flags, and the chain-command apply logic for
+    `VizelLinkEditor`.
+  - `buildVizelFindReplaceViewState(state, noResultsLabel)` and
+    `buildVizelFindReplaceViewStateFromLocale(state, locale)` — derived
+    match-counter / replace-mode / disabled flags for `VizelFindReplace`.
 
 ### Changed
 
@@ -106,6 +136,13 @@ context APIs by hand.
 - **Bubble-menu defaults.** Each framework's `VizelBubbleMenuDefault`
   collapses from ~150 lines of repeated buttons to an iteration over the
   shared `createVizelBubbleMenuActions(locale)` list.
+- **UI skeletonization.** The DOM scaffolding for `VizelMentionMenu`,
+  `VizelSlashMenu`, `VizelBlockMenu`, `VizelToolbarDropdown`,
+  `VizelNodeSelector`, `VizelLinkEditor`, and `VizelFindReplace` is now
+  declared in `@vizel/core/skeletons/`. Each framework component is a
+  thin transformer that maps the spec to its native template instead of
+  duplicating ARIA wiring, identifier schemes, and view-state
+  derivations three times.
 
 ### Fixed
 
