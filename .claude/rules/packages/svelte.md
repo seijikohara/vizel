@@ -181,6 +181,36 @@ $effect(() => {
 });
 ```
 
+### `$state` Inside Factory Functions
+
+The renderer factories (`createVizelSlashMenuRenderer`,
+`createVizelMentionMenuRenderer`) declare `$state` inside the
+function body — once per suggestion session, not at module scope.
+This is intentional: each session needs its own reactive `items` /
+`onselect` slot that can be mutated as Tiptap pushes updates, and
+the mount target's lifetime matches the session.
+
+```typescript
+export function createVizelSlashMenuRenderer(options = {}) {
+  return {
+    render: () => {
+      // Each render() call opens a new suggestion session and gets
+      // its own $state container.
+      const menuState = $state<{ items: VizelSlashCommandItem[]; onselect: ... }>({
+        items: [],
+        onselect: () => {},
+      });
+      // ...
+    },
+  };
+}
+```
+
+The Svelte 5 compiler accepts this pattern (the function is invoked
+inside a component lifecycle). Do not lift the `$state` to module
+scope — that would share the same container across every editor in
+the page and corrupt sessions when more than one suggestion is open.
+
 ## Context
 
 - `VizelProvider` calls `setContext()`.
