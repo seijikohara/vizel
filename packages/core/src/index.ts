@@ -311,12 +311,16 @@ export {
 // =============================================================================
 export {
   buildVizelMentionMenuSkeleton,
+  buildVizelSlashMenuSkeleton,
+  getNextVizelSlashMenuGroupIndex,
   type VizelMentionItemView,
   type VizelMenuItemAttrs,
   type VizelMenuItemSpec,
   type VizelMenuRootAttrs,
   type VizelMenuSectionSpec,
   type VizelMenuSpec,
+  type VizelSlashItemView,
+  type VizelSlashMenuSkeletonOptions,
 } from "./skeletons/index.ts";
 // =============================================================================
 // Theme

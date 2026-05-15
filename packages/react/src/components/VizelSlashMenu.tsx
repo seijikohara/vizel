@@ -1,6 +1,6 @@
 import {
-  groupVizelSlashCommands,
-  type VizelSlashCommandGroup,
+  buildVizelSlashMenuSkeleton,
+  getNextVizelSlashMenuGroupIndex,
   type VizelSlashCommandItem,
 } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
@@ -41,21 +41,12 @@ export interface VizelSlashMenuProps {
 
 /**
  * Slash command menu component for displaying command suggestions.
- * Supports grouping, keyboard navigation, and fuzzy search highlighting.
  *
- * @example
- * ```tsx
- * // Basic usage via createVizelSlashMenuRenderer
- * import { SlashCommand, createVizelSlashMenuRenderer } from '@vizel/react';
- *
- * const editor = useEditor({
- *   extensions: [
- *     SlashCommand.configure({
- *       suggestion: createVizelSlashMenuRenderer(),
- *     }),
- *   ],
- * });
- * ```
+ * DOM scaffolding (listbox container, section grouping, item identity
+ * + index) comes from `@vizel/core`'s `buildVizelSlashMenuSkeleton`;
+ * this component is the React-flavored binding that maps the spec to
+ * JSX. Item rendering (icon + title + description + shortcut) stays in
+ * `VizelSlashMenuItem`, which keeps `role="option"` ownership.
  */
 export function VizelSlashMenu({
   ref,
@@ -70,26 +61,26 @@ export function VizelSlashMenu({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Group items when showGroups is true and there are enough items
-  const groups = useMemo<VizelSlashCommandGroup[]>(() => {
-    if (!showGroups || items.length <= 5) {
-      // Don't group if explicitly disabled or few items (likely search results)
-      return [{ name: "", items }];
-    }
-    return groupVizelSlashCommands(items, groupOrder);
-  }, [items, showGroups, groupOrder]);
+  const spec = useMemo(
+    () =>
+      buildVizelSlashMenuSkeleton(items, selectedIndex, {
+        showGroups,
+        ...(groupOrder && { groupOrder }),
+      }),
+    [items, selectedIndex, showGroups, groupOrder]
+  );
 
-  // Flatten for navigation
-  const flatItems = useMemo(() => groups.flatMap((g) => g.items), [groups]);
+  const flatItemCount = useMemo(
+    () => spec.sections.reduce((sum, section) => sum + section.items.length, 0),
+    [spec]
+  );
 
-  // Trim refs array when items count decreases to prevent stale references
   useEffect(() => {
-    if (itemRefs.current.length > flatItems.length) {
-      itemRefs.current.length = flatItems.length;
+    if (itemRefs.current.length > flatItemCount) {
+      itemRefs.current.length = flatItemCount;
     }
-  }, [flatItems.length]);
+  }, [flatItemCount]);
 
-  // Scroll selected item into view when selection changes
   useEffect(() => {
     const selectedElement = itemRefs.current[selectedIndex];
     if (selectedElement) {
@@ -97,152 +88,96 @@ export function VizelSlashMenu({
     }
   }, [selectedIndex]);
 
-  const selectItem = useCallback(
-    (index: number) => {
-      const item = flatItems[index];
-      if (item) {
-        onSelect(item);
-      }
-    },
-    [flatItems, onSelect]
-  );
-
-  const upHandler = useCallback(() => {
-    setSelectedIndex((index) => (index + flatItems.length - 1) % flatItems.length);
-  }, [flatItems.length]);
-
-  const downHandler = useCallback(() => {
-    setSelectedIndex((index) => (index + 1) % flatItems.length);
-  }, [flatItems.length]);
-
-  const enterHandler = useCallback(() => {
-    selectItem(selectedIndex);
-  }, [selectItem, selectedIndex]);
-
-  // Navigate to next group with Tab
-  const tabHandler = useCallback(() => {
-    if (groups.length <= 1) return;
-
-    let currentGroupIndex = 0;
-    let itemCount = 0;
-    for (let i = 0; i < groups.length; i++) {
-      const group = groups[i];
-      if (!group) continue;
-      if (selectedIndex < itemCount + group.items.length) {
-        currentGroupIndex = i;
-        break;
-      }
-      itemCount += group.items.length;
-    }
-
-    // Move to next group
-    const nextGroupIndex = (currentGroupIndex + 1) % groups.length;
-    let nextIndex = 0;
-    for (let i = 0; i < nextGroupIndex; i++) {
-      const group = groups[i];
-      if (group) {
-        nextIndex += group.items.length;
-      }
-    }
-    setSelectedIndex(nextIndex);
-  }, [groups, selectedIndex]);
-
-  // Reset selection when items change (tracked via groups length)
-  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional dependency on groups to reset selection
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset selection when items change
   useEffect(() => {
     setSelectedIndex(0);
-  }, [groups]);
+  }, [items]);
+
+  const selectItem = useCallback(
+    (index: number) => {
+      const slot = spec.sections.flatMap((s) => s.items).find((s) => s.index === index);
+      if (slot) {
+        onSelect(slot.data.item);
+      }
+    },
+    [spec, onSelect]
+  );
 
   useImperativeHandle(ref, () => ({
     onKeyDown: (event) => {
       if (event.key === "ArrowUp") {
-        upHandler();
+        setSelectedIndex((i) => (i + flatItemCount - 1) % flatItemCount);
         return true;
       }
-
       if (event.key === "ArrowDown") {
-        downHandler();
+        setSelectedIndex((i) => (i + 1) % flatItemCount);
         return true;
       }
-
       if (event.key === "Enter") {
-        enterHandler();
+        selectItem(selectedIndex);
         return true;
       }
-
       if (event.key === "Tab") {
         event.preventDefault();
-        tabHandler();
+        setSelectedIndex(getNextVizelSlashMenuGroupIndex(spec, selectedIndex));
         return true;
       }
-
       return false;
     },
   }));
 
-  if (flatItems.length === 0) {
+  if (spec.sections.length === 0) {
     return (
       <div
         className={`vizel-slash-menu ${className ?? ""}`}
         data-vizel-slash-menu=""
         role="listbox"
-        aria-label="Commands"
+        aria-label={spec.root["aria-label"]}
       >
         {renderEmpty?.() ?? <VizelSlashMenuEmpty />}
       </div>
     );
   }
 
-  // Render with groups
-  let globalIndex = 0;
-
   return (
     <div
       className={`vizel-slash-menu ${className ?? ""}`}
       data-vizel-slash-menu=""
       role="listbox"
-      aria-label="Commands"
+      aria-label={spec.root["aria-label"]}
     >
-      {groups.map((group) => {
-        const groupItems = group.items.map((item) => {
-          const index = globalIndex++;
-          const isSelected = index === selectedIndex;
-          const onClick = () => selectItem(index);
-
-          if (renderItem) {
-            return (
-              <div
-                key={item.id}
-                ref={(el) => {
-                  itemRefs.current[index] = el;
-                }}
-              >
-                {renderItem({ item, isSelected, onClick })}
-              </div>
-            );
-          }
-
+      {spec.sections.map((section) => {
+        const renderedItems = section.items.map((slot) => {
+          const onClick = () => selectItem(slot.index);
+          const content = renderItem ? (
+            renderItem({ item: slot.data.item, isSelected: slot.data.isSelected, onClick })
+          ) : (
+            <VizelSlashMenuItem
+              item={slot.data.item}
+              isSelected={slot.data.isSelected}
+              onClick={onClick}
+            />
+          );
           return (
             <div
-              key={item.id}
+              key={slot.key}
               ref={(el) => {
-                itemRefs.current[index] = el;
+                itemRefs.current[slot.index] = el;
               }}
             >
-              <VizelSlashMenuItem item={item} isSelected={isSelected} onClick={onClick} />
+              {content}
             </div>
           );
         });
 
-        // If no group name, just render items
-        if (!group.name) {
-          return groupItems;
+        if (!section.header) {
+          return renderedItems;
         }
 
         return (
-          <div key={group.name} className="vizel-slash-menu-group" data-vizel-slash-menu-group>
-            <div className="vizel-slash-menu-group-header">{group.name}</div>
-            {groupItems}
+          <div key={section.key} className="vizel-slash-menu-group" data-vizel-slash-menu-group="">
+            <div className="vizel-slash-menu-group-header">{section.header.label}</div>
+            {renderedItems}
           </div>
         );
       })}

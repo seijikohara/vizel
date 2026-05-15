@@ -34,7 +34,7 @@ export interface VizelSlashMenuProps {
 </script>
 
 <script lang="ts">
-import { groupVizelSlashCommands, type VizelSlashCommandGroup } from "@vizel/core";
+import { buildVizelSlashMenuSkeleton, getNextVizelSlashMenuGroupIndex } from "@vizel/core";
 import { tick } from "svelte";
 import VizelSlashMenuItem from "./VizelSlashMenuItem.svelte";
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.svelte";
@@ -53,25 +53,23 @@ let {
 let selectedIndex = $state(0);
 let itemRefs: (HTMLElement | null)[] = $state([]);
 
+const spec = $derived(
+  buildVizelSlashMenuSkeleton(items, selectedIndex, {
+    showGroups,
+    ...(groupOrder && { groupOrder }),
+  })
+);
+
+const flatItemCount = $derived(
+  spec.sections.reduce((sum, section) => sum + section.items.length, 0)
+);
+
 // Clean up itemRefs when items decrease
 $effect(() => {
-  const length = flatItems.length;
-  if (itemRefs.length > length) {
-    itemRefs.length = length;
+  if (itemRefs.length > flatItemCount) {
+    itemRefs.length = flatItemCount;
   }
 });
-
-// Group items when showGroups is true and there are enough items
-const groups = $derived.by<VizelSlashCommandGroup[]>(() => {
-  if (!showGroups || items.length <= 5) {
-    // Don't group if explicitly disabled or few items (likely search results)
-    return [{ name: "", items }];
-  }
-  return groupVizelSlashCommands(items, groupOrder);
-});
-
-// Flatten for navigation
-const flatItems = $derived(groups.flatMap((g) => g.items));
 
 // Reset selection when items change
 $effect(() => {
@@ -91,74 +89,30 @@ $effect(() => {
 });
 
 function selectItem(index: number) {
-  const item = flatItems[index];
-  if (item) {
-    onselect?.(item);
+  const slot = spec.sections.flatMap((section) => section.items).find((s) => s.index === index);
+  if (slot) {
+    onselect?.(slot.data.item);
   }
-}
-
-// Navigate to next group with Tab
-function tabHandler() {
-  if (groups.length <= 1) return;
-
-  let currentGroupIndex = 0;
-  let itemCount = 0;
-  for (let i = 0; i < groups.length; i++) {
-    const group = groups[i];
-    if (!group) continue;
-    if (selectedIndex < itemCount + group.items.length) {
-      currentGroupIndex = i;
-      break;
-    }
-    itemCount += group.items.length;
-  }
-
-  // Move to next group
-  const nextGroupIndex = (currentGroupIndex + 1) % groups.length;
-  let nextIndex = 0;
-  for (let i = 0; i < nextGroupIndex; i++) {
-    const group = groups[i];
-    if (group) {
-      nextIndex += group.items.length;
-    }
-  }
-  selectedIndex = nextIndex;
-}
-
-// Calculate global index for items
-function getGlobalIndex(groupIndex: number, itemIndex: number): number {
-  let index = 0;
-  for (let i = 0; i < groupIndex; i++) {
-    const group = groups[i];
-    if (group) {
-      index += group.items.length;
-    }
-  }
-  return index + itemIndex;
 }
 
 function onKeyDown(event: KeyboardEvent): boolean {
   if (event.key === "ArrowUp") {
-    selectedIndex = (selectedIndex + flatItems.length - 1) % flatItems.length;
+    selectedIndex = (selectedIndex + flatItemCount - 1) % flatItemCount;
     return true;
   }
-
   if (event.key === "ArrowDown") {
-    selectedIndex = (selectedIndex + 1) % flatItems.length;
+    selectedIndex = (selectedIndex + 1) % flatItemCount;
     return true;
   }
-
   if (event.key === "Enter") {
     selectItem(selectedIndex);
     return true;
   }
-
   if (event.key === "Tab") {
     event.preventDefault();
-    tabHandler();
+    selectedIndex = getNextVizelSlashMenuGroupIndex(spec, selectedIndex);
     return true;
   }
-
   return false;
 }
 
@@ -173,54 +127,57 @@ if (ref) {
 }
 </script>
 
-<div class="vizel-slash-menu {className ?? ''}" data-vizel-slash-menu role="listbox" aria-label="Commands">
-  {#if flatItems.length === 0}
+<div
+  class="vizel-slash-menu {className ?? ''}"
+  data-vizel-slash-menu
+  role={spec.root.role}
+  aria-label={spec.root["aria-label"]}
+>
+  {#if spec.sections.length === 0}
     {#if renderEmpty}
       {@render renderEmpty()}
     {:else}
       <VizelSlashMenuEmpty />
     {/if}
   {:else}
-    {#each groups as group, groupIndex (group.name || groupIndex)}
-      {#if group.name}
-        <!-- Group with header -->
+    {#each spec.sections as section (section.key)}
+      {#if section.header}
+        <!-- Section with header -->
         <div class="vizel-slash-menu-group" data-vizel-slash-menu-group>
-          <div class="vizel-slash-menu-group-header">{group.name}</div>
-          {#each group.items as item, itemIndex (item.id)}
-            {@const globalIdx = getGlobalIndex(groupIndex, itemIndex)}
-            <div bind:this={itemRefs[globalIdx]}>
+          <div class="vizel-slash-menu-group-header">{section.header.label}</div>
+          {#each section.items as slot (slot.key)}
+            <div bind:this={itemRefs[slot.index]}>
               {#if renderItem}
                 {@render renderItem({
-                  item,
-                  isSelected: globalIdx === selectedIndex,
-                  onclick: () => selectItem(globalIdx),
+                  item: slot.data.item,
+                  isSelected: slot.data.isSelected,
+                  onclick: () => selectItem(slot.index),
                 })}
               {:else}
                 <VizelSlashMenuItem
-                  {item}
-                  isSelected={globalIdx === selectedIndex}
-                  onclick={() => selectItem(globalIdx)}
+                  item={slot.data.item}
+                  isSelected={slot.data.isSelected}
+                  onclick={() => selectItem(slot.index)}
                 />
               {/if}
             </div>
           {/each}
         </div>
       {:else}
-        <!-- Items without group header -->
-        {#each group.items as item, itemIndex (item.id)}
-          {@const globalIdx = getGlobalIndex(groupIndex, itemIndex)}
-          <div bind:this={itemRefs[globalIdx]}>
+        <!-- Items without section header -->
+        {#each section.items as slot (slot.key)}
+          <div bind:this={itemRefs[slot.index]}>
             {#if renderItem}
               {@render renderItem({
-                item,
-                isSelected: globalIdx === selectedIndex,
-                onclick: () => selectItem(globalIdx),
+                item: slot.data.item,
+                isSelected: slot.data.isSelected,
+                onclick: () => selectItem(slot.index),
               })}
             {:else}
               <VizelSlashMenuItem
-                {item}
-                isSelected={globalIdx === selectedIndex}
-                onclick={() => selectItem(globalIdx)}
+                item={slot.data.item}
+                isSelected={slot.data.isSelected}
+                onclick={() => selectItem(slot.index)}
               />
             {/if}
           </div>
