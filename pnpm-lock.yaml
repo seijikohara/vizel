@@ -16,7 +16,7 @@ importers:
         version: 1.58.2(@types/node@25.7.0)(lightningcss@1.32.0)(sass@1.99.0)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
       '@playwright/experimental-ct-svelte':
         specifier: ~1.58.2
-        version: 1.58.2(@types/node@25.7.0)(lightningcss@1.32.0)(sass@1.99.0)(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
+        version: 1.58.2(@types/node@25.7.0)(lightningcss@1.32.0)(sass@1.99.0)(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
       '@playwright/experimental-ct-vue':
         specifier: ~1.58.2
         version: 1.58.2(@types/node@25.7.0)(lightningcss@1.32.0)(sass@1.99.0)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))(vue@3.5.34(typescript@6.0.3))
@@ -25,7 +25,7 @@ importers:
         version: 1.58.2
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.1.2
-        version: 7.1.2(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
+        version: 7.1.2(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
       '@tiptap/core':
         specifier: ^3.23.1
         version: 3.23.1(@tiptap/pm@3.23.1)
@@ -190,7 +190,7 @@ importers:
         version: 19.2.6(react@19.2.6)
       svelte:
         specifier: ^5.55.5
-        version: 5.55.5
+        version: 5.55.7
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -257,14 +257,14 @@ importers:
         version: link:../../../packages/svelte
       svelte:
         specifier: ^5.55.5
-        version: 5.55.5
+        version: 5.55.7
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: ^1.21.5
         version: 1.21.5
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.1.2
-        version: 7.1.2(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
+        version: 7.1.2(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
       katex:
         specifier: ^0.16.45
         version: 0.16.45
@@ -513,34 +513,34 @@ importers:
     devDependencies:
       '@tiptap/extension-bold':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-code':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-color':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/extension-text-style@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1)))
+        version: 3.23.1(@tiptap/extension-text-style@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4)))
       '@tiptap/extension-highlight':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-italic':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-strike':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-subscript':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
       '@tiptap/extension-superscript':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
       '@tiptap/extension-text-style':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-underline':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
@@ -564,53 +564,53 @@ importers:
     dependencies:
       '@iconify/svelte':
         specifier: ^5.2.1
-        version: 5.2.1(svelte@5.55.5)
+        version: 5.2.1(svelte@5.55.7)
       svelte:
         specifier: ^5
-        version: 5.55.5
+        version: 5.55.7
     devDependencies:
       '@sveltejs/package':
         specifier: ^2.5.7
-        version: 2.5.7(svelte@5.55.5)(typescript@6.0.3)
+        version: 2.5.7(svelte@5.55.7)(typescript@6.0.3)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.1.2
-        version: 7.1.2(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
+        version: 7.1.2(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
       '@tiptap/extension-bold':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-code':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-color':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/extension-text-style@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1)))
+        version: 3.23.1(@tiptap/extension-text-style@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4)))
       '@tiptap/extension-highlight':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-italic':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-strike':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-subscript':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
       '@tiptap/extension-superscript':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
       '@tiptap/extension-text-style':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-underline':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@vizel/core':
         specifier: workspace:^
         version: link:../core
       svelte-check:
         specifier: ^4.4.8
-        version: 4.4.8(picomatch@4.0.4)(svelte@5.55.5)(typescript@6.0.3)
+        version: 4.4.8(picomatch@4.0.4)(svelte@5.55.7)(typescript@6.0.3)
 
   packages/vue:
     dependencies:
@@ -623,34 +623,34 @@ importers:
     devDependencies:
       '@tiptap/extension-bold':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-code':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-color':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/extension-text-style@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1)))
+        version: 3.23.1(@tiptap/extension-text-style@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4)))
       '@tiptap/extension-highlight':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-italic':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-strike':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-subscript':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
       '@tiptap/extension-superscript':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
       '@tiptap/extension-text-style':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@tiptap/extension-underline':
         specifier: ^3.23.1
-        version: 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+        version: 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
       '@vitejs/plugin-vue':
         specifier: ^6.0.6
         version: 6.0.6(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))(vue@3.5.34(typescript@6.0.3))
@@ -1785,6 +1785,11 @@ packages:
     peerDependencies:
       '@tiptap/pm': 3.23.1
 
+  '@tiptap/core@3.23.4':
+    resolution: {integrity: sha512-ni2LWE52bVeSt3L2HVBSmbBw+elc32ATej9C68EyKzN/8vR5ILxFn6RCdDTKm4asmwZyq2jys12dKmBdWMr9QA==}
+    peerDependencies:
+      '@tiptap/pm': 3.23.4
+
   '@tiptap/extension-blockquote@3.23.1':
     resolution: {integrity: sha512-FdVZLZOkL06j3WLXOC2UeX7++Cj3qI2vfohruMJiz4vk1Q5UUH7G4+AykFzjzBJHrdEpkiRUkRpU1KZIWdbluw==}
     peerDependencies:
@@ -2042,6 +2047,9 @@ packages:
 
   '@tiptap/pm@3.23.1':
     resolution: {integrity: sha512-8G+TkNsUHHAAJYREpA6fw+Dw/m2Y3Go4/QMQM8RYepid+wTeE1wSv7sBA/CBrphhYmJSWeTyCPtgQIxnTJXMCA==}
+
+  '@tiptap/pm@3.23.4':
+    resolution: {integrity: sha512-+C5ngcoza47n3MjtjVBqBEBICPC0McdbwzJ+X6SSCviCLoqnSYanv5mIX9HWG0Q4fJ4BkdNM3VibZUxQaTbKyQ==}
 
   '@tiptap/suggestion@3.23.1':
     resolution: {integrity: sha512-4YlkTPo3+tO1WV5t2PvQ2f/ltx7+7qFTNvBskrgv2Yid7HQ8UI/U8rAsuBhAVvSQz+gUOXwKx3m99Y8EcbbacQ==}
@@ -2679,8 +2687,8 @@ packages:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
 
-  devalue@5.8.0:
-    resolution: {integrity: sha512-2zA9pFEsnp7vWBZbXF5JAgAq0fsUIt/1XPbRiAmRV3lp/2C3upzH+sADiyy66aFCihoLEsrQHxNM5w1gIDfsBg==}
+  devalue@5.8.1:
+    resolution: {integrity: sha512-4CXDYRBGqN+57wVJkuXBYmpAVUSg3L6JAQa/DFqm238G73E1wuyc/JhGQJzN7vUf/CMphYau2zXbfWzDR5aTEw==}
 
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
@@ -2718,8 +2726,8 @@ packages:
   esm-env@1.2.2:
     resolution: {integrity: sha512-Epxrv+Nr/CaL4ZcFGPJIYLWFom+YeV1DqMLHJoEd9SYRxNbaFruBwfEX/kkHUJf55j2+TUbmDcmuilbP1TmXHA==}
 
-  esrap@2.2.7:
-    resolution: {integrity: sha512-Dl7o7btn2YXca1VXx+PVl+lKuZdHBm8oCFuckUxqchMvNMdHMJ/qF31wtPaVyWvFYLQePkbXJrirWzbAP6Yamw==}
+  esrap@2.2.8:
+    resolution: {integrity: sha512-MPweq2EvEGj8jwOI7Hgycw/QIHzqA1EbAM8lG7p+FBfZbZq/hQ6h3AMsqnu/djzisH1KVWNzbb7LSgIVtMlPSg==}
     peerDependencies:
       '@typescript-eslint/types': ^8.2.0
     peerDependenciesMeta:
@@ -3403,8 +3411,8 @@ packages:
       svelte: ^3.55 || ^4.0.0-next.0 || ^4.0 || ^5.0.0-next.0
       typescript: ^4.9.4 || ^5.0.0 || ^6.0.0
 
-  svelte@5.55.5:
-    resolution: {integrity: sha512-2uCs/LZ9us+AktdzYJM8OcxQ8qnPS1kpaO7syGT/MgO+6Qr1Ybl+TqPq+97u7PHqmmMlye5ZkoyXONy5mjjAbw==}
+  svelte@5.55.7:
+    resolution: {integrity: sha512-ymI5ykLPwIHW839E053FQbI1G+jnRFJEw3Kv5Y4njixVWywQBx+NUFpkkKyk5LIb36Fg9DVXSYpqiGekLD0hyw==}
     engines: {node: '>=18'}
 
   tabbable@6.4.0:
@@ -4136,10 +4144,10 @@ snapshots:
       '@iconify/types': 2.0.0
       react: 19.2.6
 
-  '@iconify/svelte@5.2.1(svelte@5.55.5)':
+  '@iconify/svelte@5.2.1(svelte@5.55.7)':
     dependencies:
       '@iconify/types': 2.0.0
-      svelte: 5.55.5
+      svelte: 5.55.7
 
   '@iconify/types@2.0.0': {}
 
@@ -4361,10 +4369,10 @@ snapshots:
       - vite
       - yaml
 
-  '@playwright/experimental-ct-svelte@1.58.2(@types/node@25.7.0)(lightningcss@1.32.0)(sass@1.99.0)(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))':
+  '@playwright/experimental-ct-svelte@1.58.2(@types/node@25.7.0)(lightningcss@1.32.0)(sass@1.99.0)(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))':
     dependencies:
       '@playwright/experimental-ct-core': 1.58.2(@types/node@25.7.0)(lightningcss@1.32.0)(sass@1.99.0)
-      '@sveltejs/vite-plugin-svelte': 5.1.1(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
+      '@sveltejs/vite-plugin-svelte': 5.1.1(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -4586,51 +4594,55 @@ snapshots:
     dependencies:
       acorn: 8.16.0
 
-  '@sveltejs/package@2.5.7(svelte@5.55.5)(typescript@6.0.3)':
+  '@sveltejs/package@2.5.7(svelte@5.55.7)(typescript@6.0.3)':
     dependencies:
       chokidar: 5.0.0
       kleur: 4.1.5
       sade: 1.8.1
       semver: 7.8.0
-      svelte: 5.55.5
-      svelte2tsx: 0.7.55(svelte@5.55.5)(typescript@6.0.3)
+      svelte: 5.55.7
+      svelte2tsx: 0.7.55(svelte@5.55.7)(typescript@6.0.3)
     transitivePeerDependencies:
       - typescript
 
-  '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0)))(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))':
+  '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0)))(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte': 5.1.1(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
+      '@sveltejs/vite-plugin-svelte': 5.1.1(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
       debug: 4.4.3
-      svelte: 5.55.5
+      svelte: 5.55.7
       vite: 8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))':
+  '@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte-inspector': 4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0)))(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
+      '@sveltejs/vite-plugin-svelte-inspector': 4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0)))(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
       debug: 4.4.3
       deepmerge: 4.3.1
       kleur: 4.1.5
       magic-string: 0.30.21
-      svelte: 5.55.5
+      svelte: 5.55.7
       vite: 8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0)
       vitefu: 1.1.3(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.5)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))':
+  '@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.7)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))':
     dependencies:
       deepmerge: 4.3.1
       magic-string: 0.30.21
       obug: 2.1.1
-      svelte: 5.55.5
+      svelte: 5.55.7
       vite: 8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0)
       vitefu: 1.1.3(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(sass@1.99.0))
 
   '@tiptap/core@3.23.1(@tiptap/pm@3.23.1)':
     dependencies:
       '@tiptap/pm': 3.23.1
+
+  '@tiptap/core@3.23.4(@tiptap/pm@3.23.4)':
+    dependencies:
+      '@tiptap/pm': 3.23.4
 
   '@tiptap/extension-blockquote@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))':
     dependencies:
@@ -4639,6 +4651,10 @@ snapshots:
   '@tiptap/extension-bold@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))':
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
+
+  '@tiptap/extension-bold@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))':
+    dependencies:
+      '@tiptap/core': 3.23.4(@tiptap/pm@3.23.4)
 
   '@tiptap/extension-bubble-menu@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)':
     dependencies:
@@ -4671,6 +4687,10 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
 
+  '@tiptap/extension-code@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))':
+    dependencies:
+      '@tiptap/core': 3.23.4(@tiptap/pm@3.23.4)
+
   '@tiptap/extension-collaboration-cursor@3.0.0(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(y-prosemirror@1.3.7(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))':
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
@@ -4686,6 +4706,10 @@ snapshots:
   '@tiptap/extension-color@3.23.1(@tiptap/extension-text-style@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1)))':
     dependencies:
       '@tiptap/extension-text-style': 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))
+
+  '@tiptap/extension-color@3.23.1(@tiptap/extension-text-style@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4)))':
+    dependencies:
+      '@tiptap/extension-text-style': 3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
 
   '@tiptap/extension-details@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/extension-text-style@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1)))(@tiptap/pm@3.23.1)':
     dependencies:
@@ -4732,6 +4756,10 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
 
+  '@tiptap/extension-highlight@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))':
+    dependencies:
+      '@tiptap/core': 3.23.4(@tiptap/pm@3.23.4)
+
   '@tiptap/extension-history@3.23.1(@tiptap/extensions@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1))':
     dependencies:
       '@tiptap/extensions': 3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)
@@ -4748,6 +4776,10 @@ snapshots:
   '@tiptap/extension-italic@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))':
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
+
+  '@tiptap/extension-italic@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))':
+    dependencies:
+      '@tiptap/core': 3.23.4(@tiptap/pm@3.23.4)
 
   '@tiptap/extension-link@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)':
     dependencies:
@@ -4795,15 +4827,29 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
 
+  '@tiptap/extension-strike@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))':
+    dependencies:
+      '@tiptap/core': 3.23.4(@tiptap/pm@3.23.4)
+
   '@tiptap/extension-subscript@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)':
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
       '@tiptap/pm': 3.23.1
 
+  '@tiptap/extension-subscript@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)':
+    dependencies:
+      '@tiptap/core': 3.23.4(@tiptap/pm@3.23.4)
+      '@tiptap/pm': 3.23.4
+
   '@tiptap/extension-superscript@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)':
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
       '@tiptap/pm': 3.23.1
+
+  '@tiptap/extension-superscript@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)':
+    dependencies:
+      '@tiptap/core': 3.23.4(@tiptap/pm@3.23.4)
+      '@tiptap/pm': 3.23.4
 
   '@tiptap/extension-table@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)':
     dependencies:
@@ -4822,6 +4868,10 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
 
+  '@tiptap/extension-text-style@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))':
+    dependencies:
+      '@tiptap/core': 3.23.4(@tiptap/pm@3.23.4)
+
   '@tiptap/extension-text@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))':
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
@@ -4833,6 +4883,10 @@ snapshots:
   '@tiptap/extension-underline@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))':
     dependencies:
       '@tiptap/core': 3.23.1(@tiptap/pm@3.23.1)
+
+  '@tiptap/extension-underline@3.23.1(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))':
+    dependencies:
+      '@tiptap/core': 3.23.4(@tiptap/pm@3.23.4)
 
   '@tiptap/extensions@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1)':
     dependencies:
@@ -4846,6 +4900,21 @@ snapshots:
       marked: 17.0.6
 
   '@tiptap/pm@3.23.1':
+    dependencies:
+      prosemirror-changeset: 2.4.1
+      prosemirror-commands: 1.7.1
+      prosemirror-dropcursor: 1.8.2
+      prosemirror-gapcursor: 1.4.1
+      prosemirror-history: 1.5.0
+      prosemirror-keymap: 1.2.3
+      prosemirror-model: 1.25.4
+      prosemirror-schema-list: 1.5.1
+      prosemirror-state: 1.4.4
+      prosemirror-tables: 1.8.5
+      prosemirror-transform: 1.12.0
+      prosemirror-view: 1.41.8
+
+  '@tiptap/pm@3.23.4':
     dependencies:
       prosemirror-changeset: 2.4.1
       prosemirror-commands: 1.7.1
@@ -5534,7 +5603,7 @@ snapshots:
 
   detect-libc@2.1.2: {}
 
-  devalue@5.8.0: {}
+  devalue@5.8.1: {}
 
   devlop@1.1.0:
     dependencies:
@@ -5614,7 +5683,7 @@ snapshots:
 
   esm-env@1.2.2: {}
 
-  esrap@2.2.7:
+  esrap@2.2.8:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
@@ -6335,26 +6404,26 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
-  svelte-check@4.4.8(picomatch@4.0.4)(svelte@5.55.5)(typescript@6.0.3):
+  svelte-check@4.4.8(picomatch@4.0.4)(svelte@5.55.7)(typescript@6.0.3):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       chokidar: 4.0.3
       fdir: 6.5.0(picomatch@4.0.4)
       picocolors: 1.1.1
       sade: 1.8.1
-      svelte: 5.55.5
+      svelte: 5.55.7
       typescript: 6.0.3
     transitivePeerDependencies:
       - picomatch
 
-  svelte2tsx@0.7.55(svelte@5.55.5)(typescript@6.0.3):
+  svelte2tsx@0.7.55(svelte@5.55.7)(typescript@6.0.3):
     dependencies:
       dedent-js: 1.0.1
       scule: 1.3.0
-      svelte: 5.55.5
+      svelte: 5.55.7
       typescript: 6.0.3
 
-  svelte@5.55.5:
+  svelte@5.55.7:
     dependencies:
       '@jridgewell/remapping': 2.3.5
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -6365,9 +6434,9 @@ snapshots:
       aria-query: 5.3.1
       axobject-query: 4.1.0
       clsx: 2.1.1
-      devalue: 5.8.0
+      devalue: 5.8.1
       esm-env: 1.2.2
-      esrap: 2.2.7
+      esrap: 2.2.8
       is-reference: 3.0.3
       locate-character: 3.0.0
       magic-string: 0.30.21
