@@ -11,6 +11,7 @@ import {
 } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import { useLatest } from "../hooks/useLatest.ts";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
 import { VizelBlockMenu } from "./VizelBlockMenu.tsx";
 import { VizelBubbleMenu } from "./VizelBubbleMenu.tsx";
@@ -180,27 +181,18 @@ export function Vizel({
   const isUpdatingFromMarkdownRef = useRef(false);
 
   // Keep refs for every value accessed in the editor's lifecycle callbacks.
-  // `useVizelEditor` reads options once at mount, so without refs each
-  // callback would be frozen to the closure values from the first render —
-  // re-renders that pass a fresh handler would be silently ignored.
-  const markdownRef = useRef(markdown);
-  markdownRef.current = markdown;
-  const onMarkdownChangeRef = useRef(onMarkdownChange);
-  onMarkdownChangeRef.current = onMarkdownChange;
-  const onUpdateRef = useRef(onUpdate);
-  onUpdateRef.current = onUpdate;
-  const onCreateRef = useRef(onCreate);
-  onCreateRef.current = onCreate;
-  const onDestroyRef = useRef(onDestroy);
-  onDestroyRef.current = onDestroy;
-  const onSelectionUpdateRef = useRef(onSelectionUpdate);
-  onSelectionUpdateRef.current = onSelectionUpdate;
-  const onFocusRef = useRef(onFocus);
-  onFocusRef.current = onFocus;
-  const onBlurRef = useRef(onBlur);
-  onBlurRef.current = onBlur;
-  const onErrorRef = useRef(onError);
-  onErrorRef.current = onError;
+  // `useVizelEditor` reads options once at mount, so without `useLatest`
+  // each callback would be frozen to the closure values from the first
+  // render — re-renders that pass a fresh handler would be silently ignored.
+  const markdownRef = useLatest(markdown);
+  const onMarkdownChangeRef = useLatest(onMarkdownChange);
+  const onUpdateRef = useLatest(onUpdate);
+  const onCreateRef = useLatest(onCreate);
+  const onDestroyRef = useLatest(onDestroy);
+  const onSelectionUpdateRef = useLatest(onSelectionUpdate);
+  const onFocusRef = useLatest(onFocus);
+  const onBlurRef = useLatest(onBlur);
+  const onErrorRef = useLatest(onError);
 
   const editor = useVizelEditor({
     ...(initialContent !== undefined && { initialContent }),

@@ -3,6 +3,7 @@ export {
   createVizelSlashMenuRenderer,
   type VizelSuggestionRendererOptions,
 } from "./createVizelSlashMenuRenderer.ts";
+export { useLatest } from "./useLatest.ts";
 export { type UseVizelAutoSaveResult, useVizelAutoSave } from "./useVizelAutoSave.ts";
 export {
   type UseVizelCollaborationResult,
