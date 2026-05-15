@@ -4,7 +4,7 @@ import {
   type SuggestionOptions,
   type SuggestionProps,
   type VizelMentionItem,
-  type VizelSlashMenuRendererOptions,
+  type VizelSuggestionRendererOptions,
 } from "@vizel/core";
 import { type App, createApp, h, ref } from "vue";
 import { VizelMentionMenu } from "../components/index.ts";
@@ -32,7 +32,7 @@ interface VizelMentionMenuRef {
  * ```
  */
 export function createVizelMentionMenuRenderer(
-  options: VizelSlashMenuRendererOptions = {}
+  options: VizelSuggestionRendererOptions = {}
 ): Partial<SuggestionOptions<VizelMentionItem>> {
   return {
     render: () => {

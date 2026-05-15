@@ -4,12 +4,12 @@ import {
   type SuggestionOptions,
   type SuggestionProps,
   type VizelSlashCommandItem,
-  type VizelSlashMenuRendererOptions,
+  type VizelSuggestionRendererOptions,
 } from "@vizel/core";
 import { type App, createApp, h, ref } from "vue";
 import { VizelSlashMenu } from "../components/index.ts";
 
-export type { VizelSlashMenuRendererOptions };
+export type { VizelSuggestionRendererOptions };
 
 interface VizelSlashMenuRef {
   onKeyDown: (event: KeyboardEvent) => boolean;
@@ -34,7 +34,7 @@ interface VizelSlashMenuRef {
  * ```
  */
 export function createVizelSlashMenuRenderer(
-  options: VizelSlashMenuRendererOptions = {}
+  options: VizelSuggestionRendererOptions = {}
 ): Partial<SuggestionOptions<VizelSlashCommandItem>> {
   return {
     render: () => {

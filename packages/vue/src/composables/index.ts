@@ -1,7 +1,7 @@
 export { createVizelMentionMenuRenderer } from "./createVizelMentionMenuRenderer.ts";
 export {
   createVizelSlashMenuRenderer,
-  type VizelSlashMenuRendererOptions,
+  type VizelSuggestionRendererOptions,
 } from "./createVizelSlashMenuRenderer.ts";
 export { type UseVizelAutoSaveResult, useVizelAutoSave } from "./useVizelAutoSave.ts";
 export {

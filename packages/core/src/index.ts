@@ -354,6 +354,7 @@ export type {
   VizelMarkdownSyncResult,
   VizelSlashCommandOptions,
   VizelSlashMenuRendererOptions,
+  VizelSuggestionRendererOptions,
 } from "./types.ts";
 // =============================================================================
 // Utilities

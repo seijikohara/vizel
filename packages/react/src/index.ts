@@ -119,5 +119,5 @@ export {
   useVizelTheme,
   useVizelThemeSafe,
   useVizelVersionHistory,
-  type VizelSlashMenuRendererOptions,
+  type VizelSuggestionRendererOptions,
 } from "./hooks/index.ts";

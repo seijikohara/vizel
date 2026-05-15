@@ -4,12 +4,12 @@ import {
   type SuggestionOptions,
   type SuggestionProps,
   type VizelMentionItem,
-  type VizelSlashMenuRendererOptions,
+  type VizelSuggestionRendererOptions,
 } from "@vizel/core";
 import { mount, unmount } from "svelte";
 import VizelMentionMenu, { type VizelMentionMenuRef } from "../components/VizelMentionMenu.svelte";
 
-export type { VizelSlashMenuRendererOptions };
+export type { VizelSuggestionRendererOptions };
 
 /**
  * Creates a suggestion render configuration for the Mention extension.
@@ -34,7 +34,7 @@ export type { VizelSlashMenuRendererOptions };
  * ```
  */
 export function createVizelMentionMenuRenderer(
-  options: VizelSlashMenuRendererOptions = {}
+  options: VizelSuggestionRendererOptions = {}
 ): Partial<SuggestionOptions<VizelMentionItem>> {
   return {
     render: () => {

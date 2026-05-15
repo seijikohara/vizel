@@ -4,12 +4,12 @@ import {
   type SuggestionOptions,
   type SuggestionProps,
   type VizelSlashCommandItem,
-  type VizelSlashMenuRendererOptions,
+  type VizelSuggestionRendererOptions,
 } from "@vizel/core";
 import { mount, unmount } from "svelte";
 import VizelSlashMenu, { type VizelSlashMenuRef } from "../components/VizelSlashMenu.svelte";
 
-export type { VizelSlashMenuRendererOptions };
+export type { VizelSuggestionRendererOptions };
 
 /**
  * Creates a suggestion render configuration for the SlashCommand extension.
@@ -34,7 +34,7 @@ export type { VizelSlashMenuRendererOptions };
  * ```
  */
 export function createVizelSlashMenuRenderer(
-  options: VizelSlashMenuRendererOptions = {}
+  options: VizelSuggestionRendererOptions = {}
 ): Partial<SuggestionOptions<VizelSlashCommandItem>> {
   return {
     render: () => {
