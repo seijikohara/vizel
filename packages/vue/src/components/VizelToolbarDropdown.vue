@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Editor, VizelToolbarDropdownAction } from "@vizel/core";
-import { formatVizelTooltip } from "@vizel/core";
+import { buildVizelToolbarDropdownSkeleton, formatVizelTooltip } from "@vizel/core";
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -17,9 +17,9 @@ const focusedIndex = ref(0);
 const containerRef = ref<HTMLDivElement | null>(null);
 const triggerRef = ref<HTMLButtonElement | null>(null);
 
-const activeOption = computed(() => props.dropdown.getActiveOption?.(props.editor));
-const triggerIcon = computed(() => activeOption.value?.icon ?? props.dropdown.icon);
-const triggerLabel = computed(() => activeOption.value?.label ?? props.dropdown.label);
+const spec = computed(() =>
+  buildVizelToolbarDropdownSkeleton(props.dropdown, props.editor, isOpen.value, focusedIndex.value)
+);
 
 function close() {
   isOpen.value = false;
@@ -118,13 +118,13 @@ onBeforeUnmount(() => {
       ref="triggerRef"
       type="button"
       class="vizel-toolbar-dropdown-trigger"
-      aria-haspopup="listbox"
-      :aria-expanded="isOpen"
-      :title="triggerLabel"
+      :aria-haspopup="spec.trigger.attrs['aria-haspopup']"
+      :aria-expanded="spec.trigger.attrs['aria-expanded']"
+      :title="spec.trigger.label"
       @click="toggle"
       @keydown="handleTriggerKeyDown"
     >
-      <VizelIcon :name="triggerIcon" />
+      <VizelIcon :name="spec.trigger.iconName" />
       <span class="vizel-toolbar-dropdown-chevron">
         <VizelIcon name="chevronDown" />
       </span>
@@ -134,27 +134,29 @@ onBeforeUnmount(() => {
       v-if="isOpen"
       class="vizel-toolbar-dropdown-popover"
       role="listbox"
-      :aria-label="props.dropdown.label"
-      :aria-activedescendant="`vizel-dropdown-${props.dropdown.id}-${props.dropdown.options[focusedIndex]?.id}`"
-      tabindex="0"
+      :aria-label="spec.popover.root['aria-label']"
+      :aria-activedescendant="spec.popover.root['aria-activedescendant']"
+      :tabindex="spec.popover.root.tabIndex"
       @keydown="handleListKeyDown"
     >
-      <button
-        v-for="(option, index) in props.dropdown.options"
-        :id="`vizel-dropdown-${props.dropdown.id}-${option.id}`"
-        :key="option.id"
-        type="button"
-        role="option"
-        :aria-selected="option.isActive(props.editor)"
-        :class="['vizel-toolbar-dropdown-option', option.isActive(props.editor) && 'is-active', index === focusedIndex && 'is-focused']"
-        :disabled="!option.isEnabled(props.editor)"
-        :title="formatVizelTooltip(option.label, option.shortcut)"
-        tabindex="-1"
-        @click="handleOptionClick(option)"
-      >
-        <VizelIcon :name="option.icon" />
-        <span>{{ option.label }}</span>
-      </button>
+      <template v-for="section in spec.popover.sections" :key="section.key">
+        <button
+          v-for="slot in section.items"
+          :id="slot.attrs.id"
+          :key="slot.key"
+          type="button"
+          role="option"
+          :aria-selected="slot.attrs['aria-selected']"
+          :class="['vizel-toolbar-dropdown-option', slot.data.isActive && 'is-active', slot.data.isFocused && 'is-focused']"
+          :disabled="!slot.data.isEnabled"
+          :title="formatVizelTooltip(slot.data.option.label, slot.data.option.shortcut)"
+          :tabindex="slot.attrs.tabIndex"
+          @click="handleOptionClick(slot.data.option)"
+        >
+          <VizelIcon :name="slot.data.option.icon" />
+          <span>{{ slot.data.option.label }}</span>
+        </button>
+      </template>
     </div>
   </div>
 </template>

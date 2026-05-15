@@ -15,6 +15,12 @@ export {
   type VizelSlashItemView,
   type VizelSlashMenuSkeletonOptions,
 } from "./slash-menu.ts";
+export {
+  buildVizelToolbarDropdownSkeleton,
+  type VizelToolbarDropdownItemView,
+  type VizelToolbarDropdownSpec,
+  type VizelToolbarDropdownTriggerSpec,
+} from "./toolbar-dropdown.ts";
 export type {
   VizelMenuItemAttrs,
   VizelMenuItemSpec,

@@ -313,6 +313,7 @@ export {
   buildVizelBlockMenuSkeleton,
   buildVizelMentionMenuSkeleton,
   buildVizelSlashMenuSkeleton,
+  buildVizelToolbarDropdownSkeleton,
   getNextVizelSlashMenuGroupIndex,
   type VizelBlockMenuItemView,
   type VizelBlockMenuSpec,
@@ -326,6 +327,9 @@ export {
   type VizelMenuSpec,
   type VizelSlashItemView,
   type VizelSlashMenuSkeletonOptions,
+  type VizelToolbarDropdownItemView,
+  type VizelToolbarDropdownSpec,
+  type VizelToolbarDropdownTriggerSpec,
 } from "./skeletons/index.ts";
 // =============================================================================
 // Theme
