@@ -305,6 +305,19 @@ export {
   VizelPluginManager,
   validateVizelPlugin,
 } from "./plugin-system.ts";
+
+// =============================================================================
+// UI Skeletons
+// =============================================================================
+export {
+  buildVizelMentionMenuSkeleton,
+  type VizelMentionItemView,
+  type VizelMenuItemAttrs,
+  type VizelMenuItemSpec,
+  type VizelMenuRootAttrs,
+  type VizelMenuSectionSpec,
+  type VizelMenuSpec,
+} from "./skeletons/index.ts";
 // =============================================================================
 // Theme
 // =============================================================================

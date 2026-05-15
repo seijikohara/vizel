@@ -24,7 +24,7 @@ export interface VizelMentionMenuProps {
 </script>
 
 <script lang="ts">
-import { resolveVizelListNavigation } from "@vizel/core";
+import { buildVizelMentionMenuSkeleton, resolveVizelListNavigation } from "@vizel/core";
 import { tick } from "svelte";
 
 let {
@@ -37,6 +37,9 @@ let {
 
 let selectedIndex = $state(0);
 let itemRefs: (HTMLElement | null)[] = $state([]);
+
+const spec = $derived(buildVizelMentionMenuSkeleton(items, selectedIndex, locale));
+const slots = $derived(spec.sections.flatMap((section) => section.items));
 
 $effect(() => {
   if (itemRefs.length > items.length) {
@@ -94,35 +97,36 @@ if (ref) {
 <div
   class="vizel-mention-menu {className ?? ''}"
   data-vizel-mention-menu
-  role="listbox"
-  aria-label={locale?.mentionMenu?.ariaLabel ?? "Mentions"}
-  aria-activedescendant={items[selectedIndex]?.id ? `vizel-mention-${items[selectedIndex]?.id}` : undefined}
+  role={spec.root.role}
+  aria-label={spec.root["aria-label"]}
+  aria-activedescendant={spec.root["aria-activedescendant"]}
 >
-  {#if items.length === 0}
+  {#if spec.sections.length === 0}
     <div class="vizel-mention-menu-empty">{locale?.mentionMenu?.noResults ?? "No results"}</div>
   {:else}
-    {#each items as item, index (item.id)}
+    {#each slots as slot (slot.key)}
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
       <div
-        id="vizel-mention-{item.id}"
-        bind:this={itemRefs[index]}
-        class="vizel-mention-menu-item {index === selectedIndex ? 'is-selected' : ''}"
-        role="option"
-        aria-selected={index === selectedIndex}
-        onclick={() => selectItem(index)}
-        onkeydown={(e) => { if (e.key === "Enter") selectItem(index); }}
-        tabindex={-1}
+        id={slot.attrs.id}
+        bind:this={itemRefs[slot.index]}
+        class="vizel-mention-menu-item {slot.data.isSelected ? 'is-selected' : ''}"
+        role={slot.attrs.role}
+        aria-selected={slot.attrs["aria-selected"]}
+        onclick={() => selectItem(slot.index)}
+        onkeydown={(e) => { if (e.key === "Enter") selectItem(slot.index); }}
+        tabindex={slot.attrs.tabIndex}
       >
         <div class="vizel-mention-menu-item-avatar">
-          {#if item.avatar}
-            <img src={item.avatar} alt={item.label} />
+          {#if slot.data.item.avatar}
+            <img src={slot.data.item.avatar} alt={slot.data.item.label} />
           {:else}
-            {item.label.charAt(0).toUpperCase()}
+            {slot.data.item.label.charAt(0).toUpperCase()}
           {/if}
         </div>
         <div class="vizel-mention-menu-item-content">
-          <div class="vizel-mention-menu-item-label">{item.label}</div>
-          {#if item.description}
-            <div class="vizel-mention-menu-item-description">{item.description}</div>
+          <div class="vizel-mention-menu-item-label">{slot.data.item.label}</div>
+          {#if slot.data.item.description}
+            <div class="vizel-mention-menu-item-description">{slot.data.item.description}</div>
           {/if}
         </div>
       </div>

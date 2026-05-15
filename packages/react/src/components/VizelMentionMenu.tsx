@@ -1,6 +1,11 @@
-import { resolveVizelListNavigation, type VizelLocale, type VizelMentionItem } from "@vizel/core";
+import {
+  buildVizelMentionMenuSkeleton,
+  resolveVizelListNavigation,
+  type VizelLocale,
+  type VizelMentionItem,
+} from "@vizel/core";
 import type { ReactNode, Ref } from "react";
-import { useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 
 export interface VizelMentionMenuRef {
   /**
@@ -27,7 +32,11 @@ export interface VizelMentionMenuProps {
 
 /**
  * Mention autocomplete menu component.
- * Displays a list of mention suggestions with keyboard navigation.
+ *
+ * The DOM structure and ARIA wiring come from `@vizel/core`'s
+ * `buildVizelMentionMenuSkeleton`; this component is the React-flavored
+ * binding that maps the spec to JSX. Item rendering (avatar + label +
+ * description) is React-specific and stays here.
  */
 export function VizelMentionMenu({
   ref,
@@ -67,14 +76,10 @@ export function VizelMentionMenu({
     [items, onSelect]
   );
 
-  const enterHandler = useCallback(() => {
-    selectItem(selectedIndex);
-  }, [selectItem, selectedIndex]);
-
   useImperativeHandle(ref, () => ({
     onKeyDown: (event) => {
       if (event.key === "Enter") {
-        enterHandler();
+        selectItem(selectedIndex);
         return true;
       }
       const next = resolveVizelListNavigation(event.key, selectedIndex, items.length);
@@ -84,68 +89,71 @@ export function VizelMentionMenu({
     },
   }));
 
-  const ariaLabel = locale?.mentionMenu?.ariaLabel ?? "Mentions";
-  const noResultsText = locale?.mentionMenu?.noResults ?? "No results";
+  const spec = useMemo(
+    () => buildVizelMentionMenuSkeleton(items, selectedIndex, locale),
+    [items, selectedIndex, locale]
+  );
 
-  if (items.length === 0) {
+  if (spec.sections.length === 0) {
     return (
       <div
         className={`vizel-mention-menu ${className ?? ""}`}
         data-vizel-mention-menu=""
         role="listbox"
-        aria-label={ariaLabel}
+        aria-label={spec.root["aria-label"]}
       >
-        <div className="vizel-mention-menu-empty">{noResultsText}</div>
+        <div className="vizel-mention-menu-empty">
+          {locale?.mentionMenu?.noResults ?? "No results"}
+        </div>
       </div>
     );
   }
-
-  const activeOptionId = items[selectedIndex]
-    ? `vizel-mention-${items[selectedIndex].id}`
-    : undefined;
 
   return (
     <div
       className={`vizel-mention-menu ${className ?? ""}`}
       data-vizel-mention-menu=""
       role="listbox"
-      aria-label={ariaLabel}
-      {...(activeOptionId && { "aria-activedescendant": activeOptionId })}
+      aria-label={spec.root["aria-label"]}
+      {...(spec.root["aria-activedescendant"] && {
+        "aria-activedescendant": spec.root["aria-activedescendant"],
+      })}
     >
-      {items.map((item, index) => {
-        const isSelected = index === selectedIndex;
-        return (
+      {spec.sections.flatMap((section) =>
+        section.items.map((slot) => (
           <div
-            key={item.id}
-            id={`vizel-mention-${item.id}`}
+            key={slot.key}
+            id={slot.attrs.id}
             ref={(el) => {
-              itemRefs.current[index] = el;
+              itemRefs.current[slot.index] = el;
             }}
-            className={`vizel-mention-menu-item ${isSelected ? "is-selected" : ""}`}
-            onClick={() => selectItem(index)}
+            className={`vizel-mention-menu-item ${slot.data.isSelected ? "is-selected" : ""}`}
+            onClick={() => selectItem(slot.index)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") selectItem(index);
+              if (e.key === "Enter") selectItem(slot.index);
             }}
-            tabIndex={-1}
+            tabIndex={slot.attrs.tabIndex}
             role="option"
-            aria-selected={isSelected}
+            aria-selected={slot.attrs["aria-selected"]}
           >
             <div className="vizel-mention-menu-item-avatar">
-              {item.avatar ? (
-                <img src={item.avatar} alt={item.label} />
+              {slot.data.item.avatar ? (
+                <img src={slot.data.item.avatar} alt={slot.data.item.label} />
               ) : (
-                item.label.charAt(0).toUpperCase()
+                slot.data.item.label.charAt(0).toUpperCase()
               )}
             </div>
             <div className="vizel-mention-menu-item-content">
-              <div className="vizel-mention-menu-item-label">{item.label}</div>
-              {item.description && (
-                <div className="vizel-mention-menu-item-description">{item.description}</div>
+              <div className="vizel-mention-menu-item-label">{slot.data.item.label}</div>
+              {slot.data.item.description && (
+                <div className="vizel-mention-menu-item-description">
+                  {slot.data.item.description}
+                </div>
               )}
             </div>
           </div>
-        );
-      })}
+        ))
+      )}
     </div>
   );
 }

@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { resolveVizelListNavigation, type VizelLocale, type VizelMentionItem } from "@vizel/core";
+import {
+  buildVizelMentionMenuSkeleton,
+  resolveVizelListNavigation,
+  type VizelLocale,
+  type VizelMentionItem,
+} from "@vizel/core";
 import { computed, nextTick, ref, watch } from "vue";
 
 export interface VizelMentionMenuRef {
@@ -22,10 +27,11 @@ const emit = defineEmits<{
 const selectedIndex = ref(0);
 const itemRefs = ref<(HTMLElement | null)[]>([]);
 
-const activeOptionId = computed(() => {
-  const item = props.items[selectedIndex.value];
-  return item ? `vizel-mention-${item.id}` : undefined;
-});
+const spec = computed(() =>
+  buildVizelMentionMenuSkeleton(props.items, selectedIndex.value, props.locale)
+);
+
+const slots = computed(() => spec.value.sections.flatMap((section) => section.items));
 
 watch(
   () => props.items,
@@ -70,34 +76,34 @@ defineExpose<VizelMentionMenuRef>({ onKeyDown });
   <div
     :class="['vizel-mention-menu', props.class]"
     data-vizel-mention-menu
-    role="listbox"
-    :aria-label="props.locale?.mentionMenu?.ariaLabel ?? 'Mentions'"
-    :aria-activedescendant="activeOptionId"
+    :role="spec.root.role"
+    :aria-label="spec.root['aria-label']"
+    :aria-activedescendant="spec.root['aria-activedescendant']"
   >
-    <div v-if="items.length === 0" class="vizel-mention-menu-empty">
+    <div v-if="spec.sections.length === 0" class="vizel-mention-menu-empty">
       {{ props.locale?.mentionMenu?.noResults ?? 'No results' }}
     </div>
     <template v-else>
       <div
-        v-for="(item, index) in items"
-        :key="item.id"
-        :id="`vizel-mention-${item.id}`"
-        :ref="(el) => { itemRefs[index] = el as HTMLElement | null }"
-        :class="['vizel-mention-menu-item', { 'is-selected': index === selectedIndex }]"
-        role="option"
-        :aria-selected="index === selectedIndex"
-        :tabindex="-1"
-        @click="selectItem(index)"
-        @keydown.enter="selectItem(index)"
+        v-for="slot in slots"
+        :key="slot.key"
+        :id="slot.attrs.id"
+        :ref="(el) => { itemRefs[slot.index] = el as HTMLElement | null }"
+        :class="['vizel-mention-menu-item', { 'is-selected': slot.data.isSelected }]"
+        :role="slot.attrs.role"
+        :aria-selected="slot.attrs['aria-selected']"
+        :tabindex="slot.attrs.tabIndex"
+        @click="selectItem(slot.index)"
+        @keydown.enter="selectItem(slot.index)"
       >
         <div class="vizel-mention-menu-item-avatar">
-          <img v-if="item.avatar" :src="item.avatar" :alt="item.label" />
-          <template v-else>{{ item.label.charAt(0).toUpperCase() }}</template>
+          <img v-if="slot.data.item.avatar" :src="slot.data.item.avatar" :alt="slot.data.item.label" />
+          <template v-else>{{ slot.data.item.label.charAt(0).toUpperCase() }}</template>
         </div>
         <div class="vizel-mention-menu-item-content">
-          <div class="vizel-mention-menu-item-label">{{ item.label }}</div>
-          <div v-if="item.description" class="vizel-mention-menu-item-description">
-            {{ item.description }}
+          <div class="vizel-mention-menu-item-label">{{ slot.data.item.label }}</div>
+          <div v-if="slot.data.item.description" class="vizel-mention-menu-item-description">
+            {{ slot.data.item.description }}
           </div>
         </div>
       </div>
