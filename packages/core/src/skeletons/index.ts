@@ -1,4 +1,11 @@
 export {
+  buildVizelBlockMenuSkeleton,
+  type VizelBlockMenuItemView,
+  type VizelBlockMenuSpec,
+  type VizelBlockMenuSubmenuTriggerSpec,
+  type VizelBlockMenuTurnIntoItemView,
+} from "./block-menu.ts";
+export {
   buildVizelMentionMenuSkeleton,
   type VizelMentionItemView,
 } from "./mention-menu.ts";

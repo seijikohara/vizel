@@ -42,6 +42,16 @@ export interface VizelMenuItemAttrs {
    * non-activatable).
    */
   "aria-disabled"?: boolean;
+  /**
+   * Marks a menuitem that opens a popup (submenu). The value names the
+   * popup's role; for nested menus this is typically `"menu"`.
+   */
+  "aria-haspopup"?: "menu" | "true";
+  /**
+   * Whether the popup associated with this item is currently open.
+   * Set together with `aria-haspopup`.
+   */
+  "aria-expanded"?: boolean;
   /** Stable per-option id matching the root's `aria-activedescendant`. */
   id?: string;
   /** Item tabIndex; usually `-1` so the root owns keyboard focus. */

@@ -310,9 +310,14 @@ export {
 // UI Skeletons
 // =============================================================================
 export {
+  buildVizelBlockMenuSkeleton,
   buildVizelMentionMenuSkeleton,
   buildVizelSlashMenuSkeleton,
   getNextVizelSlashMenuGroupIndex,
+  type VizelBlockMenuItemView,
+  type VizelBlockMenuSpec,
+  type VizelBlockMenuSubmenuTriggerSpec,
+  type VizelBlockMenuTurnIntoItemView,
   type VizelMentionItemView,
   type VizelMenuItemAttrs,
   type VizelMenuItemSpec,
