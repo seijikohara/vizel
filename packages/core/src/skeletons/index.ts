@@ -10,6 +10,12 @@ export {
   type VizelMentionItemView,
 } from "./mention-menu.ts";
 export {
+  buildVizelNodeSelectorSkeleton,
+  type VizelNodeSelectorItemView,
+  type VizelNodeSelectorSpec,
+  type VizelNodeSelectorTriggerSpec,
+} from "./node-selector.ts";
+export {
   buildVizelSlashMenuSkeleton,
   getNextVizelSlashMenuGroupIndex,
   type VizelSlashItemView,
