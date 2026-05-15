@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import {
+  buildVizelBlockMenuSkeleton,
   clampMenuPosition,
   createVizelBlockMenuActions,
   createVizelDismissibleController,
   createVizelNodeTypes,
   type Editor,
   getVizelTurnIntoOptions,
-  groupVizelBlockMenuActions,
   shouldFlipSubmenu,
   VIZEL_BLOCK_MENU_EVENT,
   type VizelBlockMenuAction,
@@ -64,12 +64,17 @@ const submenuFlipped = ref(false);
 const menuRef = ref<HTMLDivElement | null>(null);
 const submenuRef = ref<HTMLDivElement | null>(null);
 
-const groups = computed(() =>
-  menuState.value ? groupVizelBlockMenuActions(effectiveActions.value) : []
-);
-
 const turnIntoOptions = computed(() =>
   menuState.value ? getVizelTurnIntoOptions(menuState.value.editor, effectiveNodeTypes.value) : []
+);
+
+const spec = computed(() =>
+  buildVizelBlockMenuSkeleton(
+    effectiveActions.value,
+    turnIntoOptions.value,
+    showTurnInto.value,
+    props.locale
+  )
 );
 
 function close() {
@@ -96,9 +101,6 @@ function handleTurnInto(nodeType: VizelNodeTypeOption) {
 function handleOpen(e: Event) {
   if (!(e instanceof CustomEvent)) return;
   const detail = e.detail as VizelBlockMenuOpenDetail;
-  // When this menu is bound to an editor (via prop or VizelProvider
-  // context), ignore events from any other editor on the page. This
-  // prevents sibling editors from cross-triggering each other's menus.
   if (boundEditor.value && detail.editor !== boundEditor.value) return;
   menuState.value = {
     ...detail,
@@ -107,7 +109,6 @@ function handleOpen(e: Event) {
   };
   showTurnInto.value = false;
 
-  // Clamp menu position to viewport after Vue renders
   void nextTick(() => {
     const el = menuRef.value;
     if (!(el && menuState.value)) return;
@@ -148,7 +149,6 @@ function handleMenuKeyDown(e: KeyboardEvent) {
   }
 }
 
-// Focus first menuitem when menu opens
 watch(menuState, (state) => {
   if (state) {
     void nextTick(() => {
@@ -160,7 +160,6 @@ watch(menuState, (state) => {
   }
 });
 
-// Detect whether the submenu should flip to the left side
 watch(showTurnInto, (isOpen) => {
   if (!(isOpen && menuRef.value)) {
     submenuFlipped.value = false;
@@ -174,9 +173,6 @@ watch(showTurnInto, (isOpen) => {
   });
 });
 
-// Manage outside-click + Escape dismissal declaratively through the shared
-// `createVizelDismissibleController` helper. Cleanup runs automatically
-// when the menu closes (via the `onCleanup` argument) and on unmount.
 watch(
   menuState,
   (state, _prev, onCleanup) => {
@@ -205,28 +201,28 @@ onBeforeUnmount(() => {
     ref="menuRef"
     :class="['vizel-block-menu', $props.class]"
     :style="{ left: menuState.x + 'px', top: menuState.y + 'px' }"
-    role="menu"
-    :aria-label="props.locale?.blockMenu.label ?? 'Block menu'"
+    :role="spec.root.role"
+    :aria-label="spec.root['aria-label']"
     data-vizel-block-menu
-    tabindex="-1"
+    :tabindex="spec.root.tabIndex"
     @keydown="handleMenuKeyDown"
   >
-    <template v-for="(group, groupIndex) in groups" :key="groupIndex">
-      <div v-if="groupIndex > 0" class="vizel-block-menu-divider" />
+    <template v-for="(section, sectionIndex) in spec.sections" :key="section.key">
+      <div v-if="sectionIndex > 0" class="vizel-block-menu-divider" />
       <button
-        v-for="action in group"
-        :key="action.id"
+        v-for="slot in section.items"
+        :key="slot.key"
         type="button"
-        :class="['vizel-block-menu-item', { 'is-destructive': action.id === 'delete' }]"
-        role="menuitem"
-        :disabled="action.isEnabled ? !action.isEnabled(menuState.editor, menuState.node) : false"
-        @click="handleAction(action)"
+        :class="['vizel-block-menu-item', { 'is-destructive': slot.data.isDestructive }]"
+        :role="slot.attrs.role"
+        :disabled="slot.data.action.isEnabled ? !slot.data.action.isEnabled(menuState.editor, menuState.node) : false"
+        @click="handleAction(slot.data.action)"
       >
         <span class="vizel-block-menu-item-icon">
-          <VizelIcon :name="action.icon" />
+          <VizelIcon :name="slot.data.action.icon" />
         </span>
-        <span class="vizel-block-menu-item-label">{{ action.label }}</span>
-        <span v-if="action.shortcut" class="vizel-block-menu-item-shortcut">{{ action.shortcut }}</span>
+        <span class="vizel-block-menu-item-label">{{ slot.data.action.label }}</span>
+        <span v-if="slot.data.action.shortcut" class="vizel-block-menu-item-shortcut">{{ slot.data.action.shortcut }}</span>
       </button>
     </template>
 
@@ -235,39 +231,41 @@ onBeforeUnmount(() => {
     <button
       type="button"
       class="vizel-block-menu-item vizel-block-menu-submenu-trigger"
-      role="menuitem"
-      aria-haspopup="menu"
-      :aria-expanded="showTurnInto"
+      :role="spec.submenuTrigger.attrs.role"
+      :aria-haspopup="spec.submenuTrigger.attrs['aria-haspopup']"
+      :aria-expanded="spec.submenuTrigger.attrs['aria-expanded']"
       @mouseenter="showTurnInto = true"
       @click="showTurnInto = !showTurnInto"
     >
       <span class="vizel-block-menu-item-icon">
-        <VizelIcon name="arrowRightLeft" />
+        <VizelIcon :name="spec.submenuTrigger.iconName" />
       </span>
-      <span class="vizel-block-menu-item-label">{{ props.locale?.blockMenu.turnInto ?? 'Turn into' }}</span>
+      <span class="vizel-block-menu-item-label">{{ spec.submenuTrigger.label }}</span>
     </button>
 
     <!-- Turn into submenu -->
     <div
-      v-if="showTurnInto && turnIntoOptions.length > 0"
+      v-if="showTurnInto && spec.submenu.sections.length > 0"
       ref="submenuRef"
       :class="['vizel-block-menu-submenu', { 'vizel-block-menu-submenu--left': submenuFlipped }]"
-      role="menu"
-      :aria-label="props.locale?.blockMenu.turnInto ?? 'Turn into'"
+      :role="spec.submenu.root.role"
+      :aria-label="spec.submenu.root['aria-label']"
     >
-      <button
-        v-for="nodeType in turnIntoOptions"
-        :key="nodeType.name"
-        type="button"
-        class="vizel-block-menu-item"
-        role="menuitem"
-        @click="handleTurnInto(nodeType)"
-      >
-        <span class="vizel-block-menu-item-icon">
-          <VizelIcon :name="nodeType.icon" />
-        </span>
-        <span class="vizel-block-menu-item-label">{{ nodeType.label }}</span>
-      </button>
+      <template v-for="section in spec.submenu.sections" :key="section.key">
+        <button
+          v-for="slot in section.items"
+          :key="slot.key"
+          type="button"
+          class="vizel-block-menu-item"
+          :role="slot.attrs.role"
+          @click="handleTurnInto(slot.data.nodeType)"
+        >
+          <span class="vizel-block-menu-item-icon">
+            <VizelIcon :name="slot.data.nodeType.icon" />
+          </span>
+          <span class="vizel-block-menu-item-label">{{ slot.data.nodeType.label }}</span>
+        </button>
+      </template>
     </div>
   </div>
 </template>
