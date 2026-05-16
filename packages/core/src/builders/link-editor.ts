@@ -53,7 +53,7 @@ export function resolveVizelLinkEditorLabels(
  * component recomputes this whenever `url` (or the editor selection)
  * changes, then drives conditional rendering from the boolean flags.
  */
-export interface VizelLinkEditorViewState {
+export interface VizelLinkEditorSpec {
   /** Initial URL extracted from the current link mark (empty if none). */
   initialUrl: string;
   /** Initial open-in-new-tab flag derived from `target === "_blank"`. */
@@ -77,11 +77,11 @@ export interface VizelLinkEditorViewState {
  * @param url          Current value of the URL input (may be untrimmed).
  * @param enableEmbed  Whether the consumer wants the embed toggle.
  */
-export function buildVizelLinkEditorViewState(
+export function buildVizelLinkEditorSpec(
   editor: Editor,
   url: string,
   enableEmbed: boolean
-): VizelLinkEditorViewState {
+): VizelLinkEditorSpec {
   const linkAttrs = editor.getAttributes("link");
   const initialUrl = (linkAttrs.href as string | undefined) ?? "";
   const initialOpenInNewTab = linkAttrs.target === "_blank";

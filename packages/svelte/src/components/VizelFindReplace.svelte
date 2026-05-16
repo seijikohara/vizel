@@ -15,7 +15,7 @@ export interface VizelFindReplaceProps {
 
 <script lang="ts">
 import {
-  buildVizelFindReplaceViewState,
+  buildVizelFindReplaceSpec,
   getVizelFindReplaceState,
   resolveVizelFindReplaceLabels,
   type VizelFindReplaceState,
@@ -41,7 +41,7 @@ let caseSensitive = $state(false);
 let findReplaceState = $state(emptyState);
 let findInputRef: HTMLInputElement | null = $state(null);
 
-const view = $derived(buildVizelFindReplaceViewState(findReplaceState, labels.noResults));
+const view = $derived(buildVizelFindReplaceSpec(findReplaceState, labels.noResults));
 const isOpen = $derived(view.isOpen);
 
 function updateFindReplaceState() {

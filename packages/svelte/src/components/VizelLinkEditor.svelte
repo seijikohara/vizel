@@ -18,7 +18,7 @@ export interface VizelLinkEditorProps {
 <script lang="ts">
 import {
   applyVizelLinkEdit,
-  buildVizelLinkEditorViewState,
+  buildVizelLinkEditorSpec,
   resolveVizelLinkEditorLabels,
 } from "@vizel/core";
 import { untrack } from "svelte";
@@ -36,13 +36,13 @@ let formElement: HTMLFormElement;
 let inputElement: HTMLInputElement;
 
 const labels = $derived(resolveVizelLinkEditorLabels(locale));
-let url = $state(untrack(() => buildVizelLinkEditorViewState(editor, "", enableEmbed).initialUrl));
+let url = $state(untrack(() => buildVizelLinkEditorSpec(editor, "", enableEmbed).initialUrl));
 let openInNewTab = $state(
-  untrack(() => buildVizelLinkEditorViewState(editor, "", enableEmbed).initialOpenInNewTab)
+  untrack(() => buildVizelLinkEditorSpec(editor, "", enableEmbed).initialOpenInNewTab)
 );
 let asEmbed = $state(false);
 
-const viewState = $derived(buildVizelLinkEditorViewState(editor, url, enableEmbed));
+const viewState = $derived(buildVizelLinkEditorSpec(editor, url, enableEmbed));
 
 function handleClickOutside(event: MouseEvent) {
   if (!(event.target instanceof Node)) return;

@@ -1,6 +1,6 @@
 import {
   applyVizelLinkEdit,
-  buildVizelLinkEditorViewState,
+  buildVizelLinkEditorSpec,
   type Editor,
   resolveVizelLinkEditorLabels,
   type VizelLocale,
@@ -35,7 +35,7 @@ export function VizelLinkEditor({
 }: VizelLinkEditorProps) {
   const labels = useMemo(() => resolveVizelLinkEditorLabels(locale), [locale]);
   const initialState = useMemo(
-    () => buildVizelLinkEditorViewState(editor, "", enableEmbed),
+    () => buildVizelLinkEditorSpec(editor, "", enableEmbed),
     [editor, enableEmbed]
   );
   const [url, setUrl] = useState(initialState.initialUrl);
@@ -45,7 +45,7 @@ export function VizelLinkEditor({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const viewState = useMemo(
-    () => buildVizelLinkEditorViewState(editor, url, enableEmbed),
+    () => buildVizelLinkEditorSpec(editor, url, enableEmbed),
     [editor, url, enableEmbed]
   );
 

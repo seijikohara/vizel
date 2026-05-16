@@ -8,7 +8,7 @@ import type { VizelLocale } from "../i18n/types.ts";
  * instead of duplicating the `matchCount > 0 ? "${i}/${n}" :
  * noResults` ternary in three places.
  */
-export interface VizelFindReplaceViewState {
+export interface VizelFindReplaceSpec {
   /** Whether the panel is open (mirrors `state.isOpen`). */
   isOpen: boolean;
   /** Whether the replace input row should be rendered. */
@@ -32,10 +32,10 @@ export interface VizelFindReplaceViewState {
  * about, so the helper takes a string rather than a full locale to
  * keep the unit testable.
  */
-export function buildVizelFindReplaceViewState(
+export function buildVizelFindReplaceSpec(
   state: VizelFindReplaceState | null,
   noResultsLabel: string
-): VizelFindReplaceViewState {
+): VizelFindReplaceSpec {
   const isOpen = state?.isOpen ?? false;
   const isReplaceMode = state?.mode === "replace";
   const matchCount = state?.matches.length ?? 0;
@@ -56,12 +56,12 @@ export function buildVizelFindReplaceViewState(
 /**
  * Convenience overload that resolves the `noResults` label from a
  * full locale. Equivalent to calling
- * `buildVizelFindReplaceViewState(state, locale?.findReplace?.noResults
+ * `buildVizelFindReplaceSpec(state, locale?.findReplace?.noResults
  * ?? "No matches")`.
  */
-export function buildVizelFindReplaceViewStateFromLocale(
+export function buildVizelFindReplaceSpecFromLocale(
   state: VizelFindReplaceState | null,
   locale: VizelLocale | undefined
-): VizelFindReplaceViewState {
-  return buildVizelFindReplaceViewState(state, locale?.findReplace?.noResults ?? "No matches");
+): VizelFindReplaceSpec {
+  return buildVizelFindReplaceSpec(state, locale?.findReplace?.noResults ?? "No matches");
 }
