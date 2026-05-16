@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  buildVizelSlashMenuSkeleton,
+  buildVizelSlashMenuSpec,
   getNextVizelSlashMenuGroupIndex,
   type VizelSlashCommandItem,
 } from "@vizel/core";
@@ -46,7 +46,7 @@ const selectedIndex = ref(0);
 const itemRefs = ref<(HTMLElement | null)[]>([]);
 
 const spec = computed(() =>
-  buildVizelSlashMenuSkeleton(props.items, selectedIndex.value, {
+  buildVizelSlashMenuSpec(props.items, selectedIndex.value, {
     showGroups: props.showGroups,
     ...(props.groupOrder && { groupOrder: props.groupOrder }),
   })

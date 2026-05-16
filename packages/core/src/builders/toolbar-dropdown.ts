@@ -66,7 +66,7 @@ export interface VizelToolbarDropdownSpec {
  * @param isOpen    Whether the popover is currently open.
  * @param focusedIndex Index of the keyboard-focused option.
  */
-export function buildVizelToolbarDropdownSkeleton(
+export function buildVizelToolbarDropdownSpec(
   dropdown: VizelToolbarDropdownAction,
   editor: Editor,
   isOpen: boolean,

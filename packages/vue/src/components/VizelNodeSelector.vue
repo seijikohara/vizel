@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  buildVizelNodeSelectorSkeleton,
+  buildVizelNodeSelectorSpec,
   createVizelNodeTypes,
   type Editor,
   type VizelLocale,
@@ -39,7 +39,7 @@ const triggerRef = ref<HTMLButtonElement | null>(null);
 
 const spec = computed(() => {
   void editorStateVersion.value;
-  return buildVizelNodeSelectorSkeleton(
+  return buildVizelNodeSelectorSpec(
     props.editor,
     effectiveNodeTypes.value,
     isOpen.value,

@@ -1,5 +1,5 @@
 import {
-  buildVizelNodeSelectorSkeleton,
+  buildVizelNodeSelectorSpec,
   createVizelNodeTypes,
   type Editor,
   type VizelLocale,
@@ -25,7 +25,7 @@ export interface VizelNodeSelectorProps {
  * A dropdown selector for changing block node types.
  *
  * DOM/ARIA scaffolding (trigger + listbox popover) comes from
- * `@vizel/core`'s `buildVizelNodeSelectorSkeleton`. The component owns
+ * `@vizel/core`'s `buildVizelNodeSelectorSpec`. The component owns
  * popover open/close state, outside-click dismissal, keyboard
  * navigation, and binding `nodeType.command(editor)` to each option.
  */
@@ -46,7 +46,7 @@ export function VizelNodeSelector({
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   const spec = useMemo(
-    () => buildVizelNodeSelectorSkeleton(editor, effectiveNodeTypes, isOpen, focusedIndex, locale),
+    () => buildVizelNodeSelectorSpec(editor, effectiveNodeTypes, isOpen, focusedIndex, locale),
     [editor, effectiveNodeTypes, isOpen, focusedIndex, locale]
   );
 

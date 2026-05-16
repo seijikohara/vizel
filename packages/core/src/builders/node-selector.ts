@@ -61,7 +61,7 @@ export interface VizelNodeSelectorSpec {
  * @param focusedIndex Index of the keyboard-focused row.
  * @param locale       Optional locale for translated labels.
  */
-export function buildVizelNodeSelectorSkeleton(
+export function buildVizelNodeSelectorSpec(
   editor: Editor,
   nodeTypes: readonly VizelNodeTypeOption[],
   isOpen: boolean,

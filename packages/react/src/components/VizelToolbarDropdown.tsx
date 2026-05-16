@@ -1,5 +1,5 @@
 import type { Editor, VizelToolbarDropdownAction } from "@vizel/core";
-import { buildVizelToolbarDropdownSkeleton, formatVizelTooltip } from "@vizel/core";
+import { buildVizelToolbarDropdownSpec, formatVizelTooltip } from "@vizel/core";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 
@@ -13,7 +13,7 @@ export interface VizelToolbarDropdownProps {
  * A dropdown toolbar button that shows a popover with nested actions.
  *
  * DOM/ARIA scaffolding (trigger + listbox popover) comes from
- * `@vizel/core`'s `buildVizelToolbarDropdownSkeleton`. The component
+ * `@vizel/core`'s `buildVizelToolbarDropdownSpec`. The component
  * owns popover open/close state, outside-click + Escape dismissal,
  * keyboard navigation, and binding `onClick` to each option's `run`.
  */
@@ -61,7 +61,7 @@ export function VizelToolbarDropdown({
   }, [isOpen]);
 
   const spec = useMemo(
-    () => buildVizelToolbarDropdownSkeleton(dropdown, editor, isOpen, focusedIndex),
+    () => buildVizelToolbarDropdownSpec(dropdown, editor, isOpen, focusedIndex),
     [dropdown, editor, isOpen, focusedIndex]
   );
 

@@ -28,7 +28,7 @@ export interface VizelMentionItemView {
  * Returning an empty `sections` array signals the empty / no-results
  * state — the component renders a localized empty-state element.
  */
-export function buildVizelMentionMenuSkeleton(
+export function buildVizelMentionMenuSpec(
   items: readonly VizelMentionItem[],
   selectedIndex: number,
   locale: VizelLocale | undefined

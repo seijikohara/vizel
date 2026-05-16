@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  buildVizelMentionMenuSkeleton,
+  buildVizelMentionMenuSpec,
   resolveVizelListNavigation,
   type VizelLocale,
   type VizelMentionItem,
@@ -28,7 +28,7 @@ const selectedIndex = ref(0);
 const itemRefs = ref<(HTMLElement | null)[]>([]);
 
 const spec = computed(() =>
-  buildVizelMentionMenuSkeleton(props.items, selectedIndex.value, props.locale)
+  buildVizelMentionMenuSpec(props.items, selectedIndex.value, props.locale)
 );
 
 const slots = computed(() => spec.value.sections.flatMap((section) => section.items));

@@ -19,23 +19,23 @@ export {
   type VizelLinkSubmitParams,
 } from "./link-editor.ts";
 export {
-  buildVizelMentionMenuSkeleton,
+  buildVizelMentionMenuSpec,
   type VizelMentionItemView,
 } from "./mention-menu.ts";
 export {
-  buildVizelNodeSelectorSkeleton,
+  buildVizelNodeSelectorSpec,
   type VizelNodeSelectorItemView,
   type VizelNodeSelectorSpec,
   type VizelNodeSelectorTriggerSpec,
 } from "./node-selector.ts";
 export {
-  buildVizelSlashMenuSkeleton,
+  buildVizelSlashMenuSpec,
   getNextVizelSlashMenuGroupIndex,
   type VizelSlashItemView,
-  type VizelSlashMenuSkeletonOptions,
+  type VizelSlashMenuSpecOptions,
 } from "./slash-menu.ts";
 export {
-  buildVizelToolbarDropdownSkeleton,
+  buildVizelToolbarDropdownSpec,
   type VizelToolbarDropdownItemView,
   type VizelToolbarDropdownSpec,
   type VizelToolbarDropdownTriggerSpec,

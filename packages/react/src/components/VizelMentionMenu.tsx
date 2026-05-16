@@ -1,5 +1,5 @@
 import {
-  buildVizelMentionMenuSkeleton,
+  buildVizelMentionMenuSpec,
   resolveVizelListNavigation,
   type VizelLocale,
   type VizelMentionItem,
@@ -34,7 +34,7 @@ export interface VizelMentionMenuProps {
  * Mention autocomplete menu component.
  *
  * The DOM structure and ARIA wiring come from `@vizel/core`'s
- * `buildVizelMentionMenuSkeleton`; this component is the React-flavored
+ * `buildVizelMentionMenuSpec`; this component is the React-flavored
  * binding that maps the spec to JSX. Item rendering (avatar + label +
  * description) is React-specific and stays here.
  */
@@ -90,7 +90,7 @@ export function VizelMentionMenu({
   }));
 
   const spec = useMemo(
-    () => buildVizelMentionMenuSkeleton(items, selectedIndex, locale),
+    () => buildVizelMentionMenuSpec(items, selectedIndex, locale),
     [items, selectedIndex, locale]
   );
 

@@ -9,7 +9,7 @@ export interface VizelToolbarDropdownProps {
 </script>
 
 <script lang="ts">
-import { buildVizelToolbarDropdownSkeleton, formatVizelTooltip } from "@vizel/core";
+import { buildVizelToolbarDropdownSpec, formatVizelTooltip } from "@vizel/core";
 import VizelIcon from "./VizelIcon.svelte";
 
 let {
@@ -24,7 +24,7 @@ let containerEl: HTMLDivElement | undefined = $state(undefined);
 let triggerEl: HTMLButtonElement | undefined = $state(undefined);
 
 const spec = $derived(
-  buildVizelToolbarDropdownSkeleton(dropdown, editor, isOpen, focusedIndex)
+  buildVizelToolbarDropdownSpec(dropdown, editor, isOpen, focusedIndex)
 );
 
 function close() {

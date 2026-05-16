@@ -20,9 +20,9 @@ export interface VizelSlashItemView {
 }
 
 /**
- * Options accepted by {@link buildVizelSlashMenuSkeleton}.
+ * Options accepted by {@link buildVizelSlashMenuSpec}.
  */
-export interface VizelSlashMenuSkeletonOptions {
+export interface VizelSlashMenuSpecOptions {
   /**
    * Whether to render items grouped by category. When `false`, or when
    * `items.length <= 5` (typically fuzzy-search results), grouping is
@@ -48,10 +48,10 @@ export interface VizelSlashMenuSkeletonOptions {
  * component renders its default `VizelSlashMenuEmpty` (or a custom
  * `renderEmpty`).
  */
-export function buildVizelSlashMenuSkeleton(
+export function buildVizelSlashMenuSpec(
   items: readonly VizelSlashCommandItem[],
   selectedIndex: number,
-  options: VizelSlashMenuSkeletonOptions = {}
+  options: VizelSlashMenuSpecOptions = {}
 ): VizelMenuSpec<VizelSlashItemView> {
   const { showGroups = true, groupOrder } = options;
   const rootAttrs = { role: "listbox", "aria-label": "Commands" } as const;
