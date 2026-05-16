@@ -19,6 +19,12 @@ export {
   type VizelListboxControllerOptions,
 } from "./listboxController.ts";
 export {
+  createVizelPopoverController,
+  type VizelPopoverController,
+  type VizelPopoverControllerOptions,
+  type VizelPopoverPlacement,
+} from "./popoverController.ts";
+export {
   createVizelEditorTransactionStore,
   type VizelEditorTransactionStore,
 } from "./transactionStore.ts";
