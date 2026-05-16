@@ -8,10 +8,6 @@ export {
   type VizelEditorSubscriptionOptions,
 } from "./editorSubscription.ts";
 export {
-  resolveVizelGridNavigation,
-  resolveVizelListNavigation,
-} from "./listboxController.ts";
-export {
   createVizelEditorTransactionStore,
   type VizelEditorTransactionStore,
 } from "./transactionStore.ts";

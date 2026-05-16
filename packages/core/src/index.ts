@@ -101,8 +101,6 @@ export {
   createVizelDismissibleController,
   createVizelEditorSubscription,
   createVizelEditorTransactionStore,
-  resolveVizelGridNavigation,
-  resolveVizelListNavigation,
   type VizelDismissibleControllerOptions,
   type VizelEditorEventName,
   type VizelEditorSubscriptionOptions,
@@ -444,6 +442,9 @@ export {
   resolveVizelFeatures,
   // Markdown flavor utilities
   resolveVizelFlavorConfig,
+  // Keyboard navigation (pure resolvers)
+  resolveVizelGridNavigation,
+  resolveVizelListNavigation,
   setVizelMarkdown,
   shouldFlipSubmenu,
   // Text highlight utilities
