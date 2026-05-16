@@ -114,6 +114,7 @@ export {
   createVizelDismissibleController,
   createVizelEditorSubscription,
   createVizelEditorTransactionStore,
+  type VizelDismissibleController,
   type VizelDismissibleControllerOptions,
   type VizelEditorEventName,
   type VizelEditorSubscriptionOptions,

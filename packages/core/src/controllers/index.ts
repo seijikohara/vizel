@@ -1,5 +1,6 @@
 export {
   createVizelDismissibleController,
+  type VizelDismissibleController,
   type VizelDismissibleControllerOptions,
 } from "./dismissibleController.ts";
 export {

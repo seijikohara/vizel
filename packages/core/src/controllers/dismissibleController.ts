@@ -20,33 +20,47 @@ export interface VizelDismissibleControllerOptions {
 }
 
 /**
- * Wire up "click-outside" + Escape dismissal listeners.
+ * Returned by {@link createVizelDismissibleController}.
  *
- * Encapsulates the three-step pattern of (1) attaching a `mousedown`
- * listener on `document` that compares the event target against the
- * supplied element references and (2) attaching a `keydown` listener
- * that observes Escape, plus (3) detaching both on disposal.
+ * Follows the canonical controller contract: `mount()` activates the DOM
+ * listeners, `unmount()` removes them. Both methods are idempotent and
+ * Server-Side Rendering (SSR) safe (no-op when `document` is absent).
+ */
+export interface VizelDismissibleController {
+  /** Attach the outside-click and Escape listeners to `document`. */
+  readonly mount: () => void;
+  /** Remove the attached listeners. Safe to call multiple times. */
+  readonly unmount: () => void;
+}
+
+/**
+ * Build a controller that dismisses a popup on outside-click or Escape.
  *
- * Returns a disposer. Framework adapters call this inside their effect
- * primitive and return the disposer for cleanup.
+ * The factory itself has no side effects, making it Server-Side Rendering
+ * (SSR) safe to invoke during component setup. `mount()` attaches a
+ * `mousedown` listener on `document` that compares the event target
+ * against the supplied element references, plus a `keydown` listener that
+ * observes Escape. `unmount()` detaches both. Both methods are idempotent.
  *
  * @example
  * ```tsx
  * // React adapter:
- * useEffect(() =>
- *   createVizelDismissibleController({
+ * useEffect(() => {
+ *   const controller = createVizelDismissibleController({
  *     getElements: () => [popoverRef.current, triggerRef.current],
  *     onDismiss: () => setOpen(false),
- *   }),
- * []);
+ *   });
+ *   controller.mount();
+ *   return () => controller.unmount();
+ * }, []);
  * ```
  */
 export function createVizelDismissibleController(
   options: VizelDismissibleControllerOptions
-): () => void {
+): VizelDismissibleController {
   const { getElements, onDismiss, dismissOnEscape = true } = options;
 
-  const handleMouseDown = (event: MouseEvent) => {
+  const handleMouseDown = (event: MouseEvent): void => {
     if (!(event.target instanceof Node)) return;
     const target = event.target;
     for (const el of getElements()) {
@@ -55,21 +69,33 @@ export function createVizelDismissibleController(
     onDismiss();
   };
 
-  const handleKeyDown = (event: KeyboardEvent) => {
+  const handleKeyDown = (event: KeyboardEvent): void => {
     if (event.key === "Escape") {
       onDismiss();
     }
   };
 
-  document.addEventListener("mousedown", handleMouseDown);
-  if (dismissOnEscape) {
-    document.addEventListener("keydown", handleKeyDown);
-  }
+  let isMounted = false;
 
-  return () => {
-    document.removeEventListener("mousedown", handleMouseDown);
-    if (dismissOnEscape) {
-      document.removeEventListener("keydown", handleKeyDown);
-    }
+  return {
+    mount: (): void => {
+      // SSR guard: skip DOM work when `document` is unavailable.
+      if (typeof document === "undefined") return;
+      if (isMounted) return;
+      document.addEventListener("mousedown", handleMouseDown);
+      if (dismissOnEscape) {
+        document.addEventListener("keydown", handleKeyDown);
+      }
+      isMounted = true;
+    },
+    unmount: (): void => {
+      if (typeof document === "undefined") return;
+      if (!isMounted) return;
+      document.removeEventListener("mousedown", handleMouseDown);
+      if (dismissOnEscape) {
+        document.removeEventListener("keydown", handleKeyDown);
+      }
+      isMounted = false;
+    },
   };
 }
