@@ -95,6 +95,20 @@ export {
   type VizelCommentStorage,
 } from "./comment.ts";
 // =============================================================================
+// Controllers
+// =============================================================================
+export {
+  createVizelDismissibleController,
+  createVizelEditorSubscription,
+  createVizelEditorTransactionStore,
+  resolveVizelGridNavigation,
+  resolveVizelListNavigation,
+  type VizelDismissibleControllerOptions,
+  type VizelEditorEventName,
+  type VizelEditorSubscriptionOptions,
+  type VizelEditorTransactionStore,
+} from "./controllers/index.ts";
+// =============================================================================
 // Extensions
 // =============================================================================
 export {
@@ -318,20 +332,6 @@ export {
   type VizelUIIconName,
   vizelDefaultIconIds,
 } from "./icons/index.ts";
-// =============================================================================
-// Interactions
-// =============================================================================
-export {
-  createVizelDismissibleController,
-  createVizelEditorSubscription,
-  createVizelEditorTransactionStore,
-  resolveVizelGridNavigation,
-  resolveVizelListNavigation,
-  type VizelDismissibleControllerOptions,
-  type VizelEditorEventName,
-  type VizelEditorSubscriptionOptions,
-  type VizelEditorTransactionStore,
-} from "./interactions/index.ts";
 // =============================================================================
 // Plugin System
 // =============================================================================
