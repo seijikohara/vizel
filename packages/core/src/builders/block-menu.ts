@@ -83,7 +83,7 @@ export interface VizelBlockMenuSpec {
  * @param showTurnInto  Whether the submenu is currently open.
  * @param locale  Optional locale for translated labels.
  */
-export function buildVizelBlockMenuSkeleton(
+export function buildVizelBlockMenuSpec(
   actions: readonly VizelBlockMenuAction[],
   turnIntoOptions: readonly VizelNodeTypeOption[],
   showTurnInto: boolean,

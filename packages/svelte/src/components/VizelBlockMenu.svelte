@@ -22,7 +22,7 @@ export interface VizelBlockMenuProps {
 
 <script lang="ts">
 import {
-  buildVizelBlockMenuSkeleton,
+  buildVizelBlockMenuSpec,
   clampMenuPosition,
   createVizelBlockMenuActions,
   createVizelNodeTypes,
@@ -67,7 +67,7 @@ const turnIntoOptions = $derived(
 );
 
 const spec = $derived(
-  buildVizelBlockMenuSkeleton(effectiveActions, turnIntoOptions, showTurnInto, locale),
+  buildVizelBlockMenuSpec(effectiveActions, turnIntoOptions, showTurnInto, locale),
 );
 
 function close() {

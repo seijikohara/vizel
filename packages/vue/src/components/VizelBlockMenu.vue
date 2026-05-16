@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  buildVizelBlockMenuSkeleton,
+  buildVizelBlockMenuSpec,
   clampMenuPosition,
   createVizelBlockMenuActions,
   createVizelDismissibleController,
@@ -69,7 +69,7 @@ const turnIntoOptions = computed(() =>
 );
 
 const spec = computed(() =>
-  buildVizelBlockMenuSkeleton(
+  buildVizelBlockMenuSpec(
     effectiveActions.value,
     turnIntoOptions.value,
     showTurnInto.value,

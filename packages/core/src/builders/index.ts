@@ -1,5 +1,5 @@
 export {
-  buildVizelBlockMenuSkeleton,
+  buildVizelBlockMenuSpec,
   type VizelBlockMenuItemView,
   type VizelBlockMenuSpec,
   type VizelBlockMenuSubmenuTriggerSpec,
