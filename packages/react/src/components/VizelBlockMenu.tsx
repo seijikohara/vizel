@@ -1,6 +1,6 @@
 import type { Editor } from "@vizel/core";
 import {
-  buildVizelBlockMenuSkeleton,
+  buildVizelBlockMenuSpec,
   clampMenuPosition,
   createVizelBlockMenuActions,
   createVizelNodeTypes,
@@ -44,7 +44,7 @@ interface BlockMenuState extends VizelBlockMenuOpenDetail {
 /**
  * Block context menu that appears when clicking the drag handle.
  * DOM/ARIA scaffolding (sections, submenu trigger, submenu list) comes
- * from `@vizel/core`'s `buildVizelBlockMenuSkeleton`; the React
+ * from `@vizel/core`'s `buildVizelBlockMenuSpec`; the React
  * component owns positioning, focus management, and runtime action
  * binding.
  */
@@ -160,7 +160,7 @@ export function VizelBlockMenu({
   );
 
   const spec = useMemo(
-    () => buildVizelBlockMenuSkeleton(effectiveActions, turnIntoOptions, showTurnInto, locale),
+    () => buildVizelBlockMenuSpec(effectiveActions, turnIntoOptions, showTurnInto, locale),
     [effectiveActions, turnIntoOptions, showTurnInto, locale]
   );
 

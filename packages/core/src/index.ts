@@ -36,7 +36,7 @@ export {
 // =============================================================================
 export {
   applyVizelLinkEdit,
-  buildVizelBlockMenuSkeleton,
+  buildVizelBlockMenuSpec,
   buildVizelFindReplaceViewState,
   buildVizelFindReplaceViewStateFromLocale,
   buildVizelLinkEditorViewState,
