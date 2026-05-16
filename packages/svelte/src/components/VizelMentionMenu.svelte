@@ -24,7 +24,7 @@ export interface VizelMentionMenuProps {
 </script>
 
 <script lang="ts">
-import { buildVizelMentionMenuSkeleton, resolveVizelListNavigation } from "@vizel/core";
+import { buildVizelMentionMenuSpec, resolveVizelListNavigation } from "@vizel/core";
 import { tick } from "svelte";
 
 let {
@@ -38,7 +38,7 @@ let {
 let selectedIndex = $state(0);
 let itemRefs: (HTMLElement | null)[] = $state([]);
 
-const spec = $derived(buildVizelMentionMenuSkeleton(items, selectedIndex, locale));
+const spec = $derived(buildVizelMentionMenuSpec(items, selectedIndex, locale));
 const slots = $derived(spec.sections.flatMap((section) => section.items));
 
 $effect(() => {

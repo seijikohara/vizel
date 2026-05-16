@@ -1,5 +1,5 @@
 import {
-  buildVizelSlashMenuSkeleton,
+  buildVizelSlashMenuSpec,
   getNextVizelSlashMenuGroupIndex,
   type VizelSlashCommandItem,
 } from "@vizel/core";
@@ -43,7 +43,7 @@ export interface VizelSlashMenuProps {
  * Slash command menu component for displaying command suggestions.
  *
  * DOM scaffolding (listbox container, section grouping, item identity
- * + index) comes from `@vizel/core`'s `buildVizelSlashMenuSkeleton`;
+ * + index) comes from `@vizel/core`'s `buildVizelSlashMenuSpec`;
  * this component is the React-flavored binding that maps the spec to
  * JSX. Item rendering (icon + title + description + shortcut) stays in
  * `VizelSlashMenuItem`, which keeps `role="option"` ownership.
@@ -63,7 +63,7 @@ export function VizelSlashMenu({
 
   const spec = useMemo(
     () =>
-      buildVizelSlashMenuSkeleton(items, selectedIndex, {
+      buildVizelSlashMenuSpec(items, selectedIndex, {
         showGroups,
         ...(groupOrder && { groupOrder }),
       }),

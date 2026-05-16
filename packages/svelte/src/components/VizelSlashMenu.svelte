@@ -34,7 +34,7 @@ export interface VizelSlashMenuProps {
 </script>
 
 <script lang="ts">
-import { buildVizelSlashMenuSkeleton, getNextVizelSlashMenuGroupIndex } from "@vizel/core";
+import { buildVizelSlashMenuSpec, getNextVizelSlashMenuGroupIndex } from "@vizel/core";
 import { tick } from "svelte";
 import VizelSlashMenuItem from "./VizelSlashMenuItem.svelte";
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.svelte";
@@ -54,7 +54,7 @@ let selectedIndex = $state(0);
 let itemRefs: (HTMLElement | null)[] = $state([]);
 
 const spec = $derived(
-  buildVizelSlashMenuSkeleton(items, selectedIndex, {
+  buildVizelSlashMenuSpec(items, selectedIndex, {
     showGroups,
     ...(groupOrder && { groupOrder }),
   })

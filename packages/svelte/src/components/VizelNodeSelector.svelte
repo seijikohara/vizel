@@ -14,7 +14,7 @@ export interface VizelNodeSelectorProps {
 </script>
 
 <script lang="ts">
-import { buildVizelNodeSelectorSkeleton, createVizelNodeTypes, vizelDefaultNodeTypes } from "@vizel/core";
+import { buildVizelNodeSelectorSpec, createVizelNodeTypes, vizelDefaultNodeTypes } from "@vizel/core";
 import { createVizelState } from "../runes/createVizelState.svelte.js";
 import VizelIcon from "./VizelIcon.svelte";
 
@@ -32,7 +32,7 @@ let triggerRef: HTMLButtonElement | undefined = $state();
 
 const spec = $derived.by(() => {
   void editorState.current;
-  return buildVizelNodeSelectorSkeleton(editor, effectiveNodeTypes, isOpen, focusedIndex, locale);
+  return buildVizelNodeSelectorSpec(editor, effectiveNodeTypes, isOpen, focusedIndex, locale);
 });
 
 function handleClickOutside(event: MouseEvent) {

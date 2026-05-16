@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Editor, VizelToolbarDropdownAction } from "@vizel/core";
-import { buildVizelToolbarDropdownSkeleton, formatVizelTooltip } from "@vizel/core";
+import { buildVizelToolbarDropdownSpec, formatVizelTooltip } from "@vizel/core";
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -18,7 +18,7 @@ const containerRef = ref<HTMLDivElement | null>(null);
 const triggerRef = ref<HTMLButtonElement | null>(null);
 
 const spec = computed(() =>
-  buildVizelToolbarDropdownSkeleton(props.dropdown, props.editor, isOpen.value, focusedIndex.value)
+  buildVizelToolbarDropdownSpec(props.dropdown, props.editor, isOpen.value, focusedIndex.value)
 );
 
 function close() {
