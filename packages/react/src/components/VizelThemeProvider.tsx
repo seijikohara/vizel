@@ -57,11 +57,11 @@ export function VizelThemeProvider({
 
   // Listen for system theme changes
   useEffect(() => {
-    const cleanup = createVizelSystemThemeListener((newSystemTheme) => {
+    const controller = createVizelSystemThemeListener((newSystemTheme) => {
       setSystemTheme(newSystemTheme);
     });
-
-    return cleanup;
+    controller.mount();
+    return () => controller.unmount();
   }, []);
 
   const setTheme = useCallback(
