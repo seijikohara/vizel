@@ -29,15 +29,17 @@ let {
 
 let relativeTime = $state("");
 
-$effect(() =>
-  createVizelRelativeTimeTicker({
+$effect(() => {
+  const ticker = createVizelRelativeTimeTicker({
     getDate: () => lastSaved,
     getLocale: () => locale,
     onTick: (text) => {
       relativeTime = text;
     },
-  })
-);
+  });
+  ticker.mount();
+  return () => ticker.unmount();
+});
 
 const view = $derived(
   resolveVizelSaveIndicatorView(status, locale, lastSaved, relativeTime, showTimestamp)

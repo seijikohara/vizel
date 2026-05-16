@@ -68,11 +68,11 @@ export interface VizelThemeProviderProps extends VizelThemeProviderOptions {
 
   $effect(() => {
     // Listen for system theme changes
-    const cleanup = createVizelSystemThemeListener((newSystemTheme: VizelResolvedTheme) => {
+    const controller = createVizelSystemThemeListener((newSystemTheme: VizelResolvedTheme) => {
       systemTheme = newSystemTheme;
     });
-
-    return cleanup;
+    controller.mount();
+    return () => controller.unmount();
   });
 </script>
 

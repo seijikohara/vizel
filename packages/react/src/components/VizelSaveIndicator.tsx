@@ -49,15 +49,15 @@ export function VizelSaveIndicator({
   const localeRef = useRef(locale);
   localeRef.current = locale;
 
-  useEffect(
-    () =>
-      createVizelRelativeTimeTicker({
-        getDate: () => lastSavedRef.current,
-        getLocale: () => localeRef.current,
-        onTick: setRelativeTime,
-      }),
-    []
-  );
+  useEffect(() => {
+    const ticker = createVizelRelativeTimeTicker({
+      getDate: () => lastSavedRef.current,
+      getLocale: () => localeRef.current,
+      onTick: setRelativeTime,
+    });
+    ticker.mount();
+    return () => ticker.unmount();
+  }, []);
 
   const view = resolveVizelSaveIndicatorView(
     status,

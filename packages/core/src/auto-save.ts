@@ -274,24 +274,63 @@ export interface VizelRelativeTimeTickerOptions {
 }
 
 /**
- * Start a relative-time interval ticker.
+ * Returned by {@link createVizelRelativeTimeTicker}.
  *
- * Calls `onTick` once synchronously with the current relative-time string,
- * then on every `intervalMs` boundary until the returned dispose function
- * fires. Framework components wrap this in their effect primitive instead
- * of reimplementing the `setInterval`/`clearInterval` pair.
+ * Follows the canonical controller contract: `mount()` starts the
+ * interval and emits once synchronously; `unmount()` clears the
+ * interval. Both are idempotent.
  */
-export function createVizelRelativeTimeTicker(options: VizelRelativeTimeTickerOptions): () => void {
+export interface VizelRelativeTimeTicker {
+  /** Start ticking. Emits once synchronously, then on every `intervalMs`. */
+  readonly mount: () => void;
+  /** Stop ticking. Safe to call repeatedly. */
+  readonly unmount: () => void;
+}
+
+/**
+ * Build a relative-time interval ticker.
+ *
+ * The factory itself has no side effects. `mount()` calls `onTick`
+ * synchronously with the current relative-time string, then on every
+ * `intervalMs` boundary until `unmount()` clears the interval.
+ *
+ * @example
+ * ```tsx
+ * // React adapter:
+ * useEffect(() => {
+ *   const ticker = createVizelRelativeTimeTicker({
+ *     getDate: () => date,
+ *     onTick: setText,
+ *   });
+ *   ticker.mount();
+ *   return () => ticker.unmount();
+ * }, []);
+ * ```
+ */
+export function createVizelRelativeTimeTicker(
+  options: VizelRelativeTimeTickerOptions
+): VizelRelativeTimeTicker {
   const { getDate, getLocale, intervalMs = 10000, onTick } = options;
 
-  const emit = () => {
+  const emit = (): void => {
     const date = getDate();
     onTick(date ? formatVizelRelativeTime(date, getLocale?.()) : "");
   };
 
-  emit();
-  const id = setInterval(emit, intervalMs);
-  return () => clearInterval(id);
+  let intervalId: ReturnType<typeof setInterval> | null = null;
+
+  return {
+    mount: (): void => {
+      if (intervalId !== null) return;
+      emit();
+      intervalId = setInterval(emit, intervalMs);
+    },
+    unmount: (): void => {
+      if (intervalId === null) return;
+      clearInterval(intervalId);
+      intervalId = null;
+    },
+  };
 }
 
 /**
