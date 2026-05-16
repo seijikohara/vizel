@@ -52,6 +52,7 @@ Each rule under `.claude/rules/` is the single source of truth (SSOT) for its to
 
 | Rule | Loads When | Topic |
 |------|------------|-------|
+| `.claude/rules/architecture.md` | Always (project-wide layering invariants) | Core / framework adapter / UI-skeleton layering and consumer-facing invariants |
 | `.claude/rules/code-style.md` | Editing source under `packages/`, `apps/`, or `tests/` | TypeScript style, function declarations, type safety |
 | `.claude/rules/cross-framework.md` | Editing under `packages/{react,vue,svelte}/` or `packages/core/src/types.ts` | Component, hook, composable, and rune parity |
 | `.claude/rules/git.md` | Always (commit messages, branches, hooks) | Conventional Commits, branch naming, lefthook |
