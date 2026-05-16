@@ -1,5 +1,5 @@
 import {
-  buildVizelFindReplaceViewState,
+  buildVizelFindReplaceSpec,
   type Editor,
   getVizelFindReplaceState,
   resolveVizelFindReplaceLabels,
@@ -136,7 +136,7 @@ export function VizelFindReplace({ editor, className, locale, onClose }: VizelFi
   );
 
   const view = useMemo(
-    () => buildVizelFindReplaceViewState(state, labels.noResults),
+    () => buildVizelFindReplaceSpec(state, labels.noResults),
     [state, labels.noResults]
   );
 

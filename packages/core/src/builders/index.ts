@@ -6,16 +6,16 @@ export {
   type VizelBlockMenuTurnIntoItemView,
 } from "./block-menu.ts";
 export {
-  buildVizelFindReplaceViewState,
-  buildVizelFindReplaceViewStateFromLocale,
-  type VizelFindReplaceViewState,
+  buildVizelFindReplaceSpec,
+  buildVizelFindReplaceSpecFromLocale,
+  type VizelFindReplaceSpec,
 } from "./find-replace.ts";
 export {
   applyVizelLinkEdit,
-  buildVizelLinkEditorViewState,
+  buildVizelLinkEditorSpec,
   resolveVizelLinkEditorLabels,
   type VizelLinkEditorLabels,
-  type VizelLinkEditorViewState,
+  type VizelLinkEditorSpec,
   type VizelLinkSubmitParams,
 } from "./link-editor.ts";
 export {

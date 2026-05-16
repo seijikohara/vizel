@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  buildVizelFindReplaceViewState,
+  buildVizelFindReplaceSpec,
   type Editor,
   getVizelFindReplaceState,
   resolveVizelFindReplaceLabels,
@@ -31,7 +31,7 @@ const state = ref<VizelFindReplaceState | null>(null);
 const findInputRef = ref<HTMLInputElement | null>(null);
 
 const labels = computed(() => resolveVizelFindReplaceLabels(props.locale?.findReplace));
-const view = computed(() => buildVizelFindReplaceViewState(state.value, labels.value.noResults));
+const view = computed(() => buildVizelFindReplaceSpec(state.value, labels.value.noResults));
 const isOpen = computed(() => view.value.isOpen);
 
 function updateState() {

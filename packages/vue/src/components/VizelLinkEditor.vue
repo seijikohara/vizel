@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   applyVizelLinkEdit,
-  buildVizelLinkEditorViewState,
+  buildVizelLinkEditorSpec,
   type Editor,
   resolveVizelLinkEditorLabels,
   type VizelLocale,
@@ -32,13 +32,13 @@ const formRef = ref<HTMLFormElement | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
 
 const labels = computed(() => resolveVizelLinkEditorLabels(props.locale));
-const initialState = buildVizelLinkEditorViewState(props.editor, "", props.enableEmbed);
+const initialState = buildVizelLinkEditorSpec(props.editor, "", props.enableEmbed);
 const url = ref(initialState.initialUrl);
 const openInNewTab = ref(initialState.initialOpenInNewTab);
 const asEmbed = ref(false);
 
 const viewState = computed(() =>
-  buildVizelLinkEditorViewState(props.editor, url.value, props.enableEmbed)
+  buildVizelLinkEditorSpec(props.editor, url.value, props.enableEmbed)
 );
 
 function handleClickOutside(event: MouseEvent) {
