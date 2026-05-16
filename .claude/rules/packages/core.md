@@ -59,6 +59,34 @@ Naming conventions:
 
 `_internal/` carries a README that records the rule that no symbol inside it appears in `packages/core/src/index.ts`. Framework packages must not re-export `_internal/` symbols.
 
+### Builder Layer
+
+Every UI scaffold consumes one of five canonical spec types. New builders produce one of these shapes; do not introduce ad-hoc spec types.
+
+| Spec | Purpose | Examples |
+|------|---------|----------|
+| `VizelMenuSpec<TData>` | Listbox or menu | slash menu, mention menu, dropdown body |
+| `VizelPopoverSpec` | Anchored popover (trigger + body) | block menu wrapper, toolbar dropdown, node selector wrapper, color picker wrapper |
+| `VizelFormSpec<TFields>` | Inline input form | link editor, find/replace |
+| `VizelCommandSpec` | Actionable item shared across command surfaces | slash item, toolbar action, bubble menu action, block menu item |
+| `VizelGridSpec<TCell>` | Two-dimensional cell grid | color picker grid, future emoji picker |
+
+Builder function names follow the pattern `buildVizel<Component>Spec(...)`. Section 2 of the v2.0.0 redesign retires the legacy `*Skeleton` naming and migrates each existing builder to one of the five spec types above.
+
+Component composition (target state):
+
+| Component | Spec composition |
+|-----------|-----------------|
+| `VizelSlashMenu` | `VizelMenuSpec<VizelCommandSpec>` |
+| `VizelMentionMenu` | `VizelMenuSpec<VizelMentionItemView>` |
+| `VizelBubbleMenu` | `readonly VizelCommandSpec[]` |
+| `VizelToolbarDropdown` | `VizelPopoverSpec` + `VizelMenuSpec<VizelCommandSpec>` |
+| `VizelNodeSelector` | `VizelPopoverSpec` + `VizelMenuSpec<VizelNodeTypeOption>` |
+| `VizelBlockMenu` | `VizelPopoverSpec` + `VizelMenuSpec<VizelCommandSpec>` + optional submenu |
+| `VizelLinkEditor` | `VizelFormSpec<{ url, text, embed }>` |
+| `VizelFindReplace` | `VizelFormSpec<{ find, replace }>` |
+| `VizelColorPicker` | `VizelPopoverSpec` + `VizelGridSpec<VizelColorCell>` |
+
 ## Extension Development
 
 ### Creating Extensions

@@ -106,3 +106,234 @@ export interface VizelMenuSpec<TData> {
   /** Sections (groups) of items. Empty when there are no items. */
   sections: readonly VizelMenuSectionSpec<TData>[];
 }
+
+// ============================================================================
+// VizelPopoverSpec
+// ============================================================================
+
+/**
+ * ARIA attributes for the trigger element of a popover.
+ *
+ * The trigger anchors the floating body element. Click, keyboard, or
+ * focus opens the body; the framework component owns the activation
+ * behavior while the spec carries the static wiring.
+ */
+export interface VizelPopoverTriggerSpec {
+  /** Stable id; used as `aria-controls` target by the body. */
+  id: string;
+  /** Role of the popup element this trigger opens. */
+  "aria-haspopup": "listbox" | "menu" | "dialog";
+  /** Whether the body is currently visible. */
+  "aria-expanded": boolean;
+  /** Id of the body element this trigger controls. */
+  "aria-controls": string;
+}
+
+/**
+ * ARIA attributes for the floating body element of a popover.
+ */
+export interface VizelPopoverBodySpec {
+  /** Stable id matching the trigger's `aria-controls`. */
+  id: string;
+  /** Body's role; aligns with the trigger's `aria-haspopup`. */
+  role: "dialog" | "listbox" | "menu";
+  /** Optional label source for assistive tech. */
+  "aria-labelledby"?: string;
+}
+
+/**
+ * Spec for an anchored popover.
+ *
+ * Block menu, toolbar dropdown, node selector, and color picker all wrap
+ * a body element (listbox / menu / dialog) anchored to a trigger button.
+ * The spec covers the trigger-body wiring; the body itself is described
+ * by a nested {@link VizelMenuSpec}, {@link VizelGridSpec}, or
+ * {@link VizelFormSpec}.
+ */
+export interface VizelPopoverSpec {
+  /** Trigger element wiring. */
+  readonly trigger: VizelPopoverTriggerSpec;
+  /** Body element wiring. */
+  readonly body: VizelPopoverBodySpec;
+  /** Whether the body is currently mounted / visible. */
+  readonly isOpen: boolean;
+}
+
+// ============================================================================
+// VizelCommandSpec
+// ============================================================================
+
+/**
+ * Platform-specific keyboard shortcut.
+ *
+ * Format follows Tiptap's keymap notation: `Mod` resolves to `Cmd` on
+ * macOS and `Ctrl` elsewhere; `Alt` and `Shift` carry their usual
+ * meaning. Examples: `Mod-B`, `Mod-Shift-1`, `Alt-ArrowUp`.
+ *
+ * The two fields exist because some commands intentionally differ
+ * across platforms. When they coincide, set both to the same string.
+ */
+export interface VizelShortcutSpec {
+  /** Shortcut string for macOS. */
+  readonly mac: string;
+  /** Shortcut string for other platforms (Windows / Linux). */
+  readonly other: string;
+}
+
+/**
+ * Actionable item shared across command surfaces.
+ *
+ * The same logical command appears in multiple surfaces (slash menu,
+ * toolbar, bubble menu, block menu, keyboard shortcut). The spec
+ * carries the view-only fields a renderer needs: identity, localized
+ * label, optional description / icon / shortcut, classification group,
+ * fuzzy-match keywords, and the runtime-evaluated enable / active
+ * flags.
+ *
+ * Section 9 of the v2.0.0 redesign introduces `VizelCommand` (the
+ * runtime-bearing form with `canRun`, `isActive`, `run`); builders use
+ * `VizelCommand` to derive a `VizelCommandSpec` for a specific editor
+ * instance. Until Section 9 ships, builders construct
+ * `VizelCommandSpec` values directly from the legacy item-view types.
+ */
+export interface VizelCommandSpec {
+  /** Stable identifier shared across surfaces (e.g. "format/bold"). */
+  readonly id: string;
+  /** Localized display label. */
+  readonly label: string;
+  /** Optional secondary line (slash menu description, tooltip hint). */
+  readonly description?: string;
+  /** Optional icon identifier resolved by the icon catalog. */
+  readonly icon?: string;
+  /** Optional keyboard shortcut hint. */
+  readonly shortcut?: VizelShortcutSpec;
+  /** Group key for slash menu sections, toolbar grouping, etc. */
+  readonly group?: string;
+  /** Fuzzy-match keywords used by slash menu filtering. */
+  readonly keywords?: readonly string[];
+  /** Whether the command can currently run against the editor. */
+  readonly isEnabled: boolean;
+  /** Whether the command's mark / node is currently active at the selection. */
+  readonly isActive: boolean;
+}
+
+// ============================================================================
+// VizelFormSpec
+// ============================================================================
+
+/**
+ * ARIA attributes for a single form field.
+ */
+export interface VizelFormFieldAttrs {
+  /** Stable id; matches the field's `<label for>`. */
+  id: string;
+  /** Field name used by `<form>` submission and aria. */
+  name: string;
+  /** Localized label announced by assistive tech. */
+  "aria-label": string;
+  /** Whether the field currently violates validation. */
+  "aria-invalid"?: boolean;
+  /** Id of an associated description element (often the error message). */
+  "aria-describedby"?: string;
+}
+
+/**
+ * Spec for a single form field.
+ *
+ * Generic over the value type so consumers can carry strings, numbers,
+ * booleans, or richer value shapes without losing type safety.
+ */
+export interface VizelFormFieldSpec<TValue> {
+  readonly attrs: VizelFormFieldAttrs;
+  readonly value: TValue;
+  /** Localized validation error message (paired with `aria-invalid`). */
+  readonly errorMessage?: string;
+}
+
+/**
+ * ARIA attributes for the form root.
+ */
+export interface VizelFormRootAttrs {
+  /** Stable id; matches each field's `aria-describedby` when needed. */
+  id: string;
+  role: "form";
+  /** Localized label for the form. */
+  "aria-label": string;
+}
+
+/**
+ * Spec for an inline input form.
+ *
+ * Used by link editor (`{ url, text, embed }`), find/replace
+ * (`{ find, replace }`), and future forms. The `TFields` type
+ * parameter constrains the field map so consumers get type-safe access
+ * to each named field.
+ */
+export interface VizelFormSpec<TFields extends Record<string, VizelFormFieldSpec<unknown>>> {
+  readonly root: VizelFormRootAttrs;
+  readonly fields: TFields;
+  /** Localized submit-button label. */
+  readonly submitLabel: string;
+  /** Localized cancel-button label, when the form supports cancel. */
+  readonly cancelLabel?: string;
+  /** Whether the submit action is currently allowed. */
+  readonly canSubmit: boolean;
+}
+
+// ============================================================================
+// VizelGridSpec
+// ============================================================================
+
+/**
+ * ARIA attributes for a grid root.
+ */
+export interface VizelGridRootAttrs {
+  id: string;
+  role: "grid";
+  "aria-label": string;
+}
+
+/**
+ * ARIA attributes for a single grid cell.
+ */
+export interface VizelGridCellAttrs {
+  role: "gridcell";
+  /** Stable id; used by the root's `aria-activedescendant`. */
+  id: string;
+  /** Whether this cell is the active selection. */
+  "aria-selected"?: boolean;
+  /** Cell tabIndex; usually -1 so the root owns keyboard focus. */
+  tabIndex: -1 | 0;
+}
+
+/**
+ * Spec for a single cell inside a grid.
+ *
+ * Generic over the cell payload so consumers can carry color hex
+ * codes, emoji descriptors, or richer cell data while keeping the
+ * structural attrs uniform.
+ */
+export interface VizelGridCellSpec<TCell> {
+  /** Stable iteration key. */
+  readonly key: string;
+  /** Zero-based row position. */
+  readonly row: number;
+  /** Zero-based column position. */
+  readonly col: number;
+  readonly attrs: VizelGridCellAttrs;
+  readonly data: TCell;
+}
+
+/**
+ * Spec for a two-dimensional grid (color picker, future emoji picker).
+ *
+ * Rows are arrays of cells in column order. Empty rows are allowed but
+ * unusual; consumers typically pad the last row when the data does not
+ * divide evenly.
+ */
+export interface VizelGridSpec<TCell> {
+  readonly root: VizelGridRootAttrs;
+  readonly rows: readonly (readonly VizelGridCellSpec<TCell>[])[];
+  /** Currently focused cell position. */
+  readonly focusedPosition: { readonly row: number; readonly col: number };
+}

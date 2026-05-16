@@ -41,9 +41,22 @@ export {
   type VizelToolbarDropdownTriggerSpec,
 } from "./toolbar-dropdown.ts";
 export type {
+  VizelCommandSpec,
+  VizelFormFieldAttrs,
+  VizelFormFieldSpec,
+  VizelFormRootAttrs,
+  VizelFormSpec,
+  VizelGridCellAttrs,
+  VizelGridCellSpec,
+  VizelGridRootAttrs,
+  VizelGridSpec,
   VizelMenuItemAttrs,
   VizelMenuItemSpec,
   VizelMenuRootAttrs,
   VizelMenuSectionSpec,
   VizelMenuSpec,
+  VizelPopoverBodySpec,
+  VizelPopoverSpec,
+  VizelPopoverTriggerSpec,
+  VizelShortcutSpec,
 } from "./types.ts";
