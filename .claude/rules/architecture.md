@@ -31,6 +31,9 @@ Vizel is a **block-based visual Markdown editor** built on Tiptap. The product:
      call `document.addEventListener` directly — they pass an element into a
      controller and let it own the listener.
 
+   The concrete directory layout for these three categories appears in
+   `.claude/rules/packages/core.md` under "Four-Layer Structure".
+
 2. **Framework packages are thin adapters.**
    `@vizel/react`, `@vizel/vue`, and `@vizel/svelte` only:
    - Bind the editor to the framework lifecycle (mount, update, unmount).

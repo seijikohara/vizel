@@ -1,5 +1,26 @@
 // Editor helpers
 
+// Portal utilities (relocated to controllers/ in v2.0.0 Section 1; re-exported here for compat)
+export {
+  createVizelPortalElement,
+  getVizelPortalContainer,
+  hasVizelPortalContainer,
+  mountToVizelPortal,
+  removeVizelPortalContainer,
+  unmountFromVizelPortal,
+  VIZEL_PORTAL_ID,
+  VIZEL_PORTAL_Z_INDEX,
+  type VizelMountPortalOptions,
+  type VizelPortalLayer,
+} from "../controllers/portal.ts";
+// Suggestion container utilities (relocated to controllers/ in v2.0.0 Section 1; re-exported here for compat)
+export {
+  createVizelSuggestionContainer,
+  handleVizelSuggestionEscape,
+  VIZEL_SUGGESTION_Z_INDEX,
+  type VizelDOMRectGetter,
+  type VizelSuggestionContainer,
+} from "../controllers/suggestionContainer.ts";
 // Color utilities
 export { isVizelValidHexColor, normalizeVizelHexColor } from "./colorUtils.ts";
 // Editor factory
@@ -35,6 +56,11 @@ export {
 export { groupByConsecutiveField } from "./groupByField.ts";
 // Keyboard shortcut utilities
 export { formatVizelShortcut, formatVizelTooltip, isVizelMacPlatform } from "./keyboard.ts";
+// Keyboard navigation (pure resolvers for 1D and 2D lists)
+export {
+  resolveVizelGridNavigation,
+  resolveVizelListNavigation,
+} from "./keyboard-navigation.ts";
 // Lazy import utility
 export { createLazyLoader } from "./lazy-import.ts";
 // Markdown utilities
@@ -57,27 +83,6 @@ export {
 } from "./markdown-flavors.ts";
 // Menu positioning utilities
 export { clampMenuPosition, type MenuPosition, shouldFlipSubmenu } from "./menuPositioning.ts";
-// Portal utilities
-export {
-  createVizelPortalElement,
-  getVizelPortalContainer,
-  hasVizelPortalContainer,
-  mountToVizelPortal,
-  removeVizelPortalContainer,
-  unmountFromVizelPortal,
-  VIZEL_PORTAL_ID,
-  VIZEL_PORTAL_Z_INDEX,
-  type VizelMountPortalOptions,
-  type VizelPortalLayer,
-} from "./portal.ts";
-// Suggestion container utilities
-export {
-  createVizelSuggestionContainer,
-  handleVizelSuggestionEscape,
-  VIZEL_SUGGESTION_Z_INDEX,
-  type VizelDOMRectGetter,
-  type VizelSuggestionContainer,
-} from "./suggestionContainer.ts";
 // Text highlight utilities
 export { splitVizelTextByMatches, type VizelTextSegment } from "./textHighlight.ts";
 // Type guard utilities
