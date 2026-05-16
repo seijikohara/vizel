@@ -117,6 +117,7 @@ export {
   createVizelEditorTransactionStore,
   createVizelGridController,
   createVizelListboxController,
+  createVizelPopoverController,
   type VizelDismissibleController,
   type VizelDismissibleControllerOptions,
   type VizelEditorEventName,
@@ -126,6 +127,9 @@ export {
   type VizelGridControllerOptions,
   type VizelListboxController,
   type VizelListboxControllerOptions,
+  type VizelPopoverController,
+  type VizelPopoverControllerOptions,
+  type VizelPopoverPlacement,
 } from "./controllers/index.ts";
 // =============================================================================
 // Extensions
