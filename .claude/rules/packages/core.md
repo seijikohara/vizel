@@ -25,6 +25,40 @@ The core package excludes:
 - Framework-specific state primitives (hooks, composables, runes).
 - Runtime dependencies on React, Vue, or Svelte.
 
+## Four-Layer Structure
+
+The package organizes source code into four directories with strict dependency direction and explicit DOM-touch rules.
+
+```
+packages/core/src/
+├── extensions/      # Tiptap extensions only (createVizel*Extension)
+├── commands/        # Tiptap chain command wrappers and VizelCommand type
+├── builders/        # Pure spec builders (renamed from skeletons/)
+├── controllers/     # DOM-owning controller factories
+├── utils/           # Pure helpers. No DOM access.
+├── _internal/       # Implementation-private symbols, not re-exported
+├── styles/          # SCSS
+└── index.ts
+```
+
+| Layer | Role | DOM access | May depend on |
+|-------|------|-----------|---------------|
+| `extensions/` | Define Tiptap extensions. | Only inside ProseMirror plugins. | `utils/`, `commands/`, Tiptap |
+| `commands/` | Wrap Tiptap chain commands. Define the `VizelCommand` type. | None. | `extensions/`, `utils/` |
+| `builders/` | Build framework-neutral specs. | **None.** | `utils/`, types, locale |
+| `controllers/` | Own DOM listeners through a `{ mount, unmount }` contract. | Inside `mount()` only. Each `mount()` starts with an SSR guard. | `builders/`, `utils/` |
+| `utils/` | Provide pure helpers. | **None.** | Self, types |
+| `_internal/` | Hold implementation-private helpers. | Per the surrounding layer's rule. | Per the surrounding layer's rule |
+
+Naming conventions:
+
+- Extension: `createVizelXxxExtension(options)`.
+- Command: `createVizelXxxCommand` or `applyVizel<Verb>` chain helper.
+- Builder: `buildVizelXxxSpec(input)` returning `VizelXxxSpec`.
+- Controller: `createVizelXxxController({...})` returning `{ mount, unmount }`.
+
+`_internal/` carries a README that records the rule that no symbol inside it appears in `packages/core/src/index.ts`. Framework packages must not re-export `_internal/` symbols.
+
 ## Extension Development
 
 ### Creating Extensions
