@@ -31,7 +31,44 @@ export {
   type VizelSaveStatus,
   type VizelStorageBackend,
 } from "./auto-save.ts";
-
+// =============================================================================
+// UI Skeletons
+// =============================================================================
+export {
+  applyVizelLinkEdit,
+  buildVizelBlockMenuSkeleton,
+  buildVizelFindReplaceViewState,
+  buildVizelFindReplaceViewStateFromLocale,
+  buildVizelLinkEditorViewState,
+  buildVizelMentionMenuSkeleton,
+  buildVizelNodeSelectorSkeleton,
+  buildVizelSlashMenuSkeleton,
+  buildVizelToolbarDropdownSkeleton,
+  getNextVizelSlashMenuGroupIndex,
+  resolveVizelLinkEditorLabels,
+  type VizelBlockMenuItemView,
+  type VizelBlockMenuSpec,
+  type VizelBlockMenuSubmenuTriggerSpec,
+  type VizelBlockMenuTurnIntoItemView,
+  type VizelFindReplaceViewState,
+  type VizelLinkEditorLabels,
+  type VizelLinkEditorViewState,
+  type VizelLinkSubmitParams,
+  type VizelMentionItemView,
+  type VizelMenuItemAttrs,
+  type VizelMenuItemSpec,
+  type VizelMenuRootAttrs,
+  type VizelMenuSectionSpec,
+  type VizelMenuSpec,
+  type VizelNodeSelectorItemView,
+  type VizelNodeSelectorSpec,
+  type VizelNodeSelectorTriggerSpec,
+  type VizelSlashItemView,
+  type VizelSlashMenuSkeletonOptions,
+  type VizelToolbarDropdownItemView,
+  type VizelToolbarDropdownSpec,
+  type VizelToolbarDropdownTriggerSpec,
+} from "./builders/index.ts";
 // =============================================================================
 // Collaboration
 // =============================================================================
@@ -57,7 +94,6 @@ export {
   type VizelCommentState,
   type VizelCommentStorage,
 } from "./comment.ts";
-
 // =============================================================================
 // Extensions
 // =============================================================================
@@ -305,45 +341,6 @@ export {
   VizelPluginManager,
   validateVizelPlugin,
 } from "./plugin-system.ts";
-
-// =============================================================================
-// UI Skeletons
-// =============================================================================
-export {
-  applyVizelLinkEdit,
-  buildVizelBlockMenuSkeleton,
-  buildVizelFindReplaceViewState,
-  buildVizelFindReplaceViewStateFromLocale,
-  buildVizelLinkEditorViewState,
-  buildVizelMentionMenuSkeleton,
-  buildVizelNodeSelectorSkeleton,
-  buildVizelSlashMenuSkeleton,
-  buildVizelToolbarDropdownSkeleton,
-  getNextVizelSlashMenuGroupIndex,
-  resolveVizelLinkEditorLabels,
-  type VizelBlockMenuItemView,
-  type VizelBlockMenuSpec,
-  type VizelBlockMenuSubmenuTriggerSpec,
-  type VizelBlockMenuTurnIntoItemView,
-  type VizelFindReplaceViewState,
-  type VizelLinkEditorLabels,
-  type VizelLinkEditorViewState,
-  type VizelLinkSubmitParams,
-  type VizelMentionItemView,
-  type VizelMenuItemAttrs,
-  type VizelMenuItemSpec,
-  type VizelMenuRootAttrs,
-  type VizelMenuSectionSpec,
-  type VizelMenuSpec,
-  type VizelNodeSelectorItemView,
-  type VizelNodeSelectorSpec,
-  type VizelNodeSelectorTriggerSpec,
-  type VizelSlashItemView,
-  type VizelSlashMenuSkeletonOptions,
-  type VizelToolbarDropdownItemView,
-  type VizelToolbarDropdownSpec,
-  type VizelToolbarDropdownTriggerSpec,
-} from "./skeletons/index.ts";
 // =============================================================================
 // Theme
 // =============================================================================
