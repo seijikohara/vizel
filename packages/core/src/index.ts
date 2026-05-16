@@ -115,11 +115,17 @@ export {
   createVizelDismissibleController,
   createVizelEditorSubscription,
   createVizelEditorTransactionStore,
+  createVizelGridController,
+  createVizelListboxController,
   type VizelDismissibleController,
   type VizelDismissibleControllerOptions,
   type VizelEditorEventName,
   type VizelEditorSubscriptionOptions,
   type VizelEditorTransactionStore,
+  type VizelGridController,
+  type VizelGridControllerOptions,
+  type VizelListboxController,
+  type VizelListboxControllerOptions,
 } from "./controllers/index.ts";
 // =============================================================================
 // Extensions
