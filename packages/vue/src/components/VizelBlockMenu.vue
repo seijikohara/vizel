@@ -177,11 +177,12 @@ watch(
   menuState,
   (state, _prev, onCleanup) => {
     if (!state) return;
-    const dispose = createVizelDismissibleController({
+    const controller = createVizelDismissibleController({
       getElements: () => [menuRef.value, submenuRef.value],
       onDismiss: close,
     });
-    onCleanup(dispose);
+    controller.mount();
+    onCleanup(() => controller.unmount());
   },
   { flush: "post" }
 );
