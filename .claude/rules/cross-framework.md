@@ -8,18 +8,49 @@ paths:
 
 The React, Vue, and Svelte packages must maintain feature parity and consistent APIs.
 
-## Source of Truth
+This file is the single source of truth for cross-framework parity. The six
+tables below are checked programmatically by
+`scripts/check-cross-framework-parity.ts` (added in Section 5b). Drift
+outside the Idiom Exception Catalog (Table 6) is a defect.
 
-`@vizel/core` owns all framework-agnostic code. See `packages/core.md` for the centralization rules.
+The architectural invariants that drive these tables — Core remains
+framework-agnostic, framework packages are thin adapters, UI components
+ship as Core skeletons plus framework renderers — live in
+`.claude/rules/architecture.md`. If this file and architecture.md
+conflict, architecture.md wins.
 
-The framework packages do NOT re-export symbols from `@vizel/core`. Consumers import shared symbols directly:
+## Six SSOT Parity Tables
 
-- Import Vizel types and utilities from `@vizel/core`.
-- Import Tiptap types (`JSONContent`, `Editor`, etc.) from `@tiptap/core`.
+### 1. Identifier Parity Table
 
-## Component Equivalence
+Every hook / composable / rune stem matches across the three framework
+`src/index.ts` exports modulo the idiom-exception prefix (`use*` in
+React and Vue, `create*` for Svelte factories, `get*` for Svelte
+context getters). Differences outside this whitelist are defects.
 
-Each component must exist in all three framework packages with equivalent functionality.
+| React (`hooks/`) | Vue (`composables/`) | Svelte (`runes/`) |
+|------------------|----------------------|--------------------|
+| `useVizelEditor` | `useVizelEditor` | `createVizelEditor` |
+| `useVizelState` | `useVizelState` | `createVizelState` |
+| `useVizelEditorState` | `useVizelEditorState` | `createVizelEditorState` |
+| `useVizelAutoSave` | `useVizelAutoSave` | `createVizelAutoSave` |
+| `useVizelMarkdown` | `useVizelMarkdown` | `createVizelMarkdown` |
+| `useVizelTheme` | `useVizelTheme` | `getVizelTheme` |
+| `useVizelThemeSafe` | `useVizelThemeSafe` | `getVizelThemeSafe` |
+| `useVizelContext` | `useVizelContext` | `getVizelContext` |
+| `useVizelContextSafe` | `useVizelContextSafe` | `getVizelContextSafe` |
+| `useVizelIconContext` | `useVizelIconContext` | `getVizelIconContext` |
+| `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` |
+| `createVizelMentionMenuRenderer` | `createVizelMentionMenuRenderer` | `createVizelMentionMenuRenderer` |
+| `useVizelCollaboration` | `useVizelCollaboration` | `createVizelCollaboration` |
+| `useVizelComment` | `useVizelComment` | `createVizelComment` |
+| `useVizelVersionHistory` | `useVizelVersionHistory` | `createVizelVersionHistory` |
+
+### 2. Component Parity Table
+
+Each component must exist in all three framework packages with equivalent
+functionality. The file-extension column reflects each framework's
+authoring convention.
 
 | Component | React | Vue | Svelte |
 |-----------|-------|-----|--------|
@@ -53,29 +84,143 @@ Each component must exist in all three framework packages with equivalent functi
 | VizelToolbarDropdown | `.tsx` | `.vue` | `.svelte` |
 | VizelToolbarOverflow | `.tsx` | `.vue` | `.svelte` |
 
-## Props Interface
+### 3. Props Parity Table
 
-Each component exposes equivalent props across frameworks. React uses `className`. Vue and Svelte use `class`.
+Each component's prop interface must match across the three frameworks by
+name and shape, modulo the idiom exceptions in Table 6 (`className` vs
+`class`, `children: ReactNode | Snippet`, ref-prop shape). The table
+below lists the load-bearing props for each component; consult the
+per-framework component source for the full set.
 
-```typescript
-interface VizelEditorProps {
-  editor?: Editor | null;
-  class?: string; // React: className
-}
+#### `Vizel` (all-in-one)
 
-interface VizelBubbleMenuProps {
-  editor?: Editor | null;
-  class?: string;
-  children?: ReactNode | VNode | Snippet; // framework-specific child type
-}
-```
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `initialContent` | `JSONContent` | `JSONContent` | `JSONContent` |
+| `initialMarkdown` | `string` | `string` | `string` |
+| `transformDiagramsOnImport` | `boolean` | `boolean` | `boolean` |
+| `placeholder` | `string` | `string` | `string` |
+| `editable` | `boolean` | `boolean` | `boolean` |
+| `autofocus` | `boolean \| "start" \| "end" \| "all" \| number` | (same) | (same) |
+| `features` | `VizelFeatureOptions` | `VizelFeatureOptions` | `VizelFeatureOptions` |
+| `flavor` | `VizelMarkdownFlavor` | `VizelMarkdownFlavor` | `VizelMarkdownFlavor` |
+| `locale` | `VizelLocale` | `VizelLocale` | `VizelLocale` |
+| `extensions` | `Extensions` | `Extensions` | `Extensions` |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+| `showToolbar` | `boolean` | `boolean` | `boolean` |
+| Toolbar slot | `toolbarContent?: (props) => ReactNode` | `<slot name="toolbar" :editor>` | `toolbar?: Snippet<[{ editor }]>` |
+| `showBubbleMenu` | `boolean` | `boolean` | `boolean` |
+| Bubble-menu slot | `bubbleMenuContent?: (props) => ReactNode` | `<slot name="bubble-menu" :editor>` | `bubbleMenu?: Snippet<[{ editor }]>` |
+| `enableEmbed` | `boolean` | `boolean` | `boolean` |
+| Children | `children?: ReactNode` | default slot | `children?: Snippet<[{ editor }]>` |
+| Controlled `markdown` | `string` | `string` (`v-model:markdown`) | `string` (`bind:markdown`) |
+| `onMarkdownChange` | `(md: string) => void` | emitted via `v-model:markdown` | bound via `bind:markdown` |
+| Ref prop | `ref?: Ref<VizelRef>` | template ref → `defineExpose` | `ref?: VizelRef` (mutable prop) |
+| Lifecycle callbacks | `onUpdate`, `onCreate`, `onDestroy`, `onSelectionUpdate`, `onFocus`, `onBlur`, `onError` | (same names) | (same names) |
 
-### Custom Item Renderers
+#### `VizelEditor`
 
-Components that iterate a list (e.g. `VizelSlashMenu`, `VizelMentionMenu`)
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `editor` | `Editor \| null` | `Editor \| null` | `Editor \| null` |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+| Ref prop | `ref?: Ref<VizelExposed>` | template ref → `defineExpose` | `ref?: VizelExposed` |
+
+#### `VizelProvider`
+
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `editor` | `Editor \| null` | `Editor \| null` | `Editor \| null` |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+| Children | `children: ReactNode` (required) | default slot | `children: Snippet` (required) |
+
+#### `VizelThemeProvider`
+
+Extends `VizelThemeProviderOptions` from `@vizel/core` (`defaultTheme`,
+`storageKey`, `targetSelector`, `disableTransitionOnChange`) in all three
+frameworks. The only divergence is the children form.
+
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| Children | `children: ReactNode` (required) | default slot | `children: Snippet` (required) |
+
+#### `VizelBubbleMenu`
+
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `editor` | `Editor \| null` | `Editor \| null` | `Editor \| null` |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+| `showDefaultMenu` | `boolean` | `boolean` | `boolean` |
+| `pluginKey` | `string` | `string` | `string` |
+| `updateDelay` | `number` | `number` | `number` |
+| `shouldShow` | `(props: { editor, from, to }) => boolean` | (same) | (same) |
+| `enableEmbed` | `boolean` | `boolean` | `boolean` |
+| `locale` | `VizelLocale` | `VizelLocale` | `VizelLocale` |
+| Children | `children?: ReactNode` | default slot | `children?: Snippet` |
+
+#### `VizelToolbar`
+
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `editor` | `Editor \| null` | `Editor \| null` | `Editor \| null` |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+| `showDefaultToolbar` | `boolean` | `boolean` | `boolean` |
+| `locale` | `VizelLocale` | `VizelLocale` | `VizelLocale` |
+| Children | `children?: ReactNode` | default slot | `children?: Snippet<[{ editor }]>` |
+
+#### `VizelLinkEditor`
+
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `editor` | `Editor` (required) | `Editor` (required) | `Editor` (required) |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+| Close callback | `onClose?: () => void` | (emit `close`) | `onclose?: () => void` |
+| `enableEmbed` | `boolean` | `boolean` | `boolean` |
+| `locale` | `VizelLocale` | `VizelLocale` | `VizelLocale` |
+
+#### `VizelFindReplace`
+
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `editor` | `Editor \| null` | `Editor \| null` | `Editor \| null` |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+| `locale` | `VizelLocale` | `VizelLocale` | `VizelLocale` |
+| Close callback | `onClose?: () => void` | (emit `close`) | `onClose?: () => void` |
+
+#### `VizelSlashMenu`
+
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `items` | `VizelSlashCommandItem[]` | `VizelSlashCommandItem[]` | `VizelSlashCommandItem[]` |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+| Selection callback | `onSelect: (item) => void` | emit `select` | `onselect?: (item) => void` |
+| `showGroups` | `boolean` | `boolean` | `boolean` |
+| `groupOrder` | `string[]` | `string[]` | `string[]` |
+| Item renderer | `renderItem?: (state) => ReactNode` | `#item` slot | `renderItem?: Snippet<[state]>` |
+| Empty renderer | `renderEmpty?: () => ReactNode` | `#empty` slot | `renderEmpty?: Snippet` |
+| Imperative ref | `ref?: Ref<VizelSlashMenuRef>` | template ref → `defineExpose` | `ref?: VizelSlashMenuRef` (mutable prop) |
+
+#### `VizelColorPicker`
+
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `colors` | `readonly VizelColorDefinition[]` | (same) | (same) |
+| `value` | `string` | `string` | `string` |
+| Change callback | `onChange: (color: string) => void` | emit `change` | `onchange: (color: string) => void` |
+| `label`, `recentColors`, `recentLabel`, `hexPlaceholder`, `applyTitle`, `applyAriaLabel`, `noneValues` | `string` / `string[]` | (same) | (same) |
+| `allowCustomColor`, `showRecentColors` | `boolean` | `boolean` | `boolean` |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+
+Class-prop, ref-prop, and slot/children form differences come from the
+Idiom Exception Catalog (Table 6) and are not defects. Any divergence in
+the other rows is a defect.
+
+#### Custom Item Renderers
+
+Components that iterate a list (`VizelSlashMenu`, `VizelMentionMenu`)
 expose an item-level customization seam through whatever the framework's
 idiomatic slot mechanism is. Consumers may swap the rendering of a
-single item, but the menu container's structure, keyboard handlers, and
+single item; the menu container's structure, keyboard handlers, and
 ARIA wiring stay owned by the component.
 
 | Framework | API form |
@@ -88,25 +233,88 @@ The cross-framework concept is identical — give the consumer the item
 data plus the selection state and let them return a node — only the
 binding form differs to honor each framework's slot idiom.
 
-## State Management Equivalence
+### 4. Return Type Table
 
-Each framework exposes equivalent state primitives under its idiomatic naming.
+| API | React | Vue | Svelte |
+|-----|-------|-----|--------|
+| `useVizelEditor` / `createVizelEditor` | `Editor \| null` | `ShallowRef<Editor \| null>` | `{ readonly current: Editor \| null }` |
+| `useVizelState` / `createVizelState` | `number` | `ComputedRef<number>` | `{ readonly version: number }` |
+| `useVizelEditorState` / `createVizelEditorState` | `VizelEditorState` | `ComputedRef<VizelEditorState>` | `{ readonly current: VizelEditorState }` |
+| `useVizelMarkdown` / `createVizelMarkdown` | `{ markdown: string; setMarkdown: (md: string) => void; isPending: boolean; flush: () => void }` | `{ markdown: Readonly<ShallowRef<string>>; setMarkdown: (md: string) => void; isPending: ComputedRef<boolean>; flush: () => void }` | `{ readonly current: string; setMarkdown: (md: string) => void; readonly isPending: boolean; flush: () => void }` |
+| `useVizelTheme` / `getVizelTheme` | `{ theme: VizelResolvedTheme; setTheme: (next: VizelResolvedTheme) => void }` | `{ theme: ComputedRef<VizelResolvedTheme>; setTheme: (next: VizelResolvedTheme) => void }` | `{ readonly current: VizelResolvedTheme; setTheme: (next: VizelResolvedTheme) => void }` |
+| `useVizelAutoSave` / `createVizelAutoSave` | `{ status: VizelSaveStatus; hasUnsavedChanges: boolean; lastSaved: Date \| null; error: Error \| null; save: () => Promise<void>; restore: () => Promise<JSONContent \| null> }` | `{ status: ComputedRef<VizelSaveStatus>; hasUnsavedChanges: ComputedRef<boolean>; lastSaved: ComputedRef<Date \| null>; error: ComputedRef<Error \| null>; save: () => Promise<void>; restore: () => Promise<JSONContent \| null> }` | `{ readonly status: VizelSaveStatus; readonly hasUnsavedChanges: boolean; readonly lastSaved: Date \| null; readonly error: Error \| null; save: () => Promise<void>; restore: () => Promise<JSONContent \| null> }` |
+| `useVizelContext` / `getVizelContext` | `Editor \| null` | `ShallowRef<Editor \| null>` | `{ readonly current: Editor \| null }` |
+| Suggestion menu imperative ref | `RefObject<{ onKeyDown: (e: KeyboardEvent) => boolean }>` | `Ref<{ onKeyDown: (e: KeyboardEvent) => boolean } \| null>` | `{ onKeyDown: (e: KeyboardEvent) => boolean } \| null` (mutable prop) |
 
-| React (`hooks/`) | Vue (`composables/`) | Svelte (`runes/`) |
-|------------------|----------------------|--------------------|
-| `useVizelEditor` | `useVizelEditor` | `createVizelEditor` |
-| `useVizelState` | `useVizelState` | `createVizelState` |
-| `useVizelEditorState` | `useVizelEditorState` | `createVizelEditorState` |
-| `useVizelAutoSave` | `useVizelAutoSave` | `createVizelAutoSave` |
-| `useVizelMarkdown` | `useVizelMarkdown` | `createVizelMarkdown` |
-| `useVizelTheme` | `useVizelTheme` | `getVizelTheme` |
-| `useVizelContext` | `useVizelContext` | `getVizelContext` |
-| `useVizelIconContext` | `useVizelIconContext` | `getVizelIconContext` |
-| `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` | `createVizelSlashMenuRenderer` |
-| `createVizelMentionMenuRenderer` | `createVizelMentionMenuRenderer` | `createVizelMentionMenuRenderer` |
-| `useVizelCollaboration` | `useVizelCollaboration` | `createVizelCollaboration` |
-| `useVizelComment` | `useVizelComment` | `createVizelComment` |
-| `useVizelVersionHistory` | `useVizelVersionHistory` | `createVizelVersionHistory` |
+Notes on shape choices:
+
+- The Svelte `version` field on `createVizelState` distinguishes the
+  tick value from the editor-instance accessor (`current`) used
+  elsewhere.
+- The Vue `Readonly<ShallowRef<...>>` on `useVizelMarkdown.markdown`
+  signals read-only intent at the type level (writes route through
+  `setMarkdown`).
+- `useVizelAutoSave` is unwrapped in React (snapshot-on-render),
+  `ComputedRef`-wrapped per-field in Vue (templates use `.value`
+  directly), and `readonly`-wrapped in Svelte runes (rune-getter
+  idiom).
+- The Section 4 rationale for the per-framework shape choices lives in
+  `docs/superpowers/specs/2026-05-16-vizel-v2-ideal-interface-design.md`.
+
+### 5. Event Payload Table
+
+Callback prop names and argument shapes are identical across the three
+frameworks. The canonical signatures live in
+`packages/core/src/types.ts` (`VizelEditorOptions`). The framework
+components either accept the callback verbatim as a prop (React, Svelte)
+or emit a matching event (Vue), but the payload shape never changes.
+
+| Callback prop | Argument type | Source |
+|---------------|---------------|--------|
+| `onUpdate` | `(props: { editor: Editor }) => void` | `VizelEditorOptions.onUpdate` |
+| `onCreate` | `(props: { editor: Editor }) => void` | `VizelEditorOptions.onCreate` |
+| `onDestroy` | `() => void` | `VizelEditorOptions.onDestroy` |
+| `onSelectionUpdate` | `(props: { editor: Editor }) => void` | `VizelEditorOptions.onSelectionUpdate` |
+| `onFocus` | `(props: { editor: Editor }) => void` | `VizelEditorOptions.onFocus` |
+| `onBlur` | `(props: { editor: Editor }) => void` | `VizelEditorOptions.onBlur` |
+| `onError` | `(error: VizelError) => void` | `VizelEditorOptions.onError` |
+| `onMarkdownChange` (`Vizel`) | `(markdown: string) => void` | `Vizel` component (controlled markdown) |
+| `onClose` (`VizelLinkEditor`, `VizelFindReplace`) | `() => void` | per-component, dismissal callback |
+| `onSelect` / `onselect` (`VizelSlashMenu`, `VizelMentionMenu`) | `(item: VizelSlashCommandItem) => void` / `(item: VizelMentionItem) => void` | per-component, selection callback |
+| `onChange` / `onchange` (`VizelColorPicker`) | `(color: string) => void` | per-component, selection callback |
+| `onUpload` (image feature) | `(file: File) => Promise<string>` | `VizelImageUploadPluginOptions.onUpload` |
+| `onValidationError` (image feature) | `(error: VizelImageValidationError) => void` | `VizelImageUploadPluginOptions.onValidationError` |
+
+The casing difference for Svelte's `onclose` / `onchange` /
+`onselect` is the same DOM-attribute-casing exception that applies to
+every Svelte 5 component (lowercase native event handlers); the React
+and Vue equivalents use camelCase per their own conventions.
+
+### 6. Idiom Exception Catalog
+
+Differences that fall inside this catalog are intentional and honor the
+host framework's idiom. Differences outside this catalog are defects.
+
+| Target | React | Vue | Svelte | Justification |
+|--------|-------|-----|--------|---------------|
+| Function prefix | `useFoo` | `useFoo` | `createFoo` | Svelte 5 rune convention |
+| Context getter prefix | `useVizelContext` | `useVizelContext` | `getVizelContext` | Svelte context API convention |
+| Hook return type | bare value | `Ref` / `ShallowRef` / `ComputedRef` | `{ readonly current }` | See Return Type Table (Table 4) |
+| Class prop name | `className` | `class` | `class` | Each framework's HTML attribute convention |
+| Children / slot | `children: ReactNode` | `<slot />` / `default` slot | `Snippet` | Each framework's children convention |
+| Imperative ref | `forwardRef` + `useImperativeHandle` | `defineExpose` + template ref | mutable ref prop | Each framework's ref convention |
+| Event handler prop | `onUpdate` | `onUpdate` | `onUpdate` | All frameworks unify on the `on*` callback prop |
+
+## Supporting Conventions
+
+### Source of Truth
+
+`@vizel/core` owns all framework-agnostic code. See `packages/core.md` for the centralization rules.
+
+The framework packages do NOT re-export symbols from `@vizel/core`. Consumers import shared symbols directly:
+
+- Import Vizel types and utilities from `@vizel/core`.
+- Import Tiptap types (`JSONContent`, `Editor`, etc.) from `@tiptap/core`.
 
 ### Naming Conventions
 
@@ -128,12 +336,6 @@ interface VizelEditorOptions {
 }
 ```
 
-### Return Type Equivalence
-
-| React | Vue | Svelte |
-|-------|-----|--------|
-| `Editor \| null` | `ShallowRef<Editor \| null>` | `{ get current(): Editor \| null }` |
-
 ### Editor Accessor Convention
 
 Each framework accepts the editor in the shape that is idiomatic for its
@@ -154,7 +356,7 @@ binding form differs to honor each framework's reactivity model.
 |-------|-----|--------|
 | `Editor \| null` (`useVizelContext()` throws outside a provider; `useVizelContextSafe()` returns `null` both outside a provider and while the provider's editor is still `null`) | `ShallowRef<Editor \| null>` (both `useVizelContext()` and `useVizelContextSafe()`; the safe variant returns `null` outside a provider) | `{ get current(): Editor \| null }` |
 
-## Context API Equivalence
+### Context API Equivalence
 
 | Feature | React | Vue | Svelte |
 |---------|-------|-----|--------|
@@ -169,7 +371,7 @@ wrapper, prepending the consumer-supplied class. The `.vizel-root` selector
 scopes all CSS custom properties (`--vizel-*`), so omitting the class would
 break theming for any descendant that depends on those variables.
 
-## Suggestion Menu Ref Convention
+### Suggestion Menu Ref Convention
 
 `VizelSlashMenu` and `VizelMentionMenu` expose keyboard control to the
 Tiptap suggestion renderer through an imperative `onKeyDown` handle. The
@@ -187,7 +389,7 @@ Svelte (ref-prop pattern). The previous React/Vue declarations used a
 `{ event }` wrapper that did not match the underlying implementation;
 v2.0 collapses them to the raw-event form.
 
-## Reactive vs Mount-time Editor Options
+### Reactive vs Mount-time Editor Options
 
 `useVizelEditor` / `createVizelEditor` create the Tiptap instance once on
 mount. Most options (`initialContent`, `initialMarkdown`, `placeholder`,
@@ -201,7 +403,7 @@ switch the editor between read-write and read-only modes.
 To change other options at runtime, use the corresponding Tiptap command
 (`editor.commands.setContent(...)`, `editor.commands.focus(...)`, etc.).
 
-## State Subscription Convention
+### State Subscription Convention
 
 The `useVizelState` / `createVizelState` primitives in every framework
 wrap `createVizelEditorTransactionStore` from `@vizel/core`. They
@@ -232,7 +434,8 @@ Follow this sequence to add a feature with consistent cross-framework support:
 
 1. Add shared logic and types to `@vizel/core`.
 2. Implement the feature in all three framework packages.
-3. Verify props, options, and return types match across frameworks.
+3. Verify props, options, and return types match across frameworks
+   against the six tables above; update the tables in the same PR.
 4. Update each demo app to exercise the feature.
 5. Add Playwright Component Tests with shared scenarios under `tests/ct/scenarios/`.
 6. Run `pnpm typecheck && pnpm build && pnpm test:ct`.

@@ -23,8 +23,40 @@ This subagent verifies feature parity and API consistency across the three Vizel
    - The hook, composable, and rune share an option interface defined in `@vizel/core`.
    - The return shape matches the framework idiom: `Editor | null` (React), `ShallowRef<Editor | null>` (Vue), `{ get current(): Editor | null }` (Svelte).
    - Shared types, constants, and utilities live in `@vizel/core`.
-4. **Verify the demo apps.** Confirm that each demo under `apps/demo/{react,vue,svelte}/` exercises the new feature.
-5. **Verify the tests.** Confirm that `tests/ct/scenarios/` defines a shared scenario and that `tests/ct/{react,vue,svelte}/specs/` consumes it.
+4. **Run the four Parity Checks** (see next section).
+5. **Verify the demo apps.** Confirm that each demo under `apps/demo/{react,vue,svelte}/` exercises the new feature.
+6. **Verify the tests.** Confirm that `tests/ct/scenarios/` defines a shared scenario and that `tests/ct/{react,vue,svelte}/specs/` consumes it.
+
+## Parity Checks
+
+The six SSOT parity tables in `.claude/rules/cross-framework.md` are
+the contract. Run the following four checks against the changed
+surface. Any divergence outside Table 6 (Idiom Exception Catalog) is a
+defect.
+
+1. **Identifier parity.** Function name stems (hooks, composables,
+   runes) match across `packages/react/src/index.ts`,
+   `packages/vue/src/index.ts`, and `packages/svelte/src/index.ts`,
+   modulo the Category B prefix (`use*` in React and Vue, `create*`
+   for Svelte factories, `get*` for Svelte context getters). Diff the
+   three `index.ts` exports against the Identifier Parity Table.
+2. **Props parity.** For every component touched (or added), the prop
+   types match across frameworks by name and shape. The only allowed
+   shape differences are: `class` vs `className`; children prop type
+   (`ReactNode` vs default slot vs `Snippet`); imperative-ref shape
+   (`Ref<T>` vs `defineExpose` vs mutable ref prop). Cross-check the
+   per-component rows of the Props Parity Table.
+3. **Event payload parity.** Callback argument types match across
+   frameworks. The Vue counterpart may surface a callback prop as an
+   emitted event; the payload shape must still match the React/Svelte
+   callback signature, which itself must match the canonical signature
+   in `packages/core/src/types.ts`. Verify against the Event Payload
+   Table.
+4. **Idiom exception whitelist.** Differences outside the Idiom
+   Exception Catalog (Table 6 in `cross-framework.md`) are defects.
+   Flag any divergence that does not fall into Category B and propose
+   either bringing it back into parity or extending the catalog with a
+   documented justification.
 
 ## Output
 
