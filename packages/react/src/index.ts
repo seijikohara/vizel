@@ -14,6 +14,11 @@ import { initVizelIconRenderer } from "@vizel/core";
 
 initVizelIconRenderer();
 
+// Re-export the full @vizel/core public API so consumers can install only
+// the framework package and import every shared symbol from one place.
+// biome-ignore lint/performance/noReExportAll: intentional re-export mirror per Section 6 of the v2.0.0 spec; named-only would diverge whenever Core adds a symbol.
+export * from "@vizel/core";
+
 // Components
 export {
   useVizelContext,
