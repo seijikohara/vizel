@@ -48,3 +48,6 @@ pre-push:
 
     typecheck:
       run: pnpm typecheck
+
+    parity:
+      run: pnpm check:parity

@@ -33,6 +33,7 @@
     "format:fix": "biome format --write .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
+    "check:parity": "tsx scripts/check-cross-framework-parity.ts",
     "prepare": "lefthook install",
     "deps:check": "pnpm dlx taze major -r",
     "deps:update": "pnpm dlx taze major -r -w && pnpm install"
@@ -110,6 +111,7 @@
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "svelte": "^5.55.7",
+    "tsx": "^4.22.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.13",
     "vitepress": "^2.0.0-alpha.17",
