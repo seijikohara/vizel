@@ -46,9 +46,12 @@ export {
 // Error handling utilities
 export {
   createVizelError,
+  emitVizelError,
   isVizelError,
   VizelError,
   type VizelErrorCode,
+  type VizelErrorOptions,
+  type VizelErrorSeverity,
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./errorHandling.ts";

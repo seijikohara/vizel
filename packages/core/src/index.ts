@@ -438,6 +438,7 @@ export {
   // Suggestion container utilities
   createVizelSuggestionContainer,
   createVizelUploadEventHandler,
+  emitVizelError,
   // Keyboard shortcut utilities
   formatVizelShortcut,
   formatVizelTooltip,
@@ -489,6 +490,8 @@ export {
   type VizelDOMRectGetter,
   VizelError,
   type VizelErrorCode,
+  type VizelErrorOptions,
+  type VizelErrorSeverity,
   type VizelFlavorConfig,
   type VizelMarkdownFlavor,
   type VizelMarkdownSyncHandlers,

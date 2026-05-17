@@ -95,7 +95,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
       } catch (error) {
         const vizelError = wrapAsVizelError(error, {
           context: "Editor initialization failed",
-          code: "EDITOR_INIT_FAILED",
+          code: "INVALID_CONFIG",
         });
         const handler = opts.editorOptions.onError;
         if (handler) {
