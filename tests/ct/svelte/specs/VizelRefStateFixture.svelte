@@ -16,9 +16,9 @@ let editor = $state<Editor | null>(null);
 // The updateCount changes on every editor transaction
 const updateCount = createVizelState(() => editor);
 
-// Use $derived.by to access updateCount.current and create dependency
+// Use $derived.by to access updateCount.version and create dependency
 const editorState = $derived.by(() => {
-  void updateCount.current; // Create dependency on updateCount
+  void updateCount.version; // Create dependency on updateCount
   return getVizelEditorState(editor);
 });
 

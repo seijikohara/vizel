@@ -40,7 +40,7 @@ const effectiveActions = $derived(actions ?? (locale ? createVizelToolbarActions
 const editorState = createVizelState(() => editor);
 
 const groups = $derived.by(() => {
-  void editorState.current;
+  void editorState.version;
   return groupVizelToolbarActions(effectiveActions);
 });
 </script>

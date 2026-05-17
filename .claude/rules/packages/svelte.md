@@ -216,10 +216,13 @@ the page and corrupt sessions when more than one suggestion is open.
 - `VizelProvider` calls `setContext()`.
 - Consumers call `getVizelContext()` for required access or `getVizelContextSafe()` for optional access.
 
+`getVizelContext()` returns a reactive accessor (`{ readonly current: Editor | null }`). Keep the accessor bound and read `.current` inside reactive scopes so the read registers as a dependency.
+
 ```typescript
 import { getVizelContext } from "@vizel/svelte";
 
-const { editor } = getVizelContext();
+const context = getVizelContext();
+// Read context.current inside $derived, $effect, or templates.
 ```
 
 ## Event Handling

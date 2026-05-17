@@ -15,25 +15,25 @@ const editor = createVizelEditor({
 const actualEditor = $derived(nullEditor ? null : editor.current);
 const editorStateRune = createVizelState(() => actualEditor);
 
-// Depend on editorStateRune.current to trigger re-evaluation when editor state changes
+// Depend on editorStateRune.version to trigger re-evaluation when editor state changes
 const isBoldActive = $derived.by(() => {
-  void editorStateRune.current;
+  void editorStateRune.version;
   return actualEditor?.isActive("bold") ?? false;
 });
 const isItalicActive = $derived.by(() => {
-  void editorStateRune.current;
+  void editorStateRune.version;
   return actualEditor?.isActive("italic") ?? false;
 });
 
 // Use getVizelEditorState to get full state including character/word counts
 const fullEditorState = $derived.by(() => {
-  void editorStateRune.current;
+  void editorStateRune.version;
   return getVizelEditorState(actualEditor);
 });
 </script>
 
 <VizelProvider editor={actualEditor}>
-  <div data-testid="update-count">{editorStateRune.current}</div>
+  <div data-testid="update-count">{editorStateRune.version}</div>
   <div data-testid="bold-active">{String(isBoldActive)}</div>
   <div data-testid="italic-active">{String(isItalicActive)}</div>
   <div data-testid="character-count">{fullEditorState.characterCount}</div>
