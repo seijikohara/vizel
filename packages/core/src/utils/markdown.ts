@@ -5,6 +5,7 @@ import {
   transformVizelDiagramCodeBlocks,
   type VizelContentNode,
 } from "./editorHelpers.ts";
+import { emitVizelError, VizelError } from "./errorHandling.ts";
 
 /**
  * Default debounce delay for markdown export in milliseconds.
@@ -50,12 +51,23 @@ function hasMarkdownStorage(editor: Editor): editor is Editor & EditorWithMarkdo
 /**
  * Get markdown content from the editor.
  * Returns empty string if markdown extension is not enabled.
+ *
+ * @param editor - The editor instance
+ * @param onError - Optional callback invoked when the markdown extension is missing.
+ *   When omitted, the error is logged via `console.error` (the `emitVizelError` default).
  */
-export function getVizelMarkdown(editor: Editor | null | undefined): string {
+export function getVizelMarkdown(
+  editor: Editor | null | undefined,
+  onError?: (err: VizelError) => void
+): string {
   if (!editor) return "";
   if (!hasMarkdownExport(editor)) {
-    console.warn(
-      "[Vizel] Markdown extension is not enabled. Enable it via features.markdown option."
+    emitVizelError(
+      new VizelError(
+        "INVALID_EXTENSION",
+        "Markdown extension is not enabled. Enable it via the `features.markdown` option."
+      ),
+      onError
     );
     return "";
   }
@@ -68,7 +80,8 @@ export function getVizelMarkdown(editor: Editor | null | undefined): string {
  *
  * Returns `true` if the operation succeeded, `false` if the editor is missing
  * or the markdown extension is not enabled. When `false` is returned, a
- * warning is also emitted to the console.
+ * {@link VizelError} with code `INVALID_EXTENSION` is emitted via the
+ * `onError` callback (or `console.error` when no callback is supplied).
  *
  * @param editor - The editor instance
  * @param markdown - The markdown content to set
@@ -78,15 +91,19 @@ export function getVizelMarkdown(editor: Editor | null | undefined): string {
 export function setVizelMarkdown(
   editor: Editor | null | undefined,
   markdown: string,
-  options: { transformDiagrams?: boolean } = {}
+  options: { transformDiagrams?: boolean; onError?: (err: VizelError) => void } = {}
 ): boolean {
   if (!editor) return false;
 
-  const { transformDiagrams = true } = options;
+  const { transformDiagrams = true, onError } = options;
 
   if (!hasMarkdownExport(editor)) {
-    console.warn(
-      "[Vizel] Markdown extension is not enabled. Enable it via features.markdown option."
+    emitVizelError(
+      new VizelError(
+        "INVALID_EXTENSION",
+        "Markdown extension is not enabled. Enable it via the `features.markdown` option."
+      ),
+      onError
     );
     return false;
   }
@@ -116,15 +133,19 @@ export function setVizelMarkdown(
 export function parseVizelMarkdown(
   editor: Editor | null | undefined,
   markdown: string,
-  options: { transformDiagrams?: boolean } = {}
+  options: { transformDiagrams?: boolean; onError?: (err: VizelError) => void } = {}
 ): JSONContent | null {
   if (!editor) return null;
 
-  const { transformDiagrams = true } = options;
+  const { transformDiagrams = true, onError } = options;
 
   if (!hasMarkdownStorage(editor)) {
-    console.warn(
-      "[Vizel] Markdown extension is not enabled. Enable it via features.markdown option."
+    emitVizelError(
+      new VizelError(
+        "INVALID_EXTENSION",
+        "Markdown extension is not enabled. Enable it via the `features.markdown` option."
+      ),
+      onError
     );
     return null;
   }

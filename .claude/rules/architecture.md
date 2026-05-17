@@ -71,9 +71,14 @@ These hold across every framework package:
   shapes, and event payloads mirror each other across the three frameworks,
   modulo idiomatic naming (`useFoo` in React and Vue, `createFoo` in Svelte).
   Any divergence requires a rationale comment in the diverging package.
-- **Loud errors at boundaries.** Misuse — conflicting props, invalid editor
-  configuration, missing context — is rejected with a typed `VizelError`
-  carrying a stable error code, not a `console.warn` + silent fallback.
+- **Loud errors at boundaries.** Misuse — conflicting props, invalid
+  editor configuration, missing context — surfaces as a typed
+  `VizelError` carrying a stable `code` from `VizelErrorCode`.
+  Configuration mistakes throw; runtime / input errors flow through
+  `emitVizelError` and the consumer-supplied `onError` callback.
+  `console.warn` and `console.error` are banned inside
+  `packages/core/src/`; the only allowed `console.error` lives inside
+  `emitVizelError`.
 - **SSR safe.** All Core utilities guard `document` / `window` access and
   produce no DOM side effects until a framework lifecycle hook (`onMount`,
   `useEffect`, Vue `onMounted`) runs.

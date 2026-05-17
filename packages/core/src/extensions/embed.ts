@@ -11,6 +11,7 @@
 import { mergeAttributes, Node } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import DOMPurify from "dompurify";
+import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
 
 /**
  * Embed type based on available metadata
@@ -696,11 +697,15 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
               .catch((error) => {
                 const err = error instanceof Error ? error : new Error(String(error));
                 try {
-                  if (this.options.onFetchError) {
-                    this.options.onFetchError(err, url);
-                  } else {
-                    console.error("Failed to fetch embed data:", err);
-                  }
+                  emitVizelError(
+                    new VizelError("EMBED_LOAD_FAILED", `Failed to fetch embed data for ${url}`, {
+                      cause: err,
+                      context: { url },
+                    }),
+                    this.options.onFetchError
+                      ? () => this.options.onFetchError?.(err, url)
+                      : undefined
+                  );
                 } catch {
                   // Ensure fallback update always executes even if callback throws
                 }
@@ -903,11 +908,16 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
                 .catch((error) => {
                   const err = error instanceof Error ? error : new Error(String(error));
                   try {
-                    if (extension.options.onFetchError) {
-                      extension.options.onFetchError(err, trimmedText);
-                    } else {
-                      console.error("Failed to fetch embed data:", err);
-                    }
+                    emitVizelError(
+                      new VizelError(
+                        "EMBED_LOAD_FAILED",
+                        `Failed to fetch embed data for ${trimmedText}`,
+                        { cause: err, context: { url: trimmedText } }
+                      ),
+                      extension.options.onFetchError
+                        ? () => extension.options.onFetchError?.(err, trimmedText)
+                        : undefined
+                    );
                   } catch {
                     // Ensure fallback update always executes even if callback throws
                   }
