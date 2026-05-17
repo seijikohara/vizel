@@ -2,6 +2,7 @@ import type { Editor } from "@tiptap/core";
 import type { IFuseOptions } from "fuse.js";
 import type { SlashItemText, VizelLocale } from "../i18n/types.ts";
 import type { VizelSlashCommandIconName } from "../icons/types.ts";
+import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
 
 /**
  * Range for slash command execution
@@ -291,18 +292,20 @@ export const defaultSlashCommands: SlashCommandItem[] = [
       // event handler (slash-menu Enter), and the file picker dialog MUST be
       // opened on the same stack frame to avoid being blocked by the browser
       // pop-up suppressor. If the Tiptap delete fails (e.g., the document was
-      // mutated between menu open and command run), we log a warning instead
-      // of throwing so the file picker still opens. Production logging hooks
-      // can pick the warning up via `console.warn`.
+      // mutated between menu open and command run), we emit a VizelError
+      // instead of throwing so the file picker still opens. Production logging
+      // hooks can pick the error up via `emitVizelError`'s console fallback.
       try {
         editor.chain().focus().deleteRange(range).run();
       } catch (error) {
-        if (typeof console !== "undefined") {
-          console.warn(
-            "[Vizel] Failed to remove slash command text before opening file picker:",
-            error
-          );
-        }
+        emitVizelError(
+          new VizelError(
+            "INVALID_CONFIG",
+            "Failed to remove slash command text before opening file picker.",
+            { cause: error, severity: "warning" }
+          ),
+          undefined
+        );
       }
 
       // Open file picker dialog (must happen synchronously in user event handler)

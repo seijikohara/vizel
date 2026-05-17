@@ -9,6 +9,7 @@
 import type { IconifyIcon } from "@iconify/utils";
 import { getIconData, iconToSVG } from "@iconify/utils";
 import lucide from "@iconify-json/lucide/icons.json";
+import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
 
 /**
  * Icon names used in slash commands and menus.
@@ -355,8 +356,12 @@ export function renderVizelIcon(
 ): string {
   if (!iconRenderer) {
     if (process.env.NODE_ENV === "development") {
-      console.warn(
-        `[Vizel] Icon renderer not set. Call setVizelIconRenderer() from your framework package (@vizel/react, @vizel/vue, or @vizel/svelte).`
+      emitVizelError(
+        new VizelError(
+          "INVALID_CONFIG",
+          "Icon renderer not set. Call setVizelIconRenderer() from your framework package (@vizel/react, @vizel/vue, or @vizel/svelte)."
+        ),
+        undefined
       );
     }
     return "";
