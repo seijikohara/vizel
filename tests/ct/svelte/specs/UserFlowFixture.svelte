@@ -1,10 +1,10 @@
 <script lang="ts">
-import { VizelMarkdown } from "@vizel/core";
 import {
   createVizelAutoSave,
   createVizelEditor,
   VizelBubbleMenu,
   VizelEditor,
+  VizelMarkdown,
   VizelProvider,
 } from "@vizel/svelte";
 

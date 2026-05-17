@@ -1,5 +1,4 @@
-import type { VizelTheme } from "@vizel/core";
-import { useVizelTheme, VizelThemeProvider } from "@vizel/react";
+import { useVizelTheme, type VizelTheme, VizelThemeProvider } from "@vizel/react";
 
 interface ThemeProviderFixtureProps {
   defaultTheme?: VizelTheme;

@@ -1,6 +1,4 @@
-import type { Editor } from "@tiptap/core";
-import { getVizelEditorState } from "@vizel/core";
-import { useVizelState, Vizel } from "@vizel/react";
+import { type Editor, getVizelEditorState, useVizelState, Vizel } from "@vizel/react";
 import { useState } from "react";
 
 interface VizelRefStateFixtureProps {

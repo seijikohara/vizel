@@ -1,6 +1,10 @@
 <script lang="ts">
-import { VIZEL_HIGHLIGHT_COLORS, VIZEL_TEXT_COLORS, type VizelColorDefinition } from "@vizel/core";
-import { VizelColorPicker } from "@vizel/svelte";
+import {
+  VIZEL_HIGHLIGHT_COLORS,
+  VIZEL_TEXT_COLORS,
+  type VizelColorDefinition,
+  VizelColorPicker,
+} from "@vizel/svelte";
 
 interface Props {
   colors?: VizelColorDefinition[];

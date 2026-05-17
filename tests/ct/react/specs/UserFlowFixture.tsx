@@ -1,9 +1,9 @@
-import { VizelMarkdown } from "@vizel/core";
 import {
   useVizelAutoSave,
   useVizelEditor,
   VizelBubbleMenu,
   VizelEditor,
+  VizelMarkdown,
   VizelProvider,
 } from "@vizel/react";
 import { useState } from "react";

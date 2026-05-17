@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { VizelMarkdownFlavor } from "@vizel/core";
-import { useVizelEditor, VizelEditor, VizelProvider } from "@vizel/vue";
+import { useVizelEditor, VizelEditor, type VizelMarkdownFlavor, VizelProvider } from "@vizel/vue";
 import { ref } from "vue";
 
 const props = withDefaults(

@@ -1,7 +1,8 @@
-import type { Editor, JSONContent } from "@tiptap/core";
-import type { VizelMarkdownFlavor } from "@vizel/core";
-import { createVizelFindReplaceExtension, setVizelMarkdown } from "@vizel/core";
 import {
+  createVizelFindReplaceExtension,
+  type Editor,
+  type JSONContent,
+  setVizelMarkdown,
   useVizelAutoSave,
   useVizelComment,
   useVizelEditorState,
@@ -9,6 +10,7 @@ import {
   useVizelVersionHistory,
   Vizel,
   VizelFindReplace,
+  type VizelMarkdownFlavor,
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/react";

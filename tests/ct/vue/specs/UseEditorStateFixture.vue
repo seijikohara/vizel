@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { getVizelEditorState } from "@vizel/core";
-import { useVizelEditor, useVizelState, VizelEditor, VizelProvider } from "@vizel/vue";
+import {
+  getVizelEditorState,
+  useVizelEditor,
+  useVizelState,
+  VizelEditor,
+  VizelProvider,
+} from "@vizel/vue";
 import { computed } from "vue";
 
 const props = defineProps<{

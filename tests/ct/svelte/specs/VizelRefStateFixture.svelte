@@ -1,7 +1,5 @@
 <script lang="ts">
-import type { Editor } from "@tiptap/core";
-import { getVizelEditorState } from "@vizel/core";
-import { createVizelState, Vizel } from "@vizel/svelte";
+import { createVizelState, type Editor, getVizelEditorState, Vizel } from "@vizel/svelte";
 
 interface Props {
   initialContent?: string;

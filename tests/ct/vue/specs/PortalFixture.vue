@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { PortalLayer } from "@vizel/core";
-import { VizelPortal } from "@vizel/vue";
+import { VizelPortal, type VizelPortalLayer } from "@vizel/vue";
 
 interface Props {
-  layer?: PortalLayer;
+  layer?: VizelPortalLayer;
   disabled?: boolean;
   class?: string;
   withOverflowContainer?: boolean;

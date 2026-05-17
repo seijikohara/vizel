@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import type { Editor } from "@tiptap/core";
-import { getVizelEditorState } from "@vizel/core";
-import { useVizelState, Vizel } from "@vizel/vue";
+import { type Editor, getVizelEditorState, useVizelState, Vizel } from "@vizel/vue";
 import { computed, shallowRef } from "vue";
 
 interface Props {

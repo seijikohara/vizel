@@ -10,7 +10,16 @@
 // =============================================================================
 // Tiptap Re-exports (for framework packages)
 // =============================================================================
-export type { Editor, Extensions, JSONContent } from "@tiptap/core";
+// Tiptap symbol re-exports — see Section 6 of the v2.0.0 spec. Consumers
+// can install only one Vizel framework package and import these without
+// adding @tiptap/core to their dependencies.
+export type {
+  ChainedCommands,
+  Editor,
+  Extensions,
+  JSONContent,
+  Range,
+} from "@tiptap/core";
 export { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
 export type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 

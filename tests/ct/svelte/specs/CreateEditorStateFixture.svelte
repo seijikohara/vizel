@@ -1,6 +1,11 @@
 <script lang="ts">
-import { getVizelEditorState } from "@vizel/core";
-import { createVizelEditor, createVizelState, VizelEditor, VizelProvider } from "@vizel/svelte";
+import {
+  createVizelEditor,
+  createVizelState,
+  getVizelEditorState,
+  VizelEditor,
+  VizelProvider,
+} from "@vizel/svelte";
 
 interface Props {
   nullEditor?: boolean;
