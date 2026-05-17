@@ -354,7 +354,7 @@
       }
     },
     {
-      "includes": ["packages/*/scripts/**/*"],
+      "includes": ["packages/*/scripts/**/*", "scripts/**/*"],
       "linter": {
         "rules": {
           "suspicious": {
