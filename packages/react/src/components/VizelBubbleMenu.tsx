@@ -63,8 +63,8 @@ export function VizelBubbleMenu({
   enableEmbed,
   locale,
 }: VizelBubbleMenuProps) {
-  const context = useVizelContextSafe();
-  const editor = editorProp ?? context?.editor ?? null;
+  const contextEditor = useVizelContextSafe();
+  const editor = editorProp ?? contextEditor;
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Store shouldShow in ref to avoid recreating plugin when callback changes

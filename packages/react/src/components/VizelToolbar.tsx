@@ -40,8 +40,8 @@ export function VizelToolbar({
   children,
   locale,
 }: VizelToolbarProps) {
-  const context = useVizelContextSafe();
-  const editor = editorProp ?? context?.editor ?? null;
+  const contextEditor = useVizelContextSafe();
+  const editor = editorProp ?? contextEditor;
 
   if (!editor) return null;
 
