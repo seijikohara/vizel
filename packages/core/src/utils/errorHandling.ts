@@ -1,61 +1,90 @@
 /**
  * Error codes for Vizel operations.
  *
- * @example
- * ```typescript
- * import { type VizelErrorCode, createVizelError } from '@vizel/core';
+ * Codes group into four categories:
  *
- * const error = createVizelError(
- *   "EDITOR_INIT_FAILED",
- *   "Failed to initialize editor"
- * );
- * ```
+ * - **Configuration** — developer mistakes; surface by `throw`.
+ * - **Input** — runtime data issues; surface via `options.onError`.
+ * - **Runtime** — transient failures; surface via `options.onError`.
+ * - **Collaboration** — collab-specific transport / sync failures.
+ *
+ * `UNKNOWN_ERROR` is the fallback used by {@link wrapAsVizelError} when
+ * no specific code is supplied.
  */
 export type VizelErrorCode =
-  | "EDITOR_INIT_FAILED"
-  | "EXTENSION_LOAD_FAILED"
-  | "IMAGE_UPLOAD_FAILED"
-  | "IMAGE_VALIDATION_FAILED"
+  // Configuration errors (developer mistakes — thrown at boundary).
   | "INVALID_CONFIG"
-  | "MARKDOWN_PARSE_FAILED"
+  | "INVALID_EXTENSION"
+  | "MISSING_CONTEXT"
+  | "INVALID_LOCALE"
+  | "SSR_NOT_SUPPORTED"
+  | "MISSING_OPTIONAL_DEP"
+  // Input errors (runtime data issues — emitted via onError).
+  | "INVALID_MARKDOWN"
+  | "INVALID_JSON_CONTENT"
+  | "INVALID_URL"
+  | "MARKDOWN_LOSSY"
+  // Runtime errors (transient failures — emitted via onError).
+  | "UPLOAD_FAILED"
+  | "EMBED_LOAD_FAILED"
+  | "CLIPBOARD_FAILED"
+  // Collaboration errors.
+  | "COLLAB_DISCONNECTED"
+  | "COLLAB_SYNC_FAILED"
+  // Fallback for `wrapAsVizelError` when no code is supplied.
   | "UNKNOWN_ERROR";
+
+/**
+ * Severity of a {@link VizelError}.
+ *
+ * - `"error"` — the default. Renders via `console.error` when no
+ *   `onError` is set.
+ * - `"warning"` — for non-fatal advisories (e.g. `MARKDOWN_LOSSY`).
+ *   Stays silent if no `onError` is set.
+ */
+export type VizelErrorSeverity = "error" | "warning";
+
+/**
+ * Options accepted by the {@link VizelError} constructor.
+ */
+export interface VizelErrorOptions {
+  /** Severity (default: `"error"`). */
+  severity?: VizelErrorSeverity;
+  /** Free-form structured context attached to the error. */
+  context?: Record<string, unknown>;
+  /** Underlying cause, forwarded to `Error`'s `cause`. */
+  cause?: unknown;
+}
 
 /**
  * Structured error class for Vizel operations.
  *
- * Extends Error to provide stack traces and instanceof checks.
- *
- * @example
- * ```typescript
- * import { VizelError, isVizelError } from '@vizel/core';
- *
- * try {
- *   // ... editor operations
- * } catch (e) {
- *   if (isVizelError(e)) {
- *     console.error(`Vizel error [${e.code}]: ${e.message}`);
- *   }
- * }
- * ```
+ * Extends `Error` so callers get stack traces and `instanceof` checks.
+ * The `originalError` field is retained as an alias for `cause` to keep
+ * pre-v2.0.0 consumer code compiling.
  */
 export class VizelError extends Error {
-  /**
-   * The error code identifying the type of error.
-   */
   readonly code: VizelErrorCode;
-
+  readonly severity: VizelErrorSeverity;
+  readonly context?: Record<string, unknown>;
   /**
-   * The original error that caused this error, if any.
+   * Alias for `Error.cause`. Retained for source compatibility with
+   * pre-v2.0.0 consumers that read `err.originalError`.
    */
   readonly originalError?: unknown;
 
-  constructor(code: VizelErrorCode, message: string, originalError?: unknown) {
-    super(message);
+  constructor(code: VizelErrorCode, message: string, options?: VizelErrorOptions) {
+    super(message, options?.cause === undefined ? undefined : { cause: options.cause });
     this.name = "VizelError";
     this.code = code;
-    this.originalError = originalError;
+    this.severity = options?.severity ?? "error";
+    if (options?.context !== undefined) {
+      this.context = options.context;
+    }
+    if (options?.cause !== undefined) {
+      this.originalError = options.cause;
+    }
 
-    // Maintains proper stack trace for where error was thrown (V8 engines)
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, VizelError);
     }
@@ -63,28 +92,18 @@ export class VizelError extends Error {
 }
 
 /**
- * Create a VizelError instance.
+ * Create a {@link VizelError} instance. Convenience wrapper around `new VizelError(...)`.
  *
- * @param code - The error code
- * @param message - Human-readable error message
- * @param originalError - The original error that caused this error
- * @returns A new VizelError instance
- *
- * @example
- * ```typescript
- * const error = createVizelError(
- *   "IMAGE_UPLOAD_FAILED",
- *   "Failed to upload image: network error",
- *   originalError
- * );
- * ```
+ * @param code - The error code.
+ * @param message - Human-readable error message.
+ * @param options - Optional severity / context / cause.
  */
 export function createVizelError(
   code: VizelErrorCode,
   message: string,
-  originalError?: unknown
+  options?: VizelErrorOptions
 ): VizelError {
-  return new VizelError(code, message, originalError);
+  return new VizelError(code, message, options);
 }
 
 /**
@@ -163,7 +182,7 @@ export interface WrapAsVizelErrorOptions {
  * // With options object
  * const vizelError = wrapAsVizelError(e, {
  *   context: "During initialization",
- *   code: "EDITOR_INIT_FAILED",
+ *   code: "INVALID_CONFIG",
  * });
  * ```
  */
@@ -182,7 +201,7 @@ export function wrapAsVizelError(
   const prefix = context ? `${context}: ` : "";
 
   if (error instanceof Error) {
-    return createVizelError(code, `${prefix}${error.message}`, error);
+    return createVizelError(code, `${prefix}${error.message}`, { cause: error });
   }
 
   // Include string representation of non-Error values for better logging
@@ -191,5 +210,32 @@ export function wrapAsVizelError(
       ? "An unknown error occurred"
       : `An unknown error occurred: ${String(error)}`;
 
-  return createVizelError(code, `${prefix}${errorMessage}`, error);
+  return createVizelError(code, `${prefix}${errorMessage}`, { cause: error });
+}
+
+/**
+ * Emit a {@link VizelError} through the consumer-supplied `onError`
+ * callback, falling back to `console.error` when no callback is set
+ * and the severity is `"error"`. Warnings without a callback stay
+ * silent.
+ *
+ * This is the only function inside `packages/core/src/` that calls
+ * `console`; Biome's `noConsole` rule enforces this.
+ *
+ * @param err - The error to emit.
+ * @param onError - Optional consumer callback.
+ */
+export function emitVizelError(
+  err: VizelError,
+  onError: ((err: VizelError) => void) | undefined
+): void {
+  if (onError) {
+    onError(err);
+    return;
+  }
+  if (err.severity === "error") {
+    // biome-ignore lint/suspicious/noConsole: emitVizelError is the
+    // single sanctioned console site inside packages/core/src/.
+    console.error(err);
+  }
 }

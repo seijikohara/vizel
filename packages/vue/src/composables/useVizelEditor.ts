@@ -94,7 +94,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
       } catch (error) {
         const vizelError = wrapAsVizelError(error, {
           context: "Editor initialization failed",
-          code: "EDITOR_INIT_FAILED",
+          code: "INVALID_CONFIG",
         });
         const handler = editorOptions.onError;
         if (handler) {
