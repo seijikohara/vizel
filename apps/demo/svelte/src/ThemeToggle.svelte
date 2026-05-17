@@ -4,7 +4,7 @@ import { getVizelTheme } from "@vizel/svelte";
 const themeState = getVizelTheme();
 
 function toggleTheme() {
-  themeState.setTheme(themeState.resolvedTheme === "dark" ? "light" : "dark");
+  themeState.setTheme(themeState.current === "dark" ? "light" : "dark");
 }
 </script>
 
@@ -12,7 +12,7 @@ function toggleTheme() {
   type="button"
   class="theme-toggle"
   onclick={toggleTheme}
-  aria-label={`Switch to ${themeState.resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
+  aria-label={`Switch to ${themeState.current === 'dark' ? 'light' : 'dark'} mode`}
 >
-  {themeState.resolvedTheme === "dark" ? "☀️" : "🌙"}
+  {themeState.current === "dark" ? "☀️" : "🌙"}
 </button>
