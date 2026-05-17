@@ -45,12 +45,18 @@ export function useVizelTheme(): UseVizelThemeResult {
   // underlying `VizelThemeState` keeps `theme` (user setting) and
   // `resolvedTheme` (applied) separate; v2 collapses both into a single
   // observable so the toggle pattern stays a one-liner.
+  //
+  // `setTheme` is re-wrapped so the parameter type is physically narrowed
+  // to `VizelResolvedTheme`. The underlying `context.setTheme` accepts
+  // the wider `VizelTheme` (including "system"), and contravariant
+  // assignment would let an `as VizelTheme` cast slip through; the
+  // wrapper makes the narrowing structural.
   return useMemo<UseVizelThemeResult>(
     () => ({
       theme: context.resolvedTheme,
-      setTheme: context.setTheme,
+      setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
     }),
-    [context.resolvedTheme, context.setTheme]
+    [context]
   );
 }
 
@@ -70,7 +76,7 @@ export function useVizelThemeSafe(): UseVizelThemeResult | null {
       context
         ? {
             theme: context.resolvedTheme,
-            setTheme: context.setTheme,
+            setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
           }
         : null,
     [context]

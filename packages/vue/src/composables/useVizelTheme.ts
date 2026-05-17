@@ -50,7 +50,10 @@ export function useVizelTheme(): UseVizelThemeResult {
     // `resolvedTheme` (applied) separate; v2 collapses both into a single
     // observable so the toggle pattern stays a one-liner.
     theme: computed<VizelResolvedTheme>(() => context.resolvedTheme),
-    setTheme: context.setTheme,
+    // Physically narrow `setTheme` to `VizelResolvedTheme` so the public
+    // type matches the runtime guarantee; the underlying provider's
+    // setter accepts the wider `VizelTheme` including "system".
+    setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
   };
 }
 
@@ -65,6 +68,9 @@ export function useVizelThemeSafe(): UseVizelThemeResult | null {
   if (!context) return null;
   return {
     theme: computed<VizelResolvedTheme>(() => context.resolvedTheme),
-    setTheme: context.setTheme,
+    // Physically narrow `setTheme` to `VizelResolvedTheme` so the public
+    // type matches the runtime guarantee; the underlying provider's
+    // setter accepts the wider `VizelTheme` including "system".
+    setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
   };
 }
