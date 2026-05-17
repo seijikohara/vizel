@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Editor } from "@vizel/core";
-import { computed, provide } from "vue";
+import { computed, provide, shallowRef, watch } from "vue";
 import { VIZEL_CONTEXT_KEY } from "./VizelContext.ts";
 
 export interface VizelProviderProps {
@@ -12,7 +12,18 @@ export interface VizelProviderProps {
 
 const props = defineProps<VizelProviderProps>();
 
-provide(VIZEL_CONTEXT_KEY, () => props.editor);
+// Hold the editor in a `shallowRef` so consumers receive a `ShallowRef`
+// directly via `useVizelContext()`, mirroring `useVizelEditor`'s return
+// shape. A watcher keeps the ref in sync with the (possibly null) prop.
+const editorRef = shallowRef<Editor | null>(props.editor);
+watch(
+  () => props.editor,
+  (editor) => {
+    editorRef.value = editor;
+  }
+);
+
+provide(VIZEL_CONTEXT_KEY, editorRef);
 
 // Always emit the `vizel-root` class so consumers get the CSS variable scope
 // for free (.vizel-root { --vizel-* }). Matches the React provider behavior.
