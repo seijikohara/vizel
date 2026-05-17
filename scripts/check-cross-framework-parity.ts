@@ -8,13 +8,16 @@
  * Checks performed:
  *
  * 1. Identifier parity — every "stem" present in at least one framework
- *    must appear in all three, where the stem is the symbol name with the
- *    framework's idiom prefix (`use*` for React and Vue; `create*` or
- *    `get*` for Svelte) stripped.
- * 2. Core re-export stub — confirms that each framework `src/index.ts`
- *    eventually grows an `export * from "@vizel/core"` line (Section 6
- *    enforces this fully; for 5b we only emit a notice).
- * 3. Idiom exception whitelist — Category B exceptions from the
+ *    must appear in all three (idiom prefixes `use*` / `create*` / `get*`
+ *    stripped before comparison).
+ * 2. Core re-export — each framework `src/index.ts` must include
+ *    `export * from "@vizel/core"` (Section 6 of the v2.0.0 spec).
+ * 3. Core symbol reachability — every symbol exported from
+ *    `packages/core/src/index.ts` must remain reachable through each
+ *    framework's public surface. The wildcard re-export from check 2
+ *    forwards every Core symbol by default, so this sub-check guards
+ *    against accidental shadowing by same-named non-Core re-exports.
+ * 4. Idiom exception whitelist — Category B exceptions from the
  *    cross-framework parity spec are recognized and never reported.
  *
  * Exits with code 0 on success, 1 on any parity violation.
@@ -31,29 +34,23 @@ import ts from "typescript";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(SCRIPT_DIR, "..");
+const CORE_INDEX_PATH = resolve(REPO_ROOT, "packages/core/src/index.ts");
 
 interface FrameworkConfig {
   name: "react" | "vue" | "svelte";
   indexPath: string;
-  /**
-   * Idiom prefixes recognized for value symbols. Stripped from a
-   * symbol name to derive its parity stem.
-   */
+  /** Idiom prefixes stripped from value names to derive parity stems. */
   valuePrefixes: readonly string[];
-  /**
-   * Idiom prefixes recognized for type symbols. Types follow the same
-   * verb idiom as their associated function, but in PascalCase
-   * (`UseVizelAutoSaveResult`, `CreateVizelAutoSaveResult`).
-   */
+  /** PascalCase counterparts of `valuePrefixes` for type names. */
   typePrefixes: readonly string[];
 }
 
+// `create*` is shared across frameworks for factory functions outside
+// the hook idiom (e.g. `createVizelSlashMenuRenderer`).
 const FRAMEWORKS: readonly FrameworkConfig[] = [
   {
     name: "react",
     indexPath: resolve(REPO_ROOT, "packages/react/src/index.ts"),
-    // `create*` is shared by React/Vue/Svelte for factory functions that
-    // do not follow the `use*` hook idiom (e.g. `createVizelSlashMenuRenderer`).
     valuePrefixes: ["use", "create"],
     typePrefixes: ["Use", "Create"],
   },
@@ -74,100 +71,43 @@ const FRAMEWORKS: readonly FrameworkConfig[] = [
 /**
  * Idiom exception catalog (Category B from
  * `docs/superpowers/specs/2026-05-16-vizel-v2-ideal-interface-design.md`
- * Section 5).
- *
- * Each entry lists the symbol per framework (or `null` when the symbol
- * is intentionally absent in that framework). When all three frameworks
- * are non-null, the entry pins the exact idiom triple. When one or more
- * are null, the entry is a sanctioned single-framework or paired
- * exception (e.g. Vue's `provideVizelIcons` has no React or Svelte
- * counterpart by design).
- *
+ * Section 5). Each entry pins the per-framework symbol triple, with
+ * `null` marking sanctioned absences (e.g. Vue-only `provideVizelIcons`).
  * Stems built from these entries are excluded from the identifier
- * parity check; missing-in-one-framework entries (with `null`) are
- * never reported as defects.
+ * parity check.
  */
 interface IdiomException {
-  /** Human-readable stem used in error messages. */
   stem: string;
   react: string | null;
   vue: string | null;
   svelte: string | null;
 }
 
+// Build an exception entry from a stem and the Svelte prefix (React and
+// Vue always share `use`). Vue-only `provideVizelIcons` backs
+// `VizelIconProvider`; React and Svelte expose it through the component.
+const idiomEntry = (stem: string, sveltePrefix: "create" | "get"): IdiomException => ({
+  stem,
+  react: `use${stem}`,
+  vue: `use${stem}`,
+  svelte: `${sveltePrefix}${stem}`,
+});
 const IDIOM_EXCEPTIONS: readonly IdiomException[] = [
   // Category B row 1 — function prefix (`useFoo` vs `createFoo`).
-  {
-    stem: "VizelEditor",
-    react: "useVizelEditor",
-    vue: "useVizelEditor",
-    svelte: "createVizelEditor",
-  },
-  { stem: "VizelState", react: "useVizelState", vue: "useVizelState", svelte: "createVizelState" },
-  {
-    stem: "VizelEditorState",
-    react: "useVizelEditorState",
-    vue: "useVizelEditorState",
-    svelte: "createVizelEditorState",
-  },
-  {
-    stem: "VizelAutoSave",
-    react: "useVizelAutoSave",
-    vue: "useVizelAutoSave",
-    svelte: "createVizelAutoSave",
-  },
-  {
-    stem: "VizelMarkdown",
-    react: "useVizelMarkdown",
-    vue: "useVizelMarkdown",
-    svelte: "createVizelMarkdown",
-  },
-  {
-    stem: "VizelCollaboration",
-    react: "useVizelCollaboration",
-    vue: "useVizelCollaboration",
-    svelte: "createVizelCollaboration",
-  },
-  {
-    stem: "VizelComment",
-    react: "useVizelComment",
-    vue: "useVizelComment",
-    svelte: "createVizelComment",
-  },
-  {
-    stem: "VizelVersionHistory",
-    react: "useVizelVersionHistory",
-    vue: "useVizelVersionHistory",
-    svelte: "createVizelVersionHistory",
-  },
+  idiomEntry("VizelEditor", "create"),
+  idiomEntry("VizelState", "create"),
+  idiomEntry("VizelEditorState", "create"),
+  idiomEntry("VizelAutoSave", "create"),
+  idiomEntry("VizelMarkdown", "create"),
+  idiomEntry("VizelCollaboration", "create"),
+  idiomEntry("VizelComment", "create"),
+  idiomEntry("VizelVersionHistory", "create"),
   // Category B row 2 — context getter prefix (`useVizelContext` vs `getVizelContext`).
-  {
-    stem: "VizelContext",
-    react: "useVizelContext",
-    vue: "useVizelContext",
-    svelte: "getVizelContext",
-  },
-  {
-    stem: "VizelContextSafe",
-    react: "useVizelContextSafe",
-    vue: "useVizelContextSafe",
-    svelte: "getVizelContextSafe",
-  },
-  {
-    stem: "VizelIconContext",
-    react: "useVizelIconContext",
-    vue: "useVizelIconContext",
-    svelte: "getVizelIconContext",
-  },
-  { stem: "VizelTheme", react: "useVizelTheme", vue: "useVizelTheme", svelte: "getVizelTheme" },
-  {
-    stem: "VizelThemeSafe",
-    react: "useVizelThemeSafe",
-    vue: "useVizelThemeSafe",
-    svelte: "getVizelThemeSafe",
-  },
-  // Vue-only idiomatic helper: `provide*` composable backing `VizelIconProvider`.
-  // React and Svelte expose the same capability through `VizelIconProvider` only.
+  idiomEntry("VizelContext", "get"),
+  idiomEntry("VizelContextSafe", "get"),
+  idiomEntry("VizelIconContext", "get"),
+  idiomEntry("VizelTheme", "get"),
+  idiomEntry("VizelThemeSafe", "get"),
   { stem: "VizelIcons", react: null, vue: "provideVizelIcons", svelte: null },
 ];
 
@@ -186,15 +126,20 @@ interface FrameworkExports {
   values: ReadonlySet<string>;
   /** Type-only exports (interfaces, type aliases). */
   types: ReadonlySet<string>;
-  /** Raw source text for substring checks (e.g. `export * from`). */
-  source: string;
+  /**
+   * Every explicit named export keyed by name; value is the module
+   * specifier it was re-exported from, or `null` for a bare
+   * `export { foo }` without `from`.
+   */
+  namedExportSources: ReadonlyMap<string, string | null>;
+  /** Module specifiers re-exported via `export * from "X"`. */
+  wildcardSources: ReadonlySet<string>;
 }
 
-function collectExports(config: FrameworkConfig): FrameworkExports {
-  const source = readFileSync(config.indexPath, "utf8");
+function collectExports(indexPath: string, framework: FrameworkConfig["name"]): FrameworkExports {
   const sourceFile = ts.createSourceFile(
-    config.indexPath,
-    source,
+    indexPath,
+    readFileSync(indexPath, "utf8"),
     ts.ScriptTarget.Latest,
     /* setParentNodes */ true,
     ts.ScriptKind.TS
@@ -202,31 +147,35 @@ function collectExports(config: FrameworkConfig): FrameworkExports {
 
   const values = new Set<string>();
   const types = new Set<string>();
+  const namedExportSources = new Map<string, string | null>();
+  const wildcardSources = new Set<string>();
+
+  function handleExportDeclaration(node: ts.ExportDeclaration): void {
+    const moduleSpecifier =
+      node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)
+        ? node.moduleSpecifier.text
+        : null;
+    if (!node.exportClause && moduleSpecifier !== null) {
+      wildcardSources.add(moduleSpecifier);
+      return;
+    }
+    if (!(node.exportClause && ts.isNamedExports(node.exportClause))) return;
+    const declarationIsTypeOnly = node.isTypeOnly === true;
+    for (const element of node.exportClause.elements) {
+      const name = element.name.text;
+      if (declarationIsTypeOnly || element.isTypeOnly === true) types.add(name);
+      else values.add(name);
+      namedExportSources.set(name, moduleSpecifier);
+    }
+  }
 
   function visit(node: ts.Node): void {
-    if (ts.isExportDeclaration(node) && node.exportClause && ts.isNamedExports(node.exportClause)) {
-      const declarationIsTypeOnly = node.isTypeOnly === true;
-      for (const element of node.exportClause.elements) {
-        const name = element.name.text;
-        const elementIsTypeOnly = element.isTypeOnly === true;
-        if (declarationIsTypeOnly || elementIsTypeOnly) {
-          types.add(name);
-        } else {
-          values.add(name);
-        }
-      }
-    }
+    if (ts.isExportDeclaration(node)) handleExportDeclaration(node);
     ts.forEachChild(node, visit);
   }
 
   visit(sourceFile);
-
-  return {
-    framework: config.name,
-    values,
-    types,
-    source,
-  };
+  return { framework, values, types, namedExportSources, wildcardSources };
 }
 
 // =============================================================================
@@ -235,29 +184,26 @@ function collectExports(config: FrameworkConfig): FrameworkExports {
 
 /**
  * Strip the framework's idiom prefix from a symbol name and return the
- * stem. Returns `null` when no recognized prefix applies, signaling
- * that the symbol's name itself is the stem (e.g. component classes
- * `Vizel*`, type aliases, constants).
+ * stem. Returns `null` when no recognized prefix applies (e.g. component
+ * classes, type aliases, constants — the literal name is the stem).
  */
 function stripIdiomPrefix(name: string, prefixes: readonly string[]): string | null {
   for (const prefix of prefixes) {
-    // The prefix must be followed by an uppercase letter to avoid
-    // false positives like `userVizelX` matching `use`.
-    if (name.startsWith(prefix) && name.length > prefix.length) {
-      const firstChar = name.charAt(prefix.length);
-      if (firstChar === firstChar.toUpperCase() && firstChar !== firstChar.toLowerCase()) {
-        return name.slice(prefix.length);
-      }
+    if (!name.startsWith(prefix) || name.length <= prefix.length) continue;
+    // The next character must be uppercase to avoid false positives
+    // like `userVizelX` matching `use`.
+    const next = name.charAt(prefix.length);
+    if (next === next.toUpperCase() && next !== next.toLowerCase()) {
+      return name.slice(prefix.length);
     }
   }
   return null;
 }
 
 /**
- * Bucket each export into either a stemmed identifier (when a prefix
- * strips cleanly) or the literal name (no recognized prefix). The
- * first bucket is used for cross-framework parity comparisons; the
- * second is compared verbatim across the three frameworks.
+ * Bucket each export into a stemmed identifier (prefix strips cleanly)
+ * or a literal name (no recognized prefix). Stems are compared modulo
+ * idiom prefix; literals are compared verbatim across frameworks.
  */
 function categorizeExports(
   exportsByFramework: ReadonlyMap<FrameworkConfig["name"], FrameworkExports>
@@ -271,32 +217,20 @@ function categorizeExports(
   for (const config of FRAMEWORKS) {
     const exportsForFw = exportsByFramework.get(config.name);
     if (!exportsForFw) continue;
-
     const stems = new Map<string, string>();
     const literals = new Set<string>();
-
     for (const value of exportsForFw.values) {
       const stem = stripIdiomPrefix(value, config.valuePrefixes);
-      if (stem === null) {
-        literals.add(value);
-      } else {
-        stems.set(stem, value);
-      }
+      if (stem === null) literals.add(value);
+      else stems.set(stem, value);
     }
     for (const type of exportsForFw.types) {
       const stem = stripIdiomPrefix(type, config.typePrefixes);
-      if (stem === null) {
-        literals.add(type);
-      } else {
-        // Type stems are namespaced with a `T:` prefix so they do not
-        // collide with value stems (e.g. the function `useVizelMarkdown`
-        // and the type `UseVizelMarkdownResult` both contribute
-        // `VizelMarkdown` after prefix stripping, but they are
-        // distinct symbols).
-        stems.set(`T:${stem}`, type);
-      }
+      if (stem === null) literals.add(type);
+      // `T:` prefix prevents collisions with same-stem value symbols
+      // (e.g. `useVizelMarkdown` vs `UseVizelMarkdownResult`).
+      else stems.set(`T:${stem}`, type);
     }
-
     stemsByFramework.set(config.name, stems);
     literalsByFramework.set(config.name, literals);
   }
@@ -309,11 +243,11 @@ function categorizeExports(
 // =============================================================================
 
 interface Violation {
-  category: "identifier" | "literal" | "core-reexport";
+  category: "identifier" | "literal" | "core-reexport" | "core-reachability";
   message: string;
 }
 
-/** Compute the set of frameworks that lack `stem`, honoring `null` exception slots. */
+/** Frameworks lacking `stem`, honoring `null` exception slots. */
 function findFrameworksMissingStem(
   stem: string,
   stemsByFramework: ReadonlyMap<FrameworkConfig["name"], ReadonlyMap<string, string>>,
@@ -321,18 +255,13 @@ function findFrameworksMissingStem(
 ): FrameworkConfig["name"][] {
   const missing: FrameworkConfig["name"][] = [];
   for (const config of FRAMEWORKS) {
-    const hasStem = stemsByFramework.get(config.name)?.has(stem) ?? false;
-    if (hasStem) continue;
-    // If the exception explicitly marks this framework as null, the
-    // symbol is intentionally absent.
-    const exceptionDeclaresAbsent = exception?.[config.name] === null;
-    if (exceptionDeclaresAbsent) continue;
+    if (stemsByFramework.get(config.name)?.has(stem)) continue;
+    if (exception?.[config.name] === null) continue;
     missing.push(config.name);
   }
   return missing;
 }
 
-/** Format a single identifier-parity violation message for a missing stem. */
 function formatIdentifierViolation(
   stem: string,
   missing: readonly FrameworkConfig["name"][],
@@ -341,12 +270,11 @@ function formatIdentifierViolation(
   const isTypeStem = stem.startsWith("T:");
   const displayStem = isTypeStem ? stem.slice(2) : stem;
   const placeholder = (verb: string): string => `(${verb}${displayStem})`;
-  const reactSymbol =
-    stemsByFramework.get("react")?.get(stem) ?? placeholder(isTypeStem ? "Use" : "use");
-  const vueSymbol =
-    stemsByFramework.get("vue")?.get(stem) ?? placeholder(isTypeStem ? "Use" : "use");
-  const svelteSymbol =
-    stemsByFramework.get("svelte")?.get(stem) ?? placeholder(isTypeStem ? "Create" : "create");
+  const get = (fw: FrameworkConfig["name"], fallback: string): string =>
+    stemsByFramework.get(fw)?.get(stem) ?? placeholder(fallback);
+  const reactSymbol = get("react", isTypeStem ? "Use" : "use");
+  const vueSymbol = get("vue", isTypeStem ? "Use" : "use");
+  const svelteSymbol = get("svelte", isTypeStem ? "Create" : "create");
   const label = isTypeStem ? `type stem "${displayStem}"` : `stem "${displayStem}"`;
   return {
     category: "identifier",
@@ -379,18 +307,12 @@ function checkLiteralParity(
   const violations: Violation[] = [];
   const allLiterals = new Set<string>();
   for (const literals of literalsByFramework.values()) {
-    for (const literal of literals) {
-      allLiterals.add(literal);
-    }
+    for (const literal of literals) allLiterals.add(literal);
   }
-
   for (const literal of allLiterals) {
     const missing: FrameworkConfig["name"][] = [];
     for (const config of FRAMEWORKS) {
-      const literals = literalsByFramework.get(config.name);
-      if (!literals?.has(literal)) {
-        missing.push(config.name);
-      }
+      if (!literalsByFramework.get(config.name)?.has(literal)) missing.push(config.name);
     }
     if (missing.length > 0) {
       violations.push({
@@ -399,27 +321,158 @@ function checkLiteralParity(
       });
     }
   }
-
   return violations;
 }
 
-function checkCoreReexportStub(
+function checkCoreReexport(
   exportsByFramework: ReadonlyMap<FrameworkConfig["name"], FrameworkExports>
 ): Violation[] {
-  // Section 6 fully enforces `export * from "@vizel/core"`. For 5b this
-  // is an advisory check — we only emit a notice if the line is absent.
-  // No violations are produced.
+  // Section 6 of the v2.0.0 spec requires every framework package to
+  // re-export the full `@vizel/core` surface so consumers can install
+  // one framework package and import every shared symbol from it.
   const violations: Violation[] = [];
-  const pattern = /export\s*\*\s*from\s*["']@vizel\/core["']/;
+  for (const config of FRAMEWORKS) {
+    const exports = exportsByFramework.get(config.name);
+    if (exports && !exports.wildcardSources.has("@vizel/core")) {
+      violations.push({
+        category: "core-reexport",
+        message: `${config.name} package missing \`export * from "@vizel/core"\` — required by Section 6 of the v2.0.0 spec`,
+      });
+    }
+  }
+  return violations;
+}
+
+// =============================================================================
+// Core symbol reachability
+// =============================================================================
+
+/**
+ * Collect every named export from `@vizel/core/src/index.ts`. Names
+ * starting with `_` are skipped (implementation-private aliases).
+ */
+function collectCoreSymbols(): ReadonlySet<string> {
+  const exports = collectExports(CORE_INDEX_PATH, "react");
+  const symbols = new Set<string>();
+  for (const name of [...exports.values, ...exports.types]) {
+    if (!name.startsWith("_")) symbols.add(name);
+  }
+  return symbols;
+}
+
+/**
+ * Resolve a relative import to its on-disk path. The Svelte package
+ * uses `.js` import strings that resolve to `.ts` / `.svelte.ts` files.
+ */
+function resolveRelativeModule(importerPath: string, specifier: string): string | null {
+  if (!specifier.startsWith(".")) return null;
+  const importerDir = dirname(importerPath);
+  for (const candidate of [
+    specifier,
+    specifier.replace(/\.js$/, ".ts"),
+    specifier.replace(/\.js$/, ".svelte.ts"),
+  ]) {
+    try {
+      const absolute = resolve(importerDir, candidate);
+      readFileSync(absolute, "utf8");
+      return absolute;
+    } catch {
+      // Try the next candidate.
+    }
+  }
+  return null;
+}
+
+/**
+ * Walk a module and return, per exported name, the module specifier
+ * the symbol came from (`null` for a local declaration).
+ */
+function collectModuleReexports(filePath: string): ReadonlyMap<string, string | null> {
+  const sourceFile = ts.createSourceFile(
+    filePath,
+    readFileSync(filePath, "utf8"),
+    ts.ScriptTarget.Latest,
+    /* setParentNodes */ true,
+    ts.ScriptKind.TS
+  );
+  const importedFrom = new Map<string, string>();
+  const reexports = new Map<string, string | null>();
+
+  function visit(node: ts.Node): void {
+    if (
+      ts.isImportDeclaration(node) &&
+      node.importClause?.namedBindings &&
+      ts.isNamedImports(node.importClause.namedBindings) &&
+      ts.isStringLiteral(node.moduleSpecifier)
+    ) {
+      const specifier = node.moduleSpecifier.text;
+      for (const element of node.importClause.namedBindings.elements) {
+        importedFrom.set(element.name.text, specifier);
+      }
+    }
+    if (ts.isExportDeclaration(node) && node.exportClause && ts.isNamedExports(node.exportClause)) {
+      const from =
+        node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)
+          ? node.moduleSpecifier.text
+          : null;
+      // Bare `export { Foo }` resolves to the matching `import { Foo }`
+      // (or to a local declaration when no import exists).
+      for (const element of node.exportClause.elements) {
+        const name = element.name.text;
+        reexports.set(name, from ?? importedFrom.get(name) ?? null);
+      }
+    }
+    ts.forEachChild(node, visit);
+  }
+
+  visit(sourceFile);
+  return reexports;
+}
+
+/**
+ * Trace a same-named export through framework-local modules to confirm
+ * it ultimately originates in `@vizel/core`. Cross-name renames cannot
+ * satisfy same-name reachability, so the walk only follows the same name.
+ */
+function tracesToCore(
+  startFile: string,
+  startSpecifier: string,
+  symbol: string,
+  visited: Set<string> = new Set()
+): boolean {
+  if (startSpecifier === "@vizel/core") return true;
+  if (!startSpecifier.startsWith(".")) return false;
+  const resolved = resolveRelativeModule(startFile, startSpecifier);
+  if (resolved === null || visited.has(resolved) || visited.size > 16) return false;
+  visited.add(resolved);
+  const next = collectModuleReexports(resolved).get(symbol);
+  if (next === undefined || next === null) return false;
+  return tracesToCore(resolved, next, symbol, visited);
+}
+
+/**
+ * `export * from "@vizel/core"` forwards every Core symbol by default;
+ * a same-named explicit export from a framework-local module overrides
+ * the wildcard. The override is safe only when the local re-export
+ * resolves back to the same Core symbol.
+ */
+function checkCoreSymbolReachability(
+  coreSymbols: ReadonlySet<string>,
+  exportsByFramework: ReadonlyMap<FrameworkConfig["name"], FrameworkExports>
+): Violation[] {
+  const violations: Violation[] = [];
   for (const config of FRAMEWORKS) {
     const exports = exportsByFramework.get(config.name);
     if (!exports) continue;
-    if (!pattern.test(exports.source)) {
-      // Emit as a console notice so it shows up in CI logs without
-      // failing the run. Section 6 will upgrade this to a violation.
-      console.log(
-        `note: ${config.name}/src/index.ts does not yet contain \`export * from "@vizel/core"\` (will be enforced in Section 6).`
-      );
+    for (const symbol of coreSymbols) {
+      const overrideSource = exports.namedExportSources.get(symbol);
+      if (overrideSource === undefined) continue;
+      if (overrideSource === null || overrideSource === "@vizel/core") continue;
+      if (tracesToCore(config.indexPath, overrideSource, symbol)) continue;
+      violations.push({
+        category: "core-reachability",
+        message: `${config.name} shadows Core symbol "${symbol}" with an explicit export from "${overrideSource}" — remove the explicit export or rename it to keep the @vizel/core symbol reachable`,
+      });
     }
   }
   return violations;
@@ -432,15 +485,18 @@ function checkCoreReexportStub(
 function main(): number {
   const exportsByFramework = new Map<FrameworkConfig["name"], FrameworkExports>();
   for (const config of FRAMEWORKS) {
-    exportsByFramework.set(config.name, collectExports(config));
+    exportsByFramework.set(config.name, collectExports(config.indexPath, config.name));
   }
+
+  const coreSymbols = collectCoreSymbols();
 
   const { stemsByFramework, literalsByFramework } = categorizeExports(exportsByFramework);
 
   const violations: Violation[] = [
     ...checkIdentifierParity(stemsByFramework),
     ...checkLiteralParity(literalsByFramework),
-    ...checkCoreReexportStub(exportsByFramework),
+    ...checkCoreReexport(exportsByFramework),
+    ...checkCoreSymbolReachability(coreSymbols, exportsByFramework),
   ];
 
   if (violations.length === 0) {
