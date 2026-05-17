@@ -291,6 +291,19 @@
       }
     },
     {
+      "includes": ["packages/core/src/**/*.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": {
+              "level": "error",
+              "options": { "allow": [] }
+            }
+          }
+        }
+      }
+    },
+    {
       "includes": ["packages/core/src/styles/**/*.css"],
       "linter": {
         "rules": {
