@@ -298,9 +298,15 @@ export const defaultSlashCommands: SlashCommandItem[] = [
       try {
         editor.chain().focus().deleteRange(range).run();
       } catch (error) {
+        // Use UNKNOWN_ERROR because the failure is a transient runtime
+        // race (document mutated between slash-menu open and command
+        // run), and the spec's error categories have no domain-specific
+        // code for command-range staleness. Severity is "warning" so
+        // the default emit fallback stays silent while consumers that
+        // wire `onError` still see it.
         emitVizelError(
           new VizelError(
-            "INVALID_CONFIG",
+            "UNKNOWN_ERROR",
             "Failed to remove slash command text before opening file picker.",
             { cause: error, severity: "warning" }
           ),

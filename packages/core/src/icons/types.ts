@@ -355,15 +355,19 @@ export function renderVizelIcon(
   options?: VizelIconRendererOptions
 ): string {
   if (!iconRenderer) {
-    if (process.env.NODE_ENV === "development") {
-      emitVizelError(
-        new VizelError(
-          "INVALID_CONFIG",
-          "Icon renderer not set. Call setVizelIconRenderer() from your framework package (@vizel/react, @vizel/vue, or @vizel/svelte)."
-        ),
-        undefined
-      );
-    }
+    // Emit as warning so production stays silent under the default
+    // `emitVizelError` fallback (warnings with no `onError` are silent),
+    // while consumers wiring `onError` still surface the misconfiguration.
+    // This avoids a `process.env.NODE_ENV` guard, which would not collapse
+    // safely in non-Node ESM consumers.
+    emitVizelError(
+      new VizelError(
+        "INVALID_CONFIG",
+        "Icon renderer not set. Call setVizelIconRenderer() from your framework package (@vizel/react, @vizel/vue, or @vizel/svelte).",
+        { severity: "warning" }
+      ),
+      undefined
+    );
     return "";
   }
   return iconRenderer(name, options);
