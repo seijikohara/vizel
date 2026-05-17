@@ -55,8 +55,8 @@ export function VizelBlockMenu({
   className,
   locale,
 }: VizelBlockMenuProps): ReactNode {
-  const context = useVizelContextSafe();
-  const boundEditor: Editor | null = editorProp ?? context?.editor ?? null;
+  const contextEditor = useVizelContextSafe();
+  const boundEditor: Editor | null = editorProp ?? contextEditor;
   const effectiveActions = useMemo(
     () => actions ?? (locale ? createVizelBlockMenuActions(locale) : vizelDefaultBlockMenuActions),
     [actions, locale]

@@ -7,16 +7,20 @@ interface ThemeProviderFixtureProps {
 }
 
 function ThemeContent() {
-  const { theme, resolvedTheme, setTheme } = useVizelTheme();
+  const { theme, setTheme } = useVizelTheme();
 
   const toggleTheme = () => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
+  // The v2 hook collapses `theme` (user setting) and `resolvedTheme` (applied)
+  // into a single resolved value. Render the same source under both legacy
+  // testids so existing scenarios keep passing without depending on the
+  // removed `VizelThemeState` shape.
   return (
     <div data-testid="theme-content">
       <span data-testid="current-theme">{theme}</span>
-      <span data-testid="resolved-theme">{resolvedTheme}</span>
+      <span data-testid="resolved-theme">{theme}</span>
       <button type="button" data-testid="toggle-theme" onClick={toggleTheme}>
         Toggle
       </button>

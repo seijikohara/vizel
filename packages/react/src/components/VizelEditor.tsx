@@ -39,8 +39,8 @@ export interface VizelExposed {
  * ```
  */
 export function VizelEditor({ ref, editor: editorProp, className }: VizelEditorProps): ReactNode {
-  const context = useVizelContextSafe();
-  const editor = editorProp ?? context?.editor;
+  const contextEditor = useVizelContextSafe();
+  const editor = editorProp ?? contextEditor;
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Expose container ref via imperative handle

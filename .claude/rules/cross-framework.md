@@ -152,7 +152,7 @@ binding form differs to honor each framework's reactivity model.
 
 | React | Vue | Svelte |
 |-------|-----|--------|
-| `{ editor: Editor \| null }` | `ShallowRef<Editor \| null>` (both `useVizelContext()` and `useVizelContextSafe()`; the safe variant returns `null` outside a provider) | `{ get current(): Editor \| null }` |
+| `Editor \| null` (`useVizelContext()` throws outside a provider; `useVizelContextSafe()` returns `null` both outside a provider and while the provider's editor is still `null`) | `ShallowRef<Editor \| null>` (both `useVizelContext()` and `useVizelContextSafe()`; the safe variant returns `null` outside a provider) | `{ get current(): Editor \| null }` |
 
 ## Context API Equivalence
 
