@@ -99,3 +99,26 @@ if (isAction(data)) {
   data.type; // narrowed safely
 }
 ```
+
+## Error Handling
+
+Vizel uses a single error model rooted at `VizelError`. Errors fall
+into three categories, each with its own delivery channel:
+
+| Category | Delivery | Examples |
+|----------|----------|----------|
+| Developer mistake (boundary) | `throw new VizelError(...)` | `INVALID_CONFIG`, `MISSING_CONTEXT` |
+| Runtime error (recoverable) | `emitVizelError(err, options.onError)` | `UPLOAD_FAILED`, `EMBED_LOAD_FAILED` |
+| Warning (advisory) | `emitVizelError(err, options.onError)` with `severity: "warning"` | `MARKDOWN_LOSSY` |
+
+Rules:
+
+- **No `console` calls** inside `packages/core/src/`. Biome's
+  `noConsole` rule enforces this. The single sanctioned site is
+  `emitVizelError` itself, which falls back to `console.error` when no
+  callback is supplied.
+- Always pass a stable `VizelErrorCode` — do not invent ad-hoc strings.
+- Attach structured context via the `context` field (`{ url, file, ... }`)
+  rather than embedding details in the message.
+- Forward the underlying cause via the `cause` option so stack traces
+  survive.
