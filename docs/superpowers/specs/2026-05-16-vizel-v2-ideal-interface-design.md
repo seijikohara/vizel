@@ -262,7 +262,9 @@ add per-framework templates to `.claude/rules/packages/{react,vue,svelte}.md`.
 The hook, composable, and rune return types follow each framework's
 idiom rather than a forced shared shape. The argument types, callback
 signatures, props, events, and underlying builder/controller layers
-remain symmetric.
+remain symmetric. **Consumer extras (`setMarkdown`, `isPending`, `save`,
+`restore`, `hasUnsavedChanges`, `error`) are preserved** — only the
+shape of the reactive wrapper changes per framework.
 
 ### Return type table
 
@@ -270,11 +272,25 @@ remain symmetric.
 |-----|-------|-----|--------|
 | `useVizelEditor` / `createVizelEditor` | `Editor \| null` | `ShallowRef<Editor \| null>` | `{ readonly current: Editor \| null }` |
 | `useVizelState` / `createVizelState` | `number` | `ComputedRef<number>` | `{ readonly version: number }` |
-| `useVizelMarkdown` / `createVizelMarkdown` | `{ markdown: string; flush: () => void }` | `{ markdown: Readonly<ShallowRef<string>>; flush: () => void }` | `{ readonly current: string; flush: () => void }` |
-| `useVizelTheme` / `createVizelTheme` | `{ theme: VizelTheme; setTheme: (next: "light" \| "dark") => void }` | `{ theme: ComputedRef<VizelTheme>; setTheme: (next: "light" \| "dark") => void }` | `{ readonly current: VizelTheme; setTheme: (next: "light" \| "dark") => void }` |
-| `useVizelAutoSave` | `{ status: VizelSaveStatus; lastSaved: Date \| null }` snapshot | `{ status: ComputedRef<VizelSaveStatus>; lastSaved: ComputedRef<Date \| null> }` | `{ readonly status: VizelSaveStatus; readonly lastSaved: Date \| null }` |
+| `useVizelEditorState` / `createVizelEditorState` | `VizelEditorState` | `ComputedRef<VizelEditorState>` | `{ readonly current: VizelEditorState }` |
+| `useVizelMarkdown` / `createVizelMarkdown` | `{ markdown: string; setMarkdown: (md: string) => void; isPending: boolean; flush: () => void }` | `{ markdown: Readonly<ShallowRef<string>>; setMarkdown: (md: string) => void; isPending: ComputedRef<boolean>; flush: () => void }` | `{ readonly current: string; setMarkdown: (md: string) => void; readonly isPending: boolean; flush: () => void }` |
+| `useVizelTheme` / `getVizelTheme` | `{ theme: VizelTheme; setTheme: (next: "light" \| "dark") => void }` | `{ theme: ComputedRef<VizelTheme>; setTheme: (next: "light" \| "dark") => void }` | `{ readonly current: VizelTheme; setTheme: (next: "light" \| "dark") => void }` |
+| `useVizelAutoSave` / `createVizelAutoSave` | `{ status: VizelSaveStatus; hasUnsavedChanges: boolean; lastSaved: Date \| null; error: Error \| null; save: () => Promise<void>; restore: () => Promise<JSONContent \| null> }` | `{ status: ComputedRef<VizelSaveStatus>; hasUnsavedChanges: ComputedRef<boolean>; lastSaved: ComputedRef<Date \| null>; error: ComputedRef<Error \| null>; save: () => Promise<void>; restore: () => Promise<JSONContent \| null> }` | `{ readonly status: VizelSaveStatus; readonly hasUnsavedChanges: boolean; readonly lastSaved: Date \| null; readonly error: Error \| null; save: () => Promise<void>; restore: () => Promise<JSONContent \| null> }` |
 | `useVizelContext` / `getVizelContext` | `Editor \| null` | `ShallowRef<Editor \| null>` | `{ readonly current: Editor \| null }` |
 | Suggestion menu imperative ref | `RefObject<{ onKeyDown: (e: KeyboardEvent) => boolean }>` | `Ref<{ onKeyDown: (e: KeyboardEvent) => boolean } \| null>` | `{ onKeyDown: (e: KeyboardEvent) => boolean } \| null` (mutable prop) |
+
+Notes on shape choices:
+
+- The Svelte `version` field on `createVizelState` distinguishes the
+  tick value from the editor-instance accessor (`current`) used
+  elsewhere.
+- The Vue `Readonly<ShallowRef<...>>` on `useVizelMarkdown.markdown`
+  signals read-only intent at the type level (writes route through
+  `setMarkdown`).
+- `useVizelAutoSave` is unwrapped in React (snapshot-on-render),
+  `ComputedRef`-wrapped per-field in Vue (templates use `.value`
+  directly), and `readonly`-wrapped in Svelte runes (rune-getter
+  idiom).
 
 Each hook, composable, and rune disposes of its internal resources
 during the framework's teardown lifecycle (`useEffect` cleanup,
@@ -293,9 +309,10 @@ Vue users encounter Vue's standard destructure caveat: `const { value } =
 ref` loses reactivity. This caveat applies regardless of the shape Vizel
 returns.
 
-`.claude/` updates: document this decision in the new "Return Type Table"
-section of `.claude/rules/cross-framework.md`; reference it from
-`.claude/rules/packages/vue.md` for the destructure caveat.
+`.claude/` updates: each per-framework PR updates the corresponding
+rows of `.claude/rules/cross-framework.md`'s return-type tables so the
+rule and the code stay in lockstep; `.claude/rules/packages/vue.md`
+gets a Composable Destructure Caveat note.
 
 ---
 
