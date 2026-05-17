@@ -1,4 +1,4 @@
-import type { VizelResolvedTheme, VizelTheme } from "@vizel/core";
+import type { VizelResolvedTheme } from "@vizel/core";
 import { type ComputedRef, computed, inject } from "vue";
 import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext";
 
@@ -8,15 +8,15 @@ import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext";
  * The flat `{ theme, setTheme }` shape mirrors the React hook and Svelte
  * rune. `theme` reflects the currently applied (resolved) theme so consumers
  * can build a simple toggle without reading any other field. `setTheme`
- * accepts only `"light" | "dark"` because the v2 surface intentionally
- * restricts callers to concrete themes — entering "system" mode is the
- * provider's `defaultTheme` concern, not a runtime toggle.
+ * accepts only concrete `VizelResolvedTheme` values because entering
+ * "system" mode is the provider's `defaultTheme` concern, not a runtime
+ * toggle.
  */
 export interface UseVizelThemeResult {
   /** Currently applied theme (resolved from the user's preference). */
-  theme: ComputedRef<VizelTheme>;
+  theme: ComputedRef<VizelResolvedTheme>;
   /** Switch the editor theme to a concrete value. */
-  setTheme: (next: "light" | "dark") => void;
+  setTheme: (next: VizelResolvedTheme) => void;
 }
 
 /**
@@ -49,7 +49,7 @@ export function useVizelTheme(): UseVizelThemeResult {
     // underlying `VizelThemeState` keeps `theme` (user setting) and
     // `resolvedTheme` (applied) separate; v2 collapses both into a single
     // observable so the toggle pattern stays a one-liner.
-    theme: computed<VizelTheme>(() => context.resolvedTheme satisfies VizelResolvedTheme),
+    theme: computed<VizelResolvedTheme>(() => context.resolvedTheme),
     setTheme: context.setTheme,
   };
 }
@@ -64,7 +64,7 @@ export function useVizelThemeSafe(): UseVizelThemeResult | null {
   const context = inject(VIZEL_THEME_CONTEXT_KEY, null);
   if (!context) return null;
   return {
-    theme: computed<VizelTheme>(() => context.resolvedTheme satisfies VizelResolvedTheme),
+    theme: computed<VizelResolvedTheme>(() => context.resolvedTheme),
     setTheme: context.setTheme,
   };
 }
