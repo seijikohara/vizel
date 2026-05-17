@@ -1,5 +1,4 @@
-import { VizelMarkdown } from "@vizel/core";
-import { useVizelEditor, VizelEditor, VizelProvider } from "@vizel/react";
+import { useVizelEditor, VizelEditor, VizelMarkdown, VizelProvider } from "@vizel/react";
 import { useState } from "react";
 
 export function MarkdownFixture() {

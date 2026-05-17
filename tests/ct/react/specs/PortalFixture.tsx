@@ -1,5 +1,4 @@
-import type { VizelPortalLayer } from "@vizel/core";
-import { VizelPortal } from "@vizel/react";
+import { VizelPortal, type VizelPortalLayer } from "@vizel/react";
 
 interface PortalFixtureProps {
   layer?: VizelPortalLayer;

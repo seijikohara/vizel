@@ -1,5 +1,4 @@
-import type { VizelMarkdownFlavor } from "@vizel/core";
-import { useVizelEditor, VizelEditor, VizelProvider } from "@vizel/react";
+import { useVizelEditor, VizelEditor, type VizelMarkdownFlavor, VizelProvider } from "@vizel/react";
 import { useState } from "react";
 
 export interface MarkdownFlavorsFixtureProps {

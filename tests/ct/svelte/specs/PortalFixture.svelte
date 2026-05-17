@@ -1,9 +1,8 @@
 <script lang="ts">
-import type { PortalLayer } from "@vizel/core";
-import { VizelPortal } from "@vizel/svelte";
+import { VizelPortal, type VizelPortalLayer } from "@vizel/svelte";
 
 interface Props {
-  layer?: PortalLayer;
+  layer?: VizelPortalLayer;
   disabled?: boolean;
   class?: string;
   withOverflowContainer?: boolean;

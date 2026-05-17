@@ -1,6 +1,5 @@
 <script lang="ts">
-import { VizelMarkdown } from "@vizel/core";
-import { createVizelEditor, VizelEditor, VizelProvider } from "@vizel/svelte";
+import { createVizelEditor, VizelEditor, VizelMarkdown, VizelProvider } from "@vizel/svelte";
 
 let markdownOutput = $state("");
 

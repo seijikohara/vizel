@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import type { Editor, JSONContent } from "@tiptap/core";
-import type { VizelMarkdownFlavor } from "@vizel/core";
-import { createVizelFindReplaceExtension, setVizelMarkdown } from "@vizel/core";
 import {
+  createVizelFindReplaceExtension,
+  type Editor,
+  type JSONContent,
+  setVizelMarkdown,
   useVizelAutoSave,
   useVizelComment,
   useVizelEditorState,
   useVizelVersionHistory,
   Vizel,
   VizelFindReplace,
+  type VizelMarkdownFlavor,
   VizelSaveIndicator,
   VizelThemeProvider,
 } from "@vizel/vue";

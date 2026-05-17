@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { VizelMarkdown } from "@vizel/core";
-import { useVizelEditor, VizelEditor, VizelProvider } from "@vizel/vue";
+import { useVizelEditor, VizelEditor, VizelMarkdown, VizelProvider } from "@vizel/vue";
 import { ref } from "vue";
 
 const markdownOutput = ref("");

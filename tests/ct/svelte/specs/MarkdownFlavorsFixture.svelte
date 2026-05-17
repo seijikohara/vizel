@@ -1,6 +1,10 @@
 <script lang="ts">
-import type { VizelMarkdownFlavor } from "@vizel/core";
-import { createVizelEditor, VizelEditor, VizelProvider } from "@vizel/svelte";
+import {
+  createVizelEditor,
+  VizelEditor,
+  type VizelMarkdownFlavor,
+  VizelProvider,
+} from "@vizel/svelte";
 
 interface Props {
   flavor?: VizelMarkdownFlavor;

@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import type { SaveStatus } from "@vizel/core";
+import type { VizelSaveStatus } from "@vizel/core";
 
 /**
  * Shared test scenarios for SaveIndicator component
@@ -10,7 +10,7 @@ import type { SaveStatus } from "@vizel/core";
  * Test that SaveIndicator renders correctly with each status
  */
 export async function testSaveIndicatorStatuses(
-  mount: (status: SaveStatus) => Promise<Locator>,
+  mount: (status: VizelSaveStatus) => Promise<Locator>,
   _page: Page
 ): Promise<void> {
   // Test 'saved' status

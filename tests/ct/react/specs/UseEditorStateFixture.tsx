@@ -1,5 +1,10 @@
-import { getVizelEditorState } from "@vizel/core";
-import { useVizelEditor, useVizelState, VizelEditor, VizelProvider } from "@vizel/react";
+import {
+  getVizelEditorState,
+  useVizelEditor,
+  useVizelState,
+  VizelEditor,
+  VizelProvider,
+} from "@vizel/react";
 
 interface UseEditorStateFixtureProps {
   nullEditor?: boolean;

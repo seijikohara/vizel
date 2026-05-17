@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { VIZEL_HIGHLIGHT_COLORS, VIZEL_TEXT_COLORS, type VizelColorDefinition } from "@vizel/core";
-import { VizelColorPicker } from "@vizel/vue";
+import {
+  VIZEL_HIGHLIGHT_COLORS,
+  VIZEL_TEXT_COLORS,
+  type VizelColorDefinition,
+  VizelColorPicker,
+} from "@vizel/vue";
 import { computed, ref } from "vue";
 
 const props = withDefaults(
