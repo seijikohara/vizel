@@ -18,16 +18,16 @@ import reactLogo from "../../shared/logos/react.svg";
 import { mockMentionItems, mockUploadImage } from "../../shared/utils";
 
 function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useVizelTheme();
+  const { theme, setTheme } = useVizelTheme();
 
   return (
     <button
       type="button"
       className="theme-toggle"
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      aria-label={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
     >
-      {resolvedTheme === "dark" ? "☀️" : "🌙"}
+      {theme === "dark" ? "☀️" : "🌙"}
     </button>
   );
 }
