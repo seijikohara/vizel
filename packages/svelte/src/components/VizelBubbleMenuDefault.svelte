@@ -42,11 +42,11 @@ const markGroups = $derived(
   groupVizelBubbleMenuActions(filteredActions.filter((a) => a.id !== "link"))
 );
 
-// Reading `editorState.current` inside the derived isActive map registers the
+// Reading `editorState.version` inside the derived isActive map registers the
 // version counter as a tracked dependency so re-renders happen on every
 // selection change. The value itself is discarded.
 const isActive = $derived.by(() => {
-  void editorState.current;
+  void editorState.version;
   return (actionId: string): boolean => {
     const action = filteredActions.find((a) => a.id === actionId);
     return action ? action.isActive(editor) : false;

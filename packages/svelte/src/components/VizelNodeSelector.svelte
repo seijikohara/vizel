@@ -31,7 +31,7 @@ let dropdownRef: HTMLDivElement | undefined = $state();
 let triggerRef: HTMLButtonElement | undefined = $state();
 
 const spec = $derived.by(() => {
-  void editorState.current;
+  void editorState.version;
   return buildVizelNodeSelectorSpec(editor, effectiveNodeTypes, isOpen, focusedIndex, locale);
 });
 

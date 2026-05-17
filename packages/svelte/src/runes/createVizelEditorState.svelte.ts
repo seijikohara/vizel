@@ -31,8 +31,8 @@ export function createVizelEditorState(getEditor: () => Editor | null | undefine
 
   return {
     get current() {
-      // Access state.current to establish reactivity dependency
-      void state.current;
+      // Access state.version to establish reactivity dependency
+      void state.version;
       return getVizelEditorState(getEditor());
     },
   };
