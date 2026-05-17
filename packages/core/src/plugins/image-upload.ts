@@ -5,6 +5,7 @@ import {
   VIZEL_DEFAULT_FILE_MIME_TYPES,
   VIZEL_DEFAULT_IMAGE_MAX_FILE_SIZE,
 } from "../extensions/file-handler.ts";
+import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
 
 /**
  * Image upload plugin options
@@ -257,7 +258,16 @@ export function createVizelImageUploader(
           const imageNode = schema.nodes.image?.create({ src: uploadedSrc });
 
           if (!imageNode) {
-            console.warn("Image node type not found in schema");
+            emitVizelError(
+              new VizelError(
+                "INVALID_EXTENSION",
+                "Image node type not found in schema. Ensure the Image extension is registered.",
+                { severity: "error" }
+              ),
+              // `onUploadError` accepts `(error: Error, file: File)`; bridge to
+              // a VizelError sink by ignoring the file param.
+              onUploadError ? (err) => onUploadError(err, file) : undefined
+            );
             return;
           }
 
