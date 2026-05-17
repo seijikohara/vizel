@@ -1,5 +1,5 @@
 import { createVizelEditorTransactionStore, type Editor } from "@vizel/core";
-import { onBeforeUnmount, type Ref, ref, watch } from "vue";
+import { type ComputedRef, computed, onBeforeUnmount, ref, watch } from "vue";
 
 /**
  * Composable that forces a re-render whenever the editor's state changes.
@@ -9,7 +9,8 @@ import { onBeforeUnmount, type Ref, ref, watch } from "vue";
  * Svelte adapters.
  *
  * @param getEditor - A function that returns the editor instance
- * @returns A ref that changes on each editor state update (can be ignored)
+ * @returns A computed ref whose value changes on each editor state update
+ *   (the numeric value itself is opaque and can be ignored)
  *
  * @example
  * ```vue
@@ -22,7 +23,11 @@ import { onBeforeUnmount, type Ref, ref, watch } from "vue";
  * </template>
  * ```
  */
-export function useVizelState(getEditor: () => Editor | null | undefined): Ref<number> {
+export function useVizelState(getEditor: () => Editor | null | undefined): ComputedRef<number> {
+  // Hold the version counter in a private writable ref so the watcher can
+  // increment it; expose it as a `ComputedRef<number>` so consumers cannot
+  // mutate the tick from the outside. The shape mirrors the React hook's
+  // `number` return and the Svelte rune's `{ readonly version }` getter.
   const updateCount = ref(0);
   let unsubscribe: (() => void) | null = null;
 
@@ -47,5 +52,5 @@ export function useVizelState(getEditor: () => Editor | null | undefined): Ref<n
     unsubscribe = null;
   });
 
-  return updateCount;
+  return computed(() => updateCount.value);
 }
