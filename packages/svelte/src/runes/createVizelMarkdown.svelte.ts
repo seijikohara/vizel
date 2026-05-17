@@ -18,7 +18,7 @@ export interface CreateVizelMarkdownResult {
    * Current markdown content (reactive getter).
    * Updates with debounce when editor content changes.
    */
-  readonly markdown: string;
+  readonly current: string;
   /**
    * Set markdown content to the editor.
    * Automatically transforms diagram code blocks if transformDiagrams is enabled.
@@ -54,7 +54,7 @@ export interface CreateVizelMarkdownResult {
  *
  * <VizelEditor editor={editorState.current} />
  * <textarea
- *   value={markdownState.markdown}
+ *   value={markdownState.current}
  *   oninput={(e) => markdownState.setMarkdown(e.currentTarget.value)}
  * />
  * {#if markdownState.isPending}
@@ -175,7 +175,7 @@ export function createVizelMarkdown(
   };
 
   return {
-    get markdown() {
+    get current() {
       return markdown;
     },
     setMarkdown,
