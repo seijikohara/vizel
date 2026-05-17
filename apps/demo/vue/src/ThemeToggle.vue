@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useVizelTheme } from "@vizel/vue";
 
-const themeState = useVizelTheme();
+const { theme, setTheme } = useVizelTheme();
 
 function toggleTheme() {
-  themeState.setTheme(themeState.resolvedTheme === "dark" ? "light" : "dark");
+  setTheme(theme.value === "dark" ? "light" : "dark");
 }
 </script>
 
@@ -13,8 +13,8 @@ function toggleTheme() {
     type="button"
     class="theme-toggle"
     @click="toggleTheme"
-    :aria-label="`Switch to ${themeState.resolvedTheme === 'dark' ? 'light' : 'dark'} mode`"
+    :aria-label="`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`"
   >
-    {{ themeState.resolvedTheme === "dark" ? "☀️" : "🌙" }}
+    {{ theme === "dark" ? "☀️" : "🌙" }}
   </button>
 </template>

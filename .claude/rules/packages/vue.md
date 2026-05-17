@@ -75,12 +75,29 @@ const editor = useVizelEditor({
 
 - `VizelProvider` calls `provide()`.
 - Children call `inject()` through `useVizelContext()` for required access or `useVizelContextSafe()` for optional access.
+- `useVizelContext()` returns the raw `ShallowRef<Editor | null>`. Read the editor through `.value`; do not destructure (Vue refs lose reactivity when destructured).
 
 ```typescript
 import { useVizelContext } from "@vizel/vue";
 
-const { editor } = useVizelContext();
+const editor = useVizelContext(); // ShallowRef<Editor | null>
+// access via editor.value in setup or templates
 ```
+
+## Composable Destructure Caveat
+
+Vue refs (`Ref`, `ShallowRef`, `ComputedRef`) lose reactivity when destructured:
+
+```typescript
+// BAD: loses reactivity
+const { value: editorInstance } = useVizelContext();
+
+// GOOD: keep the ref bound; read .value
+const editor = useVizelContext();
+console.log(editor.value);
+```
+
+Destructuring the *return object* of a composable whose fields are refs is fine — only destructuring inside a single ref loses reactivity. For example, `const { theme, setTheme } = useVizelTheme()` is correct because `theme` is itself a `ComputedRef`.
 
 ## Reactivity
 

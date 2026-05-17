@@ -5,8 +5,8 @@ import {
   type VizelMarkdownSyncHandlers,
   type VizelMarkdownSyncOptions,
 } from "@vizel/core";
-import type { ComputedRef, Ref } from "vue";
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import type { ComputedRef, ShallowRef } from "vue";
+import { computed, onBeforeUnmount, shallowRef, watch } from "vue";
 
 export interface UseVizelMarkdownOptions extends VizelMarkdownSyncOptions {
   /**
@@ -17,10 +17,14 @@ export interface UseVizelMarkdownOptions extends VizelMarkdownSyncOptions {
 
 export interface UseVizelMarkdownResult {
   /**
-   * Current markdown content (reactive).
-   * Updates with debounce when editor content changes.
+   * Current markdown content (reactive, read-only).
+   *
+   * Updates with debounce when editor content changes. Use `setMarkdown` to
+   * write — the ref is intentionally read-only so accidental writes via
+   * `markdown.value = "..."` cannot desynchronize the editor and the cached
+   * markdown.
    */
-  markdown: Ref<string>;
+  markdown: Readonly<ShallowRef<string>>;
   /**
    * Set markdown content to the editor.
    * Automatically transforms diagram code blocks if transformDiagrams is enabled.
@@ -81,8 +85,12 @@ export function useVizelMarkdown(
 ): UseVizelMarkdownResult {
   const { initialValue, ...syncOptions } = options;
 
-  const markdown = ref(initialValue ?? "");
-  const pendingState = ref(false);
+  // `shallowRef` is sufficient because the value is always a primitive
+  // `string`; deep reactivity would only add overhead. Exposing the ref as
+  // `Readonly<ShallowRef<string>>` in the return signature signals that
+  // consumers must mutate via `setMarkdown`.
+  const markdown = shallowRef(initialValue ?? "");
+  const pendingState = shallowRef(false);
 
   // Create sync handlers
   let handlers: VizelMarkdownSyncHandlers | null = null;
