@@ -32,6 +32,11 @@ export {
   type VizelCodeBlockLanguage,
   type VizelCodeBlockOptions,
 } from "./code-block-lowlight.ts";
+// Command shortcuts (Section 9)
+export {
+  createVizelCommandShortcutsExtension,
+  type VizelCommandShortcutsOptions,
+} from "./command-shortcuts.ts";
 // Comment
 export {
   createVizelCommentExtension,
