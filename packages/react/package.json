@@ -36,13 +36,16 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./styles.css": "./dist/styles.css",
+    "./components.css": "./dist/components.css",
+    "./mathematics.css": "./dist/mathematics.css"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && node scripts/copy-styles.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
