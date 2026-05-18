@@ -14,6 +14,33 @@ import { initializeVizelMarkdownContent } from "./markdown.ts";
  * which we have to undo for cases where the consumer asked for "start", "all",
  * a numeric position, or no focus at all.
  */
+/**
+ * Validate collaboration-feature dependencies. Both `comments` and
+ * `presence` lose meaning without an underlying provider distributing
+ * their state; the editor refuses to construct rather than render
+ * silently broken UI.
+ */
+function validateVizelCollaborationFeatures(features: VizelEditorOptions["features"]): void {
+  const collaboration = features?.collaboration;
+  if (!collaboration) return;
+  const provider = collaboration.provider;
+
+  if (collaboration.comments && !provider) {
+    throw createVizelError(
+      "INVALID_CONFIG",
+      "features.collaboration.comments requires features.collaboration.provider to be set.",
+      { context: { feature: "comments" } }
+    );
+  }
+  if (collaboration.presence && !provider) {
+    throw createVizelError(
+      "INVALID_CONFIG",
+      "features.collaboration.presence requires features.collaboration.provider to be set.",
+      { context: { feature: "presence" } }
+    );
+  }
+}
+
 function applyInitialSelection(editor: Editor, autofocus: VizelEditorOptions["autofocus"]): void {
   const docSize = editor.state.doc.content.size;
   if (autofocus === false || autofocus === undefined) {
@@ -121,6 +148,8 @@ export async function createVizelEditorInstance(
       "Cannot supply both `initialContent` and `initialMarkdown` to the editor. Pick one."
     );
   }
+
+  validateVizelCollaborationFeatures(features);
 
   // Resolve features with slash menu renderer
   const resolvedFeatures = resolveVizelFeatures({

@@ -525,6 +525,7 @@ export {
   type VizelSuggestionContainer,
   type VizelTextSegment,
   vizelDefaultEditorProps,
+  vizelDefaultFeatures,
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./utils/index.ts";
