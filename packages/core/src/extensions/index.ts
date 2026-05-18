@@ -169,7 +169,15 @@ export {
   type VizelNodeTypeOption,
   vizelDefaultNodeTypes,
 } from "./node-types.ts";
-
+// Presence (collaborative cursors)
+export {
+  createVizelPresenceExtension,
+  type VizelPresenceAwareness,
+  type VizelPresenceOptions,
+  type VizelPresenceUser,
+  type VizelPresenceUserState,
+  vizelPresencePluginKey,
+} from "./presence.ts";
 // Slash command
 export {
   createVizelSlashCommands,
@@ -187,7 +195,6 @@ export {
   vizelDefaultGroupOrder,
   vizelDefaultSlashCommands,
 } from "./slash-command.ts";
-
 // Table
 export {
   createVizelTableExtensions,
@@ -197,7 +204,6 @@ export {
   VizelTableHeader,
   type VizelTableOptions,
 } from "./table.ts";
-
 // Table controls
 export {
   VIZEL_TABLE_MENU_ITEMS,
@@ -230,7 +236,6 @@ export {
   type VizelColorDefinition,
   type VizelTextColorOptions,
 } from "./text-color.ts";
-
 // Typography
 export {
   createVizelTypographyExtension,

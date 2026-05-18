@@ -104,6 +104,7 @@ export {
   type VizelYjsAwareness,
   type VizelYjsProvider,
 } from "./collaboration.ts";
+export type { VizelCollaborationProvider } from "./collaboration-provider.ts";
 // =============================================================================
 // Comments
 // =============================================================================
@@ -192,6 +193,7 @@ export {
   createVizelMentionExtension,
   // Node types (locale-aware)
   createVizelNodeTypes,
+  createVizelPresenceExtension,
   // Slash command (locale-aware)
   createVizelSlashCommands,
   createVizelSlashGroupOrder,
@@ -293,6 +295,10 @@ export {
   type VizelMentionItem,
   type VizelMentionOptions,
   type VizelNodeTypeOption,
+  type VizelPresenceAwareness,
+  type VizelPresenceOptions,
+  type VizelPresenceUser,
+  type VizelPresenceUserState,
   VizelResizableImage,
   type VizelResizableImageOptions,
   VizelSlashCommand,
@@ -332,6 +338,7 @@ export {
   vizelDefaultSlashCommands,
   vizelEmbedPastePluginKey,
   vizelFindReplacePluginKey,
+  vizelPresencePluginKey,
   vizelVisualHierarchyPluginKey,
   vizelWikiLinkPluginKey,
 } from "./extensions/index.ts";
