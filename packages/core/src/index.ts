@@ -113,6 +113,10 @@ export {
   type VizelCommand,
   type VizelCommandSurfaceSet,
   type VizelShortcut,
+  vizelBlockCommands,
+  vizelDefaultCommands,
+  vizelFormatCommands,
+  vizelInsertCommands,
 } from "./commands/index.ts";
 // =============================================================================
 // Comments
