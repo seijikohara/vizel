@@ -17,7 +17,9 @@ let markdownOutput = $state("");
 const editor = createVizelEditor({
   flavor: props.flavor ?? "gfm",
   features: {
-    callout: true,
+    content: {
+      callout: true,
+    },
   },
 });
 

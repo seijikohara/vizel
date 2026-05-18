@@ -208,24 +208,29 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
               enable-embed
               :extensions="findReplaceExtensions"
               :features="{
-                markdown: true,
-                mathematics: true,
-                embed: true,
-                details: true,
-                diagram: true,
-                wikiLink: true,
-                comment: true,
-                callout: true,
-                tableOfContents: true,
-                superscript: true,
-                subscript: true,
-                typography: true,
-                mention: { items: mockMentionItems },
-                image: {
-                  onUpload: mockUploadImage,
-                  maxFileSize: 10 * 1024 * 1024,
-                  onValidationError: (error) => alert(`Validation error: ${error.message}`),
-                  onUploadError: (error) => alert(`Upload failed: ${error.message}`),
+                content: {
+                  mathematics: true,
+                  embed: true,
+                  details: true,
+                  diagram: true,
+                  wikiLink: true,
+                  callout: true,
+                  tableOfContents: true,
+                  superscript: true,
+                  subscript: true,
+                  image: {
+                    onUpload: mockUploadImage,
+                    maxFileSize: 10 * 1024 * 1024,
+                    onValidationError: (error) => alert(`Validation error: ${error.message}`),
+                    onUploadError: (error) => alert(`Upload failed: ${error.message}`),
+                  },
+                },
+                interaction: {
+                  typography: true,
+                  mention: { items: mockMentionItems },
+                },
+                collaboration: {
+                  comments: true,
                 },
               }"
               @create="handleCreate"

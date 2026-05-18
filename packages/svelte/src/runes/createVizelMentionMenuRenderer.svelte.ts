@@ -25,9 +25,11 @@ export type { VizelSuggestionRendererOptions };
  *
  * const editor = createVizelEditor({
  *   features: {
- *     mention: {
- *       items: async (query) => fetchUsers(query),
- *       suggestion: createVizelMentionMenuRenderer(),
+ *     interaction: {
+ *       mention: {
+ *         items: async (query) => fetchUsers(query),
+ *         suggestion: createVizelMentionMenuRenderer(),
+ *       },
  *     },
  *   },
  * });

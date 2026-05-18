@@ -16,7 +16,9 @@ const markdownOutput = ref("");
 const editor = useVizelEditor({
   flavor: props.flavor,
   features: {
-    callout: true,
+    content: {
+      callout: true,
+    },
   },
 });
 

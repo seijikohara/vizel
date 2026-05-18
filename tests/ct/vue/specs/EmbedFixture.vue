@@ -14,7 +14,9 @@ const editor = useVizelEditor({
   placeholder: props.placeholder,
   initialContent: props.initialContent,
   features: {
-    embed: true,
+    content: {
+      embed: true,
+    },
   },
 });
 </script>

@@ -13,7 +13,9 @@ export function EmbedFixture({
     placeholder,
     initialContent,
     features: {
-      embed: true,
+      content: {
+        embed: true,
+      },
     },
   });
 

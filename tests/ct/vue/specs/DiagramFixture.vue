@@ -18,7 +18,9 @@ const editor = useVizelEditor({
   placeholder: props.placeholder,
   initialContent: props.initialContent,
   features: {
-    diagram: true,
+    content: {
+      diagram: true,
+    },
   },
 });
 </script>

@@ -54,7 +54,7 @@ export interface UseVizelCommentResult {
  * ```tsx
  * function Editor() {
  *   const editor = useVizelEditor({
- *     features: { comment: true },
+ *     features: { collaboration: { comments: true } },
  *   });
  *   const { comments, addComment, resolveComment, setActiveComment } =
  *     useVizelComment(editor, { key: "my-comments" });

@@ -57,7 +57,7 @@ export interface UseVizelCollaborationResult {
  * );
  *
  * const editor = useVizelEditor({
- *   features: { collaboration: true },
+ *   features: { collaboration: { provider: true } },
  *   extensions: [
  *     Collaboration.configure({ document: doc }),
  *     CollaborationCursor.configure({
