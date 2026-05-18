@@ -231,6 +231,12 @@ export {
   type VizelTextColorOptions,
 } from "./text-color.ts";
 
+// Typography
+export {
+  createVizelTypographyExtension,
+  type VizelTypographyOptions,
+} from "./typography.ts";
+
 // Wiki link
 export {
   createVizelWikiLinkExtension,

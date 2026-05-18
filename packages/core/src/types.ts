@@ -15,6 +15,7 @@ import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTableOfContentsOptions } from "./extensions/table-of-contents.ts";
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
+import type { VizelTypographyOptions } from "./extensions/typography.ts";
 import type { VizelWikiLinkOptions } from "./extensions/wiki-link.ts";
 import type { VizelLocale } from "./i18n/types.ts";
 import type { VizelImageUploadPluginOptions } from "./plugins/image-upload.ts";
@@ -130,8 +131,24 @@ export interface VizelInteractionFeatureOptions {
   mention?: VizelMentionOptions | boolean;
   /** Character and word count tracking */
   characterCount?: VizelCharacterCountOptions | boolean;
-  /** Typography auto-conversion (smart quotes, em-dashes, ellipsis, etc.) */
-  typography?: boolean;
+  /**
+   * Typography auto-conversion (smart quotes, em-dashes, ellipsis, etc.).
+   * Pass an options object to override individual replacement characters.
+   */
+  typography?: VizelTypographyOptions | boolean;
+  /**
+   * Placeholder text shown when the editor is empty.
+   * Replaces the top-level `VizelEditorOptions.placeholder` option from
+   * v1.x. Default: "Type '/' for commands...".
+   */
+  placeholder?: string;
+  /**
+   * Maximum number of history entries (undo / redo depth).
+   * Forwarded to the Tiptap History extension. When `collaboration.provider`
+   * is set, the History extension is excluded and this value is ignored.
+   * @default 100
+   */
+  historyDepth?: number;
 }
 
 /**

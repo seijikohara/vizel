@@ -20,7 +20,6 @@ import Strike from "@tiptap/extension-strike";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import Text from "@tiptap/extension-text";
-import Typography from "@tiptap/extension-typography";
 import Underline from "@tiptap/extension-underline";
 import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelFeatureOptions } from "../types.ts";
@@ -52,6 +51,7 @@ import { createVizelTableExtensions } from "./table.ts";
 import { createVizelTableOfContentsExtension } from "./table-of-contents.ts";
 import { createVizelTaskListExtensions } from "./task-list.ts";
 import { createVizelTextColorExtensions } from "./text-color.ts";
+import { createVizelTypographyExtension } from "./typography.ts";
 import { createVizelWikiLinkExtension } from "./wiki-link.ts";
 
 export interface VizelExtensionsOptions {
@@ -87,9 +87,13 @@ export interface VizelExtensionsOptions {
  * to support syntax highlighting when enabled.
  */
 function createBaseExtensions(
-  options: { headingLevels?: (1 | 2 | 3 | 4 | 5 | 6)[]; excludeHistory?: boolean } = {}
+  options: {
+    headingLevels?: (1 | 2 | 3 | 4 | 5 | 6)[];
+    excludeHistory?: boolean;
+    historyDepth?: number;
+  } = {}
 ): Extensions {
-  const { headingLevels = [1, 2, 3, 4, 5, 6], excludeHistory = false } = options;
+  const { headingLevels = [1, 2, 3, 4, 5, 6], excludeHistory = false, historyDepth } = options;
 
   const extensions: Extensions = [
     // Nodes
@@ -117,7 +121,9 @@ function createBaseExtensions(
 
   // History is excluded when collaboration is enabled (Yjs provides its own undo manager)
   if (!excludeHistory) {
-    extensions.push(History);
+    extensions.push(
+      historyDepth === undefined ? History : History.configure({ depth: historyDepth })
+    );
   }
 
   return extensions;
@@ -432,11 +438,17 @@ export async function createVizelExtensions(
 
   const flavorConfig = resolveVizelFlavorConfig(flavor);
   const excludeHistory = Boolean(features.collaboration?.provider);
+  const historyDepth = features.interaction?.historyDepth;
+  const placeholderText = features.interaction?.placeholder ?? placeholder;
 
   const extensions: Extensions = [
-    ...createBaseExtensions({ headingLevels, excludeHistory }),
+    ...createBaseExtensions({
+      headingLevels,
+      excludeHistory,
+      ...(historyDepth !== undefined && { historyDepth }),
+    }),
     Placeholder.configure({
-      placeholder,
+      placeholder: placeholderText,
       emptyEditorClass: "vizel-editor-empty",
       emptyNodeClass: "vizel-node-empty",
     }),
@@ -481,8 +493,10 @@ export async function createVizelExtensions(
   if (features.content?.subscript !== false) {
     extensions.push(Subscript);
   }
-  if (features.interaction?.typography !== false) {
-    extensions.push(Typography);
+  const typography = features.interaction?.typography;
+  if (typography !== false) {
+    const typographyOptions = typeof typography === "object" ? typography : {};
+    extensions.push(createVizelTypographyExtension(typographyOptions));
   }
 
   // CodeBlock (always-on, async — lowlight is loaded dynamically)
