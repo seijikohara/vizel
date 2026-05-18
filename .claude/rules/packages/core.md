@@ -130,6 +130,49 @@ gated by `VizelFeatureOptions`: Markdown, Link, CodeBlock. To configure
 them, use the corresponding top-level options on `VizelEditorOptions`
 (e.g. the Markdown flavor lives at `flavor`, not under `features`).
 
+## Feature Categories
+
+`VizelFeatureOptions` groups every opt-in into three categories that
+answer different consumer questions. Adding a new feature requires
+placing it in one of these three categories.
+
+| Category | Consumer question | Examples |
+|----------|--------------------|----------|
+| `content` | What can the document contain? | `image`, `table`, `mathematics`, `diagram`, `embed`, `callout`, `details`, `textColor`, `highlight`, `underline`, `superscript`, `subscript`, `taskList`, `wikiLink`, `tableOfContents` |
+| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth`, `visualHierarchy` |
+| `collaboration` | Who edits together? | `comments`, `provider`, `versionHistory`, `presence` |
+
+### Categorization rule
+
+When adding a new feature, ask: *what is the user's main motivation to
+turn this on?* That motivation determines the category. `mention` lives
+under `interaction` because users turn it on for the completion
+experience, not for the inline node it produces. `comments` lives under
+`collaboration` because the annotation flow only matters when other
+collaborators can read it.
+
+### Dependency validation
+
+`createVizelEditorInstance` validates feature dependencies at
+construction time and throws `VizelError("INVALID_CONFIG", ...)` when a
+required dependency is missing. The current rules:
+
+- `features.collaboration.comments` requires `features.collaboration.provider`.
+- `features.collaboration.presence` requires `features.collaboration.provider`.
+
+Add new dependency rules to `packages/core/src/utils/editorFactory.ts`
+alongside the existing checks. Each rule must throw a typed
+`VizelError` with a stable `code` (`INVALID_CONFIG`) and a `context`
+carrying the offending feature name.
+
+### Curated defaults
+
+`vizelDefaultFeatures()` returns a curated feature object that enables
+every safe opt-in (everything except `mention`, `provider`, `comments`,
+`versionHistory`, `presence` — features that need consumer-supplied
+configuration to function). Use it when you want the Notion-like
+surface without enumerating each toggle.
+
 ## Dependencies
 
 ### Allowed

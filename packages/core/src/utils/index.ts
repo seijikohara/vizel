@@ -23,6 +23,8 @@ export {
 } from "../controllers/suggestionContainer.ts";
 // Color utilities
 export { isVizelValidHexColor, normalizeVizelHexColor } from "./colorUtils.ts";
+// Curated default feature set
+export { vizelDefaultFeatures } from "./default-features.ts";
 // Editor factory
 export {
   type CreateVizelEditorInstanceOptions,
