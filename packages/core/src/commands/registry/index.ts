@@ -5,6 +5,7 @@ import { vizelInsertCommands } from "./insert.ts";
 
 export { vizelBlockCommands } from "./block.ts";
 export { vizelFormatCommands } from "./format.ts";
+export { vizelCommandsFromNodeTypes } from "./from-node-types.ts";
 export { vizelInsertCommands } from "./insert.ts";
 
 /**
