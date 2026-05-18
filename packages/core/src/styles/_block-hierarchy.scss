@@ -1,0 +1,36 @@
+/**
+ * Block hierarchy indicator styles.
+ *
+ * Applied by the visual hierarchy extension via a
+ * `data-vizel-depth="N"` decoration on every block node. Each depth
+ * step adds left padding and draws a thin guide line.
+ *
+ * Activated by `features.interaction.visualHierarchy`.
+ */
+
+.vizel-root .ProseMirror {
+  [data-vizel-depth="2"] {
+    padding-inline-start: 1rem;
+    border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
+  }
+
+  [data-vizel-depth="3"] {
+    padding-inline-start: 1.25rem;
+    border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
+  }
+
+  [data-vizel-depth="4"] {
+    padding-inline-start: 1.5rem;
+    border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
+  }
+
+  [data-vizel-depth="5"] {
+    padding-inline-start: 1.75rem;
+    border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
+  }
+
+  [data-vizel-depth="6"] {
+    padding-inline-start: 2rem;
+    border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
+  }
+}

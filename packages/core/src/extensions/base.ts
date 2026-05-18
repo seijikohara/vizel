@@ -52,6 +52,7 @@ import { createVizelTableOfContentsExtension } from "./table-of-contents.ts";
 import { createVizelTaskListExtensions } from "./task-list.ts";
 import { createVizelTextColorExtensions } from "./text-color.ts";
 import { createVizelTypographyExtension } from "./typography.ts";
+import { createVizelVisualHierarchyExtension } from "./visual-hierarchy.ts";
 import { createVizelWikiLinkExtension } from "./wiki-link.ts";
 
 export interface VizelExtensionsOptions {
@@ -375,6 +376,20 @@ function addCommentsExtension(extensions: Extensions, features: VizelFeatureOpti
 }
 
 /**
+ * Add Visual Hierarchy extension (enabled by default).
+ *
+ * Attaches `data-vizel-depth="N"` to each block-level node so that
+ * `block-hierarchy.scss` can render progressive indentation.
+ */
+function addVisualHierarchyExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  const visualHierarchy = features.interaction?.visualHierarchy;
+  if (visualHierarchy === false) return;
+
+  const hierarchyOptions = typeof visualHierarchy === "object" ? visualHierarchy : {};
+  extensions.push(createVizelVisualHierarchyExtension(hierarchyOptions));
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * All features are enabled by default. Set any feature to `false` to disable it.
  *
@@ -482,6 +497,7 @@ export async function createVizelExtensions(
   addWikiLinkExtension(extensions, features, flavorConfig);
   addMentionExtension(extensions, features);
   addCommentsExtension(extensions, features);
+  addVisualHierarchyExtension(extensions, features);
 
   // Marks (default on, opt-out via content.*)
   if (features.content?.underline !== false) {
