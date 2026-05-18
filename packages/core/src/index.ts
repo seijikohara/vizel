@@ -106,6 +106,15 @@ export {
 } from "./collaboration.ts";
 export type { VizelCollaborationProvider } from "./collaboration-provider.ts";
 // =============================================================================
+// Commands (Section 9 — VizelCommand unified abstraction)
+// =============================================================================
+export {
+  deriveVizelCommandSpec,
+  type VizelCommand,
+  type VizelCommandSurfaceSet,
+  type VizelShortcut,
+} from "./commands/index.ts";
+// =============================================================================
 // Comments
 // =============================================================================
 export {
