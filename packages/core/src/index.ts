@@ -47,19 +47,25 @@ export {
 export {
   applyVizelLinkEdit,
   buildVizelBlockMenuSpec,
+  buildVizelBlockMenuSpecFromCommands,
+  buildVizelBubbleMenuSpec,
   buildVizelFindReplaceSpec,
   buildVizelFindReplaceSpecFromLocale,
   buildVizelLinkEditorSpec,
   buildVizelMentionMenuSpec,
   buildVizelNodeSelectorSpec,
   buildVizelSlashMenuSpec,
+  buildVizelSlashMenuSpecFromCommands,
   buildVizelToolbarDropdownSpec,
+  buildVizelToolbarSpec,
   getNextVizelSlashMenuGroupIndex,
   resolveVizelLinkEditorLabels,
+  type VizelBlockMenuFromCommandsOptions,
   type VizelBlockMenuItemView,
   type VizelBlockMenuSpec,
   type VizelBlockMenuSubmenuTriggerSpec,
   type VizelBlockMenuTurnIntoItemView,
+  type VizelBubbleMenuSpecOptions,
   type VizelCommandSpec,
   type VizelFindReplaceSpec,
   type VizelFormFieldAttrs,
@@ -87,10 +93,12 @@ export {
   type VizelPopoverTriggerSpec,
   type VizelShortcutSpec,
   type VizelSlashItemView,
+  type VizelSlashMenuFromCommandsOptions,
   type VizelSlashMenuSpecOptions,
   type VizelToolbarDropdownItemView,
   type VizelToolbarDropdownSpec,
   type VizelToolbarDropdownTriggerSpec,
+  type VizelToolbarSpecOptions,
 } from "./builders/index.ts";
 // =============================================================================
 // Collaboration
@@ -169,6 +177,8 @@ export {
   createVizelCharacterCountExtension,
   // Code block with syntax highlighting
   createVizelCodeBlockExtension,
+  // Command shortcuts (Section 9)
+  createVizelCommandShortcutsExtension,
   // Comment
   createVizelCommentExtension,
   // Embed (oEmbed, OGP)
@@ -260,6 +270,7 @@ export {
   type VizelCodeBlockLanguage,
   type VizelCodeBlockOptions,
   type VizelColorDefinition,
+  type VizelCommandShortcutsOptions,
   VizelCommentMark,
   type VizelCommentMarkOptions,
   type VizelCommentPluginState,
