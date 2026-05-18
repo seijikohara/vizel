@@ -122,6 +122,7 @@ export {
   type VizelCommandSurfaceSet,
   type VizelShortcut,
   vizelBlockCommands,
+  vizelCommandsFromNodeTypes,
   vizelDefaultCommands,
   vizelFormatCommands,
   vizelInsertCommands,
