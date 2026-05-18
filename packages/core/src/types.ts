@@ -7,6 +7,7 @@ import type { VizelDetailsOptions } from "./extensions/details.ts";
 import type { VizelDiagramOptions } from "./extensions/diagram.ts";
 import type { VizelDragHandleOptions } from "./extensions/drag-handle.ts";
 import type { VizelEmbedOptions } from "./extensions/embed.ts";
+import type { VizelHighlightOptions } from "./extensions/highlight.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
 import type { VizelMentionOptions } from "./extensions/mention.ts";
 import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
@@ -86,8 +87,10 @@ export interface VizelContentFeatureOptions {
   callout?: VizelCalloutOptions | boolean;
   /** Collapsible content blocks (accordion) */
   details?: VizelDetailsOptions | boolean;
-  /** Text color and highlight support */
+  /** Text color (foreground) mark */
   textColor?: VizelTextColorOptions | boolean;
+  /** Highlight (background) mark */
+  highlight?: VizelHighlightOptions | boolean;
   /** Underline mark (default-on) */
   underline?: boolean;
   /** Superscript mark (e.g., x²) */

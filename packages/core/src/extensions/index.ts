@@ -41,7 +41,6 @@ export {
   type VizelCommentPluginState,
   vizelCommentPluginKey,
 } from "./comment.ts";
-
 // Details (collapsible content)
 export {
   createVizelDetailsExtensions,
@@ -50,7 +49,6 @@ export {
   type VizelDetailsOptions,
   type VizelDetailsSummaryOptions,
 } from "./details.ts";
-
 // Diagram (Mermaid, GraphViz)
 export {
   createVizelDiagramExtension,
@@ -59,7 +57,6 @@ export {
   type VizelDiagramOptions,
   type VizelDiagramType,
 } from "./diagram.ts";
-
 // Drag handle
 export {
   createVizelDragHandleExtension,
@@ -68,7 +65,6 @@ export {
   VizelDragHandle,
   type VizelDragHandleOptions,
 } from "./drag-handle.ts";
-
 // Embed (oEmbed, OGP)
 export {
   createVizelDefaultFetchEmbedData,
@@ -86,7 +82,6 @@ export {
   vizelDefaultEmbedProviders,
   vizelEmbedPastePluginKey,
 } from "./embed.ts";
-
 // File handler
 export {
   createVizelFileHandlerExtension,
@@ -100,7 +95,6 @@ export {
   type VizelImageFileHandlerOptions,
   type VizelImageFileHandlers,
 } from "./file-handler.ts";
-
 // Find & Replace
 export {
   createVizelFindReplaceExtension,
@@ -110,6 +104,11 @@ export {
   type VizelFindReplaceState,
   vizelFindReplacePluginKey,
 } from "./find-replace.ts";
+// Highlight
+export {
+  createVizelHighlightExtension,
+  type VizelHighlightOptions,
+} from "./highlight.ts";
 
 // Image
 export {

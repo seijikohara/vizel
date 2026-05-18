@@ -33,6 +33,7 @@ import { createVizelDetailsExtensions } from "./details.ts";
 import { createVizelDiagramExtension } from "./diagram.ts";
 import { createVizelDragHandleExtensions } from "./drag-handle.ts";
 import { createVizelEmbedExtension } from "./embed.ts";
+import { createVizelHighlightExtension } from "./highlight.ts";
 import {
   createVizelImageUploadExtensions,
   defaultImageResizeOptions,
@@ -202,6 +203,17 @@ function addTextColorExtension(extensions: Extensions, features: VizelFeatureOpt
 
   const textColorOptions = typeof textColor === "object" ? textColor : {};
   extensions.push(...createVizelTextColorExtensions(textColorOptions));
+}
+
+/**
+ * Add Highlight extension if enabled (enabled by default).
+ */
+function addHighlightExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  const highlight = features.content?.highlight;
+  if (highlight === false) return;
+
+  const highlightOptions = typeof highlight === "object" ? highlight : {};
+  extensions.push(...createVizelHighlightExtension(highlightOptions));
 }
 
 /**
@@ -447,6 +459,7 @@ export async function createVizelExtensions(
   addTaskListExtension(extensions, features);
   addCharacterCountExtension(extensions, features);
   addTextColorExtension(extensions, features);
+  addHighlightExtension(extensions, features);
   addMathematicsExtension(extensions, features);
   addDragHandleExtension(extensions, features, locale);
   addDetailsExtension(extensions, features);

@@ -173,6 +173,8 @@ export {
   createVizelFileHandlerExtension,
   // Find & Replace
   createVizelFindReplaceExtension,
+  // Highlight
+  createVizelHighlightExtension,
   // Image
   createVizelImageExtension,
   createVizelImageFileHandlers,
@@ -267,6 +269,7 @@ export {
   type VizelFindMatch,
   type VizelFindReplaceOptions,
   type VizelFindReplaceState,
+  type VizelHighlightOptions,
   VizelImage,
   type VizelImageFileHandlerOptions,
   type VizelImageFileHandlers,

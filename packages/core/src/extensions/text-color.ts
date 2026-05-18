@@ -1,6 +1,5 @@
 import type { Editor, Extensions } from "@tiptap/core";
 import { Color } from "@tiptap/extension-color";
-import { Highlight } from "@tiptap/extension-highlight";
 import { TextStyle } from "@tiptap/extension-text-style";
 
 /**
@@ -163,28 +162,24 @@ export function applyVizelColorToEditor(
 }
 
 /**
- * Options for text color extensions
+ * Options for text color extensions.
+ *
+ * Highlight options moved to `VizelHighlightOptions` in
+ * `extensions/highlight.ts` so that text color and highlight can be
+ * configured independently through `features.content.textColor` and
+ * `features.content.highlight`.
  */
 export interface VizelTextColorOptions {
   /** Custom text color palette */
   textColors?: readonly VizelColorDefinition[];
-  /** Custom highlight color palette */
-  highlightColors?: readonly VizelColorDefinition[];
-  /** Enable multicolor highlights (allows any color) */
-  multicolor?: boolean;
 }
 
 /**
- * Create text color and highlight extensions
+ * Create text color mark extensions (TextStyle + Color).
+ *
+ * The highlight mark lives in `createVizelHighlightExtension` and is
+ * configured separately.
  */
-export function createVizelTextColorExtensions(options: VizelTextColorOptions = {}): Extensions {
-  const { multicolor = true } = options;
-
-  return [
-    TextStyle,
-    Color,
-    Highlight.configure({
-      multicolor,
-    }),
-  ];
+export function createVizelTextColorExtensions(_options: VizelTextColorOptions = {}): Extensions {
+  return [TextStyle, Color];
 }
