@@ -15,7 +15,9 @@ export function DiagramFixture({
     placeholder,
     initialContent,
     features: {
-      diagram: true,
+      content: {
+        diagram: true,
+      },
     },
   });
 

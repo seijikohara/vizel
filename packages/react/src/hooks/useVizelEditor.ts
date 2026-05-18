@@ -59,7 +59,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
   const [editor, setEditor] = useState<Editor | null>(null);
 
   // Store image upload options for event handler
-  const imageOptions = typeof features?.image === "object" ? features.image : {};
+  const imageOptions = typeof features?.content?.image === "object" ? features.content.image : {};
   const imageOptionsRef = useRef(imageOptions);
   imageOptionsRef.current = imageOptions;
 

@@ -2,14 +2,11 @@ import type { Editor, Extensions, JSONContent } from "@tiptap/core";
 import type { SuggestionOptions } from "@tiptap/suggestion";
 import type { VizelCalloutOptions } from "./extensions/callout.ts";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
-import type { VizelCodeBlockOptions } from "./extensions/code-block-lowlight.ts";
 import type { VizelCommentMarkOptions } from "./extensions/comment.ts";
 import type { VizelDetailsOptions } from "./extensions/details.ts";
 import type { VizelDiagramOptions } from "./extensions/diagram.ts";
 import type { VizelDragHandleOptions } from "./extensions/drag-handle.ts";
 import type { VizelEmbedOptions } from "./extensions/embed.ts";
-import type { VizelLinkOptions } from "./extensions/link.ts";
-import type { VizelMarkdownOptions } from "./extensions/markdown.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
 import type { VizelMentionOptions } from "./extensions/mention.ts";
 import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
@@ -44,54 +41,76 @@ export interface VizelImageFeatureOptions extends Partial<VizelImageUploadPlugin
 /**
  * Feature configuration for Vizel editor.
  *
- * Each field accepts one of three forms:
+ * Features are grouped into three categories that answer different
+ * consumer questions:
  *
- * - `true` — enable the feature with default options (also the default when
- *   the field is omitted, except for `mention` and `collaboration` which
- *   default to `false`).
+ * - `content` — What can the document contain?
+ * - `interaction` — How does the user edit?
+ * - `collaboration` — Who edits together?
+ *
+ * Each field accepts one of:
+ *
+ * - `true` — enable the feature with default options.
  * - `false` — disable the feature.
- * - an options object — enable the feature with custom options.
+ * - an options object — enable with custom options.
  *
- * The `true`/options-object forms are equivalent in behavior; the latter is
- * preferred when overriding any non-default option.
+ * Always-on core (no opt-in needed): paragraph, heading, list,
+ * blockquote, bold/italic/strike/code marks, hard break, horizontal
+ * rule, link, code block (with lowlight), markdown import/export,
+ * undo/redo. These extensions load regardless of `features`.
  */
 export interface VizelFeatureOptions {
-  /** Slash command menu (type "/" to open) */
-  slashCommand?: VizelSlashCommandOptions | boolean;
-  /** Table support with column/row controls */
-  table?: VizelTableOptions | boolean;
-  /** Link extension with autolink and paste support */
-  link?: VizelLinkOptions | boolean;
+  readonly content?: VizelContentFeatureOptions;
+  readonly interaction?: VizelInteractionFeatureOptions;
+  readonly collaboration?: VizelCollaborationFeatureOptions;
+}
+
+/**
+ * Content features — what the document can contain.
+ */
+export interface VizelContentFeatureOptions {
   /** Image upload and resize */
-  image?: VizelImageFeatureOptions | boolean;
-  /** Markdown import/export support */
-  markdown?: VizelMarkdownOptions | boolean;
-  /** Task list (checkbox) support */
-  taskList?: VizelTaskListExtensionsOptions | boolean;
-  /** Character and word count tracking */
-  characterCount?: VizelCharacterCountOptions | boolean;
-  /** Text color and highlight support */
-  textColor?: VizelTextColorOptions | boolean;
-  /** Code block with syntax highlighting */
-  codeBlock?: VizelCodeBlockOptions | boolean;
+  readonly image?: VizelImageFeatureOptions | boolean;
+  /** Table support with column/row controls */
+  readonly table?: VizelTableOptions | boolean;
   /** Mathematics (LaTeX) support with KaTeX rendering */
-  mathematics?: VizelMathematicsOptions | boolean;
+  readonly mathematics?: VizelMathematicsOptions | boolean;
+  /** Diagram support (Mermaid, GraphViz) */
+  readonly diagram?: VizelDiagramOptions | boolean;
+  /** URL embedding with oEmbed/OGP support */
+  readonly embed?: VizelEmbedOptions | boolean;
+  /** Callout / admonition blocks (info, warning, danger, tip, note) */
+  readonly callout?: VizelCalloutOptions | boolean;
+  /** Collapsible content blocks (accordion) */
+  readonly details?: VizelDetailsOptions | boolean;
+  /** Text color and highlight support */
+  readonly textColor?: VizelTextColorOptions | boolean;
+  /** Underline mark (default-on) */
+  readonly underline?: boolean;
+  /** Superscript mark (e.g., x²) */
+  readonly superscript?: boolean;
+  /** Subscript mark (e.g., H₂O) */
+  readonly subscript?: boolean;
+  /** Task list (checkbox) support */
+  readonly taskList?: VizelTaskListExtensionsOptions | boolean;
+  /** Wiki links ([[page-name]], [[page|display text]]) for knowledge base use cases */
+  readonly wikiLink?: VizelWikiLinkOptions | boolean;
+  /** Table of Contents block that auto-collects headings */
+  readonly tableOfContents?: VizelTableOfContentsOptions | boolean;
+}
+
+/**
+ * Interaction features — how the user edits.
+ */
+export interface VizelInteractionFeatureOptions {
+  /** Slash command menu (type "/" to open) */
+  readonly slashMenu?: VizelSlashCommandOptions | boolean;
   /**
    * Per-item drag handle for reordering blocks and list items
    * (bullet, ordered, task) at any nesting depth, with Alt+Up/Down
    * keyboard shortcuts.
    */
-  dragHandle?: VizelDragHandleOptions | boolean;
-  /** URL embedding with oEmbed/OGP support */
-  embed?: VizelEmbedOptions | boolean;
-  /** Collapsible content blocks (accordion) */
-  details?: VizelDetailsOptions | boolean;
-  /** Callout / admonition blocks (info, warning, danger, tip, note) */
-  callout?: VizelCalloutOptions | boolean;
-  /** Diagram support (Mermaid, GraphViz) */
-  diagram?: VizelDiagramOptions | boolean;
-  /** Wiki links ([[page-name]], [[page|display text]]) for knowledge base use cases */
-  wikiLink?: VizelWikiLinkOptions | boolean;
+  readonly dragHandle?: VizelDragHandleOptions | boolean;
   /**
    * @mention autocomplete for user mentions.
    * Disabled by default — requires user-provided items function.
@@ -102,23 +121,26 @@ export interface VizelFeatureOptions {
    * }
    * ```
    */
-  mention?: VizelMentionOptions | boolean;
-  /** Table of Contents block that auto-collects headings */
-  tableOfContents?: VizelTableOfContentsOptions | boolean;
-  /** Comment/annotation marks for collaborative review workflows */
-  comment?: VizelCommentMarkOptions | boolean;
-  /** Superscript mark (e.g., x²) */
-  superscript?: boolean;
-  /** Subscript mark (e.g., H₂O) */
-  subscript?: boolean;
+  readonly mention?: VizelMentionOptions | boolean;
+  /** Character and word count tracking */
+  readonly characterCount?: VizelCharacterCountOptions | boolean;
   /** Typography auto-conversion (smart quotes, em-dashes, ellipsis, etc.) */
-  typography?: boolean;
+  readonly typography?: boolean;
+}
+
+/**
+ * Collaboration features — who edits together.
+ */
+export interface VizelCollaborationFeatureOptions {
+  /** Comment/annotation marks for collaborative review workflows */
+  readonly comments?: VizelCommentMarkOptions | boolean;
   /**
-   * Real-time collaboration mode.
-   * When enabled, the History extension is excluded (Yjs provides its own undo manager).
-   * Users must install and configure Yjs collaboration extensions separately.
+   * Enable collaboration mode. When set (any truthy value), the
+   * History extension is excluded — Yjs provides its own undo
+   * manager. In 8a this is a `boolean`; 8e replaces it with the
+   * structured `VizelCollaborationProvider` type.
    */
-  collaboration?: boolean;
+  readonly provider?: boolean;
 }
 
 /**

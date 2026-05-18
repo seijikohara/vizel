@@ -14,7 +14,9 @@ const editor = createVizelEditor({
   placeholder: props.placeholder ?? "Type something...",
   initialContent: props.initialContent,
   features: {
-    details: true,
+    content: {
+      details: true,
+    },
   },
 });
 </script>

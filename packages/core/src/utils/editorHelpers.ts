@@ -58,9 +58,9 @@ export interface VizelResolveFeaturesOptions {
 }
 
 /**
- * Resolves feature options with default slash menu renderer.
- * If slashCommand is enabled but no suggestion renderer is provided,
- * automatically adds the provided renderer.
+ * Resolves feature options with a default slash menu renderer.
+ * If `interaction.slashMenu` is enabled but no suggestion renderer is
+ * provided, attaches the supplied default.
  */
 export function resolveVizelFeatures(
   options: VizelResolveFeaturesOptions
@@ -68,31 +68,32 @@ export function resolveVizelFeatures(
   const { features, createSlashMenuRenderer } = options;
 
   if (!features) {
-    // No features specified, use defaults with auto slash menu
     return {
-      slashCommand: {
-        suggestion: createSlashMenuRenderer(),
+      interaction: {
+        slashMenu: { suggestion: createSlashMenuRenderer() },
       },
     };
   }
 
-  if (features.slashCommand === false) {
-    // Slash command explicitly disabled
+  const interaction = features.interaction;
+  if (interaction?.slashMenu === false) {
     return features;
   }
 
-  const slashOptions = typeof features.slashCommand === "object" ? features.slashCommand : {};
+  const slashOptions = typeof interaction?.slashMenu === "object" ? interaction.slashMenu : {};
 
-  // If suggestion is already provided, use it; otherwise add default
   if (slashOptions.suggestion) {
     return features;
   }
 
   return {
     ...features,
-    slashCommand: {
-      ...slashOptions,
-      suggestion: createSlashMenuRenderer(),
+    interaction: {
+      ...interaction,
+      slashMenu: {
+        ...slashOptions,
+        suggestion: createSlashMenuRenderer(),
+      },
     },
   };
 }

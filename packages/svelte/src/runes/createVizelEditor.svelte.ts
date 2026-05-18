@@ -64,7 +64,7 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
   const { features, extensions: additionalExtensions = [], ...editorOptions } = options;
 
   // Store image upload options for event handler
-  const imageOptions = typeof features?.image === "object" ? features.image : {};
+  const imageOptions = typeof features?.content?.image === "object" ? features.content.image : {};
 
   let editor = $state<Editor | null>(null);
 

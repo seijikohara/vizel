@@ -54,7 +54,7 @@ export interface CreateVizelCommentResult {
  * <script lang="ts">
  * import { createVizelEditor, createVizelComment } from "@vizel/svelte";
  *
- * const editor = createVizelEditor({ features: { comment: true } });
+ * const editor = createVizelEditor({ features: { collaboration: { comments: true } } });
  * const comment = createVizelComment(() => editor.current, { key: "my-comments" });
  * </script>
  *

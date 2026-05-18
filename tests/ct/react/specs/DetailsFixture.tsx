@@ -13,7 +13,9 @@ export function DetailsFixture({
     placeholder,
     initialContent,
     features: {
-      details: true,
+      content: {
+        details: true,
+      },
     },
   });
 

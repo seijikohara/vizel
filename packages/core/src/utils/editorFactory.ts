@@ -130,7 +130,7 @@ export async function createVizelEditorInstance(
 
   // Extract image options for event handler registration
   const imageOptions: VizelImageFeatureOptions =
-    typeof features?.image === "object" ? features.image : {};
+    typeof features?.content?.image === "object" ? features.content.image : {};
 
   // Wrap onCreate to handle initialMarkdown. Tiptap's `setContent` resets the
   // selection to the end of the new document and triggers a scroll-into-view,

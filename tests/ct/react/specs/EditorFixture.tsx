@@ -15,7 +15,9 @@ export function EditorFixture({
     placeholder,
     initialContent,
     features: {
-      mathematics: true,
+      content: {
+        mathematics: true,
+      },
     },
   });
 

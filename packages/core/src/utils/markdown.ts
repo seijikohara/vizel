@@ -65,7 +65,7 @@ export function getVizelMarkdown(
     emitVizelError(
       new VizelError(
         "INVALID_EXTENSION",
-        "Markdown extension is not enabled. Enable it via the `features.markdown` option."
+        "Markdown extension is not loaded on this editor. Ensure the editor was created with `createVizelExtensions` (Markdown is always-on)."
       ),
       onError
     );
@@ -101,7 +101,7 @@ export function setVizelMarkdown(
     emitVizelError(
       new VizelError(
         "INVALID_EXTENSION",
-        "Markdown extension is not enabled. Enable it via the `features.markdown` option."
+        "Markdown extension is not loaded on this editor. Ensure the editor was created with `createVizelExtensions` (Markdown is always-on)."
       ),
       onError
     );
@@ -143,7 +143,7 @@ export function parseVizelMarkdown(
     emitVizelError(
       new VizelError(
         "INVALID_EXTENSION",
-        "Markdown extension is not enabled. Enable it via the `features.markdown` option."
+        "Markdown extension is not loaded on this editor. Ensure the editor was created with `createVizelExtensions` (Markdown is always-on)."
       ),
       onError
     );

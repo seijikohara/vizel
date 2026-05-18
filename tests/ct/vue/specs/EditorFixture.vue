@@ -18,7 +18,9 @@ const editor = useVizelEditor({
   placeholder: props.placeholder,
   initialContent: props.initialContent,
   features: {
-    mathematics: true,
+    content: {
+      mathematics: true,
+    },
   },
 });
 </script>

@@ -20,9 +20,11 @@ import { VizelMentionMenu, type VizelMentionMenuRef } from "../components/VizelM
  *
  * const editor = useVizelEditor({
  *   features: {
- *     mention: {
- *       items: async (query) => fetchUsers(query),
- *       suggestion: createVizelMentionMenuRenderer(),
+ *     interaction: {
+ *       mention: {
+ *         items: async (query) => fetchUsers(query),
+ *         suggestion: createVizelMentionMenuRenderer(),
+ *       },
  *     },
  *   },
  * });

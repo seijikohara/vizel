@@ -11,7 +11,9 @@ export function MarkdownFlavorsFixture({ flavor = "gfm" }: MarkdownFlavorsFixtur
   const editor = useVizelEditor({
     flavor,
     features: {
-      callout: true,
+      content: {
+        callout: true,
+      },
     },
   });
 

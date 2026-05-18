@@ -125,6 +125,11 @@ Heading.configure({
 | WikiLink | `extensions/wiki-link.ts` | Wiki-style internal links |
 | Comment | `extensions/comment.ts` | Text annotations and comments |
 
+The following extensions are part of the always-on core and are NOT
+gated by `VizelFeatureOptions`: Markdown, Link, CodeBlock. To configure
+them, use the corresponding top-level options on `VizelEditorOptions`
+(e.g. the Markdown flavor lives at `flavor`, not under `features`).
+
 ## Dependencies
 
 ### Allowed

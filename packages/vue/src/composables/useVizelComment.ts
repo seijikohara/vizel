@@ -55,7 +55,7 @@ export interface UseVizelCommentResult {
  * <script setup lang="ts">
  * import { useVizelEditor, useVizelComment } from "@vizel/vue";
  *
- * const editor = useVizelEditor({ features: { comment: true } });
+ * const editor = useVizelEditor({ features: { collaboration: { comments: true } } });
  * const { comments, addComment, resolveComment, setActiveComment } =
  *   useVizelComment(() => editor.value, { key: "my-comments" });
  * </script>

@@ -28,7 +28,6 @@ import type { VizelFlavorConfig, VizelMarkdownFlavor } from "../utils/markdown-f
 import { resolveVizelFlavorConfig } from "../utils/markdown-flavors.ts";
 import { createVizelCalloutExtension } from "./callout.ts";
 import { createVizelCharacterCountExtension } from "./character-count.ts";
-import type { VizelCodeBlockOptions } from "./code-block-lowlight.ts";
 import { createVizelCommentExtension } from "./comment.ts";
 import { createVizelDetailsExtensions } from "./details.ts";
 import { createVizelDiagramExtension } from "./diagram.ts";
@@ -109,7 +108,6 @@ function createBaseExtensions(
     Code,
     Italic,
     Strike,
-    Underline,
     // Functionality
     Dropcursor.configure({ color: "#3b82f6", width: 2 }),
     Gapcursor,
@@ -125,12 +123,13 @@ function createBaseExtensions(
 }
 
 /**
- * Add SlashCommand extension if enabled
+ * Add SlashMenu extension if enabled (enabled by default).
  */
-function addSlashCommandExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.slashCommand === false) return;
+function addSlashMenuExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  const slashMenu = features.interaction?.slashMenu;
+  if (slashMenu === false) return;
 
-  const slashOptions = typeof features.slashCommand === "object" ? features.slashCommand : {};
+  const slashOptions = typeof slashMenu === "object" ? slashMenu : {};
   const items: VizelSlashCommandItem[] = slashOptions.items ?? vizelDefaultSlashCommands;
 
   extensions.push(
@@ -144,12 +143,13 @@ function addSlashCommandExtension(extensions: Extensions, features: VizelFeature
 }
 
 /**
- * Add Image extension if enabled
+ * Add Image extension if enabled (enabled by default).
  */
 function addImageExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.image === false) return;
+  const image = features.content?.image;
+  if (image === false) return;
 
-  const imageOptions = typeof features.image === "object" ? features.image : {};
+  const imageOptions = typeof image === "object" ? image : {};
   const onUpload = imageOptions.onUpload ?? vizelDefaultBase64Upload;
   const resizeEnabled = imageOptions.resize !== false;
 
@@ -172,104 +172,74 @@ function addImageExtension(extensions: Extensions, features: VizelFeatureOptions
 }
 
 /**
- * Add Markdown extension if enabled (enabled by default)
- */
-function addMarkdownExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.markdown === false) return;
-
-  const markdownOptions = typeof features.markdown === "object" ? features.markdown : {};
-  extensions.push(createVizelMarkdownExtension(markdownOptions));
-}
-
-/**
- * Add Task List extension if enabled
+ * Add Task List extension if enabled (enabled by default).
  */
 function addTaskListExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.taskList === false) return;
+  const taskList = features.content?.taskList;
+  if (taskList === false) return;
 
-  const taskListOptions = typeof features.taskList === "object" ? features.taskList : {};
+  const taskListOptions = typeof taskList === "object" ? taskList : {};
   extensions.push(...createVizelTaskListExtensions(taskListOptions));
 }
 
 /**
- * Add Character Count extension if enabled
+ * Add Character Count extension if enabled (enabled by default).
  */
 function addCharacterCountExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.characterCount === false) return;
+  const characterCount = features.interaction?.characterCount;
+  if (characterCount === false) return;
 
-  const characterCountOptions =
-    typeof features.characterCount === "object" ? features.characterCount : {};
+  const characterCountOptions = typeof characterCount === "object" ? characterCount : {};
   extensions.push(createVizelCharacterCountExtension(characterCountOptions));
 }
 
 /**
- * Add Text Color and Highlight extensions if enabled
+ * Add Text Color and Highlight extensions if enabled (enabled by default).
  */
 function addTextColorExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.textColor === false) return;
+  const textColor = features.content?.textColor;
+  if (textColor === false) return;
 
-  const textColorOptions = typeof features.textColor === "object" ? features.textColor : {};
+  const textColorOptions = typeof textColor === "object" ? textColor : {};
   extensions.push(...createVizelTextColorExtensions(textColorOptions));
 }
 
 /**
- * Add Code Block extension (with or without syntax highlighting).
+ * Add Code Block extension (always-on).
  * Async because lowlight is loaded dynamically as an optional dependency.
  */
-async function addCodeBlockExtension(
-  extensions: Extensions,
-  features: VizelFeatureOptions,
-  locale?: VizelLocale
-): Promise<void> {
-  // If codeBlock is explicitly set to false, don't add any code block extension
-  if (features.codeBlock === false) {
-    return;
-  }
-
-  // Dynamically import to avoid loading lowlight at module evaluation time
+async function addCodeBlockExtension(extensions: Extensions, locale?: VizelLocale): Promise<void> {
   const { createVizelCodeBlockExtension } = await import("./code-block-lowlight.ts");
-
-  // If codeBlock is enabled (true or options object), use syntax highlighting
-  if (features.codeBlock === true || typeof features.codeBlock === "object") {
-    const codeBlockOptions: VizelCodeBlockOptions =
-      typeof features.codeBlock === "object" ? features.codeBlock : {};
-    extensions.push(
-      ...(await createVizelCodeBlockExtension({
-        ...codeBlockOptions,
-        ...(locale !== undefined && { locale }),
-      }))
-    );
-  } else {
-    // Default: use syntax highlighting with default options
-    extensions.push(
-      ...(await createVizelCodeBlockExtension({
-        ...(locale !== undefined && { locale }),
-      }))
-    );
-  }
+  extensions.push(
+    ...(await createVizelCodeBlockExtension({
+      ...(locale !== undefined && { locale }),
+    }))
+  );
 }
 
 /**
- * Add Mathematics extension if enabled (enabled by default)
+ * Add Mathematics extension if enabled (enabled by default).
  */
 function addMathematicsExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.mathematics === false) return;
+  const mathematics = features.content?.mathematics;
+  if (mathematics === false) return;
 
-  const mathOptions = typeof features.mathematics === "object" ? features.mathematics : {};
+  const mathOptions = typeof mathematics === "object" ? mathematics : {};
   extensions.push(...createVizelMathematicsExtensions(mathOptions));
 }
 
 /**
- * Add Drag Handle extension if enabled
+ * Add Drag Handle extension if enabled (enabled by default).
  */
 function addDragHandleExtension(
   extensions: Extensions,
   features: VizelFeatureOptions,
   locale?: VizelLocale
 ): void {
-  if (features.dragHandle === false) return;
+  const dragHandle = features.interaction?.dragHandle;
+  if (dragHandle === false) return;
 
-  const dragHandleOptions = typeof features.dragHandle === "object" ? features.dragHandle : {};
+  const dragHandleOptions = typeof dragHandle === "object" ? dragHandle : {};
   extensions.push(
     ...createVizelDragHandleExtensions({
       ...dragHandleOptions,
@@ -279,42 +249,46 @@ function addDragHandleExtension(
 }
 
 /**
- * Add Details extension if enabled (enabled by default)
+ * Add Details extension if enabled (enabled by default).
  */
 function addDetailsExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.details === false) return;
+  const details = features.content?.details;
+  if (details === false) return;
 
-  const detailsOptions = typeof features.details === "object" ? features.details : {};
+  const detailsOptions = typeof details === "object" ? details : {};
   extensions.push(...createVizelDetailsExtensions(detailsOptions));
 }
 
 /**
- * Add Embed extension if enabled (enabled by default)
+ * Add Embed extension if enabled (enabled by default).
  */
 function addEmbedExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.embed === false) return;
+  const embed = features.content?.embed;
+  if (embed === false) return;
 
-  const embedOptions = typeof features.embed === "object" ? features.embed : {};
+  const embedOptions = typeof embed === "object" ? embed : {};
   extensions.push(createVizelEmbedExtension(embedOptions));
 }
 
 /**
- * Add Diagram extension if enabled (enabled by default)
+ * Add Diagram extension if enabled (enabled by default).
  */
 function addDiagramExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.diagram === false) return;
+  const diagram = features.content?.diagram;
+  if (diagram === false) return;
 
-  const diagramOptions = typeof features.diagram === "object" ? features.diagram : {};
+  const diagramOptions = typeof diagram === "object" ? diagram : {};
   extensions.push(createVizelDiagramExtension(diagramOptions));
 }
 
 /**
- * Add Table of Contents extension if enabled
+ * Add Table of Contents extension if enabled (enabled by default).
  */
 function addTableOfContentsExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (features.tableOfContents === false) return;
+  const tableOfContents = features.content?.tableOfContents;
+  if (tableOfContents === false) return;
 
-  const tocOptions = typeof features.tableOfContents === "object" ? features.tableOfContents : {};
+  const tocOptions = typeof tableOfContents === "object" ? tableOfContents : {};
   extensions.push(createVizelTableOfContentsExtension(tocOptions));
 }
 
@@ -327,9 +301,10 @@ function addWikiLinkExtension(
   features: VizelFeatureOptions,
   flavorConfig: VizelFlavorConfig
 ): void {
-  if (!features.wikiLink) return;
+  const wikiLink = features.content?.wikiLink;
+  if (!wikiLink) return;
 
-  const wikiLinkOptions = typeof features.wikiLink === "object" ? features.wikiLink : {};
+  const wikiLinkOptions = typeof wikiLink === "object" ? wikiLink : {};
   extensions.push(
     createVizelWikiLinkExtension({
       ...wikiLinkOptions,
@@ -347,9 +322,10 @@ function addCalloutExtension(
   features: VizelFeatureOptions,
   flavorConfig: VizelFlavorConfig
 ): void {
-  if (features.callout === false) return;
+  const callout = features.content?.callout;
+  if (callout === false) return;
 
-  const calloutOptions = typeof features.callout === "object" ? features.callout : {};
+  const calloutOptions = typeof callout === "object" ? callout : {};
   extensions.push(
     createVizelCalloutExtension({
       ...calloutOptions,
@@ -359,22 +335,24 @@ function addCalloutExtension(
 }
 
 /**
- * Add Mention extension if enabled (disabled by default)
+ * Add Mention extension if enabled (disabled by default).
  */
 function addMentionExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (!features.mention) return;
+  const mention = features.interaction?.mention;
+  if (!mention) return;
 
-  const mentionOptions = typeof features.mention === "object" ? features.mention : {};
+  const mentionOptions = typeof mention === "object" ? mention : {};
   extensions.push(createVizelMentionExtension(mentionOptions));
 }
 
 /**
- * Add Comment extension if enabled (disabled by default)
+ * Add Comments extension if enabled (disabled by default).
  */
-function addCommentExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  if (!features.comment) return;
+function addCommentsExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  const comments = features.collaboration?.comments;
+  if (!comments) return;
 
-  const commentOptions = typeof features.comment === "object" ? features.comment : {};
+  const commentOptions = typeof comments === "object" ? comments : {};
   extensions.push(createVizelCommentExtension(commentOptions));
 }
 
@@ -391,14 +369,18 @@ function addCommentExtension(extensions: Extensions, features: VizelFeatureOptio
  * ```ts
  * const extensions = createVizelExtensions({
  *   features: {
- *     table: false,
- *     slashCommand: false,
- *     mathematics: false,
+ *     content: {
+ *       table: false,
+ *       mathematics: false,
+ *     },
+ *     interaction: {
+ *       slashMenu: false,
+ *     },
  *   },
  * });
  * ```
  *
- * @example Using Markdown support (enabled by default)
+ * @example Using Markdown support (always-on)
  * ```ts
  * const extensions = createVizelExtensions();
  *
@@ -411,12 +393,14 @@ function addCommentExtension(extensions: Extensions, features: VizelFeatureOptio
  * ```ts
  * const extensions = createVizelExtensions({
  *   features: {
- *     image: {
- *       onUpload: async (file) => {
- *         const formData = new FormData();
- *         formData.append('file', file);
- *         const res = await fetch('/api/upload', { method: 'POST', body: formData });
- *         return (await res.json()).url;
+ *     content: {
+ *       image: {
+ *         onUpload: async (file) => {
+ *           const formData = new FormData();
+ *           formData.append('file', file);
+ *           const res = await fetch('/api/upload', { method: 'POST', body: formData });
+ *           return (await res.json()).url;
+ *         },
  *       },
  *     },
  *   },
@@ -435,7 +419,7 @@ export async function createVizelExtensions(
   } = options;
 
   const flavorConfig = resolveVizelFlavorConfig(flavor);
-  const excludeHistory = features.collaboration === true;
+  const excludeHistory = Boolean(features.collaboration?.provider);
 
   const extensions: Extensions = [
     ...createBaseExtensions({ headingLevels, excludeHistory }),
@@ -446,21 +430,20 @@ export async function createVizelExtensions(
     }),
   ];
 
-  // Add optional features (sync)
-  addSlashCommandExtension(extensions, features);
+  // Always-on (no feature flag)
+  extensions.push(createVizelLinkExtension({}));
+  extensions.push(createVizelMarkdownExtension({}));
 
-  if (features.table !== false) {
-    const tableOptions = typeof features.table === "object" ? features.table : {};
+  // Opt-out content
+  const table = features.content?.table;
+  if (table !== false) {
+    const tableOptions = typeof table === "object" ? table : {};
     extensions.push(...createVizelTableExtensions(tableOptions));
   }
 
-  if (features.link !== false) {
-    const linkOptions = typeof features.link === "object" ? features.link : {};
-    extensions.push(createVizelLinkExtension(linkOptions));
-  }
-
+  // Opt-out / opt-in features
+  addSlashMenuExtension(extensions, features);
   addImageExtension(extensions, features);
-  addMarkdownExtension(extensions, features);
   addTaskListExtension(extensions, features);
   addCharacterCountExtension(extensions, features);
   addTextColorExtension(extensions, features);
@@ -473,21 +456,24 @@ export async function createVizelExtensions(
   addTableOfContentsExtension(extensions, features);
   addWikiLinkExtension(extensions, features, flavorConfig);
   addMentionExtension(extensions, features);
-  addCommentExtension(extensions, features);
+  addCommentsExtension(extensions, features);
 
-  // Add typography marks
-  if (features.superscript !== false) {
+  // Marks (default on, opt-out via content.*)
+  if (features.content?.underline !== false) {
+    extensions.push(Underline);
+  }
+  if (features.content?.superscript !== false) {
     extensions.push(Superscript);
   }
-  if (features.subscript !== false) {
+  if (features.content?.subscript !== false) {
     extensions.push(Subscript);
   }
-  if (features.typography !== false) {
+  if (features.interaction?.typography !== false) {
     extensions.push(Typography);
   }
 
-  // Add code block extension (async - lowlight is loaded dynamically)
-  await addCodeBlockExtension(extensions, features, locale);
+  // CodeBlock (always-on, async — lowlight is loaded dynamically)
+  await addCodeBlockExtension(extensions, locale);
 
   return extensions;
 }
