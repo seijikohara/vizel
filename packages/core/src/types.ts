@@ -60,9 +60,12 @@ export interface VizelImageFeatureOptions extends Partial<VizelImageUploadPlugin
  * undo/redo. These extensions load regardless of `features`.
  */
 export interface VizelFeatureOptions {
-  readonly content?: VizelContentFeatureOptions;
-  readonly interaction?: VizelInteractionFeatureOptions;
-  readonly collaboration?: VizelCollaborationFeatureOptions;
+  /** Content features — what the document can contain. */
+  content?: VizelContentFeatureOptions;
+  /** Interaction features — how the user edits. */
+  interaction?: VizelInteractionFeatureOptions;
+  /** Collaboration features — who edits together. */
+  collaboration?: VizelCollaborationFeatureOptions;
 }
 
 /**
@@ -70,33 +73,33 @@ export interface VizelFeatureOptions {
  */
 export interface VizelContentFeatureOptions {
   /** Image upload and resize */
-  readonly image?: VizelImageFeatureOptions | boolean;
+  image?: VizelImageFeatureOptions | boolean;
   /** Table support with column/row controls */
-  readonly table?: VizelTableOptions | boolean;
+  table?: VizelTableOptions | boolean;
   /** Mathematics (LaTeX) support with KaTeX rendering */
-  readonly mathematics?: VizelMathematicsOptions | boolean;
+  mathematics?: VizelMathematicsOptions | boolean;
   /** Diagram support (Mermaid, GraphViz) */
-  readonly diagram?: VizelDiagramOptions | boolean;
+  diagram?: VizelDiagramOptions | boolean;
   /** URL embedding with oEmbed/OGP support */
-  readonly embed?: VizelEmbedOptions | boolean;
+  embed?: VizelEmbedOptions | boolean;
   /** Callout / admonition blocks (info, warning, danger, tip, note) */
-  readonly callout?: VizelCalloutOptions | boolean;
+  callout?: VizelCalloutOptions | boolean;
   /** Collapsible content blocks (accordion) */
-  readonly details?: VizelDetailsOptions | boolean;
+  details?: VizelDetailsOptions | boolean;
   /** Text color and highlight support */
-  readonly textColor?: VizelTextColorOptions | boolean;
+  textColor?: VizelTextColorOptions | boolean;
   /** Underline mark (default-on) */
-  readonly underline?: boolean;
+  underline?: boolean;
   /** Superscript mark (e.g., x²) */
-  readonly superscript?: boolean;
+  superscript?: boolean;
   /** Subscript mark (e.g., H₂O) */
-  readonly subscript?: boolean;
+  subscript?: boolean;
   /** Task list (checkbox) support */
-  readonly taskList?: VizelTaskListExtensionsOptions | boolean;
+  taskList?: VizelTaskListExtensionsOptions | boolean;
   /** Wiki links ([[page-name]], [[page|display text]]) for knowledge base use cases */
-  readonly wikiLink?: VizelWikiLinkOptions | boolean;
+  wikiLink?: VizelWikiLinkOptions | boolean;
   /** Table of Contents block that auto-collects headings */
-  readonly tableOfContents?: VizelTableOfContentsOptions | boolean;
+  tableOfContents?: VizelTableOfContentsOptions | boolean;
 }
 
 /**
@@ -104,13 +107,13 @@ export interface VizelContentFeatureOptions {
  */
 export interface VizelInteractionFeatureOptions {
   /** Slash command menu (type "/" to open) */
-  readonly slashMenu?: VizelSlashCommandOptions | boolean;
+  slashMenu?: VizelSlashCommandOptions | boolean;
   /**
    * Per-item drag handle for reordering blocks and list items
    * (bullet, ordered, task) at any nesting depth, with Alt+Up/Down
    * keyboard shortcuts.
    */
-  readonly dragHandle?: VizelDragHandleOptions | boolean;
+  dragHandle?: VizelDragHandleOptions | boolean;
   /**
    * @mention autocomplete for user mentions.
    * Disabled by default — requires user-provided items function.
@@ -121,11 +124,11 @@ export interface VizelInteractionFeatureOptions {
    * }
    * ```
    */
-  readonly mention?: VizelMentionOptions | boolean;
+  mention?: VizelMentionOptions | boolean;
   /** Character and word count tracking */
-  readonly characterCount?: VizelCharacterCountOptions | boolean;
+  characterCount?: VizelCharacterCountOptions | boolean;
   /** Typography auto-conversion (smart quotes, em-dashes, ellipsis, etc.) */
-  readonly typography?: boolean;
+  typography?: boolean;
 }
 
 /**
@@ -133,14 +136,14 @@ export interface VizelInteractionFeatureOptions {
  */
 export interface VizelCollaborationFeatureOptions {
   /** Comment/annotation marks for collaborative review workflows */
-  readonly comments?: VizelCommentMarkOptions | boolean;
+  comments?: VizelCommentMarkOptions | boolean;
   /**
-   * Enable collaboration mode. When set (any truthy value), the
-   * History extension is excluded — Yjs provides its own undo
-   * manager. In 8a this is a `boolean`; 8e replaces it with the
-   * structured `VizelCollaborationProvider` type.
+   * Enable collaboration mode. When set, the History extension is
+   * excluded — Yjs (or another CRDT provider) supplies its own undo
+   * manager. A future release replaces this `boolean` with a
+   * structured collaboration-provider type.
    */
-  readonly provider?: boolean;
+  provider?: boolean;
 }
 
 /**
