@@ -203,6 +203,7 @@ export {
   createVizelTaskListExtensions,
   createVizelTextColorExtensions,
   createVizelTypographyExtension,
+  createVizelVisualHierarchyExtension,
   createVizelWikiLinkExtension,
   detectVizelEmbedProvider,
   filterVizelFilesByMimeType,
@@ -317,6 +318,7 @@ export {
   type VizelTOCHeading,
   type VizelTypographyOptions,
   type VizelUploadImageFn,
+  type VizelVisualHierarchyOptions,
   VizelWikiLink,
   type VizelWikiLinkOptions,
   type VizelWikiLinkSuggestion,
@@ -330,6 +332,7 @@ export {
   vizelDefaultSlashCommands,
   vizelEmbedPastePluginKey,
   vizelFindReplacePluginKey,
+  vizelVisualHierarchyPluginKey,
   vizelWikiLinkPluginKey,
 } from "./extensions/index.ts";
 // =============================================================================

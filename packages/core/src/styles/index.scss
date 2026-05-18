@@ -45,6 +45,7 @@
 @use "wiki-link";
 @use "components/comment";
 @use "components/find-replace";
+@use "block-hierarchy";
 
 /* Print optimization */
 @use "print";
