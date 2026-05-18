@@ -39,13 +39,16 @@
       "svelte": "./dist/index.js",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
-    }
+    },
+    "./styles.css": "./dist/styles.css",
+    "./components.css": "./dist/components.css",
+    "./mathematics.css": "./dist/mathematics.css"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "svelte-package -i src -o dist && node scripts/compile-svelte.mjs",
+    "build": "svelte-package -i src -o dist && node scripts/compile-svelte.mjs && node scripts/copy-styles.mjs",
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
