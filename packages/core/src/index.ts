@@ -202,6 +202,7 @@ export {
   // Task list
   createVizelTaskListExtensions,
   createVizelTextColorExtensions,
+  createVizelTypographyExtension,
   createVizelWikiLinkExtension,
   detectVizelEmbedProvider,
   filterVizelFilesByMimeType,
@@ -314,6 +315,7 @@ export {
   type VizelTaskListOptions,
   type VizelTextColorOptions,
   type VizelTOCHeading,
+  type VizelTypographyOptions,
   type VizelUploadImageFn,
   VizelWikiLink,
   type VizelWikiLinkOptions,
