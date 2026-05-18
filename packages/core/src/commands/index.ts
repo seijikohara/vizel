@@ -2,6 +2,7 @@
 export { deriveVizelCommandSpec } from "./derive.ts";
 export {
   vizelBlockCommands,
+  vizelCommandsFromNodeTypes,
   vizelDefaultCommands,
   vizelFormatCommands,
   vizelInsertCommands,

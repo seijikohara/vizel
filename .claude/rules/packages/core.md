@@ -173,6 +173,70 @@ every safe opt-in (everything except `mention`, `provider`, `comments`,
 configuration to function). Use it when you want the Notion-like
 surface without enumerating each toggle.
 
+## Command Layer
+
+A single `VizelCommand` represents one user action everywhere it
+appears. The same logical command (e.g. "format/bold") shows up in
+the toolbar, the bubble menu, and the keyboard shortcut table without
+being defined more than once. Surface-specific builders consume a
+`readonly VizelCommand[]` and project each entry into the matching
+Section 2 spec for a specific editor and locale.
+
+### Surfaces and builders
+
+| Surface | Builder | Output |
+|---------|---------|--------|
+| Slash menu | `buildVizelSlashMenuSpecFromCommands` | `VizelMenuSpec<VizelCommandSpec>` |
+| Toolbar | `buildVizelToolbarSpec` | `readonly VizelCommandSpec[]` |
+| Bubble menu | `buildVizelBubbleMenuSpec` | `readonly VizelCommandSpec[]` |
+| Block menu | `buildVizelBlockMenuSpecFromCommands` | `readonly VizelCommandSpec[]` |
+| Keyboard shortcut | `createVizelCommandShortcutsExtension` | `Extension` |
+
+Each builder filters by the corresponding `command.surfaces.*` entry,
+applies surface-specific tuning (priority sort, `showWhen` predicate),
+and derives one `VizelCommandSpec` per command via
+`deriveVizelCommandSpec(command, editor, locale)`. The framework
+components consume the resulting specs without seeing a
+`VizelCommand`.
+
+### Built-in registries
+
+`vizelFormatCommands`, `vizelBlockCommands`, and
+`vizelInsertCommands` ship in `packages/core/src/commands/registry/`.
+A command lives in exactly one registry, chosen by what the command
+*does*:
+
+- **`vizelFormatCommands`** — toggles a mark (bold, italic, strike,
+  underline, code, superscript, subscript). Marks surface on the
+  toolbar / bubble menu only; they do not appear in the slash menu.
+- **`vizelBlockCommands`** — changes the current block's node type
+  (headings, lists, quote, code block, divider, details, callout).
+  Block commands surface on the slash menu plus an optional shortcut.
+- **`vizelInsertCommands`** — inserts a new node into the document
+  (table, image, embed, math, diagram, table of contents). Insert
+  commands surface on the slash menu only.
+
+`vizelDefaultCommands` is the concatenation of the three registries.
+`vizelCommandsFromNodeTypes(nodeTypes)` derives a parallel
+`VizelCommand[]` from `VizelNodeTypeOption[]` so adding a node type
+registers it across the block menu and slash menu in one entry.
+
+### Locale integration
+
+`VizelCommand.label` and `VizelCommand.description` are thunks that
+receive a `VizelLocale` and return a string. Surface builders pass the
+current locale; consumers override individual strings by passing a
+customized `VizelLocale` to the editor.
+
+### Shortcut OS branching
+
+`VizelShortcut` carries both `mac` and `other` strings (Tiptap keymap
+notation, where `Mod` resolves to `Cmd` on macOS and `Ctrl`
+elsewhere). `createVizelCommandShortcutsExtension` selects the right
+string via `isVizelMacPlatform()` and binds the result to
+`command.run(editor)`. When the two strings differ, document the
+reason in a comment on the command definition.
+
 ## Dependencies
 
 ### Allowed
