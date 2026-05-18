@@ -1,5 +1,6 @@
 import type { Editor, Extensions, JSONContent } from "@tiptap/core";
 import type { SuggestionOptions } from "@tiptap/suggestion";
+import type { VizelCollaborationProvider } from "./collaboration-provider.ts";
 import type { VizelCalloutOptions } from "./extensions/callout.ts";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelCommentMarkOptions } from "./extensions/comment.ts";
@@ -10,6 +11,7 @@ import type { VizelEmbedOptions } from "./extensions/embed.ts";
 import type { VizelHighlightOptions } from "./extensions/highlight.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
 import type { VizelMentionOptions } from "./extensions/mention.ts";
+import type { VizelPresenceOptions } from "./extensions/presence.ts";
 import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTableOfContentsOptions } from "./extensions/table-of-contents.ts";
@@ -22,6 +24,7 @@ import type { VizelLocale } from "./i18n/types.ts";
 import type { VizelImageUploadPluginOptions } from "./plugins/image-upload.ts";
 import type { VizelError } from "./utils/errorHandling.ts";
 import type { VizelMarkdownFlavor } from "./utils/markdown-flavors.ts";
+import type { VizelVersionHistoryOptions } from "./version-history.ts";
 
 /**
  * Slash command feature options
@@ -165,12 +168,29 @@ export interface VizelCollaborationFeatureOptions {
   /** Comment/annotation marks for collaborative review workflows */
   comments?: VizelCommentMarkOptions | boolean;
   /**
-   * Enable collaboration mode. When set, the History extension is
-   * excluded — Yjs (or another CRDT provider) supplies its own undo
-   * manager. A future release replaces this `boolean` with a
-   * structured collaboration-provider type.
+   * Enable collaboration mode. Pass `true` for the legacy
+   * History-excluded mode (consumer wires Yjs separately), or pass a
+   * `VizelCollaborationProvider` adapter to let Vizel manage connect /
+   * disconnect on the editor lifecycle.
+   *
+   * When set (to any truthy value), the History extension is excluded
+   * — the provider supplies its own undo manager.
    */
-  provider?: boolean;
+  provider?: VizelCollaborationProvider | boolean;
+  /**
+   * Version history snapshot management. The boolean form is a typed
+   * opt-in marker (consumers still call `useVizelVersionHistory` to
+   * use it); the options form lets callers prefill storage / event
+   * hooks the hook will consume.
+   */
+  versionHistory?: VizelVersionHistoryOptions | boolean;
+  /**
+   * Real-time collaborative cursors and selections rendered through a
+   * generic awareness adapter (Yjs Awareness satisfies the shape
+   * natively). Disabled by default — requires consumer-supplied
+   * `awareness` and `currentUser`.
+   */
+  presence?: VizelPresenceOptions;
 }
 
 /**

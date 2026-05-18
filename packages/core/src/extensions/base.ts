@@ -42,6 +42,7 @@ import { createVizelLinkExtension } from "./link.ts";
 import { createVizelMarkdownExtension } from "./markdown.ts";
 import { createVizelMathematicsExtensions } from "./mathematics.ts";
 import { createVizelMentionExtension } from "./mention.ts";
+import { createVizelPresenceExtension } from "./presence.ts";
 import {
   VizelSlashCommand,
   type VizelSlashCommandItem,
@@ -390,6 +391,18 @@ function addVisualHierarchyExtension(extensions: Extensions, features: VizelFeat
 }
 
 /**
+ * Add Presence extension if configured (disabled by default).
+ *
+ * Renders other collaborators' cursors and selections via the supplied
+ * awareness adapter.
+ */
+function addPresenceExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+  const presence = features.collaboration?.presence;
+  if (!presence) return;
+  extensions.push(createVizelPresenceExtension(presence));
+}
+
+/**
  * Create the default set of extensions for Vizel editor.
  * All features are enabled by default. Set any feature to `false` to disable it.
  *
@@ -498,6 +511,7 @@ export async function createVizelExtensions(
   addMentionExtension(extensions, features);
   addCommentsExtension(extensions, features);
   addVisualHierarchyExtension(extensions, features);
+  addPresenceExtension(extensions, features);
 
   // Marks (default on, opt-out via content.*)
   if (features.content?.underline !== false) {
