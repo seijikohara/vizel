@@ -6,6 +6,14 @@ export {
   type VizelBlockMenuTurnIntoItemView,
 } from "./block-menu.ts";
 export {
+  buildVizelBlockMenuSpecFromCommands,
+  type VizelBlockMenuFromCommandsOptions,
+} from "./block-menu-from-commands.ts";
+export {
+  buildVizelBubbleMenuSpec,
+  type VizelBubbleMenuSpecOptions,
+} from "./bubble-menu.ts";
+export {
   buildVizelFindReplaceSpec,
   buildVizelFindReplaceSpecFromLocale,
   type VizelFindReplaceSpec,
@@ -30,10 +38,16 @@ export {
 } from "./node-selector.ts";
 export {
   buildVizelSlashMenuSpec,
+  buildVizelSlashMenuSpecFromCommands,
   getNextVizelSlashMenuGroupIndex,
   type VizelSlashItemView,
+  type VizelSlashMenuFromCommandsOptions,
   type VizelSlashMenuSpecOptions,
 } from "./slash-menu.ts";
+export {
+  buildVizelToolbarSpec,
+  type VizelToolbarSpecOptions,
+} from "./toolbar.ts";
 export {
   buildVizelToolbarDropdownSpec,
   type VizelToolbarDropdownItemView,
