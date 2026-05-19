@@ -22,7 +22,11 @@ import Superscript from "@tiptap/extension-superscript";
 import Text from "@tiptap/extension-text";
 import Underline from "@tiptap/extension-underline";
 import type { VizelLocale } from "../i18n/types.ts";
-import type { VizelMarkdownFlavor } from "../markdown/types.ts";
+import type {
+  VizelMarkdownEncodingOptions,
+  VizelMarkdownFlavor,
+  VizelMarkdownLossyEncodingMode,
+} from "../markdown/types.ts";
 import type { VizelFeatureOptions } from "../types.ts";
 import { resolveVizelFlavorConfig, type VizelFlavorConfig } from "../utils/markdown-flavors.ts";
 import { createVizelCalloutExtension } from "./callout.ts";
@@ -72,6 +76,12 @@ export interface VizelExtensionsOptions {
    * @default "gfm"
    */
   flavor?: VizelMarkdownFlavor;
+  /**
+   * Per-node encoding mode for nodes that have no canonical Markdown
+   * representation (`embed`, `mention`, `wikiLink`). See
+   * {@link VizelMarkdownEncodingOptions}.
+   */
+  encoding?: VizelMarkdownEncodingOptions;
   /**
    * Locale for editor UI strings.
    * If not provided, default English strings are used.
@@ -357,12 +367,21 @@ function addCalloutExtension(
 /**
  * Add Mention extension if enabled (disabled by default).
  */
-function addMentionExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+function addMentionExtension(
+  extensions: Extensions,
+  features: VizelFeatureOptions,
+  mentionEncoding: VizelMarkdownLossyEncodingMode | undefined
+): void {
   const mention = features.interaction?.mention;
   if (!mention) return;
 
   const mentionOptions = typeof mention === "object" ? mention : {};
-  extensions.push(createVizelMentionExtension(mentionOptions));
+  extensions.push(
+    createVizelMentionExtension({
+      ...mentionOptions,
+      ...(mentionEncoding !== undefined && { encoding: mentionEncoding }),
+    })
+  );
 }
 
 /**
@@ -461,6 +480,7 @@ export async function createVizelExtensions(
     headingLevels = [1, 2, 3, 4, 5, 6],
     features = {},
     flavor,
+    encoding,
     locale,
   } = options;
 
@@ -508,7 +528,7 @@ export async function createVizelExtensions(
   addDiagramExtension(extensions, features);
   addTableOfContentsExtension(extensions, features);
   addWikiLinkExtension(extensions, features, flavorConfig);
-  addMentionExtension(extensions, features);
+  addMentionExtension(extensions, features, encoding?.mention);
   addCommentsExtension(extensions, features);
   addVisualHierarchyExtension(extensions, features);
   addPresenceExtension(extensions, features);

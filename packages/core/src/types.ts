@@ -21,7 +21,7 @@ import type { VizelTypographyOptions } from "./extensions/typography.ts";
 import type { VizelVisualHierarchyOptions } from "./extensions/visual-hierarchy.ts";
 import type { VizelWikiLinkOptions } from "./extensions/wiki-link.ts";
 import type { VizelLocale } from "./i18n/types.ts";
-import type { VizelMarkdownFlavor } from "./markdown/types.ts";
+import type { VizelMarkdownEncodingOptions, VizelMarkdownFlavor } from "./markdown/types.ts";
 import type { VizelImageUploadPluginOptions } from "./plugins/image-upload.ts";
 import type { VizelError } from "./utils/errorHandling.ts";
 import type { VizelVersionHistoryOptions } from "./version-history.ts";
@@ -206,18 +206,21 @@ export interface VizelEditorOptions {
    */
   locale?: VizelLocale;
   /**
-   * Markdown output flavor.
-   * Controls how Markdown is serialized when exporting content.
+   * Markdown pipeline configuration.
    *
-   * - `"commonmark"` — Standard CommonMark (callouts fall back to blockquotes)
-   * - `"gfm"` — GitHub Flavored Markdown with `> [!NOTE]` alerts (default)
-   * - `"obsidian"` — Obsidian-style `> [!note]` callouts and `[[wiki-links]]`
-   * - `"docusaurus"` — Docusaurus/VitePress `:::note` admonitions
-   *
-   * Input parsing is always tolerant: all callout formats are recognized regardless of flavor.
-   * @default "gfm"
+   * - `flavor` selects the Markdown output flavor. The parser remains
+   *   tolerant across formats; only serialization follows the selected
+   *   flavor. Defaults to {@link vizelGfmFlavor} when omitted.
+   * - `encoding` selects the per-node encoding mode for nodes that have
+   *   no canonical Markdown representation (`embed`, `mention`,
+   *   `wikiLink`). `"default"` chooses the lossy-but-portable
+   *   encoding; `"metadata-comment"` chooses the lossless-but-noisy
+   *   encoding that preserves identifiers via a trailing HTML comment.
    */
-  flavor?: VizelMarkdownFlavor;
+  markdown?: {
+    readonly flavor?: VizelMarkdownFlavor;
+    readonly encoding?: VizelMarkdownEncodingOptions;
+  };
   /**
    * Initial content in JSON format.
    *

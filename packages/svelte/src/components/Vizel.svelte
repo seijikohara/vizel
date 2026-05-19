@@ -148,7 +148,9 @@ const editorState = createVizelEditor({
   editable: restProps.editable ?? true,
   autofocus: restProps.autofocus ?? false,
   ...(restProps.features !== undefined && { features: restProps.features }),
-  ...(restProps.flavor !== undefined && { flavor: restProps.flavor }),
+  ...(restProps.flavor !== undefined && {
+    markdown: { flavor: restProps.flavor },
+  }),
   ...(restProps.locale !== undefined && { locale: restProps.locale }),
   ...(restProps.extensions !== undefined && { extensions: restProps.extensions }),
   onUpdate: wrappedOnUpdate,
