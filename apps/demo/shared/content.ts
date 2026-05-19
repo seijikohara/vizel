@@ -4,17 +4,14 @@ import docusaurusContent from "./content-docusaurus.md?raw";
 import gfmContent from "./content-gfm.md?raw";
 import obsidianContent from "./content-obsidian.md?raw";
 
-const flavorContent: Record<VizelMarkdownFlavor, string> = {
+const flavorContentByName: Record<string, string> = {
   commonmark: commonmarkContent,
   gfm: gfmContent,
   obsidian: obsidianContent,
   docusaurus: docusaurusContent,
 };
 
-/** Get demo content for a specific Markdown flavor */
+/** Return demo content matching the given Markdown flavor. */
 export function getFlavorContent(flavor: VizelMarkdownFlavor): string {
-  return flavorContent[flavor];
+  return flavorContentByName[flavor.name] ?? gfmContent;
 }
-
-/** @deprecated Use getFlavorContent("gfm") instead */
-export { default as initialMarkdown } from "./demo-content.md?raw";
