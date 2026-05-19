@@ -1,15 +1,31 @@
-import { useVizelEditor, VizelEditor, type VizelMarkdownFlavor, VizelProvider } from "@vizel/react";
+import {
+  useVizelEditor,
+  VizelEditor,
+  type VizelMarkdownFlavor,
+  VizelProvider,
+  vizelCommonMarkFlavor,
+  vizelDocusaurusFlavor,
+  vizelGfmFlavor,
+  vizelObsidianFlavor,
+} from "@vizel/react";
 import { useState } from "react";
 
+const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
+  [vizelCommonMarkFlavor.name]: vizelCommonMarkFlavor,
+  [vizelGfmFlavor.name]: vizelGfmFlavor,
+  [vizelObsidianFlavor.name]: vizelObsidianFlavor,
+  [vizelDocusaurusFlavor.name]: vizelDocusaurusFlavor,
+};
+
 export interface MarkdownFlavorsFixtureProps {
-  flavor?: VizelMarkdownFlavor;
+  flavor?: string;
 }
 
 export function MarkdownFlavorsFixture({ flavor = "gfm" }: MarkdownFlavorsFixtureProps) {
   const [markdownOutput, setMarkdownOutput] = useState("");
 
   const editor = useVizelEditor({
-    flavor,
+    flavor: FLAVOR_BY_NAME[flavor] ?? vizelGfmFlavor,
     features: {
       content: {
         callout: true,

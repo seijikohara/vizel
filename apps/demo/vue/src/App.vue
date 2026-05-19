@@ -13,12 +13,23 @@ import {
   type VizelMarkdownFlavor,
   VizelSaveIndicator,
   VizelThemeProvider,
+  vizelCommonMarkFlavor,
+  vizelDocusaurusFlavor,
+  vizelGfmFlavor,
+  vizelObsidianFlavor,
 } from "@vizel/vue";
 import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { getFlavorContent } from "../../shared/content";
 import vueLogo from "../../shared/logos/vue.svg";
 import { mockMentionItems, mockUploadImage } from "../../shared/utils";
 import ThemeToggle from "./ThemeToggle.vue";
+
+const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
+  [vizelCommonMarkFlavor.name]: vizelCommonMarkFlavor,
+  [vizelGfmFlavor.name]: vizelGfmFlavor,
+  [vizelObsidianFlavor.name]: vizelObsidianFlavor,
+  [vizelDocusaurusFlavor.name]: vizelDocusaurusFlavor,
+};
 
 // Feature toggles (all enabled by default)
 const features = reactive({
@@ -31,7 +42,10 @@ const features = reactive({
   history: true,
 });
 
-const flavor = ref<VizelMarkdownFlavor>("gfm");
+const flavorName = ref<string>(vizelGfmFlavor.name);
+const flavor = computed<VizelMarkdownFlavor>(
+  () => FLAVOR_BY_NAME[flavorName.value] ?? vizelGfmFlavor
+);
 
 type PanelTab = "markdown" | "json" | "history" | "comments";
 const activeTab = ref<PanelTab>("markdown");
@@ -186,7 +200,7 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
           </label>
           <label class="feature-toggle">
             <span class="feature-toggle-label">Flavor</span>
-            <select class="feature-select" v-model="flavor">
+            <select class="feature-select" v-model="flavorName">
               <option value="commonmark">CommonMark</option>
               <option value="gfm">GFM</option>
               <option value="obsidian">Obsidian</option>

@@ -21,9 +21,9 @@ import type { VizelTypographyOptions } from "./extensions/typography.ts";
 import type { VizelVisualHierarchyOptions } from "./extensions/visual-hierarchy.ts";
 import type { VizelWikiLinkOptions } from "./extensions/wiki-link.ts";
 import type { VizelLocale } from "./i18n/types.ts";
+import type { VizelMarkdownFlavor } from "./markdown/types.ts";
 import type { VizelImageUploadPluginOptions } from "./plugins/image-upload.ts";
 import type { VizelError } from "./utils/errorHandling.ts";
-import type { VizelMarkdownFlavor } from "./utils/markdown-flavors.ts";
 import type { VizelVersionHistoryOptions } from "./version-history.ts";
 
 /**

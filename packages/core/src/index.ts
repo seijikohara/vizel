@@ -405,6 +405,18 @@ export {
   vizelDefaultIconIds,
 } from "./icons/index.ts";
 // =============================================================================
+// Markdown flavor plugin types (Section 10)
+// =============================================================================
+export {
+  composeVizelMarkdownFlavors,
+  type VizelMarkdownEncodingOptions,
+  type VizelMarkdownFlavor,
+  type VizelMarkdownItInstance,
+  type VizelMarkdownLossyEncodingMode,
+  type VizelMarkSerializer,
+  type VizelNodeSerializer,
+} from "./markdown/index.ts";
+// =============================================================================
 // Plugin System
 // =============================================================================
 export {
@@ -542,15 +554,18 @@ export {
   type VizelErrorOptions,
   type VizelErrorSeverity,
   type VizelFlavorConfig,
-  type VizelMarkdownFlavor,
   type VizelMarkdownSyncHandlers,
   type VizelMountPortalOptions,
   type VizelPortalLayer,
   type VizelResolveFeaturesOptions,
   type VizelSuggestionContainer,
   type VizelTextSegment,
+  vizelCommonMarkFlavor,
   vizelDefaultEditorProps,
   vizelDefaultFeatures,
+  vizelDocusaurusFlavor,
+  vizelGfmFlavor,
+  vizelObsidianFlavor,
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./utils/index.ts";

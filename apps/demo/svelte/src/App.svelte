@@ -13,7 +13,19 @@ import {
   type VizelMarkdownFlavor,
   VizelSaveIndicator,
   VizelThemeProvider,
+  vizelCommonMarkFlavor,
+  vizelDocusaurusFlavor,
+  vizelGfmFlavor,
+  vizelObsidianFlavor,
 } from "@vizel/svelte";
+
+const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
+  [vizelCommonMarkFlavor.name]: vizelCommonMarkFlavor,
+  [vizelGfmFlavor.name]: vizelGfmFlavor,
+  [vizelObsidianFlavor.name]: vizelObsidianFlavor,
+  [vizelDocusaurusFlavor.name]: vizelDocusaurusFlavor,
+};
+
 import { getFlavorContent } from "../../shared/content";
 import svelteLogo from "../../shared/logos/svelte.svg";
 import { mockMentionItems, mockUploadImage } from "../../shared/utils";
@@ -30,7 +42,8 @@ let features = $state({
   history: true,
 });
 
-let flavor = $state<VizelMarkdownFlavor>("gfm");
+let flavorName = $state<string>(vizelGfmFlavor.name);
+const flavor = $derived<VizelMarkdownFlavor>(FLAVOR_BY_NAME[flavorName] ?? vizelGfmFlavor);
 
 type PanelTab = "markdown" | "json" | "history" | "comments";
 let activeTab = $state<PanelTab>("markdown");
@@ -191,7 +204,7 @@ function handleJsonChange(event: Event) {
         <span class="feature-toggle-label">Flavor</span>
         <select
           class="feature-select"
-          bind:value={flavor}
+          bind:value={flavorName}
         >
           <option value="commonmark">CommonMark</option>
           <option value="gfm">GFM</option>

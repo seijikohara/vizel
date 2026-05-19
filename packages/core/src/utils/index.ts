@@ -84,7 +84,10 @@ export {
   VIZEL_DEFAULT_FLAVOR,
   type VizelCalloutMarkdownFormat,
   type VizelFlavorConfig,
-  type VizelMarkdownFlavor,
+  vizelCommonMarkFlavor,
+  vizelDocusaurusFlavor,
+  vizelGfmFlavor,
+  vizelObsidianFlavor,
 } from "./markdown-flavors.ts";
 // Menu positioning utilities
 export { clampMenuPosition, type MenuPosition, shouldFlipSubmenu } from "./menuPositioning.ts";

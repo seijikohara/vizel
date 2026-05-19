@@ -1,20 +1,40 @@
 <script setup lang="ts">
-import { useVizelEditor, VizelEditor, type VizelMarkdownFlavor, VizelProvider } from "@vizel/vue";
-import { ref } from "vue";
+import {
+  useVizelEditor,
+  VizelEditor,
+  type VizelMarkdownFlavor,
+  VizelProvider,
+  vizelCommonMarkFlavor,
+  vizelDocusaurusFlavor,
+  vizelGfmFlavor,
+  vizelObsidianFlavor,
+} from "@vizel/vue";
+import { computed, ref } from "vue";
 
 const props = withDefaults(
   defineProps<{
-    flavor?: VizelMarkdownFlavor;
+    flavor?: string;
   }>(),
   {
     flavor: "gfm",
   }
 );
 
+const flavorByName: Record<string, VizelMarkdownFlavor> = {
+  [vizelCommonMarkFlavor.name]: vizelCommonMarkFlavor,
+  [vizelGfmFlavor.name]: vizelGfmFlavor,
+  [vizelObsidianFlavor.name]: vizelObsidianFlavor,
+  [vizelDocusaurusFlavor.name]: vizelDocusaurusFlavor,
+};
+
+const resolvedFlavor = computed<VizelMarkdownFlavor>(
+  () => flavorByName[props.flavor] ?? vizelGfmFlavor
+);
+
 const markdownOutput = ref("");
 
 const editor = useVizelEditor({
-  flavor: props.flavor,
+  flavor: resolvedFlavor.value,
   features: {
     content: {
       callout: true,

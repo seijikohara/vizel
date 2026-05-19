@@ -13,11 +13,22 @@ import {
   type VizelMarkdownFlavor,
   VizelSaveIndicator,
   VizelThemeProvider,
+  vizelCommonMarkFlavor,
+  vizelDocusaurusFlavor,
+  vizelGfmFlavor,
+  vizelObsidianFlavor,
 } from "@vizel/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getFlavorContent } from "../../shared/content";
 import reactLogo from "../../shared/logos/react.svg";
 import { mockMentionItems, mockUploadImage } from "../../shared/utils";
+
+const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
+  [vizelCommonMarkFlavor.name]: vizelCommonMarkFlavor,
+  [vizelGfmFlavor.name]: vizelGfmFlavor,
+  [vizelObsidianFlavor.name]: vizelObsidianFlavor,
+  [vizelDocusaurusFlavor.name]: vizelDocusaurusFlavor,
+};
 
 function ThemeToggle() {
   const { theme, setTheme } = useVizelTheme();
@@ -73,7 +84,11 @@ function AppContent() {
     history: true,
   });
 
-  const [flavor, setFlavor] = useState<VizelMarkdownFlavor>("gfm");
+  const [flavorName, setFlavorName] = useState<string>(vizelGfmFlavor.name);
+  const flavor = useMemo<VizelMarkdownFlavor>(
+    () => FLAVOR_BY_NAME[flavorName] ?? vizelGfmFlavor,
+    [flavorName]
+  );
   const [activeTab, setActiveTab] = useState<PanelTab>("markdown");
   const [jsonInput, setJsonInput] = useState("");
   const [markdownInput, setMarkdownInput] = useState("");
@@ -232,16 +247,11 @@ function AppContent() {
             <span className="feature-toggle-label">Flavor</span>
             <select
               className="feature-select"
-              value={flavor}
+              value={flavorName}
               onChange={(e) => {
                 const value = e.target.value;
-                if (
-                  value === "commonmark" ||
-                  value === "gfm" ||
-                  value === "obsidian" ||
-                  value === "docusaurus"
-                ) {
-                  setFlavor(value);
+                if (FLAVOR_BY_NAME[value]) {
+                  setFlavorName(value);
                 }
               }}
             >

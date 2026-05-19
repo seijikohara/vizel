@@ -1,77 +1,59 @@
-/**
- * Markdown flavor definitions and resolution utilities.
- *
- * Vizel supports multiple Markdown output flavors while parsing all formats tolerantly.
- * The flavor setting only affects serialization (output); input parsing accepts all formats.
- */
+import {
+  vizelCommonMarkFlavor,
+  vizelDocusaurusFlavor,
+  vizelGfmFlavor,
+  vizelObsidianFlavor,
+} from "../markdown/flavors/index.ts";
+import type { VizelMarkdownFlavor } from "../markdown/types.ts";
 
 /**
- * Supported Markdown output flavors.
- *
- * | Flavor | Callout Output | WikiLinks | Platforms |
- * |--------|---------------|-----------|-----------|
- * | `commonmark` | Blockquote fallback | No | SO, Reddit, email |
- * | `gfm` | `> [!NOTE]` | No | GitHub, GitLab, DEV.to |
- * | `obsidian` | `> [!note]` | `[[page]]` | Obsidian, Logseq, Foam |
- * | `docusaurus` | `:::note` | No | Docusaurus, VitePress, Zenn, Qiita |
+ * Markdown flavor configuration consumed by extensions that need
+ * flavor-specific serialization tuning (callout output style,
+ * wiki-link bracket style).
  */
-export type VizelMarkdownFlavor = "commonmark" | "gfm" | "obsidian" | "docusaurus";
+export interface VizelFlavorConfig {
+  /** How callout / admonition blocks are serialized. */
+  calloutFormat: VizelCalloutMarkdownFormat;
+  /** Whether wiki links are serialized as `[[page]]` (true) or standard links (false). */
+  wikiLinkSerialize: boolean;
+}
 
-/** Callout/admonition output format for Markdown serialization */
+/** Callout / admonition output format for Markdown serialization. */
 export type VizelCalloutMarkdownFormat =
   | "github-alerts"
   | "obsidian-callouts"
   | "directives"
   | "blockquote-fallback";
 
-/**
- * Flavor-specific configuration resolved from a {@link VizelMarkdownFlavor}.
- * Used internally by extensions to determine how to serialize Markdown.
- */
-export interface VizelFlavorConfig {
-  /** How callout/admonition blocks are serialized */
-  calloutFormat: VizelCalloutMarkdownFormat;
-  /** Whether wiki links are serialized as `[[page]]` (true) or standard links (false) */
-  wikiLinkSerialize: boolean;
-}
+/** Default Markdown flavor (GitHub Flavored Markdown). */
+export const VIZEL_DEFAULT_FLAVOR: VizelMarkdownFlavor = vizelGfmFlavor;
 
-/** Default Markdown flavor */
-export const VIZEL_DEFAULT_FLAVOR: VizelMarkdownFlavor = "gfm";
-
-const FLAVOR_CONFIGS = {
-  commonmark: {
-    calloutFormat: "blockquote-fallback",
-    wikiLinkSerialize: false,
-  },
-  gfm: {
-    calloutFormat: "github-alerts",
-    wikiLinkSerialize: false,
-  },
-  obsidian: {
-    calloutFormat: "obsidian-callouts",
-    wikiLinkSerialize: true,
-  },
-  docusaurus: {
-    calloutFormat: "directives",
-    wikiLinkSerialize: false,
-  },
-} as const satisfies Record<VizelMarkdownFlavor, VizelFlavorConfig>;
+const DEFAULT_FLAVOR_CONFIG: VizelFlavorConfig = {
+  calloutFormat: "blockquote-fallback",
+  wikiLinkSerialize: false,
+};
 
 /**
- * Resolve flavor-specific configuration from a Markdown flavor name.
+ * Resolve the {@link VizelFlavorConfig} carried inside a flavor's
+ * `config` field.
  *
- * @param flavor - The Markdown flavor to resolve. Defaults to `"gfm"`.
- * @returns Flavor configuration for extension serialization.
- *
- * @example
- * ```typescript
- * const config = resolveVizelFlavorConfig("obsidian");
- * // config.calloutFormat === "obsidian-callouts"
- * // config.wikiLinkSerialize === true
- * ```
+ * Falls back to CommonMark-equivalent defaults when the flavor does
+ * not declare these settings.
  */
 export function resolveVizelFlavorConfig(
   flavor: VizelMarkdownFlavor = VIZEL_DEFAULT_FLAVOR
 ): VizelFlavorConfig {
-  return FLAVOR_CONFIGS[flavor];
+  const calloutFormat =
+    (flavor.config?.calloutFormat as VizelCalloutMarkdownFormat | undefined) ??
+    DEFAULT_FLAVOR_CONFIG.calloutFormat;
+  const wikiLinkSerialize =
+    (flavor.config?.wikiLinkSerialize as boolean | undefined) ??
+    DEFAULT_FLAVOR_CONFIG.wikiLinkSerialize;
+  return { calloutFormat, wikiLinkSerialize };
 }
+
+// Surface the built-in flavors here so existing import sites that pull
+// from `utils/markdown-flavors.ts` (Section 10 will retire these in
+// favor of `@vizel/core` root re-exports) keep working without the
+// callers having to chase the new module path.
+export { vizelCommonMarkFlavor, vizelDocusaurusFlavor, vizelGfmFlavor, vizelObsidianFlavor };

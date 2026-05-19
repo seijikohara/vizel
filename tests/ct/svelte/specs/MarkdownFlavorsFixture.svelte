@@ -4,18 +4,29 @@ import {
   VizelEditor,
   type VizelMarkdownFlavor,
   VizelProvider,
+  vizelCommonMarkFlavor,
+  vizelDocusaurusFlavor,
+  vizelGfmFlavor,
+  vizelObsidianFlavor,
 } from "@vizel/svelte";
 
 interface Props {
-  flavor?: VizelMarkdownFlavor;
+  flavor?: string;
 }
 
 const props = $props<Props>();
 
+const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
+  [vizelCommonMarkFlavor.name]: vizelCommonMarkFlavor,
+  [vizelGfmFlavor.name]: vizelGfmFlavor,
+  [vizelObsidianFlavor.name]: vizelObsidianFlavor,
+  [vizelDocusaurusFlavor.name]: vizelDocusaurusFlavor,
+};
+
 let markdownOutput = $state("");
 
 const editor = createVizelEditor({
-  flavor: props.flavor ?? "gfm",
+  flavor: FLAVOR_BY_NAME[props.flavor ?? "gfm"] ?? vizelGfmFlavor,
   features: {
     content: {
       callout: true,
