@@ -26,7 +26,7 @@ const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
 let markdownOutput = $state("");
 
 const editor = createVizelEditor({
-  flavor: FLAVOR_BY_NAME[props.flavor ?? "gfm"] ?? vizelGfmFlavor,
+  markdown: { flavor: FLAVOR_BY_NAME[props.flavor ?? "gfm"] ?? vizelGfmFlavor },
   features: {
     content: {
       callout: true,

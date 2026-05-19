@@ -34,7 +34,7 @@ const resolvedFlavor = computed<VizelMarkdownFlavor>(
 const markdownOutput = ref("");
 
 const editor = useVizelEditor({
-  flavor: resolvedFlavor.value,
+  markdown: { flavor: resolvedFlavor.value },
   features: {
     content: {
       callout: true,
