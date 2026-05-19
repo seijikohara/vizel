@@ -126,7 +126,7 @@ export async function createVizelEditorInstance(
     editable = true,
     autofocus = false,
     features,
-    flavor,
+    markdown,
     locale,
     extensions: additionalExtensions = [],
     createSlashMenuRenderer,
@@ -137,6 +137,8 @@ export async function createVizelEditorInstance(
     onFocus,
     onBlur,
   } = options;
+  const flavor = markdown?.flavor;
+  const encoding = markdown?.encoding;
 
   if (initialContent !== undefined && initialMarkdown !== undefined) {
     // Programming error: the two options are mutually exclusive. Throwing
@@ -181,6 +183,7 @@ export async function createVizelEditorInstance(
     ...(placeholder !== undefined && { placeholder }),
     ...(resolvedFeatures !== undefined && { features: resolvedFeatures }),
     ...(flavor !== undefined && { flavor }),
+    ...(encoding !== undefined && { encoding }),
     ...(locale !== undefined && { locale }),
   });
 

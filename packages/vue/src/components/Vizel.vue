@@ -122,7 +122,9 @@ const editor = useVizelEditor({
   editable: props.editable,
   autofocus: props.autofocus,
   ...(props.features !== undefined && { features: props.features }),
-  ...(props.flavor !== undefined && { flavor: props.flavor }),
+  ...(props.flavor !== undefined && {
+    markdown: { flavor: props.flavor },
+  }),
   ...(props.locale !== undefined && { locale: props.locale }),
   ...(props.extensions !== undefined && { extensions: props.extensions }),
   onUpdate: (e) => {

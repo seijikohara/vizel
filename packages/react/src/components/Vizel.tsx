@@ -212,7 +212,7 @@ export function Vizel({
     editable,
     autofocus,
     ...(features !== undefined && { features }),
-    ...(flavor !== undefined && { flavor }),
+    ...(flavor !== undefined && { markdown: { flavor } }),
     ...(locale !== undefined && { locale }),
     ...(extensions !== undefined && { extensions }),
     onUpdate: (e) => {

@@ -73,6 +73,19 @@ export interface VizelMentionOptions {
   deleteTriggerWithBackspace?: boolean;
 
   /**
+   * Markdown encoding mode (Section 10).
+   *
+   * - `"default"` emits the lossy form `@username`. The mention id is
+   *   lost on round-trip if the label and id differ.
+   * - `"metadata-comment"` emits the lossless form
+   *   `@username <!-- vizel:mention id="..." -->` so the id survives
+   *   round-trips through plain markdown.
+   *
+   * @default "default"
+   */
+  encoding?: import("../markdown/types.ts").VizelMarkdownLossyEncodingMode;
+
+  /**
    * Custom HTML attributes for the rendered mention element.
    */
   HTMLAttributes?: Record<string, string>;
@@ -134,6 +147,7 @@ export function createVizelMentionExtension(options: VizelMentionOptions = {}) {
     suggestion = {},
     deleteTriggerWithBackspace = false,
     HTMLAttributes = {},
+    encoding = "default",
   } = options;
 
   const VizelMention = Mention.extend({
@@ -142,7 +156,13 @@ export function createVizelMentionExtension(options: VizelMentionOptions = {}) {
         markdown: {
           serialize(state: MarkdownSerializerState, node: PMNode) {
             const label = String(node.attrs?.label ?? node.attrs?.id ?? "");
-            state.write(`@${label}`);
+            const id = String(node.attrs?.id ?? "");
+            if (encoding === "metadata-comment" && id) {
+              const escaped = id.replace(/"/g, "&quot;");
+              state.write(`@${label} <!-- vizel:mention id="${escaped}" -->`);
+            } else {
+              state.write(`@${label}`);
+            }
           },
           parse: {
             setup(md: MarkdownIt) {
