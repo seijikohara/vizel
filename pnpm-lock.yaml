@@ -236,7 +236,7 @@ importers:
         version: 6.0.2(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(sass@1.99.0)(tsx@4.22.0))
       katex:
         specifier: ^0.16.46
-        version: 0.16.46
+        version: 0.16.47
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0
@@ -267,7 +267,7 @@ importers:
         version: 7.1.2(svelte@5.55.7)(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(sass@1.99.0)(tsx@4.22.0))
       katex:
         specifier: ^0.16.46
-        version: 0.16.46
+        version: 0.16.47
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0
@@ -298,7 +298,7 @@ importers:
         version: 6.0.7(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(sass@1.99.0)(tsx@4.22.0))(vue@3.5.34(typescript@6.0.3))
       katex:
         specifier: ^0.16.46
-        version: 0.16.46
+        version: 0.16.47
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0
@@ -509,7 +509,7 @@ importers:
         version: 3.0.4
       dompurify:
         specifier: ^3.4.3
-        version: 3.4.5
+        version: 3.4.3
       fuse.js:
         specifier: ^7.3.0
         version: 7.3.0
@@ -2884,8 +2884,8 @@ packages:
   dompurify@3.4.2:
     resolution: {integrity: sha512-lHeS9SA/IKeIFFyYciHBr2n0v1VMPlSj843HdLOwjb2OxNwdq9Xykxqhk+FE42MzAdHvInbAolSE4mhahPpjXA==}
 
-  dompurify@3.4.5:
-    resolution: {integrity: sha512-OrwIBKsdNSVEeubdJ1HBv/wNENRM9ytAVCv7YXt//A3vPdVMNuACRqK9mXCGCBW2ln7BT/A4X0jXHo2Gu89miA==}
+  dompurify@3.4.3:
+    resolution: {integrity: sha512-VVwJidIJcp1hpg2OMXML3ZVRPYSZiq4aX7qBh83BSIpOaRDqI+qxhXjjIWnpzkOXhmp0L81lnoME1mnCc9H48A==}
 
   electron-to-chromium@1.5.353:
     resolution: {integrity: sha512-kOrWphBi8TOZyiJZqsgqIle0lw+tzmnQK83pV9dZUd01Nm2POECSyFQMAuarzZdYqQW7FH9RaYOuaRo3h+bQ3w==}
@@ -3079,8 +3079,8 @@ packages:
     resolution: {integrity: sha512-pQpZbdBu7wCTmQUh7ufPmLr0pFoObnGUoL/yhtwJDgmmQpbkg/0HSVti25Fu4rmd1oCR6NGWe9vqTWuWv3GcNA==}
     hasBin: true
 
-  katex@0.16.46:
-    resolution: {integrity: sha512-WHy4Coo+bGZyH7NwJKHkS04YFsFcarWbAEOAC3EMndzdN6VSZqklLLIgfxzyaW9jDoeGYJX9SWbJPKpecox0Uw==}
+  katex@0.16.47:
+    resolution: {integrity: sha512-Eeo8Ys1doU1z+x8AZsPpQu+p/QcZBI5PeOo7QGQdy2x2m0MU/hYagBbGOmXwr5KVbEfVuWv9LpnQWeehogurjg==}
     hasBin: true
 
   khroma@2.1.0:
@@ -5883,7 +5883,7 @@ snapshots:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
-  dompurify@3.4.5:
+  dompurify@3.4.3:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -6115,7 +6115,7 @@ snapshots:
     dependencies:
       commander: 8.3.0
 
-  katex@0.16.46:
+  katex@0.16.47:
     dependencies:
       commander: 8.3.0
 
