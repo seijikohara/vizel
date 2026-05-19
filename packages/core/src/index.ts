@@ -7,6 +7,11 @@
  * Built on top of Tiptap and ProseMirror.
  */
 
+// Side-effect import: augment `@tiptap/core`'s Editor with the always-on
+// `getMarkdown()` / `markdown.parse(md)` surface (Section 10 of the v2.0.0
+// spec). Must load before any consumer touches the augmented members.
+import "./markdown/augment.ts";
+
 // =============================================================================
 // Tiptap Re-exports (for framework packages)
 // =============================================================================
@@ -566,6 +571,7 @@ export {
   vizelDocusaurusFlavor,
   vizelGfmFlavor,
   vizelObsidianFlavor,
+  vizelPandocFlavor,
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./utils/index.ts";

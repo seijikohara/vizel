@@ -11,10 +11,12 @@
  *
  * @see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/writing-mathematical-expressions
  */
-import type { JSONContent, MarkdownToken, MarkdownTokenizer } from "@tiptap/core";
 import { InputRule, mergeAttributes, Node } from "@tiptap/core";
-import type { NodeType } from "@tiptap/pm/model";
+import type { NodeType, Node as PMNode } from "@tiptap/pm/model";
 import type katex from "katex";
+import type MarkdownIt from "markdown-it";
+import type StateBlock from "markdown-it/lib/rules_block/state_block.mjs";
+import type { MarkdownSerializerState } from "prosemirror-markdown";
 import { createLazyLoader } from "../utils/lazy-import.ts";
 
 /**
@@ -129,46 +131,100 @@ function mathInputRule(config: {
 }
 
 /**
- * Markdown tokenizer for inline math: $...$
- * GitHub Markdown compatible syntax
+ * Register a markdown-it inline rule that recognizes `$...$` math.
+ *
+ * The rule emits HTML matching `VizelMathInline.parseHTML` so that
+ * markdown round-trip restores math expressions to typed nodes.
  */
-const mathInlineTokenizer: MarkdownTokenizer = {
-  name: "mathInline",
-  start: "$",
-  tokenize(src: string): MarkdownToken | undefined {
-    // Match $...$ but not $$
-    const match = src.match(/^\$([^$\n]+?)\$/);
-    if (match?.[1]) {
-      return {
-        type: "mathInline",
-        raw: match[0],
-        latex: match[1],
-      };
+function registerMathInlineRule(md: MarkdownIt): void {
+  md.inline.ruler.before("escape", "vizel_math_inline", (state, silent) => {
+    if (state.src.charCodeAt(state.pos) !== 0x24) return false;
+    if (state.src.charCodeAt(state.pos + 1) === 0x24) return false;
+    const end = state.src.indexOf("$", state.pos + 1);
+    if (end === -1) return false;
+    const latex = state.src.slice(state.pos + 1, end);
+    if (!latex || /\n/.test(latex)) return false;
+    if (!silent) {
+      const token = state.push("vizel_math_inline", "span", 0);
+      token.content = latex;
     }
-    return undefined;
-  },
-};
+    state.pos = end + 1;
+    return true;
+  });
+
+  md.renderer.rules.vizel_math_inline = (tokens, idx) => {
+    const latex = tokens[idx]?.content ?? "";
+    const escaped = latex.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+    return `<span data-type="math-inline" data-latex="${escaped}" class="vizel-math vizel-math-inline"></span>`;
+  };
+}
 
 /**
- * Markdown tokenizer for block math: $$...$$
- * GitHub Markdown compatible syntax
+ * Register a markdown-it block rule that recognizes `$$...$$` math.
  */
-const mathBlockTokenizer: MarkdownTokenizer = {
-  name: "mathBlock",
-  start: "$$",
-  tokenize(src: string): MarkdownToken | undefined {
-    // Match $$...$$ (can span multiple lines)
-    const match = src.match(/^\$\$([\s\S]+?)\$\$/);
-    if (match?.[1]) {
-      return {
-        type: "mathBlock",
-        raw: match[0],
-        latex: match[1].trim(),
-      };
+function readMathLine(state: StateBlock, lineIndex: number): string {
+  const pos = (state.bMarks[lineIndex] ?? 0) + (state.tShift[lineIndex] ?? 0);
+  const max = state.eMarks[lineIndex] ?? state.src.length;
+  return state.src.slice(pos, max);
+}
+
+function findMathBlockClose(state: StateBlock, startLine: number, endLine: number): number {
+  let nextLine = startLine + 1;
+  while (nextLine < endLine) {
+    if (readMathLine(state, nextLine).trim() === "$$") {
+      return nextLine;
     }
-    return undefined;
-  },
-};
+    nextLine++;
+  }
+  return -1;
+}
+
+function registerMathBlockRule(md: MarkdownIt): void {
+  md.block.ruler.before(
+    "fence",
+    "vizel_math_block",
+    (state, startLine, endLine, silent) => {
+      const firstLine = readMathLine(state, startLine);
+      if (!firstLine.startsWith("$$")) return false;
+
+      const singleLineMatch = /^\$\$([\s\S]+)\$\$\s*$/.exec(firstLine);
+      if (singleLineMatch) {
+        if (silent) return true;
+        emitMathBlock(state, singleLineMatch[1]?.trim() ?? "", startLine, startLine);
+        state.line = startLine + 1;
+        return true;
+      }
+
+      if (firstLine.slice(2).trim().length > 0) return false;
+      const closingLine = findMathBlockClose(state, startLine, endLine);
+      if (closingLine === -1) return false;
+      if (silent) return true;
+      const content = state.getLines(
+        startLine + 1,
+        closingLine,
+        state.tShift[startLine] ?? 0,
+        false
+      );
+      emitMathBlock(state, content.trim(), startLine, closingLine);
+      state.line = closingLine + 1;
+      return true;
+    },
+    { alt: ["paragraph"] }
+  );
+
+  md.renderer.rules.vizel_math_block = (tokens, idx) => {
+    const latex = tokens[idx]?.content ?? "";
+    const escaped = latex.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+    return `<div data-type="math-block" data-latex="${escaped}" class="vizel-math vizel-math-block"></div>`;
+  };
+}
+
+function emitMathBlock(state: StateBlock, latex: string, startLine: number, endLine: number): void {
+  const token = state.push("vizel_math_block", "div", 0);
+  token.content = latex;
+  token.block = true;
+  token.map = [startLine, endLine + 1];
+}
 
 /**
  * Mathematics extension for inline math expressions
@@ -366,21 +422,20 @@ export const VizelMathInline = Node.create<VizelMathematicsOptions>({
     };
   },
 
-  // Markdown support (GitHub compatible)
-  markdownTokenizer: mathInlineTokenizer,
-
-  parseMarkdown(token: MarkdownToken): JSONContent {
+  addStorage() {
     return {
-      type: "mathInline",
-      attrs: {
-        latex: token.latex || "",
+      markdown: {
+        serialize(state: MarkdownSerializerState, node: PMNode) {
+          const latex = String(node.attrs?.latex ?? "");
+          state.write(`$${latex}$`);
+        },
+        parse: {
+          setup(md: MarkdownIt) {
+            registerMathInlineRule(md);
+          },
+        },
       },
     };
-  },
-
-  renderMarkdown(node: JSONContent): string {
-    const latex = node.attrs?.latex || "";
-    return `$${latex}$`;
   },
 });
 
@@ -636,21 +691,21 @@ export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
     };
   },
 
-  // Markdown support (GitHub compatible)
-  markdownTokenizer: mathBlockTokenizer,
-
-  parseMarkdown(token: MarkdownToken): JSONContent {
+  addStorage() {
     return {
-      type: "mathBlock",
-      attrs: {
-        latex: token.latex || "",
+      markdown: {
+        serialize(state: MarkdownSerializerState, node: PMNode) {
+          const latex = String(node.attrs?.latex ?? "");
+          state.write(`$$\n${latex}\n$$`);
+          state.closeBlock(node);
+        },
+        parse: {
+          setup(md: MarkdownIt) {
+            registerMathBlockRule(md);
+          },
+        },
       },
     };
-  },
-
-  renderMarkdown(node: JSONContent): string {
-    const latex = node.attrs?.latex || "";
-    return `$$\n${latex}\n$$`;
   },
 });
 

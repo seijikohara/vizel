@@ -1,56 +1,6 @@
-import type { JSONContent } from "@tiptap/core";
 import { Table, TableCell, TableHeader } from "@tiptap/extension-table";
-
-/**
- * Marked.js table token structure
- */
-interface MarkedTableToken {
-  type: "table";
-  header: Array<{
-    text: string;
-    tokens: unknown[];
-  }>;
-  align: Array<"left" | "center" | "right" | null>;
-  rows: Array<
-    Array<{
-      text: string;
-      tokens: unknown[];
-    }>
-  >;
-}
-
-/**
- * Parse helpers provided by @tiptap/markdown
- */
-interface MarkdownParseHelpers {
-  parseInline: (tokens: unknown[]) => JSONContent[];
-  parseChildren: (tokens: unknown[]) => JSONContent[];
-  createTextNode: (text: string, marks?: unknown[]) => JSONContent;
-  createNode: (
-    type: string,
-    attrs?: Record<string, unknown>,
-    content?: JSONContent[]
-  ) => JSONContent;
-}
-
-/**
- * Render helpers provided by @tiptap/markdown
- */
-interface MarkdownRenderHelpers {
-  renderChildren: (nodes: JSONContent[] | JSONContent, separator?: string) => string;
-  indent: (content: string) => string;
-  wrapInBlock: (prefix: string, content: string) => string;
-}
-
-/**
- * Render context provided by @tiptap/markdown
- */
-interface MarkdownRenderContext {
-  index: number;
-  level: number;
-  parentType?: string;
-  meta: Record<string, unknown>;
-}
+import type { Node as PMNode } from "@tiptap/pm/model";
+import type { MarkdownSerializerState } from "prosemirror-markdown";
 
 /**
  * Text alignment options for table cells.
@@ -58,154 +8,105 @@ interface MarkdownRenderContext {
 export type VizelTableCellAlignment = "left" | "center" | "right";
 
 /**
- * Parse cell content from marked token into Tiptap JSONContent.
+ * Map a `textAlign` attribute to the corresponding GFM separator-row segment.
  */
-function parseCellContent(
-  cell: { text: string; tokens: unknown[] },
-  helpers: MarkdownParseHelpers
-): JSONContent[] {
-  if (cell.tokens) {
-    return helpers.parseInline(cell.tokens);
+function alignmentSegment(align: string | null | undefined): string {
+  switch (align) {
+    case "left":
+      return ":---";
+    case "center":
+      return ":---:";
+    case "right":
+      return "---:";
+    default:
+      return "---";
   }
-  if (cell.text) {
-    return [helpers.createTextNode(cell.text)];
-  }
-  return [];
 }
 
 /**
- * Create paragraph content for a table cell.
+ * Serialize a table node to GFM-flavored Markdown including alignment.
+ *
+ * The default `tiptap-markdown` table serializer drops the `textAlign`
+ * attribute. Vizel preserves it so round-trips through the editor keep
+ * the alignment exposed in the toolbar.
  */
-function createCellParagraph(content: JSONContent[], helpers: MarkdownParseHelpers): JSONContent[] {
-  if (content.length > 0) {
-    return [helpers.createNode("paragraph", undefined, content)];
+function serializeTable(state: MarkdownSerializerState, node: PMNode): void {
+  // Expose `inTable` to mark-string handlers (mirrors tiptap-markdown
+  // behavior so inline marks emit table-safe escapes).
+  (state as unknown as { inTable: boolean }).inTable = true;
+
+  const rows: PMNode[] = [];
+  for (let i = 0; i < node.childCount; i++) {
+    const row = node.child(i);
+    rows.push(row);
   }
-  return [helpers.createNode("paragraph")];
-}
-
-/**
- * Parse a marked table token into Tiptap table structure with alignment support.
- */
-function parseMarkdownTable(
-  token: MarkedTableToken,
-  helpers: MarkdownParseHelpers
-): JSONContent | null {
-  const { header, align, rows } = token;
-
-  // Create header row
-  const headerCells: JSONContent[] = header.map((cell, index) => {
-    const content = parseCellContent(cell, helpers);
-    const attrs = align[index] ? { textAlign: align[index] } : undefined;
-    return helpers.createNode("tableHeader", attrs, createCellParagraph(content, helpers));
-  });
-
-  const headerRow = helpers.createNode("tableRow", undefined, headerCells);
-
-  // Create body rows
-  const bodyRows: JSONContent[] = rows.map((row) => {
-    const cells: JSONContent[] = row.map((cell, index) => {
-      const content = parseCellContent(cell, helpers);
-      const attrs = align[index] ? { textAlign: align[index] } : undefined;
-      return helpers.createNode("tableCell", attrs, createCellParagraph(content, helpers));
-    });
-
-    return helpers.createNode("tableRow", undefined, cells);
-  });
-
-  return helpers.createNode("table", undefined, [headerRow, ...bodyRows]);
-}
-
-/**
- * Render a table node to Markdown with alignment support.
- */
-function renderMarkdownTable(node: JSONContent, helpers: MarkdownRenderHelpers): string {
-  if (!node.content || node.content.length === 0) {
-    return "";
+  if (rows.length === 0) {
+    (state as unknown as { inTable: boolean }).inTable = false;
+    return;
   }
 
-  const rows = node.content;
-  const firstRow = rows[0];
-  if (!firstRow?.content) {
-    return "";
+  // Capture header alignments from the first row's cells.
+  const headerRow = rows[0];
+  if (!headerRow) {
+    (state as unknown as { inTable: boolean }).inTable = false;
+    return;
+  }
+  const alignments: (string | null)[] = [];
+  for (let i = 0; i < headerRow.childCount; i++) {
+    const cell = headerRow.child(i);
+    const align = cell.attrs?.textAlign;
+    alignments.push(typeof align === "string" ? align : null);
   }
 
-  // Detect column alignments from first row (header)
-  const alignments: Array<"left" | "center" | "right" | null> = firstRow.content.map(
-    (cell: JSONContent) => {
-      return (cell.attrs?.textAlign as "left" | "center" | "right") || null;
+  for (const [rowIndex, row] of rows.entries()) {
+    state.write("| ");
+    for (let cellIndex = 0; cellIndex < row.childCount; cellIndex++) {
+      const cell = row.child(cellIndex);
+      if (cellIndex > 0) {
+        state.write(" | ");
+      }
+      const cellContent = cell.firstChild;
+      if (cellContent?.textContent.trim()) {
+        state.renderInline(cellContent);
+      }
     }
-  );
+    state.write(" |");
+    state.ensureNewLine();
 
-  // Render each row
-  const renderedRows: string[] = rows.map((row: JSONContent) => {
-    if (!row.content) return "|";
-
-    const cells = row.content.map((cell: JSONContent) => {
-      // Render cell content
-      const content = cell.content ? helpers.renderChildren(cell.content, "") : "";
-      // Clean up: remove newlines and trim
-      return content.replace(/\n/g, " ").trim();
-    });
-
-    return `| ${cells.join(" | ")} |`;
-  });
-
-  // Create alignment row
-  const alignmentRow = alignments.map((align) => {
-    switch (align) {
-      case "left":
-        return ":---";
-      case "center":
-        return ":---:";
-      case "right":
-        return "---:";
-      default:
-        return "---";
+    if (rowIndex === 0) {
+      const separator = alignments.map((align) => alignmentSegment(align)).join(" | ");
+      state.write(`| ${separator} |`);
+      state.ensureNewLine();
     }
-  });
-  const alignmentRowStr = `| ${alignmentRow.join(" | ")} |`;
-
-  // Insert alignment row after header
-  if (renderedRows.length > 0) {
-    return [renderedRows[0], alignmentRowStr, ...renderedRows.slice(1)].join("\n");
   }
 
-  return renderedRows.join("\n");
+  state.closeBlock(node);
+  (state as unknown as { inTable: boolean }).inTable = false;
 }
 
 /**
- * Extended Table with Markdown parsing/rendering support.
+ * Extended Table with Markdown serialization support.
+ *
+ * Parsing relies on markdown-it's built-in GFM table tokenizer, which
+ * emits standard `<table>` / `<thead>` / `<tbody>` HTML that the
+ * Tiptap table parseHTML rules hydrate directly. Cell alignment is
+ * recovered from the per-cell inline style by `VizelTableCell` /
+ * `VizelTableHeader`.
  */
 export const VizelTable = Table.extend({
-  // Register markdown name for token matching
   name: "table",
 
   addStorage() {
     return {
       ...this.parent?.(),
-      // Mark this extension as markdown-aware
       markdown: {
-        parse: parseMarkdownTable,
-        serialize: renderMarkdownTable,
+        serialize: serializeTable,
+        parse: {
+          // markdown-it ships a GFM table rule; the rendered HTML
+          // already matches Tiptap's parseHTML contract.
+        },
       },
     };
-  },
-
-  // Add markdown parsing support
-  // @ts-expect-error - parseMarkdown is a @tiptap/markdown extension point
-  parseMarkdown(token: MarkedTableToken, helpers: MarkdownParseHelpers) {
-    if (token.type !== "table") return null;
-    return parseMarkdownTable(token, helpers);
-  },
-
-  // Add markdown rendering support
-  // @ts-expect-error - renderMarkdown is a @tiptap/markdown extension point
-  renderMarkdown(
-    node: JSONContent,
-    helpers: MarkdownRenderHelpers,
-    _context: MarkdownRenderContext
-  ) {
-    return renderMarkdownTable(node, helpers);
   },
 });
 

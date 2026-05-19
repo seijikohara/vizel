@@ -6,16 +6,12 @@
  * items for suggestion filtering.
  */
 
-import type {
-  Editor,
-  JSONContent,
-  MarkdownLexerConfiguration,
-  MarkdownParseHelpers,
-  MarkdownParseResult,
-  MarkdownToken,
-} from "@tiptap/core";
+import type { Editor } from "@tiptap/core";
 import Mention from "@tiptap/extension-mention";
+import type { Node as PMNode } from "@tiptap/pm/model";
 import type { SuggestionOptions } from "@tiptap/suggestion";
+import type MarkdownIt from "markdown-it";
+import type { MarkdownSerializerState } from "prosemirror-markdown";
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
@@ -83,6 +79,40 @@ export interface VizelMentionOptions {
 }
 
 /**
+ * Register a markdown-it inline rule that recognizes `@username`
+ * tokens and emits HTML matching the Tiptap mention node.
+ *
+ * The rule only fires at word boundaries to avoid matching email
+ * addresses or other inline `@` usages.
+ */
+function registerMentionRule(md: MarkdownIt): void {
+  md.inline.ruler.before("emphasis", "vizel_mention", (state, silent) => {
+    if (state.src.charCodeAt(state.pos) !== 0x40) return false;
+    if (state.pos > 0) {
+      const prev = state.src[state.pos - 1];
+      if (prev && /\w/.test(prev)) return false;
+    }
+    const rest = state.src.slice(state.pos + 1);
+    const match = /^([\w-]+)/.exec(rest);
+    if (!match) return false;
+    const label = match[1] ?? "";
+    if (!label) return false;
+    if (!silent) {
+      const token = state.push("vizel_mention", "span", 0);
+      token.content = label;
+    }
+    state.pos += 1 + label.length;
+    return true;
+  });
+
+  md.renderer.rules.vizel_mention = (tokens, idx) => {
+    const label = tokens[idx]?.content ?? "";
+    const escaped = label.replace(/"/g, "&quot;");
+    return `<span data-type="mention" data-id="${escaped}" data-label="${escaped}" class="vizel-mention">@${escaped}</span>`;
+  };
+}
+
+/**
  * Create the Vizel mention extension.
  *
  * @param options - Mention configuration options
@@ -107,51 +137,18 @@ export function createVizelMentionExtension(options: VizelMentionOptions = {}) {
   } = options;
 
   const VizelMention = Mention.extend({
-    // Markdown serialization: @label
-    renderMarkdown(node) {
-      const jsonNode = node as JSONContent;
-      const label = jsonNode.attrs?.label ?? jsonNode.attrs?.id ?? "";
-      return `@${label}`;
-    },
-
-    // Markdown tokenizer: recognize @mention inline syntax
-    markdownTokenizer: {
-      name: "mention",
-      level: "inline" as const,
-
-      start(src: string) {
-        const idx = src.indexOf("@");
-        if (idx <= 0) return idx;
-        const prev = src[idx - 1];
-        if (prev && /\w/.test(prev)) return -1;
-        return idx;
-      },
-
-      tokenize(
-        src: string,
-        _tokens: MarkdownToken[],
-        _lexer: MarkdownLexerConfiguration
-      ): MarkdownToken | undefined {
-        const match = /^@([\w-]+)/.exec(src);
-        if (!match) return undefined;
-
-        return {
-          type: "mention",
-          raw: match[0],
-          mentionLabel: match[1] ?? "",
-        };
-      },
-    },
-
-    // Markdown parser: convert tokens to Tiptap JSON
-    parseMarkdown(token: MarkdownToken, _helpers: MarkdownParseHelpers): MarkdownParseResult {
-      const label = (token as MarkdownToken & { mentionLabel?: string }).mentionLabel ?? "";
-
+    addStorage() {
       return {
-        type: "mention",
-        attrs: {
-          id: label,
-          label,
+        markdown: {
+          serialize(state: MarkdownSerializerState, node: PMNode) {
+            const label = String(node.attrs?.label ?? node.attrs?.id ?? "");
+            state.write(`@${label}`);
+          },
+          parse: {
+            setup(md: MarkdownIt) {
+              registerMentionRule(md);
+            },
+          },
         },
       };
     },
