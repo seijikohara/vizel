@@ -5,7 +5,7 @@ import {
   transformVizelDiagramCodeBlocks,
   type VizelContentNode,
 } from "./editorHelpers.ts";
-import { emitVizelError, VizelError } from "./errorHandling.ts";
+import type { VizelError } from "./errorHandling.ts";
 
 /**
  * Default debounce delay for markdown export in milliseconds.
@@ -13,75 +13,33 @@ import { emitVizelError, VizelError } from "./errorHandling.ts";
 export const VIZEL_DEFAULT_MARKDOWN_DEBOUNCE_MS = 300;
 
 /**
- * Editor with markdown export capability (provided by @tiptap/markdown).
- */
-interface EditorWithMarkdownExport {
-  getMarkdown: () => string;
-}
-
-/**
- * Editor with markdown storage for parsing (provided by @tiptap/markdown).
- */
-interface EditorWithMarkdownStorage {
-  markdown: { parse: (md: string) => JSONContent };
-}
-
-/**
- * Type guard: check if the editor has markdown export (getMarkdown method).
- */
-function hasMarkdownExport(editor: Editor): editor is Editor & EditorWithMarkdownExport {
-  const editorRecord = editor as unknown as Record<string, unknown>;
-  return "getMarkdown" in editor && typeof editorRecord.getMarkdown === "function";
-}
-
-/**
- * Type guard: check if the editor has markdown storage with parse capability.
- */
-function hasMarkdownStorage(editor: Editor): editor is Editor & EditorWithMarkdownStorage {
-  const editorRecord = editor as unknown as Record<string, unknown>;
-  if (!("markdown" in editor)) return false;
-
-  const storage = editorRecord.markdown;
-  if (typeof storage !== "object" || storage === null) return false;
-
-  const storageRecord = storage as Record<string, unknown>;
-  return "parse" in storage && typeof storageRecord.parse === "function";
-}
-
-/**
  * Get markdown content from the editor.
- * Returns empty string if markdown extension is not enabled.
+ *
+ * The Markdown extension is always installed by Vizel, so
+ * `editor.getMarkdown()` is guaranteed to exist when the editor is
+ * non-null (Section 10 of the v2.0.0 spec). Returns an empty string
+ * when the editor is missing.
  *
  * @param editor - The editor instance
- * @param onError - Optional callback invoked when the markdown extension is missing.
- *   When omitted, the error is logged via `console.error` (the `emitVizelError` default).
+ * @param _onError - Reserved for future use. The current implementation
+ *   never reports recoverable errors from this path because the
+ *   Markdown extension is always-on; the parameter is kept for API
+ *   symmetry with the parse / set helpers below.
  */
 export function getVizelMarkdown(
   editor: Editor | null | undefined,
-  onError?: (err: VizelError) => void
+  _onError?: (err: VizelError) => void
 ): string {
   if (!editor) return "";
-  if (!hasMarkdownExport(editor)) {
-    emitVizelError(
-      new VizelError(
-        "INVALID_EXTENSION",
-        "Markdown extension is not loaded on this editor. Ensure the editor was created with `createVizelExtensions` (Markdown is always-on)."
-      ),
-      onError
-    );
-    return "";
-  }
   return editor.getMarkdown();
 }
 
 /**
  * Set markdown content to the editor.
- * Optionally transforms diagram code blocks to diagram nodes.
  *
- * Returns `true` if the operation succeeded, `false` if the editor is missing
- * or the markdown extension is not enabled. When `false` is returned, a
- * {@link VizelError} with code `INVALID_EXTENSION` is emitted via the
- * `onError` callback (or `console.error` when no callback is supplied).
+ * Returns `true` if the operation succeeded, `false` only when the
+ * editor reference is missing. The Markdown extension is always-on, so
+ * no capability check is required.
  *
  * @param editor - The editor instance
  * @param markdown - The markdown content to set
@@ -95,25 +53,12 @@ export function setVizelMarkdown(
 ): boolean {
   if (!editor) return false;
 
-  const { transformDiagrams = true, onError } = options;
+  const { transformDiagrams = true } = options;
 
-  if (!hasMarkdownExport(editor)) {
-    emitVizelError(
-      new VizelError(
-        "INVALID_EXTENSION",
-        "Markdown extension is not loaded on this editor. Ensure the editor was created with `createVizelExtensions` (Markdown is always-on)."
-      ),
-      onError
-    );
-    return false;
-  }
+  // tiptap-markdown overrides `setContent` so a raw string is parsed as
+  // markdown automatically; no `contentType` cast is needed.
+  editor.commands.setContent(markdown);
 
-  // Set content using markdown contentType
-  editor.commands.setContent(markdown, { contentType: "markdown" } as Parameters<
-    typeof editor.commands.setContent
-  >[1]);
-
-  // Transform diagram code blocks if enabled
   if (transformDiagrams) {
     convertVizelCodeBlocksToDiagrams(editor);
   }
@@ -123,12 +68,15 @@ export function setVizelMarkdown(
 
 /**
  * Parse markdown to JSON content.
- * Returns null if markdown extension is not enabled.
+ *
+ * Returns `null` only when the editor reference is missing. The
+ * Markdown extension is always-on, so `editor.markdown.parse` is
+ * guaranteed to exist.
  *
  * @param editor - The editor instance (needed for markdown extension access)
  * @param markdown - The markdown content to parse
  * @param options - Options for parsing
- * @returns The parsed JSON content, or null if parsing failed
+ * @returns The parsed JSON content, or null if the editor is missing
  */
 export function parseVizelMarkdown(
   editor: Editor | null | undefined,
@@ -137,19 +85,7 @@ export function parseVizelMarkdown(
 ): JSONContent | null {
   if (!editor) return null;
 
-  const { transformDiagrams = true, onError } = options;
-
-  if (!hasMarkdownStorage(editor)) {
-    emitVizelError(
-      new VizelError(
-        "INVALID_EXTENSION",
-        "Markdown extension is not loaded on this editor. Ensure the editor was created with `createVizelExtensions` (Markdown is always-on)."
-      ),
-      onError
-    );
-    return null;
-  }
-
+  const { transformDiagrams = true } = options;
   const parsed = editor.markdown.parse(markdown);
 
   if (transformDiagrams && parsed?.type) {
@@ -173,8 +109,6 @@ export function initializeVizelMarkdownContent(
   options: { transformDiagrams?: boolean } = {}
 ): void {
   const { transformDiagrams = true } = options;
-
-  // Use setContent with markdown contentType
   setVizelMarkdown(editor, markdown, { transformDiagrams });
 }
 

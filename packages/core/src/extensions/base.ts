@@ -484,7 +484,7 @@ export async function createVizelExtensions(
 
   // Always-on (no feature flag)
   extensions.push(createVizelLinkExtension({}));
-  extensions.push(createVizelMarkdownExtension({}));
+  extensions.push(createVizelMarkdownExtension({ ...(flavor !== undefined && { flavor }) }));
 
   // Opt-out content
   const table = features.content?.table;

@@ -5,8 +5,10 @@
  * Uses HTML5 <details> and <summary> elements.
  */
 
-import type { Extensions, JSONContent } from "@tiptap/core";
+import type { Extensions } from "@tiptap/core";
 import { Details, DetailsContent, DetailsSummary } from "@tiptap/extension-details";
+import type { Node as PMNode } from "@tiptap/pm/model";
+import type { MarkdownSerializerState } from "prosemirror-markdown";
 
 /**
  * Options for the Details container extension
@@ -59,6 +61,11 @@ export interface VizelDetailsOptions {
 /**
  * Creates details extensions for collapsible content blocks.
  *
+ * Markdown round-trip uses raw HTML (`<details>` / `<summary>`), which
+ * tiptap-markdown supports because `html: true` is enabled by default.
+ * On the way in, markdown-it preserves the inline HTML and Tiptap's
+ * `parseHTML` rules hydrate the nodes.
+ *
  * @example
  * ```typescript
  * import { createVizelDetailsExtensions } from '@vizel/core'
@@ -71,29 +78,54 @@ export interface VizelDetailsOptions {
 export function createVizelDetailsExtensions(options: VizelDetailsOptions = {}): Extensions {
   const { details = {}, detailsContent = {}, detailsSummary = {} } = options;
 
-  // Extend Details with markdown serialization
   const VizelDetails = Details.extend({
-    renderMarkdown(node, helpers) {
-      const isOpen = (node as JSONContent).attrs?.open === true;
-      const openAttr = isOpen ? " open" : "";
-      const content = helpers.renderChildren((node as JSONContent).content ?? [], "");
-      return `<details${openAttr}>\n${content}</details>\n\n`;
+    addStorage() {
+      return {
+        markdown: {
+          serialize(state: MarkdownSerializerState, node: PMNode) {
+            const isOpen = node.attrs?.open === true;
+            const openAttr = isOpen ? " open" : "";
+            state.write(`<details${openAttr}>\n`);
+            state.renderContent(node);
+            state.ensureNewLine();
+            state.write(`</details>`);
+            state.closeBlock(node);
+          },
+          parse: {
+            // <details> blocks pass through as raw HTML thanks to markdown-it's
+            // html: true. The Tiptap parseHTML rules in @tiptap/extension-details
+            // hydrate the node from the HTML structure.
+          },
+        },
+      };
     },
   });
 
-  // Extend DetailsSummary with markdown serialization
   const VizelDetailsSummary = DetailsSummary.extend({
-    renderMarkdown(node, helpers) {
-      const content = helpers.renderChildren((node as JSONContent).content ?? [], "");
-      return `<summary>${content}</summary>\n`;
+    addStorage() {
+      return {
+        markdown: {
+          serialize(state: MarkdownSerializerState, node: PMNode) {
+            state.write(`<summary>`);
+            state.renderInline(node);
+            state.write(`</summary>\n`);
+          },
+          parse: {},
+        },
+      };
     },
   });
 
-  // Extend DetailsContent with markdown serialization
   const VizelDetailsContent = DetailsContent.extend({
-    renderMarkdown(node, helpers) {
-      const content = helpers.renderChildren((node as JSONContent).content ?? [], "\n\n");
-      return `\n${content}\n`;
+    addStorage() {
+      return {
+        markdown: {
+          serialize(state: MarkdownSerializerState, node: PMNode) {
+            state.renderContent(node);
+          },
+          parse: {},
+        },
+      };
     },
   });
 

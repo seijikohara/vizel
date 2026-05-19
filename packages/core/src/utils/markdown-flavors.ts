@@ -3,6 +3,7 @@ import {
   vizelDocusaurusFlavor,
   vizelGfmFlavor,
   vizelObsidianFlavor,
+  vizelPandocFlavor,
 } from "../markdown/flavors/index.ts";
 import type { VizelMarkdownFlavor } from "../markdown/types.ts";
 
@@ -56,4 +57,10 @@ export function resolveVizelFlavorConfig(
 // from `utils/markdown-flavors.ts` (Section 10 will retire these in
 // favor of `@vizel/core` root re-exports) keep working without the
 // callers having to chase the new module path.
-export { vizelCommonMarkFlavor, vizelDocusaurusFlavor, vizelGfmFlavor, vizelObsidianFlavor };
+export {
+  vizelCommonMarkFlavor,
+  vizelDocusaurusFlavor,
+  vizelGfmFlavor,
+  vizelObsidianFlavor,
+  vizelPandocFlavor,
+};

@@ -1,12 +1,8 @@
-import type {
-  JSONContent,
-  MarkdownLexerConfiguration,
-  MarkdownParseHelpers,
-  MarkdownParseResult,
-  MarkdownToken,
-} from "@tiptap/core";
 import { InputRule, Mark, mergeAttributes } from "@tiptap/core";
+import type { Mark as PMMark, Node as PMNode } from "@tiptap/pm/model";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
+import type MarkdownIt from "markdown-it";
+import type { MarkdownSerializerState } from "prosemirror-markdown";
 
 // =============================================================================
 // Types
@@ -257,61 +253,62 @@ export const VizelWikiLink = Mark.create<VizelWikiLinkOptions>({
     ];
   },
 
-  // Markdown serialization: default format (standard link).
-  // Flavor-aware serialization is provided by createVizelWikiLinkExtension() via .extend() closure.
-  renderMarkdown(node, helpers) {
-    const pageName = (node as JSONContent).attrs?.pageName ?? "";
-    const children = (node as JSONContent).content ?? [];
-    const text = children.length > 0 ? helpers.renderChildren(children) : pageName;
-    return `[${text || pageName}](wiki://${encodeURIComponent(pageName)})`;
-  },
-
-  // Markdown tokenizer: recognize [[page]] and [[page|text]] inline syntax
-  markdownTokenizer: {
-    name: "wikiLink",
-    level: "inline" as const,
-
-    start(src: string) {
-      return src.indexOf("[[");
-    },
-
-    tokenize(
-      src: string,
-      _tokens: MarkdownToken[],
-      _lexer: MarkdownLexerConfiguration
-    ): MarkdownToken | undefined {
-      const match = /^\[\[([^\]|]+?)(?:\|([^\]]+?))?\]\]/.exec(src);
-      if (!match) return undefined;
-
-      const pageName = match[1]?.trim() ?? "";
-      const displayText = match[2]?.trim() ?? pageName;
-
-      return {
-        type: "wikiLink",
-        raw: match[0],
-        pageName,
-        text: displayText,
-      };
-    },
-  },
-
-  // Markdown parser: convert tokens to Tiptap JSON
-  parseMarkdown(token: MarkdownToken, _helpers: MarkdownParseHelpers): MarkdownParseResult {
-    const pageName = (token as MarkdownToken & { pageName?: string }).pageName ?? "";
-    const text = (token as MarkdownToken & { text?: string }).text ?? pageName;
-
+  addStorage() {
     return {
-      type: "text",
-      text,
-      marks: [
-        {
-          type: "wikiLink",
-          attrs: { pageName },
+      markdown: {
+        serialize: {
+          open(_state: MarkdownSerializerState, _mark: PMMark) {
+            return `[`;
+          },
+          close(_state: MarkdownSerializerState, mark: PMMark) {
+            const pageName = String(mark.attrs?.pageName ?? "");
+            return `](wiki://${encodeURIComponent(pageName)})`;
+          },
         },
-      ],
+        parse: {
+          setup(md: MarkdownIt) {
+            registerWikiLinkRule(md);
+          },
+        },
+      },
     };
   },
 });
+
+/**
+ * Register a markdown-it inline rule for `[[page]]` and
+ * `[[page|display]]` wiki-link syntax.
+ */
+function registerWikiLinkRule(md: MarkdownIt): void {
+  md.inline.ruler.before("link", "vizel_wiki_link", (state, silent) => {
+    if (state.src.charCodeAt(state.pos) !== 0x5b) return false;
+    if (state.src.charCodeAt(state.pos + 1) !== 0x5b) return false;
+    const rest = state.src.slice(state.pos);
+    const match = /^\[\[([^\]|]+?)(?:\|([^\]]+?))?\]\]/.exec(rest);
+    if (!match) return false;
+    const pageName = (match[1] ?? "").trim();
+    const displayText = (match[2] ?? pageName).trim();
+    if (!pageName) return false;
+    if (!silent) {
+      const token = state.push("vizel_wiki_link", "a", 0);
+      token.content = displayText;
+      token.meta = { pageName };
+    }
+    state.pos += match[0].length;
+    return true;
+  });
+
+  md.renderer.rules.vizel_wiki_link = (tokens, idx) => {
+    const token = tokens[idx];
+    const pageName = String((token?.meta as { pageName?: string } | undefined)?.pageName ?? "");
+    const escapedPage = pageName.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+    const text = (token?.content ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    return `<a data-wiki-link="" data-wiki-page="${escapedPage}" href="#${escapedPage}">${text}</a>`;
+  };
+}
 
 // =============================================================================
 // Factory Function
@@ -350,21 +347,45 @@ export const VizelWikiLink = Mark.create<VizelWikiLinkOptions>({
 export function createVizelWikiLinkExtension(options: VizelWikiLinkOptions = {}) {
   const serializeAsWikiLink = options.serializeAsWikiLink ?? false;
 
-  // Use .extend() to capture serializeAsWikiLink in a closure for renderMarkdown,
-  // because `this.options` / `this.storage` are not accessible in the renderMarkdown context.
+  // Override the markdown serialize spec to honor the flavor-specific
+  // wiki-link policy. Obsidian uses `[[page]]`; other flavors fall back
+  // to a standard markdown link with the `wiki://` URI scheme so the
+  // distinction round-trips through plain markdown consumers.
   return VizelWikiLink.extend({
-    renderMarkdown(node, helpers) {
-      const pageName = (node as JSONContent).attrs?.pageName ?? "";
-      const children = (node as JSONContent).content ?? [];
-      const text = children.length > 0 ? helpers.renderChildren(children) : pageName;
-
-      if (serializeAsWikiLink) {
-        if (text && text !== pageName) {
-          return `[[${pageName}|${text}]]`;
-        }
-        return `[[${pageName}]]`;
-      }
-      return `[${text || pageName}](wiki://${encodeURIComponent(pageName)})`;
+    addStorage() {
+      return {
+        markdown: {
+          serialize: serializeAsWikiLink
+            ? {
+                open(_state: MarkdownSerializerState, mark: PMMark, parent: PMNode, index: number) {
+                  const pageName = String(mark.attrs?.pageName ?? "");
+                  const childText = parent.child(index).textContent;
+                  // Obsidian emits `[[page]]` when the display text matches
+                  // the page name; otherwise `[[page|text]]`. The opening
+                  // delimiter cannot be finalized without peeking at the
+                  // marked text node, so the same node is consulted here.
+                  return childText === pageName ? `[[` : `[[${pageName}|`;
+                },
+                close(_state: MarkdownSerializerState, _mark: PMMark) {
+                  return `]]`;
+                },
+              }
+            : {
+                open(_state: MarkdownSerializerState, _mark: PMMark) {
+                  return `[`;
+                },
+                close(_state: MarkdownSerializerState, mark: PMMark) {
+                  const pageName = String(mark.attrs?.pageName ?? "");
+                  return `](wiki://${encodeURIComponent(pageName)})`;
+                },
+              },
+          parse: {
+            setup(md: MarkdownIt) {
+              registerWikiLinkRule(md);
+            },
+          },
+        },
+      };
     },
   }).configure(options);
 }

@@ -15,10 +15,12 @@
  */
 
 import type { Graphviz as GraphvizType } from "@hpcc-js/wasm-graphviz";
-import type { JSONContent, MarkdownToken, MarkdownTokenizer } from "@tiptap/core";
 import { mergeAttributes, Node } from "@tiptap/core";
+import type { Node as PMNode } from "@tiptap/pm/model";
 import DOMPurify from "dompurify";
+import type MarkdownIt from "markdown-it";
 import type { MermaidConfig } from "mermaid";
+import type { MarkdownSerializerState } from "prosemirror-markdown";
 import { createLazyLoader } from "../utils/lazy-import.ts";
 
 /**
@@ -114,57 +116,49 @@ function generateDiagramId(): string {
 }
 
 /**
- * Markdown tokenizer for diagram code blocks.
- * Handles mermaid, dot, and graphviz languages.
- * GitHub Markdown compatible syntax.
- *
- * This tokenizer has a higher priority than the default code block tokenizer
- * to ensure diagram code blocks are parsed as diagram nodes.
+ * Map a markdown-it fence language tag to a diagram type, or `null`
+ * when the language is not a diagram.
  */
-const diagramTokenizer: MarkdownTokenizer = {
-  name: "diagram",
-  start: "```",
-  tokenize(src: string): MarkdownToken | undefined {
-    // Match ```mermaid ... ```
-    const mermaidMatch = src.match(/^```mermaid\n([\s\S]*?)```/);
-    if (mermaidMatch?.[1] !== undefined) {
-      return {
-        type: "diagram",
-        raw: mermaidMatch[0],
-        code: mermaidMatch[1].trim(),
-        diagramType: "mermaid",
-      };
+function languageToDiagramType(lang: string | null | undefined): VizelDiagramType | null {
+  switch ((lang ?? "").toLowerCase()) {
+    case "mermaid":
+      return "mermaid";
+    case "dot":
+    case "graphviz":
+      return "graphviz";
+    default:
+      return null;
+  }
+}
+
+/**
+ * Register a markdown-it fence renderer override that emits diagram
+ * HTML for `mermaid`, `dot`, and `graphviz` code blocks. The resulting
+ * HTML matches `VizelDiagram.parseHTML` so Tiptap hydrates the node
+ * directly without a post-parse transform.
+ */
+function registerDiagramFenceRenderer(md: MarkdownIt): void {
+  const fenceRule = md.renderer.rules.fence;
+  md.renderer.rules.fence = (tokens, idx, opts, env, self) => {
+    const token = tokens[idx];
+    const info = token?.info?.trim() ?? "";
+    const lang = info.split(/\s+/)[0] ?? "";
+    const diagramType = languageToDiagramType(lang);
+    if (!diagramType) {
+      return fenceRule
+        ? fenceRule(tokens, idx, opts, env, self)
+        : self.renderToken(tokens, idx, opts);
     }
-
-    // Match ```dot ... ```
-    const dotMatch = src.match(/^```dot\n([\s\S]*?)```/);
-    if (dotMatch?.[1] !== undefined) {
-      return {
-        type: "diagram",
-        raw: dotMatch[0],
-        code: dotMatch[1].trim(),
-        diagramType: "graphviz",
-      };
-    }
-
-    // Match ```graphviz ... ```
-    const graphvizMatch = src.match(/^```graphviz\n([\s\S]*?)```/);
-    if (graphvizMatch?.[1] !== undefined) {
-      return {
-        type: "diagram",
-        raw: graphvizMatch[0],
-        code: graphvizMatch[1].trim(),
-        diagramType: "graphviz",
-      };
-    }
-
-    return undefined;
-  },
-};
-
-// Keep individual tokenizers for backwards compatibility
-const mermaidTokenizer: MarkdownTokenizer = diagramTokenizer;
-const graphvizTokenizer: MarkdownTokenizer = diagramTokenizer;
+    const code = token?.content ?? "";
+    // Escape attribute value to keep the HTML well-formed.
+    const escaped = code
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    return `<div data-type="diagram" data-vizel-diagram="" data-diagram-type="${diagramType}" data-code="${escaped}" class="vizel-diagram"></div>`;
+  };
+}
 
 /**
  * Initialize Mermaid with the provided configuration.
@@ -324,6 +318,25 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
     return {
       /** Whether mermaid has been initialized for this editor instance */
       mermaidInitialized: false,
+      markdown: {
+        serialize(state: MarkdownSerializerState, node: PMNode) {
+          const code = String(node.attrs?.code ?? "");
+          const type = String(node.attrs?.type ?? "mermaid");
+          // Mermaid uses `mermaid`; GraphViz canonically uses `dot` (GitHub
+          // recognizes `dot` for native GraphViz rendering).
+          const lang = type === "graphviz" ? "dot" : type;
+          state.write(`\`\`\`${lang}\n`);
+          state.text(code, false);
+          state.ensureNewLine();
+          state.write(`\`\`\``);
+          state.closeBlock(node);
+        },
+        parse: {
+          setup(md: MarkdownIt) {
+            registerDiagramFenceRenderer(md);
+          },
+        },
+      },
     };
   },
 
@@ -668,35 +681,6 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
       },
     };
   },
-
-  // Markdown support (GitHub compatible)
-  // Single tokenizer handles mermaid, dot, and graphviz code blocks
-  markdownTokenizer: diagramTokenizer,
-
-  parseMarkdown(token: MarkdownToken): JSONContent {
-    return {
-      type: "diagram",
-      attrs: {
-        code: token.code || "",
-        type: isVizelDiagramType(token.diagramType) ? token.diagramType : "mermaid",
-      },
-    };
-  },
-
-  renderMarkdown(node: JSONContent): string {
-    const code = node.attrs?.code || "";
-    const type = node.attrs?.type || "mermaid";
-
-    if (type === "mermaid") {
-      return `\`\`\`mermaid\n${code}\n\`\`\``;
-    }
-
-    if (type === "graphviz") {
-      return `\`\`\`dot\n${code}\n\`\`\``;
-    }
-
-    return `\`\`\`${type}\n${code}\n\`\`\``;
-  },
 });
 
 /**
@@ -734,6 +718,3 @@ export function createVizelDiagramExtension(
 ): ReturnType<typeof VizelDiagram.configure> {
   return VizelDiagram.configure(options);
 }
-
-// Export tokenizers for advanced usage
-export { graphvizTokenizer, mermaidTokenizer };

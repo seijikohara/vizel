@@ -5,6 +5,7 @@ export {
   vizelDocusaurusFlavor,
   vizelGfmFlavor,
   vizelObsidianFlavor,
+  vizelPandocFlavor,
 } from "./flavors/index.ts";
 export type {
   VizelMarkdownEncodingOptions,
