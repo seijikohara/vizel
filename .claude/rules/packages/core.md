@@ -237,6 +237,76 @@ string via `isVizelMacPlatform()` and binds the result to
 `command.run(editor)`. When the two strings differ, document the
 reason in a comment on the command definition.
 
+## Markdown Pipeline
+
+The Markdown extension is part of the always-on core (Section 8) — it
+loads without an opt-in flag, and consumer Markdown output is governed
+by the `markdown` option on `VizelEditorOptions`:
+
+```ts
+useVizelEditor({
+  markdown: {
+    flavor: vizelGfmFlavor,
+    encoding: {
+      mention: "metadata-comment",
+    },
+  },
+});
+```
+
+### Library and library swap
+
+Vizel uses `tiptap-markdown` (markdown-it base). The marked-based
+`@tiptap/markdown` is no longer a dependency. Extensions register
+parser hooks through `addStorage().markdown.parse.setup(md)` and
+serialize hooks through `addStorage().markdown.serialize(state, node,
+parent, index)` using `prosemirror-markdown`'s `MarkdownSerializerState`
+API. Never reintroduce the legacy `parseMarkdown(token, helpers)` /
+`renderMarkdown(node, helpers)` shape — it does not exist on the
+current library.
+
+### `VizelMarkdownFlavor` as plugin type
+
+A flavor is a `{ name, markdownItPlugins?, nodeSerializers?,
+markSerializers?, config? }` object. The five built-ins are
+`vizelCommonMarkFlavor`, `vizelGfmFlavor`, `vizelObsidianFlavor`,
+`vizelDocusaurusFlavor`, and `vizelPandocFlavor`. Compose them with
+`composeVizelMarkdownFlavors(flavors, name?)` — later flavors override
+earlier ones in `nodeSerializers` / `markSerializers` and shallow-merge
+`config`.
+
+### Parse tolerantly, serialize strictly
+
+The parser registers markdown-it plugins from every built-in flavor
+plus the user's selected flavor, so input remains tolerant across
+formats (every callout shape, every wiki-link shape, etc. is
+recognized). The serializer uses only the selected flavor's hooks, so
+output follows that flavor strictly. When a node has no
+representation under the chosen flavor, the extension emits
+`VizelError("MARKDOWN_LOSSY")` via `emitVizelError(err, options.onError)`.
+
+### Encoding modes for lossy nodes
+
+The `markdown.encoding` field selects per-node encoding for nodes
+without a canonical Markdown representation:
+
+| Node | `"default"` | `"metadata-comment"` |
+|------|-------------|---------------------|
+| `embed` | `[Title](url)` | `[Title](url)<!-- vizel:embed type="..." id="..." -->` |
+| `mention` | `@username` | `@username <!-- vizel:mention id="..." -->` |
+| `wikiLink` | flavor-dependent (`[[page]]` for Obsidian; `[page](page)` elsewhere) | flavor-dependent + comment |
+
+`"default"` is portable; `"metadata-comment"` is lossless.
+
+### Round-trip helper
+
+Flavor authors validate their custom flavors with
+`assertMarkdownRoundtrip(flavor, samples)`. The helper parses each
+sample, re-serializes it, and throws `VizelError("MARKDOWN_LOSSY")`
+when the output differs from the input after whitespace
+normalization. Use it from a test runner; do not import it in
+production code.
+
 ## Dependencies
 
 ### Allowed
