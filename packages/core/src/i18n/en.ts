@@ -187,4 +187,37 @@ export const vizelEnLocale = {
     visitTitle: "Open URL in new tab",
     embedAsRichContent: "Embed as rich content",
   },
+
+  commands: {
+    block: {
+      mergePrevious: {
+        title: "Merge with previous",
+        description: "Join this block with the one above.",
+      },
+      promote: {
+        title: "Promote",
+        description: "Lift this block one level out of its parent.",
+      },
+      demote: {
+        title: "Demote",
+        description: "Nest this block one level deeper.",
+      },
+      split: {
+        title: "Split",
+        description: "Split the current block at the cursor.",
+      },
+      duplicate: {
+        title: "Duplicate",
+        description: "Create a copy of this block below the original.",
+      },
+      moveUp: {
+        title: "Move up",
+        description: "Swap this block with the one above.",
+      },
+      moveDown: {
+        title: "Move down",
+        description: "Swap this block with the one below.",
+      },
+    },
+  },
 } satisfies VizelLocale;
