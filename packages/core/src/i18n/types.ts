@@ -251,6 +251,25 @@ export interface VizelLocale {
     /** Embed toggle label */
     embedAsRichContent: string;
   };
+
+  /**
+   * Strings for the block operation `VizelCommand` registry.
+   *
+   * Each entry carries a `title` (used by the block menu and slash
+   * menu) and a `description` (used by the slash menu's secondary
+   * line).
+   */
+  commands: {
+    block: {
+      mergePrevious: SlashItemText;
+      promote: SlashItemText;
+      demote: SlashItemText;
+      split: SlashItemText;
+      duplicate: SlashItemText;
+      moveUp: SlashItemText;
+      moveDown: SlashItemText;
+    };
+  };
 }
 
 /** Title and description for a slash menu item */
