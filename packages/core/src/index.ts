@@ -413,6 +413,7 @@ export {
 // Markdown flavor plugin types (Section 10)
 // =============================================================================
 export {
+  assertMarkdownRoundtrip,
   composeVizelMarkdownFlavors,
   type VizelMarkdownEncodingOptions,
   type VizelMarkdownFlavor,
@@ -420,6 +421,7 @@ export {
   type VizelMarkdownLossyEncodingMode,
   type VizelMarkSerializer,
   type VizelNodeSerializer,
+  type VizelRoundtripSample,
 } from "./markdown/index.ts";
 // =============================================================================
 // Plugin System
