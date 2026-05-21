@@ -47,7 +47,7 @@ export {
   type VizelStorageBackend,
 } from "./auto-save.ts";
 // =============================================================================
-// UI Skeletons
+// Builders (Section 2)
 // =============================================================================
 export {
   applyVizelLinkEdit,
@@ -498,7 +498,6 @@ export type {
   VizelMarkdownSyncOptions,
   VizelMarkdownSyncResult,
   VizelSlashCommandOptions,
-  VizelSlashMenuRendererOptions,
   VizelSuggestionRendererOptions,
 } from "./types.ts";
 // =============================================================================
