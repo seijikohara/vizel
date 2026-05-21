@@ -7,6 +7,11 @@ import {
 import BlockClipboardFixture from "./BlockClipboardFixture.svelte";
 
 test.describe("VizelBlockClipboard - Svelte", () => {
+  test.skip(
+    ({ browserName }) => browserName === "firefox",
+    "synthetic ClipboardEvent dispatch unsupported in Firefox"
+  );
+
   test("copy multi-block selection and paste reproduces every block", async ({ mount, page }) => {
     const component = await mount(BlockClipboardFixture);
     await testCopyMultiBlockPaste(component, page);

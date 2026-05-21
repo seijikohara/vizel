@@ -7,6 +7,17 @@ import {
 import { BlockClipboardFixture } from "./BlockClipboardFixture";
 
 test.describe("VizelBlockClipboard - React", () => {
+  // Firefox silently drops writes to a programmatically-constructed
+  // `ClipboardEvent`'s `clipboardData`, so the synthetic copy / paste
+  // dispatch our scenarios use cannot exercise the round-trip in
+  // Firefox. The production code path works in real Firefox usage
+  // because real keyboard-triggered clipboard events have writable
+  // `clipboardData`.
+  test.skip(
+    ({ browserName }) => browserName === "firefox",
+    "synthetic ClipboardEvent dispatch unsupported in Firefox"
+  );
+
   test("copy multi-block selection and paste reproduces every block", async ({ mount, page }) => {
     const component = await mount(<BlockClipboardFixture />);
     await testCopyMultiBlockPaste(component, page);
