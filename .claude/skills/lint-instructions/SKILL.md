@@ -67,7 +67,7 @@ For each applicable rule file, verify the following.
 - [ ] Each component exists in all three framework packages.
 - [ ] Props match across frameworks (allowing `class` versus `className`).
 - [ ] Hooks, composables, and runes share an option interface defined in `@vizel/core`.
-- [ ] No framework package re-exports symbols from `@vizel/core`.
+- [ ] Each framework package re-exports the full `@vizel/core` surface via `export * from "@vizel/core"` in its `src/index.ts` (Section 6 of the v2 redesign — verified by `pnpm check:parity`).
 
 #### Core Package (`packages/core.md`)
 
@@ -130,4 +130,4 @@ For each fixable violation:
 | Type defined inside a framework package | `cross-framework.md` | Move the type to `@vizel/core` |
 | Component missing in one framework | `cross-framework.md` | Add the equivalent component |
 | `default export` | Biome | Use a named export |
-| Re-export from `@vizel/core` in a framework package | `cross-framework.md` | Import directly from `@vizel/core` |
+| Framework `src/index.ts` missing `export * from "@vizel/core"` | `cross-framework.md` | Add the mirror re-export so consumers do not need a direct `@vizel/core` dependency |

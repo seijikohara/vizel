@@ -36,7 +36,16 @@ This project uses Conventional Commits. The lefthook `commit-msg` hook validates
 | `react` | `@vizel/react` package |
 | `vue` | `@vizel/vue` package |
 | `svelte` | `@vizel/svelte` package |
-| `demo` | Demo applications |
+| `demo` | Demo applications under `apps/demo/` |
+| `docs` | VitePress docs site under `docs/` |
+| `ct` | Playwright Component Tests under `tests/ct/` |
+| `deps` | Dependency-only changes (typically `chore(deps)`) |
+| `spec` | v2 design spec under `docs/superpowers/specs/` |
+| `guide` | User-facing guide pages under `docs/guide/` |
+| `plan` | Implementation plans under `docs/superpowers/plans/` |
+| `i18n` | Locale files |
+| `a11y` | Accessibility-only fixes |
+| `ci` | CI workflows under `.github/workflows/` |
 | (none) | Multiple packages or project-wide changes |
 
 ### Rules

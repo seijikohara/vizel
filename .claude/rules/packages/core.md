@@ -126,12 +126,28 @@ Heading.configure({
 | Comment | `extensions/comment.ts` | Text annotations and comments |
 | MultiBlockSelection | `extensions/multi-block-selection.ts` | Always-on multi-block range selection with block-aware Backspace / Delete / Tab / Shift+Tab |
 | BlockClipboard | `extensions/block-clipboard.ts` | Always-on block-aware copy / cut / paste; writes `application/x-vizel-blocks` (lossless JSON) plus `text/html` / `text/markdown` / `text/plain` mirrors and accepts the same payloads on paste |
+| BlockMenu | `extensions/block-menu.ts` | Block-level action menu surface (used by `VizelBlockMenu`) |
+| Mention | `extensions/mention.ts` | `@`-mention suggestion menu with markdown encoding modes |
+| FindReplace | `extensions/find-replace.ts` | In-document find / replace with highlight decorations |
+| Highlight | `extensions/highlight.ts` | Text highlight mark (yellow / orange / green / blue / pink palette) |
+| Callout | `extensions/callout.ts` | Note / tip / warning / danger callout blocks |
+| ImageResize | `extensions/image-resize.ts` | Resize handles for the `image` node |
+| FileHandler | `extensions/file-handler.ts` | Paste / drop handler for file uploads |
+| Presence | `extensions/presence.ts` | Cursor / selection presence overlays for collaboration |
+| Typography | `extensions/typography.ts` | Smart quote / em-dash / ellipsis input rules |
+| VisualHierarchy | `extensions/visual-hierarchy.ts` | Visual cues for nested block depth |
+| TableBase | `extensions/table-base.ts` | Base Tiptap Table family (without UI controls) |
+| TableControls | `extensions/table-controls.ts` | Row / column control overlays for the table feature |
+| TableOfContents | `extensions/table-of-contents.ts` | Live-updated outline node sourced from headings |
+| CommandShortcuts | `extensions/command-shortcuts.ts` | Keyboard shortcut bindings derived from `VizelCommand.shortcut` |
+| NodeTypes | `extensions/node-types.ts` | Helper extension for `VizelNodeTypeOption` lookups |
 
 The following extensions are part of the always-on core and are NOT
-gated by `VizelFeatureOptions`: Markdown, Link, CodeBlock,
-MultiBlockSelection, BlockClipboard. To configure
-them, use the corresponding top-level options on `VizelEditorOptions`
-(e.g. the Markdown flavor lives at `flavor`, not under `features`).
+gated by `VizelFeatureOptions`: Base, Markdown, Link, CodeBlock,
+MultiBlockSelection, BlockClipboard, BlockMenu, FindReplace,
+CommandShortcuts, NodeTypes. To configure them, use the corresponding
+top-level options on `VizelEditorOptions` (e.g. the Markdown flavor
+lives at `flavor`, not under `features`).
 
 ## Feature Categories
 
