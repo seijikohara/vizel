@@ -9,6 +9,13 @@ export default withMermaid({
   base: "/vizel/",
   lang: "en-US",
 
+  // Internal planning and spec documents live under docs/superpowers/.
+  // Exclude them from the published site so VitePress does not try to
+  // parse the embedded Tiptap / Vue / TypeScript code blocks (their
+  // `{{ ... }}` interpolation patterns crash the Vue compiler when it
+  // walks markdown files).
+  srcExclude: ["superpowers/**"],
+
   head: [
     ["link", { rel: "icon", type: "image/svg+xml", href: "/vizel/logo.svg" }],
     ["meta", { name: "theme-color", content: "#6366F1" }],
