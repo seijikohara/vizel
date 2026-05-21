@@ -45,12 +45,12 @@ Vizel is a **block-based visual Markdown editor** built on Tiptap. The product:
    framework-side component file should fit within ~120 lines of view code; if
    it grows past that, the excess is logic that belongs in Core.
 
-3. **UI components ship as Core skeletons + framework renderers.**
+3. **UI components ship as Core specs + framework renderers.**
    Every menu, popover, and form (`VizelSlashMenu`, `VizelMentionMenu`,
    `VizelBlockMenu`, `VizelToolbarDropdown`, `VizelNodeSelector`,
    `VizelLinkEditor`, `VizelFindReplace`, `VizelColorPicker`,
    `VizelBubbleMenu`, ...) declares its DOM scaffolding as a typed spec in
-   `packages/core/src/skeletons/`. The framework component is a thin
+   `packages/core/src/builders/`. The framework component is a thin
    transformer that maps the spec to native template syntax. ARIA attributes,
    identifiers, and section/item structure live in the spec — frameworks do
    not duplicate them.

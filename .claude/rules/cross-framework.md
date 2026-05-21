@@ -332,10 +332,18 @@ host framework's idiom. Differences outside this catalog are defects.
 
 `@vizel/core` owns all framework-agnostic code. See `packages/core.md` for the centralization rules.
 
-The framework packages do NOT re-export symbols from `@vizel/core`. Consumers import shared symbols directly:
+The framework packages re-export the full `@vizel/core` surface via
+`export * from "@vizel/core"` in each `packages/{react,vue,svelte}/src/index.ts`.
+Installing one framework package is sufficient to access every Core
+type, constant, extension, builder, controller, and utility — consumers
+do not need a direct `@vizel/core` dependency for normal use (Section 6
+of the v2 redesign, enforced by `pnpm check:parity`).
 
-- Import Vizel types and utilities from `@vizel/core`.
+- Import Vizel symbols from the framework package you already use
+  (`@vizel/react`, `@vizel/vue`, or `@vizel/svelte`).
 - Import Tiptap types (`JSONContent`, `Editor`, etc.) from `@tiptap/core`.
+- Style imports remain explicit: `import "@vizel/<framework>/styles.css"`
+  works because CSS cannot be re-exported across packages.
 
 ### Naming Conventions
 

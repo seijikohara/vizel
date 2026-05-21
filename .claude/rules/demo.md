@@ -74,9 +74,31 @@ All three demos share:
 
 ## CSS
 
-- Import `packages/core/src/styles/index.css` as the editor stylesheet.
-- Use the shared `styles.css` for demo-specific styling.
+- Import `@vizel/<framework>/styles.css` as the editor stylesheet
+  (e.g. `@vizel/react/styles.css`). Framework packages re-export the
+  Core CSS bundles through subpath exports.
+- Add `@vizel/<framework>/mathematics.css` only when the mathematics
+  feature is enabled.
+- Use the shared `apps/demo/shared/styles/base.css` for demo chrome
+  styling.
 - Maintain a consistent look across frameworks.
+
+## Common Pitfalls
+
+- **`features.collaboration.comments` requires `features.collaboration.provider`.**
+  Setting `comments: true` without a provider throws
+  `VizelError("INVALID_CONFIG")` from `createVizelEditorInstance` at
+  mount time. The editor stays `null` and the demo renders an empty
+  wrapper. The comment side-panel UI (`useVizelComment` /
+  `createVizelComment`) runs independently and does not require the
+  feature flag — leave it on the demo controls without forwarding to
+  `features`. The same rule applies to
+  `features.collaboration.presence`.
+- **Do not install a blanket `onError` trampoline on `<Vizel>`.** When
+  the consumer did not pass an `onError` prop / `@error` listener, leave
+  the prop unset so `useVizelEditor` can rethrow configuration errors
+  to the global handler. A blanket wrapper silently swallows
+  `INVALID_CONFIG` and `SSR_NOT_SUPPORTED`.
 
 ## Verification Checklist
 
