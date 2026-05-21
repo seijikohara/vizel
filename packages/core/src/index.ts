@@ -227,6 +227,8 @@ export {
   createVizelMathematicsExtensions,
   // Mention
   createVizelMentionExtension,
+  // Multi-block range selection (Section 11b)
+  createVizelMultiBlockSelectionExtension,
   // Node types (locale-aware)
   createVizelNodeTypes,
   createVizelPresenceExtension,
@@ -254,6 +256,7 @@ export {
   getVizelCommentPluginState,
   getVizelFindReplaceState,
   getVizelImageUploadPluginKey,
+  getVizelMultiBlockSelectionState,
   getVizelRecentColors,
   getVizelRegisteredLanguages,
   // Block menu
@@ -331,6 +334,8 @@ export {
   VizelMathInline,
   type VizelMentionItem,
   type VizelMentionOptions,
+  type VizelMultiBlockSelectionOptions,
+  type VizelMultiBlockSelectionState,
   type VizelNodeTypeOption,
   type VizelPresenceAwareness,
   type VizelPresenceOptions,
@@ -375,6 +380,7 @@ export {
   vizelDefaultSlashCommands,
   vizelEmbedPastePluginKey,
   vizelFindReplacePluginKey,
+  vizelMultiBlockSelectionPluginKey,
   vizelPresencePluginKey,
   vizelVisualHierarchyPluginKey,
   vizelWikiLinkPluginKey,

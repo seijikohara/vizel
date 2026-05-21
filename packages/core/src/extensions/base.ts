@@ -46,6 +46,7 @@ import { createVizelLinkExtension } from "./link.ts";
 import { createVizelMarkdownExtension } from "./markdown.ts";
 import { createVizelMathematicsExtensions } from "./mathematics.ts";
 import { createVizelMentionExtension } from "./mention.ts";
+import { createVizelMultiBlockSelectionExtension } from "./multi-block-selection.ts";
 import { createVizelPresenceExtension } from "./presence.ts";
 import {
   VizelSlashCommand,
@@ -129,6 +130,8 @@ function createBaseExtensions(
     Dropcursor.configure({ color: "#3b82f6", width: 2 }),
     Gapcursor,
     ListKeymap,
+    // Multi-block range selection — always-on (Section 11b)
+    createVizelMultiBlockSelectionExtension(),
   ];
 
   // History is excluded when collaboration is enabled (Yjs provides its own undo manager)

@@ -166,6 +166,14 @@ export {
   type VizelMentionItem,
   type VizelMentionOptions,
 } from "./mention.ts";
+// Multi-block range selection (Section 11b)
+export {
+  createVizelMultiBlockSelectionExtension,
+  getVizelMultiBlockSelectionState,
+  type VizelMultiBlockSelectionOptions,
+  type VizelMultiBlockSelectionState,
+  vizelMultiBlockSelectionPluginKey,
+} from "./multi-block-selection.ts";
 
 // Node types
 export {
