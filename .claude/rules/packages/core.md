@@ -429,3 +429,55 @@ CSS lives in `src/styles/`.
 - Scope styles to Vizel components.
 - Use CSS custom properties for theming.
 - Document non-trivial style dependencies in comments.
+
+## CSS Variables and Theme
+
+Vizel is theme-neutral. The library writes only the
+`data-vizel-theme` attribute on the host element. It never touches
+host theme selectors (`.dark`, `.light`, `[data-theme="*"]`, etc.) —
+those belong to the host theme library (Tailwind, next-themes, ...).
+
+### Two-selector rule
+
+`packages/core/src/styles/_variables.scss` declares the entire token
+catalog exactly twice:
+
+- `:root, [data-vizel-theme="light"]` — light tokens.
+- `[data-vizel-theme="dark"]` — dark overrides.
+
+A system-preference fallback covers users that have not chosen a
+theme: `@media (prefers-color-scheme: dark)` applies the dark
+overrides when neither `[data-vizel-theme="light"]` nor any explicit
+`[data-vizel-theme]` value is set on `:root`.
+
+Do not introduce `.light`, `.dark`, or `[data-theme="*"]` selectors
+to any SCSS file. The single permitted theme selector inside Vizel
+styles is `[data-vizel-theme]`.
+
+### `applyVizelTheme`
+
+`applyVizelTheme(resolvedTheme, targetSelector?)` writes the
+`data-vizel-theme` attribute on the resolved target element (defaults
+to `document.documentElement`). It does nothing else — no class
+toggles, no host-environment side effects.
+
+### Style surface
+
+A single CSS entry per framework package
+(`@vizel/<framework>/styles.css`) makes every built-in component
+render correctly. Three import patterns are supported via the
+subpath exports landed in Section 6c:
+
+| Pattern | Import | Use case |
+|---------|--------|----------|
+| Full | `@vizel/core/styles.css` | Default. Vizel ships its own tokens. |
+| Variables only | `@vizel/core/styles/variables.css` | Consumer supplies their own component CSS. |
+| Components only | `@vizel/core/styles/components.css` | Consumer maps another design system to Vizel tokens. |
+
+### Documentation policy
+
+`docs/guide/theming.md` consolidates theme documentation. It
+describes override and synchronization patterns abstractly without
+naming a specific dark-mode library. Library-specific recipes belong
+to that library's own documentation and decay when the library
+changes its API.

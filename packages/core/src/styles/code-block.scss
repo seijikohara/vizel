@@ -278,8 +278,8 @@
 }
 
 // Light Theme Override
-:root[data-theme="light"] .vizel-code-block,
-.vizel-code-block[data-theme="light"] {
+:root[data-vizel-theme="light"] .vizel-code-block,
+.vizel-code-block[data-vizel-theme="light"] {
   --vizel-code-block-bg: oklch(0.968 0 0);
   --vizel-code-block-toolbar-bg: oklch(0 0 0 / 0.03);
   --vizel-code-block-border: oklch(0 0 0 / 0.1);
