@@ -104,6 +104,11 @@ export {
   type VizelThemeInitScriptOptions,
   vizelThemeInitScript,
 } from "./ssr.ts";
+// Static HTML rendering (Section 12 Mode 1)
+export {
+  generateVizelStaticHtml,
+  type VizelGenerateStaticHtmlOptions,
+} from "./staticHtml.ts";
 // Text highlight utilities
 export { splitVizelTextByMatches, type VizelTextSegment } from "./textHighlight.ts";
 // Type guard utilities
