@@ -9,7 +9,7 @@ export interface VizelFindReplaceProps {
   /** Locale for translated UI strings */
   locale?: VizelLocale;
   /** Callback when the panel is closed */
-  onClose?: () => void;
+  onclose?: () => void;
 }
 </script>
 
@@ -22,7 +22,7 @@ import {
 } from "@vizel/core";
 import { tick } from "svelte";
 
-let { editor, class: className, locale, onClose }: VizelFindReplaceProps = $props();
+let { editor, class: className, locale, onclose }: VizelFindReplaceProps = $props();
 const labels = $derived(resolveVizelFindReplaceLabels(locale?.findReplace));
 
 // Empty state for initial value
@@ -105,7 +105,7 @@ function handleClose() {
   findText = "";
   replaceText = "";
   editor?.view.dom.focus();
-  onClose?.();
+  onclose?.();
 }
 
 function handleCaseSensitiveChange(e: Event) {

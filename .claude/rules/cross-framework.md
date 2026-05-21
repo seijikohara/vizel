@@ -187,7 +187,7 @@ frameworks. The only divergence is the children form.
 | `editor` | `Editor \| null` | `Editor \| null` | `Editor \| null` |
 | Class prop | `className?: string` | `class?: string` | `class?: string` |
 | `locale` | `VizelLocale` | `VizelLocale` | `VizelLocale` |
-| Close callback | `onClose?: () => void` | (emit `close`) | `onClose?: () => void` |
+| Close callback | `onClose?: () => void` | (emit `close`) | `onclose?: () => void` |
 
 #### `VizelMinimap`
 
@@ -322,7 +322,8 @@ host framework's idiom. Differences outside this catalog are defects.
 | Hook return type | bare value | `Ref` / `ShallowRef` / `ComputedRef` | `{ readonly current }` | See Return Type Table (Table 4) |
 | Class prop name | `className` | `class` | `class` | Each framework's HTML attribute convention |
 | Children / slot | `children: ReactNode` | `<slot />` / `default` slot | `Snippet` | Each framework's children convention |
-| Imperative ref | `forwardRef` + `useImperativeHandle` | `defineExpose` + template ref | mutable ref prop | Each framework's ref convention |
+| Imperative ref | `ref` prop + `useImperativeHandle` | `defineExpose` + template ref | mutable ref prop | Each framework's ref convention (React 19 treats `ref` as a regular prop — no `forwardRef`) |
+| Hook scalar field | semantic name (`theme`, `markdown`, `editor`) | semantic name (`theme`, `markdown`, `editor`) | rune-getter `current` | Svelte runes expose a single getter (`{ readonly current }`); React / Vue keep the semantic name so destructuring `{ theme }` / `{ markdown }` reads naturally |
 | Event handler prop | `onUpdate` | `onUpdate` | `onUpdate` | All frameworks unify on the `on*` callback prop |
 
 ## Supporting Conventions
@@ -374,7 +375,7 @@ binding form differs to honor each framework's reactivity model.
 
 | React | Vue | Svelte |
 |-------|-----|--------|
-| `Editor \| null` (`useVizelContext()` throws outside a provider; `useVizelContextSafe()` returns `null` both outside a provider and while the provider's editor is still `null`) | `ShallowRef<Editor \| null>` (both `useVizelContext()` and `useVizelContextSafe()`; the safe variant returns `null` outside a provider) | `{ get current(): Editor \| null }` |
+| `Editor \| null` (`useVizelContext()` throws outside a provider; `useVizelContextSafe()` returns `null` both outside a provider and while the provider's editor is still `null`) | `ShallowRef<Editor \| null>` (both `useVizelContext()` and `useVizelContextSafe()`; the safe variant returns `null` outside a provider) | `{ readonly current: Editor \| null }` (`getVizelContext()` throws outside a provider; `getVizelContextSafe()` returns `null` outside a provider) |
 
 ### Context API Equivalence
 
