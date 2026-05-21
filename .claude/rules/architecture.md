@@ -66,7 +66,13 @@ These hold across every framework package:
   helpers).
 - **Style surface.** A single CSS entry per framework package (e.g.
   `@vizel/react/styles.css`). No hand-mounting of additional stylesheets is
-  required to make any built-in component render correctly.
+  required to make any built-in component render correctly. The CSS ships
+  the entire token catalog under exactly two selectors —
+  `:root, [data-vizel-theme="light"]` and `[data-vizel-theme="dark"]` —
+  plus the `(prefers-color-scheme: dark)` fallback for unset themes.
+  Vizel never writes host-environment selectors (`.dark`, `.light`,
+  `[data-theme="*"]`); host theming belongs to the host theme library
+  and stays decoupled from Vizel.
 - **Symmetric API.** Component props, hook / composable / rune names, return
   shapes, and event payloads mirror each other across the three frameworks,
   modulo idiomatic naming (`useFoo` in React and Vue, `createFoo` in Svelte).

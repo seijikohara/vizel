@@ -28,8 +28,6 @@
 // ============================================
 
 :root,
-.light,
-[data-theme="light"],
 [data-vizel-theme="light"] {
   // Color Tokens
   @include output-vars($light-colors);
@@ -102,8 +100,6 @@
 // Dark Theme
 // ============================================
 
-.dark,
-[data-theme="dark"],
 [data-vizel-theme="dark"] {
   // Color Overrides
   @include output-vars($dark-colors);
@@ -125,7 +121,7 @@
 // ============================================
 
 @media (prefers-color-scheme: dark) {
-  :root:not(.light):not([data-theme="light"]):not([data-vizel-theme="light"]):not([data-vizel-theme]) {
+  :root:not([data-vizel-theme="light"]):not([data-vizel-theme]) {
     // Color Overrides
     @include output-vars($dark-colors);
 
