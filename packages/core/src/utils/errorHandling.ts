@@ -60,18 +60,13 @@ export interface VizelErrorOptions {
  * Structured error class for Vizel operations.
  *
  * Extends `Error` so callers get stack traces and `instanceof` checks.
- * The `originalError` field is retained as an alias for `cause` to keep
- * pre-v2.0.0 consumer code compiling.
+ * The underlying cause flows through the standard `Error.cause`
+ * property; consumers read `err.cause` to reach the wrapped error.
  */
 export class VizelError extends Error {
   readonly code: VizelErrorCode;
   readonly severity: VizelErrorSeverity;
   readonly context?: Record<string, unknown>;
-  /**
-   * Alias for `Error.cause`. Retained for source compatibility with
-   * pre-v2.0.0 consumers that read `err.originalError`.
-   */
-  readonly originalError?: unknown;
 
   constructor(code: VizelErrorCode, message: string, options?: VizelErrorOptions) {
     super(message, options?.cause === undefined ? undefined : { cause: options.cause });
@@ -80,9 +75,6 @@ export class VizelError extends Error {
     this.severity = options?.severity ?? "error";
     if (options?.context !== undefined) {
       this.context = options.context;
-    }
-    if (options?.cause !== undefined) {
-      this.originalError = options.cause;
     }
 
     if (Error.captureStackTrace) {
