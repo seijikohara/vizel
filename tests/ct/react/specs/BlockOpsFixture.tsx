@@ -1,4 +1,10 @@
-import { useVizelEditor, useVizelState, VizelEditor, VizelProvider } from "@vizel/react";
+import {
+  useVizelEditor,
+  useVizelState,
+  VizelEditor,
+  VizelProvider,
+  vizelBlockOperationCommands,
+} from "@vizel/react";
 import { useEffect } from "react";
 
 export function BlockOpsFixture() {
@@ -9,9 +15,15 @@ export function BlockOpsFixture() {
 
   useEffect(() => {
     if (!editor) return;
-    (window as unknown as { vizelTestEditor?: unknown }).vizelTestEditor = editor;
+    const win = window as unknown as {
+      vizelTestEditor?: unknown;
+      vizelBlockOperationCommands?: unknown;
+    };
+    win.vizelTestEditor = editor;
+    win.vizelBlockOperationCommands = vizelBlockOperationCommands;
     return () => {
-      delete (window as unknown as { vizelTestEditor?: unknown }).vizelTestEditor;
+      delete win.vizelTestEditor;
+      delete win.vizelBlockOperationCommands;
     };
   }, [editor]);
 

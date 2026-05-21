@@ -1,5 +1,16 @@
 <script lang="ts">
-import { createVizelEditor, createVizelState, VizelEditor, VizelProvider } from "@vizel/svelte";
+import {
+  createVizelEditor,
+  createVizelState,
+  VizelEditor,
+  VizelProvider,
+  vizelBlockOperationCommands,
+} from "@vizel/svelte";
+
+interface TestWindow extends Window {
+  vizelTestEditor?: unknown;
+  vizelBlockOperationCommands?: unknown;
+}
 
 const editor = createVizelEditor({
   immediatelyRender: false,
@@ -8,10 +19,14 @@ createVizelState(() => editor.current);
 
 $effect(() => {
   if (editor.current) {
-    (window as unknown as { vizelTestEditor?: unknown }).vizelTestEditor = editor.current;
+    const win = window as unknown as TestWindow;
+    win.vizelTestEditor = editor.current;
+    win.vizelBlockOperationCommands = vizelBlockOperationCommands;
   }
   return () => {
-    delete (window as unknown as { vizelTestEditor?: unknown }).vizelTestEditor;
+    const win = window as unknown as TestWindow;
+    delete win.vizelTestEditor;
+    delete win.vizelBlockOperationCommands;
   };
 });
 </script>

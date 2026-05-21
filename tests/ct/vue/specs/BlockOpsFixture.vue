@@ -1,6 +1,17 @@
 <script setup lang="ts">
-import { useVizelEditor, useVizelState, VizelEditor, VizelProvider } from "@vizel/vue";
+import {
+  useVizelEditor,
+  useVizelState,
+  VizelEditor,
+  VizelProvider,
+  vizelBlockOperationCommands,
+} from "@vizel/vue";
 import { onBeforeUnmount, watch } from "vue";
+
+interface TestWindow extends Window {
+  vizelTestEditor?: unknown;
+  vizelBlockOperationCommands?: unknown;
+}
 
 const editor = useVizelEditor({
   immediatelyRender: false,
@@ -11,14 +22,18 @@ watch(
   () => editor.value,
   (instance) => {
     if (instance) {
-      (window as unknown as { vizelTestEditor?: unknown }).vizelTestEditor = instance;
+      const win = window as unknown as TestWindow;
+      win.vizelTestEditor = instance;
+      win.vizelBlockOperationCommands = vizelBlockOperationCommands;
     }
   },
   { immediate: true }
 );
 
 onBeforeUnmount(() => {
-  delete (window as unknown as { vizelTestEditor?: unknown }).vizelTestEditor;
+  const win = window as unknown as TestWindow;
+  delete win.vizelTestEditor;
+  delete win.vizelBlockOperationCommands;
 });
 </script>
 

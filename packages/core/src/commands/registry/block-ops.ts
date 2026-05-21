@@ -20,12 +20,17 @@ function moveCurrentBlock(editor: Editor, direction: -1 | 1): boolean {
   const blockStart = $from.before(blockDepth);
   const blockNode = $from.node(blockDepth);
   const blockEnd = blockStart + blockNode.nodeSize;
-  const targetSiblingStart =
-    direction === -1 ? blockStart - parent.child(targetIndex).nodeSize : blockEnd;
+  const targetSiblingSize = parent.child(targetIndex).nodeSize;
+
+  // After deleting the current block, the sibling we are swapping with
+  // shifts. For move-up the previous sibling keeps its original start; for
+  // move-down the next sibling slides into the deleted block's slot and ends
+  // at `blockStart + targetSiblingSize`.
+  const insertPos =
+    direction === -1 ? blockStart - targetSiblingSize : blockStart + targetSiblingSize;
 
   const tr = state.tr;
   tr.delete(blockStart, blockEnd);
-  const insertPos = direction === -1 ? targetSiblingStart : blockStart;
   tr.insert(insertPos, blockNode);
   tr.setSelection(NodeSelection.create(tr.doc, insertPos));
   view.dispatch(tr.scrollIntoView());

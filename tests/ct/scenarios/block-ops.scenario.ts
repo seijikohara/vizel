@@ -12,18 +12,26 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
+interface BlockOpCommand {
+  readonly id: string;
+  readonly run: (editor: unknown) => void;
+}
+
 interface TestWindow extends Window {
   vizelTestEditor?: unknown;
+  vizelBlockOperationCommands?: readonly BlockOpCommand[];
 }
 
 async function runBlockOpCommand(page: Page, id: string): Promise<void> {
-  await page.evaluate(async (commandId: string) => {
-    const { vizelBlockOperationCommands } = await import("@vizel/core");
-    const editor = (window as TestWindow).vizelTestEditor;
+  await page.evaluate((commandId: string) => {
+    const win = window as TestWindow;
+    const editor = win.vizelTestEditor;
+    const registry = win.vizelBlockOperationCommands;
     if (!editor) throw new Error("vizelTestEditor not exposed on window");
-    const command = vizelBlockOperationCommands.find((c) => c.id === commandId);
+    if (!registry) throw new Error("vizelBlockOperationCommands not exposed on window");
+    const command = registry.find((c) => c.id === commandId);
     if (!command) throw new Error(`Unknown command id: ${commandId}`);
-    command.run(editor as never);
+    command.run(editor);
   }, id);
 }
 
