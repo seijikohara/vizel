@@ -310,6 +310,54 @@ when the output differs from the input after whitespace
 normalization. Use it from a test runner; do not import it in
 production code.
 
+## SSR Safety
+
+Vizel is rendered into a contenteditable element in the browser, so
+the editor itself is client-only. The surrounding APIs are designed
+to remain callable on Node, edge runtimes, and the browser so that
+consumers can mix server and client without crashing at import time.
+
+### Layer-by-layer rules
+
+| Layer | Server-callable | DOM access |
+|-------|----------------|-----------|
+| `utils/` | Yes | Never at module scope |
+| `builders/` | Yes | Never |
+| `commands/` | Yes | Never |
+| `markdown/` | Yes | Never |
+| `controllers/` | Factory yes; `mount()` no | Inside `mount()` only, with an SSR guard |
+| `extensions/` | Factory yes; ProseMirror plugin no | Inside ProseMirror plugins only |
+| `utils/editorFactory.ts` | No — throws `VizelError("SSR_NOT_SUPPORTED")` | (Throws before reaching the DOM) |
+
+`pnpm check:ssr` runs `scripts/check-ssr-safety.ts`, which walks
+`utils/`, `builders/`, `commands/`, `markdown/`, plus `types.ts` and
+`index.ts`, and fails when it finds a `document.` or `window.`
+reference at the module's top scope. References inside function
+bodies are allowed because they execute lazily — the SSR-time import
+graph stays clean. Run it before opening a PR; CI gates merges on a
+green run.
+
+### Factory guard
+
+`createVizelEditorInstance` opens with `typeof document === "undefined"`
+and throws `VizelError("SSR_NOT_SUPPORTED")` when the check passes.
+Consumers that accidentally try to construct an editor in a server
+function get a typed error pointing at the right lifecycle hook
+(`useEffect`, `onMounted`, `onMount`) rather than a cryptic
+`document is not defined` ReferenceError from deep inside Tiptap.
+
+### Theme-flash mitigation
+
+`vizelThemeInitScript(options?)` returns a self-contained IIFE that
+reads `localStorage[storageKey]` (default `"vizel-theme"`), falls
+back to the supplied `defaultTheme` (`"system"` resolves via
+`matchMedia`), and writes `data-vizel-theme` on
+`document.documentElement` synchronously. The script body is built
+from typed options — never from consumer-supplied raw markup — so it
+carries no XSS surface. Embed the return value inline in the
+server-rendered `<head>` via the framework's idiomatic raw-script
+mechanism to eliminate the dark-mode flash on first paint.
+
 ## Dependencies
 
 ### Allowed

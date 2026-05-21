@@ -34,6 +34,7 @@
     "check": "biome check .",
     "check:fix": "biome check --write .",
     "check:parity": "tsx scripts/check-cross-framework-parity.ts",
+    "check:ssr": "tsx scripts/check-ssr-safety.ts",
     "prepare": "lefthook install",
     "deps:check": "pnpm dlx taze major -r",
     "deps:update": "pnpm dlx taze major -r -w && pnpm install"
