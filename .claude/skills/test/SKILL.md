@@ -24,6 +24,77 @@ This skill runs Playwright Component Tests across the React, Vue, and Svelte fra
 | `pnpm test:ct:react` | Run React tests only |
 | `pnpm test:ct:vue` | Run Vue tests only |
 | `pnpm test:ct:svelte` | Run Svelte tests only |
+| `pnpm test:md-roundtrip` | Run the Markdown round-trip suite (Pillar 3) |
+| `pnpm test:ssr` | Run the SSR static-HTML smoke test (Pillar 4) |
+| `pnpm check:ct-parity` | Verify CT spec parity across frameworks (Pillar 1) |
+
+
+## Section 14 Pillars
+
+The seven-pillar testing rules in `.claude/rules/testing.md` govern
+the broader test surface. This skill drives all pillars that ship
+runnable suites today.
+
+| Pillar | Status | How to run |
+|--------|--------|------------|
+| 1. Framework parity | shipped | `pnpm check:ct-parity` |
+| 2. Behavior tests | shipped | `pnpm test:ct` (and variants above) |
+| 3. Markdown round-trip | shipped | `pnpm test:md-roundtrip` |
+| 4. SSR | shipped | `pnpm test:ssr` |
+| 5. Accessibility | not yet | follow-up; `tests/a11y/` not yet created |
+| 6. Visual regression | not yet | follow-up; CI-only suite not yet created |
+| 7. Coverage discipline | shipped | reviewed at PR time against the Pillar 7 matrix |
+
+### Run the full local matrix
+
+```bash
+pnpm check:ct-parity   # Pillar 1
+pnpm test:ct           # Pillar 2
+pnpm test:md-roundtrip # Pillar 3
+pnpm test:ssr          # Pillar 4
+```
+
+### CT spec parity
+
+`pnpm check:ct-parity` lints `tests/ct/{react,vue,svelte}/specs/`
+for matching spec filenames, modulo the `Use*` / `Create*` / `Get*`
+idiom prefix. A non-zero exit means a spec exists in one or two
+frameworks but not all three.
+
+```bash
+pnpm check:ct-parity
+# CT spec parity check (react=33, vue=33, svelte=33)
+# CT spec parity check passed.
+```
+
+### Markdown round-trip
+
+`pnpm test:md-roundtrip` drives `generateVizelStaticHtml` against
+every sample in `tests/markdown-roundtrip/samples/index.ts` and
+asserts the round-tripped Markdown matches the input. Add a new
+sample by appending to the relevant `<flavor>Samples` array.
+
+### SSR static HTML smoke test
+
+`pnpm test:ssr` runs `scripts/test-static-html.ts`. The script
+boots the Core SSR path in Node, renders fixed Markdown samples,
+and asserts the produced HTML contains the expected DOM markers.
+Add a case by appending a `StaticHtmlCase` entry to the same
+script.
+
+### Accessibility (NOT YET SHIPPED)
+
+`tests/a11y/` will run `@axe-core/playwright` against every
+component. The directory and dependency are tracked as follow-up
+work; the test skill will gain a `pnpm test:a11y` command once
+the suite lands.
+
+### Visual regression (NOT YET SHIPPED)
+
+A CI-only visual snapshot suite covering ~20 essential views is
+planned. Local execution is intentionally skipped to avoid
+OS-level rendering noise. The test skill will gain a
+`pnpm test:visual` (CI-only) command once the suite lands.
 
 ## Process
 

@@ -23,14 +23,14 @@ This subagent verifies feature parity and API consistency across the three Vizel
    - The hook, composable, and rune share an option interface defined in `@vizel/core`.
    - The return shape matches the framework idiom: `Editor | null` (React), `ShallowRef<Editor | null>` (Vue), `{ get current(): Editor | null }` (Svelte).
    - Shared types, constants, and utilities live in `@vizel/core`.
-4. **Run the four Parity Checks** (see next section).
+4. **Run the six Parity Checks** (see next section).
 5. **Verify the demo apps.** Confirm that each demo under `apps/demo/{react,vue,svelte}/` exercises the new feature.
 6. **Verify the tests.** Confirm that `tests/ct/scenarios/` defines a shared scenario and that `tests/ct/{react,vue,svelte}/specs/` consumes it.
 
 ## Parity Checks
 
 The six SSOT parity tables in `.claude/rules/cross-framework.md` are
-the contract. Run the following four checks against the changed
+the contract. Run the following six checks against the changed
 surface. Any divergence outside Table 6 (Idiom Exception Catalog) is a
 defect.
 
@@ -58,6 +58,20 @@ defect.
    either bringing it back into parity or extending the catalog with a
    documented justification.
 
+5. **CT spec parity.** Every `*.spec.{tsx,ts}` file must exist in all
+   three framework specs directories
+   (`tests/ct/{react,vue,svelte}/specs/`), modulo the idiom prefix
+   stripped from hook / composable / rune specs (`Use*` on React and
+   Vue, `Create*` / `Get*` on Svelte). Run `pnpm check:ct-parity` to
+   confirm; lefthook runs the same script on `pre-push` and the CI
+   `ct-parity` job blocks merge. The seven-pillar rules in
+   `.claude/rules/testing.md` gate review on this check.
+6. **Shared scenario usage.** For each spec touched, confirm it
+   imports its core assertions from `tests/ct/scenarios/`. A spec
+   that hand-rolls framework-specific assertions is a defect: lift
+   the assertions into the shared scenario so the other two
+   frameworks consume the same expectations.
+
 ## Output
 
 Report findings in the following format. Cite file paths in `path:line` form.
@@ -79,6 +93,7 @@ Report findings in the following format. Cite file paths in `path:line` form.
 - [ ] Add a `createVizel<Feature>` rune at `packages/svelte/src/runes/<feature>.svelte.ts`.
 - [ ] Update demos at `apps/demo/{react,vue,svelte}/` to exercise the feature.
 - [ ] Add a shared scenario at `tests/ct/scenarios/<feature>.scenario.ts`.
+- [ ] Confirm `pnpm check:ct-parity` exits 0 after adding the per-framework specs.
 ```
 
 ## Constraints

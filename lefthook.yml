@@ -52,6 +52,9 @@ pre-push:
     parity:
       run: pnpm check:parity
 
+    ct-parity:
+      run: pnpm check:ct-parity
+
     ssr:
       run: pnpm check:ssr
 
