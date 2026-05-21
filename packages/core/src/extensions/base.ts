@@ -298,12 +298,21 @@ function addDetailsExtension(extensions: Extensions, features: VizelFeatureOptio
 /**
  * Add Embed extension if enabled (enabled by default).
  */
-function addEmbedExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+function addEmbedExtension(
+  extensions: Extensions,
+  features: VizelFeatureOptions,
+  embedEncoding: VizelMarkdownLossyEncodingMode | undefined
+): void {
   const embed = features.content?.embed;
   if (embed === false) return;
 
   const embedOptions = typeof embed === "object" ? embed : {};
-  extensions.push(createVizelEmbedExtension(embedOptions));
+  extensions.push(
+    createVizelEmbedExtension({
+      ...embedOptions,
+      ...(embedEncoding !== undefined && { encoding: embedEncoding }),
+    })
+  );
 }
 
 /**
@@ -335,7 +344,8 @@ function addTableOfContentsExtension(extensions: Extensions, features: VizelFeat
 function addWikiLinkExtension(
   extensions: Extensions,
   features: VizelFeatureOptions,
-  flavorConfig: VizelFlavorConfig
+  flavorConfig: VizelFlavorConfig,
+  wikiLinkEncoding: VizelMarkdownLossyEncodingMode | undefined
 ): void {
   const wikiLink = features.content?.wikiLink;
   if (!wikiLink) return;
@@ -345,6 +355,7 @@ function addWikiLinkExtension(
     createVizelWikiLinkExtension({
       ...wikiLinkOptions,
       serializeAsWikiLink: wikiLinkOptions.serializeAsWikiLink ?? flavorConfig.wikiLinkSerialize,
+      ...(wikiLinkEncoding !== undefined && { encoding: wikiLinkEncoding }),
     })
   );
 }
@@ -530,10 +541,10 @@ export async function createVizelExtensions(
   addDragHandleExtension(extensions, features, locale);
   addDetailsExtension(extensions, features);
   addCalloutExtension(extensions, features, flavorConfig);
-  addEmbedExtension(extensions, features);
+  addEmbedExtension(extensions, features, encoding?.embed);
   addDiagramExtension(extensions, features);
   addTableOfContentsExtension(extensions, features);
-  addWikiLinkExtension(extensions, features, flavorConfig);
+  addWikiLinkExtension(extensions, features, flavorConfig, encoding?.wikiLink);
   addMentionExtension(extensions, features, encoding?.mention);
   addCommentsExtension(extensions, features);
   addVisualHierarchyExtension(extensions, features);

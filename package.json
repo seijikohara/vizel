@@ -26,6 +26,7 @@
     "test:ct:react:coverage": "c8 playwright test -c tests/ct/react/playwright-ct.config.ts",
     "test:ct:vue:coverage": "c8 playwright test -c tests/ct/vue/playwright-ct.config.ts",
     "test:ct:svelte:coverage": "c8 playwright test -c tests/ct/svelte/playwright-ct.config.ts",
+    "test:md-roundtrip": "playwright test -c tests/markdown-roundtrip/playwright-ct.config.ts --project=chromium",
     "typecheck": "pnpm -r --if-present run typecheck",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",

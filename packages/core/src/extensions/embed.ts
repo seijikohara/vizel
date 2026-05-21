@@ -9,8 +9,11 @@
  */
 
 import { mergeAttributes, Node } from "@tiptap/core";
+import type { Node as PMNode } from "@tiptap/pm/model";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import DOMPurify from "dompurify";
+import type MarkdownIt from "markdown-it";
+import type { MarkdownSerializerState } from "prosemirror-markdown";
 import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
 
 /**
@@ -387,6 +390,18 @@ export interface VizelEmbedOptions {
    * @param url - The URL that failed to fetch
    */
   onFetchError?: (error: Error, url: string) => void;
+  /**
+   * Markdown encoding mode (Section 10).
+   *
+   * - `"default"` emits the lossy form `[title || url](url)`. Metadata
+   *   such as `type` and `provider` is lost on round-trip.
+   * - `"metadata-comment"` emits the lossless form
+   *   `[title || url](url)<!-- vizel:embed type="..." provider="..." -->`
+   *   so the metadata survives round-trips through plain markdown.
+   *
+   * @default "default"
+   */
+  encoding?: import("../markdown/types.ts").VizelMarkdownLossyEncodingMode;
 }
 
 declare module "@tiptap/core" {
@@ -515,6 +530,113 @@ function renderLink(container: HTMLElement, url: string, title?: string): void {
 }
 
 /**
+ * Escape a value for inclusion inside a `vizel:` metadata comment.
+ *
+ * Order matters: `&` is escaped first so subsequent replacements do
+ * not double-escape ampersand-introduced entities. The literal
+ * `-->` sequence becomes `--&gt;` so the value cannot prematurely
+ * close the host HTML comment.
+ */
+function escapeMetadataCommentValue(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/-->/g, "--&gt;");
+}
+
+/**
+ * Decode a value previously escaped by
+ * {@link escapeMetadataCommentValue}.
+ *
+ * Reverses the same replacements in inverse order so the original
+ * characters are restored verbatim on parse.
+ */
+function unescapeMetadataCommentValue(value: string): string {
+  return value
+    .replace(/&gt;/g, ">")
+    .replace(/&lt;/g, "<")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&");
+}
+
+/**
+ * Parse the attribute list of a `<!-- vizel:embed key="value" -->`
+ * comment into a plain object. Values are unescaped via
+ * {@link unescapeMetadataCommentValue}.
+ */
+function parseEmbedMetadataAttrs(attrsSrc: string): Record<string, string> {
+  const result: Record<string, string> = {};
+  const attrRegex = /([A-Za-z_][\w-]*)="([^"]*)"/g;
+  for (const match of attrsSrc.matchAll(attrRegex)) {
+    const key = match[1];
+    const value = match[2];
+    if (key === undefined || value === undefined) continue;
+    result[key] = unescapeMetadataCommentValue(value);
+  }
+  return result;
+}
+
+/**
+ * Inline regex matching `[text](url)<!-- vizel:embed key="value" ... -->`.
+ * Group 1 captures the link text, group 2 captures the URL, group 3
+ * captures the comment body up to the terminating `-->`.
+ */
+const VIZEL_EMBED_METADATA_PATTERN =
+  /^\[([^\]]*)\]\(([^)\s]+)\)<!--\s*vizel:embed\s+([\s\S]*?)\s*-->/;
+
+/**
+ * Register a markdown-it inline rule that recognizes the
+ * `[title](url)<!-- vizel:embed ... -->` pattern and emits a single
+ * `vizel_embed` token carrying the recovered attributes. The rule
+ * runs before `link` so the link parser never gets a chance to
+ * consume the visible portion in isolation.
+ */
+function registerEmbedRule(md: MarkdownIt): void {
+  md.inline.ruler.before("link", "vizel_embed", (state, silent) => {
+    if (state.src.charCodeAt(state.pos) !== 0x5b) return false;
+    const rest = state.src.slice(state.pos);
+    const match = VIZEL_EMBED_METADATA_PATTERN.exec(rest);
+    if (!match) return false;
+    const title = match[1] ?? "";
+    const url = match[2] ?? "";
+    const attrsSrc = match[3] ?? "";
+    if (!url) return false;
+    if (!silent) {
+      const attrs = parseEmbedMetadataAttrs(attrsSrc);
+      const token = state.push("vizel_embed", "div", 0);
+      token.content = title;
+      token.meta = { url, attrs };
+    }
+    state.pos += match[0].length;
+    return true;
+  });
+
+  md.renderer.rules.vizel_embed = (tokens, idx) => {
+    const token = tokens[idx];
+    const meta = (token?.meta as { url?: string; attrs?: Record<string, string> } | undefined) ?? {
+      url: "",
+      attrs: {},
+    };
+    const url = meta.url ?? "";
+    const attrs = meta.attrs ?? {};
+    const title = token?.content ?? "";
+    const escapedUrl = url.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+    const titleAttr = attrs.title ?? title;
+    const escapedTitle = titleAttr.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+    const dataAttrs = Object.entries(attrs)
+      .filter(([key]) => key !== "title")
+      .map(
+        ([key, value]) =>
+          ` data-embed-${key}="${value.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"`
+      )
+      .join("");
+    return `<div data-vizel-embed="true" data-embed-url="${escapedUrl}" data-embed-title="${escapedTitle}"${dataAttrs}></div>`;
+  };
+}
+
+/**
  * Embed node extension
  */
 export const VizelEmbed = Node.create<VizelEmbedOptions>({
@@ -541,6 +663,43 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
       },
       pasteHandler: true,
       inline: false,
+      encoding: "default",
+    };
+  },
+
+  addStorage() {
+    return {
+      markdown: {
+        serialize(state: MarkdownSerializerState, node: PMNode) {
+          const ctx = this as unknown as { options: VizelEmbedOptions };
+          const encoding = ctx.options.encoding ?? "default";
+          const url = String(node.attrs?.url ?? "");
+          const titleAttr = node.attrs?.title;
+          const title = typeof titleAttr === "string" && titleAttr.length > 0 ? titleAttr : url;
+          const linkText = `[${title}](${url})`;
+          if (encoding === "metadata-comment") {
+            const type = node.attrs?.type;
+            const provider = node.attrs?.provider;
+            const parts: string[] = [];
+            if (typeof type === "string" && type.length > 0) {
+              parts.push(`type="${escapeMetadataCommentValue(type)}"`);
+            }
+            if (typeof provider === "string" && provider.length > 0) {
+              parts.push(`provider="${escapeMetadataCommentValue(provider)}"`);
+            }
+            const attrsSrc = parts.length > 0 ? ` ${parts.join(" ")} ` : " ";
+            state.write(`${linkText}<!-- vizel:embed${attrsSrc}-->`);
+          } else {
+            state.write(linkText);
+          }
+          state.closeBlock(node);
+        },
+        parse: {
+          setup(md: MarkdownIt) {
+            registerEmbedRule(md);
+          },
+        },
+      },
     };
   },
 
@@ -548,12 +707,17 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
     return {
       url: {
         default: null,
+        parseHTML: (element: HTMLElement) =>
+          element.getAttribute("data-embed-url") ?? element.getAttribute("data-url") ?? null,
       },
       type: {
         default: "link" as VizelEmbedType,
+        parseHTML: (element: HTMLElement) =>
+          (element.getAttribute("data-embed-type") as VizelEmbedType | null) ?? "link",
       },
       provider: {
         default: null,
+        parseHTML: (element: HTMLElement) => element.getAttribute("data-embed-provider"),
       },
       html: {
         default: null,
@@ -566,6 +730,7 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
       },
       title: {
         default: null,
+        parseHTML: (element: HTMLElement) => element.getAttribute("data-embed-title"),
       },
       description: {
         default: null,
