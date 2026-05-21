@@ -8,7 +8,10 @@ export async function testOutlineRendersHeadings(component: Locator, page: Page)
   const editor = component.locator(".vizel-editor [contenteditable]");
   const outline = component.locator("[data-vizel-outline]");
 
-  await expect(outline).toBeVisible();
+  // Outline `<nav>` mounts as empty; check the structural attribute
+  // before any content is typed. `toBeVisible` is deferred until the
+  // outline actually has children — an empty `<nav>` collapses to
+  // zero height which Playwright reports as "hidden".
   await expect(outline).toHaveAttribute("role", "tree");
 
   // Type the three headings.
@@ -20,6 +23,7 @@ export async function testOutlineRendersHeadings(component: Locator, page: Page)
   await page.keyboard.type("## C");
 
   // Three outline entries become visible.
+  await expect(outline).toBeVisible();
   const items = outline.getByRole("treeitem");
   await expect(items).toHaveCount(3);
   await expect(items.nth(0)).toContainText("A");
