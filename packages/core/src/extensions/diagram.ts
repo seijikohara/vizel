@@ -162,25 +162,48 @@ function registerDiagramFenceRenderer(md: MarkdownIt): void {
 }
 
 /**
+ * Resolve the Mermaid theme that matches the host page's current
+ * `data-vizel-theme`. Mermaid's `"default"` theme assumes a light
+ * canvas and renders nearly-invisible strokes against Vizel's dark
+ * tokens, so the diagram extension re-initializes Mermaid whenever
+ * the resolved theme changes.
+ */
+function resolveMermaidTheme(): "default" | "dark" {
+  if (typeof document === "undefined") return "default";
+  const attr = document.documentElement.getAttribute("data-vizel-theme");
+  if (attr === "dark") return "dark";
+  if (attr === "light") return "default";
+  return typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "default";
+}
+
+/**
  * Initialize Mermaid with the provided configuration.
- * Loads the mermaid module dynamically on first use.
+ *
+ * Loads the mermaid module dynamically on first use and re-runs the
+ * initializer whenever the host page flips between light and dark
+ * themes (Mermaid's `initialize` is idempotent — repeated calls
+ * overwrite the previous config, so the cost is bounded).
  */
 async function initializeMermaid(
   config: MermaidConfig | undefined,
-  storage: { mermaidInitialized: boolean }
+  storage: { mermaidInitializedTheme: "default" | "dark" | null }
 ): Promise<void> {
-  if (storage.mermaidInitialized) return;
+  const resolvedTheme = config?.theme ?? resolveMermaidTheme();
+  if (storage.mermaidInitializedTheme === resolvedTheme) return;
 
   const mermaid = await loadMermaid();
   mermaid.initialize({
     startOnLoad: false,
-    theme: "default",
+    theme: resolvedTheme,
     fontFamily: "var(--vizel-font-sans)",
     ...config,
     securityLevel: config?.securityLevel ?? "strict",
   });
 
-  storage.mermaidInitialized = true;
+  storage.mermaidInitializedTheme = resolvedTheme === "dark" ? "dark" : "default";
 }
 
 /**
@@ -320,8 +343,12 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
 
   addStorage() {
     return {
-      /** Whether mermaid has been initialized for this editor instance */
-      mermaidInitialized: false,
+      /**
+       * Theme Mermaid was last initialized for. `null` means Mermaid
+       * has not been initialized yet; switching themes re-initializes
+       * Mermaid in {@link initializeMermaid}.
+       */
+      mermaidInitializedTheme: null as "default" | "dark" | null,
       markdown: {
         serialize(state: MarkdownSerializerState, node: PMNode) {
           const code = String(node.attrs?.code ?? "");
@@ -388,7 +415,9 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
   addNodeView() {
     return ({ node, getPos, editor }) => {
       const mermaidConfig = this.options.mermaidConfig;
-      const diagramStorage = this.storage as { mermaidInitialized: boolean };
+      const diagramStorage = this.storage as {
+        mermaidInitializedTheme: "default" | "dark" | null;
+      };
 
       const dom = document.createElement("div");
       dom.classList.add("vizel-diagram");

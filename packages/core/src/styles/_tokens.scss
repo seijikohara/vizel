@@ -128,9 +128,12 @@ $dark-colors: (
   "accent": oklch(0.279 0.041 260.031),
   "accent-foreground": oklch(0.985 0 0),
 
-  // Border
-  "border": oklch(0.279 0.041 260.031),
-  "border-hover": oklch(0.372 0.044 257.287),
+  // Border — slightly above background-tertiary (L=0.279) so dividers,
+  // table cell borders, blockquote rules, and other 1px strokes stay
+  // visible against the L=0.21 base. Anything below L≈0.40 hides
+  // against a dark canvas.
+  "border": oklch(0.42 0.025 257.287),
+  "border-hover": oklch(0.55 0.03 257.287),
 
   // Hover/Active States
   "hover-bg": oklch(1 0 0 / 0.05),
