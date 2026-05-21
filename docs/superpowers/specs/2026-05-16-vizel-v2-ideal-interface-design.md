@@ -576,9 +576,19 @@ questions.
 
 | Category | Question | Examples |
 |----------|----------|----------|
-| `content` | What can the document contain? | `image`, `table`, `mathematics`, `diagram`, `embed`, `callout`, `details`, `textColor`, `highlight`, `underline`, `superscript`, `subscript` |
-| `interaction` | How does the user edit? | `slashMenu`, `blockMenu`, `bubbleMenu`, `dragHandle`, `mention`, `findAndReplace`, `autoSave`, `placeholder`, `characterCount`, `historyDepth`, `typography`, `visualHierarchy` |
+| `content` | What can the document contain? | `image`, `table`, `mathematics`, `diagram`, `embed`, `callout`, `details`, `textColor`, `highlight`, `underline`, `superscript`, `subscript`, `taskList`, `wikiLink`, `tableOfContents` |
+| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `placeholder`, `characterCount`, `historyDepth`, `typography`, `visualHierarchy` |
 | `collaboration` | Who edits together? | `provider`, `comments`, `versionHistory`, `presence` |
+
+### Out of `features`
+
+Some surfaces look interaction-shaped but live outside `VizelFeatureOptions` because their lifetime is tied to a different layer:
+
+- `blockMenu` and `bubbleMenu` are framework component props (`<Vizel showBlockMenu={false}>`, `<Vizel showBubbleMenu={false}>`). They are presentational concerns owned by the consumer's render tree.
+- `findAndReplace` ships as `createVizelFindReplaceExtension()` so consumers compose it into their own `extensions` array alongside their own additions.
+- `autoSave` is a per-hook concern: `useVizelAutoSave` / `createVizelAutoSave` runs on the editor instance the consumer already owns, with debounce, storage backend, and key supplied as hook options. No editor-construction-time toggle exists.
+
+Always-on extensions (no opt-in needed): `multiBlockSelection`, `blockClipboard`, the Markdown serializer, Link, CodeBlock. Section 11 and Section 10 cover why each one is fundamental.
 
 ### Type definition
 
@@ -597,20 +607,19 @@ export type VizelFeatureOptions = {
     readonly underline?: boolean;
     readonly superscript?: boolean;
     readonly subscript?: boolean;
+    readonly taskList?: boolean | VizelTaskListExtensionsOptions;
+    readonly wikiLink?: boolean | VizelWikiLinkOptions;
+    readonly tableOfContents?: boolean | VizelTableOfContentsOptions;
   };
   readonly interaction?: {
     readonly slashMenu?: boolean | VizelSlashMenuOptions;
-    readonly blockMenu?: boolean | VizelBlockMenuOptions;
-    readonly bubbleMenu?: boolean | VizelBubbleMenuOptions;
     readonly dragHandle?: boolean | VizelDragHandleOptions;
     readonly mention?: boolean | VizelMentionOptions;
-    readonly findAndReplace?: boolean | VizelFindReplaceOptions;
-    readonly autoSave?: boolean | VizelAutoSaveOptions;
     readonly placeholder?: string;
     readonly characterCount?: boolean | VizelCharacterCountOptions;
     readonly historyDepth?: number;
     readonly typography?: boolean | VizelTypographyOptions;
-    readonly visualHierarchy?: boolean;
+    readonly visualHierarchy?: boolean | VizelVisualHierarchyOptions;
   };
   readonly collaboration?: {
     readonly provider?: VizelCollaborationProvider;
