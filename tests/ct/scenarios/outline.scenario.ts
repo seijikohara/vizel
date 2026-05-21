@@ -5,7 +5,7 @@ import { expect } from "@playwright/test";
  * Test that the outline renders one entry per heading in the document.
  */
 export async function testOutlineRendersHeadings(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor [contenteditable]");
+  const editor = component.locator(".vizel-editor");
   const outline = component.locator("[data-vizel-outline]");
 
   // Outline `<nav>` mounts as empty; check the structural attribute
@@ -38,7 +38,7 @@ export async function testOutlineClickMovesSelection(
   component: Locator,
   page: Page
 ): Promise<void> {
-  const editor = component.locator(".vizel-editor [contenteditable]");
+  const editor = component.locator(".vizel-editor");
   const outline = component.locator("[data-vizel-outline]");
   const cursorPos = component.locator("[data-testid='cursor-pos']");
 
