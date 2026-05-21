@@ -125,10 +125,11 @@ Heading.configure({
 | WikiLink | `extensions/wiki-link.ts` | Wiki-style internal links |
 | Comment | `extensions/comment.ts` | Text annotations and comments |
 | MultiBlockSelection | `extensions/multi-block-selection.ts` | Always-on multi-block range selection with block-aware Backspace / Delete / Tab / Shift+Tab |
+| BlockClipboard | `extensions/block-clipboard.ts` | Always-on block-aware copy / cut / paste; writes `application/x-vizel-blocks` (lossless JSON) plus `text/html` / `text/markdown` / `text/plain` mirrors and accepts the same payloads on paste |
 
 The following extensions are part of the always-on core and are NOT
 gated by `VizelFeatureOptions`: Markdown, Link, CodeBlock,
-MultiBlockSelection. To configure
+MultiBlockSelection, BlockClipboard. To configure
 them, use the corresponding top-level options on `VizelEditorOptions`
 (e.g. the Markdown flavor lives at `flavor`, not under `features`).
 

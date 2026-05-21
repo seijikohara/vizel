@@ -1,10 +1,12 @@
 import { Extension } from "@tiptap/core";
 import DragHandle from "@tiptap/extension-drag-handle";
 import type { Node as PmNode } from "@tiptap/pm/model";
+import { TextSelection } from "@tiptap/pm/state";
 import { vizelEnLocale } from "../i18n/en.ts";
 import type { VizelLocale } from "../i18n/types.ts";
 import { renderVizelIcon } from "../icons/types.ts";
 import { VIZEL_BLOCK_MENU_EVENT, type VizelBlockMenuOpenDetail } from "./block-menu.ts";
+import { getVizelMultiBlockSelectionState } from "./multi-block-selection.ts";
 
 export { DragHandle as VizelDragHandle };
 
@@ -148,6 +150,32 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
     nested: {
       edgeDetection: "none",
     },
+    onElementDragStart() {
+      // Multi-block forwarding (Section 11c). When a multi-block range
+      // is active and the drag handle's current node falls inside that
+      // range, expand the editor selection to cover the entire range
+      // before the underlying `dragHandler` runs. `dragHandler` checks
+      // whether its target node is contained in the current selection
+      // and, when it is, uses the full selection as the dragged
+      // payload — so the resulting drop moves every block in the range
+      // together in a single transaction.
+      if (!currentEditor) return;
+      const rangeState = getVizelMultiBlockSelectionState(currentEditor.state);
+      if (!rangeState) return;
+      // Only expand when the dragged block sits inside the multi-block
+      // range. Dragging a block outside the range falls back to the
+      // single-block move path.
+      if (currentPos < rangeState.from || currentPos >= rangeState.to) return;
+      const { doc, tr } = currentEditor.state;
+      try {
+        const startPos = doc.resolve(rangeState.from);
+        const endPos = doc.resolve(rangeState.to);
+        currentEditor.view.dispatch(tr.setSelection(new TextSelection(startPos, endPos)));
+      } catch {
+        // Resolving outside the document is a no-op; the single-block
+        // path takes over.
+      }
+    },
     onElementDragEnd() {
       // Tiptap's DragHandlePlugin (v3.22.x) does not clear its internal
       // `currentNode` on drag end. When the user hovers the same node after
@@ -181,7 +209,6 @@ declare module "@tiptap/core" {
 
 import type { Node, ResolvedPos } from "@tiptap/pm/model";
 import type { EditorState } from "@tiptap/pm/state";
-import { TextSelection } from "@tiptap/pm/state";
 
 interface BlockInfo {
   pos: number;

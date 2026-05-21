@@ -182,6 +182,8 @@ export {
   // Text color
   addVizelRecentColor,
   applyVizelColorToEditor,
+  // Block-aware clipboard (Section 11c)
+  createVizelBlockClipboardExtension,
   // Block menu (locale-aware)
   createVizelBlockMenuActions,
   // Callout / Admonition
@@ -275,6 +277,7 @@ export {
   // Table controls
   VIZEL_TABLE_MENU_ITEMS,
   VIZEL_TEXT_COLORS,
+  type VizelBlockClipboardOptions,
   type VizelBlockMenuAction,
   type VizelBlockMenuOpenDetail,
   VizelBlockMoveKeymap,
@@ -371,6 +374,7 @@ export {
   type VizelWikiLinkOptions,
   type VizelWikiLinkSuggestion,
   validateVizelImageFile,
+  vizelBlockClipboardPluginKey,
   vizelCommentPluginKey,
   vizelDefaultBase64Upload,
   vizelDefaultBlockMenuActions,

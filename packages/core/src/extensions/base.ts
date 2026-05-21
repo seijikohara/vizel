@@ -29,6 +29,7 @@ import type {
 } from "../markdown/types.ts";
 import type { VizelFeatureOptions } from "../types.ts";
 import { resolveVizelFlavorConfig, type VizelFlavorConfig } from "../utils/markdown-flavors.ts";
+import { createVizelBlockClipboardExtension } from "./block-clipboard.ts";
 import { createVizelCalloutExtension } from "./callout.ts";
 import { createVizelCharacterCountExtension } from "./character-count.ts";
 import { createVizelCommentExtension } from "./comment.ts";
@@ -132,6 +133,8 @@ function createBaseExtensions(
     ListKeymap,
     // Multi-block range selection — always-on (Section 11b)
     createVizelMultiBlockSelectionExtension(),
+    // Block-aware clipboard — always-on (Section 11c)
+    createVizelBlockClipboardExtension(),
   ];
 
   // History is excluded when collaboration is enabled (Yjs provides its own undo manager)
