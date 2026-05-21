@@ -590,6 +590,8 @@ export {
   type VizelResolveFeaturesOptions,
   type VizelSuggestionContainer,
   type VizelTextSegment,
+  // SSR utilities (Section 12)
+  type VizelThemeInitScriptOptions,
   vizelCommonMarkFlavor,
   vizelDefaultEditorProps,
   vizelDefaultFeatures,
@@ -597,6 +599,7 @@ export {
   vizelGfmFlavor,
   vizelObsidianFlavor,
   vizelPandocFlavor,
+  vizelThemeInitScript,
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./utils/index.ts";

@@ -99,6 +99,11 @@ export {
   renderVizelMinimapToCanvas,
   type VizelMinimapRenderOptions,
 } from "./minimap-render.ts";
+// SSR utilities (Section 12)
+export {
+  type VizelThemeInitScriptOptions,
+  vizelThemeInitScript,
+} from "./ssr.ts";
 // Text highlight utilities
 export { splitVizelTextByMatches, type VizelTextSegment } from "./textHighlight.ts";
 // Type guard utilities
