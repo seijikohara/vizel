@@ -92,6 +92,11 @@ export {
 } from "./markdown-flavors.ts";
 // Menu positioning utilities
 export { clampMenuPosition, type MenuPosition, shouldFlipSubmenu } from "./menuPositioning.ts";
+// Minimap canvas rendering
+export {
+  renderVizelMinimapToCanvas,
+  type VizelMinimapRenderOptions,
+} from "./minimap-render.ts";
 // Text highlight utilities
 export { splitVizelTextByMatches, type VizelTextSegment } from "./textHighlight.ts";
 // Type guard utilities

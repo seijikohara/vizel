@@ -59,6 +59,11 @@ export {
   type VizelMentionMenuProps,
   type VizelMentionMenuRef,
 } from "./VizelMentionMenu.vue";
+// VizelMinimap component
+export {
+  default as VizelMinimap,
+  type VizelMinimapProps,
+} from "./VizelMinimap.vue";
 // VizelNodeSelector component
 export {
   default as VizelNodeSelector,
