@@ -52,7 +52,7 @@
     "build:css:styles": "sass --load-path=src/styles --load-path=node_modules src/styles/index.scss dist/styles.css --style=compressed",
     "build:css:variables": "sass --load-path=src/styles --load-path=node_modules src/styles/entries/variables.scss dist/styles/variables.css --style=compressed",
     "build:css:components": "sass --load-path=src/styles --load-path=node_modules src/styles/entries/components.scss dist/styles/components.css --style=compressed",
-    "build:css:mathematics": "sass --load-path=src/styles --load-path=node_modules src/styles/katex-entry.scss dist/mathematics.css --style=compressed",
+    "build:css:mathematics": "node scripts/build-mathematics-css.mjs",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
