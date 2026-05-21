@@ -1,5 +1,11 @@
 // Base extensions
 export { createVizelExtensions, type VizelExtensionsOptions } from "./base.ts";
+// Block-aware clipboard (Section 11c)
+export {
+  createVizelBlockClipboardExtension,
+  type VizelBlockClipboardOptions,
+  vizelBlockClipboardPluginKey,
+} from "./block-clipboard.ts";
 // Block menu
 export {
   createVizelBlockMenuActions,
