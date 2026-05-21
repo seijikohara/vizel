@@ -183,13 +183,13 @@ export async function testCutListItemPreservesNesting(
         };
       };
     };
-    let result = -1;
+    const matches: number[] = [];
     editor.state.doc.forEach((node, offset) => {
-      if (node.type.name === "paragraph" && result === -1) {
-        result = offset;
+      if (node.type.name === "paragraph" && matches.length === 0) {
+        matches.push(offset);
       }
     });
-    return result;
+    return matches[0] ?? -1;
   });
   if (trailingPos <= 0) throw new Error("Trailing paragraph not found");
 

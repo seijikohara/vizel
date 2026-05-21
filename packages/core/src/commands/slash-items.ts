@@ -489,31 +489,35 @@ export function createVizelSlashCommands(locale: VizelLocale): SlashCommandItem[
     const groupKey = item.group ? groupToLocaleKey[item.group] : undefined;
     const localizedGroup = groupKey ? t.groups[groupKey] : item.group;
 
-    // For items with window.prompt, wrap the command to use locale strings
-    let { command } = item;
-    if (item.icon === "image") {
-      command = ({ editor, range }) => {
-        const url = window.prompt(t.enterImageUrl);
-        if (url) {
-          editor.chain().focus().deleteRange(range).setImage({ src: url }).run();
-        }
-      };
-    } else if (item.icon === "embed") {
-      command = ({ editor, range }) => {
-        const hasEmbedExtension = typeof editor.commands.setEmbed === "function";
-        if (!hasEmbedExtension) {
-          const url = window.prompt(t.enterUrl);
+    // For items with window.prompt, wrap the command to use locale strings.
+    const wrapPromptCommand = (): SlashCommandItem["command"] => {
+      if (item.icon === "image") {
+        return ({ editor, range }) => {
+          const url = window.prompt(t.enterImageUrl);
           if (url) {
-            editor.chain().focus().deleteRange(range).setLink({ href: url }).run();
+            editor.chain().focus().deleteRange(range).setImage({ src: url }).run();
           }
-          return;
-        }
-        const url = window.prompt(t.enterEmbedUrl);
-        if (url) {
-          editor.chain().focus().deleteRange(range).setEmbed({ url }).run();
-        }
-      };
-    }
+        };
+      }
+      if (item.icon === "embed") {
+        return ({ editor, range }) => {
+          const hasEmbedExtension = typeof editor.commands.setEmbed === "function";
+          if (!hasEmbedExtension) {
+            const url = window.prompt(t.enterUrl);
+            if (url) {
+              editor.chain().focus().deleteRange(range).setLink({ href: url }).run();
+            }
+            return;
+          }
+          const url = window.prompt(t.enterEmbedUrl);
+          if (url) {
+            editor.chain().focus().deleteRange(range).setEmbed({ url }).run();
+          }
+        };
+      }
+      return item.command;
+    };
+    const command = wrapPromptCommand();
 
     return {
       ...item,
@@ -567,16 +571,18 @@ interface FuseSearchable {
  * Factory function for creating Fuse instances.
  * Populated when fuse.js is dynamically loaded; null if unavailable.
  */
-let createFuseInstance:
-  | ((items: SlashCommandItem[], options: IFuseOptions<SlashCommandItem>) => FuseSearchable)
-  | null = null;
+const fuseFactory: {
+  create:
+    | ((items: SlashCommandItem[], options: IFuseOptions<SlashCommandItem>) => FuseSearchable)
+    | null;
+} = { create: null };
 
 // fuse.js is an optional peerDependency — preload eagerly via dynamic import
 // so it's ready by the time the user opens the slash menu.
 void import("fuse.js").then(
   (mod) => {
     const Fuse = mod.default;
-    createFuseInstance = (items, options) => new Fuse(items, options);
+    fuseFactory.create = (items, options) => new Fuse(items, options);
   },
   () => {
     // fuse.js not installed — fuzzy search unavailable, simple filtering used
@@ -593,12 +599,12 @@ const fuseCache = new WeakMap<SlashCommandItem[], FuseSearchable>();
  * Returns null if fuse.js is not installed.
  */
 function getFuseInstance(items: SlashCommandItem[]): FuseSearchable | null {
-  if (!createFuseInstance) return null;
-  let fuse = fuseCache.get(items);
-  if (!fuse) {
-    fuse = createFuseInstance(items, fuseOptions);
-    fuseCache.set(items, fuse);
-  }
+  const create = fuseFactory.create;
+  if (!create) return null;
+  const cached = fuseCache.get(items);
+  if (cached) return cached;
+  const fuse = create(items, fuseOptions);
+  fuseCache.set(items, fuse);
   return fuse;
 }
 

@@ -98,10 +98,8 @@ function buildOutlineTree(
 
     // Pop frames whose level is at or above the new entry. The root
     // frame at level 0 stays so we always have a parent to push into.
-    let top = stack.at(-1);
-    while (top !== undefined && stack.length > 1 && top.level >= level) {
+    while (stack.length > 1 && (stack.at(-1)?.level ?? 0) >= level) {
       stack.pop();
-      top = stack.at(-1);
     }
 
     const children: VizelOutlineItemSpec[] = [];

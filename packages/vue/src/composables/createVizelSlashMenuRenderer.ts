@@ -38,8 +38,10 @@ export function createVizelSlashMenuRenderer(
 ): Partial<SuggestionOptions<VizelSlashCommandItem>> {
   return {
     render: () => {
-      let app: App | null = null;
-      let suggestionContainer: ReturnType<typeof createVizelSuggestionContainer> | null = null;
+      const renderState: {
+        app: App | null;
+        suggestionContainer: ReturnType<typeof createVizelSuggestionContainer> | null;
+      } = { app: null, suggestionContainer: null };
       const componentRef = ref<VizelSlashMenuRef | null>(null);
       const items = ref<VizelSlashCommandItem[]>([]);
       const commandFn = ref<((item: VizelSlashCommandItem) => void) | null>(null);
@@ -49,9 +51,10 @@ export function createVizelSlashMenuRenderer(
           items.value = props.items;
           commandFn.value = props.command;
 
-          suggestionContainer = createVizelSuggestionContainer();
+          const suggestionContainer = createVizelSuggestionContainer();
+          renderState.suggestionContainer = suggestionContainer;
 
-          app = createApp({
+          const app = createApp({
             setup() {
               return () =>
                 h(VizelSlashMenu, {
@@ -64,6 +67,7 @@ export function createVizelSlashMenuRenderer(
                 });
             },
           });
+          renderState.app = app;
 
           app.mount(suggestionContainer.menuContainer);
           suggestionContainer.updatePosition(props.clientRect);
@@ -72,7 +76,7 @@ export function createVizelSlashMenuRenderer(
         onUpdate: (props: SuggestionProps<VizelSlashCommandItem>) => {
           items.value = props.items;
           commandFn.value = props.command;
-          suggestionContainer?.updatePosition(props.clientRect);
+          renderState.suggestionContainer?.updatePosition(props.clientRect);
         },
 
         onKeyDown: (props: { event: KeyboardEvent }) => {
@@ -83,10 +87,10 @@ export function createVizelSlashMenuRenderer(
         },
 
         onExit: () => {
-          app?.unmount();
-          suggestionContainer?.destroy();
-          app = null;
-          suggestionContainer = null;
+          renderState.app?.unmount();
+          renderState.suggestionContainer?.destroy();
+          renderState.app = null;
+          renderState.suggestionContainer = null;
         },
       };
     },

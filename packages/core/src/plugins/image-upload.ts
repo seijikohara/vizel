@@ -107,7 +107,7 @@ export function createVizelImageUploadPlugin(options: VizelImageUploadPluginOpti
       },
       apply(tr, currentSet: DecorationSet): DecorationSet {
         // Map decorations through document changes
-        let decoSet = currentSet.map(tr.mapping, tr.doc);
+        const mapped = currentSet.map(tr.mapping, tr.doc);
 
         const meta = tr.getMeta(imageUploadKey);
         const action = isImageUploadAction(meta) ? meta : undefined;
@@ -130,14 +130,13 @@ export function createVizelImageUploadPlugin(options: VizelImageUploadPluginOpti
           placeholder.appendChild(spinner);
 
           const deco = Decoration.widget(pos, placeholder, { id });
-          decoSet = decoSet.add(tr.doc, [deco]);
-        } else if (action?.type === "remove") {
-          decoSet = decoSet.remove(
-            decoSet.find(undefined, undefined, (spec) => spec.id === action.id)
-          );
+          return mapped.add(tr.doc, [deco]);
+        }
+        if (action?.type === "remove") {
+          return mapped.remove(mapped.find(undefined, undefined, (spec) => spec.id === action.id));
         }
 
-        return decoSet;
+        return mapped;
       },
     },
     props: {

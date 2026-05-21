@@ -62,6 +62,18 @@ function isFindReplaceMeta(value: unknown): value is VizelFindReplaceMeta {
   return typeof value === "object" && value !== null && "type" in value;
 }
 
+function findAllOccurrences(haystack: string, needle: string): number[] {
+  if (!needle) return [];
+  const step = Math.max(needle.length, 1);
+  const collect = (cursor: number, acc: readonly number[]): readonly number[] => {
+    if (cursor > haystack.length - needle.length) return acc;
+    const found = haystack.indexOf(needle, cursor);
+    if (found === -1) return acc;
+    return collect(found + step, [...acc, found]);
+  };
+  return [...collect(0, [])];
+}
+
 function buildMatches(
   doc: ProseMirrorNode,
   query: string,
@@ -76,18 +88,11 @@ function buildMatches(
 
     const text = node.text ?? "";
     const haystack = caseSensitive ? text : text.toLowerCase();
-    let index = 0;
-
-    while (index <= haystack.length - needle.length) {
-      const found = haystack.indexOf(needle, index);
-      if (found === -1) break;
-
+    for (const found of findAllOccurrences(haystack, needle)) {
       matches.push({
         from: pos + found,
         to: pos + found + needle.length,
       });
-
-      index = found + Math.max(needle.length, 1);
     }
 
     return true;
@@ -99,6 +104,46 @@ function buildMatches(
 function clampActiveIndex(activeIndex: number, matches: VizelFindMatch[]): number {
   if (matches.length === 0) return -1;
   return Math.min(Math.max(activeIndex, 0), matches.length - 1);
+}
+
+function applyFindReplaceMeta(
+  tr: import("@tiptap/pm/state").Transaction,
+  value: VizelFindReplaceState,
+  meta: VizelFindReplaceMeta
+): VizelFindReplaceState {
+  switch (meta.type) {
+    case "setQuery": {
+      const matches = buildMatches(tr.doc, meta.query, value.caseSensitive);
+      return {
+        ...value,
+        query: meta.query,
+        matches,
+        activeIndex: matches.length > 0 ? 0 : -1,
+      };
+    }
+    case "setActiveIndex":
+      return {
+        ...value,
+        activeIndex: clampActiveIndex(meta.index, value.matches),
+      };
+    case "setCaseSensitive": {
+      const matches = buildMatches(tr.doc, value.query, meta.caseSensitive);
+      return {
+        ...value,
+        caseSensitive: meta.caseSensitive,
+        matches,
+        activeIndex: clampActiveIndex(value.activeIndex, matches),
+      };
+    }
+    case "setOpen":
+      return { ...value, isOpen: true, mode: meta.mode };
+    case "setClosed":
+      return { ...value, isOpen: false };
+    case "clear":
+      return createEmptyState(value.caseSensitive);
+    default:
+      return value;
+  }
 }
 
 /**
@@ -232,13 +277,9 @@ export function createVizelFindReplaceExtension(options: VizelFindReplaceOptions
             if (!pluginState || pluginState.matches.length === 0) return false;
 
             // Replace from back to front to preserve positions
-            let tr = state.tr;
-            for (let i = pluginState.matches.length - 1; i >= 0; i -= 1) {
-              const match = pluginState.matches[i];
-              if (match) {
-                tr = tr.insertText(text, match.from, match.to);
-              }
-            }
+            const tr = [...pluginState.matches]
+              .reverse()
+              .reduce((acc, match) => acc.insertText(text, match.from, match.to), state.tr);
 
             if (dispatch) dispatch(tr.scrollIntoView());
             return true;
@@ -275,62 +316,21 @@ export function createVizelFindReplaceExtension(options: VizelFindReplaceOptions
             init: () => createEmptyState(initialCaseSensitive),
             apply: (tr, value) => {
               const metaRaw = tr.getMeta(vizelFindReplacePluginKey);
-              let next = value;
-
-              if (isFindReplaceMeta(metaRaw)) {
-                switch (metaRaw.type) {
-                  case "setQuery": {
-                    const matches = buildMatches(tr.doc, metaRaw.query, next.caseSensitive);
-                    next = {
-                      ...next,
-                      query: metaRaw.query,
-                      matches,
-                      activeIndex: matches.length > 0 ? 0 : -1,
-                    };
-                    break;
-                  }
-                  case "setActiveIndex":
-                    next = {
-                      ...next,
-                      activeIndex: clampActiveIndex(metaRaw.index, next.matches),
-                    };
-                    break;
-                  case "setCaseSensitive": {
-                    const matches = buildMatches(tr.doc, next.query, metaRaw.caseSensitive);
-                    next = {
-                      ...next,
-                      caseSensitive: metaRaw.caseSensitive,
-                      matches,
-                      activeIndex: clampActiveIndex(next.activeIndex, matches),
-                    };
-                    break;
-                  }
-                  case "setOpen":
-                    next = { ...next, isOpen: true, mode: metaRaw.mode };
-                    break;
-                  case "setClosed":
-                    next = { ...next, isOpen: false };
-                    break;
-                  case "clear":
-                    next = createEmptyState(next.caseSensitive);
-                    break;
-                  default:
-                    // All cases are handled; this satisfies the linter
-                    break;
-                }
-              }
+              const afterMeta = isFindReplaceMeta(metaRaw)
+                ? applyFindReplaceMeta(tr, value, metaRaw)
+                : value;
 
               // Rebuild matches if document changed and we have a query
-              if (tr.docChanged && next.query) {
-                const matches = buildMatches(tr.doc, next.query, next.caseSensitive);
-                next = {
-                  ...next,
+              if (tr.docChanged && afterMeta.query) {
+                const matches = buildMatches(tr.doc, afterMeta.query, afterMeta.caseSensitive);
+                return {
+                  ...afterMeta,
                   matches,
-                  activeIndex: clampActiveIndex(next.activeIndex, matches),
+                  activeIndex: clampActiveIndex(afterMeta.activeIndex, matches),
                 };
               }
 
-              return next;
+              return afterMeta;
             },
           },
 
@@ -354,7 +354,7 @@ export function createVizelFindReplaceExtension(options: VizelFindReplaceOptions
           },
 
           view: () => {
-            let prev = { total: 0, current: 0 };
+            const ref = { prev: { total: 0, current: 0 } };
             return {
               update: (view) => {
                 const pluginState = vizelFindReplacePluginKey.getState(view.state);
@@ -365,9 +365,9 @@ export function createVizelFindReplaceExtension(options: VizelFindReplaceOptions
                   current: pluginState.activeIndex >= 0 ? pluginState.activeIndex + 1 : 0,
                 };
 
-                if (next.total !== prev.total || next.current !== prev.current) {
+                if (next.total !== ref.prev.total || next.current !== ref.prev.current) {
                   extensionOptions.onResultsChange?.(next);
-                  prev = next;
+                  ref.prev = next;
                 }
               },
             };

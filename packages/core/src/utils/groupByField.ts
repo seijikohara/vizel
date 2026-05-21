@@ -20,24 +20,13 @@
  * ```
  */
 export function groupByConsecutiveField<T>(items: readonly T[], field: keyof T & string): T[][] {
-  const groups: T[][] = [];
-  let currentValue: unknown = Symbol("initial");
-  let currentGroup: T[] = [];
-
-  for (const item of items) {
-    if (item[field] !== currentValue) {
-      if (currentGroup.length > 0) {
-        groups.push(currentGroup);
-      }
-      currentValue = item[field];
-      currentGroup = [];
+  return items.reduce<T[][]>((groups, item) => {
+    const lastGroup = groups.at(-1);
+    if (lastGroup && lastGroup[0]?.[field] === item[field]) {
+      lastGroup.push(item);
+    } else {
+      groups.push([item]);
     }
-    currentGroup.push(item);
-  }
-
-  if (currentGroup.length > 0) {
-    groups.push(currentGroup);
-  }
-
-  return groups;
+    return groups;
+  }, []);
 }

@@ -73,8 +73,13 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
   // Create editor on mount (async - optional dependencies are loaded dynamically)
   useEffect(() => {
     const opts = optionsRef.current;
-    let isMounted = true;
-    let editorInstance: Editor | null = null;
+    // Mount / instance state held in a closure-shared object so the async
+    // initializer and the cleanup function can both observe the latest values
+    // without mutable let bindings.
+    const lifecycle: { isMounted: boolean; editorInstance: Editor | null } = {
+      isMounted: true,
+      editorInstance: null,
+    };
 
     void (async () => {
       try {
@@ -85,12 +90,12 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
           createSlashMenuRenderer: createVizelSlashMenuRenderer,
         });
 
-        if (!isMounted) {
+        if (!lifecycle.isMounted) {
           result.editor.destroy();
           return;
         }
 
-        editorInstance = result.editor;
+        lifecycle.editorInstance = result.editor;
         setEditor(result.editor);
       } catch (error) {
         const vizelError = wrapAsVizelError(error, {
@@ -112,8 +117,8 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
     })();
 
     return () => {
-      isMounted = false;
-      editorInstance?.destroy();
+      lifecycle.isMounted = false;
+      lifecycle.editorInstance?.destroy();
     };
   }, []);
 

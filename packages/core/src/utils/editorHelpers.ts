@@ -234,22 +234,20 @@ export function getVizelEditorState(editor: Editor | null | undefined): VizelEdi
     };
   }
 
-  let characterCount = 0;
-  let wordCount = 0;
-
   const storage: unknown = editor.storage;
-  if (hasVizelCharacterCountStorage(storage)) {
-    characterCount = storage.characterCount.characters();
-    wordCount = storage.characterCount.words();
-  }
+  const counts = hasVizelCharacterCountStorage(storage)
+    ? {
+        characterCount: storage.characterCount.characters(),
+        wordCount: storage.characterCount.words(),
+      }
+    : { characterCount: 0, wordCount: 0 };
 
   return {
     isFocused: editor.isFocused,
     isEmpty: editor.isEmpty,
     canUndo: editor.can().undo(),
     canRedo: editor.can().redo(),
-    characterCount,
-    wordCount,
+    ...counts,
   };
 }
 
@@ -356,17 +354,10 @@ export function convertVizelCodeBlocksToDiagrams(editor: Editor): void {
   if (replacements.length === 0) return;
 
   // Apply replacements in reverse order to preserve positions
-  let { tr } = editor.state;
-  for (let i = replacements.length - 1; i >= 0; i--) {
-    const replacement = replacements[i];
-    if (!replacement) continue;
-    const { from, to, code, type } = replacement;
-    const diagramNode = diagramType.create({
-      code,
-      type,
-    });
-    tr = tr.replaceWith(from, to, diagramNode);
-  }
+  const tr = [...replacements].reverse().reduce((acc, { from, to, code, type }) => {
+    const diagramNode = diagramType.create({ code, type });
+    return acc.replaceWith(from, to, diagramNode);
+  }, editor.state.tr);
 
   editor.view.dispatch(tr);
 }

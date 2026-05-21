@@ -336,8 +336,7 @@ export async function testBubbleMenuTextColorReset(component: Locator, page: Pag
 
   // Verify color is applied
   const editor = component.locator(".vizel-editor");
-  let coloredText = editor.locator('span[style*="color"]');
-  await expect(coloredText).toContainText("Select this text");
+  await expect(editor.locator('span[style*="color"]')).toContainText("Select this text");
 
   // Re-select the text
   await page.keyboard.press("ControlOrMeta+a");
@@ -349,8 +348,7 @@ export async function testBubbleMenuTextColorReset(component: Locator, page: Pag
   await defaultSwatch.click();
 
   // Verify color is removed
-  coloredText = editor.locator('span[style*="color"]');
-  await expect(coloredText).toHaveCount(0);
+  await expect(editor.locator('span[style*="color"]')).toHaveCount(0);
 }
 
 /** Verify highlight can be removed */
@@ -368,8 +366,7 @@ export async function testBubbleMenuHighlightReset(component: Locator, page: Pag
 
   // Verify highlight is applied
   const editor = component.locator(".vizel-editor");
-  let highlightedText = editor.locator("mark");
-  await expect(highlightedText).toContainText("Select this text");
+  await expect(editor.locator("mark")).toContainText("Select this text");
 
   // Re-select the text
   await page.keyboard.press("ControlOrMeta+a");
@@ -381,8 +378,7 @@ export async function testBubbleMenuHighlightReset(component: Locator, page: Pag
   await transparentSwatch.click();
 
   // Verify highlight is removed
-  highlightedText = editor.locator("mark");
-  await expect(highlightedText).toHaveCount(0);
+  await expect(editor.locator("mark")).toHaveCount(0);
 }
 
 // Node Selector Tests

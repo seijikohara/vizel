@@ -61,16 +61,18 @@ export interface VizelCodeBlockOptions {
  * Module-level cached lowlight instance.
  * Set when the extension is created, used by utility functions.
  */
-let activeLowlightInstance: ReturnType<typeof import("lowlight").createLowlight> | null = null;
+const lowlightRef: {
+  instance: ReturnType<typeof import("lowlight").createLowlight> | null;
+} = { instance: null };
 
 /**
  * Get the list of all registered languages (sorted alphabetically).
  * Returns an empty array if the code block extension has not been initialized yet.
  */
 export function getVizelRegisteredLanguages(): VizelCodeBlockLanguage[] {
-  if (!activeLowlightInstance) return [];
+  if (!lowlightRef.instance) return [];
 
-  const registeredNames = activeLowlightInstance.listLanguages();
+  const registeredNames = lowlightRef.instance.listLanguages();
 
   return registeredNames
     .sort((a, b) => a.localeCompare(b))
@@ -172,7 +174,7 @@ export async function createVizelCodeBlockExtension(
   const lowlight = customLowlight ?? (await loadLowlightInstance(languages));
 
   // Cache the instance for utility functions
-  activeLowlightInstance = lowlight;
+  lowlightRef.instance = lowlight;
 
   // Pre-resolve locale labels to keep addNodeView closure complexity low
   const codeBlockLabels = {
@@ -303,7 +305,7 @@ export async function createVizelCodeBlockExtension(
         setIconContent(copyBtn, "copy");
         copyBtn.title = codeBlockLabels.copyCode;
 
-        let copyTimeout: ReturnType<typeof setTimeout> | null = null;
+        const copyTimerRef: { current: ReturnType<typeof setTimeout> | null } = { current: null };
 
         copyBtn.addEventListener("click", (e) => {
           e.preventDefault();
@@ -313,12 +315,12 @@ export async function createVizelCodeBlockExtension(
             copyBtn.classList.add("copied");
             setIconContent(copyBtn, "checkSmall");
             copyBtn.title = codeBlockLabels.copied;
-            if (copyTimeout) clearTimeout(copyTimeout);
-            copyTimeout = setTimeout(() => {
+            if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+            copyTimerRef.current = setTimeout(() => {
               copyBtn.classList.remove("copied");
               setIconContent(copyBtn, "copy");
               copyBtn.title = codeBlockLabels.copyCode;
-              copyTimeout = null;
+              copyTimerRef.current = null;
             }, 2000);
           });
         });
@@ -361,13 +363,13 @@ export async function createVizelCodeBlockExtension(
             text.endsWith("\n") && lines.length > 1 ? lines.length - 1 : Math.max(1, lines.length);
 
           if (gutter.children.length !== lineCount) {
-            gutter.replaceChildren();
-            for (let i = 1; i <= lineCount; i++) {
+            const lineNums = Array.from({ length: lineCount }, (_, i) => {
               const lineNum = document.createElement("div");
               lineNum.classList.add("vizel-code-block-line-number");
-              lineNum.textContent = String(i);
-              gutter.appendChild(lineNum);
-            }
+              lineNum.textContent = String(i + 1);
+              return lineNum;
+            });
+            gutter.replaceChildren(...lineNums);
           }
         };
 
@@ -378,8 +380,10 @@ export async function createVizelCodeBlockExtension(
         }
 
         // Track current state
-        let currentLanguage = node.attrs.language;
-        let currentLineNumbers = node.attrs.lineNumbers;
+        const nodeViewState: { currentLanguage: string; currentLineNumbers: boolean } = {
+          currentLanguage: node.attrs.language,
+          currentLineNumbers: node.attrs.lineNumbers,
+        };
 
         // Add click handler for line numbers toggle (using currentLineNumbers)
         lineNumbersBtn.addEventListener("click", (e) => {
@@ -392,20 +396,20 @@ export async function createVizelCodeBlockExtension(
           if (!nodeAtPos) return;
           tr.setNodeMarkup(pos, undefined, {
             ...nodeAtPos.attrs,
-            lineNumbers: !currentLineNumbers,
+            lineNumbers: !nodeViewState.currentLineNumbers,
           });
           editor.view.dispatch(tr);
         });
 
         // Helper functions for update
         const syncLanguage = (newLang: string) => {
-          currentLanguage = newLang;
+          nodeViewState.currentLanguage = newLang;
           languageInput.value = newLang || defaultLanguage;
           code.className = `language-${newLang || defaultLanguage}`;
         };
 
         const syncLineNumbers = (enabled: boolean) => {
-          currentLineNumbers = enabled;
+          nodeViewState.currentLineNumbers = enabled;
           dom.classList.toggle("vizel-code-block-line-numbers", enabled);
           lineNumbersBtn.classList.toggle("active", enabled);
           lineNumbersBtn.title = enabled
@@ -423,17 +427,17 @@ export async function createVizelCodeBlockExtension(
             }
 
             // Sync language if changed
-            if (updatedNode.attrs.language !== currentLanguage) {
+            if (updatedNode.attrs.language !== nodeViewState.currentLanguage) {
               syncLanguage(updatedNode.attrs.language);
             }
 
             // Sync line numbers if changed
-            if (updatedNode.attrs.lineNumbers !== currentLineNumbers) {
+            if (updatedNode.attrs.lineNumbers !== nodeViewState.currentLineNumbers) {
               syncLineNumbers(updatedNode.attrs.lineNumbers);
             }
 
             // Update gutter if line numbers enabled
-            if (currentLineNumbers) {
+            if (nodeViewState.currentLineNumbers) {
               setTimeout(updateLineNumbers, 0);
             }
 
@@ -446,7 +450,7 @@ export async function createVizelCodeBlockExtension(
           },
 
           destroy() {
-            if (copyTimeout) clearTimeout(copyTimeout);
+            if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
           },
         };
       };

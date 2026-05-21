@@ -26,22 +26,25 @@ const props = withDefaults(defineProps<VizelSaveIndicatorProps>(), {
 });
 
 const relativeTime = ref("");
-let ticker: ReturnType<typeof createVizelRelativeTimeTicker> | null = null;
+const tickerState: { instance: ReturnType<typeof createVizelRelativeTimeTicker> | null } = {
+  instance: null,
+};
 
 onMounted(() => {
-  ticker = createVizelRelativeTimeTicker({
+  const instance = createVizelRelativeTimeTicker({
     getDate: () => props.lastSaved,
     getLocale: () => props.locale,
     onTick: (text) => {
       relativeTime.value = text;
     },
   });
-  ticker.mount();
+  tickerState.instance = instance;
+  instance.mount();
 });
 
 onBeforeUnmount(() => {
-  ticker?.unmount();
-  ticker = null;
+  tickerState.instance?.unmount();
+  tickerState.instance = null;
 });
 
 const view = computed(() =>

@@ -106,13 +106,14 @@ declare module "@tiptap/core" {
 /**
  * Unique counter for generating diagram IDs
  */
-let diagramIdCounter = 0;
+const diagramIdState = { counter: 0 };
 
 /**
  * Generate a unique ID for diagram rendering
  */
 function generateDiagramId(): string {
-  return `vizel-diagram-${Date.now()}-${++diagramIdCounter}`;
+  diagramIdState.counter += 1;
+  return `vizel-diagram-${Date.now()}-${diagramIdState.counter}`;
 }
 
 /**
@@ -187,24 +188,27 @@ async function initializeMermaid(
  * GraphViz WASM initialization is expensive, so the instance is shared across
  * all editor instances at the module level.
  */
-let graphvizInstance: GraphvizType | null = null;
-let graphvizInitPromise: Promise<GraphvizType> | null = null;
+const graphvizState: {
+  instance: GraphvizType | null;
+  initPromise: Promise<GraphvizType> | null;
+} = { instance: null, initPromise: null };
 
 /**
  * Initialize GraphViz WASM (shared singleton)
  */
 function initializeGraphviz(): Promise<GraphvizType> {
-  if (graphvizInstance) return Promise.resolve(graphvizInstance);
-  if (graphvizInitPromise) return graphvizInitPromise;
+  if (graphvizState.instance) return Promise.resolve(graphvizState.instance);
+  if (graphvizState.initPromise) return graphvizState.initPromise;
 
-  graphvizInitPromise = (async () => {
+  const promise = (async () => {
     const GraphvizClass = await loadGraphvizModule();
     const instance = await GraphvizClass.load();
-    graphvizInstance = instance;
+    graphvizState.instance = instance;
     return instance;
   })();
+  graphvizState.initPromise = promise;
 
-  return graphvizInitPromise;
+  return promise;
 }
 
 /**
@@ -428,9 +432,15 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
 
       dom.appendChild(editContainer);
 
-      let isEditing = false;
-      let currentCode = node.attrs.code;
-      let currentType: VizelDiagramType = node.attrs.type;
+      const viewState: {
+        isEditing: boolean;
+        currentCode: string;
+        currentType: VizelDiagramType;
+      } = {
+        isEditing: false,
+        currentCode: node.attrs.code,
+        currentType: node.attrs.type,
+      };
 
       const renderDiagram = async (
         code: string,
@@ -445,14 +455,13 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
           return;
         }
 
-        let result: { svg: string; error: string | null };
-
-        if (type === "graphviz") {
-          result = await renderGraphviz(code, this.options.graphvizEngine);
-        } else {
-          await initializeMermaid(mermaidConfig, diagramStorage);
-          result = await renderMermaid(code);
-        }
+        const result: { svg: string; error: string | null } =
+          type === "graphviz"
+            ? await renderGraphviz(code, this.options.graphvizEngine)
+            : await (async () => {
+                await initializeMermaid(mermaidConfig, diagramStorage);
+                return renderMermaid(code);
+              })();
 
         if (result.error) {
           container.textContent = "";
@@ -513,19 +522,19 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
 
       const startEditing = () => {
         if (!editor.isEditable) return;
-        isEditing = true;
+        viewState.isEditing = true;
         dom.classList.add("vizel-diagram-editing");
         renderContainer.style.display = "none";
         typeIndicator.style.display = "none";
         editContainer.style.display = "";
-        editTextarea.value = currentCode;
-        void renderDiagram(currentCode, currentType, previewContainer);
+        editTextarea.value = viewState.currentCode;
+        void renderDiagram(viewState.currentCode, viewState.currentType, previewContainer);
         editTextarea.focus();
       };
 
       const stopEditing = () => {
-        if (!isEditing) return;
-        isEditing = false;
+        if (!viewState.isEditing) return;
+        viewState.isEditing = false;
         dom.classList.remove("vizel-diagram-editing");
         renderContainer.style.display = "";
         typeIndicator.style.display = "";
@@ -535,15 +544,15 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
         const pos = typeof getPos === "function" ? getPos() : null;
 
         if (pos !== null && pos !== undefined) {
-          if (newCode === "" && currentCode !== "") {
+          if (newCode === "" && viewState.currentCode !== "") {
             // If user clears the code, delete the node
             editor
               .chain()
               .focus()
               .deleteRange({ from: pos, to: pos + node.nodeSize })
               .run();
-          } else if (newCode !== currentCode) {
-            currentCode = newCode;
+          } else if (newCode !== viewState.currentCode) {
+            viewState.currentCode = newCode;
             editor.chain().focus().updateAttributes("diagram", { code: newCode }).run();
           }
         }
@@ -551,7 +560,7 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
 
       // Event listeners
       const handleDomClick = (e: MouseEvent) => {
-        if (!isEditing && e.target === dom) {
+        if (!viewState.isEditing && e.target === dom) {
           e.preventDefault();
           e.stopPropagation();
           startEditing();
@@ -576,7 +585,7 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
       const handleTextareaKeydown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
           e.preventDefault();
-          editTextarea.value = currentCode;
+          editTextarea.value = viewState.currentCode;
           stopEditing();
         }
         // Allow Ctrl/Cmd + Enter to save
@@ -587,13 +596,15 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
       };
 
       // Debounce preview updates
-      let previewTimeout: ReturnType<typeof setTimeout> | null = null;
+      const debounceState: { previewTimeout: ReturnType<typeof setTimeout> | null } = {
+        previewTimeout: null,
+      };
       const handleTextareaInput = () => {
-        if (previewTimeout) {
-          clearTimeout(previewTimeout);
+        if (debounceState.previewTimeout) {
+          clearTimeout(debounceState.previewTimeout);
         }
-        previewTimeout = setTimeout(() => {
-          void renderDiagram(editTextarea.value, currentType, previewContainer);
+        debounceState.previewTimeout = setTimeout(() => {
+          void renderDiagram(editTextarea.value, viewState.currentType, previewContainer);
         }, 300);
       };
 
@@ -604,7 +615,7 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
       editTextarea.addEventListener("input", handleTextareaInput);
 
       // Initial render
-      void renderDiagram(currentCode, currentType, renderContainer);
+      void renderDiagram(viewState.currentCode, viewState.currentType, renderContainer);
 
       return {
         dom,
@@ -612,17 +623,17 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
           if (updatedNode.type.name !== "diagram") {
             return false;
           }
-          const typeChanged = updatedNode.attrs.type !== currentType;
-          const codeChanged = updatedNode.attrs.code !== currentCode;
+          const typeChanged = updatedNode.attrs.type !== viewState.currentType;
+          const codeChanged = updatedNode.attrs.code !== viewState.currentCode;
 
           if (typeChanged) {
-            currentType = updatedNode.attrs.type;
-            typeIndicator.textContent = getDiagramTypeName(currentType);
+            viewState.currentType = updatedNode.attrs.type;
+            typeIndicator.textContent = getDiagramTypeName(viewState.currentType);
           }
 
-          if (!isEditing && (codeChanged || typeChanged)) {
-            currentCode = updatedNode.attrs.code;
-            void renderDiagram(currentCode, currentType, renderContainer);
+          if (!viewState.isEditing && (codeChanged || typeChanged)) {
+            viewState.currentCode = updatedNode.attrs.code;
+            void renderDiagram(viewState.currentCode, viewState.currentType, renderContainer);
           }
 
           return true;
@@ -634,8 +645,8 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
           dom.classList.remove("vizel-diagram-selected");
         },
         destroy() {
-          if (previewTimeout) {
-            clearTimeout(previewTimeout);
+          if (debounceState.previewTimeout) {
+            clearTimeout(debounceState.previewTimeout);
           }
           dom.removeEventListener("click", handleDomClick);
           renderContainer.removeEventListener("click", handleRenderClick);

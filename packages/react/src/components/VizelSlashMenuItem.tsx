@@ -15,11 +15,12 @@ export interface VizelSlashMenuItemProps {
  */
 const renderHighlightedText = (text: string, matches?: [number, number][]): React.ReactNode => {
   const segments = splitVizelTextByMatches(text, matches);
-  // Use fragment with cumulative character position as unique key
-  let charPos = 0;
-  return segments.map((segment) => {
+  // Use fragment with cumulative character position as unique key. The
+  // cumulative offset is derived from a running prefix-sum over preceding
+  // segment lengths so the implementation stays free of mutable counters.
+  return segments.map((segment, i) => {
+    const charPos = segments.slice(0, i).reduce((sum, s) => sum + s.text.length, 0);
     const key = `${charPos}-${segment.highlight}`;
-    charPos += segment.text.length;
     return segment.highlight ? (
       <mark key={key} className="vizel-slash-menu-highlight">
         {segment.text}

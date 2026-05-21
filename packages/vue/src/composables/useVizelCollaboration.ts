@@ -85,8 +85,10 @@ export function useVizelCollaboration(
     error: null,
   });
 
-  let handlers: ReturnType<typeof createVizelCollaborationHandlers> | null = null;
-  let unsubscribe: (() => void) | null = null;
+  const collaborationState: {
+    handlers: ReturnType<typeof createVizelCollaborationHandlers> | null;
+    unsubscribe: (() => void) | null;
+  } = { handlers: null, unsubscribe: null };
 
   function handleStateChange(partial: Partial<VizelCollaborationState>) {
     if (partial.isConnected !== undefined) state.isConnected = partial.isConnected;
@@ -97,17 +99,21 @@ export function useVizelCollaboration(
 
   function setup() {
     cleanup();
-    handlers = createVizelCollaborationHandlers(getProvider, options, handleStateChange);
+    collaborationState.handlers = createVizelCollaborationHandlers(
+      getProvider,
+      options,
+      handleStateChange
+    );
     const provider = getProvider();
     if (provider && enabled) {
-      unsubscribe = handlers.subscribe();
+      collaborationState.unsubscribe = collaborationState.handlers.subscribe();
     }
   }
 
   function cleanup() {
-    unsubscribe?.();
-    unsubscribe = null;
-    handlers = null;
+    collaborationState.unsubscribe?.();
+    collaborationState.unsubscribe = null;
+    collaborationState.handlers = null;
   }
 
   // Single setup path: a `watch` with `immediate: true` fires once on mount
@@ -132,8 +138,8 @@ export function useVizelCollaboration(
     isSynced: computed(() => state.isSynced),
     peerCount: computed(() => state.peerCount),
     error: computed(() => state.error),
-    connect: () => handlers?.connect(),
-    disconnect: () => handlers?.disconnect(),
-    updateUser: (user) => handlers?.updateUser(user),
+    connect: () => collaborationState.handlers?.connect(),
+    disconnect: () => collaborationState.handlers?.disconnect(),
+    updateUser: (user) => collaborationState.handlers?.updateUser(user),
   };
 }

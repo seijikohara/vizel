@@ -43,7 +43,7 @@ export interface VizelEditorTransactionStore {
 export function createVizelEditorTransactionStore(
   getEditor: () => Editor | null | undefined
 ): VizelEditorTransactionStore {
-  let version = 0;
+  const state = { version: 0 };
 
   return {
     subscribe(onChange) {
@@ -54,7 +54,7 @@ export function createVizelEditorTransactionStore(
         };
       }
       const handler = () => {
-        version = (version + 1) | 0;
+        state.version = (state.version + 1) | 0;
         onChange();
       };
       editor.on("transaction", handler);
@@ -63,7 +63,7 @@ export function createVizelEditorTransactionStore(
       };
     },
     getVersion() {
-      return version;
+      return state.version;
     },
   };
 }

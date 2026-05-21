@@ -315,7 +315,7 @@ export type VizelIconRendererWithOptions = (
 ) => string;
 
 // Global icon renderer, injected by framework packages
-let iconRenderer: VizelIconRendererWithOptions | null = null;
+const iconRendererRef: { current: VizelIconRendererWithOptions | null } = { current: null };
 
 /**
  * Set the icon renderer function.
@@ -339,7 +339,7 @@ let iconRenderer: VizelIconRendererWithOptions | null = null;
  * ```
  */
 export function setVizelIconRenderer(renderer: VizelIconRendererWithOptions): void {
-  iconRenderer = renderer;
+  iconRendererRef.current = renderer;
 }
 
 /**
@@ -354,7 +354,8 @@ export function renderVizelIcon(
   name: VizelInternalIconName,
   options?: VizelIconRendererOptions
 ): string {
-  if (!iconRenderer) {
+  const renderer = iconRendererRef.current;
+  if (!renderer) {
     // Emit as warning so production stays silent under the default
     // `emitVizelError` fallback (warnings with no `onError` are silent),
     // while consumers wiring `onError` still surface the misconfiguration.
@@ -370,7 +371,7 @@ export function renderVizelIcon(
     );
     return "";
   }
-  return iconRenderer(name, options);
+  return renderer(name, options);
 }
 
 /**

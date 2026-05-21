@@ -45,10 +45,17 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
   }
 
   // Store references for onNodeChange and click handler
-  let dragHandleElement: HTMLElement | null = null;
-  let currentNode: PmNode | null = null;
-  let currentPos = 0;
-  let currentEditor: import("@tiptap/core").Editor | null = null;
+  const handleState: {
+    dragHandleElement: HTMLElement | null;
+    currentNode: PmNode | null;
+    currentPos: number;
+    currentEditor: import("@tiptap/core").Editor | null;
+  } = {
+    dragHandleElement: null,
+    currentNode: null,
+    currentPos: 0,
+    currentEditor: null,
+  };
 
   return DragHandle.configure({
     render() {
@@ -71,66 +78,75 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
       grip.appendChild(template.content);
       element.appendChild(grip);
 
-      // Click vs drag detection
-      let startX = 0;
-      let startY = 0;
-      let isDrag = false;
+      // Click vs drag detection (mutable across listener invocations).
+      const clickDetect = { startX: 0, startY: 0, isDrag: false };
 
       element.addEventListener("mousedown", (e: MouseEvent) => {
-        startX = e.clientX;
-        startY = e.clientY;
-        isDrag = false;
+        clickDetect.startX = e.clientX;
+        clickDetect.startY = e.clientY;
+        clickDetect.isDrag = false;
       });
 
       element.addEventListener("mousemove", (e: MouseEvent) => {
-        if (Math.abs(e.clientX - startX) + Math.abs(e.clientY - startY) > CLICK_DRAG_THRESHOLD) {
-          isDrag = true;
+        if (
+          Math.abs(e.clientX - clickDetect.startX) + Math.abs(e.clientY - clickDetect.startY) >
+          CLICK_DRAG_THRESHOLD
+        ) {
+          clickDetect.isDrag = true;
         }
       });
 
       element.addEventListener("mouseup", () => {
-        if (!isDrag && currentNode && currentEditor && dragHandleElement) {
-          const handleRect = dragHandleElement.getBoundingClientRect();
+        if (
+          !clickDetect.isDrag &&
+          handleState.currentNode &&
+          handleState.currentEditor &&
+          handleState.dragHandleElement
+        ) {
+          const handleRect = handleState.dragHandleElement.getBoundingClientRect();
           const detail: VizelBlockMenuOpenDetail = {
-            editor: currentEditor,
-            pos: currentPos,
-            node: currentNode,
+            editor: handleState.currentEditor,
+            pos: handleState.currentPos,
+            node: handleState.currentNode,
             handleRect,
           };
           document.dispatchEvent(new CustomEvent(VIZEL_BLOCK_MENU_EVENT, { detail }));
         }
       });
 
-      dragHandleElement = element;
+      handleState.dragHandleElement = element;
 
       return element;
     },
     onNodeChange({ node, editor, ...rest }) {
-      currentNode = node ?? null;
+      handleState.currentNode = node ?? null;
       // The drag-handle plugin passes pos at runtime but the public type omits it
-      currentPos = (rest as { pos?: number }).pos ?? 0;
-      currentEditor = editor;
+      handleState.currentPos = (rest as { pos?: number }).pos ?? 0;
+      handleState.currentEditor = editor;
 
       // Toggle visibility class based on whether a node is being targeted
-      if (dragHandleElement) {
+      if (handleState.dragHandleElement) {
         if (node) {
-          dragHandleElement.classList.add("is-visible");
+          handleState.dragHandleElement.classList.add("is-visible");
 
           // Add list-specific class for styling adjustments
           const isListContainer = LIST_CONTAINER_NODE_TYPES.has(node.type.name);
           const isListItem = LIST_ITEM_NODE_TYPES.has(node.type.name);
-          dragHandleElement.classList.toggle("is-list-target", isListContainer || isListItem);
+          handleState.dragHandleElement.classList.toggle(
+            "is-list-target",
+            isListContainer || isListItem
+          );
           // Bullet and ordered list items render their marker in the parent
           // list's padding area, which the default left placement of the
           // handle overlaps. Mark these items so CSS can shift the handle
           // further left past the marker. Task items render their checkbox
           // inside the li content and do not need the shift.
-          dragHandleElement.classList.toggle(
+          handleState.dragHandleElement.classList.toggle(
             "is-marker-list-target",
             node.type.name === "listItem"
           );
         } else {
-          dragHandleElement.classList.remove(
+          handleState.dragHandleElement.classList.remove(
             "is-visible",
             "is-list-target",
             "is-marker-list-target"
@@ -159,18 +175,21 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
       // and, when it is, uses the full selection as the dragged
       // payload — so the resulting drop moves every block in the range
       // together in a single transaction.
-      if (!currentEditor) return;
-      const rangeState = getVizelMultiBlockSelectionState(currentEditor.state);
+      if (!handleState.currentEditor) return;
+      const rangeState = getVizelMultiBlockSelectionState(handleState.currentEditor.state);
       if (!rangeState) return;
       // Only expand when the dragged block sits inside the multi-block
       // range. Dragging a block outside the range falls back to the
       // single-block move path.
-      if (currentPos < rangeState.from || currentPos >= rangeState.to) return;
-      const { doc, tr } = currentEditor.state;
+      if (handleState.currentPos < rangeState.from || handleState.currentPos >= rangeState.to)
+        return;
+      const { doc, tr } = handleState.currentEditor.state;
       try {
         const startPos = doc.resolve(rangeState.from);
         const endPos = doc.resolve(rangeState.to);
-        currentEditor.view.dispatch(tr.setSelection(new TextSelection(startPos, endPos)));
+        handleState.currentEditor.view.dispatch(
+          tr.setSelection(new TextSelection(startPos, endPos))
+        );
       } catch {
         // Resolving outside the document is a no-op; the single-block
         // path takes over.
@@ -185,7 +204,7 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
       // to a different node. Dispatch a synthetic mouseleave on the editor
       // view to force the plugin to reset `currentNode` so the next hover
       // re-triggers detection.
-      const view = currentEditor?.view;
+      const view = handleState.currentEditor?.view;
       if (!view) return;
       view.dom.dispatchEvent(new MouseEvent("mouseleave", { bubbles: false, cancelable: true }));
     },
@@ -265,27 +284,20 @@ function findPreviousSiblingInfo(
   const parentStart = resolvedPos.start(parentDepth);
   const parent = resolvedPos.parent;
 
-  // Find current node index by iterating through parent's children
-  let currentOffset = parentStart;
-  let currentIndex = -1;
+  // Compute cumulative offsets for each child index so we can find the
+  // matching index without mutable accumulators.
+  const childOffsets = Array.from({ length: parent.childCount + 1 }, (_, i) =>
+    Array.from({ length: i }, (_, j) => parent.child(j).nodeSize).reduce(
+      (sum, size) => sum + size,
+      parentStart
+    )
+  );
+  const currentIndex = childOffsets.indexOf(blockInfo.pos);
 
-  for (let i = 0; i < parent.childCount; i++) {
-    if (currentOffset === blockInfo.pos) {
-      currentIndex = i;
-      break;
-    }
-    currentOffset += parent.child(i).nodeSize;
-  }
-
-  // If current node is first child, no previous sibling
+  // If current node is first child or not found, no previous sibling
   if (currentIndex <= 0) return null;
 
-  // Calculate the position of the previous sibling
-  let prevPos = parentStart;
-  for (let i = 0; i < currentIndex - 1; i++) {
-    prevPos += parent.child(i).nodeSize;
-  }
-
+  const prevPos = childOffsets[currentIndex - 1] ?? parentStart;
   return { pos: prevPos, node: parent.child(currentIndex - 1) };
 }
 

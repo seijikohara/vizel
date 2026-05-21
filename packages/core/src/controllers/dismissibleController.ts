@@ -75,27 +75,27 @@ export function createVizelDismissibleController(
     }
   };
 
-  let isMounted = false;
+  const state = { isMounted: false };
 
   return {
     mount: (): void => {
       // SSR guard: skip DOM work when `document` is unavailable.
       if (typeof document === "undefined") return;
-      if (isMounted) return;
+      if (state.isMounted) return;
       document.addEventListener("mousedown", handleMouseDown);
       if (dismissOnEscape) {
         document.addEventListener("keydown", handleKeyDown);
       }
-      isMounted = true;
+      state.isMounted = true;
     },
     unmount: (): void => {
       if (typeof document === "undefined") return;
-      if (!isMounted) return;
+      if (!state.isMounted) return;
       document.removeEventListener("mousedown", handleMouseDown);
       if (dismissOnEscape) {
         document.removeEventListener("keydown", handleKeyDown);
       }
-      isMounted = false;
+      state.isMounted = false;
     },
   };
 }

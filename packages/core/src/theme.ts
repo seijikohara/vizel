@@ -190,23 +190,26 @@ export function createVizelSystemThemeListener(
     callback(event.matches ? "dark" : "light");
   };
 
-  let mediaQuery: MediaQueryList | null = null;
-  let isMounted = false;
+  const state: { mediaQuery: MediaQueryList | null; isMounted: boolean } = {
+    mediaQuery: null,
+    isMounted: false,
+  };
 
   return {
     mount: (): void => {
       if (typeof window === "undefined") return;
-      if (isMounted) return;
-      mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      if (state.isMounted) return;
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
       mediaQuery.addEventListener("change", handleChange);
-      isMounted = true;
+      state.mediaQuery = mediaQuery;
+      state.isMounted = true;
     },
     unmount: (): void => {
       if (typeof window === "undefined") return;
-      if (!(isMounted && mediaQuery)) return;
-      mediaQuery.removeEventListener("change", handleChange);
-      mediaQuery = null;
-      isMounted = false;
+      if (!(state.isMounted && state.mediaQuery)) return;
+      state.mediaQuery.removeEventListener("change", handleChange);
+      state.mediaQuery = null;
+      state.isMounted = false;
     },
   };
 }

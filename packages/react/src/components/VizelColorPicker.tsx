@@ -117,48 +117,35 @@ export function VizelColorPicker({
       const totalColors = allColors.length;
       if (totalColors === 0) return;
 
-      let newIndex = currentIndex;
-      let handled = false;
-
-      switch (e.key) {
-        case "ArrowRight":
-          newIndex = (currentIndex + 1) % totalColors;
-          handled = true;
-          break;
-        case "ArrowLeft":
-          newIndex = (currentIndex - 1 + totalColors) % totalColors;
-          handled = true;
-          break;
-        case "ArrowDown":
-          newIndex = Math.min(currentIndex + GRID_COLUMNS, totalColors - 1);
-          handled = true;
-          break;
-        case "ArrowUp":
-          newIndex = Math.max(currentIndex - GRID_COLUMNS, 0);
-          handled = true;
-          break;
-        case "Home":
-          newIndex = 0;
-          handled = true;
-          break;
-        case "End":
-          newIndex = totalColors - 1;
-          handled = true;
-          break;
-        case "Enter":
-        case " ": {
-          e.preventDefault();
-          const selectedColor = allColors[currentIndex];
-          if (selectedColor) {
-            handleSelect(selectedColor);
-          }
-          return;
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        const selectedColor = allColors[currentIndex];
+        if (selectedColor) {
+          handleSelect(selectedColor);
         }
-        default:
-          break;
+        return;
       }
 
-      if (handled) {
+      const newIndex = ((): number | null => {
+        switch (e.key) {
+          case "ArrowRight":
+            return (currentIndex + 1) % totalColors;
+          case "ArrowLeft":
+            return (currentIndex - 1 + totalColors) % totalColors;
+          case "ArrowDown":
+            return Math.min(currentIndex + GRID_COLUMNS, totalColors - 1);
+          case "ArrowUp":
+            return Math.max(currentIndex - GRID_COLUMNS, 0);
+          case "Home":
+            return 0;
+          case "End":
+            return totalColors - 1;
+          default:
+            return null;
+        }
+      })();
+
+      if (newIndex !== null) {
         e.preventDefault();
         setFocusedIndex(newIndex);
         swatchRefs.current[newIndex]?.focus();

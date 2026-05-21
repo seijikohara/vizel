@@ -29,18 +29,18 @@ export function useVizelState(getEditor: () => Editor | null | undefined): Compu
   // mutate the tick from the outside. The shape mirrors the React hook's
   // `number` return and the Svelte rune's `{ readonly version }` getter.
   const updateCount = ref(0);
-  let unsubscribe: (() => void) | null = null;
+  const subscription: { unsubscribe: (() => void) | null } = { unsubscribe: null };
 
   watch(
     getEditor,
     (editor) => {
-      unsubscribe?.();
+      subscription.unsubscribe?.();
       if (!editor) {
-        unsubscribe = null;
+        subscription.unsubscribe = null;
         return;
       }
       const store = createVizelEditorTransactionStore(() => editor);
-      unsubscribe = store.subscribe(() => {
+      subscription.unsubscribe = store.subscribe(() => {
         updateCount.value = store.getVersion();
       });
     },
@@ -48,8 +48,8 @@ export function useVizelState(getEditor: () => Editor | null | undefined): Compu
   );
 
   onBeforeUnmount(() => {
-    unsubscribe?.();
-    unsubscribe = null;
+    subscription.unsubscribe?.();
+    subscription.unsubscribe = null;
   });
 
   return computed(() => updateCount.value);

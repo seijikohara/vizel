@@ -48,33 +48,23 @@ export function formatVizelShortcut(shortcut: string): string {
 
   if (isMac) {
     // macOS: use symbols, modifiers first in standard Apple order (⌃⌥⇧⌘)
-    const modifiers: string[] = [];
-    let key = "";
-
-    for (const part of parts) {
-      switch (part) {
-        case "Mod":
-          modifiers.push("⌘");
-          break;
-        case "Shift":
-          modifiers.push("⇧");
-          break;
-        case "Alt":
-          modifiers.push("⌥");
-          break;
-        case "Ctrl":
-          modifiers.push("⌃");
-          break;
-        default:
-          key = part;
-      }
-    }
+    const modifierSymbols: Record<string, string> = {
+      Mod: "⌘",
+      Shift: "⇧",
+      Alt: "⌥",
+      Ctrl: "⌃",
+    };
+    const modifierSet = new Set(Object.keys(modifierSymbols));
+    const modifiers = parts
+      .filter((part) => modifierSet.has(part))
+      .map((part) => modifierSymbols[part] ?? part);
+    const key = parts.findLast((part) => !modifierSet.has(part)) ?? "";
 
     // Apple standard modifier order: ⌃ ⌥ ⇧ ⌘
     const order = ["⌃", "⌥", "⇧", "⌘"];
-    modifiers.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+    const orderedModifiers = [...modifiers].sort((a, b) => order.indexOf(a) - order.indexOf(b));
 
-    return modifiers.join("") + key;
+    return orderedModifiers.join("") + key;
   }
 
   // Windows/Linux: use text labels with + separator

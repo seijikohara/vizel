@@ -69,7 +69,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
   const editor = shallowRef<Editor | null>(null);
 
   // Handle vizel:upload-image custom event from slash command
-  let cleanupHandler: (() => void) | null = null;
+  const cleanup: { handler: (() => void) | null } = { handler: null };
 
   onMounted(() => {
     // Run async editor creation inside an IIFE so a throw becomes a quiet
@@ -87,7 +87,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
 
         editor.value = result.editor;
 
-        cleanupHandler = registerVizelUploadEventHandler({
+        cleanup.handler = registerVizelUploadEventHandler({
           getEditor: () => editor.value,
           getImageOptions: () => imageOptions,
         });
@@ -126,7 +126,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
   );
 
   onBeforeUnmount(() => {
-    cleanupHandler?.();
+    cleanup.handler?.();
     editor.value?.destroy();
   });
 

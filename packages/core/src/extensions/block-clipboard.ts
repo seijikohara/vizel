@@ -168,22 +168,29 @@ function serializeSliceToMarkdown(editor: EditorWithMarkdown, slice: Slice): str
  * can `preventDefault()` the paste event.
  */
 function insertSliceFromJson(view: EditorView, raw: string): boolean {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return false;
-  }
+  const parsed = tryParseJson(raw);
   if (parsed === null || typeof parsed !== "object") return false;
-  let slice: Slice;
-  try {
-    slice = Slice.fromJSON(view.state.schema, parsed);
-  } catch {
-    return false;
-  }
+  const slice = tryBuildSlice(view.state.schema, parsed);
+  if (!slice) return false;
   const tr = view.state.tr.replaceSelection(slice).scrollIntoView();
   view.dispatch(tr);
   return true;
+}
+
+function tryParseJson(raw: string): unknown {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function tryBuildSlice(schema: EditorView["state"]["schema"], parsed: unknown): Slice | null {
+  try {
+    return Slice.fromJSON(schema, parsed);
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -192,6 +199,25 @@ function insertSliceFromJson(view: EditorView, raw: string): boolean {
  * document drops content (lighter than a trivial source string),
  * emits a `MARKDOWN_LOSSY` warning so consumers can surface it.
  */
+function tryParseMarkdown(
+  editor: EditorWithMarkdown,
+  markdown: string,
+  onError: ((err: VizelError) => void) | undefined
+): JSONContent | null {
+  try {
+    return editor.markdown.parse(markdown);
+  } catch (cause) {
+    emitVizelError(
+      new VizelError("INVALID_MARKDOWN", "Failed to parse pasted Markdown", {
+        cause,
+        context: { length: markdown.length },
+      }),
+      onError
+    );
+    return null;
+  }
+}
+
 function insertMarkdown(
   editor: Editor,
   markdown: string,
@@ -201,19 +227,8 @@ function insertMarkdown(
   const trimmed = markdown.trim();
   if (trimmed.length === 0) return false;
 
-  let parsed: JSONContent;
-  try {
-    parsed = editor.markdown.parse(markdown);
-  } catch (cause) {
-    emitVizelError(
-      new VizelError("INVALID_MARKDOWN", "Failed to parse pasted Markdown", {
-        cause,
-        context: { length: markdown.length },
-      }),
-      onError
-    );
-    return false;
-  }
+  const parsed = tryParseMarkdown(editor, markdown, onError);
+  if (parsed === null) return false;
 
   const inserted = editor.commands.insertContent(parsed);
   if (!inserted) return false;
@@ -257,17 +272,12 @@ function insertMarkdown(
  */
 function approximateRenderedLength(content: unknown): number {
   if (content === null || typeof content !== "object") return 0;
-  let total = 0;
   const node = content as { text?: unknown; content?: unknown };
-  if (typeof node.text === "string") {
-    total += node.text.length;
-  }
-  if (Array.isArray(node.content)) {
-    for (const child of node.content) {
-      total += approximateRenderedLength(child);
-    }
-  }
-  return total;
+  const textLength = typeof node.text === "string" ? node.text.length : 0;
+  const childrenLength = Array.isArray(node.content)
+    ? node.content.reduce<number>((sum, child) => sum + approximateRenderedLength(child), 0)
+    : 0;
+  return textLength + childrenLength;
 }
 
 /**

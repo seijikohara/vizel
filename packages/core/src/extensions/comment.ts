@@ -139,13 +139,12 @@ export const VizelCommentMark = Mark.create<VizelCommentMarkOptions>({
           const positions = findCommentMarkPositions(state, commentId, markType);
           if (positions.length === 0) return false;
 
-          let tr = state.tr;
-          for (let i = positions.length - 1; i >= 0; i -= 1) {
-            const pos = positions[i];
-            if (pos) {
-              tr = tr.removeMark(pos.from, pos.to, markType.create({ commentId }));
-            }
-          }
+          const tr = [...positions]
+            .reverse()
+            .reduce(
+              (acc, pos) => acc.removeMark(pos.from, pos.to, markType.create({ commentId })),
+              state.tr
+            );
 
           dispatch(tr);
           return true;

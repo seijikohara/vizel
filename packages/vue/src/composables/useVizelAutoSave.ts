@@ -69,8 +69,10 @@ export function useVizelAutoSave(
     error: null,
   });
 
-  let currentEditor: Editor | null = null;
-  let handlers: ReturnType<typeof createVizelAutoSaveHandlers> | null = null;
+  const subscriptionState: {
+    currentEditor: Editor | null;
+    handlers: ReturnType<typeof createVizelAutoSaveHandlers> | null;
+  } = { currentEditor: null, handlers: null };
 
   const handleStateChange = (partial: Partial<VizelAutoSaveState>) => {
     if (partial.status !== undefined) state.status = partial.status;
@@ -84,21 +86,25 @@ export function useVizelAutoSave(
     const editor = getEditor();
 
     // Unsubscribe from previous editor
-    if (currentEditor && handlers) {
-      currentEditor.off("update", handlers.handleUpdate);
-      handlers.cancel();
+    if (subscriptionState.currentEditor && subscriptionState.handlers) {
+      subscriptionState.currentEditor.off("update", subscriptionState.handlers.handleUpdate);
+      subscriptionState.handlers.cancel();
     }
 
-    currentEditor = editor ?? null;
+    subscriptionState.currentEditor = editor ?? null;
 
-    if (!(currentEditor && opts.enabled)) {
-      handlers = null;
+    if (!(subscriptionState.currentEditor && opts.enabled)) {
+      subscriptionState.handlers = null;
       return;
     }
 
-    handlers = createVizelAutoSaveHandlers(() => currentEditor, opts, handleStateChange);
+    subscriptionState.handlers = createVizelAutoSaveHandlers(
+      () => subscriptionState.currentEditor,
+      opts,
+      handleStateChange
+    );
 
-    currentEditor.on("update", handlers.handleUpdate);
+    subscriptionState.currentEditor.on("update", subscriptionState.handlers.handleUpdate);
   };
 
   // Single setup path: a `watch` with `immediate: true` fires once on mount
@@ -115,18 +121,18 @@ export function useVizelAutoSave(
   );
 
   onBeforeUnmount(() => {
-    if (currentEditor && handlers) {
-      currentEditor.off("update", handlers.handleUpdate);
-      handlers.cancel();
+    if (subscriptionState.currentEditor && subscriptionState.handlers) {
+      subscriptionState.currentEditor.off("update", subscriptionState.handlers.handleUpdate);
+      subscriptionState.handlers.cancel();
     }
   });
 
   async function save(): Promise<void> {
-    await handlers?.saveNow();
+    await subscriptionState.handlers?.saveNow();
   }
 
   async function restore(): Promise<JSONContent | null> {
-    return (await handlers?.restore()) ?? null;
+    return (await subscriptionState.handlers?.restore()) ?? null;
   }
 
   return {

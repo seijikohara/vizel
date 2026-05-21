@@ -92,18 +92,19 @@ export function useVizelMarkdown(
   const markdown = shallowRef(initialValue ?? "");
   const pendingState = shallowRef(false);
 
-  // Create sync handlers
-  let handlers: VizelMarkdownSyncHandlers | null = null;
+  // Create sync handlers — held in a ref-object so the lazy initializer can
+  // memoize without a mutable let.
+  const handlersRef: { current: VizelMarkdownSyncHandlers | null } = { current: null };
 
   const initHandlers = (): VizelMarkdownSyncHandlers => {
-    if (!handlers) {
-      handlers = createVizelMarkdownSyncHandlers(syncOptions);
+    if (!handlersRef.current) {
+      handlersRef.current = createVizelMarkdownSyncHandlers(syncOptions);
     }
-    return handlers;
+    return handlersRef.current;
   };
 
-  // Track if initial value has been set
-  let initialSet = false;
+  // Track if initial value has been set across watcher re-runs.
+  const initFlag = { value: false };
 
   // Watch for editor availability
   watch(
@@ -114,7 +115,7 @@ export function useVizelMarkdown(
       const h = initHandlers();
 
       // Initial value setup (only once)
-      if (!initialSet) {
+      if (!initFlag.value) {
         if (initialValue === undefined) {
           // Get initial markdown from editor
           markdown.value = getVizelMarkdown(editor);
@@ -122,30 +123,30 @@ export function useVizelMarkdown(
           h.setMarkdown(editor, initialValue);
           markdown.value = initialValue;
         }
-        initialSet = true;
+        initFlag.value = true;
       }
 
       // Subscribe to editor updates (every time editor changes)
-      let rafId: number | null = null;
+      const rafState: { id: number | null } = { id: null };
 
       const handleUpdate = () => {
         h.handleUpdate(editor);
         pendingState.value = h.isPending();
 
         // Cancel any pending rAF before scheduling a new one
-        if (rafId !== null) cancelAnimationFrame(rafId);
+        if (rafState.id !== null) cancelAnimationFrame(rafState.id);
 
         // Schedule state update after debounce
         const checkPending = () => {
           if (h.isPending()) {
-            rafId = requestAnimationFrame(checkPending);
+            rafState.id = requestAnimationFrame(checkPending);
           } else {
-            rafId = null;
+            rafState.id = null;
             markdown.value = h.getMarkdown();
             pendingState.value = false;
           }
         };
-        rafId = requestAnimationFrame(checkPending);
+        rafState.id = requestAnimationFrame(checkPending);
       };
 
       editor.on("update", handleUpdate);
@@ -160,7 +161,7 @@ export function useVizelMarkdown(
           pendingState.value = false;
         }
         editor.off("update", handleUpdate);
-        if (rafId !== null) cancelAnimationFrame(rafId);
+        if (rafState.id !== null) cancelAnimationFrame(rafState.id);
       });
     },
     { immediate: true }
@@ -168,7 +169,7 @@ export function useVizelMarkdown(
 
   // Cleanup on unmount
   onBeforeUnmount(() => {
-    handlers?.destroy();
+    handlersRef.current?.destroy();
   });
 
   const setMarkdown = (newMarkdown: string) => {

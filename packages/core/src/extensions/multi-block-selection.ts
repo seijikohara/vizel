@@ -82,9 +82,7 @@ function computeMultiBlockSelectionState(
   // Walk the doc's top-level children and collect blocks that overlap
   // the selection range. Top-level blocks live at depth 1 in the
   // ProseMirror tree (the doc node itself is depth 0).
-  const blockPositions: number[] = [];
-  let rangeFrom = -1;
-  let rangeTo = -1;
+  const overlappingBlocks: Array<{ start: number; end: number }> = [];
 
   doc.forEach((child, offset) => {
     if (!child.isBlock) return;
@@ -99,13 +97,15 @@ function computeMultiBlockSelectionState(
     const overlaps = blockStart < to && blockEnd > from;
     if (!overlaps) return;
 
-    blockPositions.push(blockStart);
-    if (rangeFrom === -1) rangeFrom = blockStart;
-    rangeTo = blockEnd;
+    overlappingBlocks.push({ start: blockStart, end: blockEnd });
   });
 
-  if (blockPositions.length < 2) return null;
-  return { from: rangeFrom, to: rangeTo, blockPositions };
+  if (overlappingBlocks.length < 2) return null;
+  const blockPositions = overlappingBlocks.map((b) => b.start);
+  const first = overlappingBlocks[0];
+  const last = overlappingBlocks.at(-1);
+  if (!(first && last)) return null;
+  return { from: first.start, to: last.end, blockPositions };
 }
 
 /**
@@ -186,16 +186,15 @@ function applyListIndentToRange(
   direction: "sink" | "lift"
 ): boolean {
   const positions = [...rangeState.blockPositions].reverse();
-  let applied = false;
 
-  for (const pos of positions) {
+  return positions.reduce<boolean>((applied, pos) => {
     const node = editor.state.doc.nodeAt(pos);
-    if (!node) continue;
+    if (!node) return applied;
     // Only act on list-item-like nodes — Tab on a paragraph does
     // nothing in Tiptap defaults, so we should not invent behavior for
     // those cases.
     const typeName = node.type.name;
-    if (typeName !== "listItem" && typeName !== "taskItem") continue;
+    if (typeName !== "listItem" && typeName !== "taskItem") return applied;
 
     // Select the list item by its node position so the Tiptap command
     // operates against exactly that block.
@@ -203,10 +202,8 @@ function applyListIndentToRange(
       .chain()
       .setNodeSelection(pos)
       [direction === "sink" ? "sinkListItem" : "liftListItem"](typeName);
-    if (chain.run()) applied = true;
-  }
-
-  return applied;
+    return chain.run() || applied;
+  }, false);
 }
 
 /**

@@ -187,20 +187,20 @@ export function createVizelVersionHistoryHandlers(
   const opts = { ...VIZEL_DEFAULT_VERSION_HISTORY_OPTIONS, ...options };
   const storageBackend = getVizelVersionStorageBackend(opts.storage, opts.key);
 
-  let cachedSnapshots: VizelVersionSnapshot[] = [];
+  const cache: { snapshots: VizelVersionSnapshot[] } = { snapshots: [] };
 
   const loadVersions = async (): Promise<VizelVersionSnapshot[]> => {
     try {
       onStateChange({ isLoading: true });
       const snapshots = await storageBackend.load();
-      cachedSnapshots = snapshots;
+      cache.snapshots = snapshots;
       onStateChange({ snapshots, isLoading: false, error: null });
       return snapshots;
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e));
       onStateChange({ isLoading: false, error });
       opts.onError?.(error);
-      return cachedSnapshots;
+      return cache.snapshots;
     }
   };
 
@@ -225,7 +225,7 @@ export function createVizelVersionHistoryHandlers(
       const updated = [snapshot, ...existing].slice(0, opts.maxVersions);
 
       await storageBackend.save(updated);
-      cachedSnapshots = updated;
+      cache.snapshots = updated;
       onStateChange({ snapshots: updated, error: null });
 
       opts.onSave?.(snapshot);
@@ -243,7 +243,7 @@ export function createVizelVersionHistoryHandlers(
     if (!editor) return false;
 
     try {
-      const snapshots = cachedSnapshots.length > 0 ? cachedSnapshots : await storageBackend.load();
+      const snapshots = cache.snapshots.length > 0 ? cache.snapshots : await storageBackend.load();
       const snapshot = snapshots.find((s) => s.id === versionId);
       if (!snapshot) return false;
 
@@ -260,10 +260,10 @@ export function createVizelVersionHistoryHandlers(
 
   const deleteVersion = async (versionId: string): Promise<void> => {
     try {
-      const snapshots = cachedSnapshots.length > 0 ? cachedSnapshots : await storageBackend.load();
+      const snapshots = cache.snapshots.length > 0 ? cache.snapshots : await storageBackend.load();
       const updated = snapshots.filter((s) => s.id !== versionId);
       await storageBackend.save(updated);
-      cachedSnapshots = updated;
+      cache.snapshots = updated;
       onStateChange({ snapshots: updated, error: null });
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e));
@@ -275,7 +275,7 @@ export function createVizelVersionHistoryHandlers(
   const clearVersions = async (): Promise<void> => {
     try {
       await storageBackend.save([]);
-      cachedSnapshots = [];
+      cache.snapshots = [];
       onStateChange({ snapshots: [], error: null });
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e));

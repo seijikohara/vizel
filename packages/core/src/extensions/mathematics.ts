@@ -169,14 +169,12 @@ function readMathLine(state: StateBlock, lineIndex: number): string {
 }
 
 function findMathBlockClose(state: StateBlock, startLine: number, endLine: number): number {
-  let nextLine = startLine + 1;
-  while (nextLine < endLine) {
-    if (readMathLine(state, nextLine).trim() === "$$") {
-      return nextLine;
-    }
-    nextLine++;
-  }
-  return -1;
+  const fromLine = startLine + 1;
+  const candidate = Array.from(
+    { length: Math.max(0, endLine - fromLine) },
+    (_, i) => fromLine + i
+  ).find((line) => readMathLine(state, line).trim() === "$$");
+  return candidate ?? -1;
 }
 
 function registerMathBlockRule(md: MarkdownIt): void {
@@ -295,7 +293,7 @@ export const VizelMathInline = Node.create<VizelMathematicsOptions>({
       editInput.style.display = "none";
       dom.appendChild(editInput);
 
-      let isEditing = false;
+      const viewState = { isEditing: false };
       const katexOptions = this.options.katexOptions;
 
       const renderMath = (latex: string) => {
@@ -307,7 +305,7 @@ export const VizelMathInline = Node.create<VizelMathematicsOptions>({
 
       const startEditing = () => {
         if (!editor.isEditable) return;
-        isEditing = true;
+        viewState.isEditing = true;
         dom.classList.add("vizel-math-editing");
         renderContainer.style.display = "none";
         editInput.style.display = "inline";
@@ -317,8 +315,8 @@ export const VizelMathInline = Node.create<VizelMathematicsOptions>({
       };
 
       const stopEditing = () => {
-        if (!isEditing) return;
-        isEditing = false;
+        if (!viewState.isEditing) return;
+        viewState.isEditing = false;
         dom.classList.remove("vizel-math-editing");
         renderContainer.style.display = "";
         editInput.style.display = "none";
@@ -342,7 +340,7 @@ export const VizelMathInline = Node.create<VizelMathematicsOptions>({
 
       // Event listeners - store references for proper cleanup
       const handleDomClick = (e: MouseEvent) => {
-        if (!isEditing) {
+        if (!viewState.isEditing) {
           e.preventDefault();
           e.stopPropagation();
           startEditing();
@@ -375,7 +373,7 @@ export const VizelMathInline = Node.create<VizelMathematicsOptions>({
           if (updatedNode.type.name !== "mathInline") {
             return false;
           }
-          if (!isEditing) {
+          if (!viewState.isEditing) {
             renderMath(updatedNode.attrs.latex);
           }
           return true;
@@ -517,7 +515,7 @@ export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
 
       dom.appendChild(editContainer);
 
-      let isEditing = false;
+      const viewState = { isEditing: false };
       const katexBlockOptions = this.options.katexOptions;
 
       const renderMath = (latex: string) => {
@@ -536,7 +534,7 @@ export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
 
       const startEditing = () => {
         if (!editor.isEditable) return;
-        isEditing = true;
+        viewState.isEditing = true;
         dom.classList.add("vizel-math-editing");
         renderContainer.style.display = "none";
         editContainer.style.display = "";
@@ -546,8 +544,8 @@ export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
       };
 
       const stopEditing = () => {
-        if (!isEditing) return;
-        isEditing = false;
+        if (!viewState.isEditing) return;
+        viewState.isEditing = false;
         dom.classList.remove("vizel-math-editing");
         renderContainer.style.display = "";
         editContainer.style.display = "none";
@@ -571,7 +569,7 @@ export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
 
       // Event listeners (named handlers for proper cleanup in destroy())
       const handleDomClick = (e: MouseEvent) => {
-        if (!isEditing && e.target === dom) {
+        if (!viewState.isEditing && e.target === dom) {
           e.preventDefault();
           e.stopPropagation();
           startEditing();
@@ -625,7 +623,7 @@ export const VizelMathBlock = Node.create<VizelMathematicsOptions>({
           if (updatedNode.type.name !== "mathBlock") {
             return false;
           }
-          if (!isEditing) {
+          if (!viewState.isEditing) {
             renderMath(updatedNode.attrs.latex);
           }
           return true;

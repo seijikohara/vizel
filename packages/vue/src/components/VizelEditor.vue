@@ -28,23 +28,23 @@ defineExpose<VizelExposed>({
   },
 });
 
-let dispose: (() => void) | null = null;
+const mountState: { dispose: (() => void) | null } = { dispose: null };
 
 watch(
   () => [resolvedEditor.value, containerRef.value] as const,
   ([editorValue, container]) => {
-    dispose?.();
-    dispose = null;
+    mountState.dispose?.();
+    mountState.dispose = null;
     if (editorValue && container) {
-      dispose = mountVizelEditorView(editorValue, container);
+      mountState.dispose = mountVizelEditorView(editorValue, container);
     }
   },
   { immediate: true }
 );
 
 onBeforeUnmount(() => {
-  dispose?.();
-  dispose = null;
+  mountState.dispose?.();
+  mountState.dispose = null;
 });
 </script>
 

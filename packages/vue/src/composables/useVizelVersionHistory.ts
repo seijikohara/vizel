@@ -65,7 +65,9 @@ export function useVizelVersionHistory(
     error: null,
   });
 
-  let handlers: ReturnType<typeof createVizelVersionHistoryHandlers> | null = null;
+  const handlerRef: { handlers: ReturnType<typeof createVizelVersionHistoryHandlers> | null } = {
+    handlers: null,
+  };
 
   function handleStateChange(partial: Partial<VizelVersionHistoryState>) {
     if (partial.snapshots !== undefined) state.snapshots = partial.snapshots;
@@ -74,7 +76,8 @@ export function useVizelVersionHistory(
   }
 
   function setup() {
-    handlers = createVizelVersionHistoryHandlers(getEditor, opts, handleStateChange);
+    const handlers = createVizelVersionHistoryHandlers(getEditor, opts, handleStateChange);
+    handlerRef.handlers = handlers;
     const editor = getEditor();
     if (editor && opts.enabled) {
       void handlers.loadVersions();
@@ -95,30 +98,30 @@ export function useVizelVersionHistory(
   );
 
   onBeforeUnmount(() => {
-    handlers = null;
+    handlerRef.handlers = null;
   });
 
   async function saveVersion(
     description?: string,
     author?: string
   ): Promise<VizelVersionSnapshot | null> {
-    return (await handlers?.saveVersion(description, author)) ?? null;
+    return (await handlerRef.handlers?.saveVersion(description, author)) ?? null;
   }
 
   async function restoreVersion(versionId: string): Promise<boolean> {
-    return (await handlers?.restoreVersion(versionId)) ?? false;
+    return (await handlerRef.handlers?.restoreVersion(versionId)) ?? false;
   }
 
   async function loadVersions(): Promise<VizelVersionSnapshot[]> {
-    return (await handlers?.loadVersions()) ?? [];
+    return (await handlerRef.handlers?.loadVersions()) ?? [];
   }
 
   async function deleteVersion(versionId: string): Promise<void> {
-    await handlers?.deleteVersion(versionId);
+    await handlerRef.handlers?.deleteVersion(versionId);
   }
 
   async function clearVersions(): Promise<void> {
-    await handlers?.clearVersions();
+    await handlerRef.handlers?.clearVersions();
   }
 
   return {

@@ -39,26 +39,16 @@ export function clampMenuPosition(
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  let x = anchorRect.left;
-  let y = anchorRect.bottom + gap;
+  const rawX = anchorRect.left;
+  const rawY = anchorRect.bottom + gap;
 
-  // Clamp horizontal: prevent overflow on right edge
-  if (x + menuWidth > vw - padding) {
-    x = vw - menuWidth - padding;
-  }
-  // Clamp horizontal: prevent overflow on left edge
-  if (x < padding) {
-    x = padding;
-  }
+  // Clamp horizontal: prevent overflow on right edge first, then left edge
+  const clampedRight = rawX + menuWidth > vw - padding ? vw - menuWidth - padding : rawX;
+  const x = clampedRight < padding ? padding : clampedRight;
 
-  // Clamp vertical: if menu overflows bottom, flip above anchor
-  if (y + menuHeight > vh - padding) {
-    y = anchorRect.top - menuHeight - gap;
-  }
-  // Clamp vertical: prevent overflow on top edge
-  if (y < padding) {
-    y = padding;
-  }
+  // Clamp vertical: flip above anchor if overflow, then clamp top edge
+  const flippedY = rawY + menuHeight > vh - padding ? anchorRect.top - menuHeight - gap : rawY;
+  const y = flippedY < padding ? padding : flippedY;
 
   return { x, y };
 }
