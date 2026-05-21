@@ -33,15 +33,12 @@ export type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 // =============================================================================
 export {
   createVizelAutoSaveHandlers,
-  createVizelRelativeTimeTicker,
   formatVizelRelativeTime,
   getVizelStorageBackend,
   resolveVizelSaveIndicatorView,
   VIZEL_DEFAULT_AUTO_SAVE_OPTIONS,
   type VizelAutoSaveOptions,
   type VizelAutoSaveState,
-  type VizelRelativeTimeTicker,
-  type VizelRelativeTimeTickerOptions,
   type VizelSaveIndicatorView,
   type VizelSaveStatus,
   type VizelStorageBackend,
@@ -162,6 +159,8 @@ export {
   createVizelGridController,
   createVizelListboxController,
   createVizelPopoverController,
+  createVizelRelativeTimeTicker,
+  createVizelSystemThemeListener,
   type VizelDismissibleController,
   type VizelDismissibleControllerOptions,
   type VizelEditorEventName,
@@ -174,6 +173,9 @@ export {
   type VizelPopoverController,
   type VizelPopoverControllerOptions,
   type VizelPopoverPlacement,
+  type VizelRelativeTimeTicker,
+  type VizelRelativeTimeTickerOptions,
+  type VizelSystemThemeListener,
 } from "./controllers/index.ts";
 // =============================================================================
 // Extensions
@@ -454,7 +456,6 @@ export {
 // =============================================================================
 export {
   applyVizelTheme,
-  createVizelSystemThemeListener,
   getStoredVizelTheme,
   getVizelSystemTheme,
   getVizelThemeInitScript,
@@ -464,7 +465,6 @@ export {
   VIZEL_DEFAULT_THEME_STORAGE_KEY,
   VIZEL_THEME_DATA_ATTRIBUTE,
   type VizelResolvedTheme,
-  type VizelSystemThemeListener,
   type VizelTheme,
   type VizelThemeProviderOptions,
   type VizelThemeState,

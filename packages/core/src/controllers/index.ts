@@ -25,6 +25,15 @@ export {
   type VizelPopoverPlacement,
 } from "./popoverController.ts";
 export {
+  createVizelRelativeTimeTicker,
+  type VizelRelativeTimeTicker,
+  type VizelRelativeTimeTickerOptions,
+} from "./relativeTimeTicker.ts";
+export {
+  createVizelSystemThemeListener,
+  type VizelSystemThemeListener,
+} from "./systemThemeListener.ts";
+export {
   createVizelEditorTransactionStore,
   type VizelEditorTransactionStore,
 } from "./transactionStore.ts";
