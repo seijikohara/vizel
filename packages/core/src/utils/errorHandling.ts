@@ -18,6 +18,7 @@ export type VizelErrorCode =
   | "MISSING_CONTEXT"
   | "INVALID_LOCALE"
   | "SSR_NOT_SUPPORTED"
+  | "SSR_DOM_SHIM_MISSING"
   | "MISSING_OPTIONAL_DEP"
   // Input errors (runtime data issues — emitted via onError).
   | "INVALID_MARKDOWN"
