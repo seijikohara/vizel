@@ -104,6 +104,13 @@ export {
   type VizelNodeSelectorProps,
 } from "./VizelNodeSelector.svelte";
 // ============================================================================
+// Vizel Outline component
+// ============================================================================
+export {
+  default as VizelOutline,
+  type VizelOutlineProps,
+} from "./VizelOutline.svelte";
+// ============================================================================
 // Vizel Portal component
 // ============================================================================
 export {

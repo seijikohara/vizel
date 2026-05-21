@@ -145,6 +145,10 @@ export const vizelEnLocale = {
     currentBlockType: "Current block type: {type}",
   },
 
+  outline: {
+    ariaLabel: "Document outline",
+  },
+
   relativeTime: {
     justNow: "Just now",
     secondsAgo: "{n}s ago",

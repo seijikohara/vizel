@@ -60,6 +60,7 @@ export {
   buildVizelMentionMenuSpec,
   buildVizelMinimapSpec,
   buildVizelNodeSelectorSpec,
+  buildVizelOutlineSpec,
   buildVizelSlashMenuSpec,
   buildVizelSlashMenuSpecFromCommands,
   buildVizelToolbarDropdownSpec,
@@ -96,6 +97,8 @@ export {
   type VizelNodeSelectorItemView,
   type VizelNodeSelectorSpec,
   type VizelNodeSelectorTriggerSpec,
+  type VizelOutlineItemSpec,
+  type VizelOutlineSpec,
   type VizelPopoverBodySpec,
   type VizelPopoverSpec,
   type VizelPopoverTriggerSpec,
@@ -514,6 +517,8 @@ export {
   // Keyboard shortcut utilities
   formatVizelShortcut,
   formatVizelTooltip,
+  // Block path utility
+  getVizelBlockPath,
   getVizelEditorState,
   getVizelMarkdown,
   getVizelPortalContainer,
@@ -558,6 +563,7 @@ export {
   VIZEL_PORTAL_Z_INDEX,
   VIZEL_SUGGESTION_Z_INDEX,
   VIZEL_UPLOAD_IMAGE_EVENT,
+  type VizelBlockPathSegment,
   type VizelCalloutMarkdownFormat,
   type VizelContentNode,
   type VizelCreateUploadEventHandlerOptions,

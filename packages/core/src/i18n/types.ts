@@ -172,6 +172,12 @@ export interface VizelLocale {
     currentBlockType: string;
   };
 
+  /** Outline (document heading navigation) */
+  outline: {
+    /** Aria label for the outline tree container */
+    ariaLabel: string;
+  };
+
   /**
    * Relative time strings.
    * Use `{n}` as placeholder for the numeric value.

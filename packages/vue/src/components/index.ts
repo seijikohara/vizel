@@ -69,6 +69,11 @@ export {
   default as VizelNodeSelector,
   type VizelNodeSelectorProps,
 } from "./VizelNodeSelector.vue";
+// VizelOutline component
+export {
+  default as VizelOutline,
+  type VizelOutlineProps,
+} from "./VizelOutline.vue";
 // VizelPortal component
 export { default as VizelPortal, type VizelPortalProps } from "./VizelPortal.vue";
 export { default as VizelProvider, type VizelProviderProps } from "./VizelProvider.vue";

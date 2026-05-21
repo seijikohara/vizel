@@ -21,6 +21,8 @@ export {
   type VizelDOMRectGetter,
   type VizelSuggestionContainer,
 } from "../controllers/suggestionContainer.ts";
+// Block path utilities
+export { getVizelBlockPath, type VizelBlockPathSegment } from "./block-path.ts";
 // Color utilities
 export { isVizelValidHexColor, normalizeVizelHexColor } from "./colorUtils.ts";
 // Curated default feature set
