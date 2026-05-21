@@ -14,7 +14,7 @@ import {
   type VizelLocale,
   type VizelMarkdownFlavor,
 } from "@vizel/core";
-import { computed, useSlots, watch } from "vue";
+import { computed, useAttrs, useSlots, watch } from "vue";
 import { useVizelEditor } from "../composables/useVizelEditor.ts";
 import VizelBlockMenu from "./VizelBlockMenu.vue";
 import VizelBubbleMenu from "./VizelBubbleMenu.vue";
@@ -141,7 +141,13 @@ const editor = useVizelEditor({
   onSelectionUpdate: (e) => emit("selectionUpdate", e),
   onFocus: (e) => emit("focus", e),
   onBlur: (e) => emit("blur", e),
-  onError: (e) => emit("error", e),
+  // Vue's `emit` always succeeds — even when no parent listener exists. To
+  // mirror the React component's behavior (let configuration errors surface
+  // when no consumer is interested), only wire the trampoline when the
+  // parent actually registered an `@error` listener.
+  ...(useAttrs().onError !== undefined && {
+    onError: (e: VizelError) => emit("error", e),
+  }),
 });
 
 // Watch for external markdown changes (v-model:markdown)

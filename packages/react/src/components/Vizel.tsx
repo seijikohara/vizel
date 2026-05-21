@@ -227,7 +227,10 @@ export function Vizel({
     onSelectionUpdate: (e) => onSelectionUpdateRef.current?.(e),
     onFocus: (e) => onFocusRef.current?.(e),
     onBlur: (e) => onBlurRef.current?.(e),
-    onError: (e) => onErrorRef.current?.(e),
+    // Only install the error trampoline when the consumer actually passed an
+    // onError prop. A blanket wrapper would intercept thrown configuration
+    // errors and swallow them silently inside useVizelEditor.
+    ...(onError !== undefined && { onError: (e) => onErrorRef.current?.(e) }),
   });
 
   // Watch for external markdown changes (controlled mode)

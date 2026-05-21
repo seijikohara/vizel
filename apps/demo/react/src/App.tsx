@@ -301,9 +301,6 @@ function AppContent() {
                   typography: true,
                   mention: { items: mockMentionItems },
                 },
-                collaboration: {
-                  comments: true,
-                },
               }}
               onCreate={({ editor: newEditor }) => {
                 setEditor(newEditor);
