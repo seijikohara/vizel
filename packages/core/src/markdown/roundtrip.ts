@@ -41,8 +41,37 @@ export async function assertMarkdownRoundtrip(
   flavor: VizelMarkdownFlavor,
   samples: readonly VizelRoundtripSample[]
 ): Promise<void> {
-  const extensions = await createVizelExtensions({ flavor });
-  const editor = new Editor({ extensions });
+  // Enable every opt-in content feature so flavor-specific syntax
+  // (wiki-links, embeds, mentions, callouts, etc.) is exercised
+  // through the same parser/serializer pair that consumer code uses.
+  const extensions = await createVizelExtensions({
+    flavor,
+    features: {
+      content: {
+        wikiLink: true,
+      },
+      interaction: {
+        mention: true,
+      },
+    },
+  });
+  // Tiptap initializes extension storage and `onCreate` callbacks only
+  // when the editor mounts to a host element. Use a detached
+  // `<div>` so the markdown extension can attach
+  // `editor.getMarkdown()` and `editor.markdown.parse`. The Tiptap
+  // constructor fires its `create` event in a `setTimeout(0)`, so
+  // await the event before driving any sample through the editor.
+  const host = typeof document === "undefined" ? undefined : document.createElement("div");
+  const editor = new Editor(host === undefined ? { extensions } : { element: host, extensions });
+  if (host !== undefined) {
+    await new Promise<void>((resolve) => {
+      if ((editor as unknown as { isInitialized?: boolean }).isInitialized) {
+        resolve();
+        return;
+      }
+      editor.once("create", () => resolve());
+    });
+  }
   try {
     for (const sample of samples) {
       setVizelMarkdown(editor, sample.input);

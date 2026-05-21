@@ -74,6 +74,21 @@ export interface VizelWikiLinkOptions {
    * @default false
    */
   serializeAsWikiLink?: boolean;
+
+  /**
+   * Markdown encoding mode (Section 10).
+   *
+   * - `"default"` emits the lossy form (`[[page]]` for Obsidian-style
+   *   flavors, `[display](wiki://page)` otherwise). The page identifier
+   *   survives only via the URL portion.
+   * - `"metadata-comment"` appends a trailing
+   *   `<!-- vizel:wikiLink page="..." -->` comment to the lossy form so
+   *   the page name survives round-trips even when the display text and
+   *   the visible link diverge.
+   *
+   * @default "default"
+   */
+  encoding?: import("../markdown/types.ts").VizelMarkdownLossyEncodingMode;
 }
 
 // =============================================================================
@@ -137,6 +152,7 @@ export const VizelWikiLink = Mark.create<VizelWikiLinkOptions>({
       newClass: "vizel-wiki-link--new",
       HTMLAttributes: {},
       serializeAsWikiLink: false,
+      encoding: "default",
     };
   },
 
@@ -268,6 +284,7 @@ export const VizelWikiLink = Mark.create<VizelWikiLinkOptions>({
         parse: {
           setup(md: MarkdownIt) {
             registerWikiLinkRule(md);
+            registerWikiLinkMetadataRule(md);
           },
         },
       },
@@ -310,6 +327,110 @@ function registerWikiLinkRule(md: MarkdownIt): void {
   };
 }
 
+/**
+ * Escape a value for inclusion inside a `vizel:` metadata comment.
+ *
+ * Mirrors the escape table from spec A.3: `&`, `"`, `<`, `>`, and the
+ * literal `-->` sequence map to their HTML-entity equivalents so the
+ * value cannot prematurely close the host HTML comment or collide
+ * with the attribute delimiter.
+ */
+function escapeMetadataCommentValue(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/-->/g, "--&gt;");
+}
+
+/**
+ * Reverse {@link escapeMetadataCommentValue}.
+ */
+function unescapeMetadataCommentValue(value: string): string {
+  return value
+    .replace(/&gt;/g, ">")
+    .replace(/&lt;/g, "<")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&");
+}
+
+/**
+ * Extract the `page` attribute from a `vizel:wikiLink` metadata
+ * comment, returning `null` when the token is not such a comment.
+ */
+function extractWikiLinkPageMetadata(
+  token: { type: string; content?: string },
+  commentRegex: RegExp
+): string | null {
+  if (token.type !== "html_inline") return null;
+  const match = commentRegex.exec(token.content ?? "");
+  if (!match) return null;
+  const pageMatch = /page="([^"]*)"/.exec(match[1] ?? "");
+  if (!pageMatch) return null;
+  const pageName = unescapeMetadataCommentValue(pageMatch[1] ?? "");
+  return pageName ? pageName : null;
+}
+
+/**
+ * Register a markdown-it core rule that splices recovered
+ * `<!-- vizel:wikiLink page="..." -->` metadata onto the closest
+ * preceding wiki-link token. The trailing HTML comment is consumed so
+ * it does not bleed into the rendered output.
+ *
+ * Runs after the inline parser has produced its token stream so the
+ * preceding `vizel_wiki_link` token already carries the parsed page
+ * name from {@link registerWikiLinkRule}. When the comment overrides
+ * that page name, the rule writes the comment-supplied value back into
+ * the token's `meta`.
+ */
+function registerWikiLinkMetadataRule(md: MarkdownIt): void {
+  const commentRegex = /<!--\s*vizel:wikiLink\s+([\s\S]*?)\s*-->/;
+  md.core.ruler.after("inline", "vizel_wiki_link_metadata", (state) => {
+    for (const blockToken of state.tokens) {
+      if (blockToken.type !== "inline" || !blockToken.children) continue;
+      const children = blockToken.children;
+      const removalIndices = new Set<number>();
+      children.forEach((child, idx) => {
+        const pageName = extractWikiLinkPageMetadata(child, commentRegex);
+        if (!pageName) return;
+        const wikiIndex = findPrecedingWikiLinkIndex(children, idx);
+        if (wikiIndex < 0) return;
+        const wikiToken = children[wikiIndex];
+        if (!wikiToken) return;
+        wikiToken.meta = { ...(wikiToken.meta ?? {}), pageName };
+        removalIndices.add(idx);
+      });
+      if (removalIndices.size === 0) continue;
+      blockToken.children = children.filter((_child, idx) => !removalIndices.has(idx));
+    }
+    return false;
+  });
+}
+
+/**
+ * Locate the nearest preceding `vizel_wiki_link` token, allowing
+ * inert tokens (`text` with empty content, `softbreak`) between the
+ * comment and the link. Returns `-1` when the comment is not adjacent
+ * to a recognized wiki-link token.
+ */
+function findPrecedingWikiLinkIndex(
+  children: readonly { type: string; content?: string }[],
+  fromIdx: number
+): number {
+  const isPassthrough = (type: string, content: string | undefined): boolean =>
+    type === "softbreak" || (type === "text" && (content ?? "").trim().length === 0);
+  const scan = (idx: number): number => {
+    if (idx < 0) return -1;
+    const child = children[idx];
+    if (!child) return -1;
+    if (child.type === "vizel_wiki_link") return idx;
+    if (isPassthrough(child.type, child.content)) return scan(idx - 1);
+    return -1;
+  };
+  return scan(fromIdx - 1);
+}
+
 // =============================================================================
 // Factory Function
 // =============================================================================
@@ -346,6 +467,19 @@ function registerWikiLinkRule(md: MarkdownIt): void {
  */
 export function createVizelWikiLinkExtension(options: VizelWikiLinkOptions = {}) {
   const serializeAsWikiLink = options.serializeAsWikiLink ?? false;
+  const encoding = options.encoding ?? "default";
+
+  // Compose the metadata-comment suffix. When the encoding mode opts
+  // into metadata-comment serialization, both Obsidian and standard
+  // markdown forms gain a trailing `<!-- vizel:wikiLink page="..." -->`
+  // so the page identifier survives round-trips even when the display
+  // text and the page name diverge.
+  const metadataSuffix = (mark: PMMark): string => {
+    if (encoding !== "metadata-comment") return "";
+    const pageName = String(mark.attrs?.pageName ?? "");
+    if (!pageName) return "";
+    return `<!-- vizel:wikiLink page="${escapeMetadataCommentValue(pageName)}" -->`;
+  };
 
   // Override the markdown serialize spec to honor the flavor-specific
   // wiki-link policy. Obsidian uses `[[page]]`; other flavors fall back
@@ -366,8 +500,8 @@ export function createVizelWikiLinkExtension(options: VizelWikiLinkOptions = {})
                   // marked text node, so the same node is consulted here.
                   return childText === pageName ? `[[` : `[[${pageName}|`;
                 },
-                close(_state: MarkdownSerializerState, _mark: PMMark) {
-                  return `]]`;
+                close(_state: MarkdownSerializerState, mark: PMMark) {
+                  return `]]${metadataSuffix(mark)}`;
                 },
               }
             : {
@@ -376,12 +510,13 @@ export function createVizelWikiLinkExtension(options: VizelWikiLinkOptions = {})
                 },
                 close(_state: MarkdownSerializerState, mark: PMMark) {
                   const pageName = String(mark.attrs?.pageName ?? "");
-                  return `](wiki://${encodeURIComponent(pageName)})`;
+                  return `](wiki://${encodeURIComponent(pageName)})${metadataSuffix(mark)}`;
                 },
               },
           parse: {
             setup(md: MarkdownIt) {
               registerWikiLinkRule(md);
+              registerWikiLinkMetadataRule(md);
             },
           },
         },
