@@ -47,6 +47,8 @@ export {
 export { VizelMinimap, type VizelMinimapProps } from "./VizelMinimap.tsx";
 // VizelNodeSelector component
 export { VizelNodeSelector, type VizelNodeSelectorProps } from "./VizelNodeSelector.tsx";
+// VizelOutline component
+export { VizelOutline, type VizelOutlineProps } from "./VizelOutline.tsx";
 // Portal component
 export { VizelPortal, type VizelPortalProps } from "./VizelPortal.tsx";
 export { VizelProvider, type VizelProviderProps } from "./VizelProvider.tsx";

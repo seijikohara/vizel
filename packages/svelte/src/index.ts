@@ -68,6 +68,9 @@ export {
   // NodeSelector
   VizelNodeSelector,
   type VizelNodeSelectorProps,
+  // Outline
+  VizelOutline,
+  type VizelOutlineProps,
   // Portal
   VizelPortal,
   type VizelPortalProps,

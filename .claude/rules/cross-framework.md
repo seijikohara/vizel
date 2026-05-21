@@ -64,6 +64,7 @@ authoring convention.
 | VizelBubbleMenuColorPicker | `.tsx` | `.vue` | `.svelte` |
 | VizelLinkEditor | `.tsx` | `.vue` | `.svelte` |
 | VizelNodeSelector | `.tsx` | `.vue` | `.svelte` |
+| VizelOutline | `.tsx` | `.vue` | `.svelte` |
 | VizelSlashMenu | `.tsx` | `.vue` | `.svelte` |
 | VizelSlashMenuItem | `.tsx` | `.vue` | `.svelte` |
 | VizelSlashMenuEmpty | `.tsx` | `.vue` | `.svelte` |
@@ -196,6 +197,15 @@ frameworks. The only divergence is the children form.
 | Class prop | `className?: string` | `class?: string` | `class?: string` |
 | `width` | `number` (default 120) | `number` (default 120) | `number` (default 120) |
 | `height` | `number` (default 400) | `number` (default 400) | `number` (default 400) |
+
+#### `VizelOutline`
+
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `editor` | `Editor \| null` | `Editor \| null` | `Editor \| null` |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+| `currentPos` | `number \| null` | `number \| null` | `number \| null` |
+| `locale` | `VizelLocale` | `VizelLocale` | `VizelLocale` |
 
 #### `VizelSlashMenu`
 

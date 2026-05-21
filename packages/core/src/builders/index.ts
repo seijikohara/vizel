@@ -42,6 +42,11 @@ export {
   type VizelNodeSelectorTriggerSpec,
 } from "./node-selector.ts";
 export {
+  buildVizelOutlineSpec,
+  type VizelOutlineItemSpec,
+  type VizelOutlineSpec,
+} from "./outline.ts";
+export {
   buildVizelSlashMenuSpec,
   buildVizelSlashMenuSpecFromCommands,
   getNextVizelSlashMenuGroupIndex,
