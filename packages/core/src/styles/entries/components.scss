@@ -1,0 +1,13 @@
+/**
+ * Vizel component CSS entry (no token catalog).
+ *
+ * Outputs every component stylesheet without the `--vizel-*` token
+ * blocks. Use this entry when you map another design system's tokens
+ * onto Vizel's variable names:
+ *
+ * ```ts
+ * import "@vizel/core/styles/components.css";
+ * ```
+ */
+
+@use "../components";

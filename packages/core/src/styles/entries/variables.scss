@@ -1,0 +1,14 @@
+/**
+ * Vizel CSS variables entry (tokens only).
+ *
+ * Outputs the `:root`, `[data-vizel-theme="light"]`, and
+ * `[data-vizel-theme="dark"]` blocks plus the
+ * `prefers-color-scheme: dark` fallback. Use this entry when you want
+ * Vizel's token catalog but ship your own component CSS:
+ *
+ * ```ts
+ * import "@vizel/core/styles/variables.css";
+ * ```
+ */
+
+@use "../variables";

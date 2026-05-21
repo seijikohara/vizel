@@ -45,7 +45,8 @@ This package provides:
 | Import | Description |
 |--------|-------------|
 | `@vizel/core/styles.css` | Full stylesheet (CSS variables + component styles) |
-| `@vizel/core/components.css` | Component styles only (for shadcn/ui integration) |
+| `@vizel/core/styles/variables.css` | CSS variables / token catalog only |
+| `@vizel/core/styles/components.css` | Component styles only (no token catalog) |
 | `@vizel/core/mathematics.css` | KaTeX styles for math rendering |
 
 ## Extensions

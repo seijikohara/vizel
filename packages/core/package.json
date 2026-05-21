@@ -39,7 +39,8 @@
       "default": "./dist/index.js"
     },
     "./styles.css": "./dist/styles.css",
-    "./components.css": "./dist/components.css",
+    "./styles/variables.css": "./dist/styles/variables.css",
+    "./styles/components.css": "./dist/styles/components.css",
     "./mathematics.css": "./dist/mathematics.css"
   },
   "files": [
@@ -47,9 +48,10 @@
   ],
   "scripts": {
     "build": "vite build && npm run build:css",
-    "build:css": "npm run build:css:styles && npm run build:css:components && npm run build:css:mathematics",
+    "build:css": "npm run build:css:styles && npm run build:css:variables && npm run build:css:components && npm run build:css:mathematics",
     "build:css:styles": "sass --load-path=src/styles --load-path=node_modules src/styles/index.scss dist/styles.css --style=compressed",
-    "build:css:components": "sass --load-path=src/styles --load-path=node_modules src/styles/components.scss dist/components.css --style=compressed",
+    "build:css:variables": "sass --load-path=src/styles --load-path=node_modules src/styles/entries/variables.scss dist/styles/variables.css --style=compressed",
+    "build:css:components": "sass --load-path=src/styles --load-path=node_modules src/styles/entries/components.scss dist/styles/components.css --style=compressed",
     "build:css:mathematics": "sass --load-path=src/styles --load-path=node_modules src/styles/katex-entry.scss dist/mathematics.css --style=compressed",
     "typecheck": "tsc --noEmit"
   },
