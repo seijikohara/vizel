@@ -5,11 +5,17 @@ import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext.js";
 /**
  * Public return shape for `getVizelTheme`.
  *
- * The flat `{ current, setTheme }` shape mirrors the React hook and Vue
- * composable. `current` is the currently applied (resolved) theme so a
- * toggle is a one-liner. `setTheme` accepts only concrete
- * `VizelResolvedTheme` values because entering "system" mode is the
- * provider's `defaultTheme` concern, not a runtime toggle.
+ * The flat `{ current, setTheme }` shape parallels the React hook's
+ * `{ theme, setTheme }` and the Vue composable's
+ * `{ theme: ComputedRef<…>, setTheme }`. The scalar field is renamed
+ * to `current` here so it lines up with every other Svelte rune
+ * accessor (`editor.current`, `state.current`, etc.) — the rename is
+ * documented as Table 6's "Hook scalar field" idiom exception in
+ * `.claude/rules/cross-framework.md`. `current` is the currently
+ * applied (resolved) theme so a toggle is a one-liner. `setTheme`
+ * accepts only concrete `VizelResolvedTheme` values because entering
+ * "system" mode is the provider's `defaultTheme` concern, not a
+ * runtime toggle.
  */
 export interface GetVizelThemeResult {
   /** Currently applied theme (resolved from the user's preference). */

@@ -46,11 +46,15 @@ export function getVizelContext(): VizelContextAccessor {
 /**
  * Get the editor instance accessor from context.
  *
- * Returns `undefined` when called outside of `VizelProvider` (does not
+ * Returns `null` when called outside of `VizelProvider` (does not
  * throw). Mirrors {@link getVizelContext} but is non-throwing so optional
  * consumers (e.g. components that work both inside and outside a provider)
  * can fall back gracefully.
+ *
+ * The `null` sentinel matches the React / Vue equivalents
+ * (`useVizelContextSafe`) — every framework returns `null` when no
+ * provider is present.
  */
-export function getVizelContextSafe(): VizelContextAccessor | undefined {
-  return getContext<VizelContextAccessor | undefined>(VIZEL_CONTEXT_KEY);
+export function getVizelContextSafe(): VizelContextAccessor | null {
+  return getContext<VizelContextAccessor | undefined>(VIZEL_CONTEXT_KEY) ?? null;
 }
