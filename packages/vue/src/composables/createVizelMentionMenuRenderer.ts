@@ -38,8 +38,10 @@ export function createVizelMentionMenuRenderer(
 ): Partial<SuggestionOptions<VizelMentionItem>> {
   return {
     render: () => {
-      let app: App | null = null;
-      let suggestionContainer: ReturnType<typeof createVizelSuggestionContainer> | null = null;
+      const renderState: {
+        app: App | null;
+        suggestionContainer: ReturnType<typeof createVizelSuggestionContainer> | null;
+      } = { app: null, suggestionContainer: null };
       const componentRef = ref<VizelMentionMenuRef | null>(null);
       const items = ref<VizelMentionItem[]>([]);
       const commandFn = ref<((item: VizelMentionItem) => void) | null>(null);
@@ -49,9 +51,10 @@ export function createVizelMentionMenuRenderer(
           items.value = props.items;
           commandFn.value = props.command;
 
-          suggestionContainer = createVizelSuggestionContainer();
+          const suggestionContainer = createVizelSuggestionContainer();
+          renderState.suggestionContainer = suggestionContainer;
 
-          app = createApp({
+          const app = createApp({
             setup() {
               return () =>
                 h(VizelMentionMenu, {
@@ -64,6 +67,7 @@ export function createVizelMentionMenuRenderer(
                 });
             },
           });
+          renderState.app = app;
 
           app.mount(suggestionContainer.menuContainer);
           suggestionContainer.updatePosition(props.clientRect);
@@ -72,7 +76,7 @@ export function createVizelMentionMenuRenderer(
         onUpdate: (props: SuggestionProps<VizelMentionItem>) => {
           items.value = props.items;
           commandFn.value = props.command;
-          suggestionContainer?.updatePosition(props.clientRect);
+          renderState.suggestionContainer?.updatePosition(props.clientRect);
         },
 
         onKeyDown: (props: { event: KeyboardEvent }) => {
@@ -83,10 +87,10 @@ export function createVizelMentionMenuRenderer(
         },
 
         onExit: () => {
-          app?.unmount();
-          suggestionContainer?.destroy();
-          app = null;
-          suggestionContainer = null;
+          renderState.app?.unmount();
+          renderState.suggestionContainer?.destroy();
+          renderState.app = null;
+          renderState.suggestionContainer = null;
         },
       };
     },

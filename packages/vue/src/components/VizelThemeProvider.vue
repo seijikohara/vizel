@@ -49,17 +49,20 @@ const themeState: VizelThemeState = {
 
 provide(VIZEL_THEME_CONTEXT_KEY, themeState);
 
-let themeListener: ReturnType<typeof createVizelSystemThemeListener> | null = null;
+const listenerState: { instance: ReturnType<typeof createVizelSystemThemeListener> | null } = {
+  instance: null,
+};
 
 onMounted(() => {
   // Apply initial theme
   applyVizelTheme(resolvedTheme.value, props.targetSelector, props.disableTransitionOnChange);
 
   // Listen for system theme changes
-  themeListener = createVizelSystemThemeListener((newSystemTheme) => {
+  const instance = createVizelSystemThemeListener((newSystemTheme) => {
     systemTheme.value = newSystemTheme;
   });
-  themeListener.mount();
+  listenerState.instance = instance;
+  instance.mount();
 });
 
 // Re-apply the theme whenever ANY input changes: the resolved theme,
@@ -75,8 +78,8 @@ watch(
 );
 
 onBeforeUnmount(() => {
-  themeListener?.unmount();
-  themeListener = null;
+  listenerState.instance?.unmount();
+  listenerState.instance = null;
 });
 </script>
 

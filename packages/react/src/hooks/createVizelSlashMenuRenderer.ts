@@ -35,17 +35,25 @@ export function createVizelSlashMenuRenderer(
 ): Partial<SuggestionOptions<VizelSlashCommandItem>> {
   return {
     render: () => {
-      let root: Root | null = null;
-      let suggestionContainer: ReturnType<typeof createVizelSuggestionContainer> | null = null;
-      let items: VizelSlashCommandItem[] = [];
-      let commandFn: ((item: VizelSlashCommandItem) => void) | null = null;
+      const rendererState: {
+        root: Root | null;
+        suggestionContainer: ReturnType<typeof createVizelSuggestionContainer> | null;
+        items: VizelSlashCommandItem[];
+        commandFn: ((item: VizelSlashCommandItem) => void) | null;
+      } = {
+        root: null,
+        suggestionContainer: null,
+        items: [],
+        commandFn: null,
+      };
       const menuRef: RefObject<VizelSlashMenuRef | null> = { current: null };
 
       const renderMenu = () => {
+        const { root, commandFn } = rendererState;
         if (!(root && commandFn)) return;
         root.render(
           createElement(VizelSlashMenu, {
-            items,
+            items: rendererState.items,
             onSelect: commandFn,
             ...(options.className !== undefined && { className: options.className }),
             ref: menuRef,
@@ -55,20 +63,21 @@ export function createVizelSlashMenuRenderer(
 
       return {
         onStart: (props: SuggestionProps<VizelSlashCommandItem>) => {
-          items = props.items;
-          commandFn = props.command;
+          rendererState.items = props.items;
+          rendererState.commandFn = props.command;
 
-          suggestionContainer = createVizelSuggestionContainer();
-          root = createRoot(suggestionContainer.menuContainer);
+          const suggestionContainer = createVizelSuggestionContainer();
+          rendererState.suggestionContainer = suggestionContainer;
+          rendererState.root = createRoot(suggestionContainer.menuContainer);
           renderMenu();
           suggestionContainer.updatePosition(props.clientRect);
         },
 
         onUpdate: (props: SuggestionProps<VizelSlashCommandItem>) => {
-          items = props.items;
-          commandFn = props.command;
+          rendererState.items = props.items;
+          rendererState.commandFn = props.command;
           renderMenu();
-          suggestionContainer?.updatePosition(props.clientRect);
+          rendererState.suggestionContainer?.updatePosition(props.clientRect);
         },
 
         onKeyDown: (props: { event: KeyboardEvent }) => {
@@ -79,10 +88,10 @@ export function createVizelSlashMenuRenderer(
         },
 
         onExit: () => {
-          root?.unmount();
-          suggestionContainer?.destroy();
-          root = null;
-          suggestionContainer = null;
+          rendererState.root?.unmount();
+          rendererState.suggestionContainer?.destroy();
+          rendererState.root = null;
+          rendererState.suggestionContainer = null;
         },
       };
     },

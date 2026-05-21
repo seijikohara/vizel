@@ -100,8 +100,7 @@ export function renderVizelMinimapToCanvas(
   );
   if (total <= 0) return;
 
-  let yCursor = 0;
-  for (const block of blocks) {
+  blocks.reduce((yCursor, block) => {
     const ratio = block.approxHeight / total;
     const rectHeight = Math.max(1, Math.floor(ratio * height));
     // Clamp depth to >= 1 to guarantee a non-zero rectangle width.
@@ -111,8 +110,8 @@ export function renderVizelMinimapToCanvas(
     ctx.fillStyle = isHeadingLike(block.type) ? headingColor : blockColor;
     ctx.fillRect(0, yCursor, rectWidth, Math.max(1, rectHeight - 1));
 
-    yCursor += rectHeight;
-  }
+    return yCursor + rectHeight;
+  }, 0);
 
   // Viewport overlay: translate the doc-level [viewport.top, viewport.bottom]
   // range into canvas Y coordinates by scaling against the cumulative height.

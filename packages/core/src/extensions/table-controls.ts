@@ -150,23 +150,16 @@ function findColumnBoundary(
   const firstBoundary = boundaries[0];
   if (!firstBoundary) return null;
 
-  let closest = firstBoundary;
-  let minDistance = Math.abs(relativeX - closest.position);
-
-  for (const boundary of boundaries) {
-    const distance = Math.abs(relativeX - boundary.position);
-    if (distance < minDistance) {
-      minDistance = distance;
-      closest = boundary;
-    }
-  }
+  const { closest, minDistance } = boundaries.reduce(
+    (acc, boundary) => {
+      const distance = Math.abs(relativeX - boundary.position);
+      return distance < acc.minDistance ? { closest: boundary, minDistance: distance } : acc;
+    },
+    { closest: firstBoundary, minDistance: Math.abs(relativeX - firstBoundary.position) }
+  );
 
   // Only return if within threshold
-  if (minDistance <= BOUNDARY_THRESHOLD_PX) {
-    return closest;
-  }
-
-  return null;
+  return minDistance <= BOUNDARY_THRESHOLD_PX ? closest : null;
 }
 
 /**
@@ -199,23 +192,16 @@ function findRowBoundary(
   const firstBoundary = boundaries[0];
   if (!firstBoundary) return null;
 
-  let closest = firstBoundary;
-  let minDistance = Math.abs(relativeY - closest.position);
-
-  for (const boundary of boundaries) {
-    const distance = Math.abs(relativeY - boundary.position);
-    if (distance < minDistance) {
-      minDistance = distance;
-      closest = boundary;
-    }
-  }
+  const { closest, minDistance } = boundaries.reduce(
+    (acc, boundary) => {
+      const distance = Math.abs(relativeY - boundary.position);
+      return distance < acc.minDistance ? { closest: boundary, minDistance: distance } : acc;
+    },
+    { closest: firstBoundary, minDistance: Math.abs(relativeY - firstBoundary.position) }
+  );
 
   // Only return if within threshold
-  if (minDistance <= BOUNDARY_THRESHOLD_PX) {
-    return closest;
-  }
-
-  return null;
+  return minDistance <= BOUNDARY_THRESHOLD_PX ? closest : null;
 }
 
 /**
@@ -274,21 +260,20 @@ function selectCellInRow(editor: Editor, tablePos: number, rowIndex: number): vo
   const table = state.doc.nodeAt(tablePos);
   if (!table) return;
 
-  let pos = tablePos + 1; // Skip table node start
-  for (let i = 0; i < table.childCount; i++) {
-    const row = table.child(i);
-    if (i === rowIndex) {
-      // Select first cell in this row
-      const cellPos = pos + 1; // Skip row node start
-      editor
-        .chain()
-        .focus()
-        .setTextSelection(cellPos + 1)
-        .run();
-      return;
-    }
-    pos += row.nodeSize;
-  }
+  // Sum sizes of preceding rows to locate the requested row's start position.
+  const startOffset = Array.from({ length: rowIndex }, (_, i) => table.child(i).nodeSize).reduce(
+    (sum, size) => sum + size,
+    0
+  );
+  if (rowIndex >= table.childCount) return;
+  const rowStartPos = tablePos + 1 + startOffset;
+  // Skip row node start then enter the first cell.
+  const cellPos = rowStartPos + 1;
+  editor
+    .chain()
+    .focus()
+    .setTextSelection(cellPos + 1)
+    .run();
 }
 
 /**
@@ -300,25 +285,29 @@ function selectCellInColumn(editor: Editor, tablePos: number, colIndex: number):
   if (!table || table.childCount === 0) return;
 
   const firstRow = table.child(0);
-  let pos = tablePos + 2; // Skip table node start and row node start
-
-  for (let i = 0; i < firstRow.childCount; i++) {
-    if (i === colIndex || (colIndex > firstRow.childCount && i === firstRow.childCount - 1)) {
-      editor
-        .chain()
-        .focus()
-        .setTextSelection(pos + 1)
-        .run();
-      return;
+  const targetIndex = colIndex > firstRow.childCount ? firstRow.childCount - 1 : colIndex;
+  if (targetIndex < 0 || targetIndex >= firstRow.childCount) {
+    // If colIndex is 0 (and clamping kept us here), select first cell.
+    if (colIndex === 0 && firstRow.childCount > 0) {
+      const firstCellPos = tablePos + 3;
+      editor.chain().focus().setTextSelection(firstCellPos).run();
     }
-    pos += firstRow.child(i).nodeSize;
+    return;
   }
 
-  // If colIndex is 0, select first cell
-  if (colIndex === 0 && firstRow.childCount > 0) {
-    const firstCellPos = tablePos + 3;
-    editor.chain().focus().setTextSelection(firstCellPos).run();
-  }
+  // Sum sizes of preceding cells to locate the target cell's start position.
+  const cellOffset = Array.from(
+    { length: targetIndex },
+    (_, i) => firstRow.child(i).nodeSize
+  ).reduce((sum, size) => sum + size, 0);
+
+  // Skip table node start and row node start, then accumulate cell sizes.
+  const pos = tablePos + 2 + cellOffset;
+  editor
+    .chain()
+    .focus()
+    .setTextSelection(pos + 1)
+    .run();
 }
 
 /**
@@ -348,11 +337,8 @@ function getTablePosition(
   getPos: (() => number | undefined) | boolean,
   editor: Editor
 ): number | undefined {
-  let pos = typeof getPos === "function" ? getPos() : undefined;
-  if (pos === undefined) {
-    pos = findTablePositionFromSelection(editor);
-  }
-  return pos;
+  const fromGetPos = typeof getPos === "function" ? getPos() : undefined;
+  return fromGetPos ?? findTablePositionFromSelection(editor);
 }
 
 /**
@@ -369,29 +355,32 @@ function setColumnAlignment(
   if (!table) return;
 
   const { tr } = state;
-  let pos = tablePos + 1; // Skip table node start
 
-  // Iterate through all rows
-  for (let rowIdx = 0; rowIdx < table.childCount; rowIdx++) {
-    const row = table.child(rowIdx);
-    let cellPos = pos + 1; // Skip row node start
+  // Compute cumulative row offsets so each row's start position is derived
+  // without a running accumulator.
+  const rowOffsets = Array.from({ length: table.childCount }, (_, idx) =>
+    Array.from({ length: idx }, (_, j) => table.child(j).nodeSize).reduce(
+      (sum, size) => sum + size,
+      0
+    )
+  );
 
-    // Find the cell at colIndex
-    for (let cellIdx = 0; cellIdx < row.childCount; cellIdx++) {
-      const cell = row.child(cellIdx);
-      if (cellIdx === colIndex) {
-        // Set textAlign attribute on this cell
-        tr.setNodeMarkup(cellPos, undefined, {
-          ...cell.attrs,
-          textAlign: alignment,
-        });
-        break;
-      }
-      cellPos += cell.nodeSize;
-    }
-
-    pos += row.nodeSize;
-  }
+  // Mutate `tr` in place. `setNodeMarkup` returns the same transaction; we
+  // forEach over rows and stage one mark per row.
+  table.forEach((row, _, rowIdx) => {
+    const rowStartPos = tablePos + 1 + (rowOffsets[rowIdx] ?? 0);
+    const cellOffset = Array.from({ length: colIndex }, (_, j) => row.child(j).nodeSize).reduce(
+      (sum, size) => sum + size,
+      0
+    );
+    if (colIndex < 0 || colIndex >= row.childCount) return;
+    const cellPos = rowStartPos + 1 + cellOffset;
+    const cell = row.child(colIndex);
+    tr.setNodeMarkup(cellPos, undefined, {
+      ...cell.attrs,
+      textAlign: alignment,
+    });
+  });
 
   view.dispatch(tr);
 }
@@ -570,17 +559,26 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
       columnHandle.style.left = "64px";
       columnHandle.style.top = "0px";
 
-      // Menu state
-      let activeMenu: HTMLElement | null = null;
-      let currentColumnBoundary: { index: number; position: number } | null = null;
-      let currentRowBoundary: { index: number; position: number } | null = null;
-      let currentHoveredRow: { index: number; element: HTMLTableRowElement } | null = null;
-      let currentHoveredColumn: { index: number; centerX: number } | null = null;
+      // Menu / pointer-tracking state (held in a single closure-shared object
+      // so multiple handlers can read and write without mutable bindings).
+      const controlState: {
+        activeMenu: HTMLElement | null;
+        currentColumnBoundary: { index: number; position: number } | null;
+        currentRowBoundary: { index: number; position: number } | null;
+        currentHoveredRow: { index: number; element: HTMLTableRowElement } | null;
+        currentHoveredColumn: { index: number; centerX: number } | null;
+      } = {
+        activeMenu: null,
+        currentColumnBoundary: null,
+        currentRowBoundary: null,
+        currentHoveredRow: null,
+        currentHoveredColumn: null,
+      };
 
       const closeMenu = () => {
-        if (activeMenu) {
-          activeMenu.remove();
-          activeMenu = null;
+        if (controlState.activeMenu) {
+          controlState.activeMenu.remove();
+          controlState.activeMenu = null;
         }
       };
 
@@ -589,14 +587,14 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         e.preventDefault();
         e.stopPropagation();
 
-        if (!editor.isEditable || currentColumnBoundary == null) return;
+        if (!editor.isEditable || controlState.currentColumnBoundary == null) return;
 
         const pos = getTablePosition(getPos, editor);
         if (pos == null) return;
 
-        selectCellInColumn(editor, pos, Math.max(0, currentColumnBoundary.index - 1));
+        selectCellInColumn(editor, pos, Math.max(0, controlState.currentColumnBoundary.index - 1));
 
-        if (currentColumnBoundary.index === 0) {
+        if (controlState.currentColumnBoundary.index === 0) {
           editor.chain().focus().addColumnBefore().run();
         } else {
           editor.chain().focus().addColumnAfter().run();
@@ -610,14 +608,14 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         e.preventDefault();
         e.stopPropagation();
 
-        if (!editor.isEditable || currentRowBoundary == null) return;
+        if (!editor.isEditable || controlState.currentRowBoundary == null) return;
 
         const pos = getTablePosition(getPos, editor);
         if (pos == null) return;
 
-        selectCellInRow(editor, pos, Math.max(0, currentRowBoundary.index - 1));
+        selectCellInRow(editor, pos, Math.max(0, controlState.currentRowBoundary.index - 1));
 
-        if (currentRowBoundary.index === 0) {
+        if (controlState.currentRowBoundary.index === 0) {
           editor.chain().focus().addRowBefore().run();
         } else {
           editor.chain().focus().addRowAfter().run();
@@ -631,7 +629,7 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         e.preventDefault();
         e.stopPropagation();
 
-        const hoveredRow = currentHoveredRow;
+        const hoveredRow = controlState.currentHoveredRow;
         if (!editor.isEditable || hoveredRow == null) return;
 
         const pos = getTablePosition(getPos, editor);
@@ -647,14 +645,14 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         menu.style.top = `${handleRect.top}px`;
 
         document.body.appendChild(menu);
-        activeMenu = menu;
+        controlState.activeMenu = menu;
       };
 
       // Use both mousedown and click for cross-browser compatibility
       // Store click handler references for proper cleanup
       const handleRowClick = (e: MouseEvent) => {
         // Prevent duplicate handling if mousedown already succeeded
-        if (activeMenu) {
+        if (controlState.activeMenu) {
           e.preventDefault();
           e.stopPropagation();
         }
@@ -668,7 +666,7 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         e.preventDefault();
         e.stopPropagation();
 
-        const hoveredColumn = currentHoveredColumn;
+        const hoveredColumn = controlState.currentHoveredColumn;
         if (!editor.isEditable || hoveredColumn == null) return;
 
         const pos = getTablePosition(getPos, editor);
@@ -685,14 +683,14 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         menu.style.top = `${handleRect.bottom + 4}px`;
 
         document.body.appendChild(menu);
-        activeMenu = menu;
+        controlState.activeMenu = menu;
       };
 
       // Use both mousedown and click for cross-browser compatibility
       // Store click handler references for proper cleanup
       const handleColumnClick = (e: MouseEvent) => {
         // Prevent duplicate handling if mousedown already succeeded
-        if (activeMenu) {
+        if (controlState.activeMenu) {
           e.preventDefault();
           e.stopPropagation();
         }
@@ -705,18 +703,18 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
       // Note: We process synchronously instead of using RAF because React may re-render
       // and replace the DOM elements before RAF callbacks execute. This ensures the
       // button visibility is updated immediately when the mouse moves.
-      let lastMoveTime = 0;
+      const throttleState = { lastMoveTime: 0 };
       const THROTTLE_MS = 16; // ~60fps throttle
 
       // Helper to update column insert button position
       const updateColumnInsertPosition = (mouseX: number, tableRect: DOMRect) => {
         const boundary = findColumnBoundary(table, mouseX, tableRect);
         if (boundary) {
-          currentColumnBoundary = boundary;
+          controlState.currentColumnBoundary = boundary;
           columnInsertBtn.style.left = `${boundary.position + PADDING_LEFT_PX}px`;
           columnInsertBtn.style.top = "0px";
-        } else if (!currentColumnBoundary) {
-          currentColumnBoundary = { index: 0, position: 0 };
+        } else if (!controlState.currentColumnBoundary) {
+          controlState.currentColumnBoundary = { index: 0, position: 0 };
         }
       };
 
@@ -724,11 +722,11 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
       const updateRowInsertPosition = (mouseY: number, tableRect: DOMRect) => {
         const boundary = findRowBoundary(table, mouseY, tableRect);
         if (boundary) {
-          currentRowBoundary = boundary;
+          controlState.currentRowBoundary = boundary;
           rowInsertBtn.style.left = "0px";
           rowInsertBtn.style.top = `${boundary.position + PADDING_TOP_PX}px`;
-        } else if (!currentRowBoundary) {
-          currentRowBoundary = { index: 0, position: 0 };
+        } else if (!controlState.currentRowBoundary) {
+          controlState.currentRowBoundary = { index: 0, position: 0 };
         }
       };
 
@@ -736,7 +734,7 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
       const updateRowHandlePosition = (mouseY: number, tableRect: DOMRect) => {
         const hoveredRow = findHoveredRow(table, mouseY);
         if (hoveredRow) {
-          currentHoveredRow = hoveredRow;
+          controlState.currentHoveredRow = hoveredRow;
           const rowRect = hoveredRow.element.getBoundingClientRect();
           rowHandle.style.left = "2px";
           rowHandle.style.top = `${rowRect.top - tableRect.top + PADDING_TOP_PX + (rowRect.height - 20) / 2}px`;
@@ -747,7 +745,7 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
       const updateColumnHandlePosition = (mouseX: number, tableRect: DOMRect) => {
         const hoveredColumn = findHoveredColumn(table, mouseX, tableRect);
         if (hoveredColumn) {
-          currentHoveredColumn = hoveredColumn;
+          controlState.currentHoveredColumn = hoveredColumn;
           columnHandle.style.left = `${hoveredColumn.centerX + PADDING_LEFT_PX}px`;
           columnHandle.style.top = "0px";
         }
@@ -757,8 +755,8 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         if (!editor.isEditable) return;
 
         const now = Date.now();
-        if (now - lastMoveTime < THROTTLE_MS) return;
-        lastMoveTime = now;
+        if (now - throttleState.lastMoveTime < THROTTLE_MS) return;
+        throttleState.lastMoveTime = now;
 
         const tableRect = table.getBoundingClientRect();
         const isInTable =
@@ -780,11 +778,11 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         // CSS controls visibility via :hover, so we just reset state variables
         // Delay to allow clicking on buttons that might extend outside wrapper
         setTimeout(() => {
-          if (!(wrapper.matches(":hover") || activeMenu)) {
-            currentColumnBoundary = null;
-            currentRowBoundary = null;
-            currentHoveredRow = null;
-            currentHoveredColumn = null;
+          if (!(wrapper.matches(":hover") || controlState.activeMenu)) {
+            controlState.currentColumnBoundary = null;
+            controlState.currentRowBoundary = null;
+            controlState.currentHoveredRow = null;
+            controlState.currentHoveredColumn = null;
           }
         }, 100);
       };
@@ -826,7 +824,7 @@ export const VizelTableWithControls = VizelTable.extend<VizelTableControlsOption
         menu.style.top = `${e.clientY}px`;
 
         document.body.appendChild(menu);
-        activeMenu = menu;
+        controlState.activeMenu = menu;
       };
 
       table.addEventListener("contextmenu", handleContextMenu);

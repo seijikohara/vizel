@@ -13,29 +13,23 @@ export async function testSaveIndicatorStatuses(
   mount: (status: VizelSaveStatus) => Promise<Locator>,
   _page: Page
 ): Promise<void> {
-  // Test 'saved' status
-  let component = await mount("saved");
-  await expect(component).toBeVisible();
-  await expect(component).toHaveClass(/vizel-save-indicator--saved/);
-  await expect(component).toContainText("Saved");
+  const cases: ReadonlyArray<{
+    status: VizelSaveStatus;
+    classPattern: RegExp;
+    text: string;
+  }> = [
+    { status: "saved", classPattern: /vizel-save-indicator--saved/, text: "Saved" },
+    { status: "saving", classPattern: /vizel-save-indicator--saving/, text: "Saving" },
+    { status: "unsaved", classPattern: /vizel-save-indicator--unsaved/, text: "Unsaved" },
+    { status: "error", classPattern: /vizel-save-indicator--error/, text: "Error" },
+  ];
 
-  // Test 'saving' status
-  component = await mount("saving");
-  await expect(component).toBeVisible();
-  await expect(component).toHaveClass(/vizel-save-indicator--saving/);
-  await expect(component).toContainText("Saving");
-
-  // Test 'unsaved' status
-  component = await mount("unsaved");
-  await expect(component).toBeVisible();
-  await expect(component).toHaveClass(/vizel-save-indicator--unsaved/);
-  await expect(component).toContainText("Unsaved");
-
-  // Test 'error' status
-  component = await mount("error");
-  await expect(component).toBeVisible();
-  await expect(component).toHaveClass(/vizel-save-indicator--error/);
-  await expect(component).toContainText("Error");
+  for (const { status, classPattern, text } of cases) {
+    const component = await mount(status);
+    await expect(component).toBeVisible();
+    await expect(component).toHaveClass(classPattern);
+    await expect(component).toContainText(text);
+  }
 }
 
 /**

@@ -64,24 +64,24 @@ function debounce<T extends (...args: Parameters<T>) => void>(
   fn: T,
   ms: number
 ): { (...args: Parameters<T>): void; cancel: () => void } {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  const state: { timeoutId: ReturnType<typeof setTimeout> | null } = { timeoutId: null };
+
+  const cancel = (): void => {
+    if (state.timeoutId) {
+      clearTimeout(state.timeoutId);
+      state.timeoutId = null;
+    }
+  };
 
   const debounced = (...args: Parameters<T>) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    timeoutId = setTimeout(() => {
+    cancel();
+    state.timeoutId = setTimeout(() => {
       fn(...args);
-      timeoutId = null;
+      state.timeoutId = null;
     }, ms);
   };
 
-  debounced.cancel = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
-  };
+  debounced.cancel = cancel;
 
   return debounced;
 }
@@ -317,18 +317,18 @@ export function createVizelRelativeTimeTicker(
     onTick(date ? formatVizelRelativeTime(date, getLocale?.()) : "");
   };
 
-  let intervalId: ReturnType<typeof setInterval> | null = null;
+  const state: { intervalId: ReturnType<typeof setInterval> | null } = { intervalId: null };
 
   return {
     mount: (): void => {
-      if (intervalId !== null) return;
+      if (state.intervalId !== null) return;
       emit();
-      intervalId = setInterval(emit, intervalMs);
+      state.intervalId = setInterval(emit, intervalMs);
     },
     unmount: (): void => {
-      if (intervalId === null) return;
-      clearInterval(intervalId);
-      intervalId = null;
+      if (state.intervalId === null) return;
+      clearInterval(state.intervalId);
+      state.intervalId = null;
     },
   };
 }

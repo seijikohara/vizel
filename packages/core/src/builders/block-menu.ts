@@ -93,13 +93,19 @@ export function buildVizelBlockMenuSpec(
   const turnIntoLabel = locale?.blockMenu.turnInto ?? "Turn into";
 
   const groups = groupVizelBlockMenuActions(actions);
-  let globalIndex = 0;
+  const groupOffsets = groups.reduce<number[]>(
+    (acc, group) => {
+      acc.push((acc.at(-1) ?? 0) + group.length);
+      return acc;
+    },
+    [0]
+  );
   const sections: VizelMenuSectionSpec<VizelBlockMenuItemView>[] = groups.map(
     (group, groupIndex) => ({
       key: `group-${groupIndex}`,
-      items: group.map((action) => ({
+      items: group.map((action, indexInGroup) => ({
         key: action.id,
-        index: globalIndex++,
+        index: (groupOffsets[groupIndex] ?? 0) + indexInGroup,
         data: { action, isDestructive: action.id === "delete" },
         attrs: { role: "menuitem" satisfies "menuitem" } as VizelMenuItemAttrs,
       })),

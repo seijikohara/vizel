@@ -42,23 +42,23 @@ export function splitVizelTextByMatches(
     return [{ text, highlight: false }];
   }
 
-  const result: VizelTextSegment[] = [];
-  let lastIndex = 0;
+  const result = matches.reduce<{
+    segments: VizelTextSegment[];
+    cursor: number;
+  }>(
+    (acc, [start, end]) => {
+      if (start > acc.cursor) {
+        acc.segments.push({ text: text.slice(acc.cursor, start), highlight: false });
+      }
+      acc.segments.push({ text: text.slice(start, end + 1), highlight: true });
+      acc.cursor = end + 1;
+      return acc;
+    },
+    { segments: [], cursor: 0 }
+  );
 
-  for (const [start, end] of matches) {
-    // Add text before match
-    if (start > lastIndex) {
-      result.push({ text: text.slice(lastIndex, start), highlight: false });
-    }
-    // Add highlighted match
-    result.push({ text: text.slice(start, end + 1), highlight: true });
-    lastIndex = end + 1;
+  if (result.cursor < text.length) {
+    result.segments.push({ text: text.slice(result.cursor), highlight: false });
   }
-
-  // Add remaining text
-  if (lastIndex < text.length) {
-    result.push({ text: text.slice(lastIndex), highlight: false });
-  }
-
-  return result;
+  return result.segments;
 }

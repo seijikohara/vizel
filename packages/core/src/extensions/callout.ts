@@ -130,21 +130,21 @@ function tryParseDirectiveCallout(
   const match = /^:::(\w+)\s*$/.exec(firstLine);
   if (!match) return null;
   const type = parseCalloutType(match[1] ?? "info");
-  let nextLine = startLine + 1;
-  let closingLine = -1;
-  while (nextLine < endLine) {
-    if (readLine(state, nextLine) === ":::") {
-      closingLine = nextLine;
-      break;
-    }
-    nextLine++;
-  }
+  const closingLine = findClosingDirectiveLine(state, startLine + 1, endLine);
   if (closingLine === -1) return false;
   if (silent) return true;
   const innerSrc = state.getLines(startLine + 1, closingLine, state.tShift[startLine] ?? 0, false);
   emitCalloutTokens(state, md, type, innerSrc, startLine, closingLine);
   state.line = closingLine + 1;
   return true;
+}
+
+function findClosingDirectiveLine(state: StateBlock, fromLine: number, endLine: number): number {
+  const candidate = Array.from(
+    { length: Math.max(0, endLine - fromLine) },
+    (_, i) => fromLine + i
+  ).find((line) => readLine(state, line) === ":::");
+  return candidate ?? -1;
 }
 
 function tryParseAlertCallout(
@@ -158,19 +158,27 @@ function tryParseAlertCallout(
   const match = /^>\s*\[!(\w+)\]\s*$/.exec(firstLine);
   if (!match) return null;
   const type = parseCalloutType(match[1] ?? "info");
-  let nextLine = startLine + 1;
-  const contentLines: string[] = [];
-  while (nextLine < endLine) {
-    const lineText = readLine(state, nextLine);
-    if (!/^>/.test(lineText)) break;
-    contentLines.push(lineText.replace(/^>\s?/, ""));
-    nextLine++;
-  }
+  const { contentLines, nextLine } = collectAlertCalloutLines(state, startLine + 1, endLine);
   if (silent) return true;
   const innerSrc = contentLines.join("\n");
   emitCalloutTokens(state, md, type, innerSrc, startLine, nextLine - 1);
   state.line = nextLine;
   return true;
+}
+
+function collectAlertCalloutLines(
+  state: StateBlock,
+  fromLine: number,
+  endLine: number
+): { contentLines: string[]; nextLine: number } {
+  const maxCount = Math.max(0, endLine - fromLine);
+  const candidates = Array.from({ length: maxCount }, (_, i) => readLine(state, fromLine + i));
+  const stopOffset = candidates.findIndex((line) => !/^>/.test(line));
+  const consumedCount = stopOffset === -1 ? candidates.length : stopOffset;
+  return {
+    contentLines: candidates.slice(0, consumedCount).map((line) => line.replace(/^>\s?/, "")),
+    nextLine: fromLine + consumedCount,
+  };
 }
 
 function registerCalloutRule(md: MarkdownIt): void {

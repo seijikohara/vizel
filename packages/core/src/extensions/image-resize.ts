@@ -118,11 +118,19 @@ export const VizelResizableImage = Image.extend<VizelResizableImageOptions>({
       wrapper.appendChild(rightHandle);
       wrapper.appendChild(tooltip);
 
-      // Handle resize
-      let startX = 0;
-      let startWidth = 0;
-      let isResizing = false;
-      let resizeDirection: "left" | "right" = "right";
+      // Handle resize - drag state lives in a closure-shared ref so handlers
+      // can read and clear it without mutable let bindings.
+      const dragState: {
+        startX: number;
+        startWidth: number;
+        isResizing: boolean;
+        resizeDirection: "left" | "right";
+      } = {
+        startX: 0,
+        startWidth: 0,
+        isResizing: false,
+        resizeDirection: "right",
+      };
 
       const updateTooltip = (width: number, height: number) => {
         tooltip.textContent = `${Math.round(width)} × ${Math.round(height)}`;
@@ -143,10 +151,10 @@ export const VizelResizableImage = Image.extend<VizelResizableImageOptions>({
 
         if (!editor.isEditable) return;
 
-        isResizing = true;
-        resizeDirection = direction;
-        startX = e.clientX;
-        startWidth = img.offsetWidth;
+        dragState.isResizing = true;
+        dragState.resizeDirection = direction;
+        dragState.startX = e.clientX;
+        dragState.startWidth = img.offsetWidth;
 
         showTooltip();
 
@@ -157,16 +165,22 @@ export const VizelResizableImage = Image.extend<VizelResizableImageOptions>({
       };
 
       const onMouseMove = (e: MouseEvent) => {
-        if (!isResizing) return;
+        if (!dragState.isResizing) return;
 
-        const diff = resizeDirection === "right" ? e.clientX - startX : startX - e.clientX;
+        const diff =
+          dragState.resizeDirection === "right"
+            ? e.clientX - dragState.startX
+            : dragState.startX - e.clientX;
 
         // Calculate effective maxWidth: use option if set, otherwise use container width
         const containerWidth = wrapper.parentElement?.clientWidth ?? Number.POSITIVE_INFINITY;
         const effectiveMaxWidth = maxWidth ?? containerWidth;
 
         // Clamp width between min and max
-        const newWidth = Math.min(effectiveMaxWidth, Math.max(minWidth, startWidth + diff));
+        const newWidth = Math.min(
+          effectiveMaxWidth,
+          Math.max(minWidth, dragState.startWidth + diff)
+        );
 
         // Only set width - height will auto-adjust to maintain aspect ratio
         img.style.width = `${newWidth}px`;
@@ -177,9 +191,9 @@ export const VizelResizableImage = Image.extend<VizelResizableImageOptions>({
       };
 
       const onMouseUp = () => {
-        if (!isResizing) return;
+        if (!dragState.isResizing) return;
 
-        isResizing = false;
+        dragState.isResizing = false;
         hideTooltip();
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
@@ -237,8 +251,8 @@ export const VizelResizableImage = Image.extend<VizelResizableImageOptions>({
           // Restore body styles if the node view is destroyed mid-drag, so
           // the document does not stay stuck with a resize cursor and
           // disabled text selection.
-          if (isResizing) {
-            isResizing = false;
+          if (dragState.isResizing) {
+            dragState.isResizing = false;
             document.body.style.cursor = "";
             document.body.style.userSelect = "";
           }

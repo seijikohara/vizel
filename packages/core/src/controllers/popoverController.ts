@@ -95,6 +95,69 @@ export function createVizelPopoverController(
     dismissOnEscape,
   });
 
+  const computeRawPosition = (
+    placementValue: VizelPopoverPlacement,
+    anchorRect: DOMRect,
+    bodyRect: DOMRect,
+    viewport: { width: number; height: number }
+  ): { top: number; left: number } => {
+    switch (placementValue) {
+      case "bottom-start": {
+        const top = anchorRect.bottom + offset;
+        return {
+          top:
+            top + bodyRect.height > viewport.height
+              ? anchorRect.top - bodyRect.height - offset
+              : top,
+          left: anchorRect.left,
+        };
+      }
+      case "bottom-end": {
+        const top = anchorRect.bottom + offset;
+        return {
+          top:
+            top + bodyRect.height > viewport.height
+              ? anchorRect.top - bodyRect.height - offset
+              : top,
+          left: anchorRect.right - bodyRect.width,
+        };
+      }
+      case "top-start": {
+        const top = anchorRect.top - bodyRect.height - offset;
+        return {
+          top: top < 0 ? anchorRect.bottom + offset : top,
+          left: anchorRect.left,
+        };
+      }
+      case "top-end": {
+        const top = anchorRect.top - bodyRect.height - offset;
+        return {
+          top: top < 0 ? anchorRect.bottom + offset : top,
+          left: anchorRect.right - bodyRect.width,
+        };
+      }
+      case "right-start": {
+        const left = anchorRect.right + offset;
+        return {
+          top: anchorRect.top,
+          left:
+            left + bodyRect.width > viewport.width
+              ? anchorRect.left - bodyRect.width - offset
+              : left,
+        };
+      }
+      case "left-start": {
+        const left = anchorRect.left - bodyRect.width - offset;
+        return {
+          top: anchorRect.top,
+          left: left < 0 ? anchorRect.right + offset : left,
+        };
+      }
+      default:
+        return { top: anchorRect.bottom + offset, left: anchorRect.left };
+    }
+  };
+
   const updatePosition = (): void => {
     if (typeof window === "undefined") return;
     const anchor = getAnchor();
@@ -105,56 +168,9 @@ export function createVizelPopoverController(
     const bodyRect = body.getBoundingClientRect();
     const viewport = { width: window.innerWidth, height: window.innerHeight };
 
-    let top = 0;
-    let left = 0;
-
-    switch (placement) {
-      case "bottom-start":
-        top = anchorRect.bottom + offset;
-        left = anchorRect.left;
-        if (top + bodyRect.height > viewport.height) {
-          top = anchorRect.top - bodyRect.height - offset;
-        }
-        break;
-      case "bottom-end":
-        top = anchorRect.bottom + offset;
-        left = anchorRect.right - bodyRect.width;
-        if (top + bodyRect.height > viewport.height) {
-          top = anchorRect.top - bodyRect.height - offset;
-        }
-        break;
-      case "top-start":
-        top = anchorRect.top - bodyRect.height - offset;
-        left = anchorRect.left;
-        if (top < 0) {
-          top = anchorRect.bottom + offset;
-        }
-        break;
-      case "top-end":
-        top = anchorRect.top - bodyRect.height - offset;
-        left = anchorRect.right - bodyRect.width;
-        if (top < 0) {
-          top = anchorRect.bottom + offset;
-        }
-        break;
-      case "right-start":
-        top = anchorRect.top;
-        left = anchorRect.right + offset;
-        if (left + bodyRect.width > viewport.width) {
-          left = anchorRect.left - bodyRect.width - offset;
-        }
-        break;
-      case "left-start":
-        top = anchorRect.top;
-        left = anchorRect.left - bodyRect.width - offset;
-        if (left < 0) {
-          left = anchorRect.right + offset;
-        }
-        break;
-    }
-
+    const { top, left: rawLeft } = computeRawPosition(placement, anchorRect, bodyRect, viewport);
     // Clamp horizontally inside the viewport (vertical handled above).
-    left = Math.max(0, Math.min(left, viewport.width - bodyRect.width));
+    const left = Math.max(0, Math.min(rawLeft, viewport.width - bodyRect.width));
 
     body.style.position = "fixed";
     body.style.top = `${top}px`;
@@ -165,29 +181,29 @@ export function createVizelPopoverController(
     updatePosition();
   };
 
-  let isMounted = false;
+  const state = { isMounted: false };
 
   return {
     mount: (): void => {
       if (typeof document === "undefined") return;
-      if (isMounted) return;
+      if (state.isMounted) return;
       dismissible.mount();
       updatePosition();
       if (repositionOnWindowEvents) {
         window.addEventListener("resize", handleReposition);
         window.addEventListener("scroll", handleReposition, true);
       }
-      isMounted = true;
+      state.isMounted = true;
     },
     unmount: (): void => {
       if (typeof document === "undefined") return;
-      if (!isMounted) return;
+      if (!state.isMounted) return;
       dismissible.unmount();
       if (repositionOnWindowEvents) {
         window.removeEventListener("resize", handleReposition);
         window.removeEventListener("scroll", handleReposition, true);
       }
-      isMounted = false;
+      state.isMounted = false;
     },
     updatePosition,
   };

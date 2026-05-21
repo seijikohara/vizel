@@ -36,15 +36,13 @@ export type VizelPortalLayer = keyof typeof VIZEL_PORTAL_Z_INDEX;
  * ```
  */
 export function getVizelPortalContainer(): HTMLElement {
-  let container = document.getElementById(VIZEL_PORTAL_ID);
+  const existing = document.getElementById(VIZEL_PORTAL_ID);
+  if (existing) return existing;
 
-  if (!container) {
-    container = document.createElement("div");
-    container.id = VIZEL_PORTAL_ID;
-    container.setAttribute("data-vizel-portal", "");
-    document.body.appendChild(container);
-  }
-
+  const container = document.createElement("div");
+  container.id = VIZEL_PORTAL_ID;
+  container.setAttribute("data-vizel-portal", "");
+  document.body.appendChild(container);
   return container;
 }
 

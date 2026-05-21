@@ -100,6 +100,62 @@ if (isAction(data)) {
 }
 ```
 
+## Immutability
+
+The project's TypeScript surface is immutability-first. `let` declarations
+are banned outside Svelte components and runes — every reassignable
+counter, accumulator, or timer handle lives in a typed state object so the
+file scope never needs `let`.
+
+### Why
+
+- Loops with mutable accumulators obscure data flow. The functional
+  equivalents (`.reduce`, `.flatMap`, ternary, recursion) localize the
+  computation and read top-to-bottom.
+- A closure-shared `const state = { ... }` object is type-checkable,
+  refactor-safe, and survives a `Find Usages` query that a `let`
+  binding inside a function does not.
+- Forbidding `let` removes an entire class of `let-vs-const` review
+  comments and keeps the codebase consistent across thousands of files.
+
+### Scope
+
+| In scope | Excluded |
+|----------|----------|
+| `packages/core/src/**/*.ts` | `packages/svelte/src/**/*.{svelte,svelte.ts}` |
+| `packages/react/src/**/*.{ts,tsx}` | `apps/demo/svelte/src/**/*.svelte` |
+| `packages/vue/src/**/*.{ts,vue}` (`<script setup>` blocks) | `tests/ct/svelte/specs/**/*.svelte` |
+| `scripts/**/*.ts` | Any `*.svelte.ts` rune file |
+| `tests/ct/scenarios/**/*.ts` | Any `*.d.ts` |
+| `tests/ct/react/specs/**/*.{ts,tsx}` | `node_modules/`, `dist/`, `.svelte-kit/`, `.vite/`, `.cache/` |
+| `tests/ct/vue/specs/**/*.{ts,vue}` (script blocks only) | |
+| `apps/demo/{react,vue}/src/**/*.{ts,tsx,vue}` (script blocks only) | |
+
+Svelte is excluded because Svelte 5's reactivity model treats top-level
+`let` (and runes like `$state(...)`) as the canonical reactivity primitive.
+
+### Escape hatch
+
+When a third-party API (typically a Tiptap / ProseMirror plugin's
+`addProseMirrorPlugins` closure that captures mutable state across
+transactions) genuinely requires a mutable binding, opt out with a
+required-reason ignore comment on the preceding line or the same line:
+
+```ts
+// biome-ignore lint/style/noLet: ProseMirror plugin state must be mutable.
+let decoSet = currentSet.map(tr.mapping, tr.doc);
+```
+
+The `<reason>` text is mandatory and is surfaced in code review.
+
+### Enforcement
+
+`pnpm check:nolet` (`scripts/check-no-let.ts`) walks the in-scope
+directories listed above, skips Svelte files and build artifacts, and
+exits non-zero on any unguarded `let` binding. Lefthook runs the same
+check on `pre-push`, and CI gates merges on a green run. Run it locally
+before opening a PR.
+
 ## Error Handling
 
 Vizel uses a single error model rooted at `VizelError`. Errors fall

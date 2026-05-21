@@ -217,20 +217,20 @@ export function createVizelCommentHandlers(
   const opts = { ...VIZEL_DEFAULT_COMMENT_OPTIONS, ...options };
   const storageBackend = getVizelCommentStorageBackend(opts.storage, opts.key);
 
-  let cachedComments: VizelComment[] = [];
+  const cache: { comments: VizelComment[] } = { comments: [] };
 
   const loadComments = async (): Promise<VizelComment[]> => {
     try {
       onStateChange({ isLoading: true });
       const comments = await storageBackend.load();
-      cachedComments = comments;
+      cache.comments = comments;
       onStateChange({ comments, isLoading: false, error: null });
       return comments;
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e));
       onStateChange({ isLoading: false, error });
       opts.onError?.(error);
-      return cachedComments;
+      return cache.comments;
     }
   };
 
@@ -253,9 +253,9 @@ export function createVizelCommentHandlers(
 
       editor.commands.addCommentMark(comment.id);
 
-      const updated = [comment, ...cachedComments];
+      const updated = [comment, ...cache.comments];
       await storageBackend.save(updated);
-      cachedComments = updated;
+      cache.comments = updated;
       onStateChange({ comments: updated, activeCommentId: comment.id, error: null });
 
       opts.onAdd?.(comment);
@@ -276,9 +276,9 @@ export function createVizelCommentHandlers(
         editor.commands.removeCommentMark(commentId);
       }
 
-      const updated = cachedComments.filter((c) => c.id !== commentId);
+      const updated = cache.comments.filter((c) => c.id !== commentId);
       await storageBackend.save(updated);
-      cachedComments = updated;
+      cache.comments = updated;
       onStateChange({ comments: updated, activeCommentId: null, error: null });
 
       opts.onRemove?.(commentId);
@@ -291,13 +291,13 @@ export function createVizelCommentHandlers(
 
   const resolveComment = async (commentId: string): Promise<boolean> => {
     try {
-      const comment = cachedComments.find((c) => c.id === commentId);
+      const comment = cache.comments.find((c) => c.id === commentId);
       if (!comment) return false;
 
       const updatedComment = { ...comment, resolved: true };
-      const updated = cachedComments.map((c) => (c.id === commentId ? updatedComment : c));
+      const updated = cache.comments.map((c) => (c.id === commentId ? updatedComment : c));
       await storageBackend.save(updated);
-      cachedComments = updated;
+      cache.comments = updated;
       onStateChange({ comments: updated, error: null });
 
       opts.onResolve?.(updatedComment);
@@ -312,13 +312,13 @@ export function createVizelCommentHandlers(
 
   const reopenComment = async (commentId: string): Promise<boolean> => {
     try {
-      const comment = cachedComments.find((c) => c.id === commentId);
+      const comment = cache.comments.find((c) => c.id === commentId);
       if (!comment) return false;
 
       const updatedComment = { ...comment, resolved: false };
-      const updated = cachedComments.map((c) => (c.id === commentId ? updatedComment : c));
+      const updated = cache.comments.map((c) => (c.id === commentId ? updatedComment : c));
       await storageBackend.save(updated);
-      cachedComments = updated;
+      cache.comments = updated;
       onStateChange({ comments: updated, error: null });
 
       opts.onReopen?.(updatedComment);
@@ -337,7 +337,7 @@ export function createVizelCommentHandlers(
     author?: string
   ): Promise<VizelCommentReply | null> => {
     try {
-      const comment = cachedComments.find((c) => c.id === commentId);
+      const comment = cache.comments.find((c) => c.id === commentId);
       if (!comment) return null;
 
       const reply: VizelCommentReply = {
@@ -348,9 +348,9 @@ export function createVizelCommentHandlers(
       };
 
       const updatedComment = { ...comment, replies: [...comment.replies, reply] };
-      const updated = cachedComments.map((c) => (c.id === commentId ? updatedComment : c));
+      const updated = cache.comments.map((c) => (c.id === commentId ? updatedComment : c));
       await storageBackend.save(updated);
-      cachedComments = updated;
+      cache.comments = updated;
       onStateChange({ comments: updated, error: null });
 
       return reply;
@@ -371,7 +371,7 @@ export function createVizelCommentHandlers(
   };
 
   const getCommentById = (commentId: string): VizelComment | undefined => {
-    return cachedComments.find((c) => c.id === commentId);
+    return cache.comments.find((c) => c.id === commentId);
   };
 
   return {

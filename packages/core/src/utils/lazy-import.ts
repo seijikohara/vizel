@@ -29,21 +29,23 @@ export function createLazyLoader<T>(
   moduleName: string,
   importFn: () => Promise<T>
 ): () => Promise<T> {
-  let cached: T | null = null;
-  let loading: Promise<T> | null = null;
+  const state: { cached: T | null; loading: Promise<T> | null } = {
+    cached: null,
+    loading: null,
+  };
 
   return () => {
-    if (cached) return Promise.resolve(cached);
-    if (loading) return loading;
+    if (state.cached) return Promise.resolve(state.cached);
+    if (state.loading) return state.loading;
 
-    loading = importFn().then(
+    const promise = importFn().then(
       (mod) => {
-        cached = mod;
-        loading = null;
+        state.cached = mod;
+        state.loading = null;
         return mod;
       },
       (error) => {
-        loading = null;
+        state.loading = null;
         throw new Error(
           `[Vizel] Failed to load "${moduleName}". ` +
             `Please install it: npm install ${moduleName}\n` +
@@ -51,7 +53,8 @@ export function createLazyLoader<T>(
         );
       }
     );
+    state.loading = promise;
 
-    return loading;
+    return promise;
   };
 }

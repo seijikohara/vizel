@@ -76,17 +76,16 @@ export function createVizelListboxController(
 ): VizelListboxController {
   const { getRoot, initialIndex = 0, onChange, itemSelector = "[role=option]" } = options;
 
-  let selectedIndex = initialIndex;
-  let isMounted = false;
+  const state = { selectedIndex: initialIndex, isMounted: false };
 
   const handleKey = (event: KeyboardEvent): boolean => {
     const root = getRoot();
     if (!root) return false;
     const items = root.querySelectorAll(itemSelector);
-    const next = resolveVizelListNavigation(event.key, selectedIndex, items.length);
+    const next = resolveVizelListNavigation(event.key, state.selectedIndex, items.length);
     if (next === null) return false;
-    selectedIndex = next;
-    onChange(selectedIndex);
+    state.selectedIndex = next;
+    onChange(state.selectedIndex);
     return true;
   };
 
@@ -100,22 +99,22 @@ export function createVizelListboxController(
   return {
     mount: (): void => {
       if (typeof document === "undefined") return;
-      if (isMounted) return;
+      if (state.isMounted) return;
       const root = getRoot();
       if (!root) return;
       root.addEventListener("keydown", handleKeyDown);
-      isMounted = true;
+      state.isMounted = true;
     },
     unmount: (): void => {
       if (typeof document === "undefined") return;
-      if (!isMounted) return;
+      if (!state.isMounted) return;
       getRoot()?.removeEventListener("keydown", handleKeyDown);
-      isMounted = false;
+      state.isMounted = false;
     },
     handleKey,
-    getSelectedIndex: () => selectedIndex,
+    getSelectedIndex: () => state.selectedIndex,
     setSelectedIndex: (index: number) => {
-      selectedIndex = index;
+      state.selectedIndex = index;
     },
   };
 }

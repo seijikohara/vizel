@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<VizelMinimapProps>(), {
 });
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
-let rafHandle: number | null = null;
+const rafState: { handle: number | null } = { handle: null };
 
 // Subscribe to editor transactions so we redraw on every doc mutation.
 // The returned tick value is intentionally unused.
@@ -30,9 +30,9 @@ const editorRef = computed(() => props.editor);
 function redraw() {
   const editor = props.editor;
   if (!editor) return;
-  if (rafHandle !== null) return;
-  rafHandle = requestAnimationFrame(() => {
-    rafHandle = null;
+  if (rafState.handle !== null) return;
+  rafState.handle = requestAnimationFrame(() => {
+    rafState.handle = null;
     const canvas = canvasRef.value;
     if (!canvas) return;
     const spec = buildVizelMinimapSpec(editor);
@@ -42,9 +42,9 @@ function redraw() {
 
 onMounted(redraw);
 onBeforeUnmount(() => {
-  if (rafHandle !== null) {
-    cancelAnimationFrame(rafHandle);
-    rafHandle = null;
+  if (rafState.handle !== null) {
+    cancelAnimationFrame(rafState.handle);
+    rafState.handle = null;
   }
 });
 

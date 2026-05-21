@@ -162,17 +162,27 @@ export function createVizelMarkdownSyncHandlers(
 ): VizelMarkdownSyncHandlers {
   const { debounceMs = VIZEL_DEFAULT_MARKDOWN_DEBOUNCE_MS, transformDiagrams = true } = options;
 
-  let currentMarkdown = "";
-  let pending = false;
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  const state: {
+    currentMarkdown: string;
+    pending: boolean;
+    timeoutId: ReturnType<typeof setTimeout> | null;
+  } = {
+    currentMarkdown: "",
+    pending: false,
+    timeoutId: null,
+  };
+
+  const clearTimer = (): void => {
+    if (state.timeoutId) {
+      clearTimeout(state.timeoutId);
+      state.timeoutId = null;
+    }
+  };
 
   const flush = (editor: Editor): void => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
-    currentMarkdown = getVizelMarkdown(editor);
-    pending = false;
+    clearTimer();
+    state.currentMarkdown = getVizelMarkdown(editor);
+    state.pending = false;
   };
 
   const handleUpdate = (editor: Editor): void => {
@@ -181,54 +191,40 @@ export function createVizelMarkdownSyncHandlers(
       // after a subsequent `debounceMs === 0` call. The previous shape left
       // a stale `setTimeout` running, which made `isPending()` lie about
       // the export status.
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
-      pending = false;
-      currentMarkdown = getVizelMarkdown(editor);
+      clearTimer();
+      state.pending = false;
+      state.currentMarkdown = getVizelMarkdown(editor);
       return;
     }
 
-    pending = true;
+    state.pending = true;
+    clearTimer();
 
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-
-    timeoutId = setTimeout(() => {
-      currentMarkdown = getVizelMarkdown(editor);
-      pending = false;
-      timeoutId = null;
+    state.timeoutId = setTimeout(() => {
+      state.currentMarkdown = getVizelMarkdown(editor);
+      state.pending = false;
+      state.timeoutId = null;
     }, debounceMs);
   };
 
   const setMarkdownFn = (editor: Editor, markdown: string): void => {
     // Cancel any pending export
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
-    pending = false;
+    clearTimer();
+    state.pending = false;
 
     // Set the markdown content
     setVizelMarkdown(editor, markdown, { transformDiagrams });
 
     // Update current markdown
-    currentMarkdown = markdown;
+    state.currentMarkdown = markdown;
   };
 
   return {
     handleUpdate,
-    getMarkdown: () => currentMarkdown,
+    getMarkdown: () => state.currentMarkdown,
     setMarkdown: setMarkdownFn,
-    isPending: () => pending,
+    isPending: () => state.pending,
     flush,
-    destroy: () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
-    },
+    destroy: clearTimer,
   };
 }

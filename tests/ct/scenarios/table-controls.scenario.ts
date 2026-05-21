@@ -758,8 +758,7 @@ export async function testTextAlignmentLeftViaMenu(component: Locator, page: Pag
 
   // First, set center alignment
   await showColumnHandleAndClick(page, 0);
-  let menu = page.locator(TABLE_MENU_SELECTOR);
-  await menu.getByText("Align center").click();
+  await page.locator(TABLE_MENU_SELECTOR).getByText("Align center").click();
 
   // Verify center alignment was applied
   const firstHeaderCell = table.locator("th").first();
@@ -767,8 +766,7 @@ export async function testTextAlignmentLeftViaMenu(component: Locator, page: Pag
 
   // Now change to left alignment
   await showColumnHandleAndClick(page, 0);
-  menu = page.locator(TABLE_MENU_SELECTOR);
-  await menu.getByText("Align left").click();
+  await page.locator(TABLE_MENU_SELECTOR).getByText("Align left").click();
 
   // Verify left alignment was applied
   await expect(firstHeaderCell).toHaveCSS("text-align", "left");

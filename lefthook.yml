@@ -54,3 +54,6 @@ pre-push:
 
     ssr:
       run: pnpm check:ssr
+
+    nolet:
+      run: pnpm check:nolet

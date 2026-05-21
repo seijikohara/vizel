@@ -60,66 +60,95 @@ function collectFiles(dir: string, out: string[]): void {
  * Depth 0 is module scope; any positive depth is inside a function /
  * class / block. References at depth > 0 are permitted.
  */
-function findModuleScopeViolations(file: string, source: string): Violation[] {
-  const lines = source.split("\n");
-  const violations: Violation[] = [];
-  let depth = 0;
-  let inBlockComment = false;
-  let inLineComment = false;
-  let inString: '"' | "'" | "`" | null = null;
-  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-    const line = lines[lineIdx] ?? "";
-    inLineComment = false;
-    for (let col = 0; col < line.length; col++) {
-      const ch = line[col];
-      const next = line[col + 1];
-      if (inLineComment) break;
-      if (inBlockComment) {
-        if (ch === "*" && next === "/") {
-          inBlockComment = false;
-          col++;
-        }
-        continue;
-      }
-      if (inString) {
-        if (ch === "\\") {
-          col++;
-          continue;
-        }
-        if (ch === inString) {
-          inString = null;
-        }
-        continue;
-      }
-      if (ch === "/" && next === "/") {
-        inLineComment = true;
-        break;
-      }
-      if (ch === "/" && next === "*") {
-        inBlockComment = true;
-        col++;
-        continue;
-      }
-      if (ch === '"' || ch === "'" || ch === "`") {
-        inString = ch;
-        continue;
-      }
-      if (ch === "{") depth++;
-      else if (ch === "}") depth = Math.max(0, depth - 1);
+interface LexerState {
+  depth: number;
+  inBlockComment: boolean;
+  inString: '"' | "'" | "`" | null;
+}
+
+interface LineLexer {
+  inLineComment: boolean;
+  skipNext: boolean;
+}
+
+/**
+ * Apply a single character to the lexer state. Mutates `lexer` and
+ * `lineLexer` to reflect the new lexer state. Returns `true` when the
+ * caller should `break` out of the per-character loop (line-comment hit).
+ */
+function stepLexer(
+  ch: string | undefined,
+  next: string | undefined,
+  lexer: LexerState,
+  lineLexer: LineLexer
+): boolean {
+  if (lineLexer.skipNext) {
+    lineLexer.skipNext = false;
+    return false;
+  }
+  if (lineLexer.inLineComment) return true;
+  if (lexer.inBlockComment) {
+    if (ch === "*" && next === "/") {
+      lexer.inBlockComment = false;
+      lineLexer.skipNext = true;
     }
-    if (depth !== 0 || inBlockComment) continue;
-    for (const { pattern, label } of BANNED_PATTERNS) {
-      const match = pattern.exec(line);
-      if (!match) continue;
-      const column = (match.index ?? 0) + 1;
-      violations.push({
+    return false;
+  }
+  if (lexer.inString) {
+    if (ch === "\\") {
+      lineLexer.skipNext = true;
+      return false;
+    }
+    if (ch === lexer.inString) lexer.inString = null;
+    return false;
+  }
+  if (ch === "/" && next === "/") {
+    lineLexer.inLineComment = true;
+    return true;
+  }
+  if (ch === "/" && next === "*") {
+    lexer.inBlockComment = true;
+    lineLexer.skipNext = true;
+    return false;
+  }
+  if (ch === '"' || ch === "'" || ch === "`") {
+    lexer.inString = ch;
+    return false;
+  }
+  if (ch === "{") lexer.depth += 1;
+  else if (ch === "}") lexer.depth = Math.max(0, lexer.depth - 1);
+  return false;
+}
+
+function collectLineViolations(file: string, line: string, lineIdx: number): Violation[] {
+  return BANNED_PATTERNS.flatMap(({ pattern, label }) => {
+    const match = pattern.exec(line);
+    if (!match) return [];
+    return [
+      {
         file,
         line: lineIdx + 1,
-        column,
+        column: (match.index ?? 0) + 1,
         snippet: line.trim(),
         label,
-      });
+      },
+    ];
+  });
+}
+
+function findModuleScopeViolations(file: string, source: string): Violation[] {
+  const lexer: LexerState = { depth: 0, inBlockComment: false, inString: null };
+  const lines = source.split("\n");
+  const violations: Violation[] = [];
+
+  for (const [lineIdx, line] of lines.entries()) {
+    const lineLexer: LineLexer = { inLineComment: false, skipNext: false };
+    const chars = [...line];
+    for (const [col, ch] of chars.entries()) {
+      if (stepLexer(ch, line[col + 1], lexer, lineLexer)) break;
     }
+    if (lexer.depth !== 0 || lexer.inBlockComment) continue;
+    violations.push(...collectLineViolations(file, line, lineIdx));
   }
   return violations;
 }

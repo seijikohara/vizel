@@ -111,8 +111,10 @@ const markdown = defineModel<string>("markdown");
 
 const slots = useSlots();
 
-// Track whether we're currently updating from external markdown change
-let isUpdatingFromMarkdown = false;
+// Track whether we're currently updating from external markdown change.
+// A closure-shared ref lets the update callback and the markdown watcher
+// flip the guard without resorting to a mutable `let` binding.
+const markdownSyncFlag = { isUpdatingFromMarkdown: false };
 
 const editor = useVizelEditor({
   ...(props.initialContent !== undefined && { initialContent: props.initialContent }),
@@ -130,7 +132,7 @@ const editor = useVizelEditor({
   onUpdate: (e) => {
     emit("update", e);
     // Update markdown model if not updating from external change
-    if (!isUpdatingFromMarkdown && markdown.value !== undefined) {
+    if (!markdownSyncFlag.isUpdatingFromMarkdown && markdown.value !== undefined) {
       markdown.value = getVizelMarkdown(e.editor);
     }
   },
@@ -151,11 +153,11 @@ watch(markdown, (newMarkdown) => {
   if (newMarkdown === currentMarkdown) return;
 
   // Set flag to prevent emitting update:markdown during this update
-  isUpdatingFromMarkdown = true;
+  markdownSyncFlag.isUpdatingFromMarkdown = true;
   setVizelMarkdown(editor.value, newMarkdown, {
     transformDiagrams: props.transformDiagramsOnImport,
   });
-  isUpdatingFromMarkdown = false;
+  markdownSyncFlag.isUpdatingFromMarkdown = false;
 });
 
 // Expose editor instance for advanced use cases.

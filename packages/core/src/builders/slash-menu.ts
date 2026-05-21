@@ -69,10 +69,17 @@ export function buildVizelSlashMenuSpec(
       ? [{ name: "", items: [...items] }]
       : groupVizelSlashCommands([...items], groupOrder);
 
-  let globalIndex = 0;
+  const groupOffsets = groups.reduce<number[]>(
+    (acc, group) => {
+      acc.push((acc.at(-1) ?? 0) + group.items.length);
+      return acc;
+    },
+    [0]
+  );
   const sections = groups.map((group, gIndex) => {
-    const sectionItems = group.items.map((item) => {
-      const index = globalIndex++;
+    const baseOffset = groupOffsets[gIndex] ?? 0;
+    const sectionItems = group.items.map((item, indexInGroup) => {
+      const index = baseOffset + indexInGroup;
       return {
         key: item.id,
         index,
@@ -197,11 +204,18 @@ export function buildVizelSlashMenuSpecFromCommands(
         ...[...groupedMap.keys()].filter((name) => !order.includes(name)),
       ];
 
-  let globalIndex = 0;
+  const groupOffsets = orderedGroupNames.reduce<number[]>(
+    (acc, groupName) => {
+      acc.push((acc.at(-1) ?? 0) + (groupedMap.get(groupName)?.length ?? 0));
+      return acc;
+    },
+    [0]
+  );
   const sections = orderedGroupNames.map((groupName, gIndex) => {
     const groupCommands = groupedMap.get(groupName) ?? [];
-    const sectionItems = groupCommands.map((command) => {
-      const index = globalIndex++;
+    const baseOffset = groupOffsets[gIndex] ?? 0;
+    const sectionItems = groupCommands.map((command, indexInGroup) => {
+      const index = baseOffset + indexInGroup;
       return {
         key: command.id,
         index,

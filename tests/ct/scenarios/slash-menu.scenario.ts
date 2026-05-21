@@ -239,17 +239,16 @@ export async function testSlashMenuTabNavigation(component: Locator, page: Page)
   await expect(slashMenu).toBeVisible();
 
   // First item should be selected (in Text group)
-  let selectedItem = slashMenu.locator("[data-selected='true']");
+  const selectedItem = slashMenu.locator("[data-selected='true']");
   await expect(selectedItem).toBeVisible();
   await expect(selectedItem).toContainText("Heading");
 
   // Press Tab to go to next group (Lists)
   await page.keyboard.press("Tab");
 
-  // Check that a different item is selected
-  selectedItem = slashMenu.locator("[data-selected='true']");
-  await expect(selectedItem).toBeVisible();
-  await expect(selectedItem).toContainText("Bullet List");
+  // The selected item now points at the first item of the next group.
+  await expect(slashMenu.locator("[data-selected='true']")).toBeVisible();
+  await expect(slashMenu.locator("[data-selected='true']")).toContainText("Bullet List");
 }
 
 /** Verify fuzzy search works with keywords */
