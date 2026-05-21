@@ -58,6 +58,7 @@ export {
   buildVizelFindReplaceSpecFromLocale,
   buildVizelLinkEditorSpec,
   buildVizelMentionMenuSpec,
+  buildVizelMinimapSpec,
   buildVizelNodeSelectorSpec,
   buildVizelSlashMenuSpec,
   buildVizelSlashMenuSpecFromCommands,
@@ -90,6 +91,8 @@ export {
   type VizelMenuRootAttrs,
   type VizelMenuSectionSpec,
   type VizelMenuSpec,
+  type VizelMinimapBlockSpec,
+  type VizelMinimapSpec,
   type VizelNodeSelectorItemView,
   type VizelNodeSelectorSpec,
   type VizelNodeSelectorTriggerSpec,
@@ -535,6 +538,8 @@ export {
   parseVizelMarkdown,
   registerVizelUploadEventHandler,
   removeVizelPortalContainer,
+  // Minimap canvas rendering
+  renderVizelMinimapToCanvas,
   resolveVizelFeatures,
   // Markdown flavor utilities
   resolveVizelFlavorConfig,
@@ -563,6 +568,7 @@ export {
   type VizelErrorSeverity,
   type VizelFlavorConfig,
   type VizelMarkdownSyncHandlers,
+  type VizelMinimapRenderOptions,
   type VizelMountPortalOptions,
   type VizelPortalLayer,
   type VizelResolveFeaturesOptions,
