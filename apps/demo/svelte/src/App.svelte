@@ -248,9 +248,6 @@ function handleJsonChange(event: Event) {
               typography: true,
               mention: { items: mockMentionItems },
             },
-            collaboration: {
-              comments: true,
-            },
           }}
           onCreate={handleCreate}
           onUpdate={handleUpdate}

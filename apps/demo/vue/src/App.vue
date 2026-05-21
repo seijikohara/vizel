@@ -243,9 +243,6 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
                   typography: true,
                   mention: { items: mockMentionItems },
                 },
-                collaboration: {
-                  comments: true,
-                },
               }"
               @create="handleCreate"
               @update="handleUpdate"
