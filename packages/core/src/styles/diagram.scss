@@ -173,11 +173,49 @@
   --vizel-diagram-editing-bg: v("background-tertiary");
 }
 
+// GraphViz emits SVGs with hard-coded `stroke="black"` and
+// `fill="white"`, which collapse into invisible strokes on a dark
+// canvas. Mermaid embeds its own `<style>` block with theme-aware
+// colors and does not rely on these literal attributes, so the
+// attribute selectors below only catch GraphViz output and leave
+// Mermaid alone.
+[data-vizel-theme="dark"] .vizel-diagram-render svg {
+  [stroke="black"] {
+    stroke: v("foreground");
+  }
+  [fill="white"] {
+    fill: v("background-secondary");
+  }
+  [fill="black"]:not([stroke]) {
+    fill: v("foreground");
+  }
+  text {
+    fill: v("foreground");
+  }
+}
+
 @media (prefers-color-scheme: dark) {
-  .vizel-diagram {
-    --vizel-diagram-bg: v("background-secondary");
-    --vizel-diagram-hover-bg: v("background-tertiary");
-    --vizel-diagram-selected-bg: v("primary-bg");
-    --vizel-diagram-editing-bg: v("background-tertiary");
+  :root:not([data-vizel-theme="light"]):not([data-vizel-theme]) {
+    .vizel-diagram {
+      --vizel-diagram-bg: v("background-secondary");
+      --vizel-diagram-hover-bg: v("background-tertiary");
+      --vizel-diagram-selected-bg: v("primary-bg");
+      --vizel-diagram-editing-bg: v("background-tertiary");
+    }
+
+    .vizel-diagram-render svg {
+      [stroke="black"] {
+        stroke: v("foreground");
+      }
+      [fill="white"] {
+        fill: v("background-secondary");
+      }
+      [fill="black"]:not([stroke]) {
+        fill: v("foreground");
+      }
+      text {
+        fill: v("foreground");
+      }
+    }
   }
 }
