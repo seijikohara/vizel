@@ -39,6 +39,17 @@ export interface VizelMinimapSpec {
     /** Bottom of the visible window in pixels. */
     readonly bottom: number;
   };
+  /**
+   * Full pixel height of the editor DOM at build time (`scrollHeight`).
+   *
+   * The renderer needs this to translate the pixel-based
+   * {@link viewport} window into canvas Y coordinates. Block
+   * rectangles are laid out against the sum of
+   * {@link VizelMinimapBlockSpec.approxHeight} values, which is a
+   * coarser estimate; mixing the two scales caused the viewport
+   * overlay to land on the wrong slice of the canvas.
+   */
+  readonly contentHeight: number;
 }
 
 /** Deterministic height estimate per heading level (1..6). */
@@ -115,11 +126,48 @@ export function buildVizelMinimapSpec(editor: Editor): VizelMinimapSpec {
   const hasWindow = typeof window !== "undefined";
   const view = editor.view;
   const dom = hasWindow && view ? view.dom : null;
-  const top = dom instanceof HTMLElement ? dom.scrollTop : 0;
-  const bottom = dom instanceof HTMLElement ? dom.scrollTop + dom.clientHeight : 0;
+  const { top, bottom } = resolveViewportSlice(dom);
+  const contentHeight =
+    dom instanceof HTMLElement ? Math.max(dom.scrollHeight, dom.offsetHeight) : 0;
 
   return {
     blocks,
     viewport: { top, bottom },
+    contentHeight,
   };
+}
+
+/**
+ * Compute the slice of the editor DOM that is currently visible.
+ *
+ * The minimap can be embedded in two layouts:
+ *
+ * - The editor DOM scrolls internally (a fixed-height container with
+ *   `overflow: auto`). The visible slice is just
+ *   `[scrollTop, scrollTop + clientHeight)`.
+ * - The editor sits at its natural height and the page scrolls around
+ *   it. `scrollTop` stays 0 and `clientHeight` covers the entire
+ *   document, so the previous version highlighted everything as
+ *   visible. Detect this case by comparing `scrollHeight` against
+ *   `clientHeight` and fall back to intersecting the editor's bounding
+ *   rectangle with the window.
+ */
+function resolveViewportSlice(dom: HTMLElement | null): { top: number; bottom: number } {
+  if (!(dom instanceof HTMLElement)) return { top: 0, bottom: 0 };
+
+  const scrollsInternally = dom.scrollHeight - dom.clientHeight > 1;
+  if (scrollsInternally) {
+    return { top: dom.scrollTop, bottom: dom.scrollTop + dom.clientHeight };
+  }
+
+  if (typeof window === "undefined") {
+    return { top: 0, bottom: dom.clientHeight };
+  }
+
+  const rect = dom.getBoundingClientRect();
+  const editorHeight = dom.offsetHeight;
+  const windowHeight = window.innerHeight;
+  const top = Math.max(0, Math.min(editorHeight, -rect.top));
+  const bottom = Math.max(0, Math.min(editorHeight, windowHeight - rect.top));
+  return { top, bottom };
 }

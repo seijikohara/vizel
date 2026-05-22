@@ -113,12 +113,18 @@ export function renderVizelMinimapToCanvas(
     return yCursor + rectHeight;
   }, 0);
 
-  // Viewport overlay: translate the doc-level [viewport.top, viewport.bottom]
-  // range into canvas Y coordinates by scaling against the cumulative height.
+  // Viewport overlay: translate the editor DOM's pixel-based visible
+  // window into canvas Y coordinates by scaling against the editor's
+  // actual content height. The block rectangles above use
+  // approxHeight (a coarse estimate, not real DOM pixels), so the two
+  // coordinate systems must be kept separate — overlaying the
+  // viewport against the approxHeight total drifts further from the
+  // actual visible slice as the document grows.
   const { top: viewTop, bottom: viewBottom } = spec.viewport;
-  if (viewBottom > viewTop && total > 0) {
-    const overlayTop = Math.max(0, Math.floor((viewTop / total) * height));
-    const overlayBottom = Math.min(height, Math.ceil((viewBottom / total) * height));
+  const scaleBase = spec.contentHeight > 0 ? spec.contentHeight : total;
+  if (viewBottom > viewTop && scaleBase > 0) {
+    const overlayTop = Math.max(0, Math.floor((viewTop / scaleBase) * height));
+    const overlayBottom = Math.min(height, Math.ceil((viewBottom / scaleBase) * height));
     const overlayHeight = Math.max(2, overlayBottom - overlayTop);
     ctx.fillStyle = viewportColor;
     ctx.fillRect(0, overlayTop, width, overlayHeight);

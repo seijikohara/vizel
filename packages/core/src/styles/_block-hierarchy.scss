@@ -7,38 +7,41 @@
  *
  * Activated by `features.interaction.visualHierarchy`.
  *
- * Paragraphs are excluded entirely. A paragraph reaches depth >= 2
- * only when it lives inside another block — a list item, a
- * blockquote, a callout, a `<details>` body, etc. In every one of
- * those containers the parent already supplies the indent (the list
- * marker offset, the blockquote bar, the callout padding, …), so
- * applying hierarchy padding to the paragraph as well pushes the
- * text away from its marker. The container itself still receives
- * the hierarchy treatment so nesting remains visually obvious.
+ * Paragraphs and list items are excluded. A paragraph reaches
+ * depth >= 2 only when it lives inside another block (list item,
+ * blockquote, callout, `<details>` body, …) where the container
+ * already supplies the indent. A list item likewise sits inside a
+ * `<ul>` / `<ol>` whose padding handles the marker offset — adding
+ * a second padding + border on the `<li>` would push the bullet
+ * away from its row and draw a redundant guide line that no longer
+ * aligns with the actual indent step. The container itself (the
+ * outer `<ul>` / `<ol>` / blockquote / callout / details body) still
+ * receives the hierarchy treatment so nesting stays visually
+ * obvious.
  */
 
 .vizel-root .ProseMirror {
-  [data-vizel-depth="2"]:not(p) {
+  [data-vizel-depth="2"]:not(p):not(li) {
     padding-inline-start: 1rem;
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }
 
-  [data-vizel-depth="3"]:not(p) {
+  [data-vizel-depth="3"]:not(p):not(li) {
     padding-inline-start: 1.25rem;
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }
 
-  [data-vizel-depth="4"]:not(p) {
+  [data-vizel-depth="4"]:not(p):not(li) {
     padding-inline-start: 1.5rem;
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }
 
-  [data-vizel-depth="5"]:not(p) {
+  [data-vizel-depth="5"]:not(p):not(li) {
     padding-inline-start: 1.75rem;
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }
 
-  [data-vizel-depth="6"]:not(p) {
+  [data-vizel-depth="6"]:not(p):not(li) {
     padding-inline-start: 2rem;
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }

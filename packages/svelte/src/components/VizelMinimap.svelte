@@ -44,10 +44,22 @@ $effect(() => {
   void editor;
   void canvasRef;
   redraw();
+  // Track page scroll / resize so the minimap viewport highlight stays
+  // aligned when the editor sits at its natural height and the page
+  // scrolls around it. `redraw` is throttled through
+  // `requestAnimationFrame`, so event-heavy scrolling stays smooth.
+  if (typeof window !== "undefined") {
+    window.addEventListener("scroll", redraw, { passive: true });
+    window.addEventListener("resize", redraw, { passive: true });
+  }
   return () => {
     if (rafHandle !== null) {
       cancelAnimationFrame(rafHandle);
       rafHandle = null;
+    }
+    if (typeof window !== "undefined") {
+      window.removeEventListener("scroll", redraw);
+      window.removeEventListener("resize", redraw);
     }
   };
 });
