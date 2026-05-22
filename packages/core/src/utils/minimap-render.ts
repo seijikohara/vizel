@@ -1,4 +1,4 @@
-import type { VizelMinimapBlockSpec, VizelMinimapSpec } from "../builders/minimap.ts";
+import type { VizelMinimapSpec } from "../builders/minimap.ts";
 
 /**
  * Options accepted by {@link renderVizelMinimapToCanvas}.
@@ -59,13 +59,14 @@ function isHeadingLike(type: string): boolean {
 /**
  * Render the minimap reduction of `spec` onto `canvas`.
  *
- * Each block becomes a rectangle whose vertical extent is proportional to
- * `block.approxHeight` (so the column fills the canvas), and whose
- * horizontal width is scaled by `1 / depth` to convey nesting. The viewport
- * range from the spec is overlaid as a translucent rectangle.
+ * Every numeric field on the spec lives in the same coordinate
+ * system (editor DOM pixels). The renderer projects each value to
+ * canvas Y with the same formula — `pixel / contentHeight *
+ * canvasHeight` — so the block rectangles and the viewport overlay
+ * stay aligned by construction.
  *
- * SSR / degraded-environment safe: bails when `canvas` is null/undefined
- * or `getContext` is unavailable, never throws.
+ * SSR / degraded-environment safe: bails when `canvas` is null /
+ * undefined or `getContext` is unavailable, never throws.
  */
 export function renderVizelMinimapToCanvas(
   canvas: HTMLCanvasElement | null | undefined,
@@ -89,36 +90,25 @@ export function renderVizelMinimapToCanvas(
   ctx.fillStyle = background;
   ctx.fillRect(0, 0, width, height);
 
-  const blocks = spec.blocks;
-  if (blocks.length === 0) return;
+  if (spec.contentHeight <= 0) return;
 
-  // Sum of block heights drives the proportional rectangle layout. A
-  // zero total (empty doc) renders only the background.
-  const total = blocks.reduce(
-    (sum: number, block: VizelMinimapBlockSpec) => sum + block.approxHeight,
-    0
-  );
-  if (total <= 0) return;
+  const scale = height / spec.contentHeight;
 
-  blocks.reduce((yCursor, block) => {
-    const ratio = block.approxHeight / total;
-    const rectHeight = Math.max(1, Math.floor(ratio * height));
+  for (const block of spec.blocks) {
     // Clamp depth to >= 1 to guarantee a non-zero rectangle width.
     const safeDepth = Math.max(1, block.depth);
     const rectWidth = Math.max(2, Math.floor(width / safeDepth));
+    const rectTop = Math.floor(block.offsetTop * scale);
+    const rectHeight = Math.max(1, Math.floor(block.height * scale));
 
     ctx.fillStyle = isHeadingLike(block.type) ? headingColor : blockColor;
-    ctx.fillRect(0, yCursor, rectWidth, Math.max(1, rectHeight - 1));
+    ctx.fillRect(0, rectTop, rectWidth, rectHeight);
+  }
 
-    return yCursor + rectHeight;
-  }, 0);
-
-  // Viewport overlay: translate the doc-level [viewport.top, viewport.bottom]
-  // range into canvas Y coordinates by scaling against the cumulative height.
   const { top: viewTop, bottom: viewBottom } = spec.viewport;
-  if (viewBottom > viewTop && total > 0) {
-    const overlayTop = Math.max(0, Math.floor((viewTop / total) * height));
-    const overlayBottom = Math.min(height, Math.ceil((viewBottom / total) * height));
+  if (viewBottom > viewTop) {
+    const overlayTop = Math.max(0, Math.floor(viewTop * scale));
+    const overlayBottom = Math.min(height, Math.ceil(viewBottom * scale));
     const overlayHeight = Math.max(2, overlayBottom - overlayTop);
     ctx.fillStyle = viewportColor;
     ctx.fillRect(0, overlayTop, width, overlayHeight);
