@@ -4,11 +4,14 @@ import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 /**
  * One row in the document outline used by `VizelMinimap`.
  *
- * The minimap renderer draws a rectangle per spec entry; the rectangle's
- * vertical extent is proportional to `approxHeight`, the horizontal extent
- * is scaled by `1 / depth`, and `pos` is forwarded back to the editor when
- * the user clicks on the rectangle so we can call
- * `editor.commands.focus(pos)`.
+ * `offsetTop` and `height` are pixel values relative to the editor
+ * DOM. They come from `view.coordsAtPos(pos)` when the view is
+ * available; on SSR / pre-mount / when `coordsAtPos` throws, the
+ * builder falls back to deterministic per-node estimates so a block
+ * still gets a non-zero rectangle.
+ *
+ * `pos` is forwarded back to the editor when the user clicks on the
+ * rectangle so we can call `editor.commands.focus(pos)`.
  */
 export interface VizelMinimapBlockSpec {
   /** Stable identity for the row (`${type}-${pos}`); used as a React key. */
@@ -17,8 +20,10 @@ export interface VizelMinimapBlockSpec {
   readonly type: string;
   /** Nesting depth measured from the doc root (top-level blocks = 1). */
   readonly depth: number;
-  /** Deterministic pixel estimate of the block's rendered height. */
-  readonly approxHeight: number;
+  /** Top of the block in editor DOM pixels. */
+  readonly offsetTop: number;
+  /** Height of the block in editor DOM pixels. */
+  readonly height: number;
   /** Doc-level start position; pass to `editor.commands.focus(pos)`. */
   readonly pos: number;
 }
@@ -26,29 +31,22 @@ export interface VizelMinimapBlockSpec {
 /**
  * Output of {@link buildVizelMinimapSpec}.
  *
- * `viewport` mirrors the editor DOM's scroll window in pixels so the
- * renderer can draw the highlight overlay without re-reading the DOM.
+ * All numbers share one coordinate system: editor DOM pixels. Block
+ * rectangles, the viewport overlay, and `contentHeight` are
+ * directly comparable so the renderer can map every value to canvas
+ * Y via the same `pixel / contentHeight * canvasHeight` formula.
  */
 export interface VizelMinimapSpec {
   /** Top-level + nested blocks in document order. */
   readonly blocks: readonly VizelMinimapBlockSpec[];
-  /** Visible scroll window of the editor DOM at build time. */
+  /** Visible scroll window of the editor in editor DOM pixels. */
   readonly viewport: {
-    /** Top of the visible window in pixels (`view.dom.scrollTop`). */
+    /** Top of the visible window. */
     readonly top: number;
-    /** Bottom of the visible window in pixels. */
+    /** Bottom of the visible window. */
     readonly bottom: number;
   };
-  /**
-   * Full pixel height of the editor DOM at build time (`scrollHeight`).
-   *
-   * The renderer needs this to translate the pixel-based
-   * {@link viewport} window into canvas Y coordinates. Block
-   * rectangles are laid out against the sum of
-   * {@link VizelMinimapBlockSpec.approxHeight} values, which is a
-   * coarser estimate; mixing the two scales caused the viewport
-   * overlay to land on the wrong slice of the canvas.
-   */
+  /** Full pixel height of the editor (`scrollHeight`). */
   readonly contentHeight: number;
 }
 
@@ -68,9 +66,8 @@ const LIST_ROW_HEIGHT = 24;
 /**
  * Return the deterministic pixel estimate for a single ProseMirror node.
  *
- * The numbers are deliberately coarse — the minimap is a visual cue, not
- * a layout mirror — but they are stable so the renderer never reflows on
- * every transaction.
+ * Only used as a fallback when `coordsAtPos` is unavailable (SSR,
+ * pre-mount). The live path uses real DOM measurements.
  */
 function estimateApproxHeight(node: ProseMirrorNode): number {
   const typeName = node.type.name;
@@ -98,43 +95,76 @@ function estimateApproxHeight(node: ProseMirrorNode): number {
 /**
  * Walk `editor.state.doc` and collect a `VizelMinimapSpec`.
  *
- * The walk includes every block-level node (top-level paragraphs, headings,
- * lists, list items, code blocks, embeds, etc.) so the renderer can convey
- * the document's hierarchy. The viewport window comes from the editor
- * DOM's `scrollTop` / `clientHeight`; when the editor view is unavailable
- * (SSR, pre-mount, destroyed editor) we return `{ top: 0, bottom: 0 }`.
+ * Live block geometry comes from `view.coordsAtPos`, so the minimap
+ * mirrors what the user actually sees. When the view is unavailable
+ * (SSR, pre-mount, destroyed editor) we fall back to deterministic
+ * height estimates and lay blocks out sequentially from y=0; the
+ * canvas still renders without throwing.
  */
 export function buildVizelMinimapSpec(editor: Editor): VizelMinimapSpec {
   const blocks: VizelMinimapBlockSpec[] = [];
+  const view = typeof window === "undefined" ? null : editor.view;
+  const editorTop = view?.dom instanceof HTMLElement ? view.dom.getBoundingClientRect().top : 0;
+  const layoutState = { fallbackY: 0 };
 
   editor.state.doc.descendants((node, pos) => {
     if (!node.isBlock) return false;
     if (node.type.name === "doc") return true;
+    const { offsetTop, height } = measureBlockGeometry(view, editorTop, node, pos, layoutState);
     blocks.push({
       key: `${node.type.name}-${pos}`,
       type: node.type.name,
       depth: editor.state.doc.resolve(pos).depth,
-      approxHeight: estimateApproxHeight(node),
+      offsetTop,
+      height,
       pos,
     });
     return true;
   });
 
-  // SSR guard: `editor.view` is unavailable during server render and
-  // before the view mounts. Surface a zero-size viewport so the renderer
-  // can still draw block rectangles without touching the DOM.
-  const hasWindow = typeof window !== "undefined";
-  const view = editor.view;
-  const dom = hasWindow && view ? view.dom : null;
+  const dom = view?.dom instanceof HTMLElement ? view.dom : null;
   const { top, bottom } = resolveViewportSlice(dom);
-  const contentHeight =
-    dom instanceof HTMLElement ? Math.max(dom.scrollHeight, dom.offsetHeight) : 0;
+  const contentHeight = dom ? Math.max(dom.scrollHeight, dom.offsetHeight) : layoutState.fallbackY;
 
   return {
     blocks,
     viewport: { top, bottom },
     contentHeight,
   };
+}
+
+/**
+ * Resolve a block's `(offsetTop, height)` in editor DOM pixels.
+ *
+ * Uses `view.coordsAtPos` (viewport-relative window coordinates)
+ * shifted by the editor DOM's own top so the resulting pixels are
+ * measured from the editor's content origin. `coordsAtPos` can
+ * throw when the node has not been laid out yet; on failure (or when
+ * the view is unavailable) the fallback path advances a deterministic
+ * y-cursor by `estimateApproxHeight(node)`.
+ */
+function measureBlockGeometry(
+  view: Editor["view"] | null,
+  editorTop: number,
+  node: ProseMirrorNode,
+  pos: number,
+  layoutState: { fallbackY: number }
+): { offsetTop: number; height: number } {
+  if (view?.dom instanceof HTMLElement) {
+    try {
+      const start = view.coordsAtPos(pos);
+      const end = view.coordsAtPos(pos + Math.max(0, node.nodeSize - 1));
+      const offsetTop = Math.max(0, Math.round(start.top - editorTop));
+      const height = Math.max(1, Math.round(end.bottom - start.top));
+      return { offsetTop, height };
+    } catch {
+      // Fall through to the deterministic fallback.
+    }
+  }
+  const fallbackHeight = estimateApproxHeight(node);
+  const offsetTop = layoutState.fallbackY;
+  layoutState.fallbackY += fallbackHeight;
+  return { offsetTop, height: fallbackHeight };
 }
 
 /**
@@ -145,12 +175,12 @@ export function buildVizelMinimapSpec(editor: Editor): VizelMinimapSpec {
  * - The editor DOM scrolls internally (a fixed-height container with
  *   `overflow: auto`). The visible slice is just
  *   `[scrollTop, scrollTop + clientHeight)`.
- * - The editor sits at its natural height and the page scrolls around
- *   it. `scrollTop` stays 0 and `clientHeight` covers the entire
- *   document, so the previous version highlighted everything as
- *   visible. Detect this case by comparing `scrollHeight` against
- *   `clientHeight` and fall back to intersecting the editor's bounding
- *   rectangle with the window.
+ * - The editor sits at its natural height and the page scrolls
+ *   around it. `scrollTop` stays 0 and `clientHeight` covers the
+ *   entire document, so falling back on those values would highlight
+ *   everything as visible. Detect this case by comparing
+ *   `scrollHeight` against `clientHeight` and intersect the editor's
+ *   bounding rectangle with the window instead.
  */
 function resolveViewportSlice(dom: HTMLElement | null): { top: number; bottom: number } {
   if (!(dom instanceof HTMLElement)) return { top: 0, bottom: 0 };

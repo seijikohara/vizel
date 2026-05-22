@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { buildVizelMinimapSpec, type Editor, renderVizelMinimapToCanvas } from "@vizel/core";
+import {
+  buildVizelMinimapSpec,
+  createVizelPageScrollListener,
+  type Editor,
+  renderVizelMinimapToCanvas,
+} from "@vizel/core";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
 
@@ -40,25 +45,21 @@ function redraw() {
   });
 }
 
+const scrollListener = createVizelPageScrollListener(redraw);
 onMounted(() => {
   redraw();
   // Track page scroll / resize so the minimap viewport highlight
   // stays aligned when the editor sits at its natural height and the
-  // page scrolls around it. `redraw` is throttled through
-  // `requestAnimationFrame`, so event-heavy scrolling stays smooth.
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", redraw, { passive: true });
-    window.addEventListener("resize", redraw, { passive: true });
-  }
+  // page scrolls around it. The Core controller owns the
+  // `addEventListener` calls so this composable stays free of direct
+  // DOM subscriptions.
+  scrollListener.mount();
 });
 onBeforeUnmount(() => {
+  scrollListener.unmount();
   if (rafState.handle !== null) {
     cancelAnimationFrame(rafState.handle);
     rafState.handle = null;
-  }
-  if (typeof window !== "undefined") {
-    window.removeEventListener("scroll", redraw);
-    window.removeEventListener("resize", redraw);
   }
 });
 

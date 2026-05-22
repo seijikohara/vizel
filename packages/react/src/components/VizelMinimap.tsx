@@ -1,4 +1,9 @@
-import { buildVizelMinimapSpec, type Editor, renderVizelMinimapToCanvas } from "@vizel/core";
+import {
+  buildVizelMinimapSpec,
+  createVizelPageScrollListener,
+  type Editor,
+  renderVizelMinimapToCanvas,
+} from "@vizel/core";
 import { type PointerEvent, useCallback, useEffect, useRef, type WheelEvent } from "react";
 import { useVizelState } from "../hooks/useVizelState.ts";
 
@@ -47,25 +52,20 @@ export function VizelMinimap({ editor, className, width = 120, height = 400 }: V
   useEffect(() => {
     redraw();
     // When the editor sits at its natural height inside a page that
-    // scrolls (instead of an `overflow: auto` container), the visible
+    // scrolls (rather than an `overflow: auto` container), the visible
     // slice is computed from the editor's bounding rect. That slice
-    // changes on every window scroll / resize event, so the minimap
+    // changes on every page scroll / window resize, so the minimap
     // must redraw to keep its viewport highlight aligned with the
-    // user's actual reading position. The `redraw` callback is
-    // throttled through `requestAnimationFrame`, so event-heavy
-    // scrolling stays smooth.
-    if (typeof window !== "undefined") {
-      window.addEventListener("scroll", redraw, { passive: true });
-      window.addEventListener("resize", redraw, { passive: true });
-    }
+    // user's actual reading position. Owning that DOM subscription
+    // through a Core controller keeps the framework code free of
+    // direct `window.addEventListener` calls (architecture rule).
+    const scrollListener = createVizelPageScrollListener(redraw);
+    scrollListener.mount();
     return () => {
+      scrollListener.unmount();
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
-      }
-      if (typeof window !== "undefined") {
-        window.removeEventListener("scroll", redraw);
-        window.removeEventListener("resize", redraw);
       }
     };
   }, [redraw]);

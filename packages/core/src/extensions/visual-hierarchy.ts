@@ -19,13 +19,43 @@ export interface VizelVisualHierarchyOptions {}
 export const vizelVisualHierarchyPluginKey = new PluginKey("vizelVisualHierarchy");
 
 /**
+ * Block-node types that participate in the visual hierarchy.
+ *
+ * The decoration only targets container-style nodes — the elements
+ * whose role is to *hold* nested content. Leaf-style blocks
+ * (paragraphs, headings, code blocks, images, …) sit *inside* one of
+ * these containers, so the container's left padding plus a thin
+ * guide line is enough to convey the nesting depth. Decorating leaf
+ * blocks as well stacked padding on top of the container's own
+ * marker offset (the most visible case: list bullets ended up far
+ * to the right of their row text) and drew a redundant guide line
+ * per child that no longer aligned with the actual indent step.
+ *
+ * Keep this list narrow. Adding new node types here changes how the
+ * editor looks for every consumer, so the decision belongs in this
+ * file alongside the rest of the visual-hierarchy contract.
+ */
+const VIZEL_HIERARCHY_CONTAINER_TYPES: ReadonlySet<string> = new Set([
+  "blockquote",
+  "details",
+  "detailsContent",
+  "callout",
+  "bulletList",
+  "orderedList",
+  "taskList",
+]);
+
+/**
  * Create the visual hierarchy extension.
  *
  * Walks the document on every transaction and adds
- * `data-vizel-depth="N"` to each top-level child block node, where N
- * mirrors the ProseMirror nesting depth at that node's position. Lists
- * receive depth on their containing list item rather than on the
- * intermediate bullet/ordered list wrapper.
+ * `data-vizel-depth="N"` to each *container* block node whose type
+ * appears in {@link VIZEL_HIERARCHY_CONTAINER_TYPES}, where N mirrors
+ * the ProseMirror nesting depth at that node's position. Leaf
+ * blocks (paragraphs, headings, code blocks, …) are intentionally
+ * left undecorated so the CSS in `_block-hierarchy.scss` can apply
+ * a single indent step + guide line per container without colliding
+ * with the container's own marker offset.
  */
 export function createVizelVisualHierarchyExtension(
   _options: VizelVisualHierarchyOptions = {}
@@ -59,6 +89,7 @@ function buildVizelDepthDecorations(
 
   doc.descendants((node, pos) => {
     if (!node.isBlock) return undefined;
+    if (!VIZEL_HIERARCHY_CONTAINER_TYPES.has(node.type.name)) return undefined;
 
     const resolved = doc.resolve(pos);
     const depth = resolved.depth;

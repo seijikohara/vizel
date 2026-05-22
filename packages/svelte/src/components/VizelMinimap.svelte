@@ -14,7 +14,11 @@ export interface VizelMinimapProps {
 </script>
 
 <script lang="ts">
-import { buildVizelMinimapSpec, renderVizelMinimapToCanvas } from "@vizel/core";
+import {
+  buildVizelMinimapSpec,
+  createVizelPageScrollListener,
+  renderVizelMinimapToCanvas,
+} from "@vizel/core";
 import { createVizelState } from "../runes/createVizelState.svelte.js";
 
 let { editor, class: className, width = 120, height = 400 }: VizelMinimapProps = $props();
@@ -46,20 +50,15 @@ $effect(() => {
   redraw();
   // Track page scroll / resize so the minimap viewport highlight stays
   // aligned when the editor sits at its natural height and the page
-  // scrolls around it. `redraw` is throttled through
-  // `requestAnimationFrame`, so event-heavy scrolling stays smooth.
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", redraw, { passive: true });
-    window.addEventListener("resize", redraw, { passive: true });
-  }
+  // scrolls around it. The Core controller owns the DOM listeners so
+  // this component never calls `addEventListener` directly.
+  const scrollListener = createVizelPageScrollListener(redraw);
+  scrollListener.mount();
   return () => {
+    scrollListener.unmount();
     if (rafHandle !== null) {
       cancelAnimationFrame(rafHandle);
       rafHandle = null;
-    }
-    if (typeof window !== "undefined") {
-      window.removeEventListener("scroll", redraw);
-      window.removeEventListener("resize", redraw);
     }
   };
 });
