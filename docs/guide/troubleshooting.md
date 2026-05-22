@@ -554,6 +554,6 @@ If you encounter an issue not covered here:
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Full configuration reference
+- [Editor](/guide/editor) - Full configuration reference
 - [Features](/guide/features) - Feature-specific options
 - [API Reference](/api/)

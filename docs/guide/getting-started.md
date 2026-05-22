@@ -448,7 +448,7 @@ const editor = createVizelEditor({
 
 :::
 
-See [Features - Markdown Flavor Selection](/guide/features#markdown-flavor-selection) for details on each flavor.
+See [Markdown - Flavors](/guide/markdown#flavors) for details on each flavor.
 
 ## Enabling Features
 
@@ -508,7 +508,7 @@ const editor = createVizelEditor({
 
 :::
 
-See [Features](/guide/features) for detailed configuration of each feature.
+See [Editor - Features](/guide/editor#features) for the feature catalog and per-feature options.
 
 ## Composition Patterns
 
@@ -858,10 +858,9 @@ See [Theming](/guide/theming) for more customization options.
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Editor options
-- [Features](/guide/features) - Configure individual features
+- [Editor](/guide/editor) - Editor options, features, lifecycle, and auto-save
+- [Blocks](/guide/blocks) - Block selection, clipboard, drag handle, and block menu
+- [Markdown](/guide/markdown) - Flavor system, encoding modes, and round-trip
 - [Theming](/guide/theming) - Customize appearance with CSS variables
-- [Auto-Save](/guide/auto-save) - Persist content automatically
-- [React Guide](/guide/react) - React-specific patterns
-- [Vue Guide](/guide/vue) - Vue-specific patterns
-- [Svelte Guide](/guide/svelte) - Svelte-specific patterns
+- [SSR](/guide/ssr) - Server-side rendering and static HTML generation
+- [Collaboration](/guide/collaboration) - Real-time editing, comments, and version history

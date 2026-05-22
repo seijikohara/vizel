@@ -1337,7 +1337,5 @@ For types not re-exported by Vizel, import them directly from the relevant `@tip
 - [Vue API](/api/vue) - Vue-specific APIs
 - [Svelte API](/api/svelte) - Svelte-specific APIs
 - [Wiki Links Guide](/guide/wiki-links) - Wiki link usage guide
-- [Comments Guide](/guide/comments) - Comment management guide
-- [Version History Guide](/guide/version-history) - Version history guide
-- [Collaboration Guide](/guide/collaboration) - Real-time collaboration guide
+- [Collaboration Guide](/guide/collaboration) - Real-time editing, comments, and version history
 - [Plugins Guide](/guide/plugins) - Plugin system guide

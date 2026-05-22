@@ -482,5 +482,5 @@ Or manually:
 ## Next Steps
 
 - [CSS Variables Reference](/api/css-variables/)
-- [Auto-Save](/guide/auto-save) - Persist content automatically
+- [Editor: Auto-save](/guide/editor#auto-save) - Persist content automatically
 - [API Reference](/api/)

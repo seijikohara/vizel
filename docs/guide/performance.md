@@ -240,7 +240,7 @@ Choose a debounce value that balances responsiveness and performance:
 | `sessionStorage` | Temporary drafts | Cleared on tab close |
 | Custom (API) | Production apps | Async, no size limit |
 
-See [Auto-Save](/guide/auto-save) for detailed configuration.
+See [Editor: Auto-save](/guide/editor#auto-save) for detailed configuration.
 
 ---
 
@@ -326,7 +326,7 @@ Before deploying to production, verify the following optimizations:
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Editor options reference
+- [Editor](/guide/editor) - Editor options reference
 - [Features](/guide/features) - Feature-specific configuration
-- [Auto-Save](/guide/auto-save) - Auto-save configuration
+- [Editor: Auto-save](/guide/editor#auto-save) - Auto-save configuration
 - [Troubleshooting](/guide/troubleshooting) - Common issues and solutions

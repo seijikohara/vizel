@@ -140,7 +140,7 @@ This rune creates and manages a Vizel editor instance using Svelte 5 reactivity.
 
 #### Options
 
-See [Configuration](/guide/configuration) for full options.
+See [Editor](/guide/editor) for full options.
 
 #### Return Value
 
@@ -628,7 +628,7 @@ Vizel uses Svelte 5 runes. Key differences:
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Editor options
+- [Editor](/guide/editor) - Editor options, features, and auto-save
 - [Features](/guide/features) - Enable and configure features
 - [Theming](/guide/theming) - Customize appearance
 - [API Reference](/api/svelte)

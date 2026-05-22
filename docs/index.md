@@ -25,33 +25,33 @@ hero:
 features:
   - title: Block-based Editing
     details: Block-based editing with slash commands, drag-and-drop reordering, and a bubble menu for inline formatting.
-    link: /guide/features
-    linkText: Features
+    link: /guide/blocks
+    linkText: Blocks
 
   - title: Markdown Support
     details: Markdown import and export. Switch between Markdown source and visual editing.
-    link: /guide/configuration
-    linkText: Configuration
+    link: /guide/markdown
+    linkText: Markdown
 
   - title: Multi-Framework
     details: Vizel supports React 19, Vue 3, and Svelte 5 with consistent APIs.
-    link: /guide/react
-    linkText: Framework Guides
+    link: /guide/editor
+    linkText: Editor
 
   - title: Customizable
     details: Theming with CSS variables, custom extensions, and configurable features.
     link: /guide/theming
     linkText: Theming
 
-  - title: Built-in Extensions
-    details: Images, tables, code blocks, diagrams, math equations, and embeds.
-    link: /guide/features
-    linkText: Extensions
+  - title: Server-side Rendering
+    details: Render Markdown to HTML on Node and edge runtimes with typed factory guards.
+    link: /guide/ssr
+    linkText: SSR
 
-  - title: TypeScript
-    details: Vizel uses TypeScript with exported type definitions.
-    link: /api/types
-    linkText: Type Definitions
+  - title: Collaboration
+    details: Real-time editing with Yjs, comments, and version history snapshots.
+    link: /guide/collaboration
+    linkText: Collaboration
 ---
 
 <style>

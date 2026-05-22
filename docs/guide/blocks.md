@@ -74,6 +74,6 @@ Markdown, then HTML, then plain text.
 ## Try this if you want to ...
 
 - ... persist or transmit document state → [Markdown](/guide/markdown)
-- ... add a custom block type → [Plugins](/guide/plugins)
-- ... customize the slash menu → [Configuration](/guide/configuration)
+- ... add a custom block type → [Editor: Custom Tiptap extensions](/guide/editor#custom-tiptap-extensions)
+- ... customize the slash menu → [Editor: Features](/guide/editor#features)
 - ... add comments or version history → [Collaboration](/guide/collaboration)
