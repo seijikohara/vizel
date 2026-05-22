@@ -585,6 +585,7 @@ export {
   type VizelTextSegment,
   // SSR utilities (Section 12)
   type VizelThemeInitScriptOptions,
+  vizelCancelAnimationFrame,
   vizelCommonMarkFlavor,
   vizelDefaultEditorProps,
   vizelDefaultFeatures,
@@ -592,6 +593,7 @@ export {
   vizelGfmFlavor,
   vizelObsidianFlavor,
   vizelPandocFlavor,
+  vizelRequestAnimationFrame,
   vizelThemeInitScript,
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,

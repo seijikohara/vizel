@@ -4,6 +4,8 @@ import {
   getVizelMarkdown,
   type VizelMarkdownSyncHandlers,
   type VizelMarkdownSyncOptions,
+  vizelCancelAnimationFrame,
+  vizelRequestAnimationFrame,
 } from "@vizel/core";
 import type { ComputedRef, ShallowRef } from "vue";
 import { computed, onBeforeUnmount, shallowRef, watch } from "vue";
@@ -103,8 +105,9 @@ export function useVizelMarkdown(
     return handlersRef.current;
   };
 
-  // Track if initial value has been set across watcher re-runs.
-  const initFlag = { value: false };
+  // Track the last `initialValue` we applied across watcher re-runs so
+  // Suspense-resolved updates apply while no-op re-renders stay quiet.
+  const lastInitialApplied: { value: string | undefined } = { value: undefined };
 
   // Watch for editor availability
   watch(
@@ -114,16 +117,20 @@ export function useVizelMarkdown(
 
       const h = initHandlers();
 
-      // Initial value setup (only once)
-      if (!initFlag.value) {
-        if (initialValue === undefined) {
-          // Get initial markdown from editor
+      // Initial value setup. The previous single latch ignored every change
+      // after the first apply, leaving editors blank when the server-side
+      // markdown arrived asynchronously (Suspense, SWR, etc.). Track the
+      // last applied value so repeated re-renders with the same value remain
+      // no-ops while genuine updates still propagate.
+      if (initialValue === undefined) {
+        if (lastInitialApplied.value === undefined) {
           markdown.value = getVizelMarkdown(editor);
-        } else {
-          h.setMarkdown(editor, initialValue);
-          markdown.value = initialValue;
+          lastInitialApplied.value = "";
         }
-        initFlag.value = true;
+      } else if (lastInitialApplied.value !== initialValue) {
+        h.setMarkdown(editor, initialValue);
+        markdown.value = initialValue;
+        lastInitialApplied.value = initialValue;
       }
 
       // Subscribe to editor updates (every time editor changes)
@@ -134,19 +141,19 @@ export function useVizelMarkdown(
         pendingState.value = h.isPending();
 
         // Cancel any pending rAF before scheduling a new one
-        if (rafState.id !== null) cancelAnimationFrame(rafState.id);
+        vizelCancelAnimationFrame(rafState.id);
 
         // Schedule state update after debounce
         const checkPending = () => {
           if (h.isPending()) {
-            rafState.id = requestAnimationFrame(checkPending);
+            rafState.id = vizelRequestAnimationFrame(checkPending);
           } else {
             rafState.id = null;
             markdown.value = h.getMarkdown();
             pendingState.value = false;
           }
         };
-        rafState.id = requestAnimationFrame(checkPending);
+        rafState.id = vizelRequestAnimationFrame(checkPending);
       };
 
       editor.on("update", handleUpdate);
@@ -161,7 +168,7 @@ export function useVizelMarkdown(
           pendingState.value = false;
         }
         editor.off("update", handleUpdate);
-        if (rafState.id !== null) cancelAnimationFrame(rafState.id);
+        vizelCancelAnimationFrame(rafState.id);
       });
     },
     { immediate: true }
