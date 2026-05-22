@@ -32,6 +32,8 @@
     "test:a11y:react": "playwright test -c tests/a11y/react/playwright-ct.config.ts --project=chromium",
     "test:a11y:vue": "playwright test -c tests/a11y/vue/playwright-ct.config.ts --project=chromium",
     "test:a11y:svelte": "playwright test -c tests/a11y/svelte/playwright-ct.config.ts --project=chromium",
+    "test:visual": "playwright test -c tests/visual/playwright-ct.config.ts --project=chromium",
+    "test:visual:update": "playwright test -c tests/visual/playwright-ct.config.ts --project=chromium --update-snapshots",
     "typecheck": "pnpm -r --if-present run typecheck",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",

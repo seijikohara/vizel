@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -72,6 +73,46 @@ jobs:
 
       - name: Run SSR static HTML smoke test
         run: pnpm test:ssr
+
+  visual:
+    name: Visual Regression
+    # Snapshots are sensitive to subpixel rendering differences between
+    # local machines and CI, so the visual job only runs on manual
+    # dispatch. PRs that intentionally change visuals re-run this job
+    # (and `test:visual:update`) locally and commit the new baselines.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install chromium
+
+      - name: Install Playwright system dependencies
+        run: pnpm exec playwright install-deps chromium
+
+      - name: Run visual regression tests
+        run: pnpm test:visual
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report-visual
+          path: playwright-report/
+          retention-days: 7
 
   ct-parity:
     name: CT Spec Parity

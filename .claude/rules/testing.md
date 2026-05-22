@@ -296,29 +296,43 @@ Section 2 spec-based ARIA wiring keeps the per-component cost low.
 
 ---
 
-## Pillar 6 — Visual regression (NOT YET SHIPPED)
+## Pillar 6 — Visual regression
 
-The Section 14 target is a CI-only visual snapshot suite covering
-~20 essential views (editor light/dark, slash menu open, block menu
-open, bubble menu over selection, color picker, outline, minimap,
-link editor, find/replace). Local execution is skipped to avoid
-OS-level rendering noise.
+`tests/visual/` ships a Playwright snapshot suite that captures
+representative `Vizel` configurations. Snapshots live in
+`tests/visual/__snapshots__/` and run on `workflow_dispatch` only —
+PRs that intentionally change visuals update the baselines locally
+via `pnpm test:visual:update` and commit the new pngs.
 
-### Status
+### How to run
 
-- Snapshot store: not yet created.
-- Workflow: not yet created.
-- Tracking: follow-up work for the v2.0.0 release push.
+```bash
+# Compare against committed baselines.
+pnpm test:visual
 
-### How to bootstrap (when work starts)
+# Re-record baselines (commit the resulting png changes).
+pnpm test:visual:update
+```
 
-1. Add a `tests/visual/` directory with Playwright `toHaveScreenshot`
-   specs gated on `process.env.CI === "true"`.
-2. Add a `workflow_dispatch` GitHub Actions workflow that updates
-   baselines on demand.
-3. Add `pnpm test:visual` (CI-only) and an opt-in
-   `pnpm test:visual:local`.
-4. Update this section's status from "NOT YET SHIPPED" to "shipped".
+### Adding a snapshot
+
+1. Pick a setup that exercises a visually meaningful surface —
+   editor chrome in a theme, a menu open against a fixed selection,
+   etc.
+2. Add a spec under `tests/visual/specs/` that mounts a `<Vizel>`
+   (or a sub-component), waits for the visible elements, masks
+   transient pixels (e.g. caret) via injected CSS, and asserts
+   `await expect(component).toHaveScreenshot("name.png")`.
+3. Run `pnpm test:visual:update` to record the baseline, inspect
+   the diff under `__snapshots__/`, and commit both the spec and
+   the png.
+
+### Coverage status (initial)
+
+The shipped suite covers a representative slice; broader coverage
+(slash menu open, bubble menu over selection, block menu, color
+picker, outline, minimap, link editor, find/replace) is a
+follow-up tracked against the v2.0.0 polish milestone.
 
 ---
 
