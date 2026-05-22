@@ -452,34 +452,39 @@ See [Markdown - Flavors](/guide/markdown#flavors) for details on each flavor.
 
 ## Enabling Features
 
-All features are enabled by default except `collaboration`, `comment`, `mention`, and `wikiLink`. You can disable specific features by setting them to `false`, or pass an options object to configure them:
+`VizelFeatureOptions` is grouped into three categories: `content` (what the document can contain), `interaction` (how the user edits), and `collaboration` (who edits together). Set any leaf to `false` to disable, or pass an options object to configure. Use `vizelDefaultFeatures()` to enable the curated default set without listing every key.
 
 ::: code-group
 
 ```tsx [React]
 const editor = useVizelEditor({
   features: {
-    // All features below are enabled by default.
-    // Set to false to disable, or pass options to configure.
-    slashCommand: true,
-    table: true,
-    image: { onUpload: async (file) => 'https://example.com/image.png' },
-    codeBlock: true,
-    dragHandle: true,
-    characterCount: true,
-    textColor: true,
-    taskList: true,
-    link: true,
-    markdown: true,
-    mathematics: true,
-    embed: true,
-    details: true,
-    diagram: true,
-    wikiLink: true,
-
-    // Opt-in: must be explicitly enabled
-    comment: true,
-    collaboration: true,
+    content: {
+      // Enabled by default; set to false to disable, or pass options to configure.
+      table: true,
+      image: { onUpload: async (file) => 'https://example.com/image.png' },
+      mathematics: true,
+      embed: true,
+      details: true,
+      diagram: true,
+      callout: true,
+      textColor: true,
+      taskList: true,
+      // Opt-in: must be explicitly enabled.
+      wikiLink: true,
+    },
+    interaction: {
+      dragHandle: true,
+      characterCount: true,
+      typography: true,
+      // Opt-in: requires consumer-supplied items.
+      mention: { items: async (query) => [] },
+    },
+    collaboration: {
+      // Opt-in: comments require a provider.
+      provider: true,
+      comments: true,
+    },
   },
 });
 ```
@@ -487,10 +492,12 @@ const editor = useVizelEditor({
 ```vue [Vue]
 const editor = useVizelEditor({
   features: {
-    // Disable specific features
-    dragHandle: false,
-    // Configure with options
-    image: { onUpload: async (file) => 'https://example.com/image.png' },
+    content: {
+      image: { onUpload: async (file) => 'https://example.com/image.png' },
+    },
+    interaction: {
+      dragHandle: false,
+    },
   },
 });
 ```
@@ -498,10 +505,12 @@ const editor = useVizelEditor({
 ```svelte [Svelte]
 const editor = createVizelEditor({
   features: {
-    // Disable specific features
-    dragHandle: false,
-    // Configure with options
-    image: { onUpload: async (file) => 'https://example.com/image.png' },
+    content: {
+      image: { onUpload: async (file) => 'https://example.com/image.png' },
+    },
+    interaction: {
+      dragHandle: false,
+    },
   },
 });
 ```
@@ -601,7 +610,7 @@ import '@vizel/core/styles.css';
 function App() {
   const editor = useVizelEditor({
     placeholder: "Start writing...",
-    features: { image: { onUpload: uploadImage } },
+    features: { content: { image: { onUpload: uploadImage } } },
     onUpdate: ({ editor }) => console.log(editor.getMarkdown()),
   });
 
@@ -632,7 +641,7 @@ import '@vizel/core/styles.css';
 
 const editor = useVizelEditor({
   placeholder: "Start writing...",
-  features: { image: { onUpload: uploadImage } },
+  features: { content: { image: { onUpload: uploadImage } } },
   onUpdate: ({ editor }) => console.log(editor.getMarkdown()),
 });
 </script>
@@ -663,7 +672,7 @@ import '@vizel/core/styles.css';
 
 const editorState = createVizelEditor({
   placeholder: "Start writing...",
-  features: { image: { onUpload: uploadImage } },
+  features: { content: { image: { onUpload: uploadImage } } },
   onUpdate: ({ editor }) => console.log(editor.getMarkdown()),
 });
 
@@ -698,22 +707,24 @@ You can configure image uploads with a custom handler:
 ```tsx [React]
 const editor = useVizelEditor({
   features: {
-    image: {
-      onUpload: async (file) => {
-        // Upload to your server/CDN
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        const { url } = await response.json();
-        return url;
+    content: {
+      image: {
+        onUpload: async (file) => {
+          // Upload to your server/CDN
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const { url } = await response.json();
+          return url;
+        },
+        maxFileSize: 10 * 1024 * 1024, // 10MB
+        allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
       },
-      maxFileSize: 10 * 1024 * 1024, // 10MB
-      allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
     },
   },
 });
@@ -722,18 +733,20 @@ const editor = useVizelEditor({
 ```vue [Vue]
 const editor = useVizelEditor({
   features: {
-    image: {
-      onUpload: async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        const { url } = await response.json();
-        return url;
+    content: {
+      image: {
+        onUpload: async (file) => {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const { url } = await response.json();
+          return url;
+        },
       },
     },
   },
@@ -743,18 +756,20 @@ const editor = useVizelEditor({
 ```svelte [Svelte]
 const editor = createVizelEditor({
   features: {
-    image: {
-      onUpload: async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        const { url } = await response.json();
-        return url;
+    content: {
+      image: {
+        onUpload: async (file) => {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const { url } = await response.json();
+          return url;
+        },
       },
     },
   },
@@ -782,11 +797,11 @@ function App() {
 }
 
 function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useVizelTheme();
-  
+  const { theme, setTheme } = useVizelTheme();
+
   return (
-    <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
-      {resolvedTheme === 'dark' ? '☀️' : '🌙'}
+    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+      {theme === 'dark' ? '☀️' : '🌙'}
     </button>
   );
 }
@@ -810,16 +825,16 @@ import ThemeToggle from './ThemeToggle.vue';
 <script setup lang="ts">
 import { useVizelTheme } from '@vizel/vue';
 
-const { resolvedTheme, setTheme } = useVizelTheme();
+const { theme, setTheme } = useVizelTheme();
 
 function toggleTheme() {
-  setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+  setTheme(theme.value === 'dark' ? 'light' : 'dark');
 }
 </script>
 
 <template>
   <button @click="toggleTheme">
-    {{ resolvedTheme === 'dark' ? '☀️' : '🌙' }}
+    {{ theme === 'dark' ? '☀️' : '🌙' }}
   </button>
 </template>
 ```
@@ -843,12 +858,12 @@ function toggleTheme() {
   const theme = getVizelTheme();
 
   function toggleTheme() {
-    theme.setTheme(theme.resolvedTheme === 'dark' ? 'light' : 'dark');
+    theme.setTheme(theme.current === 'dark' ? 'light' : 'dark');
   }
 </script>
 
 <button onclick={toggleTheme}>
-  {theme.resolvedTheme === 'dark' ? '☀️' : '🌙'}
+  {theme.current === 'dark' ? '☀️' : '🌙'}
 </button>
 ```
 

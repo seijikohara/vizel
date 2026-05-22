@@ -11,31 +11,37 @@ Vizel enables all features by default. Disable features you don't use to reduce 
 ```typescript
 const editor = useVizelEditor({
   features: {
-    mathematics: false,  // KaTeX (~80KB gzipped)
-    diagram: false,      // Mermaid (~40KB gzipped, lazy-loaded)
-    embed: false,        // oEmbed/OGP processing
-    codeBlock: false,    // lowlight/highlight.js (~20KB gzipped)
-    table: false,
-    dragHandle: false,
+    content: {
+      mathematics: false,  // KaTeX (~80KB gzipped)
+      diagram: false,      // Mermaid (~40KB gzipped, lazy-loaded)
+      embed: false,        // oEmbed/OGP processing
+      table: false,
+    },
+    interaction: {
+      dragHandle: false,
+    },
   },
 });
 ```
+
+::: tip
+Code blocks, links, and Markdown import/export are part of the always-on core and cannot be disabled. To restrict the syntax-highlighter language set, pass a custom Lowlight instance through `extensions` instead.
+:::
 
 ### Feature Size Impact
 
 The following table shows approximate sizes (minified + gzipped) of optional features:
 
-| Feature | Approximate Size | Dependencies |
-|---------|-----------------|--------------|
-| `mathematics` | ~80KB gzipped | KaTeX |
-| `diagram` | ~40KB gzipped | Mermaid (lazy-loaded); GraphViz via `@hpcc-js/wasm-graphviz` adds additional size |
-| `codeBlock` | ~20KB gzipped | lowlight / highlight.js |
-| `embed` | ~5KB gzipped | Built-in oEmbed |
-| `table` | ~8KB gzipped | @tiptap/extension-table |
-| `dragHandle` | ~3KB gzipped | Built-in |
-| `textColor` | ~2KB gzipped | Built-in |
-| `taskList` | ~2KB gzipped | Built-in |
-| `details` | ~2KB gzipped | Built-in |
+| Feature | Path | Approximate Size | Dependencies |
+|---------|------|-----------------|--------------|
+| `mathematics` | `content` | ~80KB gzipped | KaTeX |
+| `diagram` | `content` | ~40KB gzipped | Mermaid (lazy-loaded); GraphViz via `@hpcc-js/wasm-graphviz` adds additional size |
+| `embed` | `content` | ~5KB gzipped | Built-in oEmbed |
+| `table` | `content` | ~8KB gzipped | @tiptap/extension-table |
+| `dragHandle` | `interaction` | ~3KB gzipped | Built-in |
+| `textColor` | `content` | ~2KB gzipped | Built-in |
+| `taskList` | `content` | ~2KB gzipped | Built-in |
+| `details` | `content` | ~2KB gzipped | Built-in |
 
 ::: tip Measurement
 Actual bundle sizes depend on your bundler configuration and tree-shaking. You can use tools like [bundlephobia](https://bundlephobia.com/) or your bundler's analysis output to measure exact sizes:
@@ -77,10 +83,12 @@ lowlight.register('javascript', javascript);
 lowlight.register('typescript', typescript);
 lowlight.register('css', css);
 
+// Code block syntax highlighting is part of the always-on core. Pass a
+// restricted Lowlight instance through the `extensions` array.
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+
 const editor = useVizelEditor({
-  features: {
-    codeBlock: { lowlight },
-  },
+  extensions: [CodeBlockLowlight.configure({ lowlight })],
 });
 ```
 
@@ -104,8 +112,10 @@ You can use the character count feature to enforce document size limits:
 ```typescript
 const editor = useVizelEditor({
   features: {
-    characterCount: {
-      limit: 50000, // Maximum characters
+    interaction: {
+      characterCount: {
+        limit: 50000, // Maximum characters
+      },
     },
   },
 });
