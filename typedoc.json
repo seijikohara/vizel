@@ -1,0 +1,45 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "packages/core/src/index.ts",
+    "packages/react/src/index.ts",
+    "packages/vue/src/index.ts",
+    "packages/svelte/src/index.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "tsconfig": "tsconfig.json",
+  "out": "docs/api/generated",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "readme": "none",
+  "githubPages": false,
+  "hideGenerator": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "skipErrorChecking": true,
+  "disableSources": false,
+  "sort": ["alphabetical"],
+  "kindSortOrder": [
+    "Module",
+    "Namespace",
+    "Class",
+    "Interface",
+    "TypeAlias",
+    "Enum",
+    "Function",
+    "Variable"
+  ],
+  "navigation": {
+    "includeCategories": false,
+    "includeGroups": true,
+    "includeFolders": false
+  },
+  "useCodeBlocks": true,
+  "expandObjects": false,
+  "parametersFormat": "table",
+  "propertiesFormat": "list",
+  "typeDeclarationFormat": "list",
+  "indexFormat": "table",
+  "name": "Vizel API",
+  "docsRoot": "docs"
+}

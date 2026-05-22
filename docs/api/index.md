@@ -4,12 +4,23 @@
 
 Vizel provides a consistent API across all supported frameworks. The core package contains framework-agnostic extensions and utilities, while the framework-specific packages provide components and state management primitives.
 
-## Packages
+## Hand-written guides
 
 - [@vizel/core](/api/core) - Core extensions and utilities
 - [@vizel/react](/api/react) - React components and hooks
 - [@vizel/vue](/api/vue) - Vue components and composables
 - [@vizel/svelte](/api/svelte) - Svelte components and runes
+
+## TypeDoc-generated reference
+
+The auto-generated reference below mirrors every JSDoc-documented symbol
+in the four package entries. Run `pnpm docs:api` from the repository
+root to regenerate it; the output lives at `docs/api/generated/` and is
+gitignored so each contributor materializes a fresh copy locally.
+
+- [Generated index](/api/generated/) — module overview
+- Or expand the **Generated Reference** section in the sidebar to jump
+  straight to a class, interface, type, or function.
 
 ## Architecture
 
