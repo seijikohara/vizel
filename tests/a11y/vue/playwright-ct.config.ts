@@ -1,0 +1,41 @@
+import { resolve } from "node:path";
+import { defineConfig, devices } from "@playwright/experimental-ct-vue";
+import vue from "@vitejs/plugin-vue";
+
+/**
+ * Pillar 5 — accessibility (Section 14).
+ *
+ * Runs `@axe-core/playwright` against each shipped component to assert
+ * WCAG 2.1 AA conformance. Chromium-only by design: axe-core reports a
+ * single canonical violation list, so re-running the same rule set in
+ * Firefox and WebKit adds nothing but flake.
+ */
+export default defineConfig({
+  testDir: "./specs",
+  snapshotDir: "./__snapshots__",
+  timeout: 30_000,
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : "50%",
+  reporter: "html",
+  use: {
+    trace: "on-first-retry",
+    ctPort: 3111,
+    ctViteConfig: {
+      plugins: [vue()],
+      resolve: {
+        alias: {
+          "@vizel/core": resolve(__dirname, "../../../packages/core/src"),
+          "@vizel/vue": resolve(__dirname, "../../../packages/vue/src"),
+        },
+      },
+    },
+  },
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
+});

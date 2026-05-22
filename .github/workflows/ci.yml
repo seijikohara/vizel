@@ -94,10 +94,48 @@ jobs:
       - name: Verify CT spec parity across frameworks
         run: pnpm check:ct-parity
 
+  a11y:
+    name: A11y (${{ matrix.framework }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: [react, vue, svelte]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run a11y suite
+        env:
+          FRAMEWORK: ${{ matrix.framework }}
+        run: pnpm "test:a11y:${FRAMEWORK}"
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: a11y-report-${{ matrix.framework }}
+          path: playwright-report/
+          retention-days: 7
+
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    needs: [test, ssr, ct-parity]
+    needs: [test, ssr, ct-parity, a11y]
     if: always()
     steps:
       - name: Download all results

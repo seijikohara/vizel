@@ -15,6 +15,9 @@
  * - `tests/ct/scenarios/**\/*.ts`
  * - `tests/ct/react/specs/**\/*.{ts,tsx}`
  * - `tests/ct/vue/specs/**\/*.{ts,vue}` (script blocks only)
+ * - `tests/a11y/scenarios/**\/*.ts`
+ * - `tests/a11y/react/specs/**\/*.{ts,tsx}`
+ * - `tests/a11y/vue/specs/**\/*.{ts,vue}` (script blocks only)
  * - `apps/demo/{react,vue}/src/**\/*.{ts,tsx,vue}` (script blocks only)
  *
  * Excluded:
@@ -50,6 +53,9 @@ const SCAN_ROOTS: readonly ScanRoot[] = [
   { root: "tests/ct/scenarios", extensions: [".ts"] },
   { root: "tests/ct/react/specs", extensions: [".ts", ".tsx"] },
   { root: "tests/ct/vue/specs", extensions: [".ts", ".vue"] },
+  { root: "tests/a11y/scenarios", extensions: [".ts"] },
+  { root: "tests/a11y/react/specs", extensions: [".ts", ".tsx"] },
+  { root: "tests/a11y/vue/specs", extensions: [".ts", ".vue"] },
   { root: "apps/demo/react/src", extensions: [".ts", ".tsx"] },
   { root: "apps/demo/vue/src", extensions: [".ts", ".vue"] },
 ];

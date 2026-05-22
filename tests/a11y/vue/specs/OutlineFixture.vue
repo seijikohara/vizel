@@ -1,0 +1,17 @@
+<script setup lang="ts">
+import { useVizelEditor, VizelEditor, VizelOutline, VizelProvider } from "@vizel/vue";
+
+// Outline fixture for the a11y suite. Seeds the editor with several
+// headings so `VizelOutline` renders a non-empty list — the empty
+// state has nothing for axe-core to scan.
+const editor = useVizelEditor({
+  initialContent: "<h1>First</h1><h2>Second</h2><h3>Third</h3><p>Body text.</p>",
+});
+</script>
+
+<template>
+  <VizelProvider :editor="editor">
+    <VizelOutline />
+    <VizelEditor />
+  </VizelProvider>
+</template>

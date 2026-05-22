@@ -28,6 +28,10 @@
     "test:ct:vue:coverage": "c8 playwright test -c tests/ct/vue/playwright-ct.config.ts",
     "test:ct:svelte:coverage": "c8 playwright test -c tests/ct/svelte/playwright-ct.config.ts",
     "test:md-roundtrip": "playwright test -c tests/markdown-roundtrip/playwright-ct.config.ts --project=chromium",
+    "test:a11y": "concurrently -g -n react,vue,svelte -c blue,green,magenta \"pnpm test:a11y:react\" \"pnpm test:a11y:vue\" \"pnpm test:a11y:svelte\"",
+    "test:a11y:react": "playwright test -c tests/a11y/react/playwright-ct.config.ts --project=chromium",
+    "test:a11y:vue": "playwright test -c tests/a11y/vue/playwright-ct.config.ts --project=chromium",
+    "test:a11y:svelte": "playwright test -c tests/a11y/svelte/playwright-ct.config.ts --project=chromium",
     "typecheck": "pnpm -r --if-present run typecheck",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
@@ -56,6 +60,7 @@
     }
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
     "@biomejs/biome": "^2.4.15",
     "@playwright/experimental-ct-react": "~1.58.2",
     "@playwright/experimental-ct-svelte": "~1.58.2",
