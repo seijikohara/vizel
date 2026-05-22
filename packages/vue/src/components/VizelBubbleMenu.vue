@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { BubbleMenuPlugin, type Editor, type VizelLocale } from "@vizel/core";
+import {
+  BubbleMenuPlugin,
+  createVizelBubbleMenuEscapeController,
+  type Editor,
+  type VizelLocale,
+} from "@vizel/core";
 import { computed, ref, useSlots, watch } from "vue";
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
@@ -34,14 +39,6 @@ const menuRef = ref<HTMLElement | null>(null);
 const contextEditor = useVizelContextSafe();
 const editor = computed(() => props.editor ?? contextEditor?.value ?? null);
 
-// Handle Escape key to hide bubble menu by collapsing selection
-function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === "Escape" && editor.value && !editor.value.view.state.selection.empty) {
-    event.preventDefault();
-    editor.value.commands.setTextSelection(editor.value.view.state.selection.to);
-  }
-}
-
 // Use `onCleanup` so every register/listen pair has a guaranteed teardown that
 // runs before the next watcher fire AND on unmount. The previous shape (manual
 // `oldElement` check + a separate `onBeforeUnmount`) double-registered the
@@ -67,11 +64,18 @@ watch(
     });
 
     editorValue.registerPlugin(plugin);
-    document.addEventListener("keydown", handleKeyDown);
+
+    // Escape collapses the selection so the bubble menu hides via its
+    // shouldShow predicate. The listener lives in a Core controller so
+    // this component does not call `document.addEventListener` directly.
+    const escapeController = createVizelBubbleMenuEscapeController({
+      getEditor: () => editor.value,
+    });
+    escapeController.mount();
 
     onCleanup(() => {
       editorValue.unregisterPlugin(props.pluginKey);
-      document.removeEventListener("keydown", handleKeyDown);
+      escapeController.unmount();
     });
   },
   { immediate: true }
