@@ -122,17 +122,24 @@ let {
   ...restProps
 }: VizelProps = $props();
 
-// Track whether we're currently updating from external markdown change
-let isUpdatingFromMarkdown = false;
-
 // Wrap onUpdate to sync markdown. Read restProps.onUpdate inside the
 // callback (not via a captured local) so later prop changes are picked up.
+//
+// The previous shape used a synchronous `isUpdatingFromMarkdown` flag to
+// suppress write-back during an external markdown update. Tiptap does not
+// guarantee the `update` event fires synchronously inside
+// `setVizelMarkdown` — when it lands in a microtask the flag is already
+// false and the editor's just-applied markdown gets written back to the
+// bound prop, occasionally creating a tick of feedback. Comparing the new
+// markdown against the bound prop directly avoids the timing race
+// altogether: when the editor's content matches the prop, there is
+// nothing to propagate.
 const wrappedOnUpdate = (e: { editor: import("@vizel/core").Editor }) => {
   restProps.onUpdate?.(e);
-  // Update markdown binding if not updating from external change
-  if (!isUpdatingFromMarkdown && markdown !== undefined) {
-    markdown = getVizelMarkdown(e.editor);
-  }
+  if (markdown === undefined) return;
+  const nextMarkdown = getVizelMarkdown(e.editor);
+  if (nextMarkdown === markdown) return;
+  markdown = nextMarkdown;
 };
 
 // Capture initial values for editor creation (these are intentionally not reactive)
@@ -176,20 +183,17 @@ const accessor: VizelContextAccessor = {
 };
 setContext(VIZEL_CONTEXT_KEY, accessor);
 
-// Watch for external markdown changes (bind:markdown)
+// Watch for external markdown changes (bind:markdown). `wrappedOnUpdate`
+// compares the editor's markdown against the bound prop and skips the
+// write-back when they match, so this effect can apply the incoming
+// value without juggling a synchronous reentrancy flag.
 $effect(() => {
   if (markdown === undefined || !editor) return;
-
-  // Get current editor markdown
   const currentMarkdown = getVizelMarkdown(editor);
   if (markdown === currentMarkdown) return;
-
-  // Set flag to prevent emitting update during this update
-  isUpdatingFromMarkdown = true;
   setVizelMarkdown(editor, markdown, {
     transformDiagrams: transformDiagramsOnImport,
   });
-  isUpdatingFromMarkdown = false;
 });
 </script>
 
