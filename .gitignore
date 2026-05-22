@@ -37,6 +37,9 @@ packages/*/src/**/*.d.ts.map
 docs/.vitepress/dist
 docs/.vitepress/cache
 
+# TypeDoc-generated API reference (run `pnpm docs:api` to regenerate)
+docs/api/generated
+
 # IntelliJ based IDEs
 .idea
 

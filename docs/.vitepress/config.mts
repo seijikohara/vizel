@@ -1,6 +1,24 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { withMermaid } from "vitepress-plugin-mermaid";
 
 const siteUrl = "https://seijikohara.github.io/vizel";
+
+// TypeDoc emits a VitePress-compatible sidebar definition at
+// docs/api/generated/typedoc-sidebar.json whenever `pnpm docs:api` runs.
+// Fall back to an empty list when the file is missing so a fresh clone
+// (where the generated tree is gitignored) still builds.
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const typedocSidebarPath = path.resolve(
+  dirname,
+  "../api/generated/typedoc-sidebar.json"
+);
+const typedocSidebar: Record<string, unknown>[] = fs.existsSync(
+  typedocSidebarPath
+)
+  ? JSON.parse(fs.readFileSync(typedocSidebarPath, "utf8"))
+  : [];
 
 export default withMermaid({
   title: "Vizel",
@@ -124,6 +142,7 @@ export default withMermaid({
     nav: [
       { text: "Guide", link: "/guide/" },
       { text: "API", link: "/api/" },
+      { text: "Migration", link: "/migration/v1-to-v2" },
       { text: "Demo", link: "/demo/" },
     ],
 
@@ -137,17 +156,26 @@ export default withMermaid({
           ],
         },
         {
+          text: "Concepts",
+          items: [
+            { text: "Editor", link: "/guide/editor" },
+            { text: "Blocks", link: "/guide/blocks" },
+            { text: "Markdown", link: "/guide/markdown" },
+            { text: "Theming", link: "/guide/theming" },
+            { text: "SSR", link: "/guide/ssr" },
+            { text: "Collaboration", link: "/guide/collaboration" },
+          ],
+        },
+        {
           text: "Essentials",
           items: [
             { text: "Configuration", link: "/guide/configuration" },
             { text: "Features", link: "/guide/features" },
-            { text: "Theming", link: "/guide/theming" },
             { text: "Auto-Save", link: "/guide/auto-save" },
             { text: "Plugins", link: "/guide/plugins" },
             { text: "Wiki Links", link: "/guide/wiki-links" },
             { text: "Version History", link: "/guide/version-history" },
             { text: "Comments", link: "/guide/comments" },
-            { text: "Collaboration", link: "/guide/collaboration" },
             { text: "Performance", link: "/guide/performance" },
             { text: "Accessibility", link: "/guide/accessibility" },
             { text: "Troubleshooting", link: "/guide/troubleshooting" },
@@ -160,6 +188,12 @@ export default withMermaid({
             { text: "Vue", link: "/guide/vue" },
             { text: "Svelte", link: "/guide/svelte" },
           ],
+        },
+      ],
+      "/migration/": [
+        {
+          text: "Migration",
+          items: [{ text: "v1 to v2", link: "/migration/v1-to-v2" }],
         },
       ],
       "/api/": [
@@ -196,6 +230,14 @@ export default withMermaid({
             { text: "@vizel/vue", link: "/api/vue" },
             { text: "@vizel/svelte", link: "/api/svelte" },
           ],
+        },
+        // TypeDoc-generated reference. The sidebar JSON is materialized by
+        // `pnpm docs:api`; before that the array is empty and the section
+        // collapses cleanly.
+        {
+          text: "Generated Reference",
+          collapsed: true,
+          items: typedocSidebar,
         },
       ],
     },
