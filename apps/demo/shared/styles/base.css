@@ -648,6 +648,14 @@ body {
   gap: 1rem;
   flex-shrink: 0;
   width: 220px;
+  /* Stay visible while the editor scrolls past. The offset matches
+     the page padding so the panel does not collide with the page
+     header. */
+  position: sticky;
+  top: 1rem;
+  align-self: flex-start;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
 }
 
 .editor-aside--right {

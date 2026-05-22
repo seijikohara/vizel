@@ -419,8 +419,11 @@ function AppContent({ onResetThemeToSystem }: AppContentProps) {
 
       <main className="main">
         {features.outline && editor && (
-          <aside className="outline-section" aria-label="Document outline">
-            <VizelOutline editor={editor} />
+          <aside className="editor-aside" aria-label="Document outline">
+            <div className="editor-aside-panel">
+              <span className="editor-aside-title">Outline</span>
+              <VizelOutline editor={editor} />
+            </div>
           </aside>
         )}
         <div className="editor-section">
@@ -495,8 +498,10 @@ function AppContent({ onResetThemeToSystem }: AppContentProps) {
           </div>
         </div>
         {features.minimap && editor && (
-          <aside className="minimap-section" aria-label="Document minimap">
-            <VizelMinimap editor={editor} />
+          <aside className="editor-aside editor-aside--right" aria-label="Document minimap">
+            <div className="editor-aside-panel editor-aside-panel--minimap">
+              <VizelMinimap editor={editor} />
+            </div>
           </aside>
         )}
 

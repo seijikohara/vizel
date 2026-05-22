@@ -1,0 +1,83 @@
+/**
+ * Outline component (VizelOutline) styles.
+ *
+ * `VizelOutline` renders a `<nav>` containing nested `<ul>` /
+ * `<li>` lists where every heading becomes a clickable button.
+ * The tree mirrors the document's heading hierarchy, so nested
+ * lists must visibly indent to be readable as an outline.
+ */
+
+@use "tokens" as *;
+
+.vizel-outline {
+  font-size: v("font-size-sm");
+  line-height: v("line-height-snug");
+  color: v("foreground");
+}
+
+.vizel-outline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+// Nested outline lists indent so the document hierarchy reads at a
+// glance. The first list (inside the root `<nav>`) sits flush; every
+// list that lives inside an outline item gains one indent step.
+.vizel-outline-item .vizel-outline-list {
+  padding-inline-start: 0.75rem;
+  border-inline-start: 1px solid v("border");
+  margin-inline-start: 0.25rem;
+}
+
+.vizel-outline-item {
+  margin: 0;
+  padding: 0;
+}
+
+.vizel-outline-link {
+  display: block;
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+  text-align: start;
+  background: none;
+  border: 0;
+  border-radius: v("radius-sm");
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: v("hover-bg");
+    color: v("foreground");
+  }
+
+  &:focus-visible {
+    outline: 2px solid v("ring");
+    outline-offset: 1px;
+  }
+}
+
+.vizel-outline-item--current > .vizel-outline-link {
+  background: v("primary-bg");
+  color: v("primary");
+  font-weight: v("font-weight-semibold");
+}
+
+// Per-level font sizing keeps the visual hierarchy obvious even when
+// the surrounding container is narrow. Levels 1-3 stay legible at
+// small sizes; deeper levels fade slightly.
+.vizel-outline-item--level-1 > .vizel-outline-link {
+  font-weight: v("font-weight-semibold");
+}
+
+.vizel-outline-item--level-2 > .vizel-outline-link {
+  font-weight: v("font-weight-medium");
+}
+
+.vizel-outline-item--level-4 > .vizel-outline-link,
+.vizel-outline-item--level-5 > .vizel-outline-link,
+.vizel-outline-item--level-6 > .vizel-outline-link {
+  color: v("foreground-muted");
+}

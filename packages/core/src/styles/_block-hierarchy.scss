@@ -7,35 +7,38 @@
  *
  * Activated by `features.interaction.visualHierarchy`.
  *
- * Paragraphs that sit directly inside a list item (`li > p`) are
- * excluded. The list bullet is already laid out against the list's
- * own `padding-inline-start`, and adding hierarchy padding to the
- * inner paragraph pushes the text further from the bullet than any
- * Markdown renderer expects.
+ * Paragraphs are excluded entirely. A paragraph reaches depth >= 2
+ * only when it lives inside another block — a list item, a
+ * blockquote, a callout, a `<details>` body, etc. In every one of
+ * those containers the parent already supplies the indent (the list
+ * marker offset, the blockquote bar, the callout padding, …), so
+ * applying hierarchy padding to the paragraph as well pushes the
+ * text away from its marker. The container itself still receives
+ * the hierarchy treatment so nesting remains visually obvious.
  */
 
 .vizel-root .ProseMirror {
-  [data-vizel-depth="2"]:not(li > p) {
+  [data-vizel-depth="2"]:not(p) {
     padding-inline-start: 1rem;
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }
 
-  [data-vizel-depth="3"]:not(li > p) {
+  [data-vizel-depth="3"]:not(p) {
     padding-inline-start: 1.25rem;
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }
 
-  [data-vizel-depth="4"]:not(li > p) {
+  [data-vizel-depth="4"]:not(p) {
     padding-inline-start: 1.5rem;
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }
 
-  [data-vizel-depth="5"]:not(li > p) {
+  [data-vizel-depth="5"]:not(p) {
     padding-inline-start: 1.75rem;
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }
 
-  [data-vizel-depth="6"]:not(li > p) {
+  [data-vizel-depth="6"]:not(p) {
     padding-inline-start: 2rem;
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }
