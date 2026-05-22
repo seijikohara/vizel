@@ -121,7 +121,10 @@ const editor = useVizelEditor({
   ...(props.initialMarkdown !== undefined && { initialMarkdown: props.initialMarkdown }),
   transformDiagramsOnImport: props.transformDiagramsOnImport,
   ...(props.placeholder !== undefined && { placeholder: props.placeholder }),
-  editable: props.editable,
+  // Pass a getter so `useVizelEditor` tracks reactive prop updates. The
+  // literal `props.editable` would be captured once during setup and the
+  // watcher would never see subsequent changes.
+  editable: () => props.editable,
   autofocus: props.autofocus,
   ...(props.features !== undefined && { features: props.features }),
   ...(props.flavor !== undefined && {

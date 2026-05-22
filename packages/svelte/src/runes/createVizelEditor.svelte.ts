@@ -9,9 +9,23 @@ import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.sve
 
 /**
  * Options for createVizelEditor rune.
+ *
+ * `editable` accepts either a literal boolean or a getter `() => boolean`
+ * so the rune can mirror the value through `editor.setEditable()` when it
+ * changes. Other options are captured once at mount and ignored
+ * thereafter — Tiptap does not support runtime swapping of
+ * `initialContent`, `extensions`, etc.
+ *
  * @see VizelCreateEditorOptions for available options.
  */
-export type CreateVizelEditorOptions = VizelCreateEditorOptions;
+export type CreateVizelEditorOptions = Omit<VizelCreateEditorOptions, "editable"> & {
+  /**
+   * Whether the editor accepts user input. Pass `() => boolean` to drive
+   * it from a `$state` rune; the effect resolves the getter on every
+   * change.
+   */
+  editable?: boolean | (() => boolean);
+};
 
 /**
  * Svelte 5 rune to create and manage a Vizel editor instance.
@@ -61,7 +75,12 @@ export type CreateVizelEditorOptions = VizelCreateEditorOptions;
  * ```
  */
 export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
-  const { features, extensions: additionalExtensions = [], ...editorOptions } = options;
+  const { features, extensions: additionalExtensions = [], editable, ...editorOptions } = options;
+  // Resolve `editable` whether it was passed as a literal or a getter; the
+  // effect below reads the resolver each tick so a `() => $state` source
+  // becomes reactive without changing the underlying type at every call site.
+  const resolveEditable = (): boolean =>
+    typeof editable === "function" ? editable() : (editable ?? true);
 
   // Store image upload options for event handler
   const imageOptions = typeof features?.content?.image === "object" ? features.content.image : {};
@@ -78,6 +97,7 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
       try {
         const result = await createVizelEditorInstance({
           ...editorOptions,
+          editable: resolveEditable(),
           ...(features !== undefined && { features }),
           extensions: additionalExtensions,
           createSlashMenuRenderer: createVizelSlashMenuRenderer,
@@ -124,9 +144,11 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
 
   // Mirror the `editable` option into the underlying editor. The constructor
   // option is captured at mount; without this effect consumers cannot toggle
-  // read-only mode after the editor exists. Matches the React hook behavior.
+  // read-only mode after the editor exists. `resolveEditable()` reads the
+  // caller-supplied getter (or literal), so passing `() => $state` makes
+  // the effect rerun when the state changes. Matches the React hook behavior.
   $effect(() => {
-    const desired = editorOptions.editable ?? true;
+    const desired = resolveEditable();
     if (editor && editor.isEditable !== desired) {
       editor.setEditable(desired);
     }
