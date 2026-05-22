@@ -2,6 +2,51 @@
 
 Common issues and solutions when using Vizel.
 
+## Error Handling
+
+Vizel surfaces errors through `VizelError`, a structured `Error` subclass with a stable `code` and an optional `context` object. Narrow with `isVizelError(error)` before reading the code.
+
+```ts
+import { isVizelError } from '@vizel/react';
+
+<Vizel
+  onError={(error) => {
+    if (!isVizelError(error)) return;
+    if (error.code === 'UPLOAD_FAILED') {
+      // user-facing toast
+    } else {
+      // ship to Sentry / Datadog
+    }
+  }}
+/>
+```
+
+### Error Code Reference
+
+| Code | Category | When it fires | Surface | Consumer can recover by |
+|------|----------|---------------|---------|-------------------------|
+| `INVALID_CONFIG` | Configuration | Editor construction with conflicting feature flags (e.g. `comments` without `provider`) | **Thrown** and re-emitted via `onError` | Fix the option object and re-mount |
+| `INVALID_EXTENSION` | Configuration | A custom extension fails internal validation | Thrown | Inspect the extension; align with Tiptap's contract |
+| `MISSING_CONTEXT` | Configuration | `useVizelContext` / `getVizelContext` called outside a provider | Thrown | Wrap the consumer in `<VizelProvider>` or `<Vizel>` |
+| `INVALID_LOCALE` | Configuration | A `VizelLocale` is missing required keys | Thrown | Fill in the missing locale fields or use `createVizelLocale()` |
+| `SSR_NOT_SUPPORTED` | Configuration | `createVizelEditorInstance` called on the server | Thrown | Move editor creation inside `useEffect` / `onMounted` / `$effect` |
+| `SSR_DOM_SHIM_MISSING` | Configuration | A controller's `mount()` invoked without a DOM target on the server | Thrown | Pass a DOM element or guard the controller behind the mount lifecycle |
+| `MISSING_OPTIONAL_DEP` | Configuration | A lazy-loaded peer (KaTeX, Mermaid, GraphViz) is not installed | `onError` | Add the peer dependency listed in the message |
+| `INVALID_MARKDOWN` | Input | Markdown input rejected by the parser | `onError` | Sanitize the input or pre-validate it |
+| `INVALID_JSON_CONTENT` | Input | JSON content does not match the Tiptap schema | `onError` | Normalize the content shape before passing it to `setContent` |
+| `INVALID_URL` | Input | Link / embed handed an unparseable URL | `onError` | Validate the URL string before submitting |
+| `MARKDOWN_LOSSY` | Input | The active flavor cannot serialize a node losslessly | `onError` (severity `"warning"`) | Switch to a flavor that supports the node (e.g. `vizelObsidianFlavor` for wiki links), or accept the lossy output |
+| `UPLOAD_FAILED` | Runtime | `image.onUpload` rejected or threw | `onError` | Retry, show a toast, or restore the placeholder |
+| `EMBED_LOAD_FAILED` | Runtime | Embed metadata could not be fetched | `onError` | Show a fallback link |
+| `CLIPBOARD_FAILED` | Runtime | Browser blocked a clipboard operation | `onError` | Prompt the user with a manual fallback |
+| `COLLAB_DISCONNECTED` | Collaboration | The Yjs provider lost its connection | `onError` | Reconnect the provider; show offline indicator |
+| `COLLAB_SYNC_FAILED` | Collaboration | Initial sync did not complete | `onError` | Verify provider auth; retry with backoff |
+| `UNKNOWN_ERROR` | Fallback | `wrapAsVizelError` called without a specific code | `onError` | Inspect `error.cause` for context |
+
+### Configuration errors are loud by design
+
+Configuration codes (`INVALID_CONFIG`, `SSR_NOT_SUPPORTED`, ...) are emitted to `onError` **and** rethrown so global handlers (Sentry, `window.onunhandledrejection`) observe them even when an observability `onError` handler is wired up. The previous v2.0.0 behavior — suppressing the rethrow when `onError` was set — silently blanked the editor for some consumers. If you only need telemetry, log the error and let it propagate; if you want to recover, catch the error at the parent boundary.
+
 ## Editor Not Rendering
 
 ### CSS Not Loaded
