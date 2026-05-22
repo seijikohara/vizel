@@ -174,7 +174,7 @@ frameworks. The only divergence is the children form.
 
 | Prop | React | Vue | Svelte |
 |------|-------|-----|--------|
-| `editor` | `Editor` (required) | `Editor` (required) | `Editor` (required) |
+| `editor` | `Editor \| null` (context fallback) | `Editor \| null` (context fallback) | `Editor \| null` (context fallback) |
 | Class prop | `className?: string` | `class?: string` | `class?: string` |
 | Close callback | `onClose?: () => void` | (emit `close`) | `onclose?: () => void` |
 | `enableEmbed` | `boolean` | `boolean` | `boolean` |
