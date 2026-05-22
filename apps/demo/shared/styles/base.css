@@ -601,3 +601,185 @@ body {
 [data-vizel-theme="dark"] .panel-tab[data-active="true"] {
   color: var(--framework-color);
 }
+
+/* Theme toggle group: cycles light -> dark -> system */
+.theme-toggle-group {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--demo-surface-alt);
+  border: 1px solid var(--demo-border);
+  border-radius: 9999px;
+}
+
+.theme-toggle-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--demo-text-muted);
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.theme-toggle-option[data-active="true"] {
+  background: var(--demo-surface);
+  color: var(--framework-color);
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.08);
+}
+
+.theme-toggle-option:hover:not([data-active="true"]) {
+  color: var(--demo-text-strong);
+}
+
+/* Outline / Minimap side panels next to the editor */
+.editor-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex-shrink: 0;
+  width: 220px;
+}
+
+.editor-aside--right {
+  width: 160px;
+  align-items: flex-end;
+}
+
+.editor-with-aside {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.editor-with-aside .editor-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.editor-aside-panel {
+  background: var(--demo-surface);
+  border: 1px solid var(--demo-border);
+  border-radius: 12px;
+  padding: 0.75rem;
+  width: 100%;
+  box-shadow:
+    0 4px 6px -1px oklch(0 0 0 / 0.05),
+    0 2px 4px -2px oklch(0 0 0 / 0.05);
+}
+
+.editor-aside-panel--minimap {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.editor-aside-title {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--demo-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.editor-aside-panel .vizel-outline {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+@media (max-width: 1280px) {
+  .editor-aside {
+    width: 180px;
+  }
+  .editor-aside--right {
+    width: 140px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .editor-with-aside {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .editor-aside,
+  .editor-aside--right {
+    width: 100%;
+    align-items: stretch;
+  }
+}
+
+/* Static view preview panel: shows generateVizelStaticHtml output */
+.static-preview {
+  margin-top: 1rem;
+  background: var(--demo-surface);
+  border: 1px solid var(--demo-border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow:
+    0 4px 6px -1px oklch(0 0 0 / 0.05),
+    0 2px 4px -2px oklch(0 0 0 / 0.05);
+}
+
+.static-preview-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.static-preview-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--demo-text-muted);
+}
+
+.static-preview-hint {
+  font-size: 0.7rem;
+  color: var(--demo-text-placeholder);
+}
+
+.static-preview-body {
+  border-top: 1px solid var(--demo-border-subtle);
+  padding-top: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--demo-text);
+}
+
+.static-preview-error {
+  color: var(--demo-danger);
+  font-size: 0.85rem;
+}
+
+/* Status bar shortcut hint */
+.status-hint {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--demo-text-muted);
+}
+
+.status-hint kbd {
+  display: inline-block;
+  padding: 0.05rem 0.35rem;
+  font-family: var(--demo-mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  color: var(--demo-text-strong);
+  background: var(--demo-surface-alt);
+  border: 1px solid var(--demo-border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+}

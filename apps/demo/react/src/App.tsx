@@ -1,16 +1,19 @@
 import {
   createVizelFindReplaceExtension,
   type Editor,
+  generateVizelStaticHtml,
   type JSONContent,
   setVizelMarkdown,
   useVizelAutoSave,
   useVizelComment,
   useVizelEditorState,
-  useVizelTheme,
+  useVizelThemeSafe,
   useVizelVersionHistory,
   Vizel,
   VizelFindReplace,
   type VizelMarkdownFlavor,
+  VizelMinimap,
+  VizelOutline,
   VizelSaveIndicator,
   VizelThemeProvider,
   vizelCommonMarkFlavor,
@@ -30,18 +33,110 @@ const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
   [vizelDocusaurusFlavor.name]: vizelDocusaurusFlavor,
 };
 
-function ThemeToggle() {
-  const { theme, setTheme } = useVizelTheme();
+const THEME_STORAGE_KEY = "vizel-theme";
+
+type ThemeMode = "light" | "dark" | "system";
+
+function readStoredThemeMode(): ThemeMode {
+  if (typeof localStorage === "undefined") return "system";
+  const stored = localStorage.getItem(THEME_STORAGE_KEY);
+  return stored === "light" || stored === "dark" ? stored : "system";
+}
+
+interface ThemeToggleProps {
+  /** Triggered when the user chooses "system" so the provider remounts. */
+  onResetToSystem: () => void;
+}
+
+/**
+ * Three-state theme toggle (light / dark / system).
+ *
+ * `useVizelTheme().setTheme` only accepts concrete `VizelResolvedTheme`
+ * values by design (cross-framework.md Table 4). To re-enter "system"
+ * mode the demo clears the persisted preference and asks the parent to
+ * remount the provider so its `defaultTheme="system"` initializer runs.
+ */
+function ThemeToggle({ onResetToSystem }: ThemeToggleProps) {
+  const themeApi = useVizelThemeSafe();
+  const resolvedTheme = themeApi?.theme;
+  const storedMode = readStoredThemeMode();
 
   return (
-    <button
-      type="button"
-      className="theme-toggle"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-    >
-      {theme === "dark" ? "☀️" : "🌙"}
-    </button>
+    <fieldset className="theme-toggle-group" aria-label="Theme">
+      <button
+        type="button"
+        className="theme-toggle-option"
+        data-active={storedMode === "light"}
+        aria-label="Light mode"
+        title="Light"
+        onClick={() => themeApi?.setTheme("light")}
+      >
+        ☀
+      </button>
+      <button
+        type="button"
+        className="theme-toggle-option"
+        data-active={storedMode === "dark"}
+        aria-label="Dark mode"
+        title="Dark"
+        onClick={() => themeApi?.setTheme("dark")}
+      >
+        ☾
+      </button>
+      <button
+        type="button"
+        className="theme-toggle-option"
+        data-active={storedMode === "system"}
+        aria-label={`System (currently ${resolvedTheme ?? "light"})`}
+        title="System"
+        onClick={() => {
+          if (typeof localStorage !== "undefined") {
+            localStorage.removeItem(THEME_STORAGE_KEY);
+          }
+          onResetToSystem();
+        }}
+      >
+        ⎙
+      </button>
+    </fieldset>
+  );
+}
+
+interface StaticPreviewProps {
+  html: string;
+  error: string | null;
+}
+
+/**
+ * Render the generated static HTML preview.
+ *
+ * The HTML comes from `generateVizelStaticHtml`, which runs the same
+ * Markdown the user just typed through the editor's own renderer. The
+ * source is local to the page so the demo writes the string into a
+ * detached `innerHTML` rather than using `dangerouslySetInnerHTML`.
+ */
+function StaticPreview({ html, error }: StaticPreviewProps) {
+  const bodyRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const node = bodyRef.current;
+    if (!node) return;
+    node.innerHTML = html;
+  }, [html]);
+
+  return (
+    <section className="static-preview" aria-label="Static HTML preview (server-renderable)">
+      <header className="static-preview-header">
+        <span className="static-preview-title">Static View (read-only)</span>
+        <span className="static-preview-hint">
+          Rendered by <code>generateVizelStaticHtml</code>
+        </span>
+      </header>
+      {error ? (
+        <p className="static-preview-error">{error}</p>
+      ) : (
+        <div ref={bodyRef} className="static-preview-body" />
+      )}
+    </section>
   );
 }
 
@@ -68,12 +163,20 @@ interface DemoFeatures {
   syncPanel: boolean;
   comments: boolean;
   history: boolean;
+  outline: boolean;
+  minimap: boolean;
+  staticView: boolean;
 }
 
 type PanelTab = "markdown" | "json" | "history" | "comments";
 
-function AppContent() {
-  // Feature toggles (all enabled by default)
+interface AppContentProps {
+  onResetThemeToSystem: () => void;
+}
+
+function AppContent({ onResetThemeToSystem }: AppContentProps) {
+  // Feature toggles (all enabled by default except staticView which
+  // only makes sense as a side-by-side compare panel).
   const [features, setFeatures] = useState<DemoFeatures>({
     toolbar: true,
     theme: true,
@@ -82,6 +185,9 @@ function AppContent() {
     syncPanel: true,
     comments: true,
     history: true,
+    outline: true,
+    minimap: true,
+    staticView: false,
   });
 
   const [flavorName, setFlavorName] = useState<string>(vizelGfmFlavor.name);
@@ -133,6 +239,38 @@ function AppContent() {
 
   // Find & Replace extension (stable reference)
   const findReplaceExtensions = useMemo(() => [createVizelFindReplaceExtension()], []);
+
+  // Static HTML preview (read-only view) generated by
+  // `generateVizelStaticHtml`. Only computed while the toggle is on so
+  // the demo stays light when the feature is hidden. A token guards
+  // against stale async results overwriting newer renders.
+  const [staticHtml, setStaticHtml] = useState("");
+  const [staticError, setStaticError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!features.staticView) {
+      setStaticHtml("");
+      setStaticError(null);
+      return;
+    }
+    if (!markdownInput) return;
+    const requestState = { cancelled: false };
+    generateVizelStaticHtml({ markdown: markdownInput, flavor })
+      .then((html) => {
+        if (!requestState.cancelled) {
+          setStaticHtml(html);
+          setStaticError(null);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!requestState.cancelled) {
+          setStaticHtml("");
+          setStaticError(error instanceof Error ? error.message : "Failed to render static HTML");
+        }
+      });
+    return () => {
+      requestState.cancelled = true;
+    };
+  }, [features.staticView, markdownInput, flavor]);
 
   // Handle Markdown input change and sync to editor
   const handleMarkdownChange = useCallback(
@@ -243,6 +381,21 @@ function AppContent() {
             checked={features.history}
             onChange={(v) => updateFeature("history", v)}
           />
+          <FeatureToggle
+            label="Outline"
+            checked={features.outline}
+            onChange={(v) => updateFeature("outline", v)}
+          />
+          <FeatureToggle
+            label="Minimap"
+            checked={features.minimap}
+            onChange={(v) => updateFeature("minimap", v)}
+          />
+          <FeatureToggle
+            label="Static View"
+            checked={features.staticView}
+            onChange={(v) => updateFeature("staticView", v)}
+          />
           <label className="feature-toggle">
             <span className="feature-toggle-label">Flavor</span>
             <select
@@ -265,6 +418,11 @@ function AppContent() {
       </section>
 
       <main className="main">
+        {features.outline && editor && (
+          <aside className="outline-section" aria-label="Document outline">
+            <VizelOutline editor={editor} />
+          </aside>
+        )}
         <div className="editor-section">
           <div className="editor-container">
             <Vizel
@@ -333,8 +491,14 @@ function AppContent() {
                 )}
               </div>
             )}
+            {features.staticView && <StaticPreview html={staticHtml} error={staticError} />}
           </div>
         </div>
+        {features.minimap && editor && (
+          <aside className="minimap-section" aria-label="Document minimap">
+            <VizelMinimap editor={editor} />
+          </aside>
+        )}
 
         {showPanel && (
           <div className="panel-section">
