@@ -4,7 +4,7 @@ Vizel provides a plugin system that lets you extend the editor with custom funct
 
 ## Overview
 
-While Vizel supports adding custom [Tiptap extensions](/guide/configuration#extensions) directly, the plugin system provides:
+While Vizel supports adding custom [Tiptap extensions](/guide/editor#custom-tiptap-extensions) directly, the plugin system provides:
 
 - **Standard interface** for packaging extensions
 - **Lifecycle management** (install, uninstall, transaction hooks)

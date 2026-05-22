@@ -132,15 +132,14 @@ Most features are enabled by default. Opt-in features must be explicitly enabled
 
 ## Quick Start
 
-Choose your framework to get started:
-
-- [React](/guide/react) - React 19 with hooks
-- [Vue](/guide/vue) - Vue 3 with Composition API
-- [Svelte](/guide/svelte) - Svelte 5 with runes
-
-Or jump directly to:
+Jump into the concept-first guide:
 
 - [Getting Started](/guide/getting-started) - Installation and basic setup
-- [Configuration](/guide/configuration) - Editor options and customization
-- [Features](/guide/features) - Enable and configure features
+- [Editor](/guide/editor) - The `Vizel` component, `useVizelEditor`, options, auto-save
+- [Blocks](/guide/blocks) - Block selection, clipboard, drag handle, block menu
+- [Markdown](/guide/markdown) - Flavor system, encoding modes, round-trip contract
 - [Theming](/guide/theming) - Customize appearance with CSS variables
+- [SSR](/guide/ssr) - Server-side rendering and static HTML generation
+- [Collaboration](/guide/collaboration) - Real-time editing, comments, version history
+- [Accessibility](/guide/accessibility) - Keyboard navigation and screen reader support
+- [Migration v1 to v2](/migration/v1-to-v2) - Upgrade from Vizel 1.x

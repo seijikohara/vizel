@@ -716,7 +716,7 @@ const editor = useVizelEditor({
 });
 ```
 
-Comment management (storage, replies, resolution) uses the framework-specific hooks/composables/runes. See the [Comments Guide](/guide/comments) for details.
+Comment management (storage, replies, resolution) uses the framework-specific hooks/composables/runes. See [Collaboration: Comments](/guide/collaboration#comments) for details.
 
 ---
 
@@ -1040,11 +1040,11 @@ import { VizelToolbar, VizelToolbarOverflow } from '@vizel/react';
 
 ## Next Steps
 
-- [Wiki Links](/guide/wiki-links) - Wiki-style internal links
-- [Comments](/guide/comments) - Text annotations and comments
-- [Version History](/guide/version-history) - Document snapshots
-- [Collaboration](/guide/collaboration) - Real-time multi-user editing
-- [Plugins](/guide/plugins) - Extend Vizel with plugins
+- [Editor](/guide/editor) - Editor options, lifecycle, and auto-save
+- [Blocks](/guide/blocks) - Block selection, clipboard, drag handle, and block menu
+- [Markdown](/guide/markdown) - Flavor system, encoding modes, and round-trip
+- [Collaboration](/guide/collaboration) - Real-time editing, comments, and version history
 - [Theming](/guide/theming) - Customize the appearance
-- [Auto-Save](/guide/auto-save) - Persist content automatically
+- [Wiki Links](/guide/wiki-links) - Wiki-style internal links
+- [Plugins](/guide/plugins) - Extend Vizel with plugins
 - [API Reference](/api/)

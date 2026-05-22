@@ -125,5 +125,5 @@ editor.commands.setContent(markdownString);
 
 - ... pre-render Markdown on the server → [SSR](/guide/ssr)
 - ... validate a round-trip → see `assertMarkdownRoundtrip` in [API Reference](/api/)
-- ... wire your own slash menu items → [Configuration](/guide/configuration)
-- ... persist edits automatically → [Auto-Save](/guide/auto-save)
+- ... wire your own slash menu items → [Editor: Features](/guide/editor#features)
+- ... persist edits automatically → [Editor: Auto-save](/guide/editor#auto-save)

@@ -156,7 +156,7 @@ export default withMermaid({
           ],
         },
         {
-          text: "Concepts",
+          text: "Core Concepts",
           items: [
             { text: "Editor", link: "/guide/editor" },
             { text: "Blocks", link: "/guide/blocks" },
@@ -164,30 +164,12 @@ export default withMermaid({
             { text: "Theming", link: "/guide/theming" },
             { text: "SSR", link: "/guide/ssr" },
             { text: "Collaboration", link: "/guide/collaboration" },
-          ],
-        },
-        {
-          text: "Essentials",
-          items: [
-            { text: "Configuration", link: "/guide/configuration" },
-            { text: "Features", link: "/guide/features" },
-            { text: "Auto-Save", link: "/guide/auto-save" },
-            { text: "Plugins", link: "/guide/plugins" },
-            { text: "Wiki Links", link: "/guide/wiki-links" },
-            { text: "Version History", link: "/guide/version-history" },
-            { text: "Comments", link: "/guide/comments" },
-            { text: "Performance", link: "/guide/performance" },
             { text: "Accessibility", link: "/guide/accessibility" },
-            { text: "Troubleshooting", link: "/guide/troubleshooting" },
           ],
         },
         {
-          text: "Frameworks",
-          items: [
-            { text: "React", link: "/guide/react" },
-            { text: "Vue", link: "/guide/vue" },
-            { text: "Svelte", link: "/guide/svelte" },
-          ],
+          text: "Migration",
+          items: [{ text: "v1 to v2", link: "/migration/v1-to-v2" }],
         },
       ],
       "/migration/": [

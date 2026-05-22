@@ -342,5 +342,4 @@ test('editor has no accessibility violations', async ({ page }) => {
 ## Next Steps
 
 - [Theming](/guide/theming) - Customize colors and visual styles
-- [Configuration](/guide/configuration) - Editor options reference
-- [Troubleshooting](/guide/troubleshooting) - Common issues and solutions
+- [Editor](/guide/editor) - Editor options reference

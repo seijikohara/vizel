@@ -156,7 +156,7 @@ const editor = useVizelEditor({
 
 #### Options
 
-See [Configuration](/guide/configuration) for full options.
+See [Editor](/guide/editor) for full options.
 
 #### Return Value
 
@@ -623,7 +623,7 @@ const Editor = defineAsyncComponent(() => import('./Editor.vue'));
 
 ## Next Steps
 
-- [Configuration](/guide/configuration) - Editor options
+- [Editor](/guide/editor) - Editor options, features, and auto-save
 - [Features](/guide/features) - Enable and configure features
 - [Theming](/guide/theming) - Customize appearance
 - [API Reference](/api/vue)

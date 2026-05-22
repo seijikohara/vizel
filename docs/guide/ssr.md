@@ -98,4 +98,4 @@ consumer-supplied raw markup — so it carries no XSS surface.
 
 - ... configure the editor's Markdown pipeline → [Markdown](/guide/markdown)
 - ... synchronize the theme across server and client → [Theming](/guide/theming)
-- ... persist editor state → [Auto-Save](/guide/auto-save)
+- ... persist editor state → [Editor: Auto-save](/guide/editor#auto-save)
