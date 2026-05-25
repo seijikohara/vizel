@@ -46,7 +46,9 @@ import "@vizel/core/styles.css";
 
 const editor = useVizelEditor({
   features: {
-    image: { onUpload: async (file) => "https://example.com/image.png" },
+    content: {
+      image: { onUpload: async (file) => "https://example.com/image.png" },
+    },
   },
 });
 </script>
