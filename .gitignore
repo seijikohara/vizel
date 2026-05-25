@@ -55,3 +55,6 @@ blob-report/
 .claude/settings.local.json
 .claude/worktrees/
 CLAUDE.local.md
+
+# Claude Code transient lock file
+.claude/scheduled_tasks.lock
