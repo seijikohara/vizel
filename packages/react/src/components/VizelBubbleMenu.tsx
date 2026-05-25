@@ -72,9 +72,16 @@ export function VizelBubbleMenu({
   const editor = editorProp ?? contextEditor;
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Store shouldShow in ref to avoid recreating plugin when callback changes
+  // Store shouldShow in a ref so the plugin closure always reads the latest
+  // callback without re-registering when the parent passes a new function
+  // identity. The assignment runs inside a `useEffect` (not at render time)
+  // to honor React's "no side effects during render" contract. The
+  // one-tick lag between a re-render and the ref update is fine because
+  // the closure only fires on subsequent ProseMirror events.
   const shouldShowRef = useRef(shouldShow);
-  shouldShowRef.current = shouldShow;
+  useEffect(() => {
+    shouldShowRef.current = shouldShow;
+  }, [shouldShow]);
 
   useEffect(() => {
     if (!(editor && menuRef.current)) {
