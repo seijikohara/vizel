@@ -5,15 +5,29 @@ import {
   type VizelCreateEditorOptions,
   wrapAsVizelError,
 } from "@vizel/core";
-import type { ShallowRef } from "vue";
-import { onBeforeUnmount, onMounted, shallowRef, watch } from "vue";
+import type { MaybeRefOrGetter, ShallowRef } from "vue";
+import { onBeforeUnmount, onMounted, shallowRef, toValue, watch } from "vue";
 import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.ts";
 
 /**
  * Options for useVizelEditor composable.
+ *
+ * `editable` accepts either a literal boolean or a reactive source
+ * (`Ref<boolean>` or `() => boolean`) so the composable can mirror the
+ * value through `editor.setEditable()` whenever it changes. Other options
+ * are captured once at mount and ignored thereafter — Tiptap does not
+ * support runtime swapping of `initialContent`, `extensions`, etc.
+ *
  * @see VizelCreateEditorOptions for available options.
  */
-export type UseVizelEditorOptions = VizelCreateEditorOptions;
+export type UseVizelEditorOptions = Omit<VizelCreateEditorOptions, "editable"> & {
+  /**
+   * Whether the editor accepts user input. Pass a `Ref<boolean>` or
+   * `() => boolean` to drive it from reactive state; the composable
+   * resolves the value with `toValue()` on every change.
+   */
+  editable?: MaybeRefOrGetter<boolean>;
+};
 
 /**
  * Vue composable to create and manage a Vizel editor instance.
@@ -61,7 +75,7 @@ export type UseVizelEditorOptions = VizelCreateEditorOptions;
  * ```
  */
 export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<Editor | null> {
-  const { features, extensions: additionalExtensions = [], ...editorOptions } = options;
+  const { features, extensions: additionalExtensions = [], editable, ...editorOptions } = options;
 
   // Store image upload options for event handler
   const imageOptions = typeof features?.content?.image === "object" ? features.content.image : {};
@@ -80,6 +94,9 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
       try {
         const result = await createVizelEditorInstance({
           ...editorOptions,
+          // Resolve the initial editable value at mount; the watch below
+          // mirrors subsequent changes through `editor.setEditable()`.
+          editable: toValue(editable) ?? true,
           ...(features !== undefined && { features }),
           extensions: additionalExtensions,
           createSlashMenuRenderer: createVizelSlashMenuRenderer,
@@ -111,13 +128,16 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
     })();
   });
 
-  // Mirror the `editable` option into the underlying editor. The constructor
-  // option is captured at mount; without this watcher consumers cannot toggle
-  // read-only mode after the editor exists. Matches the React hook behavior.
+  // Mirror the `editable` option into the underlying editor. `toValue()`
+  // resolves the source whether it was passed as a literal, a `Ref`, or a
+  // getter — so the watcher tracks the live value even when the consumer
+  // passes a reactive source. Without this the constructor `editable`
+  // value would be frozen at mount, defeating runtime toggling. Matches
+  // the React hook behavior.
   watch(
-    [editor, () => editorOptions.editable],
-    ([editorValue, editable]) => {
-      const desired = editable ?? true;
+    [editor, () => toValue(editable)],
+    ([editorValue, currentEditable]) => {
+      const desired = currentEditable ?? true;
       if (editorValue && editorValue.isEditable !== desired) {
         editorValue.setEditable(desired);
       }
