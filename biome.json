@@ -285,7 +285,8 @@
             "noNonNullAssertion": "off"
           },
           "complexity": {
-            "noImportantStyles": "off"
+            "noImportantStyles": "off",
+            "noExcessiveCognitiveComplexity": "off"
           }
         }
       }
@@ -341,7 +342,7 @@
       }
     },
     {
-      "includes": ["tests/ct/**/*"],
+      "includes": ["tests/**/*"],
       "linter": {
         "rules": {
           "correctness": {

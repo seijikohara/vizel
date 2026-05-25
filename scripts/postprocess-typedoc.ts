@@ -56,7 +56,7 @@ function escapeProseAngleBrackets(markdown: string): string {
   const result = lines.reduce<{ state: State; output: string[] }>(
     (carrier, line) => {
       const fenceMatch = /^(```+|~~~+)/.exec(line);
-      if (fenceMatch && fenceMatch[1]) {
+      if (fenceMatch?.[1]) {
         if (!carrier.state.inFence) {
           return {
             state: { inFence: true, fence: fenceMatch[1] },

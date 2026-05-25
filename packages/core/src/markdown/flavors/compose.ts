@@ -29,20 +29,20 @@ export function composeVizelMarkdownFlavors(
 
   const markdownItPlugins = flavors.flatMap((flavor) => flavor.markdownItPlugins ?? []);
 
-  const nodeSerializers: Record<string, VizelNodeSerializer> = flavors.reduce(
-    (acc, flavor) => ({ ...acc, ...flavor.nodeSerializers }),
-    {} as Record<string, VizelNodeSerializer>
-  );
-
-  const markSerializers: Record<string, VizelMarkSerializer> = flavors.reduce(
-    (acc, flavor) => ({ ...acc, ...flavor.markSerializers }),
-    {} as Record<string, VizelMarkSerializer>
-  );
-
-  const config = flavors.reduce<Record<string, unknown>>(
-    (acc, flavor) => ({ ...acc, ...flavor.config }),
-    {}
-  );
+  // Use a single-pass `Object.assign` accumulator instead of spreading each
+  // flavor into a new literal — the spread variant copies every previously
+  // merged key on every flavor, making the merge O(n*k) where k grows with
+  // each iteration. `Object.assign` mutates the locally-constructed `const`
+  // accumulator, so the function stays referentially transparent from the
+  // caller's perspective and biome's `noAccumulatingSpread` lint is happy.
+  const nodeSerializers: Record<string, VizelNodeSerializer> = {};
+  const markSerializers: Record<string, VizelMarkSerializer> = {};
+  const config: Record<string, unknown> = {};
+  for (const flavor of flavors) {
+    if (flavor.nodeSerializers) Object.assign(nodeSerializers, flavor.nodeSerializers);
+    if (flavor.markSerializers) Object.assign(markSerializers, flavor.markSerializers);
+    if (flavor.config) Object.assign(config, flavor.config);
+  }
 
   return {
     name: composedName,
