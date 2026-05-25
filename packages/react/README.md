@@ -94,6 +94,7 @@ function App() {
 | `VizelToolbarDropdown` | Toolbar dropdown button |
 | `VizelToolbarOverflow` | Toolbar overflow menu |
 | `VizelMentionMenu` | @mention suggestion menu |
+| `VizelOutline` | Heading-tree overview / navigation panel |
 | `VizelLinkEditor` | Link editing popover |
 | `VizelNodeSelector` | Node type selector |
 | `VizelColorPicker` | Color picker |
@@ -121,6 +122,7 @@ function App() {
 | `useVizelContext` | Access editor from context |
 | `useVizelContextSafe` | Access editor from context (returns null outside provider) |
 | `useVizelTheme` | Access theme from context |
+| `useVizelThemeSafe` | Access theme from context (returns `null` outside `VizelThemeProvider`) |
 | `useVizelIconContext` | Access icon context |
 
 ## Documentation
