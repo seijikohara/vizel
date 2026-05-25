@@ -73,7 +73,7 @@ $effect(() => {
 // Focus input when panel opens
 $effect(() => {
   if (isOpen && findInputRef) {
-    tick().then(() => {
+    void tick().then(() => {
       findInputRef?.focus();
       findInputRef?.select();
     });
