@@ -1,4 +1,4 @@
-import type { Editor } from "@vizel/core";
+import { type Editor, VizelError } from "@vizel/core";
 import { getContext } from "svelte";
 
 export const VIZEL_CONTEXT_KEY = Symbol("vizel-editor");
@@ -38,7 +38,11 @@ export interface VizelContextAccessor {
 export function getVizelContext(): VizelContextAccessor {
   const accessor = getContext<VizelContextAccessor | undefined>(VIZEL_CONTEXT_KEY);
   if (!accessor) {
-    throw new Error("getVizelContext must be used within a VizelProvider");
+    throw new VizelError(
+      "MISSING_CONTEXT",
+      "getVizelContext must be used within <VizelProvider> or <Vizel>. " +
+        "Wrap the consumer in <VizelProvider editor={editor.current}>...</VizelProvider>."
+    );
   }
   return accessor;
 }
