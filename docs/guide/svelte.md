@@ -433,7 +433,13 @@ changes are ignored. Use `bind:markdown` when you intend two-way sync.
 </div>
 ```
 
-### Reactive Content with $state (JSON)
+### Mirror Editor JSON into $state via onUpdate
+
+`initialContent` is captured once when the editor mounts — writing to
+the same `$state` later does not push the new value into the editor.
+Use `onUpdate` to read the editor's JSON back into a `$state` for
+display, and call `editor.current.commands.setContent(...)`
+imperatively when you need to push from outside:
 
 ```svelte
 <script lang="ts">
@@ -442,11 +448,14 @@ changes are ignored. Use `bind:markdown` when you intend two-way sync.
   let content = $state<JSONContent>({ type: 'doc', content: [] });
 
   const editor = createVizelEditor({
-    initialContent: content,
     onUpdate: ({ editor }) => {
       content = editor.getJSON();
     },
   });
+
+  function reset(): void {
+    editor.current?.commands.setContent({ type: 'doc', content: [] });
+  }
 </script>
 ```
 
@@ -575,31 +584,27 @@ changes are ignored. Use `bind:markdown` when you intend two-way sync.
 
 ## SSR/SvelteKit Considerations
 
-The editor runs on the client side only. Use a `browser` check or `onMount`:
+The editor runs on the client side only. `createVizelEditor` is safe
+to call unconditionally at script top — its internal `$effect` is a
+no-op on the server, and `editor.current` is `null` until the editor
+finishes initializing in the browser:
 
 ```svelte
 <script lang="ts">
-  import { browser } from '$app/environment';
-  import { onMount } from 'svelte';
+  import { createVizelEditor, VizelEditor } from '@vizel/svelte';
 
-  let mounted = $state(false);
-
-  onMount(() => {
-    mounted = true;
-  });
-
-  // Only create editor on client
-  const editor = browser ? createVizelEditor() : { current: null };
+  const editor = createVizelEditor();
 </script>
 
-{#if mounted}
+{#if editor.current}
   <VizelEditor editor={editor.current} />
 {:else}
   <div>Loading editor...</div>
 {/if}
 ```
 
-Or use dynamic import:
+If you want to defer loading the editor bundle until the client
+needs it, use a dynamic import:
 
 ```svelte
 <script lang="ts">
@@ -613,11 +618,14 @@ Or use dynamic import:
 </script>
 
 {#if Editor}
-  <svelte:component this={Editor} />
+  <Editor />
 {:else}
   <div>Loading...</div>
 {/if}
 ```
+
+The `<svelte:component>` wrapper used in earlier Svelte versions is
+deprecated in Svelte 5 — render the component variable directly.
 
 ## Svelte 5 Runes vs Svelte 4
 

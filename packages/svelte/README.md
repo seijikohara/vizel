@@ -94,6 +94,7 @@ const md = createVizelMarkdown(() => editor.current);
 | `VizelToolbarDropdown` | Toolbar dropdown button |
 | `VizelToolbarOverflow` | Toolbar overflow menu |
 | `VizelMentionMenu` | @mention suggestion menu |
+| `VizelOutline` | Heading-tree overview / navigation panel |
 | `VizelLinkEditor` | Link editing popover |
 | `VizelNodeSelector` | Node type selector |
 | `VizelColorPicker` | Color picker |
@@ -121,6 +122,7 @@ const md = createVizelMarkdown(() => editor.current);
 | `getVizelContext` | Access editor from context |
 | `getVizelContextSafe` | Access editor from context (returns null outside provider) |
 | `getVizelTheme` | Access theme from context |
+| `getVizelThemeSafe` | Access theme from context (returns `null` outside `VizelThemeProvider`) |
 | `getVizelIconContext` | Access icon context |
 
 ## Documentation
