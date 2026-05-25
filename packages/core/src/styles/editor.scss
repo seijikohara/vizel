@@ -70,9 +70,13 @@
     line-height: 1.7;
   }
 
+  // Use rem (not em) so the indent step matches across list types
+  // regardless of font size at the nesting point. Task lists use the
+  // same rem-based step (see `task-list.scss`), keeping ul / ol / task
+  // list markers aligned at the same inline-start position.
   ul,
   ol {
-    padding-left: 1.5em;
+    padding-inline-start: 1.5rem;
   }
 
   li {
