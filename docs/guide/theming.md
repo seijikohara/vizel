@@ -88,14 +88,12 @@ import { VizelThemeProvider } from '@vizel/vue';
 import { useVizelTheme } from '@vizel/react';
 
 function ThemeToggle() {
-  const { theme, resolvedTheme, setTheme } = useVizelTheme();
-  
+  const { theme, setTheme } = useVizelTheme();
+
   return (
-    <select value={theme} onChange={(e) => setTheme(e.target.value)}>
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-      <option value="system">System</option>
-    </select>
+    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+      {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+    </button>
   );
 }
 ```
@@ -104,42 +102,38 @@ function ThemeToggle() {
 <script setup lang="ts">
 import { useVizelTheme } from '@vizel/vue';
 
-const { theme, resolvedTheme, setTheme } = useVizelTheme();
+const { theme, setTheme } = useVizelTheme();
 </script>
 
 <template>
-  <select :value="theme" @change="setTheme($event.target.value)">
-    <option value="light">Light</option>
-    <option value="dark">Dark</option>
-    <option value="system">System</option>
-  </select>
+  <button @click="setTheme(theme === 'dark' ? 'light' : 'dark')">
+    {{ theme === 'dark' ? 'Light Mode' : 'Dark Mode' }}
+  </button>
 </template>
 ```
 
 ```svelte [Svelte]
 <script lang="ts">
   import { getVizelTheme } from '@vizel/svelte';
-  
+
   const theme = getVizelTheme();
 </script>
 
-<select value={theme.theme} onchange={(e) => theme.setTheme(e.target.value)}>
-  <option value="light">Light</option>
-  <option value="dark">Dark</option>
-  <option value="system">System</option>
-</select>
+<button onclick={() => theme.setTheme(theme.current === 'dark' ? 'light' : 'dark')}>
+  {theme.current === 'dark' ? 'Light Mode' : 'Dark Mode'}
+</button>
 ```
 
 :::
 
 ### Theme State Properties
 
+The `useVizelTheme` / `getVizelTheme` return surfaces only the **resolved** theme (`"light" | "dark"`). The user-preference setting (`"system"` etc.) is owned by the provider's `defaultTheme` and is not a runtime-toggleable value.
+
 | Property | Type | Description |
 |----------|------|-------------|
-| `theme` | `"light" \| "dark" \| "system"` | Current theme setting |
-| `resolvedTheme` | `"light" \| "dark"` | Actual resolved theme |
-| `systemTheme` | `"light" \| "dark"` | System preference |
-| `setTheme` | `(theme) => void` | Function to change theme |
+| `theme` (React/Vue) / `current` (Svelte) | `"light" \| "dark"` | Currently applied theme |
+| `setTheme` | `(next: "light" \| "dark") => void` | Switch to a concrete theme |
 
 ---
 
