@@ -240,31 +240,23 @@ corpus is itself a coverage task.
 
 ## Pillar 4 — SSR suite
 
-The Section 11 server-rendering path is exercised by a Node-only
-smoke test that drives `generateVizelStaticHtml` against canonical
-Markdown samples. Running the full SSR matrix through Playwright is
-gratuitous; the script asserts DOM markers directly.
+Vizel's SSR contract is currently enforced by a single static lint
+that keeps Core free of top-level `document` / `window` access. The
+runtime SSR path is the framework's own server renderer plus Tiptap's
+`generateHTML(json, extensions)` helper — consumers wire either into
+their server pipeline; Vizel ships no opinionated server-HTML helper.
 
 ### Files
 
 | Path | Purpose |
 |------|---------|
-| `scripts/test-static-html.ts` | Node smoke test for `generateVizelStaticHtml` |
 | `scripts/check-ssr-safety.ts` | Static lint for top-level `document` / `window` access |
 
 ### Commands
 
 | Command | Description |
 |---------|-------------|
-| `pnpm test:ssr` | Run the SSR static-HTML smoke test |
 | `pnpm check:ssr` | Confirm Core stays free of top-level browser globals |
-
-### How to add a new SSR case
-
-1. Append a `StaticHtmlCase` entry to `scripts/test-static-html.ts`.
-2. Set `mustInclude` / `mustNotInclude` to DOM markers that uniquely
-   identify the rendered output.
-3. Run `pnpm test:ssr` and confirm exit 0.
 
 `pnpm check:ssr` runs on `pre-push` and CI to guarantee Core never
 references `document` or `window` at module scope. Lazy access
