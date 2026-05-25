@@ -147,10 +147,22 @@ async function handleReply(commentId: string) {
 }
 
 const showPanel = computed(() => features.syncPanel || features.history || features.comments);
+
+// The provider seeds its theme state once at mount from
+// `localStorage[storageKey]` (or `defaultTheme`). The System button
+// clears the persisted preference and bumps `providerKey` so the
+// provider remounts and re-runs that seed against the now-clean
+// storage — the simplest way to re-enter "follow system" mode without
+// adding a runtime "system" path to `useVizelTheme().setTheme` (which
+// is intentionally narrowed to concrete `light` / `dark`).
+const providerKey = ref(0);
+function handleResetThemeToSystem(): void {
+  providerKey.value += 1;
+}
 </script>
 
 <template>
-  <VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
+  <VizelThemeProvider :key="providerKey" defaultTheme="system" storageKey="vizel-theme">
     <div class="app">
       <header class="header">
         <div class="header-content">
@@ -159,7 +171,7 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
             <h1>Vizel Editor</h1>
             <span class="framework-badge">Vue 3</span>
           </div>
-          <ThemeToggle v-if="features.theme" />
+          <ThemeToggle v-if="features.theme" :on-reset-to-system="handleResetThemeToSystem" />
         </div>
         <p class="header-description">
           A block-based rich text editor with slash commands and inline formatting
