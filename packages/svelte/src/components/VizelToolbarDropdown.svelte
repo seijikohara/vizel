@@ -9,7 +9,11 @@ export interface VizelToolbarDropdownProps {
 </script>
 
 <script lang="ts">
-import { buildVizelToolbarDropdownSpec, formatVizelTooltip } from "@vizel/core";
+import {
+  buildVizelToolbarDropdownSpec,
+  formatVizelTooltip,
+  resolveVizelListNavigation,
+} from "@vizel/core";
 import VizelIcon from "./VizelIcon.svelte";
 
 let {
@@ -51,36 +55,22 @@ function handleTriggerKeyDown(e: KeyboardEvent) {
 
 function handleListKeyDown(e: KeyboardEvent) {
   const optionCount = dropdown.options.length;
-  switch (e.key) {
-    case "ArrowDown":
-      e.preventDefault();
-      focusedIndex = (focusedIndex + 1) % optionCount;
-      break;
-    case "ArrowUp":
-      e.preventDefault();
-      focusedIndex = (focusedIndex - 1 + optionCount) % optionCount;
-      break;
-    case "Home":
-      e.preventDefault();
-      focusedIndex = 0;
-      break;
-    case "End":
-      e.preventDefault();
-      focusedIndex = optionCount - 1;
-      break;
-    case "Enter":
-    case " ": {
-      e.preventDefault();
-      const selected = dropdown.options[focusedIndex];
-      if (selected?.isEnabled(editor)) {
-        selected.run(editor);
-        close();
-      }
-      break;
+  if (e.key === "Enter" || e.key === " ") {
+    if (optionCount === 0) return;
+    e.preventDefault();
+    const selected = dropdown.options[focusedIndex];
+    if (selected?.isEnabled(editor)) {
+      selected.run(editor);
+      close();
     }
-    default:
-      break;
+    return;
   }
+  // Delegate Arrow/Home/End to the core helper, which short-circuits on
+  // `optionCount === 0` instead of computing `NaN`.
+  const next = resolveVizelListNavigation(e.key, focusedIndex, optionCount);
+  if (next === null) return;
+  e.preventDefault();
+  focusedIndex = next;
 }
 
 $effect(() => {

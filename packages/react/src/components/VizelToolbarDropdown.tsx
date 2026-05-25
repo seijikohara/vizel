@@ -1,5 +1,9 @@
 import type { Editor, VizelToolbarDropdownAction } from "@vizel/core";
-import { buildVizelToolbarDropdownSpec, formatVizelTooltip } from "@vizel/core";
+import {
+  buildVizelToolbarDropdownSpec,
+  formatVizelTooltip,
+  resolveVizelListNavigation,
+} from "@vizel/core";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 
@@ -76,36 +80,22 @@ export function VizelToolbarDropdown({
   }
 
   function handleListKeyDown(e: React.KeyboardEvent) {
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault();
-        setFocusedIndex((prev) => (prev + 1) % optionCount);
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        setFocusedIndex((prev) => (prev - 1 + optionCount) % optionCount);
-        break;
-      case "Home":
-        e.preventDefault();
-        setFocusedIndex(0);
-        break;
-      case "End":
-        e.preventDefault();
-        setFocusedIndex(optionCount - 1);
-        break;
-      case "Enter":
-      case " ": {
-        e.preventDefault();
-        const selected = dropdown.options[focusedIndex];
-        if (selected?.isEnabled(editor)) {
-          selected.run(editor);
-          close();
-        }
-        break;
+    if (e.key === "Enter" || e.key === " ") {
+      if (optionCount === 0) return;
+      e.preventDefault();
+      const selected = dropdown.options[focusedIndex];
+      if (selected?.isEnabled(editor)) {
+        selected.run(editor);
+        close();
       }
-      default:
-        break;
+      return;
     }
+    // Delegate Arrow/Home/End to the core helper, which short-circuits on
+    // `optionCount === 0` instead of computing `NaN`.
+    const next = resolveVizelListNavigation(e.key, focusedIndex, optionCount);
+    if (next === null) return;
+    e.preventDefault();
+    setFocusedIndex(next);
   }
 
   return (

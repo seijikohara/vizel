@@ -2,6 +2,7 @@
 import {
   buildVizelSlashMenuSpec,
   getNextVizelSlashMenuGroupIndex,
+  resolveVizelListNavigation,
   type VizelSlashCommandItem,
 } from "@vizel/core";
 import { computed, nextTick, ref, useSlots, watch } from "vue";
@@ -83,24 +84,25 @@ function selectItem(index: number) {
 
 function handleKeyDown(event: KeyboardEvent): boolean {
   const count = flatItemCount.value;
-  if (event.key === "ArrowUp") {
-    selectedIndex.value = (selectedIndex.value + count - 1) % count;
-    return true;
-  }
-  if (event.key === "ArrowDown") {
-    selectedIndex.value = (selectedIndex.value + 1) % count;
-    return true;
-  }
-  if (event.key === "Enter") {
-    selectItem(selectedIndex.value);
-    return true;
-  }
   if (event.key === "Tab") {
+    if (count === 0) return false;
     event.preventDefault();
     selectedIndex.value = getNextVizelSlashMenuGroupIndex(spec.value, selectedIndex.value);
     return true;
   }
-  return false;
+  if (event.key === "Enter") {
+    if (count === 0) return false;
+    selectItem(selectedIndex.value);
+    return true;
+  }
+  // ArrowUp/ArrowDown/Home/End — delegate to the core helper. It returns
+  // `null` for unknown keys *and* for `count === 0`, so the empty-menu
+  // case naturally falls through and lets Tiptap consume the key instead
+  // of being silently swallowed with a `NaN` write to `selectedIndex`.
+  const next = resolveVizelListNavigation(event.key, selectedIndex.value, count);
+  if (next === null) return false;
+  selectedIndex.value = next;
+  return true;
 }
 
 defineExpose({

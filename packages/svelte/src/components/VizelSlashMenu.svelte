@@ -34,7 +34,11 @@ export interface VizelSlashMenuProps {
 </script>
 
 <script lang="ts">
-import { buildVizelSlashMenuSpec, getNextVizelSlashMenuGroupIndex } from "@vizel/core";
+import {
+  buildVizelSlashMenuSpec,
+  getNextVizelSlashMenuGroupIndex,
+  resolveVizelListNavigation,
+} from "@vizel/core";
 import { tick } from "svelte";
 import VizelSlashMenuItem from "./VizelSlashMenuItem.svelte";
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.svelte";
@@ -96,24 +100,26 @@ function selectItem(index: number) {
 }
 
 function onKeyDown(event: KeyboardEvent): boolean {
-  if (event.key === "ArrowUp") {
-    selectedIndex = (selectedIndex + flatItemCount - 1) % flatItemCount;
-    return true;
-  }
-  if (event.key === "ArrowDown") {
-    selectedIndex = (selectedIndex + 1) % flatItemCount;
-    return true;
-  }
-  if (event.key === "Enter") {
-    selectItem(selectedIndex);
-    return true;
-  }
   if (event.key === "Tab") {
+    if (flatItemCount === 0) return false;
     event.preventDefault();
     selectedIndex = getNextVizelSlashMenuGroupIndex(spec, selectedIndex);
     return true;
   }
-  return false;
+  if (event.key === "Enter") {
+    if (flatItemCount === 0) return false;
+    selectItem(selectedIndex);
+    return true;
+  }
+  // ArrowUp/ArrowDown/Home/End — delegate to the core helper. It returns
+  // `null` for unknown keys *and* for `flatItemCount === 0`, so the
+  // empty-menu case naturally falls through and lets Tiptap consume the
+  // key instead of being silently swallowed with a `NaN` write to
+  // `selectedIndex`.
+  const next = resolveVizelListNavigation(event.key, selectedIndex, flatItemCount);
+  if (next === null) return false;
+  selectedIndex = next;
+  return true;
 }
 
 // Expose the keyboard handler through the optional ref prop so suggestion
