@@ -1,4 +1,4 @@
-import type { Editor } from "@vizel/core";
+import { type Editor, VizelError } from "@vizel/core";
 import { type InjectionKey, inject, type ShallowRef } from "vue";
 
 /**
@@ -39,7 +39,11 @@ export const VIZEL_CONTEXT_KEY: InjectionKey<ShallowRef<Editor | null>> = Symbol
 export function useVizelContext(): ShallowRef<Editor | null> {
   const editorRef = inject(VIZEL_CONTEXT_KEY);
   if (!editorRef) {
-    throw new Error("useVizelContext must be used within a VizelProvider");
+    throw new VizelError(
+      "MISSING_CONTEXT",
+      "useVizelContext must be used within <VizelProvider> or <Vizel>. " +
+        'Wrap the consumer in <VizelProvider :editor="editor">...</VizelProvider>.'
+    );
   }
   return editorRef;
 }
