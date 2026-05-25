@@ -112,11 +112,6 @@ const markdown = defineModel<string>("markdown");
 
 const slots = useSlots();
 
-// Track whether we're currently updating from external markdown change.
-// A closure-shared ref lets the update callback and the markdown watcher
-// flip the guard without resorting to a mutable `let` binding.
-const markdownSyncFlag = { isUpdatingFromMarkdown: false };
-
 const editor = useVizelEditor({
   ...(props.initialContent !== undefined && { initialContent: props.initialContent }),
   ...(props.initialMarkdown !== undefined && { initialMarkdown: props.initialMarkdown }),
@@ -135,10 +130,16 @@ const editor = useVizelEditor({
   ...(props.extensions !== undefined && { extensions: props.extensions }),
   onUpdate: (e) => {
     emit("update", e);
-    // Update markdown model if not updating from external change
-    if (!markdownSyncFlag.isUpdatingFromMarkdown && markdown.value !== undefined) {
-      markdown.value = getVizelMarkdown(e.editor);
-    }
+    // Skip the write-back when the editor's current markdown already
+    // matches the controlled prop. The previous shape used a synchronous
+    // flag to mute write-back during an external update, but Tiptap's
+    // `update` event can fire in a microtask after `setVizelMarkdown`
+    // returns, by which point the flag was already false — comparing the
+    // markdown values directly avoids that timing race.
+    if (markdown.value === undefined) return;
+    const nextMarkdown = getVizelMarkdown(e.editor);
+    if (nextMarkdown === markdown.value) return;
+    markdown.value = nextMarkdown;
   },
   onCreate: (e) => emit("create", e),
   onDestroy: () => emit("destroy"),
@@ -154,20 +155,17 @@ const editor = useVizelEditor({
   }),
 });
 
-// Watch for external markdown changes (v-model:markdown)
+// Watch for external markdown changes (v-model:markdown). The onUpdate
+// wrapper compares the editor's markdown to the controlled prop and
+// skips the write-back when they match, so this watcher can apply the
+// incoming value without juggling a synchronous reentrancy flag.
 watch(markdown, (newMarkdown) => {
   if (newMarkdown === undefined || !editor.value) return;
-
-  // Get current editor markdown
   const currentMarkdown = getVizelMarkdown(editor.value);
   if (newMarkdown === currentMarkdown) return;
-
-  // Set flag to prevent emitting update:markdown during this update
-  markdownSyncFlag.isUpdatingFromMarkdown = true;
   setVizelMarkdown(editor.value, newMarkdown, {
     transformDiagrams: props.transformDiagramsOnImport,
   });
-  markdownSyncFlag.isUpdatingFromMarkdown = false;
 });
 
 // Expose the editor through the same provide key VizelProvider uses, so

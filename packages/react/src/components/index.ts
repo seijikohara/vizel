@@ -43,8 +43,6 @@ export {
   type VizelMentionMenuProps,
   type VizelMentionMenuRef,
 } from "./VizelMentionMenu.tsx";
-// VizelMinimap component
-export { VizelMinimap, type VizelMinimapProps } from "./VizelMinimap.tsx";
 // VizelNodeSelector component
 export { VizelNodeSelector, type VizelNodeSelectorProps } from "./VizelNodeSelector.tsx";
 // VizelOutline component

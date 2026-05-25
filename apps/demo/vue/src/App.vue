@@ -11,7 +11,6 @@ import {
   Vizel,
   VizelFindReplace,
   type VizelMarkdownFlavor,
-  VizelMinimap,
   VizelOutline,
   VizelSaveIndicator,
   VizelThemeProvider,
@@ -43,7 +42,6 @@ const features = reactive({
   comments: true,
   history: true,
   outline: true,
-  minimap: true,
 });
 
 const flavorName = ref<string>(vizelGfmFlavor.name);
@@ -207,10 +205,6 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
             <span class="feature-toggle-label">Outline</span>
           </label>
           <label class="feature-toggle">
-            <input type="checkbox" v-model="features.minimap" />
-            <span class="feature-toggle-label">Minimap</span>
-          </label>
-          <label class="feature-toggle">
             <span class="feature-toggle-label">Flavor</span>
             <select class="feature-select" v-model="flavorName">
               <option value="commonmark">CommonMark</option>
@@ -282,16 +276,6 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
             </div>
           </div>
         </div>
-        <aside
-          v-if="features.minimap && editorRef"
-          class="editor-aside editor-aside--right"
-          aria-label="Document minimap"
-        >
-          <div class="editor-aside-panel editor-aside-panel--minimap">
-            <VizelMinimap :editor="editorRef" />
-          </div>
-        </aside>
-
         <div v-if="showPanel" class="panel-section">
           <div class="panel-container">
             <div class="panel-tabs">
