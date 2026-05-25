@@ -1,4 +1,9 @@
-import { BubbleMenuPlugin, type Editor, type VizelLocale } from "@vizel/core";
+import {
+  BubbleMenuPlugin,
+  createVizelBubbleMenuEscapeController,
+  type Editor,
+  type VizelLocale,
+} from "@vizel/core";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { VizelBubbleMenuDefault } from "./VizelBubbleMenuDefault.tsx";
@@ -92,20 +97,17 @@ export function VizelBubbleMenu({
 
     editor.registerPlugin(plugin);
 
-    // Handle Escape key to hide bubble menu by collapsing selection
-    const currentEditor = editor;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !currentEditor.view.state.selection.empty) {
-        event.preventDefault();
-        currentEditor.commands.setTextSelection(currentEditor.view.state.selection.to);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
+    // Escape collapses the selection so the bubble menu hides on its own
+    // shouldShow predicate. The listener lives in a Core controller so
+    // this component does not call `document.addEventListener` directly.
+    const escapeController = createVizelBubbleMenuEscapeController({
+      getEditor: () => editor,
+    });
+    escapeController.mount();
 
     return () => {
       editor.unregisterPlugin(pluginKey);
-      document.removeEventListener("keydown", handleKeyDown);
+      escapeController.unmount();
     };
   }, [editor, pluginKey, updateDelay]);
 

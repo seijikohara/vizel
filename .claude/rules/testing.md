@@ -323,7 +323,7 @@ pnpm test:visual:update
 
 The shipped suite covers a representative slice; broader coverage
 (slash menu open, bubble menu over selection, block menu, color
-picker, outline, minimap, link editor, find/replace) is a
+picker, outline, link editor, find/replace) is a
 follow-up tracked against the v2.0.0 polish milestone.
 
 ---

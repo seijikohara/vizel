@@ -687,12 +687,6 @@ body {
     0 2px 4px -2px oklch(0 0 0 / 0.05);
 }
 
-.editor-aside-panel--minimap {
-  display: flex;
-  justify-content: center;
-  padding: 0.5rem;
-}
-
 .editor-aside-title {
   display: block;
   font-size: 0.7rem;

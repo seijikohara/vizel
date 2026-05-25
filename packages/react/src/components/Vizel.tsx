@@ -10,7 +10,7 @@ import {
   type VizelMarkdownFlavor,
 } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
-import { useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import { useEffect, useImperativeHandle, useMemo } from "react";
 import { useLatest } from "../hooks/useLatest.ts";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
 import { VizelBlockMenu } from "./VizelBlockMenu.tsx";
@@ -188,9 +188,6 @@ export function Vizel({
   onBlur,
   onError,
 }: VizelProps): ReactNode {
-  // Track whether we're currently updating from external markdown change
-  const isUpdatingFromMarkdownRef = useRef(false);
-
   // Keep refs for every value accessed in the editor's lifecycle callbacks.
   // `useVizelEditor` reads options once at mount, so without `useLatest`
   // each callback would be frozen to the closure values from the first
@@ -218,10 +215,17 @@ export function Vizel({
     ...(extensions !== undefined && { extensions }),
     onUpdate: (e) => {
       onUpdateRef.current?.(e);
-      // Update markdown if not updating from external change
-      if (!isUpdatingFromMarkdownRef.current && markdownRef.current !== undefined) {
-        onMarkdownChangeRef.current?.(getVizelMarkdown(e.editor));
-      }
+      // Skip the write-back when the editor's current markdown already
+      // matches the controlled prop. The previous shape used a
+      // synchronous flag to mute write-back during an external update,
+      // but Tiptap's `update` event can fire in a microtask after
+      // `setVizelMarkdown` returns, by which point the flag was already
+      // false — comparing the markdown values directly avoids that
+      // timing race.
+      if (markdownRef.current === undefined) return;
+      const nextMarkdown = getVizelMarkdown(e.editor);
+      if (nextMarkdown === markdownRef.current) return;
+      onMarkdownChangeRef.current?.(nextMarkdown);
     },
     onCreate: (e) => onCreateRef.current?.(e),
     onDestroy: () => onDestroyRef.current?.(),
@@ -234,20 +238,17 @@ export function Vizel({
     ...(onError !== undefined && { onError: (e) => onErrorRef.current?.(e) }),
   });
 
-  // Watch for external markdown changes (controlled mode)
+  // Watch for external markdown changes (controlled mode). The onUpdate
+  // wrapper compares the editor's markdown to the controlled prop and
+  // skips the write-back when they match, so this effect can apply the
+  // incoming value without juggling a synchronous reentrancy flag.
   useEffect(() => {
     if (markdown === undefined || !editor) return;
-
-    // Get current editor markdown
     const currentMarkdown = getVizelMarkdown(editor);
     if (markdown === currentMarkdown) return;
-
-    // Set flag to prevent emitting onMarkdownChange during this update
-    isUpdatingFromMarkdownRef.current = true;
     setVizelMarkdown(editor, markdown, {
       transformDiagrams: transformDiagramsOnImport,
     });
-    isUpdatingFromMarkdownRef.current = false;
   }, [markdown, editor, transformDiagramsOnImport]);
 
   // Expose editor instance via ref

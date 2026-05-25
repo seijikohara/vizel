@@ -11,7 +11,6 @@ import {
   Vizel,
   VizelFindReplace,
   type VizelMarkdownFlavor,
-  VizelMinimap,
   VizelOutline,
   VizelSaveIndicator,
   VizelThemeProvider,
@@ -43,7 +42,6 @@ let features = $state({
   comments: true,
   history: true,
   outline: true,
-  minimap: true,
 });
 
 let flavorName = $state<string>(vizelGfmFlavor.name);
@@ -209,10 +207,6 @@ function handleJsonChange(event: Event) {
         <span class="feature-toggle-label">Outline</span>
       </label>
       <label class="feature-toggle">
-        <input type="checkbox" bind:checked={features.minimap} />
-        <span class="feature-toggle-label">Minimap</span>
-      </label>
-      <label class="feature-toggle">
         <span class="feature-toggle-label">Flavor</span>
         <select
           class="feature-select"
@@ -295,13 +289,6 @@ function handleJsonChange(event: Event) {
         {/if}
       </div>
     </div>
-    {#if features.minimap && editorRef}
-      <aside class="editor-aside editor-aside--right" aria-label="Document minimap">
-        <div class="editor-aside-panel editor-aside-panel--minimap">
-          <VizelMinimap editor={editorRef} />
-        </div>
-      </aside>
-    {/if}
 
     {#if showPanel}
       <div class="panel-section">

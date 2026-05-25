@@ -31,11 +31,6 @@ export {
   type VizelMentionItemView,
 } from "./mention-menu.ts";
 export {
-  buildVizelMinimapSpec,
-  type VizelMinimapBlockSpec,
-  type VizelMinimapSpec,
-} from "./minimap.ts";
-export {
   buildVizelNodeSelectorSpec,
   type VizelNodeSelectorItemView,
   type VizelNodeSelectorSpec,
