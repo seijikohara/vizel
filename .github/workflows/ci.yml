@@ -12,6 +12,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  quality:
+    name: Quality (lint, typecheck, build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # `pnpm lint` runs biome with `--error-on-warnings`, so any warning
+      # (not just errors) fails CI. The intent is to prevent warning rot
+      # — the codebase ships at zero warnings, and CI keeps it that way.
+      - name: Lint (fail on warnings)
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Cross-framework parity
+        run: pnpm check:parity
+
+      - name: No-let check
+        run: pnpm check:nolet
+
+      - name: Build
+        run: pnpm build
+
   test:
     name: Test (${{ matrix.framework }}/${{ matrix.browser }})
     runs-on: ubuntu-latest
