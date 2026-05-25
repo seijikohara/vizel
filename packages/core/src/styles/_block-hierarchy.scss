@@ -5,38 +5,26 @@
  * `data-vizel-depth="N"` decoration. The extension only decorates
  * *container* block nodes (`bulletList`, `orderedList`, `taskList`,
  * `blockquote`, `details`, `detailsContent`, `callout`) — see
- * `extensions/visual-hierarchy.ts`. Each container at depth >= 2
- * receives one indent step plus a thin guide line on its inline
- * start, so nesting is conveyed by a single rule per level without
- * fighting the container's own marker offset (list bullets, callout
- * padding, etc.).
+ * `extensions/visual-hierarchy.ts`.
+ *
+ * Container responsibilities are split deliberately:
+ *
+ * - Each container owns its **indent step** via its own
+ *   `padding-inline-start` (`ul` / `ol` / `.vizel-task-list` /
+ *   `ul[data-type="taskList"]` in `editor.scss` and `task-list.scss`,
+ *   `blockquote` in `editor.scss`, `callout` / `details` in their own
+ *   files). This guarantees the marker / checkbox / quote bar sits a
+ *   consistent distance from the container's inline-start regardless
+ *   of node type.
+ * - This file owns the **guide line** drawn at the container's
+ *   inline-start edge. The line therefore lands flush against the
+ *   parent block's content edge, exactly where the indent begins.
  *
  * Activated by `features.interaction.visualHierarchy`.
  */
 
 .vizel-root .ProseMirror {
-  [data-vizel-depth="2"] {
-    padding-inline-start: 1rem;
-    border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
-  }
-
-  [data-vizel-depth="3"] {
-    padding-inline-start: 1.25rem;
-    border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
-  }
-
-  [data-vizel-depth="4"] {
-    padding-inline-start: 1.5rem;
-    border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
-  }
-
-  [data-vizel-depth="5"] {
-    padding-inline-start: 1.75rem;
-    border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
-  }
-
-  [data-vizel-depth="6"] {
-    padding-inline-start: 2rem;
+  [data-vizel-depth] {
     border-inline-start: 1px solid var(--vizel-border-subtle, rgb(0 0 0 / 6%));
   }
 }
