@@ -99,9 +99,11 @@ export interface VizelProps {
 // A complete editor component that includes EditorContent and BubbleMenu.
 // This is the recommended way to use Vizel for most use cases.
 import { getVizelMarkdown, setVizelMarkdown } from "@vizel/core";
+import { setContext } from "svelte";
 import { createVizelEditor } from "../runes/createVizelEditor.svelte.js";
 import VizelBlockMenu from "./VizelBlockMenu.svelte";
 import VizelBubbleMenu from "./VizelBubbleMenu.svelte";
+import { type VizelContextAccessor, VIZEL_CONTEXT_KEY } from "./VizelContext.js";
 import VizelEditor from "./VizelEditor.svelte";
 import VizelToolbar from "./VizelToolbar.svelte";
 
@@ -166,6 +168,16 @@ const editorState = createVizelEditor({
 });
 
 const editor = $derived(editorState.current);
+
+// Expose the editor through the same context key VizelProvider uses, so
+// nested components (and the built-in toolbar / bubble menu / block menu)
+// can resolve it via getVizelContext() without an explicit `editor` prop.
+const accessor: VizelContextAccessor = {
+  get current() {
+    return editorState.current;
+  },
+};
+setContext(VIZEL_CONTEXT_KEY, accessor);
 
 // Watch for external markdown changes (bind:markdown)
 $effect(() => {
