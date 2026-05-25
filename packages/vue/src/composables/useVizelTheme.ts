@@ -1,4 +1,4 @@
-import type { VizelResolvedTheme } from "@vizel/core";
+import { VizelError, type VizelResolvedTheme } from "@vizel/core";
 import { type ComputedRef, computed, inject } from "vue";
 import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext";
 
@@ -41,7 +41,10 @@ export function useVizelTheme(): UseVizelThemeResult {
   const context = inject(VIZEL_THEME_CONTEXT_KEY);
 
   if (!context) {
-    throw new Error("useVizelTheme must be used within a VizelThemeProvider");
+    throw new VizelError(
+      "MISSING_CONTEXT",
+      "useVizelTheme must be used within a VizelThemeProvider"
+    );
   }
 
   return {

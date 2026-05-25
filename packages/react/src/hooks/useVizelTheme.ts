@@ -1,4 +1,4 @@
-import type { VizelResolvedTheme } from "@vizel/core";
+import { VizelError, type VizelResolvedTheme } from "@vizel/core";
 import { useContext, useMemo } from "react";
 import { VizelThemeContext } from "../components/VizelThemeContext.tsx";
 
@@ -38,7 +38,10 @@ export function useVizelTheme(): UseVizelThemeResult {
   const context = useContext(VizelThemeContext);
 
   if (!context) {
-    throw new Error("useVizelTheme must be used within a VizelThemeProvider");
+    throw new VizelError(
+      "MISSING_CONTEXT",
+      "useVizelTheme must be used within a VizelThemeProvider"
+    );
   }
 
   // Surface only the resolved theme through the public `theme` field. The
