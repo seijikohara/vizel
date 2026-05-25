@@ -58,7 +58,7 @@ If the editor appears unstyled or broken, ensure you import the CSS:
 import '@vizel/core/styles.css';
 
 // For components like Bubble Menu (optional)
-import '@vizel/core/components.css';
+import '@vizel/core/styles/components.css';
 
 // For mathematics support (optional)
 import '@vizel/core/mathematics.css';
@@ -231,14 +231,14 @@ const editor = useVizelEditor({
 You can increase the debounce time for auto-save:
 
 ```typescript
-import { useVizelAutoSave } from '@vizel/react';
+import { useVizelAutoSave, useVizelEditor } from '@vizel/react';
 
-useVizelAutoSave({
-  getEditor: () => editor,
+const editor = useVizelEditor();
+useVizelAutoSave(editor, {
+  debounceMs: 2000, // Wait 2 seconds after last change
   onSave: async (content) => {
     await saveToServer(content);
   },
-  debounceMs: 2000, // Wait 2 seconds after last change
 });
 ```
 
@@ -399,22 +399,22 @@ export default defineConfig({
 });
 ```
 
-3. **Multiple editor instances** sharing extensions:
+3. **Multiple editor instances** sharing the `extensions` array:
 
-You must create fresh extension instances for each editor:
+`useVizelEditor` / `createVizelEditor` build the always-on extension
+set internally; the `extensions` option is for *additional* Tiptap
+extensions a consumer wants to stack on top. Sharing the same array
+across editors works, but sharing a single ProseMirror plugin
+instance across editors does not. Create a fresh extension list per
+editor whenever any of the items is stateful:
 
 ```typescript
-// Wrong: Sharing extensions
-const extensions = createVizelExtensions({});
-const editor1 = useVizelEditor({ extensions });
-const editor2 = useVizelEditor({ extensions }); // Error!
-
-// Correct: Create extensions per editor
+// Correct: each editor builds its own extensions list
 const editor1 = useVizelEditor({
-  extensions: createVizelExtensions({}),
+  extensions: [createVizelFindReplaceExtension()],
 });
 const editor2 = useVizelEditor({
-  extensions: createVizelExtensions({}),
+  extensions: [createVizelFindReplaceExtension()],
 });
 ```
 

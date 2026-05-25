@@ -19,7 +19,7 @@ This includes CSS variable definitions (light and dark themes), component styles
 For projects using shadcn/ui or custom CSS variables:
 
 ```typescript
-import '@vizel/core/components.css';
+import '@vizel/core/styles/components.css';
 ```
 
 This includes only component styles without CSS variable definitions.
