@@ -55,7 +55,7 @@ $effect(() => {
 });
 
 function scrollToSelected() {
-  tick().then(() => {
+  void tick().then(() => {
     const el = itemRefs[selectedIndex];
     if (el) {
       el.scrollIntoView({ block: "nearest", behavior: "smooth" });

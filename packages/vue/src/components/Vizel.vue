@@ -146,13 +146,8 @@ const editor = useVizelEditor({
   onSelectionUpdate: (e) => emit("selectionUpdate", e),
   onFocus: (e) => emit("focus", e),
   onBlur: (e) => emit("blur", e),
-  // Always forward errors through the `error` emit. The previous shape
-  // gated the trampoline on `useAttrs().onError !== undefined`, but
-  // Vue 3 deliberately strips declared emits from `$attrs` / `useAttrs()`
-  // so that check was always `false` and runtime errors funneled through
-  // `emitVizelError` (UPLOAD_FAILED, EMBED_LOAD_FAILED, MARKDOWN_LOSSY)
-  // never reached the consumer. Vue's `emit` is a no-op when no parent
-  // listener is attached, so unwiring the gate does not silently swallow
+  // Always forward errors through the `error` emit; Vue's `emit` is a
+  // no-op when no parent listener is attached, so this never swallows
   // configuration errors — `useVizelEditor` still rethrows
   // INVALID_CONFIG to the global handler regardless of this callback.
   onError: (e: VizelError) => emit("error", e),
@@ -208,7 +203,7 @@ const localeProps = computed(() => (props.locale ? { locale: props.locale } : {}
       </template>
     </VizelToolbar>
     <VizelEditor :editor="editor" />
-    <VizelBubbleMenu v-if="showBubbleMenu && editor" :enable-embed="enableEmbed ?? false" v-bind="localeProps">
+    <VizelBubbleMenu v-if="showBubbleMenu && editor" :enable-embed="enableEmbed" v-bind="localeProps">
       <template v-if="slots['bubble-menu']" #default>
         <slot name="bubble-menu" :editor="editor" />
       </template>
