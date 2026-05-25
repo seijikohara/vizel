@@ -68,11 +68,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build packages
-        run: pnpm build
-
-      - name: Run SSR static HTML smoke test
-        run: pnpm test:ssr
+      - name: Verify core stays free of top-level browser globals
+        run: pnpm check:ssr
 
   visual:
     name: Visual Regression
