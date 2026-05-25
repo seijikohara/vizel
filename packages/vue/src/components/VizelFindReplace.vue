@@ -8,10 +8,16 @@ import {
   type VizelLocale,
 } from "@vizel/core";
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { useVizelContextSafe } from "./VizelContext.ts";
 
 export interface VizelFindReplaceProps {
-  /** The Tiptap editor instance */
-  editor: Editor | null;
+  /**
+   * The Tiptap editor instance.
+   *
+   * Optional — when omitted, the component resolves the editor from
+   * the surrounding `<VizelProvider>` / `<Vizel>` context.
+   */
+  editor?: Editor | null;
   /** Custom class name */
   class?: string;
   /** Locale for translated UI strings */
@@ -19,6 +25,8 @@ export interface VizelFindReplaceProps {
 }
 
 const props = defineProps<VizelFindReplaceProps>();
+const contextEditor = useVizelContextSafe();
+const editorRef = computed<Editor | null>(() => props.editor ?? contextEditor?.value ?? null);
 
 const emit = defineEmits<{
   close: [];
@@ -35,13 +43,13 @@ const view = computed(() => buildVizelFindReplaceSpec(state.value, labels.value.
 const isOpen = computed(() => view.value.isOpen);
 
 function updateState() {
-  if (props.editor) {
-    state.value = getVizelFindReplaceState(props.editor.state);
+  if (editorRef.value) {
+    state.value = getVizelFindReplaceState(editorRef.value.state);
   }
 }
 
 watch(
-  () => props.editor,
+  () => editorRef.value,
   (editor, oldEditor) => {
     if (oldEditor) {
       oldEditor.off("transaction", updateState);
@@ -55,7 +63,7 @@ watch(
 );
 
 onBeforeUnmount(() => {
-  props.editor?.off("transaction", updateState);
+  editorRef.value?.off("transaction", updateState);
 });
 
 // Focus input when panel opens
@@ -71,45 +79,45 @@ watch(isOpen, (open) => {
 function handleFindInputChange(e: Event) {
   const value = (e.target as HTMLInputElement).value;
   findText.value = value;
-  props.editor?.commands.find(value);
+  editorRef.value?.commands.find(value);
 }
 
 function handleFindNext() {
-  props.editor?.commands.findNext();
+  editorRef.value?.commands.findNext();
 }
 
 function handleFindPrevious() {
-  props.editor?.commands.findPrevious();
+  editorRef.value?.commands.findPrevious();
 }
 
 function handleReplace() {
-  if (props.editor) {
-    props.editor.commands.replace(replaceText.value);
-    props.editor.commands.findNext();
+  if (editorRef.value) {
+    editorRef.value.commands.replace(replaceText.value);
+    editorRef.value.commands.findNext();
   }
 }
 
 function handleReplaceAll() {
-  props.editor?.commands.replaceAll(replaceText.value);
+  editorRef.value?.commands.replaceAll(replaceText.value);
 }
 
 function handleClose() {
-  if (props.editor) {
-    props.editor.commands.clearFind();
-    props.editor.commands.closeFindReplace();
+  if (editorRef.value) {
+    editorRef.value.commands.clearFind();
+    editorRef.value.commands.closeFindReplace();
   }
   findText.value = "";
   replaceText.value = "";
-  props.editor?.view.dom.focus();
+  editorRef.value?.view.dom.focus();
   emit("close");
 }
 
 function handleCaseSensitiveChange(e: Event) {
   const checked = (e.target as HTMLInputElement).checked;
   caseSensitive.value = checked;
-  props.editor?.commands.setFindCaseSensitive(checked);
+  editorRef.value?.commands.setFindCaseSensitive(checked);
   if (findText.value) {
-    props.editor?.commands.find(findText.value);
+    editorRef.value?.commands.find(findText.value);
   }
 }
 

@@ -2,8 +2,13 @@
 import type { Editor, VizelLocale } from "@vizel/core";
 
 export interface VizelLinkEditorProps {
-  /** The editor instance */
-  editor: Editor;
+  /**
+   * The editor instance.
+   *
+   * Optional — when omitted, the component resolves the editor from
+   * the surrounding `<VizelProvider>` / `<Vizel>` context.
+   */
+  editor?: Editor | null;
   /** Custom class name */
   class?: string;
   /** Close handler */
@@ -22,27 +27,35 @@ import {
   resolveVizelLinkEditorLabels,
 } from "@vizel/core";
 import { untrack } from "svelte";
+import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
 
 let {
-  editor,
+  editor: editorProp,
   class: className,
   onclose,
   enableEmbed = false,
   locale,
 }: VizelLinkEditorProps = $props();
 
-let formElement: HTMLFormElement;
-let inputElement: HTMLInputElement;
+const contextEditor = getVizelContextSafe();
+const editor = $derived(editorProp ?? contextEditor?.current ?? null);
+
+let formElement = $state<HTMLFormElement | undefined>(undefined);
+let inputElement = $state<HTMLInputElement | undefined>(undefined);
 
 const labels = $derived(resolveVizelLinkEditorLabels(locale));
-let url = $state(untrack(() => buildVizelLinkEditorSpec(editor, "", enableEmbed).initialUrl));
+let url = $state(
+  untrack(() => (editor ? buildVizelLinkEditorSpec(editor, "", enableEmbed).initialUrl : ""))
+);
 let openInNewTab = $state(
-  untrack(() => buildVizelLinkEditorSpec(editor, "", enableEmbed).initialOpenInNewTab)
+  untrack(() =>
+    editor ? buildVizelLinkEditorSpec(editor, "", enableEmbed).initialOpenInNewTab : false
+  )
 );
 let asEmbed = $state(false);
 
-const viewState = $derived(buildVizelLinkEditorSpec(editor, url, enableEmbed));
+const viewState = $derived(editor ? buildVizelLinkEditorSpec(editor, url, enableEmbed) : null);
 
 function handleClickOutside(event: MouseEvent) {
   if (!(event.target instanceof Node)) return;
@@ -76,11 +89,13 @@ $effect(() => {
 
 function handleSubmit(e: Event) {
   e.preventDefault();
+  if (!editor || !viewState) return;
   applyVizelLinkEdit(editor, { url, openInNewTab, asEmbed }, viewState.canEmbed);
   onclose?.();
 }
 
 function handleRemove() {
+  if (!editor) return;
   editor.chain().focus().unsetLink().run();
   onclose?.();
 }
@@ -93,6 +108,7 @@ function handleVisit() {
 }
 </script>
 
+{#if viewState}
 <form
   bind:this={formElement}
   class="vizel-link-editor {className ?? ''}"
@@ -153,3 +169,4 @@ function handleVisit() {
     </div>
   {/if}
 </form>
+{/if}

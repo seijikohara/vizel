@@ -7,11 +7,17 @@ import {
   type VizelLocale,
 } from "@vizel/core";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelLinkEditorProps {
-  /** The editor instance */
-  editor: Editor;
+  /**
+   * The editor instance.
+   *
+   * Optional — when omitted, the component resolves the editor from
+   * the surrounding `<VizelProvider>` / `<Vizel>` context.
+   */
+  editor?: Editor | null;
   /** Custom class name */
   class?: string;
   /** Enable embed option (requires Embed extension) */
@@ -24,6 +30,9 @@ const props = withDefaults(defineProps<VizelLinkEditorProps>(), {
   enableEmbed: false,
 });
 
+const contextEditor = useVizelContextSafe();
+const editorRef = computed<Editor | null>(() => props.editor ?? contextEditor?.value ?? null);
+
 const emit = defineEmits<{
   close: [];
 }>();
@@ -32,13 +41,15 @@ const formRef = ref<HTMLFormElement | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
 
 const labels = computed(() => resolveVizelLinkEditorLabels(props.locale));
-const initialState = buildVizelLinkEditorSpec(props.editor, "", props.enableEmbed);
-const url = ref(initialState.initialUrl);
-const openInNewTab = ref(initialState.initialOpenInNewTab);
+const initialState = computed(() =>
+  editorRef.value ? buildVizelLinkEditorSpec(editorRef.value, "", props.enableEmbed) : null
+);
+const url = ref(initialState.value?.initialUrl ?? "");
+const openInNewTab = ref(initialState.value?.initialOpenInNewTab ?? false);
 const asEmbed = ref(false);
 
 const viewState = computed(() =>
-  buildVizelLinkEditorSpec(props.editor, url.value, props.enableEmbed)
+  editorRef.value ? buildVizelLinkEditorSpec(editorRef.value, url.value, props.enableEmbed) : null
 );
 
 function handleClickOutside(event: MouseEvent) {
@@ -72,16 +83,21 @@ onBeforeUnmount(() => {
 
 function handleSubmit(e: Event) {
   e.preventDefault();
+  const editor = editorRef.value;
+  const view = viewState.value;
+  if (!(editor && view)) return;
   applyVizelLinkEdit(
-    props.editor,
+    editor,
     { url: url.value, openInNewTab: openInNewTab.value, asEmbed: asEmbed.value },
-    viewState.value.canEmbed
+    view.canEmbed
   );
   emit("close");
 }
 
 function handleRemove() {
-  props.editor.chain().focus().unsetLink().run();
+  const editor = editorRef.value;
+  if (!editor) return;
+  editor.chain().focus().unsetLink().run();
   emit("close");
 }
 
@@ -95,6 +111,7 @@ function handleVisit() {
 
 <template>
   <form
+    v-if="viewState"
     ref="formRef"
     :class="['vizel-link-editor', $props.class]"
     @submit="handleSubmit"

@@ -64,9 +64,6 @@ export {
   VizelMentionMenu,
   type VizelMentionMenuProps,
   type VizelMentionMenuRef,
-  // Minimap
-  VizelMinimap,
-  type VizelMinimapProps,
   // NodeSelector
   VizelNodeSelector,
   type VizelNodeSelectorProps,
