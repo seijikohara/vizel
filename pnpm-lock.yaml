@@ -250,8 +250,8 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(sass@1.99.0)(tsx@4.22.0)(yaml@2.9.0))
       katex:
-        specifier: ^0.16.46
-        version: 0.16.47
+        specifier: ^0.17.0
+        version: 0.17.0
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0
@@ -281,8 +281,8 @@ importers:
         specifier: ^7.1.2
         version: 7.1.2(svelte@5.55.7)(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(sass@1.99.0)(tsx@4.22.0)(yaml@2.9.0))
       katex:
-        specifier: ^0.16.46
-        version: 0.16.47
+        specifier: ^0.17.0
+        version: 0.17.0
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0
@@ -312,8 +312,8 @@ importers:
         specifier: ^6.0.7
         version: 6.0.7(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(sass@1.99.0)(tsx@4.22.0)(yaml@2.9.0))(vue@3.5.34(typescript@6.0.3))
       katex:
-        specifier: ^0.16.46
-        version: 0.16.47
+        specifier: ^0.17.0
+        version: 0.17.0
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0
@@ -462,8 +462,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       katex:
-        specifier: ^0.16.0
-        version: 0.16.45
+        specifier: ^0.16.0 || ^0.17.0
+        version: 0.16.47
       linkedom:
         specifier: ^0.18.0
         version: 0.18.12
@@ -3143,6 +3143,10 @@ packages:
 
   katex@0.16.47:
     resolution: {integrity: sha512-Eeo8Ys1doU1z+x8AZsPpQu+p/QcZBI5PeOo7QGQdy2x2m0MU/hYagBbGOmXwr5KVbEfVuWv9LpnQWeehogurjg==}
+    hasBin: true
+
+  katex@0.17.0:
+    resolution: {integrity: sha512-Vdw0ATsQ9V+LuegM/BTwQqV/6cTl5lbGcIrU+BCgLxyf6bo38ybOr372tuSIxir3CN720flu1meYR6XzNMwQnw==}
     hasBin: true
 
   khroma@2.1.0:
@@ -6278,6 +6282,10 @@ snapshots:
     dependencies:
       commander: 8.3.0
 
+  katex@0.17.0:
+    dependencies:
+      commander: 8.3.0
+
   khroma@2.1.0: {}
 
   kleur@4.1.5: {}
@@ -6486,7 +6494,7 @@ snapshots:
       dagre-d3-es: 7.0.14
       dayjs: 1.11.20
       dompurify: 3.4.2
-      katex: 0.16.45
+      katex: 0.16.47
       khroma: 2.1.0
       lodash-es: 4.18.1
       marked: 16.4.2
