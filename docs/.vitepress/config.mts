@@ -10,13 +10,8 @@ const siteUrl = "https://seijikohara.github.io/vizel";
 // Fall back to an empty list when the file is missing so a fresh clone
 // (where the generated tree is gitignored) still builds.
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const typedocSidebarPath = path.resolve(
-  dirname,
-  "../api/generated/typedoc-sidebar.json"
-);
-const typedocSidebar: Record<string, unknown>[] = fs.existsSync(
-  typedocSidebarPath
-)
+const typedocSidebarPath = path.resolve(dirname, "../api/generated/typedoc-sidebar.json");
+const typedocSidebar: Record<string, unknown>[] = fs.existsSync(typedocSidebarPath)
   ? JSON.parse(fs.readFileSync(typedocSidebarPath, "utf8"))
   : [];
 
