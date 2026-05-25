@@ -150,6 +150,7 @@ export {
 // Controllers
 // =============================================================================
 export {
+  createVizelBubbleMenuEscapeController,
   createVizelDismissibleController,
   createVizelEditorSubscription,
   createVizelEditorTransactionStore,
@@ -158,6 +159,8 @@ export {
   createVizelPopoverController,
   createVizelRelativeTimeTicker,
   createVizelSystemThemeListener,
+  type VizelBubbleMenuEscapeController,
+  type VizelBubbleMenuEscapeControllerOptions,
   type VizelDismissibleController,
   type VizelDismissibleControllerOptions,
   type VizelEditorEventName,
