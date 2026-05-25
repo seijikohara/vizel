@@ -4,6 +4,8 @@ import {
   getVizelMarkdown,
   type VizelMarkdownSyncHandlers,
   type VizelMarkdownSyncOptions,
+  vizelCancelAnimationFrame,
+  vizelRequestAnimationFrame,
 } from "@vizel/core";
 
 export interface CreateVizelMarkdownOptions extends VizelMarkdownSyncOptions {
@@ -92,8 +94,10 @@ export function createVizelMarkdown(
     return handlers;
   };
 
-  // Track if initial value has been set
-  let initialSet = false;
+  // Track the last `initialValue` we applied across effect re-runs so
+  // Suspense-resolved / lazy-loaded updates apply while no-op re-renders
+  // stay quiet. A primitive `let` is allowed in `.svelte.ts` files.
+  let lastInitialApplied: string | undefined;
 
   // Watch for editor availability and subscribe to updates
   $effect(() => {
@@ -102,16 +106,17 @@ export function createVizelMarkdown(
 
     const h = initHandlers();
 
-    // Initialize markdown on first editor availability
-    if (!initialSet) {
-      if (initialValue === undefined) {
-        // Get initial markdown from editor
+    // Initialize markdown on first editor availability, then re-apply when
+    // the caller swaps `initialValue` (e.g. async data resolves later).
+    if (initialValue === undefined) {
+      if (lastInitialApplied === undefined) {
         markdown = getVizelMarkdown(editor);
-      } else {
-        h.setMarkdown(editor, initialValue);
-        markdown = initialValue;
+        lastInitialApplied = "";
       }
-      initialSet = true;
+    } else if (lastInitialApplied !== initialValue) {
+      h.setMarkdown(editor, initialValue);
+      markdown = initialValue;
+      lastInitialApplied = initialValue;
     }
 
     // Subscribe to editor updates
@@ -122,19 +127,19 @@ export function createVizelMarkdown(
       isPending = h.isPending();
 
       // Cancel any pending rAF before scheduling a new one
-      if (rafId !== null) cancelAnimationFrame(rafId);
+      vizelCancelAnimationFrame(rafId);
 
       // Schedule state update after debounce
       const checkPending = () => {
         if (h.isPending()) {
-          rafId = requestAnimationFrame(checkPending);
+          rafId = vizelRequestAnimationFrame(checkPending);
         } else {
           rafId = null;
           markdown = h.getMarkdown();
           isPending = false;
         }
       };
-      rafId = requestAnimationFrame(checkPending);
+      rafId = vizelRequestAnimationFrame(checkPending);
     };
 
     editor.on("update", handleUpdate);
@@ -147,7 +152,7 @@ export function createVizelMarkdown(
         markdown = h.getMarkdown();
       }
       editor.off("update", handleUpdate);
-      if (rafId !== null) cancelAnimationFrame(rafId);
+      vizelCancelAnimationFrame(rafId);
       handlers?.destroy();
       handlers = null;
       isPending = false;

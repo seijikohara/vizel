@@ -94,6 +94,11 @@ export {
 } from "./markdown-flavors.ts";
 // Menu positioning utilities
 export { clampMenuPosition, type MenuPosition, shouldFlipSubmenu } from "./menuPositioning.ts";
+// SSR-safe rAF helpers (used by markdown sync hooks)
+export {
+  vizelCancelAnimationFrame,
+  vizelRequestAnimationFrame,
+} from "./raf.ts";
 // SSR utilities (Section 12)
 export {
   type VizelThemeInitScriptOptions,

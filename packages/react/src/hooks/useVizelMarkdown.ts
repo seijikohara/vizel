@@ -4,6 +4,8 @@ import {
   getVizelMarkdown,
   type VizelMarkdownSyncHandlers,
   type VizelMarkdownSyncOptions,
+  vizelCancelAnimationFrame,
+  vizelRequestAnimationFrame,
 } from "@vizel/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -94,23 +96,32 @@ export function useVizelMarkdown(
   const editorRef = useRef(editor);
   editorRef.current = editor;
 
-  // Track if initial value has been set
-  const initialSetRef = useRef(false);
+  // Track the last `initialValue` we applied so suspense-resolved updates
+  // (data arriving after the first render) are still honored, while
+  // re-renders with the same value remain no-ops. The previous single
+  // latch ignored every change after the first apply, leaving editors
+  // blank when server-side markdown arrived asynchronously.
+  const appliedInitialValueRef = useRef<string | undefined>(undefined);
 
-  // Set initial markdown when editor is ready
+  // Set initial markdown when editor is ready or when `initialValue` changes
   useEffect(() => {
-    if (!editor || initialSetRef.current) return;
+    if (!editor) return;
 
     if (initialValue === undefined) {
-      // Get initial markdown from editor
-      const currentMarkdown = getVizelMarkdown(editor);
-      setMarkdownState(currentMarkdown);
-    } else {
-      handlersRef.current?.setMarkdown(editor, initialValue);
-      setMarkdownState(initialValue);
+      // Uncontrolled path: pull the current markdown from the editor exactly
+      // once so the consumer sees the server-rendered seed value.
+      if (appliedInitialValueRef.current === undefined) {
+        setMarkdownState(getVizelMarkdown(editor));
+        appliedInitialValueRef.current = "";
+      }
+      return;
     }
 
-    initialSetRef.current = true;
+    if (appliedInitialValueRef.current === initialValue) return;
+
+    handlersRef.current?.setMarkdown(editor, initialValue);
+    setMarkdownState(initialValue);
+    appliedInitialValueRef.current = initialValue;
   }, [editor, initialValue]);
 
   // Subscribe to editor updates
@@ -127,19 +138,19 @@ export function useVizelMarkdown(
       setIsPending(handlers.isPending());
 
       // Cancel any pending rAF before scheduling a new one
-      if (rafState.id !== null) cancelAnimationFrame(rafState.id);
+      vizelCancelAnimationFrame(rafState.id);
 
       // Schedule state update after debounce
       const checkPending = () => {
         if (handlers.isPending()) {
-          rafState.id = requestAnimationFrame(checkPending);
+          rafState.id = vizelRequestAnimationFrame(checkPending);
         } else {
           rafState.id = null;
           setMarkdownState(handlers.getMarkdown());
           setIsPending(false);
         }
       };
-      rafState.id = requestAnimationFrame(checkPending);
+      rafState.id = vizelRequestAnimationFrame(checkPending);
     };
 
     editor.on("update", handleUpdate);
@@ -153,7 +164,7 @@ export function useVizelMarkdown(
         setIsPending(false);
       }
       editor.off("update", handleUpdate);
-      if (rafState.id !== null) cancelAnimationFrame(rafState.id);
+      vizelCancelAnimationFrame(rafState.id);
     };
   }, [editor]);
 
