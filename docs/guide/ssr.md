@@ -48,32 +48,36 @@ Move the call into the framework's client-only hook:
 | Vue | `onMounted` (or `useVizelEditor`, which already defers) |
 | Svelte | `onMount` (or `createVizelEditor`, which already defers) |
 
-## Static HTML rendering
+## Server-rendered HTML
 
-Use `generateVizelStaticHtml(markdown, options?)` when you need
-server-rendered Markdown output for:
+Vizel does not ship its own opinionated server-HTML helper. The
+editor's CSS / extension surface is tuned for the live editing pane,
+so any "approximate static preview" diverges from the editing view as
+the extension catalog grows — keeping a separate renderer in sync is
+ongoing maintenance work that belongs in the consumer's own pipeline.
 
-- Preview thumbnails in lists or feeds
-- Search-index payloads
-- RSS / Atom feeds
-- Email summaries
-
-The helper runs on Node behind a lazy `linkedom` shim — install
-`linkedom` as a peer dependency to enable it.
+When you need server-rendered HTML for SEO, search-index payloads,
+RSS / Atom feeds, or email summaries, parse Markdown into Tiptap JSON
+on the server and render it through Tiptap's own helper:
 
 ```ts
-import { generateVizelStaticHtml } from "@vizel/core";
+import { generateHTML } from "@tiptap/html";
+import { createVizelExtensions, parseVizelMarkdown } from "@vizel/core";
 
-const html = await generateVizelStaticHtml("# Hello\n\nWorld", {
-  flavor: "gfm",
-});
+const extensions = createVizelExtensions();
+const json = parseVizelMarkdown(markdown, { extensions });
+const html = generateHTML(json, extensions);
 ```
 
-Diagram and `mermaid` fenced code blocks survive as
-`<code class="language-mermaid">` so the client-side renderer can
-hydrate them on the next paint. When `linkedom` is missing the helper
-throws `VizelError("SSR_DOM_SHIM_MISSING")` with the install command
-in the error context.
+`generateHTML` is pure (no DOM access), so it runs anywhere Node /
+edge runtimes execute. Pair it with `@vizel/core/styles.css` if you
+want the editor's visual styling on the server-rendered page, or
+provide your own stylesheet against the Vizel CSS variables.
+
+`mermaid` and `graphviz` fenced code blocks survive the round-trip as
+`<pre><code class="language-mermaid">…</code></pre>`, ready for a
+client-side hydrator to replace them with rendered diagrams on the
+next paint.
 
 ## Theme-flash mitigation
 
