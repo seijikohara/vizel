@@ -531,8 +531,6 @@ export {
   // Keyboard shortcut utilities
   formatVizelShortcut,
   formatVizelTooltip,
-  // Static HTML rendering (Section 12 Mode 1)
-  generateVizelStaticHtml,
   // Block path utility
   getVizelBlockPath,
   getVizelEditorState,
@@ -589,7 +587,6 @@ export {
   type VizelErrorOptions,
   type VizelErrorSeverity,
   type VizelFlavorConfig,
-  type VizelGenerateStaticHtmlOptions,
   type VizelMarkdownSyncHandlers,
   type VizelMinimapRenderOptions,
   type VizelMountPortalOptions,
