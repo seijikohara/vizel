@@ -14,7 +14,7 @@ import {
   type VizelLocale,
   type VizelMarkdownFlavor,
 } from "@vizel/core";
-import { computed, provide, useAttrs, useSlots, watch } from "vue";
+import { computed, provide, useSlots, watch } from "vue";
 import { useVizelEditor } from "../composables/useVizelEditor.ts";
 import VizelBlockMenu from "./VizelBlockMenu.vue";
 import VizelBubbleMenu from "./VizelBubbleMenu.vue";
@@ -146,27 +146,40 @@ const editor = useVizelEditor({
   onSelectionUpdate: (e) => emit("selectionUpdate", e),
   onFocus: (e) => emit("focus", e),
   onBlur: (e) => emit("blur", e),
-  // Vue's `emit` always succeeds — even when no parent listener exists. To
-  // mirror the React component's behavior (let configuration errors surface
-  // when no consumer is interested), only wire the trampoline when the
-  // parent actually registered an `@error` listener.
-  ...(useAttrs().onError !== undefined && {
-    onError: (e: VizelError) => emit("error", e),
-  }),
+  // Always forward errors through the `error` emit. The previous shape
+  // gated the trampoline on `useAttrs().onError !== undefined`, but
+  // Vue 3 deliberately strips declared emits from `$attrs` / `useAttrs()`
+  // so that check was always `false` and runtime errors funneled through
+  // `emitVizelError` (UPLOAD_FAILED, EMBED_LOAD_FAILED, MARKDOWN_LOSSY)
+  // never reached the consumer. Vue's `emit` is a no-op when no parent
+  // listener is attached, so unwiring the gate does not silently swallow
+  // configuration errors — `useVizelEditor` still rethrows
+  // INVALID_CONFIG to the global handler regardless of this callback.
+  onError: (e: VizelError) => emit("error", e),
 });
 
-// Watch for external markdown changes (v-model:markdown). The onUpdate
-// wrapper compares the editor's markdown to the controlled prop and
-// skips the write-back when they match, so this watcher can apply the
-// incoming value without juggling a synchronous reentrancy flag.
-watch(markdown, (newMarkdown) => {
-  if (newMarkdown === undefined || !editor.value) return;
-  const currentMarkdown = getVizelMarkdown(editor.value);
-  if (newMarkdown === currentMarkdown) return;
-  setVizelMarkdown(editor.value, newMarkdown, {
-    transformDiagrams: props.transformDiagramsOnImport,
-  });
-});
+// Watch for external markdown changes (v-model:markdown), including the
+// initial value at mount. The onUpdate wrapper compares the editor's
+// markdown to the controlled prop and skips the write-back when they
+// match, so this watcher can apply the incoming value without juggling
+// a synchronous reentrancy flag. `immediate: true` makes the
+// `v-model:markdown="md"` seed land in the editor on first mount
+// instead of waiting for the next user-triggered prop change.
+watch(
+  // Track both the prop and the editor instance so the watcher fires
+  // when either side becomes available — the prop may resolve before
+  // the editor finishes async initialization.
+  () => [markdown.value, editor.value] as const,
+  ([newMarkdown, editorValue]) => {
+    if (newMarkdown === undefined || !editorValue) return;
+    const currentMarkdown = getVizelMarkdown(editorValue);
+    if (newMarkdown === currentMarkdown) return;
+    setVizelMarkdown(editorValue, newMarkdown, {
+      transformDiagrams: props.transformDiagramsOnImport,
+    });
+  },
+  { immediate: true }
+);
 
 // Expose the editor through the same provide key VizelProvider uses, so
 // nested components (and the built-in toolbar / bubble menu / block menu)
