@@ -90,13 +90,6 @@ export {
   type VizelMentionMenuRef,
 } from "./VizelMentionMenu.svelte";
 // ============================================================================
-// Vizel Minimap component
-// ============================================================================
-export {
-  default as VizelMinimap,
-  type VizelMinimapProps,
-} from "./VizelMinimap.svelte";
-// ============================================================================
 // Vizel NodeSelector component
 // ============================================================================
 export {

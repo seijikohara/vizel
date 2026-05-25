@@ -11,7 +11,6 @@ import {
   Vizel,
   VizelFindReplace,
   type VizelMarkdownFlavor,
-  VizelMinimap,
   VizelOutline,
   VizelSaveIndicator,
   VizelThemeProvider,
@@ -125,7 +124,6 @@ interface DemoFeatures {
   comments: boolean;
   history: boolean;
   outline: boolean;
-  minimap: boolean;
 }
 
 type PanelTab = "markdown" | "json" | "history" | "comments";
@@ -145,7 +143,6 @@ function AppContent({ onResetThemeToSystem }: AppContentProps) {
     comments: true,
     history: true,
     outline: true,
-    minimap: true,
   });
 
   const [flavorName, setFlavorName] = useState<string>(vizelGfmFlavor.name);
@@ -312,11 +309,6 @@ function AppContent({ onResetThemeToSystem }: AppContentProps) {
             checked={features.outline}
             onChange={(v) => updateFeature("outline", v)}
           />
-          <FeatureToggle
-            label="Minimap"
-            checked={features.minimap}
-            onChange={(v) => updateFeature("minimap", v)}
-          />
           <label className="feature-toggle">
             <span className="feature-toggle-label">Flavor</span>
             <select
@@ -417,14 +409,6 @@ function AppContent({ onResetThemeToSystem }: AppContentProps) {
             )}
           </div>
         </div>
-        {features.minimap && editor && (
-          <aside className="editor-aside editor-aside--right" aria-label="Document minimap">
-            <div className="editor-aside-panel editor-aside-panel--minimap">
-              <VizelMinimap editor={editor} />
-            </div>
-          </aside>
-        )}
-
         {showPanel && (
           <div className="panel-section">
             <div className="panel-container">

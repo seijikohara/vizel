@@ -1,4 +1,9 @@
 export {
+  createVizelBubbleMenuEscapeController,
+  type VizelBubbleMenuEscapeController,
+  type VizelBubbleMenuEscapeControllerOptions,
+} from "./bubbleMenuEscapeController.ts";
+export {
   createVizelDismissibleController,
   type VizelDismissibleController,
   type VizelDismissibleControllerOptions,
@@ -18,10 +23,6 @@ export {
   type VizelListboxController,
   type VizelListboxControllerOptions,
 } from "./listboxController.ts";
-export {
-  createVizelPageScrollListener,
-  type VizelPageScrollListener,
-} from "./pageScrollListener.ts";
 export {
   createVizelPopoverController,
   type VizelPopoverController,
