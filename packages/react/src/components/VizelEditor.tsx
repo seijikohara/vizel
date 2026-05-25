@@ -15,6 +15,14 @@ export interface VizelEditorProps {
 export interface VizelExposed {
   /** The container DOM element */
   container: HTMLDivElement | null;
+  /**
+   * The Tiptap editor instance that this component is rendering.
+   *
+   * Mirrors whichever editor was resolved (explicit prop or context).
+   * Lets callers skip the extra round-trip through `useVizelContext` or
+   * lifting state when they only need imperative access to the editor.
+   */
+  editor: Editor | null;
 }
 
 /**
@@ -43,13 +51,17 @@ export function VizelEditor({ ref, editor: editorProp, className }: VizelEditorP
   const editor = editorProp ?? contextEditor;
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Expose container ref via imperative handle
+  // Expose container ref and editor instance via imperative handle. The
+  // editor moves into the dependency list so consumers that read
+  // `ref.current?.editor` after the editor resolves see the live value
+  // instead of the `null` snapshot captured at first mount.
   useImperativeHandle(
     ref,
     () => ({
       container: containerRef.current,
+      editor: editor ?? null,
     }),
-    []
+    [editor]
   );
 
   useEffect(() => {
