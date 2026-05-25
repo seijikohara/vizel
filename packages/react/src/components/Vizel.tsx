@@ -15,6 +15,7 @@ import { useLatest } from "../hooks/useLatest.ts";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
 import { VizelBlockMenu } from "./VizelBlockMenu.tsx";
 import { VizelBubbleMenu } from "./VizelBubbleMenu.tsx";
+import { VizelInternalProvider } from "./VizelContext.tsx";
 import { VizelEditor } from "./VizelEditor.tsx";
 import { VizelToolbar } from "./VizelToolbar.tsx";
 
@@ -262,29 +263,34 @@ export function Vizel({
   // menu / block menu) don't see a fresh `localeProps` object on every render.
   const localeProps = useMemo(() => (locale === undefined ? {} : { locale }), [locale]);
 
+  // Wrap in VizelInternalProvider so child components in `children` (and the
+  // built-in toolbar / bubble menu / block menu) can resolve the editor via
+  // context without an explicit `editor` prop. This also scopes the block
+  // menu's event filter so multiple <Vizel /> instances on the same page do
+  // not cross-trigger each other's menus.
   return (
-    <div className={`vizel-root ${className ?? ""}`} data-vizel-root="">
-      {showToolbar &&
-        editor &&
-        (toolbarContent ? (
-          <VizelToolbar editor={editor} {...localeProps}>
-            {toolbarContent({ editor })}
-          </VizelToolbar>
-        ) : (
-          <VizelToolbar editor={editor} {...localeProps} />
-        ))}
-      <VizelEditor editor={editor} />
-      {showBubbleMenu &&
-        editor &&
-        (bubbleMenuContent ? (
-          <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} {...localeProps}>
-            {bubbleMenuContent({ editor })}
-          </VizelBubbleMenu>
-        ) : (
-          <VizelBubbleMenu editor={editor} enableEmbed={enableEmbed} {...localeProps} />
-        ))}
-      <VizelBlockMenu {...localeProps} />
-      {children}
-    </div>
+    <VizelInternalProvider editor={editor}>
+      <div className={`vizel-root ${className ?? ""}`} data-vizel-root="">
+        {showToolbar &&
+          editor &&
+          (toolbarContent ? (
+            <VizelToolbar {...localeProps}>{toolbarContent({ editor })}</VizelToolbar>
+          ) : (
+            <VizelToolbar {...localeProps} />
+          ))}
+        <VizelEditor editor={editor} />
+        {showBubbleMenu &&
+          editor &&
+          (bubbleMenuContent ? (
+            <VizelBubbleMenu enableEmbed={enableEmbed} {...localeProps}>
+              {bubbleMenuContent({ editor })}
+            </VizelBubbleMenu>
+          ) : (
+            <VizelBubbleMenu enableEmbed={enableEmbed} {...localeProps} />
+          ))}
+        <VizelBlockMenu {...localeProps} />
+        {children}
+      </div>
+    </VizelInternalProvider>
   );
 }
