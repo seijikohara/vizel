@@ -19,10 +19,6 @@ export {
   type VizelListboxControllerOptions,
 } from "./listboxController.ts";
 export {
-  createVizelPageScrollListener,
-  type VizelPageScrollListener,
-} from "./pageScrollListener.ts";
-export {
   createVizelPopoverController,
   type VizelPopoverController,
   type VizelPopoverControllerOptions,

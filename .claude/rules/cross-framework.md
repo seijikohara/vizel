@@ -78,7 +78,6 @@ authoring convention.
 | VizelProvider | `.tsx` | `.vue` | `.svelte` |
 | VizelFindReplace | `.tsx` | `.vue` | `.svelte` |
 | VizelMentionMenu | `.tsx` | `.vue` | `.svelte` |
-| VizelMinimap | `.tsx` | `.vue` | `.svelte` |
 | VizelToolbar | `.tsx` | `.vue` | `.svelte` |
 | VizelToolbarButton | `.tsx` | `.vue` | `.svelte` |
 | VizelToolbarDefault | `.tsx` | `.vue` | `.svelte` |
@@ -188,15 +187,6 @@ frameworks. The only divergence is the children form.
 | Class prop | `className?: string` | `class?: string` | `class?: string` |
 | `locale` | `VizelLocale` | `VizelLocale` | `VizelLocale` |
 | Close callback | `onClose?: () => void` | (emit `close`) | `onclose?: () => void` |
-
-#### `VizelMinimap`
-
-| Prop | React | Vue | Svelte |
-|------|-------|-----|--------|
-| `editor` | `Editor \| null` | `Editor \| null` | `Editor \| null` |
-| Class prop | `className?: string` | `class?: string` | `class?: string` |
-| `width` | `number` (default 120) | `number` (default 120) | `number` (default 120) |
-| `height` | `number` (default 400) | `number` (default 400) | `number` (default 400) |
 
 #### `VizelOutline`
 
