@@ -729,50 +729,6 @@ body {
   }
 }
 
-/* Static view preview panel: shows generateVizelStaticHtml output */
-.static-preview {
-  margin-top: 1rem;
-  background: var(--demo-surface);
-  border: 1px solid var(--demo-border);
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
-  box-shadow:
-    0 4px 6px -1px oklch(0 0 0 / 0.05),
-    0 2px 4px -2px oklch(0 0 0 / 0.05);
-}
-
-.static-preview-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-}
-
-.static-preview-title {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--demo-text-muted);
-}
-
-.static-preview-hint {
-  font-size: 0.7rem;
-  color: var(--demo-text-placeholder);
-}
-
-.static-preview-body {
-  border-top: 1px solid var(--demo-border-subtle);
-  padding-top: 0.75rem;
-  font-size: 0.9rem;
-  color: var(--demo-text);
-}
-
-.static-preview-error {
-  color: var(--demo-danger);
-  font-size: 0.85rem;
-}
-
 /* Status bar shortcut hint */
 .status-hint {
   margin-left: auto;

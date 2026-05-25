@@ -45,7 +45,6 @@
     "check:ct-parity": "tsx scripts/check-ct-parity.ts",
     "check:ssr": "tsx scripts/check-ssr-safety.ts",
     "check:nolet": "tsx scripts/check-no-let.ts",
-    "test:ssr": "tsx scripts/test-static-html.ts",
     "prepare": "lefthook install",
     "deps:check": "pnpm dlx taze major -r",
     "deps:update": "pnpm dlx taze major -r -w && pnpm install"
