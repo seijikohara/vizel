@@ -147,7 +147,10 @@ const editorState = createVizelEditor({
   ...(restProps.initialMarkdown !== undefined && { initialMarkdown: restProps.initialMarkdown }),
   transformDiagramsOnImport: initialTransformDiagrams,
   ...(restProps.placeholder !== undefined && { placeholder: restProps.placeholder }),
-  editable: restProps.editable ?? true,
+  // Pass a getter so `createVizelEditor` tracks reactive prop updates. A
+  // literal `restProps.editable` snapshot would be captured at mount and
+  // the effect would never see subsequent changes.
+  editable: () => restProps.editable ?? true,
   autofocus: restProps.autofocus ?? false,
   ...(restProps.features !== undefined && { features: restProps.features }),
   ...(restProps.flavor !== undefined && {
