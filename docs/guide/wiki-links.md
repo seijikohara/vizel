@@ -25,7 +25,9 @@ import { useVizelEditor } from "@vizel/react";
 
 const editor = useVizelEditor({
   features: {
-    wikiLink: true,
+    content: {
+      wikiLink: true,
+    },
   },
 });
 ```
@@ -35,10 +37,12 @@ const editor = useVizelEditor({
 ```typescript
 const editor = useVizelEditor({
   features: {
-    wikiLink: {
-      resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
-      pageExists: (page) => knownPages.has(page),
-      onLinkClick: (page) => router.push(`/wiki/${page}`),
+    content: {
+      wikiLink: {
+        resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
+        pageExists: (page) => knownPages.has(page),
+        onLinkClick: (page) => router.push(`/wiki/${page}`),
+      },
     },
   },
 });
@@ -82,8 +86,10 @@ Converts a page name to a URL. Vizel uses this value for the `href` attribute on
 
 ```typescript
 {
-  wikiLink: {
-    resolveLink: (page) => `/docs/${page.toLowerCase().replace(/\s+/g, "-")}`,
+  content: {
+    wikiLink: {
+      resolveLink: (page) => `/docs/${page.toLowerCase().replace(/\s+/g, "-")}`,
+    },
   },
 }
 ```
@@ -96,8 +102,10 @@ Determines if a linked page exists. This function controls visual styling: exist
 const existingPages = new Set(["Getting Started", "API Reference", "FAQ"]);
 
 {
-  wikiLink: {
-    pageExists: (page) => existingPages.has(page),
+  content: {
+    wikiLink: {
+      pageExists: (page) => existingPages.has(page),
+    },
   },
 }
 ```
@@ -108,10 +116,12 @@ Intercepts wiki link clicks for client-side navigation. Without this callback, l
 
 ```typescript
 {
-  wikiLink: {
-    onLinkClick: (pageName, event) => {
-      // SPA navigation
-      router.push(`/wiki/${pageName}`);
+  content: {
+    wikiLink: {
+      onLinkClick: (pageName, event) => {
+        // SPA navigation
+        router.push(`/wiki/${pageName}`);
+      },
     },
   },
 }
@@ -123,11 +133,13 @@ Provides autocomplete suggestions. You can use this callback for future autocomp
 
 ```typescript
 {
-  wikiLink: {
-    getPageSuggestions: (query) =>
-      allPages
-        .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
-        .slice(0, 10),
+  content: {
+    wikiLink: {
+      getPageSuggestions: (query) =>
+        allPages
+          .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
+          .slice(0, 10),
+    },
   },
 }
 ```
@@ -185,11 +197,13 @@ function WikiEditor() {
 
   const editor = useVizelEditor({
     features: {
-      wikiLink: {
-        resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
-        pageExists: (page) => knownPages.has(page),
-        onLinkClick: (page) => {
-          console.log(`Navigate to: ${page}`);
+      content: {
+        wikiLink: {
+          resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
+          pageExists: (page) => knownPages.has(page),
+          onLinkClick: (page) => {
+            console.log(`Navigate to: ${page}`);
+          },
         },
       },
     },
@@ -213,11 +227,13 @@ const knownPages = new Set(["Home", "About", "Contact"]);
 
 const editor = useVizelEditor({
   features: {
-    wikiLink: {
-      resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
-      pageExists: (page) => knownPages.has(page),
-      onLinkClick: (page) => {
-        console.log(`Navigate to: ${page}`);
+    content: {
+      wikiLink: {
+        resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
+        pageExists: (page) => knownPages.has(page),
+        onLinkClick: (page) => {
+          console.log(`Navigate to: ${page}`);
+        },
       },
     },
   },
@@ -241,11 +257,13 @@ const knownPages = new Set(["Home", "About", "Contact"]);
 
 const editor = createVizelEditor({
   features: {
-    wikiLink: {
-      resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
-      pageExists: (page) => knownPages.has(page),
-      onLinkClick: (page) => {
-        console.log(`Navigate to: ${page}`);
+    content: {
+      wikiLink: {
+        resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
+        pageExists: (page) => knownPages.has(page),
+        onLinkClick: (page) => {
+          console.log(`Navigate to: ${page}`);
+        },
       },
     },
   },

@@ -79,7 +79,9 @@ import { Vizel } from '@vizel/vue';
     :enableEmbed="true"
     class="my-editor"
     :features="{
-      image: { onUpload: async (file) => 'url' },
+      content: {
+        image: { onUpload: async (file) => 'url' },
+      },
     }"
     @update="({ editor }) => {}"
     @create="({ editor }) => {}"
@@ -144,8 +146,9 @@ const editor = useVizelEditor({
   initialContent: { type: 'doc', content: [] },
   placeholder: 'Start writing...',
   features: {
-    markdown: true,
-    mathematics: true,
+    content: {
+      mathematics: true,
+    },
   },
   onUpdate: ({ editor }) => {
     console.log(editor.getJSON());
@@ -270,9 +273,10 @@ const { markdown, setMarkdown, isPending } = useVizelMarkdown(() => editor.value
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `markdown` | `Ref<string>` | Current Markdown content |
+| `markdown` | `Readonly<ShallowRef<string>>` | Current Markdown content. Templates auto-unwrap the ref; in `<script setup>` read `markdown.value`. |
 | `setMarkdown` | `(md: string) => void` | Update editor from Markdown |
-| `isPending` | `Ref<boolean>` | Whether sync is pending |
+| `isPending` | `ComputedRef<boolean>` | Whether sync is pending |
+| `flush` | `() => void` | Force-flush pending updates immediately |
 
 ### useVizelTheme
 
@@ -298,16 +302,16 @@ import ThemeToggle from './ThemeToggle.vue';
 <script setup lang="ts">
 import { useVizelTheme } from '@vizel/vue';
 
-const { resolvedTheme, setTheme } = useVizelTheme();
+const { theme, setTheme } = useVizelTheme();
 
 function toggleTheme() {
-  setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+  setTheme(theme.value === 'dark' ? 'light' : 'dark');
 }
 </script>
 
 <template>
   <button @click="toggleTheme">
-    {{ resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode' }}
+    {{ theme === 'dark' ? 'Light Mode' : 'Dark Mode' }}
   </button>
 </template>
 ```

@@ -136,18 +136,24 @@ disable it or pass an options object to configure it.
 ```ts
 const editor = useVizelEditor({
   features: {
-    // Most features are enabled by default
-    slashCommand: true,
-    table: true,
-    image: { onUpload: async (file) => "https://example.com/image.png" },
-    dragHandle: true,
-    markdown: true,
-
-    // Opt-in: must be explicitly enabled
-    comment: true,
-    collaboration: true,
-    wikiLink: true,
-    mention: true,
+    content: {
+      // Most features are enabled by default
+      table: true,
+      image: { onUpload: async (file) => "https://example.com/image.png" },
+      // Opt-in: must be explicitly enabled
+      wikiLink: true,
+    },
+    interaction: {
+      dragHandle: true,
+      slashMenu: true,
+      // Opt-in: requires consumer-supplied items
+      mention: { items: async (query) => [] },
+    },
+    collaboration: {
+      // Opt-in: comments require a provider
+      provider: true,
+      comments: true,
+    },
   },
 });
 ```
