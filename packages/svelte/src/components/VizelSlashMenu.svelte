@@ -80,7 +80,7 @@ $effect(() => {
 // Scroll selected item into view when selection changes
 $effect(() => {
   const index = selectedIndex;
-  tick().then(() => {
+  void tick().then(() => {
     const selectedElement = itemRefs[index];
     if (selectedElement) {
       selectedElement.scrollIntoView({ block: "nearest", behavior: "smooth" });
