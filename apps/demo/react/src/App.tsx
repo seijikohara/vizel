@@ -256,7 +256,7 @@ function AppContent({ onResetThemeToSystem }: AppContentProps) {
             <h1>Vizel Editor</h1>
             <span className="framework-badge">React 19</span>
           </div>
-          {features.theme && <ThemeToggle />}
+          {features.theme && <ThemeToggle onResetToSystem={onResetThemeToSystem} />}
         </div>
         <p className="header-description">
           A block-based rich text editor with slash commands and inline formatting
@@ -648,9 +648,20 @@ function AppContent({ onResetThemeToSystem }: AppContentProps) {
 }
 
 export function App() {
+  // The provider seeds its theme state once at mount from
+  // `localStorage[storageKey]` (or `defaultTheme`). The System button
+  // clears the persisted preference and bumps `providerKey` so the
+  // provider remounts and re-runs that seed against the now-clean
+  // storage — the simplest way to re-enter "follow system" mode without
+  // adding a runtime "system" path to `useVizelTheme().setTheme` (which
+  // is intentionally narrowed to concrete `light` / `dark`).
+  const [providerKey, setProviderKey] = useState(0);
+  const handleResetThemeToSystem = useCallback(() => {
+    setProviderKey((key) => key + 1);
+  }, []);
   return (
-    <VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
-      <AppContent />
+    <VizelThemeProvider key={providerKey} defaultTheme="system" storageKey="vizel-theme">
+      <AppContent onResetThemeToSystem={handleResetThemeToSystem} />
     </VizelThemeProvider>
   );
 }
