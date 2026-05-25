@@ -59,6 +59,7 @@ function selectItem(index: number) {
 
 function onKeyDown(event: KeyboardEvent): boolean {
   if (event.key === "Enter") {
+    if (props.items.length === 0) return false;
     selectItem(selectedIndex.value);
     return true;
   }
