@@ -44,7 +44,9 @@ import "@vizel/core/styles.css";
 function App() {
   const editor = useVizelEditor({
     features: {
-      image: { onUpload: async (file) => "https://example.com/image.png" },
+      content: {
+        image: { onUpload: async (file) => "https://example.com/image.png" },
+      },
     },
   });
 
@@ -64,7 +66,7 @@ import { useVizelEditor, useVizelMarkdown } from "@vizel/react";
 
 function App() {
   const editor = useVizelEditor();
-  const { markdown, setMarkdown } = useVizelMarkdown(() => editor);
+  const { markdown, setMarkdown } = useVizelMarkdown(editor);
 
   return <VizelEditor editor={editor} />;
 }

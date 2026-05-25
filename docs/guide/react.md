@@ -76,7 +76,9 @@ import { Vizel } from '@vizel/react';
   enableEmbed={true}
   className="my-editor"
   features={{
-    image: { onUpload: async (file) => 'url' },
+    content: {
+      image: { onUpload: async (file) => 'url' },
+    },
   }}
   onUpdate={({ editor }) => {}}
   onCreate={({ editor }) => {}}
@@ -130,8 +132,9 @@ function Editor() {
     initialContent: { type: 'doc', content: [] },
     placeholder: 'Start writing...',
     features: {
-      markdown: true,
-      mathematics: true,
+      content: {
+        mathematics: true,
+      },
     },
     onUpdate: ({ editor }) => {
       console.log(editor.getJSON());
@@ -279,11 +282,11 @@ This hook accesses theme state within `VizelThemeProvider`.
 import { useVizelTheme, VizelThemeProvider } from '@vizel/react';
 
 function ThemeToggle() {
-  const { theme, resolvedTheme, setTheme } = useVizelTheme();
+  const { theme, setTheme } = useVizelTheme();
 
   return (
-    <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
-      {resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+      {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
     </button>
   );
 }
