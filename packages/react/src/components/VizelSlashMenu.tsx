@@ -1,6 +1,7 @@
 import {
   buildVizelSlashMenuSpec,
   getNextVizelSlashMenuGroupIndex,
+  resolveVizelListNavigation,
   type VizelSlashCommandItem,
 } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
@@ -105,24 +106,26 @@ export function VizelSlashMenu({
 
   useImperativeHandle(ref, () => ({
     onKeyDown: (event) => {
-      if (event.key === "ArrowUp") {
-        setSelectedIndex((i) => (i + flatItemCount - 1) % flatItemCount);
-        return true;
-      }
-      if (event.key === "ArrowDown") {
-        setSelectedIndex((i) => (i + 1) % flatItemCount);
-        return true;
-      }
-      if (event.key === "Enter") {
-        selectItem(selectedIndex);
-        return true;
-      }
       if (event.key === "Tab") {
+        if (flatItemCount === 0) return false;
         event.preventDefault();
         setSelectedIndex(getNextVizelSlashMenuGroupIndex(spec, selectedIndex));
         return true;
       }
-      return false;
+      if (event.key === "Enter") {
+        if (flatItemCount === 0) return false;
+        selectItem(selectedIndex);
+        return true;
+      }
+      // ArrowUp/ArrowDown/Home/End — delegate to the core helper. It
+      // returns `null` for unknown keys *and* for `flatItemCount === 0`,
+      // so the empty-menu case naturally falls through and lets Tiptap
+      // consume the key instead of being silently swallowed with a `NaN`
+      // write to `selectedIndex`.
+      const next = resolveVizelListNavigation(event.key, selectedIndex, flatItemCount);
+      if (next === null) return false;
+      setSelectedIndex(next);
+      return true;
     },
   }));
 
