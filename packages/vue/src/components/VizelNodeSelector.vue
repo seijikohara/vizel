@@ -9,13 +9,14 @@ import {
 } from "@vizel/core";
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
+import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelNodeSelectorProps {
-  /** The editor instance */
-  editor: Editor;
-  /** Custom node types (defaults to vizelDefaultNodeTypes) */
-  nodeTypes?: VizelNodeTypeOption[];
+  /** Editor instance. Falls back to the editor from `VizelProvider`/`Vizel` context if omitted. */
+  editor?: Editor | null;
+  /** Custom node types (defaults to `vizelDefaultNodeTypes`) */
+  nodeTypes?: readonly VizelNodeTypeOption[];
   /** Custom class name */
   class?: string;
   /** Locale for translated UI strings */
@@ -24,12 +25,15 @@ export interface VizelNodeSelectorProps {
 
 const props = defineProps<VizelNodeSelectorProps>();
 
+const contextEditor = useVizelContextSafe();
+const resolvedEditor = computed<Editor | null>(() => props.editor ?? contextEditor?.value ?? null);
+
 const effectiveNodeTypes = computed(
   () =>
     props.nodeTypes ?? (props.locale ? createVizelNodeTypes(props.locale) : vizelDefaultNodeTypes)
 );
 
-const editorStateVersion = useVizelState(() => props.editor);
+const editorStateVersion = useVizelState(() => resolvedEditor.value);
 
 const isOpen = ref(false);
 const focusedIndex = ref(0);
@@ -39,8 +43,10 @@ const triggerRef = ref<HTMLButtonElement | null>(null);
 
 const spec = computed(() => {
   void editorStateVersion.value;
+  const e = resolvedEditor.value;
+  if (!e) return null;
   return buildVizelNodeSelectorSpec(
-    props.editor,
+    e,
     effectiveNodeTypes.value,
     isOpen.value,
     focusedIndex.value,
@@ -124,7 +130,9 @@ function handleKeyDown(event: KeyboardEvent) {
 }
 
 function handleSelectNodeType(nodeType: VizelNodeTypeOption) {
-  nodeType.command(props.editor);
+  const e = resolvedEditor.value;
+  if (!e) return;
+  nodeType.command(e);
   isOpen.value = false;
   triggerRef.value?.focus();
 }
@@ -132,6 +140,7 @@ function handleSelectNodeType(nodeType: VizelNodeTypeOption) {
 
 <template>
   <div
+    v-if="resolvedEditor && spec"
     ref="containerRef"
     :class="['vizel-node-selector', $props.class]"
     data-vizel-node-selector

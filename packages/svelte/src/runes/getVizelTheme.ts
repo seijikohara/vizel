@@ -1,4 +1,4 @@
-import type { VizelResolvedTheme, VizelThemeState } from "@vizel/core";
+import { VizelError, type VizelResolvedTheme, type VizelThemeState } from "@vizel/core";
 import { getContext } from "svelte";
 import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext.js";
 
@@ -44,7 +44,10 @@ export function getVizelTheme(): GetVizelThemeResult {
   const context = getContext<VizelThemeState | undefined>(VIZEL_THEME_CONTEXT_KEY);
 
   if (!context) {
-    throw new Error("getVizelTheme must be used within a VizelThemeProvider");
+    throw new VizelError(
+      "MISSING_CONTEXT",
+      "getVizelTheme must be used within a VizelThemeProvider"
+    );
   }
 
   // Surface the resolved theme through the public `current` field. The

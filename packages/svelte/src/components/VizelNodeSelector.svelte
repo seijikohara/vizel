@@ -2,10 +2,10 @@
 import type { Editor, VizelLocale, VizelNodeTypeOption } from "@vizel/core";
 
 export interface VizelNodeSelectorProps {
-  /** The editor instance */
-  editor: Editor;
-  /** Custom node types (defaults to vizelDefaultNodeTypes) */
-  nodeTypes?: VizelNodeTypeOption[];
+  /** Editor instance. Falls back to the editor from `VizelProvider`/`Vizel` context if omitted. */
+  editor?: Editor | null;
+  /** Custom node types (defaults to `vizelDefaultNodeTypes`) */
+  nodeTypes?: readonly VizelNodeTypeOption[];
   /** Custom class name */
   class?: string;
   /** Locale for translated UI strings */
@@ -16,9 +16,13 @@ export interface VizelNodeSelectorProps {
 <script lang="ts">
 import { buildVizelNodeSelectorSpec, createVizelNodeTypes, vizelDefaultNodeTypes } from "@vizel/core";
 import { createVizelState } from "../runes/createVizelState.svelte.js";
+import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
 
-let { editor, nodeTypes, class: className, locale }: VizelNodeSelectorProps = $props();
+let { editor: editorProp, nodeTypes, class: className, locale }: VizelNodeSelectorProps = $props();
+
+const contextEditor = getVizelContextSafe();
+const editor = $derived(editorProp ?? contextEditor?.current ?? null);
 
 const effectiveNodeTypes = $derived(nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes));
 
@@ -32,6 +36,7 @@ let triggerRef: HTMLButtonElement | undefined = $state();
 
 const spec = $derived.by(() => {
   void editorState.version;
+  if (!editor) return null;
   return buildVizelNodeSelectorSpec(editor, effectiveNodeTypes, isOpen, focusedIndex, locale);
 });
 
@@ -101,12 +106,14 @@ function handleKeyDown(event: KeyboardEvent) {
 }
 
 function handleSelectNodeType(nodeType: VizelNodeTypeOption) {
+  if (!editor) return;
   nodeType.command(editor);
   isOpen = false;
   triggerRef?.focus();
 }
 </script>
 
+{#if editor && spec}
 <div
   bind:this={containerRef}
   class="vizel-node-selector {className ?? ''}"
@@ -169,3 +176,4 @@ function handleSelectNodeType(nodeType: VizelNodeTypeOption) {
     </div>
   {/if}
 </div>
+{/if}

@@ -8,13 +8,14 @@ import {
 } from "@vizel/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useVizelState } from "../hooks/useVizelState.ts";
+import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelNodeSelectorProps {
-  /** The editor instance */
-  editor: Editor;
-  /** Custom node types (defaults to vizelDefaultNodeTypes) */
-  nodeTypes?: VizelNodeTypeOption[];
+  /** Editor instance. Falls back to the editor from `VizelProvider`/`Vizel` context if omitted. */
+  editor?: Editor | null;
+  /** Custom node types (defaults to `vizelDefaultNodeTypes`) */
+  nodeTypes?: readonly VizelNodeTypeOption[];
   /** Custom class name */
   className?: string;
   /** Locale for translated UI strings */
@@ -30,11 +31,13 @@ export interface VizelNodeSelectorProps {
  * navigation, and binding `nodeType.command(editor)` to each option.
  */
 export function VizelNodeSelector({
-  editor,
+  editor: editorProp,
   nodeTypes,
   className,
   locale,
 }: VizelNodeSelectorProps) {
+  const contextEditor = useVizelContextSafe();
+  const editor = editorProp ?? contextEditor;
   const effectiveNodeTypes =
     nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes);
   useVizelState(editor);
@@ -46,7 +49,10 @@ export function VizelNodeSelector({
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   const spec = useMemo(
-    () => buildVizelNodeSelectorSpec(editor, effectiveNodeTypes, isOpen, focusedIndex, locale),
+    () =>
+      editor
+        ? buildVizelNodeSelectorSpec(editor, effectiveNodeTypes, isOpen, focusedIndex, locale)
+        : null,
     [editor, effectiveNodeTypes, isOpen, focusedIndex, locale]
   );
 
@@ -119,10 +125,15 @@ export function VizelNodeSelector({
   };
 
   const handleSelectNodeType = (nodeType: VizelNodeTypeOption) => {
+    if (!editor) return;
     nodeType.command(editor);
     setIsOpen(false);
     triggerRef.current?.focus();
   };
+
+  if (!(editor && spec)) {
+    return null;
+  }
 
   return (
     <div
