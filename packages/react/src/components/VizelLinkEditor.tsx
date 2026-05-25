@@ -6,10 +6,17 @@ import {
   type VizelLocale,
 } from "@vizel/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelLinkEditorProps {
-  editor: Editor;
+  /**
+   * The Tiptap editor instance.
+   *
+   * Optional — when omitted, the component resolves the editor from
+   * the surrounding {@link VizelProvider} / {@link Vizel} context.
+   */
+  editor?: Editor | null;
   onClose?: () => void;
   className?: string;
   /** Enable embed option (requires Embed extension) */
@@ -27,25 +34,27 @@ export interface VizelLinkEditorProps {
  * skeleton helpers. The component owns input state and event wiring.
  */
 export function VizelLinkEditor({
-  editor,
+  editor: editorProp,
   onClose,
   className,
   enableEmbed = false,
   locale,
 }: VizelLinkEditorProps) {
+  const contextEditor = useVizelContextSafe();
+  const editor = editorProp ?? contextEditor;
   const labels = useMemo(() => resolveVizelLinkEditorLabels(locale), [locale]);
   const initialState = useMemo(
-    () => buildVizelLinkEditorSpec(editor, "", enableEmbed),
+    () => (editor ? buildVizelLinkEditorSpec(editor, "", enableEmbed) : null),
     [editor, enableEmbed]
   );
-  const [url, setUrl] = useState(initialState.initialUrl);
-  const [openInNewTab, setOpenInNewTab] = useState(initialState.initialOpenInNewTab);
+  const [url, setUrl] = useState(initialState?.initialUrl ?? "");
+  const [openInNewTab, setOpenInNewTab] = useState(initialState?.initialOpenInNewTab ?? false);
   const [asEmbed, setAsEmbed] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const viewState = useMemo(
-    () => buildVizelLinkEditorSpec(editor, url, enableEmbed),
+    () => (editor ? buildVizelLinkEditorSpec(editor, url, enableEmbed) : null),
     [editor, url, enableEmbed]
   );
 
@@ -84,13 +93,15 @@ export function VizelLinkEditor({
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
+      if (!(editor && viewState)) return;
       applyVizelLinkEdit(editor, { url, openInNewTab, asEmbed }, viewState.canEmbed);
       onClose?.();
     },
-    [editor, url, openInNewTab, asEmbed, viewState.canEmbed, onClose]
+    [editor, url, openInNewTab, asEmbed, viewState, onClose]
   );
 
   const handleRemove = useCallback(() => {
+    if (!editor) return;
     editor.chain().focus().unsetLink().run();
     onClose?.();
   }, [editor, onClose]);
@@ -101,6 +112,11 @@ export function VizelLinkEditor({
       window.open(trimmedUrl, "_blank", "noopener,noreferrer");
     }
   }, [url]);
+
+  // Bail out when no editor is resolvable from props or context. The early
+  // return must come *after* every hook call so React's hook-order
+  // contract holds across the populated and empty branches.
+  if (!(editor && viewState)) return null;
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className={`vizel-link-editor ${className ?? ""}`}>
