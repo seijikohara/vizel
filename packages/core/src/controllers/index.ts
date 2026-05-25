@@ -1,4 +1,9 @@
 export {
+  createVizelBubbleMenuEscapeController,
+  type VizelBubbleMenuEscapeController,
+  type VizelBubbleMenuEscapeControllerOptions,
+} from "./bubbleMenuEscapeController.ts";
+export {
   createVizelDismissibleController,
   type VizelDismissibleController,
   type VizelDismissibleControllerOptions,

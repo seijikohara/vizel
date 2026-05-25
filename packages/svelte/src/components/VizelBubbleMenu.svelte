@@ -25,7 +25,7 @@ export interface VizelBubbleMenuProps {
 </script>
 
 <script lang="ts">
-import { BubbleMenuPlugin } from "@vizel/core";
+import { BubbleMenuPlugin, createVizelBubbleMenuEscapeController } from "@vizel/core";
 import { untrack } from "svelte";
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.svelte";
 import { getVizelContextSafe } from "./VizelContext.js";
@@ -46,14 +46,6 @@ const contextEditor = getVizelContextSafe();
 const editor = $derived(editorProp ?? contextEditor?.current);
 
 let menuElement = $state<HTMLElement | null>(null);
-
-// Handle Escape key to hide bubble menu by collapsing selection
-function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === "Escape" && editor && !editor.view.state.selection.empty) {
-    event.preventDefault();
-    editor.commands.setTextSelection(editor.view.state.selection.to);
-  }
-}
 
 $effect(() => {
   if (!(editor && menuElement)) return;
@@ -81,11 +73,18 @@ $effect(() => {
   });
 
   currentEditor.registerPlugin(plugin);
-  document.addEventListener("keydown", handleKeyDown);
+
+  // Escape collapses the selection so the bubble menu hides via its
+  // shouldShow predicate. The listener lives in a Core controller so
+  // this component does not call `document.addEventListener` directly.
+  const escapeController = createVizelBubbleMenuEscapeController({
+    getEditor: () => editor,
+  });
+  escapeController.mount();
 
   return () => {
     currentEditor.unregisterPlugin(currentPluginKey);
-    document.removeEventListener("keydown", handleKeyDown);
+    escapeController.unmount();
   };
 });
 </script>
