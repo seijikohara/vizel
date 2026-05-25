@@ -76,7 +76,9 @@ All-in-one editor component with built-in bubble menu.
   enableEmbed={true}
   class="my-editor"
   features={{
-    image: { onUpload: async (file) => 'url' },
+    content: {
+      image: { onUpload: async (file) => 'url' },
+    },
   }}
   onUpdate={({ editor }) => {}}
   onCreate={({ editor }) => {}}
@@ -128,8 +130,9 @@ This rune creates and manages a Vizel editor instance using Svelte 5 reactivity.
     initialContent: { type: 'doc', content: [] },
     placeholder: 'Start writing...',
     features: {
-      markdown: true,
-      mathematics: true,
+      content: {
+        mathematics: true,
+      },
     },
     onUpdate: ({ editor }) => {
       console.log(editor.getJSON());
@@ -238,7 +241,7 @@ This rune provides two-way Markdown synchronization with debouncing.
 </script>
 
 <VizelEditor editor={editor.current} />
-<textarea value={md.markdown} oninput={(e) => md.setMarkdown(e.target.value)} />
+<textarea value={md.current} oninput={(e) => md.setMarkdown(e.target.value)} />
 {#if md.isPending}
   <span>Syncing...</span>
 {/if}
@@ -248,9 +251,10 @@ This rune provides two-way Markdown synchronization with debouncing.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `markdown` | `string` | Current Markdown content (reactive) |
+| `current` | `string` | Current Markdown content (reactive getter) |
 | `setMarkdown` | `(md: string) => void` | Update editor from Markdown |
-| `isPending` | `boolean` | Whether sync is pending (reactive) |
+| `isPending` | `boolean` | Whether sync is pending (reactive getter) |
+| `flush` | `() => void` | Force-flush pending updates immediately |
 
 ### getVizelTheme
 
@@ -263,14 +267,14 @@ This rune accesses theme state within `VizelThemeProvider` context.
   const theme = getVizelTheme();
 
   function toggleTheme() {
-    theme.setTheme(theme.resolvedTheme === 'dark' ? 'light' : 'dark');
+    theme.setTheme(theme.current === 'dark' ? 'light' : 'dark');
   }
 </script>
 
 <VizelThemeProvider defaultTheme="system">
   <Editor />
   <button onclick={toggleTheme}>
-    {theme.resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+    {theme.current === 'dark' ? 'Light Mode' : 'Dark Mode'}
   </button>
 </VizelThemeProvider>
 ```

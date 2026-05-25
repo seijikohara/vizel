@@ -425,11 +425,11 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
                       Save
                     </button>
                   </div>
-                  <div v-if="versionHistory.snapshots.value.length === 0" class="panel-list-empty">
+                  <div v-if="versionHistory.snapshots.length === 0" class="panel-list-empty">
                     No versions saved yet
                   </div>
                   <div
-                    v-for="snapshot in versionHistory.snapshots.value"
+                    v-for="snapshot in versionHistory.snapshots"
                     :key="snapshot.id"
                     class="panel-item"
                   >
@@ -465,11 +465,11 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
                       Add
                     </button>
                   </div>
-                  <div v-if="commentManager.comments.value.length === 0" class="panel-list-empty">
+                  <div v-if="commentManager.comments.length === 0" class="panel-list-empty">
                     No comments yet
                   </div>
                   <div
-                    v-for="comment in commentManager.comments.value"
+                    v-for="comment in commentManager.comments"
                     :key="comment.id"
                     :class="['panel-item', comment.resolved ? 'panel-item-resolved' : '']"
                     role="button"

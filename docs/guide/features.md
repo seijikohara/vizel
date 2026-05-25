@@ -96,19 +96,35 @@ You can override the flavor-driven defaults for individual extensions. For examp
 
 ---
 
-## Disabling Features
+## Feature Categories
 
-Set a feature to `false` to disable it:
+`VizelFeatureOptions` groups every opt-in into three categories:
+
+| Category | Consumer question | Examples |
+|----------|-------------------|----------|
+| `content` | What can the document contain? | `image`, `table`, `mathematics`, `diagram`, `embed`, `details`, `callout`, `textColor`, `highlight`, `taskList`, `wikiLink`, `tableOfContents` |
+| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth`, `visualHierarchy` |
+| `collaboration` | Who edits together? | `comments`, `provider`, `versionHistory`, `presence` |
+
+A leaf accepts `true` (enable with defaults), `false` (disable), or an options object.
 
 ```typescript
 const editor = useVizelEditor({
   features: {
-    slashCommand: false,  // Disable slash commands
-    dragHandle: false,    // Disable drag handle
-    table: false,         // Disable tables
+    interaction: {
+      slashMenu: false,  // Disable slash commands
+      dragHandle: false, // Disable drag handle
+    },
+    content: {
+      table: false,      // Disable tables
+    },
   },
 });
 ```
+
+::: tip
+Code blocks, links, Markdown import/export, find / replace, multi-block selection, and block clipboard are part of the always-on core and are not gated by `VizelFeatureOptions`. Configure Markdown via the top-level `markdown` option (e.g. `markdown: { flavor: vizelGfmFlavor }`).
+:::
 
 ---
 
@@ -146,8 +162,10 @@ const customItems: VizelSlashCommandItem[] = [
 
 const editor = useVizelEditor({
   features: {
-    slashCommand: {
-      items: customItems, // Add custom items
+    interaction: {
+      slashMenu: {
+        items: customItems, // Add custom items
+      },
     },
   },
 });
@@ -191,31 +209,33 @@ The image feature supports drag and drop, paste, and resize.
 ```typescript
 const editor = useVizelEditor({
   features: {
-    image: {
-      onUpload: async (file) => {
-        const formData = new FormData();
-        formData.append('image', file);
-        
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        const { url } = await res.json();
-        return url;
-      },
-      maxFileSize: 5 * 1024 * 1024, // 5MB
-      allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
-      onValidationError: (error) => {
-        if (error.type === 'file_too_large') {
-          alert('File is too large. Maximum size is 5MB.');
-        } else if (error.type === 'invalid_type') {
-          alert('Invalid file type. Only JPEG, PNG, and WebP are allowed.');
-        }
-      },
-      onUploadError: (error, file) => {
-        console.error(`Failed to upload ${file.name}:`, error);
-        alert('Upload failed. Please try again.');
+    content: {
+      image: {
+        onUpload: async (file) => {
+          const formData = new FormData();
+          formData.append('image', file);
+
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const { url } = await res.json();
+          return url;
+        },
+        maxFileSize: 5 * 1024 * 1024, // 5MB
+        allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        onValidationError: (error) => {
+          if (error.type === 'file_too_large') {
+            alert('File is too large. Maximum size is 5MB.');
+          } else if (error.type === 'invalid_type') {
+            alert('Invalid file type. Only JPEG, PNG, and WebP are allowed.');
+          }
+        },
+        onUploadError: (error, file) => {
+          console.error(`Failed to upload ${file.name}:`, error);
+          alert('Upload failed. Please try again.');
+        },
       },
     },
   },
@@ -226,33 +246,7 @@ const editor = useVizelEditor({
 
 ## Code Blocks
 
-This feature provides code blocks with syntax highlighting and language selection.
-
-### Options
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `defaultLanguage` | `string` | `"plaintext"` | Default language |
-| `lineNumbers` | `boolean` | `false` | Show line numbers |
-| `lowlight` | `Lowlight` | All languages | Custom Lowlight instance |
-
-### Example: Limited Languages
-
-```typescript
-import { createLowlight, common } from 'lowlight';
-
-const lowlight = createLowlight(common);
-
-const editor = useVizelEditor({
-  features: {
-    codeBlock: {
-      defaultLanguage: 'typescript',
-      lineNumbers: true,
-      lowlight, // Only common languages
-    },
-  },
-});
-```
+Code blocks with syntax highlighting are part of the always-on core. Use the language picker in the slash menu or the bubble menu's node selector to choose a language. Lowlight ships every language by default — pass a custom Lowlight instance via the `extensions` array only if you need to restrict the available grammars.
 
 ---
 
@@ -273,9 +267,11 @@ This feature tracks character and word counts.
 ```typescript
 const editor = useVizelEditor({
   features: {
-    characterCount: {
-      limit: 10000, // Max 10,000 characters
-      mode: 'textSize',
+    interaction: {
+      characterCount: {
+        limit: 10000, // Max 10,000 characters
+        mode: 'textSize',
+      },
     },
   },
 });
@@ -315,12 +311,16 @@ const customColors: VizelColorDefinition[] = [
 
 const editor = useVizelEditor({
   features: {
-    textColor: {
-      textColors: customColors,
-      highlightColors: customColors.map(c => ({
-        ...c,
-        color: `${c.color}40`, // Add transparency
-      })),
+    content: {
+      textColor: {
+        textColors: customColors,
+      },
+      highlight: {
+        highlightColors: customColors.map(c => ({
+          ...c,
+          color: `${c.color}40`, // Add transparency
+        })),
+      },
     },
   },
 });
@@ -330,50 +330,35 @@ const editor = useVizelEditor({
 
 ## Markdown
 
-This feature enables Markdown import/export.
+Markdown import/export is part of the always-on core. The serializer flavor is selected via the top-level `markdown` option, not via `features`.
 
 ### Options
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `indentation` | `{ style, size }` | `{ style: 'space', size: 2 }` | Indentation config |
-| `gfm` | `boolean` | `true` | GitHub Flavored Markdown |
-| `breaks` | `boolean` | `false` | Convert newlines to `<br>` |
+| `flavor` | `VizelMarkdownFlavor` | `vizelGfmFlavor` | Output flavor (commonmark / GFM / Obsidian / Docusaurus / Pandoc) |
+| `encoding` | `VizelMarkdownEncodingOptions` | `{}` | Per-node encoding mode (`"default"` or `"metadata-comment"`) for nodes without a canonical Markdown form (`embed`, `mention`, `wikiLink`) |
 
 ### Example
 
 ```typescript
+import { useVizelEditor, vizelObsidianFlavor } from '@vizel/react';
+
 const editor = useVizelEditor({
-  features: {
-    markdown: {
-      gfm: true,
-      breaks: false,
-      indentation: {
-        style: 'space',
-        size: 2,
-      },
+  markdown: {
+    flavor: vizelObsidianFlavor,
+    encoding: {
+      mention: 'metadata-comment',
     },
   },
 });
 
 // Export to Markdown
-const md = editor.storage.markdown.getMarkdown();
+const md = editor.getMarkdown();
 
 // Import from Markdown
-editor.commands.setContent(
-  editor.storage.markdown.parseMarkdown('# Hello\n\nWorld')
-);
+editor.commands.setContent('# Hello\n\nWorld');
 ```
-
-::: tip Recommended API
-Use `editor.getMarkdown()` for Markdown export:
-
-```typescript
-const md = editor.getMarkdown();
-```
-
-The `editor.storage.markdown.getMarkdown()` method is an internal storage accessor. Prefer `editor.getMarkdown()` for application code.
-:::
 
 ---
 
@@ -394,13 +379,15 @@ This feature renders LaTeX math equations with KaTeX.
 ```typescript
 const editor = useVizelEditor({
   features: {
-    mathematics: {
-      katexOptions: {
-        throwOnError: false,
-        strict: false,
+    content: {
+      mathematics: {
+        katexOptions: {
+          throwOnError: false,
+          strict: false,
+        },
+        inlineInputRules: true,
+        blockInputRules: true,
       },
-      inlineInputRules: true,
-      blockInputRules: true,
     },
   },
 });
@@ -450,9 +437,11 @@ const customProvider: VizelEmbedProvider = {
 
 const editor = useVizelEditor({
   features: {
-    embed: {
-      providers: [customProvider],
-      pasteHandler: true,
+    content: {
+      embed: {
+        providers: [customProvider],
+        pasteHandler: true,
+      },
     },
   },
 });
@@ -477,7 +466,9 @@ This feature provides collapsible content blocks (accordion/disclosure).
 ```typescript
 const editor = useVizelEditor({
   features: {
-    details: true, // Enable with defaults
+    content: {
+      details: true, // Enable with defaults
+    },
   },
 });
 ```
@@ -516,14 +507,16 @@ This feature supports Mermaid and GraphViz diagrams.
 ```typescript
 const editor = useVizelEditor({
   features: {
-    diagram: {
-      mermaidConfig: {
-        theme: 'neutral',
-        securityLevel: 'loose',
-      },
-      defaultType: 'mermaid',
-      defaultCode: `graph TD
+    content: {
+      diagram: {
+        mermaidConfig: {
+          theme: 'neutral',
+          securityLevel: 'loose',
+        },
+        defaultType: 'mermaid',
+        defaultCode: `graph TD
     A[Start] --> B[End]`,
+      },
     },
   },
 });
@@ -533,36 +526,7 @@ const editor = useVizelEditor({
 
 ## Links
 
-This feature provides link editing and auto-linking.
-
-### Options
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `openOnClick` | `boolean` | `true` | Open links on click |
-| `autolink` | `boolean` | `true` | Auto-link URLs while typing |
-| `linkOnPaste` | `boolean` | `true` | Link pasted URLs |
-| `defaultProtocol` | `string` | `"https"` | Default protocol |
-| `HTMLAttributes` | `object` | - | HTML attributes for links |
-
-### Example
-
-```typescript
-const editor = useVizelEditor({
-  features: {
-    link: {
-      openOnClick: true,
-      autolink: true,
-      linkOnPaste: true,
-      defaultProtocol: 'https',
-      HTMLAttributes: {
-        target: '_blank',
-        rel: 'noopener noreferrer',
-      },
-    },
-  },
-});
-```
+Link editing and auto-linking are part of the always-on core. The defaults follow industry conventions (HTTPS protocol, autolink on paste, click opens in a new tab). Pass a custom `@tiptap/extension-link` configuration through the `extensions` array if you need to override the defaults.
 
 ---
 
@@ -593,9 +557,11 @@ These shortcuts also work for bullet lists and ordered lists.
 ```typescript
 const editor = useVizelEditor({
   features: {
-    taskList: {
-      taskItem: {
-        nested: true, // Allow nested task lists
+    content: {
+      taskList: {
+        taskItem: {
+          nested: true, // Allow nested task lists
+        },
       },
     },
   },
@@ -632,8 +598,10 @@ The drag handle is automatically positioned next to the hovered block. For list 
 ```typescript
 const editor = useVizelEditor({
   features: {
-    dragHandle: {
-      enabled: true,
+    interaction: {
+      dragHandle: {
+        enabled: true,
+      },
     },
   },
 });
@@ -684,9 +652,11 @@ This feature adds wiki-style `[[page-name]]` links for linking between pages. It
 ```typescript
 const editor = useVizelEditor({
   features: {
-    wikiLink: {
-      resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
-      pageExists: (page) => knownPages.has(page),
+    content: {
+      wikiLink: {
+        resolveLink: (page) => `/wiki/${encodeURIComponent(page)}`,
+        pageExists: (page) => knownPages.has(page),
+      },
     },
   },
 });
@@ -700,21 +670,22 @@ See the [Wiki Links Guide](/guide/wiki-links) for detailed usage.
 
 This feature adds text annotation marks for reviewing and discussion.
 
-### Options
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `enabled` | `boolean` | `true` | Enable comment marks |
-
 ### Example
 
 ```typescript
 const editor = useVizelEditor({
   features: {
-    comment: true,
+    collaboration: {
+      provider: true,  // comments require a provider
+      comments: true,
+    },
   },
 });
 ```
+
+::: warning
+`comments` requires `provider`. Setting `comments: true` without a provider throws `VizelError("INVALID_CONFIG")` at editor creation.
+:::
 
 Comment management (storage, replies, resolution) uses the framework-specific hooks/composables/runes. See [Collaboration: Comments](/guide/collaboration#comments) for details.
 
@@ -733,7 +704,9 @@ This opt-in feature requires additional dependencies: `yjs`, a Yjs provider, `@t
 ```typescript
 const editor = useVizelEditor({
   features: {
-    collaboration: true, // Disables History
+    collaboration: {
+      provider: true, // Disables built-in History; Yjs handles undo/redo
+    },
   },
   extensions: [
     Collaboration.configure({ document: ydoc }),

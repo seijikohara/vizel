@@ -46,7 +46,9 @@ import "@vizel/core/styles.css";
 
 const editor = createVizelEditor({
   features: {
-    image: { onUpload: async (file) => "https://example.com/image.png" },
+    content: {
+      image: { onUpload: async (file) => "https://example.com/image.png" },
+    },
   },
 });
 </script>
@@ -66,7 +68,7 @@ import { createVizelEditor, createVizelMarkdown } from "@vizel/svelte";
 const editor = createVizelEditor();
 const md = createVizelMarkdown(() => editor.current);
 
-// Access: md.markdown, md.setMarkdown(value)
+// Access: md.current, md.setMarkdown(value)
 </script>
 ```
 
@@ -117,7 +119,7 @@ const md = createVizelMarkdown(() => editor.current);
 | `createVizelComment` | Comment and annotation management |
 | `createVizelVersionHistory` | Document version history |
 | `getVizelContext` | Access editor from context |
-| `getVizelContextSafe` | Access editor from context (returns undefined outside provider) |
+| `getVizelContextSafe` | Access editor from context (returns null outside provider) |
 | `getVizelTheme` | Access theme from context |
 | `getVizelIconContext` | Access icon context |
 
