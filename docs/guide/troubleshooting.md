@@ -133,22 +133,24 @@ By default, Vizel converts images to Base64. For production, you should configur
 ```typescript
 const editor = useVizelEditor({
   features: {
-    image: {
-      onUpload: async (file) => {
-        const formData = new FormData();
-        formData.append('image', file);
+    content: {
+      image: {
+        onUpload: async (file) => {
+          const formData = new FormData();
+          formData.append('image', file);
 
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
 
-        if (!response.ok) {
-          throw new Error('Upload failed');
-        }
+          if (!response.ok) {
+            throw new Error('Upload failed');
+          }
 
-        const { url } = await response.json();
-        return url;
+          const { url } = await response.json();
+          return url;
+        },
       },
     },
   },
@@ -162,12 +164,14 @@ You can configure `maxFileSize` and handle validation errors:
 ```typescript
 const editor = useVizelEditor({
   features: {
-    image: {
-      maxFileSize: 5 * 1024 * 1024, // 5MB
-      onValidationError: (error) => {
-        if (error.type === 'file_too_large') {
-          alert(`File too large: ${error.message}`);
-        }
+    content: {
+      image: {
+        maxFileSize: 5 * 1024 * 1024, // 5MB
+        onValidationError: (error) => {
+          if (error.type === 'file_too_large') {
+            alert(`File too large: ${error.message}`);
+          }
+        },
       },
     },
   },
@@ -181,12 +185,14 @@ You can configure allowed MIME types:
 ```typescript
 const editor = useVizelEditor({
   features: {
-    image: {
-      allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
-      onValidationError: (error) => {
-        if (error.type === 'invalid_type') {
-          alert('Only JPEG, PNG, and WebP images are allowed');
-        }
+    content: {
+      image: {
+        allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        onValidationError: (error) => {
+          if (error.type === 'invalid_type') {
+            alert('Only JPEG, PNG, and WebP images are allowed');
+          }
+        },
       },
     },
   },
@@ -200,14 +206,16 @@ You should handle upload failures gracefully:
 ```typescript
 const editor = useVizelEditor({
   features: {
-    image: {
-      onUpload: async (file) => {
-        // Your upload logic
-      },
-      onUploadError: (error, file) => {
-        console.error(`Failed to upload ${file.name}:`, error);
-        // Show user-friendly error message
-        alert('Upload failed. Please check your connection and try again.');
+    content: {
+      image: {
+        onUpload: async (file) => {
+          // Your upload logic
+        },
+        onUploadError: (error, file) => {
+          console.error(`Failed to upload ${file.name}:`, error);
+          // Show user-friendly error message
+          alert('Upload failed. Please check your connection and try again.');
+        },
       },
     },
   },
@@ -243,9 +251,11 @@ For large documents, consider the following approaches:
 ```typescript
 const editor = useVizelEditor({
   features: {
-    mathematics: false,  // Disable if not needed
-    diagram: false,      // Disable if not needed
-    embed: false,        // Disable if not needed
+    content: {
+      mathematics: false,  // Disable if not needed
+      diagram: false,      // Disable if not needed
+      embed: false,        // Disable if not needed
+    },
   },
 });
 ```
@@ -352,12 +362,14 @@ Verify that you enabled the required features:
 
 ```typescript
 // Error when trying to use disabled feature
-editor.commands.toggleMathInline(); // Fails if mathematics: false
+editor.commands.toggleMathInline(); // Fails if content.mathematics: false
 
 // Solution: Enable the feature
 const editor = useVizelEditor({
   features: {
-    mathematics: true,
+    content: {
+      mathematics: true,
+    },
   },
 });
 ```

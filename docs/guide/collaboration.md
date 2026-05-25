@@ -8,15 +8,16 @@ others.
 
 | Concern | Hook / composable / rune | Feature flag | Default storage |
 |---------|--------------------------|--------------|-----------------|
-| Real-time editing | `useVizelCollaboration` / `createVizelCollaboration` | `features.collaboration` | Yjs provider |
-| Comments | `useVizelComment` / `createVizelComment` | `features.comment` | `localStorage` |
-| Version history | `useVizelVersionHistory` / `createVizelVersionHistory` | always available | `localStorage` |
+| Real-time editing | `useVizelCollaboration` / `createVizelCollaboration` | `features.collaboration.provider` | Yjs provider |
+| Comments | `useVizelComment` / `createVizelComment` | `features.collaboration.comments` (requires `provider`) | `localStorage` |
+| Version history | `useVizelVersionHistory` / `createVizelVersionHistory` | `features.collaboration.versionHistory` (always available without flag) | `localStorage` |
 
 ## Real-time editing
 
 Vizel integrates with [Yjs](https://yjs.dev/), a CRDT-based framework
 that lets multiple users edit the same document simultaneously without
-conflicts. Setting `features.collaboration` to `true` automatically
+conflicts. Setting `features.collaboration.provider` to any truthy
+value (boolean or a `VizelCollaborationProvider` adapter) automatically
 disables the built-in `History` extension because Yjs owns undo / redo
 through `Y.UndoManager`.
 
@@ -592,9 +593,9 @@ interface VizelVersionSnapshot {
    like cursor positions, user names, and colors. Awareness state is
    separate from the document and is not persisted.
 3. **History extension conflict.** Always set
-   `features.collaboration` to `true` when Yjs is in play. The
-   built-in `History` extension does not understand CRDT operations
-   and conflicts with `Y.UndoManager`.
+   `features.collaboration.provider` (boolean or adapter) when Yjs is
+   in play. The built-in `History` extension does not understand CRDT
+   operations and conflicts with `Y.UndoManager`.
 4. **Offline support.** Yjs stores edits made offline locally and
    syncs them on reconnect without data loss.
 
@@ -602,7 +603,7 @@ interface VizelVersionSnapshot {
 
 | Symptom | Resolution |
 |---------|------------|
-| Undo / redo behaves unexpectedly | Set `features.collaboration: true` so the built-in `History` extension is disabled |
+| Undo / redo behaves unexpectedly | Set `features.collaboration.provider` (boolean or adapter) so the built-in `History` extension is disabled |
 | WebSocket disconnects in production | Verify the reverse proxy supports WebSocket upgrades; check the `ws://` vs `wss://` protocol |
 | Remote cursors appear without color | Pass `user.color` to both `CollaborationCursor.configure()` and the collaboration hook / composable / rune |
 | Comments do not persist | Confirm the storage backend resolves both `save` and `load` |
