@@ -1,4 +1,4 @@
-import type { Editor } from "@vizel/core";
+import { type Editor, VizelError } from "@vizel/core";
 import { createContext, type ReactNode, useContext } from "react";
 
 /**
@@ -56,12 +56,10 @@ export function VizelInternalProvider({ editor, children }: VizelInternalProvide
 export function useVizelContext(): Editor | null {
   const context = useContext(VizelContext);
   if (context === VIZEL_CONTEXT_UNSET) {
-    throw new Error(
-      "[Vizel] useVizelContext must be used within <VizelProvider> or <Vizel>.\n" +
-        "Example:\n" +
-        "  <VizelProvider editor={editor}>\n" +
-        "    <YourComponent />\n" +
-        "  </VizelProvider>"
+    throw new VizelError(
+      "MISSING_CONTEXT",
+      "useVizelContext must be used within <VizelProvider> or <Vizel>. " +
+        "Wrap the consumer in <VizelProvider editor={editor}>...</VizelProvider>."
     );
   }
   return context;
