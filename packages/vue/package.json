@@ -53,6 +53,16 @@
     "@iconify/vue": "^5.0.1"
   },
   "peerDependencies": {
+    "@tiptap/extension-bold": "^3.23.4",
+    "@tiptap/extension-code": "^3.23.4",
+    "@tiptap/extension-color": "^3.23.4",
+    "@tiptap/extension-highlight": "^3.23.4",
+    "@tiptap/extension-italic": "^3.23.4",
+    "@tiptap/extension-strike": "^3.23.4",
+    "@tiptap/extension-subscript": "^3.23.4",
+    "@tiptap/extension-superscript": "^3.23.4",
+    "@tiptap/extension-text-style": "^3.23.4",
+    "@tiptap/extension-underline": "^3.23.4",
     "@vizel/core": "workspace:^",
     "vue": "^3.4"
   },
