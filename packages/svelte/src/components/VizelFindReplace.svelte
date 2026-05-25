@@ -2,8 +2,13 @@
 import type { Editor, VizelLocale } from "@vizel/core";
 
 export interface VizelFindReplaceProps {
-  /** The Tiptap editor instance */
-  editor: Editor | null;
+  /**
+   * The Tiptap editor instance.
+   *
+   * Optional — when omitted, the component resolves the editor from
+   * the surrounding `<VizelProvider>` / `<Vizel>` context.
+   */
+  editor?: Editor | null;
   /** Custom class name */
   class?: string;
   /** Locale for translated UI strings */
@@ -21,8 +26,11 @@ import {
   type VizelFindReplaceState,
 } from "@vizel/core";
 import { tick } from "svelte";
+import { getVizelContextSafe } from "./VizelContext.js";
 
-let { editor, class: className, locale, onclose }: VizelFindReplaceProps = $props();
+let { editor: editorProp, class: className, locale, onclose }: VizelFindReplaceProps = $props();
+const contextEditor = getVizelContextSafe();
+const editor = $derived(editorProp ?? contextEditor?.current ?? null);
 const labels = $derived(resolveVizelFindReplaceLabels(locale?.findReplace));
 
 // Empty state for initial value

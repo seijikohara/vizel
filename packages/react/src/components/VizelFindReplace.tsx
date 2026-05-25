@@ -15,10 +15,18 @@ import {
   useRef,
   useState,
 } from "react";
+import { useVizelContextSafe } from "./VizelContext.tsx";
 
 export interface VizelFindReplaceProps {
-  /** The Tiptap editor instance */
-  editor: Editor | null;
+  /**
+   * The Tiptap editor instance.
+   *
+   * Optional — when omitted, the component resolves the editor from
+   * the surrounding {@link VizelProvider} / {@link Vizel} context, so a
+   * consumer can drop `<VizelFindReplace />` inside the all-in-one
+   * component without juggling refs.
+   */
+  editor?: Editor | null;
   /** Custom class name */
   className?: string;
   /** Locale for translated UI strings */
@@ -30,7 +38,14 @@ export interface VizelFindReplaceProps {
 /**
  * Find & Replace panel component for React
  */
-export function VizelFindReplace({ editor, className, locale, onClose }: VizelFindReplaceProps) {
+export function VizelFindReplace({
+  editor: editorProp,
+  className,
+  locale,
+  onClose,
+}: VizelFindReplaceProps) {
+  const contextEditor = useVizelContextSafe();
+  const editor = editorProp ?? contextEditor;
   const labels = resolveVizelFindReplaceLabels(locale?.findReplace);
   const [findText, setFindText] = useState("");
   const [replaceText, setReplaceText] = useState("");
