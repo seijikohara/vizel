@@ -81,6 +81,12 @@ export function VizelBlockMenu({
   }, []);
 
   useEffect(() => {
+    // `isMounted` guards the rAF callback against the React 19 strict-mode
+    // setup → cleanup → setup sequence, where the rAF scheduled in the
+    // first setup can fire after the first cleanup has detached the
+    // listener — without the guard the callback would call setMenuState
+    // against a stale closure.
+    const lifecycle = { isMounted: true };
     const handler = (e: Event) => {
       if (!(e instanceof CustomEvent)) return;
       const detail = e.detail as VizelBlockMenuOpenDetail;
@@ -94,6 +100,7 @@ export function VizelBlockMenu({
       setShowTurnInto(false);
 
       vizelRequestAnimationFrame(() => {
+        if (!lifecycle.isMounted) return;
         const el = menuRef.current;
         if (!el) return;
         const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
@@ -102,7 +109,10 @@ export function VizelBlockMenu({
     };
 
     document.addEventListener(VIZEL_BLOCK_MENU_EVENT, handler);
-    return () => document.removeEventListener(VIZEL_BLOCK_MENU_EVENT, handler);
+    return () => {
+      lifecycle.isMounted = false;
+      document.removeEventListener(VIZEL_BLOCK_MENU_EVENT, handler);
+    };
   }, [boundEditor]);
 
   useEffect(() => {

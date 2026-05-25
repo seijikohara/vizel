@@ -57,9 +57,16 @@ export function useVizelAutoSave(
   editor: Editor | null | undefined,
   options: VizelAutoSaveOptions = {}
 ): UseVizelAutoSaveResult {
-  // Store full options in ref to access callbacks without recreating handlers
+  // Store full options in a ref so handlers can read callbacks
+  // (onSave, onError, ...) without forcing a memo rebuild when the
+  // options object identity changes. The assignment runs inside a
+  // `useEffect` (not at render time) to honor React's "no side effects
+  // during render" contract; the one-tick lag is fine because handlers
+  // fire on subsequent editor events.
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
 
   // Merge with defaults - use individual primitives as dependencies to avoid
   // recreating when object reference changes but values are the same
@@ -76,9 +83,13 @@ export function useVizelAutoSave(
   });
 
   // Keep a ref to the editor for the handlers so they always read the latest
-  // value without forcing a memo rebuild on every render.
+  // value without forcing a memo rebuild on every render. The assignment runs
+  // inside a `useEffect` (not at render time) to honor React's "no side
+  // effects during render" contract.
   const editorRef = useRef(editor);
-  editorRef.current = editor;
+  useEffect(() => {
+    editorRef.current = editor;
+  }, [editor]);
 
   const handleStateChange = useCallback((partial: Partial<VizelAutoSaveState>) => {
     setState((prev) => ({ ...prev, ...partial }));
