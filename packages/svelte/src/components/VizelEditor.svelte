@@ -4,6 +4,14 @@ import type { Editor } from "@vizel/core";
 export interface VizelExposed {
   /** The container DOM element */
   container: HTMLDivElement | null;
+  /**
+   * The Tiptap editor instance that this component is rendering.
+   *
+   * Mirrors whichever editor was resolved (explicit prop or context).
+   * Lets callers skip the extra round-trip through `getVizelContext` or
+   * lifting state when they only need imperative access to the editor.
+   */
+  editor: Editor | null;
 }
 
 export interface VizelEditorProps {
@@ -32,10 +40,11 @@ const editor = $derived(editorProp ?? contextEditor?.current);
 
 let element: HTMLDivElement | null = $state(null);
 
-// Keep ref.container in sync with the bound element.
+// Keep ref.container and ref.editor in sync with the live values.
 $effect(() => {
   if (ref) {
     ref.container = element;
+    ref.editor = editor ?? null;
   }
 });
 
