@@ -14,10 +14,11 @@ import {
   type VizelLocale,
   type VizelMarkdownFlavor,
 } from "@vizel/core";
-import { computed, useAttrs, useSlots, watch } from "vue";
+import { computed, provide, useAttrs, useSlots, watch } from "vue";
 import { useVizelEditor } from "../composables/useVizelEditor.ts";
 import VizelBlockMenu from "./VizelBlockMenu.vue";
 import VizelBubbleMenu from "./VizelBubbleMenu.vue";
+import { VIZEL_CONTEXT_KEY } from "./VizelContext.ts";
 import VizelEditor from "./VizelEditor.vue";
 import VizelToolbar from "./VizelToolbar.vue";
 
@@ -166,6 +167,11 @@ watch(markdown, (newMarkdown) => {
   markdownSyncFlag.isUpdatingFromMarkdown = false;
 });
 
+// Expose the editor through the same provide key VizelProvider uses, so
+// nested components (and the built-in toolbar / bubble menu / block menu)
+// can resolve it via `useVizelContext` without an explicit `:editor` prop.
+provide(VIZEL_CONTEXT_KEY, editor);
+
 // Expose editor instance for advanced use cases.
 defineExpose<VizelRef>({
   /** The underlying Tiptap editor instance */
@@ -182,15 +188,17 @@ const localeProps = computed(() => (props.locale ? { locale: props.locale } : {}
 
 <template>
   <div :class="['vizel-root', $props.class]" data-vizel-root>
-    <VizelToolbar v-if="showToolbar && editor && slots['toolbar']" :editor="editor" v-bind="localeProps">
-      <slot name="toolbar" :editor="editor" />
+    <VizelToolbar v-if="showToolbar && editor" v-bind="localeProps">
+      <template v-if="slots['toolbar']" #default>
+        <slot name="toolbar" :editor="editor" />
+      </template>
     </VizelToolbar>
-    <VizelToolbar v-else-if="showToolbar && editor" :editor="editor" v-bind="localeProps" />
     <VizelEditor :editor="editor" />
-    <VizelBubbleMenu v-if="showBubbleMenu && editor && slots['bubble-menu']" :editor="editor" :enable-embed="enableEmbed ?? false" v-bind="localeProps">
-      <slot name="bubble-menu" :editor="editor" />
+    <VizelBubbleMenu v-if="showBubbleMenu && editor" :enable-embed="enableEmbed ?? false" v-bind="localeProps">
+      <template v-if="slots['bubble-menu']" #default>
+        <slot name="bubble-menu" :editor="editor" />
+      </template>
     </VizelBubbleMenu>
-    <VizelBubbleMenu v-else-if="showBubbleMenu && editor" :editor="editor" :enable-embed="enableEmbed ?? false" v-bind="localeProps" />
     <VizelBlockMenu v-bind="localeProps" />
     <slot :editor="editor" />
   </div>
