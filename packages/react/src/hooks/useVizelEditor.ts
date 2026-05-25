@@ -21,12 +21,14 @@ export type UseVizelEditorOptions = VizelCreateEditorOptions;
  *
  * The Tiptap editor instance is created once on mount. To avoid expensive
  * teardowns, most options are read once at mount and ignored on subsequent
- * renders. The following options are an exception:
+ * renders. The single exception is `editable`, which is mirrored through
+ * `editor.setEditable()` whenever the prop value changes.
  *
- * - `editable` — propagated through `editor.setEditable()` whenever the prop
- *   value changes.
- * - All `on*` callbacks (`onUpdate`, `onError`, etc.) — read through a ref
- *   each time they fire, so passing a fresh closure on every render is fine.
+ * `on*` callbacks (`onUpdate`, `onError`, etc.) are also captured at mount,
+ * matching Vue's `useVizelEditor` and Svelte's `createVizelEditor`. Passing a
+ * fresh closure on every render is silently ignored. Wrap callbacks in
+ * `useLatest` (or any stable ref) when you need them to read live state —
+ * the high-level `<Vizel />` component does exactly this with its own props.
  *
  * Changing `initialContent`, `initialMarkdown`, `placeholder`, `features`,
  * `extensions`, `flavor`, `locale`, or `autofocus` after mount has no effect.

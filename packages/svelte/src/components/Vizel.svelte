@@ -122,18 +122,22 @@ let {
   ...restProps
 }: VizelProps = $props();
 
-// Wrap onUpdate to sync markdown. Read restProps.onUpdate inside the
-// callback (not via a captured local) so later prop changes are picked up.
+// Wrap every lifecycle callback so the editor invokes the current prop
+// value at fire time instead of the closure captured when the editor was
+// constructed. Without this, replacing any `on*` prop after mount would
+// be silently ignored — Tiptap captures callbacks at construction. The
+// `restProps.onX?.(...)` reads happen inside the wrapper bodies, so each
+// fire picks up whatever the caller passed on the most recent render.
 //
-// The previous shape used a synchronous `isUpdatingFromMarkdown` flag to
-// suppress write-back during an external markdown update. Tiptap does not
-// guarantee the `update` event fires synchronously inside
-// `setVizelMarkdown` — when it lands in a microtask the flag is already
-// false and the editor's just-applied markdown gets written back to the
-// bound prop, occasionally creating a tick of feedback. Comparing the new
-// markdown against the bound prop directly avoids the timing race
-// altogether: when the editor's content matches the prop, there is
-// nothing to propagate.
+// `onUpdate` additionally syncs `bind:markdown`. The previous shape used
+// a synchronous `isUpdatingFromMarkdown` flag to suppress write-back
+// during an external markdown update, but Tiptap does not guarantee the
+// `update` event fires synchronously inside `setVizelMarkdown` — when it
+// lands in a microtask the flag is already false and the editor's
+// just-applied markdown gets written back to the bound prop, occasionally
+// creating a tick of feedback. Comparing the new markdown against the
+// bound prop directly avoids the timing race altogether: when the
+// editor's content matches the prop, there is nothing to propagate.
 const wrappedOnUpdate = (e: { editor: import("@vizel/core").Editor }) => {
   restProps.onUpdate?.(e);
   if (markdown === undefined) return;
@@ -141,6 +145,17 @@ const wrappedOnUpdate = (e: { editor: import("@vizel/core").Editor }) => {
   if (nextMarkdown === markdown) return;
   markdown = nextMarkdown;
 };
+const wrappedOnCreate = (e: { editor: import("@vizel/core").Editor }) =>
+  restProps.onCreate?.(e);
+const wrappedOnDestroy = () => restProps.onDestroy?.();
+const wrappedOnSelectionUpdate = (e: { editor: import("@vizel/core").Editor }) =>
+  restProps.onSelectionUpdate?.(e);
+const wrappedOnFocus = (e: { editor: import("@vizel/core").Editor }) =>
+  restProps.onFocus?.(e);
+const wrappedOnBlur = (e: { editor: import("@vizel/core").Editor }) =>
+  restProps.onBlur?.(e);
+const wrappedOnError = (error: import("@vizel/core").VizelError) =>
+  restProps.onError?.(error);
 
 // Capture initial values for editor creation (these are intentionally not reactive)
 // The editor is created once and should not be recreated when props change
@@ -166,12 +181,15 @@ const editorState = createVizelEditor({
   ...(restProps.locale !== undefined && { locale: restProps.locale }),
   ...(restProps.extensions !== undefined && { extensions: restProps.extensions }),
   onUpdate: wrappedOnUpdate,
-  ...(restProps.onCreate !== undefined && { onCreate: restProps.onCreate }),
-  ...(restProps.onDestroy !== undefined && { onDestroy: restProps.onDestroy }),
-  ...(restProps.onSelectionUpdate !== undefined && { onSelectionUpdate: restProps.onSelectionUpdate }),
-  ...(restProps.onFocus !== undefined && { onFocus: restProps.onFocus }),
-  ...(restProps.onBlur !== undefined && { onBlur: restProps.onBlur }),
-  ...(restProps.onError !== undefined && { onError: restProps.onError }),
+  onCreate: wrappedOnCreate,
+  onDestroy: wrappedOnDestroy,
+  onSelectionUpdate: wrappedOnSelectionUpdate,
+  onFocus: wrappedOnFocus,
+  onBlur: wrappedOnBlur,
+  // Only install the error trampoline when the consumer actually passed an
+  // onError prop. A blanket wrapper would intercept thrown configuration
+  // errors and swallow them silently inside createVizelEditor.
+  ...(restProps.onError !== undefined && { onError: wrappedOnError }),
 });
 
 const editor = $derived(editorState.current);
