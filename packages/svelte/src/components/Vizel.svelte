@@ -218,7 +218,7 @@ $effect(() => {
 });
 </script>
 
-<div class="vizel-root {className ?? ''}" data-vizel-root>
+<div class={className ? `vizel-root ${className}` : "vizel-root"} data-vizel-root>
   {#if showToolbar && editor && toolbar}
     <VizelToolbar {editor} {...(restProps.locale ? { locale: restProps.locale } : {})}>
       {#snippet children({ editor: e })}

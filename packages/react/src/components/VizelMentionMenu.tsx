@@ -79,6 +79,7 @@ export function VizelMentionMenu({
   useImperativeHandle(ref, () => ({
     onKeyDown: (event) => {
       if (event.key === "Enter") {
+        if (items.length === 0) return false;
         selectItem(selectedIndex);
         return true;
       }

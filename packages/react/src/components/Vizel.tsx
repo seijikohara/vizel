@@ -271,7 +271,7 @@ export function Vizel({
   // not cross-trigger each other's menus.
   return (
     <VizelInternalProvider editor={editor}>
-      <div className={`vizel-root ${className ?? ""}`} data-vizel-root="">
+      <div className={`vizel-root ${className ?? ""}`.trim()} data-vizel-root="">
         {showToolbar &&
           editor &&
           (toolbarContent ? (
