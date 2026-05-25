@@ -113,16 +113,13 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
           context: "Editor initialization failed",
           code: "INVALID_CONFIG",
         });
-        const handler = editorOptions.onError;
-        if (handler) {
-          // When a handler is supplied, the consumer has opted in to handling
-          // the failure. Do not also rethrow; that turned the same error into
-          // a console-noisy unhandled rejection right after the handler ran.
-          handler(vizelError);
-          return;
-        }
-        // Otherwise rethrow so global handlers (Sentry, unhandledrejection
-        // listeners) can observe the initialization failure.
+        // Always emit to the consumer handler so observability sinks
+        // (Sentry, log pipes) see configuration failures, *and* always
+        // rethrow so global handlers can react. Earlier v2.0.0 suppressed
+        // the rethrow when a handler was set, which silently blanked the
+        // editor when an `@error` listener was wired up purely for
+        // telemetry — a real consumer-review footgun.
+        editorOptions.onError?.(vizelError);
         throw vizelError;
       }
     })();

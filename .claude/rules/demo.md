@@ -94,11 +94,13 @@ All three demos share:
   feature flag — leave it on the demo controls without forwarding to
   `features`. The same rule applies to
   `features.collaboration.presence`.
-- **Do not install a blanket `onError` trampoline on `<Vizel>`.** When
-  the consumer did not pass an `onError` prop / `@error` listener, leave
-  the prop unset so `useVizelEditor` can rethrow configuration errors
-  to the global handler. A blanket wrapper silently swallows
-  `INVALID_CONFIG` and `SSR_NOT_SUPPORTED`.
+- **Configuration errors propagate even when `onError` is set.**
+  `useVizelEditor` / `createVizelEditor` emit `INVALID_CONFIG` and
+  `SSR_NOT_SUPPORTED` to the consumer-supplied handler *and* rethrow so
+  global handlers (Sentry, `window.onunhandledrejection`) observe them.
+  Wiring an `onError` purely for telemetry no longer hides
+  initialization failures, so the demos can wire a logging trampoline
+  freely.
 
 ## Verification Checklist
 
