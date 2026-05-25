@@ -13,6 +13,7 @@ import {
   type VizelNodeTypeOption,
   vizelDefaultBlockMenuActions,
   vizelDefaultNodeTypes,
+  vizelRequestAnimationFrame,
 } from "@vizel/core";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";
@@ -92,7 +93,7 @@ export function VizelBlockMenu({
       });
       setShowTurnInto(false);
 
-      requestAnimationFrame(() => {
+      vizelRequestAnimationFrame(() => {
         const el = menuRef.current;
         if (!el) return;
         const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
@@ -146,7 +147,7 @@ export function VizelBlockMenu({
       setSubmenuFlipped(false);
       return;
     }
-    requestAnimationFrame(() => {
+    vizelRequestAnimationFrame(() => {
       const parentRect = menuRef.current?.getBoundingClientRect();
       if (parentRect) {
         setSubmenuFlipped(shouldFlipSubmenu(parentRect, 200));
