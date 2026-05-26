@@ -1,7 +1,7 @@
 <script lang="ts" module>
 import type { Editor } from "@vizel/core";
 
-export interface VizelExposed {
+export interface VizelEditorRef {
   /** The container DOM element */
   container: HTMLDivElement | null;
   /**
@@ -25,7 +25,7 @@ export interface VizelEditorProps {
    * `ref.container` directly — symmetric with React's `useImperativeHandle`
    * and Vue's `defineExpose`.
    */
-  ref?: VizelExposed;
+  ref?: VizelEditorRef;
 }
 </script>
 

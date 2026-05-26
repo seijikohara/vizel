@@ -49,7 +49,7 @@ export { getVizelContext, getVizelContextSafe } from "./VizelContext.js";
 export {
   default as VizelEditor,
   type VizelEditorProps,
-  type VizelExposed,
+  type VizelEditorRef,
 } from "./VizelEditor.svelte";
 // ============================================================================
 // Vizel EmbedView component

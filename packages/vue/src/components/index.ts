@@ -33,7 +33,7 @@ export { useVizelContext, useVizelContextSafe } from "./VizelContext.ts";
 export {
   default as VizelEditor,
   type VizelEditorProps,
-  type VizelExposed,
+  type VizelEditorRef,
 } from "./VizelEditor.vue";
 // VizelEmbedView component
 export { default as VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.vue";
