@@ -6,7 +6,7 @@ import { useVizelContextSafe } from "./VizelContext.tsx";
 export interface VizelEditorProps {
   /** Ref to access editor container */
   ref?: Ref<VizelEditorRef>;
-  /** Override the editor from context */
+  /** Editor instance. Falls back to the editor from `VizelProvider` / `Vizel` context if omitted. */
   editor?: Editor | null;
   /** Optional className for the editor container */
   className?: string;

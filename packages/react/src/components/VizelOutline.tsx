@@ -9,7 +9,7 @@ import { useVizelState } from "../hooks/useVizelState.ts";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 
 export interface VizelOutlineProps {
-  /** Editor instance. Falls back to context if not provided. */
+  /** Editor instance. Falls back to the editor from `VizelProvider` / `Vizel` context if omitted. */
   editor?: Editor | null;
   /** Additional CSS class name */
   className?: string;

@@ -5,7 +5,7 @@ import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelToolbarDefault from "./VizelToolbarDefault.vue";
 
 export interface VizelToolbarProps {
-  /** Editor instance. Falls back to context if not provided. */
+  /** Editor instance. Falls back to the editor from `VizelProvider` / `Vizel` context if omitted. */
   editor?: Editor | null;
   /** Custom class name */
   class?: string;

@@ -4,7 +4,7 @@ import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelToolbarDefault } from "./VizelToolbarDefault.tsx";
 
 export interface VizelToolbarProps {
-  /** Editor instance. Falls back to context if not provided. */
+  /** Editor instance. Falls back to the editor from `VizelProvider` / `Vizel` context if omitted. */
   editor?: Editor | null;
   /** Additional CSS class name */
   className?: string;

@@ -203,12 +203,24 @@ frameworks. The only divergence is the children form.
 |------|-------|-----|--------|
 | `items` | `VizelSlashCommandItem[]` | `VizelSlashCommandItem[]` | `VizelSlashCommandItem[]` |
 | Class prop | `className?: string` | `class?: string` | `class?: string` |
-| Selection callback | `onSelect: (item) => void` | emit `select` | `onselect?: (item) => void` |
+| Selection callback | `onSelect: (item) => void` | emit `select` | `onselect: (item) => void` |
 | `showGroups` | `boolean` | `boolean` | `boolean` |
 | `groupOrder` | `string[]` | `string[]` | `string[]` |
 | Item renderer | `renderItem?: (state) => ReactNode` | `#item` slot | `renderItem?: Snippet<[state]>` |
 | Empty renderer | `renderEmpty?: () => ReactNode` | `#empty` slot | `renderEmpty?: Snippet` |
 | Imperative ref | `ref?: Ref<VizelSlashMenuRef>` | template ref → `defineExpose` | `ref?: VizelSlashMenuRef` (mutable prop) |
+
+#### `VizelMentionMenu`
+
+| Prop | React | Vue | Svelte |
+|------|-------|-----|--------|
+| `items` | `VizelMentionItem[]` | `VizelMentionItem[]` | `VizelMentionItem[]` |
+| Class prop | `className?: string` | `class?: string` | `class?: string` |
+| Selection callback | `onSelect: (item) => void` | emit `select` | `onselect: (item) => void` |
+| `locale` | `VizelLocale` | `VizelLocale` | `VizelLocale` |
+| Item renderer | `renderItem?: (state) => ReactNode` | `#item` slot | `renderItem?: Snippet<[state]>` |
+| Empty renderer | `renderEmpty?: () => ReactNode` | `#empty` slot | `renderEmpty?: Snippet` |
+| Imperative ref | `ref?: Ref<VizelMentionMenuRef>` | template ref → `defineExpose` | `ref?: VizelMentionMenuRef` (mutable prop) |
 
 #### `VizelColorPicker`
 

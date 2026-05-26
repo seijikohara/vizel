@@ -10,7 +10,7 @@ import { VizelBubbleMenuDefault } from "./VizelBubbleMenuDefault.tsx";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 
 export interface VizelBubbleMenuProps {
-  /** Override the editor from context */
+  /** Editor instance. Falls back to the editor from `VizelProvider` / `Vizel` context if omitted. */
   editor?: Editor | null;
   /** Custom class name for the menu container */
   className?: string;

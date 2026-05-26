@@ -4,7 +4,7 @@ import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 
 export interface VizelEditorProps {
-  /** Override the editor from context */
+  /** Editor instance. Falls back to the editor from `VizelProvider` / `Vizel` context if omitted. */
   editor?: Editor | null;
   /** Custom class name */
   class?: string;
