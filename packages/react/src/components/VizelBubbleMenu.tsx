@@ -83,6 +83,16 @@ export function VizelBubbleMenu({
     shouldShowRef.current = shouldShow;
   }, [shouldShow]);
 
+  // Re-register the plugin when `shouldShow` toggles between `undefined`
+  // and a function: if the prop transitions from `undefined` → defined,
+  // the wrapper has to be installed once. If it transitions from
+  // defined → `undefined`, the previously installed wrapper would keep
+  // calling `shouldShowRef.current?.(...) ?? false` (always `false`) and
+  // hide the menu forever. Comparing presence (not identity) so identity
+  // changes of a continuously-defined callback still flow through the
+  // ref without re-registering.
+  const hasShouldShow = shouldShow !== undefined;
+
   useEffect(() => {
     if (!(editor && menuRef.current)) {
       return;
@@ -93,7 +103,7 @@ export function VizelBubbleMenu({
       editor,
       element: menuRef.current,
       updateDelay,
-      ...(shouldShowRef.current && {
+      ...(hasShouldShow && {
         shouldShow: ({ editor: e, from, to }) =>
           shouldShowRef.current?.({ editor: e, from, to }) ?? false,
       }),
@@ -116,7 +126,7 @@ export function VizelBubbleMenu({
       editor.unregisterPlugin(pluginKey);
       escapeController.unmount();
     };
-  }, [editor, pluginKey, updateDelay]);
+  }, [editor, pluginKey, updateDelay, hasShouldShow]);
 
   if (!editor) {
     return null;
