@@ -7,7 +7,7 @@ import { VizelToolbarDropdown } from "./VizelToolbarDropdown.tsx";
 
 export interface VizelToolbarOverflowProps {
   editor: Editor;
-  actions: VizelToolbarActionItem[];
+  actions: readonly VizelToolbarActionItem[];
   className?: string;
   /** Locale for translated UI strings */
   locale?: VizelLocale;

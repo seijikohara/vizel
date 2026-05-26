@@ -42,10 +42,9 @@ export interface VizelIconProps extends Omit<ComponentProps<typeof IconifyIcon>,
  */
 export function VizelIcon({ name, customIcons, style, ...props }: VizelIconProps) {
   const { customIcons: contextIcons } = useVizelIconContext();
-  const iconId =
-    customIcons?.[name] ??
-    contextIcons?.[name] ??
-    vizelDefaultIconIds[name as keyof typeof vizelDefaultIconIds] ??
-    name;
+  // `vizelDefaultIconIds` is typed `Record<VizelIconName, string>`, so the
+  // direct index is type-safe — the previous `as keyof typeof` cast was a
+  // no-op flagged by the project's `as`-cast policy.
+  const iconId = customIcons?.[name] ?? contextIcons?.[name] ?? vizelDefaultIconIds[name] ?? name;
   return <IconifyIcon icon={iconId} style={{ pointerEvents: "none", ...style }} {...props} />;
 }

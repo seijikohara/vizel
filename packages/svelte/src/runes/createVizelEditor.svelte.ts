@@ -42,8 +42,8 @@ export type CreateVizelEditorOptions = Omit<VizelCreateEditorOptions, "editable"
  *
  * Changing `initialContent`, `initialMarkdown`, `placeholder`, `features`,
  * `extensions`, `flavor`, `locale`, or `autofocus` after mount has no effect.
- * Use `editor.current.commands.setContent(...)` (or the corresponding feature
- * command) to update the document after mount.
+ * Use `editor.current?.commands.setContent(...)` (or the corresponding
+ * feature command) to update the document after mount.
  *
  * @example
  * ```svelte

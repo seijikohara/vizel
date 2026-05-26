@@ -33,6 +33,7 @@ export interface VizelColorPickerProps {
 
 <script lang="ts">
 import { isVizelValidHexColor, normalizeVizelHexColor } from "@vizel/core";
+import { untrack } from "svelte";
 import VizelIcon from "./VizelIcon.svelte";
 
 const GRID_COLUMNS = 4;
@@ -174,14 +175,20 @@ $effect(() => {
   }
 });
 
-// Focus first swatch or current value on mount (run only once)
+// Focus first swatch or current value on mount. Wrap the body in
+// `untrack` so a later `value` / `allColors` change does not yank
+// `focusedIndex` back to the selected swatch in the middle of keyboard
+// navigation (the previous shape registered both reactive reads and
+// re-ran on every prop tick).
 $effect(() => {
-  const currentIndex = value ? allColors.indexOf(value) : -1;
-  if (currentIndex >= 0) {
-    focusedIndex = currentIndex;
-  } else if (allColors.length > 0) {
-    focusedIndex = 0;
-  }
+  untrack(() => {
+    const currentIndex = value ? allColors.indexOf(value) : -1;
+    if (currentIndex >= 0) {
+      focusedIndex = currentIndex;
+    } else if (allColors.length > 0) {
+      focusedIndex = 0;
+    }
+  });
 });
 
 const isInputValid = $derived(isVizelValidHexColor(normalizeVizelHexColor(inputValue)));

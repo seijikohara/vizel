@@ -1,13 +1,11 @@
-<script lang="ts">
+<script setup lang="ts">
 import type { Editor, VizelOutlineItemSpec } from "@vizel/core";
 
 export interface VizelOutlineItemsProps {
   items: readonly VizelOutlineItemSpec[];
   editor: Editor;
 }
-</script>
 
-<script setup lang="ts">
 const props = defineProps<VizelOutlineItemsProps>();
 
 const onItemClick = (pos: number) => {

@@ -3,7 +3,7 @@ import type { Editor, VizelLocale, VizelToolbarActionItem } from "@vizel/core";
 
 export interface VizelToolbarOverflowProps {
   editor: Editor;
-  actions: VizelToolbarActionItem[];
+  actions: readonly VizelToolbarActionItem[];
   class?: string;
   /** Locale for translated UI strings */
   locale?: VizelLocale;
