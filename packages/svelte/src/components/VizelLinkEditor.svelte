@@ -160,12 +160,16 @@ function handleVisit() {
   </div>
   {#if viewState.showEmbedToggle}
     <div class="vizel-link-editor-embed-toggle">
-      <input
-        id="vizel-embed-toggle"
-        type="checkbox"
-        bind:checked={asEmbed}
-      />
-      <label for="vizel-embed-toggle">{labels.embedAsRichContent}</label>
+      <!--
+        Wrap the input in the label so the click target is the same as
+        a `for`/`id` pair without needing a globally-unique DOM id. Two
+        link editors on one page used to share `id="vizel-embed-toggle"`,
+        triggering the wrong checkbox under WCAG 4.1.1.
+      -->
+      <label class="vizel-link-editor-embed-toggle-label">
+        <input type="checkbox" bind:checked={asEmbed} />
+        <span>{labels.embedAsRichContent}</span>
+      </label>
     </div>
   {/if}
 </form>

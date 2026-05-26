@@ -173,13 +173,21 @@ export function VizelLinkEditor({
       </div>
       {viewState.showEmbedToggle && (
         <div className="vizel-link-editor-embed-toggle">
-          <input
-            type="checkbox"
-            id="vizel-embed-toggle"
-            checked={asEmbed}
-            onChange={(e) => setAsEmbed(e.target.checked)}
-          />
-          <label htmlFor="vizel-embed-toggle">{labels.embedAsRichContent}</label>
+          {/*
+            Wrap the input in the label so the click target is the same as
+            an `htmlFor`/`id` pair without needing a globally-unique DOM id.
+            Two link editors on one page (the bubble-menu instance plus a
+            custom toolbar instance) used to share `id="vizel-embed-toggle"`,
+            triggering the wrong checkbox under WCAG 4.1.1.
+          */}
+          <label className="vizel-link-editor-embed-toggle-label">
+            <input
+              type="checkbox"
+              checked={asEmbed}
+              onChange={(e) => setAsEmbed(e.target.checked)}
+            />
+            <span>{labels.embedAsRichContent}</span>
+          </label>
         </div>
       )}
     </form>
