@@ -1,5 +1,9 @@
-<script lang="ts">
-import type { Editor, VizelLocale } from "@vizel/core";
+<script setup lang="ts">
+import { buildVizelOutlineSpec, type Editor, type VizelLocale, vizelEnLocale } from "@vizel/core";
+import { computed } from "vue";
+import { useVizelState } from "../composables/useVizelState.ts";
+import { useVizelContextSafe } from "./VizelContext.ts";
+import VizelOutlineItems from "./VizelOutlineItems.vue";
 
 export interface VizelOutlineProps {
   /** Editor instance. Falls back to the editor from `VizelProvider` / `Vizel` context if omitted. */
@@ -14,26 +18,18 @@ export interface VizelOutlineProps {
   /** Locale for translated UI strings */
   locale?: VizelLocale;
 }
-</script>
-
-<script setup lang="ts">
-import { buildVizelOutlineSpec, vizelEnLocale } from "@vizel/core";
-import { computed } from "vue";
-import { useVizelState } from "../composables/useVizelState.ts";
-import { useVizelContextSafe } from "./VizelContext.ts";
-import VizelOutlineItems from "./VizelOutlineItems.vue";
 
 const props = defineProps<VizelOutlineProps>();
 
 const contextEditor = useVizelContextSafe();
-const editor = computed(() => props.editor ?? contextEditor?.value ?? null);
+const resolvedEditor = computed<Editor | null>(() => props.editor ?? contextEditor?.value ?? null);
 
-const updateCount = useVizelState(() => editor.value);
+const updateCount = useVizelState(() => resolvedEditor.value);
 
 const resolvedLocale = computed(() => props.locale ?? vizelEnLocale);
 const spec = computed(() => {
   void updateCount.value;
-  const e = editor.value;
+  const e = resolvedEditor.value;
   if (!e) return null;
   const resolvedPos = props.currentPos === undefined ? e.state.selection.from : props.currentPos;
   return buildVizelOutlineSpec(e, resolvedPos, resolvedLocale.value);
@@ -42,12 +38,12 @@ const spec = computed(() => {
 
 <template>
   <nav
-    v-if="editor && spec"
-    :class="['vizel-outline', props.class]"
+    v-if="resolvedEditor && spec"
+    :class="['vizel-outline', $props.class]"
     :role="spec.root.role"
     :aria-label="spec.root['aria-label']"
     data-vizel-outline=""
   >
-    <VizelOutlineItems v-if="spec.items.length > 0" :items="spec.items" :editor="editor" />
+    <VizelOutlineItems v-if="spec.items.length > 0" :items="spec.items" :editor="resolvedEditor" />
   </nav>
 </template>

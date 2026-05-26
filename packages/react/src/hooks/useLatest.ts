@@ -1,6 +1,8 @@
 import { type RefObject, useRef } from "react";
 
 /**
+ * @internal
+ *
  * Track the latest value in a stable `RefObject`.
  *
  * Each render synchronously updates `ref.current` to the passed value,
