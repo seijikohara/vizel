@@ -11,13 +11,6 @@ function readStoredThemeMode(): ThemeMode {
   return stored === "light" || stored === "dark" ? stored : "system";
 }
 
-interface Props {
-  /** Triggered when the user picks "system" so the provider remounts. */
-  onResetToSystem?: () => void;
-}
-
-let { onResetToSystem }: Props = $props();
-
 const themeApi = getVizelThemeSafe();
 let storedMode = $state<ThemeMode>(readStoredThemeMode());
 
@@ -32,11 +25,8 @@ function pickDark(): void {
 }
 
 function pickSystem(): void {
-  if (typeof localStorage !== "undefined") {
-    localStorage.removeItem(THEME_STORAGE_KEY);
-  }
+  themeApi?.resetToSystem();
   storedMode = "system";
-  onResetToSystem?.();
 }
 </script>
 

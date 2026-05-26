@@ -41,20 +41,15 @@ function readStoredThemeMode(): ThemeMode {
   return stored === "light" || stored === "dark" ? stored : "system";
 }
 
-interface ThemeToggleProps {
-  /** Triggered when the user chooses "system" so the provider remounts. */
-  onResetToSystem: () => void;
-}
-
 /**
  * Three-state theme toggle (light / dark / system).
  *
- * `useVizelTheme().setTheme` only accepts concrete `VizelResolvedTheme`
- * values by design (cross-framework.md Table 4). To re-enter "system"
- * mode the demo clears the persisted preference and asks the parent to
- * remount the provider so its `defaultTheme="system"` initializer runs.
+ * `useVizelTheme().setTheme` accepts only concrete `VizelResolvedTheme`
+ * values to keep the toggle ergonomics tight; the dedicated
+ * `resetToSystem()` method re-enters the "follow OS preference" mode
+ * without remounting the provider.
  */
-function ThemeToggle({ onResetToSystem }: ThemeToggleProps) {
+function ThemeToggle() {
   const themeApi = useVizelThemeSafe();
   const resolvedTheme = themeApi?.theme;
   const storedMode = readStoredThemeMode();
@@ -87,12 +82,7 @@ function ThemeToggle({ onResetToSystem }: ThemeToggleProps) {
         data-active={storedMode === "system"}
         aria-label={`System (currently ${resolvedTheme ?? "light"})`}
         title="System"
-        onClick={() => {
-          if (typeof localStorage !== "undefined") {
-            localStorage.removeItem(THEME_STORAGE_KEY);
-          }
-          onResetToSystem();
-        }}
+        onClick={() => themeApi?.resetToSystem()}
       >
         ⎙
       </button>
@@ -128,11 +118,7 @@ interface DemoFeatures {
 
 type PanelTab = "markdown" | "json" | "history" | "comments";
 
-interface AppContentProps {
-  onResetThemeToSystem: () => void;
-}
-
-function AppContent({ onResetThemeToSystem }: AppContentProps) {
+function AppContent() {
   // Feature toggles (all enabled by default).
   const [features, setFeatures] = useState<DemoFeatures>({
     toolbar: true,
@@ -256,7 +242,7 @@ function AppContent({ onResetThemeToSystem }: AppContentProps) {
             <h1>Vizel Editor</h1>
             <span className="framework-badge">React 19</span>
           </div>
-          {features.theme && <ThemeToggle onResetToSystem={onResetThemeToSystem} />}
+          {features.theme && <ThemeToggle />}
         </div>
         <p className="header-description">
           A block-based rich text editor with slash commands and inline formatting
@@ -648,20 +634,9 @@ function AppContent({ onResetThemeToSystem }: AppContentProps) {
 }
 
 export function App() {
-  // The provider seeds its theme state once at mount from
-  // `localStorage[storageKey]` (or `defaultTheme`). The System button
-  // clears the persisted preference and bumps `providerKey` so the
-  // provider remounts and re-runs that seed against the now-clean
-  // storage — the simplest way to re-enter "follow system" mode without
-  // adding a runtime "system" path to `useVizelTheme().setTheme` (which
-  // is intentionally narrowed to concrete `light` / `dark`).
-  const [providerKey, setProviderKey] = useState(0);
-  const handleResetThemeToSystem = useCallback(() => {
-    setProviderKey((key) => key + 1);
-  }, []);
   return (
-    <VizelThemeProvider key={providerKey} defaultTheme="system" storageKey="vizel-theme">
-      <AppContent onResetThemeToSystem={handleResetThemeToSystem} />
+    <VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
+      <AppContent />
     </VizelThemeProvider>
   );
 }

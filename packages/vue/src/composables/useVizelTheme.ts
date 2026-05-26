@@ -5,18 +5,25 @@ import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext";
 /**
  * Public return shape for `useVizelTheme`.
  *
- * The flat `{ theme, setTheme }` shape mirrors the React hook and Svelte
- * rune. `theme` reflects the currently applied (resolved) theme so consumers
- * can build a simple toggle without reading any other field. `setTheme`
- * accepts only concrete `VizelResolvedTheme` values because entering
- * "system" mode is the provider's `defaultTheme` concern, not a runtime
- * toggle.
+ * The flat `{ theme, setTheme, resetToSystem }` shape mirrors the React hook
+ * and Svelte rune. `theme` reflects the currently applied (resolved) theme
+ * so consumers can build a simple toggle without reading any other field.
+ * `setTheme` accepts only concrete `VizelResolvedTheme` values to keep the
+ * toggle ergonomics tight; re-entering the "follow OS preference" mode is
+ * the dedicated `resetToSystem` method instead of an overload.
  */
 export interface UseVizelThemeResult {
   /** Currently applied theme (resolved from the user's preference). */
   theme: ComputedRef<VizelResolvedTheme>;
   /** Switch the editor theme to a concrete value. */
   setTheme: (next: VizelResolvedTheme) => void;
+  /**
+   * Drop the user's manual selection and resume tracking the OS
+   * `prefers-color-scheme` preference. The provider's stored selection is
+   * replaced with `"system"`, and `theme` updates to whatever the OS
+   * currently reports.
+   */
+  resetToSystem: () => void;
 }
 
 /**
@@ -57,6 +64,7 @@ export function useVizelTheme(): UseVizelThemeResult {
     // type matches the runtime guarantee; the underlying provider's
     // setter accepts the wider `VizelTheme` including "system".
     setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
+    resetToSystem: () => context.setTheme("system"),
   };
 }
 
@@ -75,5 +83,6 @@ export function useVizelThemeSafe(): UseVizelThemeResult | null {
     // type matches the runtime guarantee; the underlying provider's
     // setter accepts the wider `VizelTheme` including "system".
     setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
+    resetToSystem: () => context.setTheme("system"),
   };
 }

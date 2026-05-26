@@ -148,21 +148,8 @@ function handleJsonChange(event: Event) {
     // Invalid JSON, ignore
   }
 }
-
-// The provider seeds its theme state once at mount from
-// `localStorage[storageKey]` (or `defaultTheme`). The System button
-// clears the persisted preference and bumps `providerKey` so the
-// provider remounts and re-runs that seed against the now-clean
-// storage — the simplest way to re-enter "follow system" mode without
-// adding a runtime "system" path to `getVizelTheme().setTheme` (which
-// is intentionally narrowed to concrete `light` / `dark`).
-let providerKey = $state(0);
-function handleResetThemeToSystem(): void {
-  providerKey += 1;
-}
 </script>
 
-{#key providerKey}
 <VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
 <div class="app">
   <header class="header">
@@ -173,7 +160,7 @@ function handleResetThemeToSystem(): void {
         <span class="framework-badge">Svelte 5</span>
       </div>
       {#if features.theme}
-        <ThemeToggle onResetToSystem={handleResetThemeToSystem} />
+        <ThemeToggle />
       {/if}
     </div>
     <p class="header-description">
@@ -481,4 +468,3 @@ function handleResetThemeToSystem(): void {
   </footer>
 </div>
 </VizelThemeProvider>
-{/key}
