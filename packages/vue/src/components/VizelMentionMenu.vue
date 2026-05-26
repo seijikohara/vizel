@@ -81,9 +81,18 @@ defineExpose<VizelMentionMenuRef>({ onKeyDown });
     :aria-label="spec.root['aria-label']"
     :aria-activedescendant="spec.root['aria-activedescendant']"
   >
-    <div v-if="spec.sections.length === 0" class="vizel-mention-menu-empty">
-      {{ props.locale?.mentionMenu?.noResults ?? 'No results' }}
-    </div>
+    <template v-if="spec.sections.length === 0">
+      <!--
+        Mirrors VizelSlashMenu's `#empty` slot — consumers swap the
+        no-results affordance without re-implementing keyboard / ARIA
+        wiring.
+      -->
+      <slot name="empty">
+        <div class="vizel-mention-menu-empty">
+          {{ props.locale?.mentionMenu?.noResults ?? 'No results' }}
+        </div>
+      </slot>
+    </template>
     <template v-else>
       <div
         v-for="slot in slots"
@@ -97,16 +106,28 @@ defineExpose<VizelMentionMenuRef>({ onKeyDown });
         @click="selectItem(slot.index)"
         @keydown.enter="selectItem(slot.index)"
       >
-        <div class="vizel-mention-menu-item-avatar">
-          <img v-if="slot.data.item.avatar" :src="slot.data.item.avatar" :alt="slot.data.item.label" />
-          <template v-else>{{ slot.data.item.label.charAt(0).toUpperCase() }}</template>
-        </div>
-        <div class="vizel-mention-menu-item-content">
-          <div class="vizel-mention-menu-item-label">{{ slot.data.item.label }}</div>
-          <div v-if="slot.data.item.description" class="vizel-mention-menu-item-description">
-            {{ slot.data.item.description }}
+        <!--
+          Item slot mirrors VizelSlashMenu's `#item` seam. The container,
+          keyboard navigation, ARIA, and click handling stay owned by
+          VizelMentionMenu; consumers only swap the per-item markup.
+        -->
+        <slot
+          name="item"
+          :item="slot.data.item"
+          :is-selected="slot.data.isSelected"
+          :onclick="() => selectItem(slot.index)"
+        >
+          <div class="vizel-mention-menu-item-avatar">
+            <img v-if="slot.data.item.avatar" :src="slot.data.item.avatar" :alt="slot.data.item.label" />
+            <template v-else>{{ slot.data.item.label.charAt(0).toUpperCase() }}</template>
           </div>
-        </div>
+          <div class="vizel-mention-menu-item-content">
+            <div class="vizel-mention-menu-item-label">{{ slot.data.item.label }}</div>
+            <div v-if="slot.data.item.description" class="vizel-mention-menu-item-description">
+              {{ slot.data.item.description }}
+            </div>
+          </div>
+        </slot>
       </div>
     </template>
   </div>

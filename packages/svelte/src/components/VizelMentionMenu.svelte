@@ -1,16 +1,32 @@
 <script lang="ts" module>
 import type { VizelLocale, VizelMentionItem } from "@vizel/core";
+import type { Snippet } from "svelte";
 
 export interface VizelMentionMenuRef {
   onKeyDown?: (event: KeyboardEvent) => boolean;
 }
 
 export interface VizelMentionMenuProps {
+  /** Mention items to display */
   items: VizelMentionItem[];
+  /** Custom class name */
   class?: string;
-  onselect?: (item: VizelMentionItem) => void;
+  /**
+   * Callback fired when a consumer selects a mention item. Required for
+   * parity with React's `onSelect` and Vue's `@select` — the menu has no
+   * meaningful behavior without it.
+   */
+  onselect: (item: VizelMentionItem) => void;
   /** Locale for translated UI strings */
   locale?: VizelLocale;
+  /**
+   * Custom item renderer. Mirrors `VizelSlashMenu.renderItem` — the
+   * container, keyboard navigation, ARIA, and click handling stay owned
+   * by VizelMentionMenu; the snippet only paints the per-item content.
+   */
+  renderItem?: Snippet<[{ item: VizelMentionItem; isSelected: boolean; onclick: () => void }]>;
+  /** Custom empty-state renderer. Mirrors `VizelSlashMenu.renderEmpty`. */
+  renderEmpty?: Snippet;
   /**
    * Mutable ref object the component populates with imperative handles
    * (notably `onKeyDown`). Pass an object; this component assigns to its
@@ -32,6 +48,8 @@ let {
   class: className,
   onselect,
   locale,
+  renderItem,
+  renderEmpty,
   ref,
 }: VizelMentionMenuProps = $props();
 
@@ -66,7 +84,7 @@ function scrollToSelected() {
 function selectItem(index: number) {
   const item = items[index];
   if (item) {
-    onselect?.(item);
+    onselect(item);
   }
 }
 
@@ -103,7 +121,11 @@ if (ref) {
   aria-activedescendant={spec.root["aria-activedescendant"]}
 >
   {#if spec.sections.length === 0}
-    <div class="vizel-mention-menu-empty">{locale?.mentionMenu?.noResults ?? "No results"}</div>
+    {#if renderEmpty}
+      {@render renderEmpty()}
+    {:else}
+      <div class="vizel-mention-menu-empty">{locale?.mentionMenu?.noResults ?? "No results"}</div>
+    {/if}
   {:else}
     {#each slots as slot (slot.key)}
       <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
@@ -117,19 +139,27 @@ if (ref) {
         onkeydown={(e) => { if (e.key === "Enter") selectItem(slot.index); }}
         tabindex={slot.attrs.tabIndex}
       >
-        <div class="vizel-mention-menu-item-avatar">
-          {#if slot.data.item.avatar}
-            <img src={slot.data.item.avatar} alt={slot.data.item.label} />
-          {:else}
-            {slot.data.item.label.charAt(0).toUpperCase()}
-          {/if}
-        </div>
-        <div class="vizel-mention-menu-item-content">
-          <div class="vizel-mention-menu-item-label">{slot.data.item.label}</div>
-          {#if slot.data.item.description}
-            <div class="vizel-mention-menu-item-description">{slot.data.item.description}</div>
-          {/if}
-        </div>
+        {#if renderItem}
+          {@render renderItem({
+            item: slot.data.item,
+            isSelected: slot.data.isSelected,
+            onclick: () => selectItem(slot.index),
+          })}
+        {:else}
+          <div class="vizel-mention-menu-item-avatar">
+            {#if slot.data.item.avatar}
+              <img src={slot.data.item.avatar} alt={slot.data.item.label} />
+            {:else}
+              {slot.data.item.label.charAt(0).toUpperCase()}
+            {/if}
+          </div>
+          <div class="vizel-mention-menu-item-content">
+            <div class="vizel-mention-menu-item-label">{slot.data.item.label}</div>
+            {#if slot.data.item.description}
+              <div class="vizel-mention-menu-item-description">{slot.data.item.description}</div>
+            {/if}
+          </div>
+        {/if}
       </div>
     {/each}
   {/if}

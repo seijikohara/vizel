@@ -2,7 +2,7 @@
 import type { Editor, VizelLocale } from "@vizel/core";
 
 export interface VizelOutlineProps {
-  /** Editor instance. Falls back to context if not provided. */
+  /** Editor instance. Falls back to the editor from `VizelProvider` / `Vizel` context if omitted. */
   editor?: Editor | null;
   /** Custom class name */
   class?: string;

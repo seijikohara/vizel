@@ -28,6 +28,18 @@ export interface VizelMentionMenuProps {
   className?: string;
   /** Locale for translated UI strings */
   locale?: VizelLocale;
+  /**
+   * Custom render function for items. Receives the item, the selection
+   * state, and a click handler that selects the item. Mirrors the
+   * `renderItem` seam on `VizelSlashMenu` (cross-framework Table 6).
+   */
+  renderItem?: (props: {
+    item: VizelMentionItem;
+    isSelected: boolean;
+    onClick: () => void;
+  }) => ReactNode;
+  /** Custom empty state component. Mirrors `VizelSlashMenu.renderEmpty`. */
+  renderEmpty?: () => ReactNode;
 }
 
 /**
@@ -44,6 +56,8 @@ export function VizelMentionMenu({
   onSelect,
   className,
   locale,
+  renderItem,
+  renderEmpty,
 }: VizelMentionMenuProps): ReactNode {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -103,9 +117,11 @@ export function VizelMentionMenu({
         role="listbox"
         aria-label={spec.root["aria-label"]}
       >
-        <div className="vizel-mention-menu-empty">
-          {locale?.mentionMenu?.noResults ?? "No results"}
-        </div>
+        {renderEmpty?.() ?? (
+          <div className="vizel-mention-menu-empty">
+            {locale?.mentionMenu?.noResults ?? "No results"}
+          </div>
+        )}
       </div>
     );
   }
@@ -121,39 +137,49 @@ export function VizelMentionMenu({
       })}
     >
       {spec.sections.flatMap((section) =>
-        section.items.map((slot) => (
-          <div
-            key={slot.key}
-            id={slot.attrs.id}
-            ref={(el) => {
-              itemRefs.current[slot.index] = el;
-            }}
-            className={`vizel-mention-menu-item ${slot.data.isSelected ? "is-selected" : ""}`}
-            onClick={() => selectItem(slot.index)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") selectItem(slot.index);
-            }}
-            tabIndex={slot.attrs.tabIndex}
-            role="option"
-            aria-selected={slot.attrs["aria-selected"]}
-          >
-            <div className="vizel-mention-menu-item-avatar">
-              {slot.data.item.avatar ? (
-                <img src={slot.data.item.avatar} alt={slot.data.item.label} />
-              ) : (
-                slot.data.item.label.charAt(0).toUpperCase()
-              )}
+        section.items.map((slot) => {
+          const onClick = () => selectItem(slot.index);
+          const content = renderItem ? (
+            renderItem({ item: slot.data.item, isSelected: slot.data.isSelected, onClick })
+          ) : (
+            <>
+              <div className="vizel-mention-menu-item-avatar">
+                {slot.data.item.avatar ? (
+                  <img src={slot.data.item.avatar} alt={slot.data.item.label} />
+                ) : (
+                  slot.data.item.label.charAt(0).toUpperCase()
+                )}
+              </div>
+              <div className="vizel-mention-menu-item-content">
+                <div className="vizel-mention-menu-item-label">{slot.data.item.label}</div>
+                {slot.data.item.description && (
+                  <div className="vizel-mention-menu-item-description">
+                    {slot.data.item.description}
+                  </div>
+                )}
+              </div>
+            </>
+          );
+          return (
+            <div
+              key={slot.key}
+              id={slot.attrs.id}
+              ref={(el) => {
+                itemRefs.current[slot.index] = el;
+              }}
+              className={`vizel-mention-menu-item ${slot.data.isSelected ? "is-selected" : ""}`}
+              onClick={onClick}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") selectItem(slot.index);
+              }}
+              tabIndex={slot.attrs.tabIndex}
+              role="option"
+              aria-selected={slot.attrs["aria-selected"]}
+            >
+              {content}
             </div>
-            <div className="vizel-mention-menu-item-content">
-              <div className="vizel-mention-menu-item-label">{slot.data.item.label}</div>
-              {slot.data.item.description && (
-                <div className="vizel-mention-menu-item-description">
-                  {slot.data.item.description}
-                </div>
-              )}
-            </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );
