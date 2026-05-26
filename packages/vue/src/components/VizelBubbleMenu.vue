@@ -44,8 +44,16 @@ const editor = computed(() => props.editor ?? contextEditor?.value ?? null);
 // `oldElement` check + a separate `onBeforeUnmount`) double-registered the
 // ProseMirror plugin on the first editor-resolve because the initial early
 // return left `oldElement` permanently undefined.
+// Track `shouldShow` *presence* (not identity) so the watcher re-registers
+// the plugin when the prop toggles between `undefined` and a function. An
+// identity-stable change of a continuously-defined `shouldShow` flows
+// through `props.shouldShow?.(...)` inside the wrapper without re-firing.
+// The previous shape registered the conditional `...(props.shouldShow && {...})`
+// spread once at plugin construction — toggling from `undefined` → defined
+// silently skipped the wrapper, and the reverse pinned the bubble menu
+// hidden.
 watch(
-  [editor, menuRef],
+  [editor, menuRef, () => props.shouldShow !== undefined],
   ([editorValue, element], _old, onCleanup) => {
     if (!(editorValue && element)) return;
 
@@ -54,7 +62,7 @@ watch(
       editor: editorValue,
       element,
       updateDelay: props.updateDelay,
-      ...(props.shouldShow && {
+      ...(props.shouldShow !== undefined && {
         shouldShow: ({ editor: e, from, to }) =>
           props.shouldShow?.({ editor: e as Editor, from, to }) ?? false,
       }),

@@ -26,7 +26,6 @@ export interface VizelBubbleMenuProps {
 
 <script lang="ts">
 import { BubbleMenuPlugin, createVizelBubbleMenuEscapeController } from "@vizel/core";
-import { untrack } from "svelte";
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.svelte";
 import { getVizelContextSafe } from "./VizelContext.js";
 
@@ -53,17 +52,21 @@ $effect(() => {
   const currentEditor = editor;
   const currentPluginKey = pluginKey;
 
-  // Capture `shouldShow` without tracking so value updates flow through the
-  // wrapper closure (read lazily, outside any reactive context) without
-  // re-registering the plugin. Matches the React `shouldShowRef` pattern.
-  const initialShouldShow = untrack(() => shouldShow);
+  // Track `shouldShow` *presence* (not identity) so the effect re-runs when
+  // the prop toggles between `undefined` and a function. An identity-stable
+  // change of a continuously-defined `shouldShow` still flows through the
+  // wrapper closure without re-registering the plugin (the wrapper reads
+  // `shouldShow` lazily at fire time). The previous shape captured presence
+  // via `untrack(...)`, so toggling from `undefined` → defined silently
+  // skipped the wrapper and the reverse pinned the bubble menu hidden.
+  const hasShouldShow = shouldShow !== undefined;
 
   const plugin = BubbleMenuPlugin({
     pluginKey: currentPluginKey,
     editor: currentEditor,
     element: menuElement,
     updateDelay,
-    ...(initialShouldShow && {
+    ...(hasShouldShow && {
       shouldShow: ({ editor: e, from, to }) =>
         shouldShow?.({ editor: e as Editor, from, to }) ?? false,
     }),
