@@ -125,7 +125,7 @@ per-framework component source for the full set.
 |------|-------|-----|--------|
 | `editor` | `Editor \| null` | `Editor \| null` | `Editor \| null` |
 | Class prop | `className?: string` | `class?: string` | `class?: string` |
-| Ref prop | `ref?: Ref<VizelExposed>` | template ref → `defineExpose` | `ref?: VizelExposed` |
+| Ref prop | `ref?: Ref<VizelEditorRef>` | template ref → `defineExpose` | `ref?: VizelEditorRef` |
 
 #### `VizelProvider`
 

@@ -325,7 +325,7 @@ When wrapped in a `VizelProvider`, the `editor` prop is optional — the compone
 |------|------|-------------|
 | `editor` | `Editor \| null` | Editor instance. Defaults to the value provided by `VizelProvider` when omitted. |
 | `className` | `string` | Custom class name |
-| `ref` | `Ref<VizelExposed>` | Forwarded ref exposing the container DOM element. |
+| `ref` | `Ref<VizelEditorRef>` | Forwarded ref exposing the container DOM element. |
 
 ### VizelBubbleMenu
 

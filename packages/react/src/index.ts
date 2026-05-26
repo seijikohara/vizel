@@ -46,10 +46,10 @@ export {
   // Editor components
   VizelEditor,
   type VizelEditorProps,
+  type VizelEditorRef,
   // EmbedView
   VizelEmbedView,
   type VizelEmbedViewProps,
-  type VizelExposed,
   // FindReplace
   VizelFindReplace,
   type VizelFindReplaceProps,

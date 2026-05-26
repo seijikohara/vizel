@@ -10,7 +10,7 @@ export interface VizelEditorProps {
   class?: string;
 }
 
-export interface VizelExposed {
+export interface VizelEditorRef {
   /** The container DOM element */
   container: HTMLDivElement | null;
   /**
@@ -32,7 +32,7 @@ const resolvedEditor = computed(() => props.editor ?? contextEditor?.value ?? nu
 // Expose container ref and resolved editor instance to parent components.
 // Getters ensure consumers read the live values rather than the snapshots
 // captured at setup time.
-defineExpose<VizelExposed>({
+defineExpose<VizelEditorRef>({
   get container() {
     return containerRef.value;
   },

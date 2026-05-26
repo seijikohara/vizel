@@ -5,14 +5,14 @@ import { useVizelContextSafe } from "./VizelContext.tsx";
 
 export interface VizelEditorProps {
   /** Ref to access editor container */
-  ref?: Ref<VizelExposed>;
+  ref?: Ref<VizelEditorRef>;
   /** Override the editor from context */
   editor?: Editor | null;
   /** Optional className for the editor container */
   className?: string;
 }
 
-export interface VizelExposed {
+export interface VizelEditorRef {
   /** The container DOM element */
   container: HTMLDivElement | null;
   /**
@@ -41,7 +41,7 @@ export interface VizelExposed {
  * <VizelEditor editor={editor} className="prose" />
  *
  * // With ref to access container DOM
- * const editorRef = useRef<VizelExposed>(null);
+ * const editorRef = useRef<VizelEditorRef>(null);
  * <VizelEditor ref={editorRef} editor={editor} />
  * // editorRef.current?.container gives you the container element
  * ```
