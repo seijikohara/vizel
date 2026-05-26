@@ -22,6 +22,13 @@ export interface GetVizelThemeResult {
   readonly current: VizelResolvedTheme;
   /** Switch the editor theme to a concrete value. */
   setTheme: (next: VizelResolvedTheme) => void;
+  /**
+   * Drop the user's manual selection and resume tracking the OS
+   * `prefers-color-scheme` preference. The provider's stored selection is
+   * replaced with `"system"`, and `current` updates to whatever the OS
+   * currently reports.
+   */
+  resetToSystem: () => void;
 }
 
 /**
@@ -65,6 +72,7 @@ export function getVizelTheme(): GetVizelThemeResult {
       return context.resolvedTheme;
     },
     setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
+    resetToSystem: () => context.setTheme("system"),
   };
 }
 
@@ -82,5 +90,6 @@ export function getVizelThemeSafe(): GetVizelThemeResult | null {
       return context.resolvedTheme;
     },
     setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
+    resetToSystem: () => context.setTheme("system"),
   };
 }

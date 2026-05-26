@@ -5,17 +5,25 @@ import { VizelThemeContext } from "../components/VizelThemeContext.tsx";
 /**
  * Public return shape for `useVizelTheme`.
  *
- * The flat `{ theme, setTheme }` shape mirrors the Vue composable and Svelte
- * rune. `theme` is the currently applied (resolved) theme so a toggle is a
- * one-liner. `setTheme` accepts only concrete `VizelResolvedTheme` values
- * because entering "system" mode is the provider's `defaultTheme` concern,
- * not a runtime toggle.
+ * The flat `{ theme, setTheme, resetToSystem }` shape mirrors the Vue
+ * composable and Svelte rune. `theme` is the currently applied (resolved)
+ * theme so a toggle is a one-liner. `setTheme` accepts only concrete
+ * `VizelResolvedTheme` values to keep the toggle ergonomics tight;
+ * re-entering the "follow OS preference" mode is the dedicated
+ * `resetToSystem` method instead of an overload.
  */
 export interface UseVizelThemeResult {
   /** Currently applied theme (resolved from the user's preference). */
   theme: VizelResolvedTheme;
   /** Switch the editor theme to a concrete value. */
   setTheme: (next: VizelResolvedTheme) => void;
+  /**
+   * Drop the user's manual selection and resume tracking the OS
+   * `prefers-color-scheme` preference. The provider's stored selection is
+   * replaced with `"system"`, and `theme` updates to whatever the OS
+   * currently reports.
+   */
+  resetToSystem: () => void;
 }
 
 /**
@@ -58,6 +66,7 @@ export function useVizelTheme(): UseVizelThemeResult {
     () => ({
       theme: context.resolvedTheme,
       setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
+      resetToSystem: () => context.setTheme("system"),
     }),
     [context]
   );
@@ -80,6 +89,7 @@ export function useVizelThemeSafe(): UseVizelThemeResult | null {
         ? {
             theme: context.resolvedTheme,
             setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
+            resetToSystem: () => context.setTheme("system"),
           }
         : null,
     [context]
