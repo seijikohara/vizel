@@ -52,6 +52,9 @@ pre-push:
     parity:
       run: pnpm check:parity
 
+    feature-parity:
+      run: pnpm check:feature-parity
+
     ct-parity:
       run: pnpm check:ct-parity
 

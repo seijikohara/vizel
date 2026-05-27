@@ -42,6 +42,9 @@ jobs:
       - name: Cross-framework parity
         run: pnpm check:parity
 
+      - name: Feature manifest parity
+        run: pnpm check:feature-parity
+
       - name: No-let check
         run: pnpm check:nolet
 
