@@ -392,6 +392,19 @@ export {
   vizelWikiLinkPluginKey,
 } from "./extensions/index.ts";
 // =============================================================================
+// Feature Manifest (cross-framework parity SSOT)
+// =============================================================================
+export {
+  VIZEL_FEATURE_MANIFEST,
+  type VizelAdapterSymbol,
+  type VizelAriaContract,
+  type VizelFeatureAdapters,
+  type VizelFeatureCategory,
+  type VizelFeatureDefinition,
+  type VizelFeatureId,
+  type VizelKeyboardMap,
+} from "./feature-manifest.ts";
+// =============================================================================
 // i18n
 // =============================================================================
 export {

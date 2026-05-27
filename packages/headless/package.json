@@ -1,0 +1,57 @@
+{
+  "name": "@vizel/headless",
+  "version": "2.0.0",
+  "type": "module",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seijikohara/vizel",
+    "directory": "packages/headless"
+  },
+  "description": "Framework-neutral UI primitives consumed by every Vizel framework adapter",
+  "license": "MIT",
+  "author": "Seiji Kohara",
+  "homepage": "https://seijikohara.github.io/vizel/",
+  "bugs": {
+    "url": "https://github.com/seijikohara/vizel/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "vizel",
+    "headless",
+    "ui",
+    "primitives",
+    "combobox",
+    "popover",
+    "dismissable",
+    "focus-trap"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./dismissable": {
+      "types": "./dist/dismissable/index.d.ts",
+      "import": "./dist/dismissable/index.js",
+      "default": "./dist/dismissable/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "vite": "^8.0.14",
+    "vite-plugin-dts": "^5.0.1"
+  }
+}
