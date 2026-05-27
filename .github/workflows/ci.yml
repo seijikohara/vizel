@@ -45,6 +45,9 @@ jobs:
       - name: Feature manifest parity
         run: pnpm check:feature-parity
 
+      - name: Scenario foundation parity
+        run: pnpm check:scenarios
+
       - name: No-let check
         run: pnpm check:nolet
 

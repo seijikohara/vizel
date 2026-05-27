@@ -55,6 +55,9 @@ pre-push:
     feature-parity:
       run: pnpm check:feature-parity
 
+    scenarios:
+      run: pnpm check:scenarios
+
     ct-parity:
       run: pnpm check:ct-parity
 
