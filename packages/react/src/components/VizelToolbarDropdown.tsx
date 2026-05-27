@@ -4,6 +4,7 @@ import {
   formatVizelTooltip,
   resolveVizelListNavigation,
 } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 
@@ -17,9 +18,10 @@ export interface VizelToolbarDropdownProps {
  * A dropdown toolbar button that shows a popover with nested actions.
  *
  * DOM/ARIA scaffolding (trigger + listbox popover) comes from
- * `@vizel/core`'s `buildVizelToolbarDropdownSpec`. The component
- * owns popover open/close state, outside-click + Escape dismissal,
- * keyboard navigation, and binding `onClick` to each option's `run`.
+ * `@vizel/core`'s `buildVizelToolbarDropdownSpec`. Pointer-outside and
+ * Escape dismissal route through `createVizelDismissable` from
+ * `@vizel/headless` to satisfy ADR-0003 and ADR-0007 (no direct
+ * document listeners in adapter code).
  */
 export function VizelToolbarDropdown({
   editor,
@@ -36,29 +38,24 @@ export function VizelToolbarDropdown({
     triggerRef.current?.focus();
   }, []);
 
+  // Hold the latest `close` callback in a ref so the controller dispatches
+  // to the current handler without re-mounting its document listeners.
+  const closeRef = useRef(close);
+  closeRef.current = close;
+
   useEffect(() => {
     if (!isOpen) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const handleClick = (e: MouseEvent) => {
-      if (!(e.target instanceof Node)) return;
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        close();
-      }
-    };
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        close();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClick);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-      document.removeEventListener("keydown", handleKey);
-    };
-  }, [isOpen, close]);
+    const controller = createVizelDismissable({
+      onPointerOutside: () => closeRef.current(),
+      onEscape: () => closeRef.current(),
+      captureEscape: true,
+    });
+    controller.mount(container);
+    return () => controller.unmount();
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) setFocusedIndex(0);

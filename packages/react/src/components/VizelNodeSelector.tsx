@@ -6,6 +6,7 @@ import {
   type VizelNodeTypeOption,
   vizelDefaultNodeTypes,
 } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useVizelState } from "../hooks/useVizelState.ts";
 import { useVizelContextSafe } from "./VizelContext.tsx";
@@ -26,9 +27,11 @@ export interface VizelNodeSelectorProps {
  * A dropdown selector for changing block node types.
  *
  * DOM/ARIA scaffolding (trigger + listbox popover) comes from
- * `@vizel/core`'s `buildVizelNodeSelectorSpec`. The component owns
- * popover open/close state, outside-click dismissal, keyboard
- * navigation, and binding `nodeType.command(editor)` to each option.
+ * `@vizel/core`'s `buildVizelNodeSelectorSpec`. Pointer-outside
+ * dismissal routes through `createVizelDismissable` from
+ * `@vizel/headless` (ADR-0003, ADR-0007); the component still owns
+ * keyboard navigation and Escape because the dropdown root captures
+ * keydown directly inside React.
  */
 export function VizelNodeSelector({
   editor: editorProp,
@@ -58,16 +61,16 @@ export function VizelNodeSelector({
 
   useEffect(() => {
     if (!isOpen) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!(event.target instanceof Node)) return;
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    // The dropdown owns Escape and arrow-key navigation inside its own
+    // `onKeyDown`; the controller only handles outside-pointer dismissal.
+    const controller = createVizelDismissable({
+      onPointerOutside: () => setIsOpen(false),
+    });
+    controller.mount(container);
+    return () => controller.unmount();
   }, [isOpen]);
 
   useEffect(() => {

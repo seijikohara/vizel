@@ -5,6 +5,7 @@ import {
   resolveVizelLinkEditorLabels,
   type VizelLocale,
 } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
@@ -32,6 +33,10 @@ export interface VizelLinkEditorProps {
  * mark, embed-toggle visibility, etc.), and the editor-command logic
  * for applying the form come from `@vizel/core`'s link-editor
  * skeleton helpers. The component owns input state and event wiring.
+ * Pointer-outside and Escape dismissal route through
+ * `createVizelDismissable` from `@vizel/headless`; `deferPointerHandler`
+ * mirrors v1's `setTimeout(..., 0)` install so the opening pointerdown
+ * does not register as an outside click (ADR-0003, ADR-0007).
  */
 export function VizelLinkEditor({
   editor: editorProp,
@@ -62,33 +67,32 @@ export function VizelLinkEditor({
     inputRef.current?.focus();
   }, []);
 
+  // Forward the latest `onClose` to the controller without re-mounting so
+  // a prop change does not detach the listener mid-interaction.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  // Re-mount when the form first renders (editor / viewState becomes
+  // non-null) so the controller picks up `formRef.current` once it
+  // exists. Empty-deps would skip this case when the editor resolves
+  // asynchronously.
+  const hasFormTarget = Boolean(editor && viewState);
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!(event.target instanceof Node)) return;
-      if (formRef.current && !formRef.current.contains(event.target)) {
-        onClose?.();
-      }
-    };
+    if (!hasFormTarget) return;
+    const form = formRef.current;
+    if (!form) return;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        onClose?.();
-      }
-    };
-
-    const timeoutId = setTimeout(() => {
-      document.addEventListener("mousedown", handleClickOutside);
-    }, 0);
-    document.addEventListener("keydown", handleKeyDown, true);
-
-    return () => {
-      clearTimeout(timeoutId);
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown, true);
-    };
-  }, [onClose]);
+    const controller = createVizelDismissable({
+      onPointerOutside: () => onCloseRef.current?.(),
+      onEscape: () => onCloseRef.current?.(),
+      captureEscape: true,
+      // Mirrors v1's `setTimeout(..., 0)` so the pointerdown that opens the
+      // link editor does not immediately register as an outside click.
+      deferPointerHandler: true,
+    });
+    controller.mount(form);
+    return () => controller.unmount();
+  }, [hasFormTarget]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {

@@ -7,6 +7,7 @@ import {
   type VizelColorDefinition,
   type VizelLocale,
 } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { VizelColorPicker } from "./VizelColorPicker.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
@@ -29,7 +30,11 @@ export interface VizelBubbleMenuColorPickerProps {
 
 /**
  * A color picker component for the VizelBubbleMenu.
- * Supports text color and highlight color selection with custom colors and recent colors.
+ *
+ * Supports text color and highlight color selection with custom colors
+ * and recent colors. Pointer-outside dismissal routes through
+ * `createVizelDismissable` from `@vizel/headless` so the component
+ * never attaches document listeners directly (ADR-0003, ADR-0007).
  */
 export function VizelBubbleMenuColorPicker({
   editor,
@@ -74,21 +79,17 @@ export function VizelBubbleMenuColorPicker({
     [editor, type]
   );
 
-  // Close dropdown when clicking outside
+  // Close dropdown on pointer activity outside the container.
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!(event.target instanceof Node)) return;
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
+    if (!isOpen) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    const controller = createVizelDismissable({
+      onPointerOutside: () => setIsOpen(false),
+    });
+    controller.mount(container);
+    return () => controller.unmount();
   }, [isOpen]);
 
   const isTextColor = type === "textColor";
