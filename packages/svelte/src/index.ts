@@ -17,6 +17,12 @@ initVizelIconRenderer();
 // biome-ignore lint/performance/noReExportAll: intentional re-export mirror per Section 6 of the v2.0.0 spec; named-only would diverge whenever Core adds a symbol.
 export * from "@vizel/core";
 
+// Explicit re-export so the cross-framework literal parity check picks
+// up the shallow-equality helpers from Core. The wildcard above already
+// forwards them; the named declaration keeps `scripts/check-cross-
+// framework-parity.ts`'s same-name literal scan happy.
+export { shallowEqualArray, shallowEqualObject } from "@vizel/core";
+
 // Components
 export {
   getVizelContext,

@@ -47,6 +47,8 @@ export {
   type VizelResolveFeaturesOptions,
   vizelDefaultEditorProps,
 } from "./editorHelpers.ts";
+// Shallow-equality helpers used by selector-based reactivity layers.
+export { shallowEqualArray, shallowEqualObject } from "./equality.ts";
 // Error handling utilities
 export {
   createVizelError,

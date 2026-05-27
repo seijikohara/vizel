@@ -2,11 +2,12 @@
 import {
   createVizelFindReplaceExtension,
   type Editor,
+  getVizelEditorState,
   type JSONContent,
   setVizelMarkdown,
   useVizelAutoSave,
   useVizelComment,
-  useVizelEditorState,
+  useVizelState,
   useVizelVersionHistory,
   Vizel,
   VizelFindReplace,
@@ -60,8 +61,19 @@ const replyTexts = ref<Record<string, string>>({});
 // Store editor reference from Vizel component
 const editorRef = shallowRef<Editor | null>(null);
 
-// Track editor state for character/word count (only when stats enabled)
-const editorState = useVizelEditorState(() => (features.stats ? editorRef.value : null));
+// Track editor state for character/word count (only when stats enabled).
+// `useVizelEditorState` migrated to the selector-based API in Phase 3b-step1
+// (ADR-0009). The demo subscribes through the lower-level
+// `useVizelState` + `getVizelEditorState` pair until Phase 4 refactors the
+// demo to use the context-driven selector composable.
+const statsEditor = computed(() => (features.stats ? editorRef.value : null));
+const editorTick = useVizelState(() => statsEditor.value);
+const editorState = computed(() => {
+  // Read the tick to register a reactivity dependency before the
+  // selector executes; the numeric value is opaque.
+  void editorTick.value;
+  return getVizelEditorState(statsEditor.value);
+});
 
 // Auto-save functionality (only when autoSave enabled)
 const { status, lastSaved } = useVizelAutoSave(() => (features.autoSave ? editorRef.value : null), {
