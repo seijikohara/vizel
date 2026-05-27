@@ -46,22 +46,44 @@ Use Node.js LTS and pnpm. Invoke scripts with `pnpm <script>` and external binar
 | `pnpm deps:check` | List outdated dependencies (read-only) |
 | `pnpm deps:update` | Bump dependencies via `taze major -r -w` and run `pnpm install` |
 
+## Architecture Decision Records
+
+The v2.0.0 design records live under `docs/adr/`. Read the relevant ADR before changing a binding rule.
+
+| ID | Title |
+|----|-------|
+| [ADR-0001](./docs/adr/ADR-0001-feature-parity-over-api-symmetry.md) | Feature parity over API symmetry |
+| [ADR-0002](./docs/adr/ADR-0002-feature-manifest-as-parity-ssot.md) | Feature manifest as parity SSOT |
+| [ADR-0003](./docs/adr/ADR-0003-vizel-headless-package.md) | `@vizel/headless` as a transitive package |
+| [ADR-0004](./docs/adr/ADR-0004-per-framework-idiomatic-api.md) | Per-framework idiomatic API contract |
+| [ADR-0005](./docs/adr/ADR-0005-v2-breaking-release.md) | v2.0.0 as a breaking release |
+| [ADR-0006](./docs/adr/ADR-0006-retire-cross-framework-rule.md) | Retire `cross-framework.md` |
+| [ADR-0007](./docs/adr/ADR-0007-component-size-and-controller-delegation.md) | 120-line component size and controller delegation |
+| [ADR-0008](./docs/adr/ADR-0008-css-belongs-in-core.md) | CSS belongs in `@vizel/core` |
+| [ADR-0009](./docs/adr/ADR-0009-first-party-editor-reactivity.md) | First-party editor reactivity in every adapter |
+| [ADR-0010](./docs/adr/ADR-0010-claude-config-official-format.md) | `.claude/` artefacts follow Anthropic's official reference |
+| [ADR-0011](./docs/adr/ADR-0011-technical-writing-style.md) | Technical-writing style governs every artefact |
+| [ADR-0012](./docs/adr/ADR-0012-playwright-ct-three-layer-rebuild.md) | Playwright Component Tests rebuilt in three layers |
+
 ## Project Rules
 
 Each rule under `.claude/rules/` is the single source of truth (SSOT) for its topic. Claude Code auto-discovers `.claude/rules/**/*.md` and loads each rule on demand: rules with a `paths:` frontmatter load when Claude reads a file matching the pattern; rules without `paths:` load at startup with the same priority as this file.
 
 | Rule | Loads When | Topic |
 |------|------------|-------|
-| `.claude/rules/architecture.md` | Always (project-wide layering invariants) | Core / framework adapter / UI-skeleton layering and consumer-facing invariants |
+| `.claude/rules/architecture.md` | Always (project-wide invariants) | Binding architecture invariants and ADR index |
 | `.claude/rules/code-style.md` | Editing source under `packages/`, `apps/`, or `tests/` | TypeScript style, function declarations, type safety |
-| `.claude/rules/cross-framework.md` | Editing under `packages/{react,vue,svelte}/` or `packages/core/src/types.ts` | Component, hook, composable, and rune parity |
+| `.claude/rules/writing.md` | Editing any source, test, or documentation file | Technical-writing principles for prose, comments, docstrings, commits |
+| `.claude/rules/feature-manifest.md` | Editing the manifest, any adapter, or any CT scenario | Feature manifest schema and parity workflow |
+| `.claude/rules/cross-framework.md` | Editing under `packages/{react,vue,svelte}/` (deprecated, removed in Phase 1) | v1 API-symmetry contract; superseded by the feature manifest |
 | `.claude/rules/git.md` | Always (commit messages, branches, hooks) | Conventional Commits, branch naming, lefthook |
 | `.claude/rules/testing.md` | Editing under `tests/` or any `playwright-ct.config.ts` | Playwright CT structure and best practices |
 | `.claude/rules/demo.md` | Editing under `apps/demo/` | Demo content, dependencies, and CSS |
-| `.claude/rules/packages/core.md` | Editing under `packages/core/` (`*.ts` / `*.scss`) | `@vizel/core` centralization and extension catalog |
-| `.claude/rules/packages/react.md` | Editing under `packages/react/` (`*.{ts,tsx}`) | React 19 components, hooks, and context |
-| `.claude/rules/packages/vue.md` | Editing under `packages/vue/` (`*.{ts,vue}`) | Vue 3 SFC components, composables, and provide/inject |
-| `.claude/rules/packages/svelte.md` | Editing under `packages/svelte/` (`*.{ts,svelte,svelte.ts}`) | Svelte 5 components, runes, and snippets |
+| `.claude/rules/packages/core.md` | Editing under `packages/core/` (`*.ts` / `*.scss`) | `@vizel/core` centralisation and extension catalog |
+| `.claude/rules/packages/headless.md` | Editing under `packages/headless/` | Framework-neutral UI primitives |
+| `.claude/rules/packages/react.md` | Editing under `packages/react/` (`*.{ts,tsx}`) | React 19 components and hooks |
+| `.claude/rules/packages/vue.md` | Editing under `packages/vue/` (`*.{ts,vue}`) | Vue 3 SFC components and composables |
+| `.claude/rules/packages/svelte.md` | Editing under `packages/svelte/` (`*.{ts,svelte,svelte.ts}`) | Svelte 5 components and runes |
 
 ## Skills
 

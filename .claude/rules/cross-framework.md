@@ -4,6 +4,20 @@ paths:
   - "packages/core/src/types.ts"
 ---
 
+> **DEPRECATED — scheduled for removal in Phase 1.**
+>
+> This rule encodes v1's API-symmetry contract. v2.0.0 replaces it with the
+> typed feature manifest at `packages/core/src/feature-manifest.ts` plus the
+> per-framework idiomatic API contract. The new contract is documented in:
+>
+> - [ADR-0001](../../docs/adr/ADR-0001-feature-parity-over-api-symmetry.md) — feature parity over API symmetry
+> - [ADR-0002](../../docs/adr/ADR-0002-feature-manifest-as-parity-ssot.md) — feature manifest as parity SSOT
+> - [ADR-0004](../../docs/adr/ADR-0004-per-framework-idiomatic-api.md) — per-framework idiomatic API contract
+> - [ADR-0006](../../docs/adr/ADR-0006-retire-cross-framework-rule.md) — retire this file
+>
+> Phase 1 lands the manifest and deletes this file in the same pull request.
+> Until then, the tables below describe v1 behaviour for reference only.
+
 # Cross-Framework Consistency
 
 The React, Vue, and Svelte packages must maintain feature parity and consistent APIs.
