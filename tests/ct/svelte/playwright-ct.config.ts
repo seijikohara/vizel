@@ -18,8 +18,8 @@ export default defineConfig({
       plugins: [svelte()],
       resolve: {
         alias: {
-          "@vizel/core": resolve(__dirname, "../../../packages/core/src"),
-          "@vizel/svelte": resolve(__dirname, "../../../packages/svelte/src"),
+          "@vizel/core": resolve(import.meta.dirname, "../../../packages/core/src"),
+          "@vizel/svelte": resolve(import.meta.dirname, "../../../packages/svelte/src"),
         },
       },
     },
