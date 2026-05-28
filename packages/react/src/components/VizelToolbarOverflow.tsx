@@ -47,6 +47,11 @@ export function VizelToolbarOverflow({
     const container = containerRef.current;
     if (!container) return;
 
+    // `captureEscape: true` runs the Escape handler in the capture phase
+    // and calls `stopImmediatePropagation()`. The overflow popover owns
+    // Escape while open; otherwise the editor's bubble-phase keymap also
+    // fires and resets the selection or drops focus from the trigger.
+    // ADR-0007 delegates this adapter-side contract to the controller.
     const controller = createVizelDismissable({
       onPointerOutside: () => closeRef.current(),
       onEscape: () => closeRef.current(),

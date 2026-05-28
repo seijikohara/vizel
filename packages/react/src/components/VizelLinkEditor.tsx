@@ -82,6 +82,11 @@ export function VizelLinkEditor({
     const form = formRef.current;
     if (!form) return;
 
+    // `captureEscape: true` runs the Escape handler in the capture phase
+    // and calls `stopImmediatePropagation()`. The link editor owns Escape
+    // while open; otherwise the editor's bubble-phase keymap also fires
+    // and resets the selection, closing the popover and dropping focus
+    // from the input. ADR-0007 delegates this contract to the controller.
     const controller = createVizelDismissable({
       onPointerOutside: () => onCloseRef.current?.(),
       onEscape: () => onCloseRef.current?.(),
