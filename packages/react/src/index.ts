@@ -18,7 +18,13 @@ initVizelIconRenderer();
 // the framework package and import every shared symbol from one place.
 // biome-ignore lint/performance/noReExportAll: intentional re-export mirror per Section 6 of the v2.0.0 spec; named-only would diverge whenever Core adds a symbol.
 export * from "@vizel/core";
-
+// First-party `useSyncExternalStore`-backed reactivity primitive.
+// ADR-0009 mandates that every adapter implements editor reactivity
+// natively; React's adapter holds the implementation in `_reactivity.ts`
+// and re-exports the consumer-facing surface here. The shallow-equality
+// helpers re-export from `@vizel/core` so the cross-framework parity
+// check can resolve them back to a single source.
+export { shallowEqualArray, shallowEqualObject, useVizelEditorState } from "./_reactivity.ts";
 // Components
 export {
   useVizelContext,
@@ -105,7 +111,6 @@ export {
   type VizelToolbarOverflowProps,
   type VizelToolbarProps,
 } from "./components/index.ts";
-
 // Hooks
 export {
   createVizelMentionMenuRenderer,
@@ -121,7 +126,6 @@ export {
   useVizelCollaboration,
   useVizelComment,
   useVizelEditor,
-  useVizelEditorState,
   useVizelMarkdown,
   useVizelState,
   useVizelTheme,

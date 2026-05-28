@@ -572,6 +572,9 @@ export {
   resolveVizelGridNavigation,
   resolveVizelListNavigation,
   setVizelMarkdown,
+  // Shallow-equality helpers used by selector-based reactivity layers.
+  shallowEqualArray,
+  shallowEqualObject,
   shouldFlipSubmenu,
   // Text highlight utilities
   splitVizelTextByMatches,

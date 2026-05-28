@@ -1,11 +1,12 @@
 import {
   createVizelFindReplaceExtension,
   type Editor,
+  getVizelEditorState,
   type JSONContent,
   setVizelMarkdown,
   useVizelAutoSave,
   useVizelComment,
-  useVizelEditorState,
+  useVizelState,
   useVizelThemeSafe,
   useVizelVersionHistory,
   Vizel,
@@ -146,8 +147,15 @@ function AppContent() {
   // Store editor reference (useState for reactivity, unlike useRef)
   const [editor, setEditor] = useState<Editor | null>(null);
 
-  // Track editor state for character/word count (only when stats enabled)
-  const editorState = useVizelEditorState(features.stats ? editor : null);
+  // Track editor state for character/word count (only when stats enabled).
+  // `useVizelEditorState` migrated to the selector-based API in Phase 3a-step1
+  // (ADR-0009). The demo subscribes through the lower-level
+  // `useVizelState` + `getVizelEditorState` pair until Phase 4 refactors the
+  // demo to use the context-driven selector hook.
+  const statsEditor = features.stats ? editor : null;
+  const editorTick = useVizelState(statsEditor);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: editorTick triggers recomputation on every transaction
+  const editorState = useMemo(() => getVizelEditorState(statsEditor), [statsEditor, editorTick]);
 
   // Auto-save functionality (only when autoSave enabled)
   const { status, lastSaved } = useVizelAutoSave(features.autoSave ? editor : null, {
