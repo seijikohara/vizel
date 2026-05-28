@@ -15,6 +15,7 @@ export interface VizelNodeSelectorProps {
 
 <script lang="ts">
 import { buildVizelNodeSelectorSpec, createVizelNodeTypes, vizelDefaultNodeTypes } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import { createVizelState } from "../runes/createVizelState.svelte.js";
 import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
@@ -40,17 +41,19 @@ const spec = $derived.by(() => {
   return buildVizelNodeSelectorSpec(editor, effectiveNodeTypes, isOpen, focusedIndex, locale);
 });
 
-function handleClickOutside(event: MouseEvent) {
-  if (!(event.target instanceof Node)) return;
-  if (containerRef && !containerRef.contains(event.target)) {
-    isOpen = false;
-  }
-}
-
+// Pointer-outside dismissal routes through `createVizelDismissable` from
+// `@vizel/headless` (ADR-0003, ADR-0007). The dropdown owns Escape and
+// arrow-key navigation inside its own `onkeydown` handler, so the
+// controller only handles outside-pointer dismissal.
 $effect(() => {
-  if (!isOpen) return;
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
+  if (!isOpen || !containerRef) return;
+  const controller = createVizelDismissable({
+    onPointerOutside: () => {
+      isOpen = false;
+    },
+  });
+  controller.mount(containerRef);
+  return () => controller.unmount();
 });
 
 $effect(() => {

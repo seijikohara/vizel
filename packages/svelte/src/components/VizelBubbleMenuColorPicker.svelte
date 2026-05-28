@@ -26,6 +26,7 @@ import {
   VIZEL_HIGHLIGHT_COLORS,
   VIZEL_TEXT_COLORS,
 } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import VizelColorPicker from "./VizelColorPicker.svelte";
 import VizelIcon from "./VizelIcon.svelte";
 
@@ -68,19 +69,18 @@ function handleColorChange(color: string) {
   isOpen = false;
 }
 
-function handleClickOutside(event: MouseEvent) {
-  if (!(event.target instanceof Node)) return;
-  if (containerRef && !containerRef.contains(event.target)) {
-    isOpen = false;
-  }
-}
-
+// Pointer-outside dismissal routes through `createVizelDismissable` from
+// `@vizel/headless` so this component never attaches document listeners
+// directly (ADR-0003, ADR-0007).
 $effect(() => {
-  if (!isOpen) return;
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
+  if (!isOpen || !containerRef) return;
+  const controller = createVizelDismissable({
+    onPointerOutside: () => {
+      isOpen = false;
+    },
+  });
+  controller.mount(containerRef);
+  return () => controller.unmount();
 });
 
 function getTriggerStyle(): string {

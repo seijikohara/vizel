@@ -1,4 +1,9 @@
 export {
+  createVizelBlockMenuTriggerController,
+  type VizelBlockMenuTriggerController,
+  type VizelBlockMenuTriggerControllerOptions,
+} from "./blockMenuTrigger.ts";
+export {
   createVizelBubbleMenuEscapeController,
   type VizelBubbleMenuEscapeController,
   type VizelBubbleMenuEscapeControllerOptions,

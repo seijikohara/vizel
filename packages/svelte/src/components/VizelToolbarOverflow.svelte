@@ -12,6 +12,7 @@ export interface VizelToolbarOverflowProps {
 
 <script lang="ts">
 import { formatVizelTooltip, isVizelToolbarDropdownAction, vizelEnLocale } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import VizelIcon from "./VizelIcon.svelte";
 import VizelToolbarButton from "./VizelToolbarButton.svelte";
 import VizelToolbarDropdown from "./VizelToolbarDropdown.svelte";
@@ -43,28 +44,24 @@ function handleActionClick(action: VizelToolbarActionItem) {
   }
 }
 
+// Pointer-outside and Escape dismissal route through `createVizelDismissable`
+// from `@vizel/headless` so this component never attaches document listeners
+// directly (ADR-0003, ADR-0007).
 $effect(() => {
-  if (!isOpen) return;
+  if (!isOpen || !containerEl) return;
 
-  function handleClick(e: MouseEvent) {
-    if (!(e.target instanceof Node)) return;
-    if (containerEl && !containerEl.contains(e.target)) {
-      close();
-    }
-  }
-  function handleKey(e: KeyboardEvent) {
-    if (e.key === "Escape") {
-      e.preventDefault();
-      close();
-    }
-  }
-
-  document.addEventListener("mousedown", handleClick);
-  document.addEventListener("keydown", handleKey);
-  return () => {
-    document.removeEventListener("mousedown", handleClick);
-    document.removeEventListener("keydown", handleKey);
-  };
+  // `captureEscape: true` runs the Escape handler in the capture phase and
+  // calls `stopImmediatePropagation()`. The overflow popover owns Escape
+  // while open; otherwise the editor's bubble-phase keymap also fires and
+  // resets the selection or drops focus from the trigger. ADR-0007
+  // delegates this adapter-side contract to the controller.
+  const controller = createVizelDismissable({
+    onPointerOutside: () => close(),
+    onEscape: () => close(),
+    captureEscape: true,
+  });
+  controller.mount(containerEl);
+  return () => controller.unmount();
 });
 </script>
 

@@ -79,7 +79,8 @@ $effect(() => {
 
   // Escape collapses the selection so the bubble menu hides via its
   // shouldShow predicate. The listener lives in a Core controller so
-  // this component does not call `document.addEventListener` directly.
+  // this component never attaches the `keydown` listener directly
+  // (ADR-0003, ADR-0007).
   const escapeController = createVizelBubbleMenuEscapeController({
     getEditor: () => editor,
   });

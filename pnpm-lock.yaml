@@ -622,6 +622,9 @@ importers:
       '@iconify/svelte':
         specifier: ^5.2.1
         version: 5.2.1(svelte@5.55.7)
+      '@vizel/headless':
+        specifier: workspace:^
+        version: link:../headless
       svelte:
         specifier: ^5
         version: 5.55.7

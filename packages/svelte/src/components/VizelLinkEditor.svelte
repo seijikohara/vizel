@@ -21,11 +21,18 @@ export interface VizelLinkEditorProps {
 </script>
 
 <script lang="ts">
+/**
+ * Pointer-outside and Escape dismissal route through
+ * `createVizelDismissable` from `@vizel/headless`; `deferPointerHandler`
+ * mirrors v1's `setTimeout(..., 0)` install so the opening pointerdown
+ * does not register as an outside click (ADR-0003, ADR-0007).
+ */
 import {
   applyVizelLinkEdit,
   buildVizelLinkEditorSpec,
   resolveVizelLinkEditorLabels,
 } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import { untrack } from "svelte";
 import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
@@ -57,34 +64,33 @@ let asEmbed = $state(false);
 
 const viewState = $derived(editor ? buildVizelLinkEditorSpec(editor, url, enableEmbed) : null);
 
-function handleClickOutside(event: MouseEvent) {
-  if (!(event.target instanceof Node)) return;
-  if (formElement && !formElement.contains(event.target)) {
-    onclose?.();
-  }
-}
-
-function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === "Escape") {
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    onclose?.();
-  }
-}
-
+// Focus the URL input on first mount so keyboard users land in the field
+// without an extra tab.
 $effect(() => {
   inputElement?.focus();
+});
 
-  const timeoutId = setTimeout(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-  }, 0);
-  document.addEventListener("keydown", handleKeyDown, true);
+// Mount the dismissable controller once the form element binds. Reading
+// `formElement` keeps the effect reactive to the bind:this assignment that
+// fires only after `viewState` becomes non-null.
+$effect(() => {
+  if (!formElement) return;
 
-  return () => {
-    clearTimeout(timeoutId);
-    document.removeEventListener("mousedown", handleClickOutside);
-    document.removeEventListener("keydown", handleKeyDown, true);
-  };
+  // `captureEscape: true` runs the Escape handler in the capture phase and
+  // calls `stopImmediatePropagation()`. The link editor owns Escape while
+  // open; otherwise the editor's bubble-phase keymap also fires and resets
+  // the selection, closing the popover and dropping focus from the input.
+  // ADR-0007 delegates this adapter-side contract to the controller.
+  const controller = createVizelDismissable({
+    onPointerOutside: () => onclose?.(),
+    onEscape: () => onclose?.(),
+    captureEscape: true,
+    // Mirrors v1's `setTimeout(..., 0)` so the pointerdown that opens the
+    // link editor does not immediately register as an outside click.
+    deferPointerHandler: true,
+  });
+  controller.mount(formElement);
+  return () => controller.unmount();
 });
 
 function handleSubmit(e: Event) {

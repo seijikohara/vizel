@@ -37,6 +37,8 @@
     "paths": {
       "@vizel/core": ["./packages/core/src/index.ts"],
       "@vizel/core/*": ["./packages/core/src/*"],
+      "@vizel/headless": ["./packages/headless/src/index.ts"],
+      "@vizel/headless/*": ["./packages/headless/src/*"],
       "@vizel/react": ["./packages/react/src/index.ts"],
       "@vizel/react/*": ["./packages/react/src/*"],
       "@vizel/vue": ["./packages/vue/src/index.ts"],

@@ -25,14 +25,15 @@ import {
   buildVizelBlockMenuSpec,
   clampMenuPosition,
   createVizelBlockMenuActions,
+  createVizelBlockMenuTriggerController,
   createVizelNodeTypes,
   getVizelTurnIntoOptions,
   shouldFlipSubmenu,
-  VIZEL_BLOCK_MENU_EVENT,
   vizelDefaultBlockMenuActions,
   vizelDefaultNodeTypes,
   type VizelBlockMenuOpenDetail,
 } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import { tick } from "svelte";
 import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
@@ -131,59 +132,55 @@ $effect(() => {
   firstItem?.focus();
 });
 
+// The drag-handle extension dispatches `VIZEL_BLOCK_MENU_EVENT` on
+// `document`. The subscription lives in a Core controller so this
+// component never attaches the custom-event listener directly
+// (ADR-0003, ADR-0007).
 $effect(() => {
-  const handleOpen = (e: Event) => {
-    if (!(e instanceof CustomEvent)) return;
-    const detail = e.detail as VizelBlockMenuOpenDetail;
-    if (boundEditor && detail.editor !== boundEditor) return;
-    menuState = {
-      ...detail,
-      x: detail.handleRect.left,
-      y: detail.handleRect.bottom + 4,
-    };
-    showTurnInto = false;
+  const lifecycle = { isMounted: true };
+  const controller = createVizelBlockMenuTriggerController({
+    onOpen: (detail: VizelBlockMenuOpenDetail) => {
+      if (boundEditor && detail.editor !== boundEditor) return;
+      menuState = {
+        ...detail,
+        x: detail.handleRect.left,
+        y: detail.handleRect.bottom + 4,
+      };
+      showTurnInto = false;
 
-    void tick().then(() => {
-      const el = menuRef;
-      if (!el || !menuState) return;
-      const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
-      menuState = { ...menuState, x: clamped.x, y: clamped.y };
-    });
-  };
-
-  document.addEventListener(VIZEL_BLOCK_MENU_EVENT, handleOpen);
+      void tick().then(() => {
+        // Guard against menus that close while the microtask is queued —
+        // without the check, a stale `menuState` would be re-published with
+        // clamped coordinates.
+        if (!lifecycle.isMounted) return;
+        const el = menuRef;
+        if (!el || !menuState) return;
+        const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
+        menuState = { ...menuState, x: clamped.x, y: clamped.y };
+      });
+    },
+  });
+  controller.mount();
   return () => {
-    document.removeEventListener(VIZEL_BLOCK_MENU_EVENT, handleOpen);
+    lifecycle.isMounted = false;
+    controller.unmount();
   };
 });
 
+// Pointer-outside and Escape dismissal route through `createVizelDismissable`
+// from `@vizel/headless` so this component never attaches document listeners
+// directly (ADR-0003, ADR-0007). The submenu lives inside `menuRef`, so a
+// single mount target covers both surfaces for outside-pointer detection.
+// Escape keeps the original semantics (close without `preventDefault`), so
+// `captureEscape` stays off.
 $effect(() => {
-  if (!menuState) return;
-
-  const handleClick = (e: MouseEvent) => {
-    if (!(e.target instanceof Node)) return;
-    if (
-      menuRef &&
-      !menuRef.contains(e.target) &&
-      (!submenuRef || !submenuRef.contains(e.target))
-    ) {
-      close();
-    }
-  };
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      close();
-    }
-  };
-
-  document.addEventListener("mousedown", handleClick);
-  document.addEventListener("keydown", handleKeyDown);
-
-  return () => {
-    document.removeEventListener("mousedown", handleClick);
-    document.removeEventListener("keydown", handleKeyDown);
-  };
+  if (!menuState || !menuRef) return;
+  const controller = createVizelDismissable({
+    onPointerOutside: () => close(),
+    onEscape: () => close(),
+  });
+  controller.mount(menuRef);
+  return () => controller.unmount();
 });
 
 $effect(() => {
