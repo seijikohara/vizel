@@ -115,6 +115,7 @@ export {
   type CreateVizelCollaborationResult,
   type CreateVizelCommentResult,
   type CreateVizelEditorOptions,
+  type CreateVizelEditorStateOptions,
   type CreateVizelMarkdownOptions,
   type CreateVizelMarkdownResult,
   type CreateVizelVersionHistoryResult,
