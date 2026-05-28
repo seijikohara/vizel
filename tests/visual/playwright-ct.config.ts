@@ -40,8 +40,8 @@ export default defineConfig({
       plugins: [react()],
       resolve: {
         alias: {
-          "@vizel/core": resolve(__dirname, "../../packages/core/src"),
-          "@vizel/react": resolve(__dirname, "../../packages/react/src"),
+          "@vizel/core": resolve(import.meta.dirname, "../../packages/core/src"),
+          "@vizel/react": resolve(import.meta.dirname, "../../packages/react/src"),
         },
       },
     },

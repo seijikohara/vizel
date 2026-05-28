@@ -26,8 +26,8 @@ export default defineConfig({
       plugins: [vue()],
       resolve: {
         alias: {
-          "@vizel/core": resolve(__dirname, "../../../packages/core/src"),
-          "@vizel/vue": resolve(__dirname, "../../../packages/vue/src"),
+          "@vizel/core": resolve(import.meta.dirname, "../../../packages/core/src"),
+          "@vizel/vue": resolve(import.meta.dirname, "../../../packages/vue/src"),
         },
       },
     },
