@@ -6,8 +6,8 @@
  * transition; FAIL exits non-zero and blocks the build.
  *
  * Add a new ADR check by appending a function to `CHECKS` below. Each
- * function returns `{ adr, status, message }`. The harness does not
- * need a registry update.
+ * function returns `{ adr, title, status, message }`. The harness does
+ * not need a registry update.
  *
  * See ADR-0013 for the design rationale.
  */
@@ -147,27 +147,26 @@ function checkCrossFrameworkRuleRetired(): CheckResult {
 }
 
 /**
- * Framework adapters delegate global listeners to controllers from
- * @vizel/core or @vizel/headless. Direct document/window listener
- * calls inside packages/{react,vue,svelte}/src/ are forbidden.
+ * Framework adapters delegate global listeners and DOM observers to
+ * controllers from @vizel/core or @vizel/headless. Direct calls to
+ * document/window listeners and direct construction of MutationObserver
+ * / ResizeObserver inside packages/{react,vue,svelte}/src/ are
+ * forbidden by ADR-0007.
  */
 function checkControllerDelegation(): readonly CheckResult[] {
+  const forbiddenPatterns =
+    /document\.addEventListener\b|window\.addEventListener\b|new\s+MutationObserver\b|new\s+ResizeObserver\b/g;
   const results: CheckResult[] = [];
   for (const framework of ["react", "vue", "svelte"] as const) {
     const root = resolve(REPO_ROOT, "packages", framework, "src");
-    const hits = grepFiles(root, /document\.addEventListener\b|window\.addEventListener\b/g, [
-      ".ts",
-      ".tsx",
-      ".vue",
-      ".svelte",
-    ]);
+    const hits = grepFiles(root, forbiddenPatterns, [".ts", ".tsx", ".vue", ".svelte"]);
     const total = hits.reduce((sum, hit) => sum + hit.count, 0);
     if (total === 0) {
       results.push({
         adr: "ADR-0007",
         title: `controller delegation (${framework})`,
         status: "PASS",
-        message: `${framework}: zero direct document/window listeners.`,
+        message: `${framework}: zero direct document/window listeners and zero direct MutationObserver/ResizeObserver constructions.`,
       });
       continue;
     }
@@ -184,7 +183,7 @@ function checkControllerDelegation(): readonly CheckResult[] {
       adr: "ADR-0007",
       title: `controller delegation (${framework})`,
       status: "WARN",
-      message: `${framework}: ${phase} closes the gap; ${total} listener call(s) remain. Promote to FAIL after the phase merges. Files: ${filesList}.`,
+      message: `${framework}: ${phase} closes the gap; ${total} listener/observer call(s) remain. Promote to FAIL after the phase merges. Files: ${filesList}.`,
     });
   }
   return results;
@@ -254,32 +253,62 @@ function isComponentFile(framework: "react" | "vue" | "svelte", entry: string): 
 }
 
 /**
+ * Strip JavaScript block (`/* ... *\/`) and line (`// ...`) comments
+ * from a source string so downstream regex scans skip JSDoc snippets
+ * that quote real syntax (e.g., `@example return (` inside JSDoc).
+ *
+ * The substitution loses original line numbers; callers that depend
+ * on line offsets must not use the result.
+ */
+function stripJsComments(source: string): string {
+  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/[^\n]*/g, "$1");
+}
+
+/**
  * Extract the view-template block from a component source and return
  * its line count. Returns 0 when the framework has no detectable
  * template block (e.g., a TS-only file dropped into components/).
+ *
+ * Each framework branch resists a known false-positive class:
+ *
+ * - React: JSDoc `@example` blocks frequently contain `return (` and
+ *   the closing `);` shape. Strip JS comments before the regex.
+ * - Vue: nested `<template v-if>` / `<template v-for>` blocks make a
+ *   non-greedy `<template>...</template>` stop at the first inner
+ *   `</template>`. Slice from the first outermost `<template>` to the
+ *   last `</template>` instead.
+ * - Svelte: files with both `<script module>` and `<script>` carry
+ *   two `</script>` tags. Match from the last `</script>` so the
+ *   second script block does not count as view markup.
  */
 function extractViewBlockLineCount(framework: "react" | "vue" | "svelte", source: string): number {
   if (framework === "react") {
-    const returnMatch = source.match(/return\s*\(([\s\S]*?)\);\s*\n?\s*\}/);
+    const stripped = stripJsComments(source);
+    const returnMatch = stripped.match(/return\s*\(([\s\S]*?)\);\s*\n?\s*\}/);
     if (returnMatch === null) return 0;
     return returnMatch[1].split("\n").length;
   }
   if (framework === "vue") {
-    const templateMatch = source.match(/<template>([\s\S]*?)<\/template>/);
-    if (templateMatch === null) return 0;
-    return templateMatch[1].split("\n").length;
+    const openIndex = source.indexOf("<template>");
+    const closeIndex = source.lastIndexOf("</template>");
+    if (openIndex === -1 || closeIndex === -1 || closeIndex <= openIndex) return 0;
+    const inner = source.slice(openIndex + "<template>".length, closeIndex);
+    return inner.split("\n").length;
   }
-  const scriptMatch = source.match(/<\/script>([\s\S]*)$/);
-  if (scriptMatch === null) return source.split("\n").length;
-  return scriptMatch[1].split("\n").length;
+  const lastScriptClose = source.lastIndexOf("</script>");
+  if (lastScriptClose === -1) return source.split("\n").length;
+  return source.slice(lastScriptClose + "</script>".length).split("\n").length;
 }
 
 /**
- * Every adapter's exports."./styles.css" must resolve to the core
- * stylesheet. Phase 2.5 lands the integration; the harness warns
- * until then.
+ * Every adapter's exports."./styles.css" must re-export the Core
+ * stylesheet. ADR-0008 names the exact target `@vizel/core/styles.css`,
+ * so the harness checks for that path (or the matching deep import
+ * `@vizel/core/dist/styles.css`) instead of any substring match.
+ * Phase 2.5 lands the integration; the harness warns until then.
  */
 function checkCssCentralisation(): CheckResult {
+  const allowedTargets = new Set(["@vizel/core/styles.css", "@vizel/core/dist/styles.css"]);
   const offenders: string[] = [];
   for (const framework of ["react", "vue", "svelte"] as const) {
     const manifest = readText(resolve(REPO_ROOT, "packages", framework, "package.json"));
@@ -290,7 +319,7 @@ function checkCssCentralisation(): CheckResult {
       continue;
     }
     const target = match[1];
-    if (!target.includes("@vizel/core")) {
+    if (!allowedTargets.has(target)) {
       offenders.push(`${framework}: ${target}`);
     }
   }
@@ -299,14 +328,14 @@ function checkCssCentralisation(): CheckResult {
       adr: "ADR-0008",
       title: "CSS centralisation",
       status: "PASS",
-      message: "Every adapter resolves styles.css to @vizel/core.",
+      message: "Every adapter re-exports @vizel/core/styles.css.",
     };
   }
   return {
     adr: "ADR-0008",
     title: "CSS centralisation",
     status: "WARN",
-    message: `Phase 2.5 will redirect each adapter's exports."./styles.css" to @vizel/core. Pending: ${offenders.join(", ")}`,
+    message: `Phase 2.5 will redirect each adapter's exports."./styles.css" to @vizel/core/styles.css. Pending: ${offenders.join(", ")}`,
   };
 }
 
@@ -372,9 +401,24 @@ function checkFirstPartyTiptap(): readonly CheckResult[] {
 }
 
 /**
+ * Extract the YAML frontmatter block between the first two `---` lines.
+ * Return `null` when the file lacks a frontmatter block.
+ */
+function extractFrontmatter(source: string): string | null {
+  if (!source.startsWith("---")) return null;
+  const remainder = source.slice(3);
+  const endIndex = remainder.indexOf("\n---");
+  if (endIndex === -1) return null;
+  return remainder.slice(0, endIndex);
+}
+
+/**
  * Every skill carries description and when_to_use frontmatter. Path-
- * scoped skills also carry a `paths:` field. ADR-0010 documents the
- * official Claude Code spec.
+ * scoped skills (skills that the harness considers path-scoped) also
+ * carry a `paths:` field. ADR-0010 documents the official Claude Code
+ * spec. The check parses the YAML frontmatter block between the first
+ * two `---` markers and verifies the required keys appear there, not
+ * anywhere in the file body.
  */
 function checkSkillFrontmatter(): CheckResult {
   const skillsRoot = resolve(REPO_ROOT, ".claude/skills");
@@ -391,15 +435,25 @@ function checkSkillFrontmatter(): CheckResult {
     const skillFile = resolve(skillsRoot, skill, "SKILL.md");
     const source = readText(skillFile);
     if (source === null) continue;
-    if (!source.includes("description:")) offenders.push(`${skill}: missing description`);
-    if (!source.includes("when_to_use:")) offenders.push(`${skill}: missing when_to_use`);
+    const frontmatter = extractFrontmatter(source);
+    if (frontmatter === null) {
+      offenders.push(`${skill}: missing frontmatter block`);
+      continue;
+    }
+    if (!/^description:\s*\S/m.test(frontmatter)) offenders.push(`${skill}: missing description`);
+    if (!/^when_to_use:\s*\S/m.test(frontmatter)) offenders.push(`${skill}: missing when_to_use`);
+    // Every shipped skill under .claude/skills/ is path-scoped per the
+    // current rule catalogue, so paths: presence is required.
+    if (!(/^paths:\s*$/m.test(frontmatter) || /^paths:\s*\[/m.test(frontmatter))) {
+      offenders.push(`${skill}: missing paths:`);
+    }
   }
   if (offenders.length === 0) {
     return {
       adr: "ADR-0010",
       title: ".claude/ official format (skills)",
       status: "PASS",
-      message: "Every skill carries description and when_to_use frontmatter.",
+      message: "Every skill carries description, when_to_use, and paths: frontmatter.",
     };
   }
   return {
