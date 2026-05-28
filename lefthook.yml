@@ -58,6 +58,9 @@ pre-push:
     scenarios:
       run: pnpm check:scenarios
 
+    adr-compliance:
+      run: pnpm check:adr-compliance
+
     ct-parity:
       run: pnpm check:ct-parity
 

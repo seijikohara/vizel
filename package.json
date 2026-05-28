@@ -44,6 +44,7 @@
     "check:parity": "tsx scripts/check-cross-framework-parity.ts",
     "check:feature-parity": "tsx scripts/check-feature-parity.ts",
     "check:scenarios": "tsx tests/ct/parity/check-scenarios.ts",
+    "check:adr-compliance": "tsx scripts/check-adr-compliance.ts",
     "check:ct-parity": "tsx scripts/check-ct-parity.ts",
     "check:ssr": "tsx scripts/check-ssr-safety.ts",
     "check:nolet": "tsx scripts/check-no-let.ts",

@@ -48,6 +48,9 @@ jobs:
       - name: Scenario foundation parity
         run: pnpm check:scenarios
 
+      - name: ADR compliance harness
+        run: pnpm check:adr-compliance
+
       - name: No-let check
         run: pnpm check:nolet
 
