@@ -79,11 +79,16 @@ export function createVizelEditorState<T>(
   // provider does without crashing.
   const accessor = getVizelContextSafe();
 
-  // Latest Tiptap transaction observed by the listener. Stored on a
-  // plain object so reads inside `subscribe`'s start closure stay
-  // outside the rune dependency graph — only `subscribe()` registers
-  // the dependency on the version counter.
-  const latest: { transaction: VizelTransaction | null } = { transaction: null };
+  // Latest transaction observed by the listener, paired with the
+  // editor that produced it. The `editor` pairing prevents a stale
+  // read after the provider swaps editors: without it, a transaction
+  // from editor A leaks into the first selector evaluation for editor
+  // B (or for `null`), giving the selector an internally inconsistent
+  // snapshot (`editor: B, transaction: A.tr`).
+  const latest: { editor: Editor | null; transaction: VizelTransaction | null } = {
+    editor: null,
+    transaction: null,
+  };
 
   // Re-derive the subscriber for each distinct editor identity. Because
   // `createSubscriber` only invokes its `start` callback the first time
@@ -99,6 +104,10 @@ export function createVizelEditorState<T>(
     if (existing) return existing;
     const subscribe = createSubscriber((update) => {
       const handler = (event: { editor: Editor; transaction: VizelTransaction }): void => {
+        // Pair the transaction with its source editor so the next
+        // selector evaluation can detect — and discard — a stale
+        // transaction from a previous editor identity.
+        latest.editor = event.editor;
         latest.transaction = event.transaction;
         update();
       };
@@ -134,6 +143,16 @@ export function createVizelEditorState<T>(
       // dependency on the subscription's version counter and triggers
       // listener attach for this editor.
       subscribeFor(editor)();
+    }
+
+    // Discard the previously cached transaction when the editor
+    // identity changes (including the swap to `null`). The pairing
+    // guards against an inconsistent first snapshot for the new
+    // identity that would otherwise carry the old editor's
+    // transaction reference.
+    if (latest.editor !== editor) {
+      latest.editor = editor;
+      latest.transaction = null;
     }
 
     const snapshot: VizelEditorStateSnapshot = {

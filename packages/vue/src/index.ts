@@ -22,7 +22,12 @@ export * from "@vizel/core";
 // and re-exports the consumer-facing surface here. The shallow-equality
 // helpers re-export from `@vizel/core` so the cross-framework parity
 // check can resolve them back to a single source.
-export { shallowEqualArray, shallowEqualObject, useVizelEditorState } from "./_reactivity.ts";
+export {
+  shallowEqualArray,
+  shallowEqualObject,
+  type UseVizelEditorStateOptions,
+  useVizelEditorState,
+} from "./_reactivity.ts";
 
 // Components
 export {
