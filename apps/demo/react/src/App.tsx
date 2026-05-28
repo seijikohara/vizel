@@ -1,18 +1,19 @@
 import {
   createVizelFindReplaceExtension,
   type Editor,
-  getVizelEditorState,
   type JSONContent,
   setVizelMarkdown,
+  shallowEqualObject,
   useVizelAutoSave,
   useVizelComment,
-  useVizelState,
+  useVizelEditorState,
   useVizelThemeSafe,
   useVizelVersionHistory,
   Vizel,
   VizelFindReplace,
   type VizelMarkdownFlavor,
   VizelOutline,
+  VizelProvider,
   VizelSaveIndicator,
   VizelThemeProvider,
   vizelCommonMarkFlavor,
@@ -119,6 +120,31 @@ interface DemoFeatures {
 
 type PanelTab = "markdown" | "json" | "history" | "comments";
 
+/**
+ * Read character and word counts via the v2 selector API.
+ *
+ * `useVizelEditorState` reads the editor from the surrounding
+ * `VizelProvider` and re-renders only when the selector slice changes
+ * (`shallowEqualObject`). See ADR-0009 for the first-party reactivity
+ * primitive that backs the hook.
+ */
+function StatsBar() {
+  const stats = useVizelEditorState(
+    (editor) => ({
+      characters: editor?.storage.characterCount?.characters() ?? 0,
+      words: editor?.storage.characterCount?.words() ?? 0,
+    }),
+    { equalityFn: shallowEqualObject }
+  );
+  return (
+    <>
+      <span className="status-item">{stats.characters} characters</span>
+      <span className="status-divider">·</span>
+      <span className="status-item">{stats.words} words</span>
+    </>
+  );
+}
+
 function AppContent() {
   // Feature toggles (all enabled by default).
   const [features, setFeatures] = useState<DemoFeatures>({
@@ -146,16 +172,6 @@ function AppContent() {
 
   // Store editor reference (useState for reactivity, unlike useRef)
   const [editor, setEditor] = useState<Editor | null>(null);
-
-  // Track editor state for character/word count (only when stats enabled).
-  // `useVizelEditorState` migrated to the selector-based API in Phase 3a-step1
-  // (ADR-0009). The demo subscribes through the lower-level
-  // `useVizelState` + `getVizelEditorState` pair until Phase 4 refactors the
-  // demo to use the context-driven selector hook.
-  const statsEditor = features.stats ? editor : null;
-  const editorTick = useVizelState(statsEditor);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: editorTick triggers recomputation on every transaction
-  const editorState = useMemo(() => getVizelEditorState(statsEditor), [statsEditor, editorTick]);
 
   // Auto-save functionality (only when autoSave enabled)
   const { status, lastSaved } = useVizelAutoSave(features.autoSave ? editor : null, {
@@ -324,313 +340,320 @@ function AppContent() {
         </div>
       </section>
 
-      <main className="main">
-        {features.outline && editor && (
-          <aside className="editor-aside" aria-label="Document outline">
-            <div className="editor-aside-panel">
-              <span className="editor-aside-title">Outline</span>
-              <VizelOutline editor={editor} />
-            </div>
-          </aside>
-        )}
-        <div className="editor-section">
-          <div className="editor-container">
-            <Vizel
-              initialMarkdown={getFlavorContent(flavor)}
-              autofocus="start"
-              className="editor-content"
-              showToolbar={features.toolbar}
-              flavor={flavor}
-              enableEmbed
-              extensions={findReplaceExtensions}
-              features={{
-                content: {
-                  mathematics: true,
-                  embed: true,
-                  details: true,
-                  diagram: true,
-                  wikiLink: true,
-                  callout: true,
-                  tableOfContents: true,
-                  superscript: true,
-                  subscript: true,
-                  image: {
-                    onUpload: mockUploadImage,
-                    maxFileSize: 10 * 1024 * 1024, // 10MB
-                    onValidationError: (error) => {
-                      alert(`Validation error: ${error.message}`);
-                    },
-                    onUploadError: (error) => {
-                      alert(`Upload failed: ${error.message}`);
+      <VizelProvider editor={editor}>
+        <main className="main">
+          {features.outline && editor && (
+            <aside className="editor-aside" aria-label="Document outline">
+              <div className="editor-aside-panel">
+                <span className="editor-aside-title">Outline</span>
+                <VizelOutline editor={editor} />
+              </div>
+            </aside>
+          )}
+          <div className="editor-section">
+            <div className="editor-container">
+              <Vizel
+                initialMarkdown={getFlavorContent(flavor)}
+                autofocus="start"
+                className="editor-content"
+                showToolbar={features.toolbar}
+                flavor={flavor}
+                enableEmbed
+                extensions={findReplaceExtensions}
+                features={{
+                  content: {
+                    mathematics: true,
+                    embed: true,
+                    details: true,
+                    diagram: true,
+                    wikiLink: true,
+                    callout: true,
+                    tableOfContents: true,
+                    superscript: true,
+                    subscript: true,
+                    image: {
+                      onUpload: mockUploadImage,
+                      maxFileSize: 10 * 1024 * 1024, // 10MB
+                      onValidationError: (error) => {
+                        alert(`Validation error: ${error.message}`);
+                      },
+                      onUploadError: (error) => {
+                        alert(`Upload failed: ${error.message}`);
+                      },
                     },
                   },
-                },
-                interaction: {
-                  typography: true,
-                  mention: { items: mockMentionItems },
-                },
-              }}
-              onCreate={({ editor: newEditor }) => {
-                setEditor(newEditor);
-                const json = newEditor.getJSON();
-                setJsonInput(JSON.stringify(json, null, 2));
-                setMarkdownInput(newEditor.getMarkdown());
-              }}
-              onUpdate={({ editor: updatedEditor }) => {
-                const json = updatedEditor.getJSON();
-                setJsonInput(JSON.stringify(json, null, 2));
-                setMarkdownInput(updatedEditor.getMarkdown());
-              }}
-            >
-              <VizelFindReplace editor={editor} />
-            </Vizel>
-            {(features.autoSave || features.stats) && (
-              <div className="status-bar">
-                {features.autoSave && (
-                  <>
-                    <VizelSaveIndicator status={status} lastSaved={lastSaved} />
-                    {features.stats && <span className="status-divider">·</span>}
-                  </>
-                )}
-                {features.stats && (
-                  <>
-                    <span className="status-item">{editorState.characterCount} characters</span>
-                    <span className="status-divider">·</span>
-                    <span className="status-item">{editorState.wordCount} words</span>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-        {showPanel && (
-          <div className="panel-section">
-            <div className="panel-container">
-              <div className="panel-tabs">
-                {features.syncPanel && (
-                  <button
-                    type="button"
-                    className="panel-tab"
-                    data-active={activeTab === "markdown"}
-                    onClick={() => setActiveTab("markdown")}
-                  >
-                    Markdown
-                  </button>
-                )}
-                {features.syncPanel && (
-                  <button
-                    type="button"
-                    className="panel-tab"
-                    data-active={activeTab === "json"}
-                    onClick={() => setActiveTab("json")}
-                  >
-                    JSON
-                  </button>
-                )}
-                {features.history && (
-                  <button
-                    type="button"
-                    className="panel-tab"
-                    data-active={activeTab === "history"}
-                    onClick={() => setActiveTab("history")}
-                  >
-                    History
-                  </button>
-                )}
-                {features.comments && (
-                  <button
-                    type="button"
-                    className="panel-tab"
-                    data-active={activeTab === "comments"}
-                    onClick={() => setActiveTab("comments")}
-                  >
-                    Comments
-                  </button>
-                )}
-              </div>
-              <div className="panel-content">
-                {activeTab === "markdown" && features.syncPanel && (
-                  <textarea
-                    className="panel-textarea"
-                    value={markdownInput}
-                    onChange={(e) => handleMarkdownChange(e.target.value)}
-                    placeholder="Edit Markdown here..."
-                  />
-                )}
-                {activeTab === "json" && features.syncPanel && (
-                  <textarea
-                    className="panel-textarea"
-                    value={jsonInput}
-                    onChange={(e) => handleJsonChange(e.target.value)}
-                    placeholder="Edit JSON here..."
-                  />
-                )}
-                {activeTab === "history" && (
-                  <div className="panel-list">
-                    <div className="panel-action-bar">
-                      <input
-                        type="text"
-                        placeholder="Version description..."
-                        value={versionDescription}
-                        onChange={(e) => setVersionDescription(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSaveVersion()}
-                      />
-                      <button
-                        type="button"
-                        className="panel-action-btn"
-                        onClick={handleSaveVersion}
-                      >
-                        Save
-                      </button>
-                    </div>
-                    {versionHistory.snapshots.length === 0 ? (
-                      <div className="panel-list-empty">No versions saved yet</div>
-                    ) : (
-                      versionHistory.snapshots.map((snapshot) => (
-                        <div key={snapshot.id} className="panel-item">
-                          <div className="panel-item-header">
-                            <span className="panel-item-text">
-                              {snapshot.description || "Untitled"}
-                            </span>
-                            <span className="panel-item-meta">
-                              {new Date(snapshot.timestamp).toLocaleString()}
-                            </span>
-                          </div>
-                          <div className="panel-item-actions">
-                            <button
-                              type="button"
-                              className="panel-item-btn"
-                              onClick={() => versionHistory.restoreVersion(snapshot.id)}
-                            >
-                              Restore
-                            </button>
-                            <button
-                              type="button"
-                              className="panel-item-btn panel-item-btn--danger"
-                              onClick={() => versionHistory.deleteVersion(snapshot.id)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-                {activeTab === "comments" && (
-                  <div className="panel-list">
-                    <div className="panel-action-bar">
-                      <input
-                        type="text"
-                        placeholder="Select text, then add a comment..."
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
-                      />
-                      <button type="button" className="panel-action-btn" onClick={handleAddComment}>
-                        Add
-                      </button>
-                    </div>
-                    {commentManager.comments.length === 0 ? (
-                      <div className="panel-list-empty">No comments yet</div>
-                    ) : (
-                      commentManager.comments.map((comment) => (
-                        // biome-ignore lint/a11y/useSemanticElements: Card contains nested interactive elements
-                        <div
-                          key={comment.id}
-                          className={`panel-item ${comment.resolved ? "panel-item-resolved" : ""}`}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => commentManager.setActiveComment(comment.id)}
-                          onKeyDown={(e) =>
-                            e.key === "Enter" && commentManager.setActiveComment(comment.id)
-                          }
-                        >
-                          <div className="panel-item-header">
-                            <span className="panel-item-text">{comment.text}</span>
-                            <span className="panel-item-meta">
-                              {comment.author && `${comment.author} · `}
-                              {new Date(comment.createdAt).toLocaleString()}
-                            </span>
-                          </div>
-                          <div className="panel-item-actions">
-                            {comment.resolved ? (
-                              <button
-                                type="button"
-                                className="panel-item-btn"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  commentManager.reopenComment(comment.id);
-                                }}
-                              >
-                                Reopen
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                className="panel-item-btn"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  commentManager.resolveComment(comment.id);
-                                }}
-                              >
-                                Resolve
-                              </button>
-                            )}
-                            <button
-                              type="button"
-                              className="panel-item-btn panel-item-btn--danger"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                commentManager.removeComment(comment.id);
-                              }}
-                            >
-                              Remove
-                            </button>
-                          </div>
-                          {comment.replies.length > 0 && (
-                            <div className="panel-replies">
-                              {comment.replies.map((reply) => (
-                                <div key={reply.id} className="panel-reply">
-                                  <span className="panel-reply-meta">
-                                    {reply.author && `${reply.author} · `}
-                                    {new Date(reply.createdAt).toLocaleString()}
-                                  </span>
-                                  <div>{reply.text}</div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                          <div className="panel-reply-input">
-                            <input
-                              placeholder="Reply..."
-                              value={replyTexts[comment.id] || ""}
-                              onChange={(e) =>
-                                setReplyTexts((prev) => ({ ...prev, [comment.id]: e.target.value }))
-                              }
-                              onKeyDown={(e) => e.key === "Enter" && handleReply(comment.id)}
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleReply(comment.id);
-                              }}
-                            >
-                              Reply
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
+                  interaction: {
+                    typography: true,
+                    mention: { items: mockMentionItems },
+                  },
+                }}
+                onCreate={({ editor: newEditor }) => {
+                  setEditor(newEditor);
+                  const json = newEditor.getJSON();
+                  setJsonInput(JSON.stringify(json, null, 2));
+                  setMarkdownInput(newEditor.getMarkdown());
+                }}
+                onUpdate={({ editor: updatedEditor }) => {
+                  const json = updatedEditor.getJSON();
+                  setJsonInput(JSON.stringify(json, null, 2));
+                  setMarkdownInput(updatedEditor.getMarkdown());
+                }}
+              >
+                {/* `VizelFindReplace` lives inside the editor root so the
+                  Cmd/Ctrl+F shortcut binds to the surrounding container.
+                  The editor flows through the surrounding `VizelProvider`,
+                  so the explicit `editor` prop can be omitted. */}
+                <VizelFindReplace />
+              </Vizel>
+              {(features.autoSave || features.stats) && (
+                <div className="status-bar">
+                  {features.autoSave && (
+                    <>
+                      <VizelSaveIndicator status={status} lastSaved={lastSaved} />
+                      {features.stats && <span className="status-divider">·</span>}
+                    </>
+                  )}
+                  {features.stats && <StatsBar />}
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </main>
+          {showPanel && (
+            <div className="panel-section">
+              <div className="panel-container">
+                <div className="panel-tabs">
+                  {features.syncPanel && (
+                    <button
+                      type="button"
+                      className="panel-tab"
+                      data-active={activeTab === "markdown"}
+                      onClick={() => setActiveTab("markdown")}
+                    >
+                      Markdown
+                    </button>
+                  )}
+                  {features.syncPanel && (
+                    <button
+                      type="button"
+                      className="panel-tab"
+                      data-active={activeTab === "json"}
+                      onClick={() => setActiveTab("json")}
+                    >
+                      JSON
+                    </button>
+                  )}
+                  {features.history && (
+                    <button
+                      type="button"
+                      className="panel-tab"
+                      data-active={activeTab === "history"}
+                      onClick={() => setActiveTab("history")}
+                    >
+                      History
+                    </button>
+                  )}
+                  {features.comments && (
+                    <button
+                      type="button"
+                      className="panel-tab"
+                      data-active={activeTab === "comments"}
+                      onClick={() => setActiveTab("comments")}
+                    >
+                      Comments
+                    </button>
+                  )}
+                </div>
+                <div className="panel-content">
+                  {activeTab === "markdown" && features.syncPanel && (
+                    <textarea
+                      className="panel-textarea"
+                      value={markdownInput}
+                      onChange={(e) => handleMarkdownChange(e.target.value)}
+                      placeholder="Edit Markdown here..."
+                    />
+                  )}
+                  {activeTab === "json" && features.syncPanel && (
+                    <textarea
+                      className="panel-textarea"
+                      value={jsonInput}
+                      onChange={(e) => handleJsonChange(e.target.value)}
+                      placeholder="Edit JSON here..."
+                    />
+                  )}
+                  {activeTab === "history" && (
+                    <div className="panel-list">
+                      <div className="panel-action-bar">
+                        <input
+                          type="text"
+                          placeholder="Version description..."
+                          value={versionDescription}
+                          onChange={(e) => setVersionDescription(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleSaveVersion()}
+                        />
+                        <button
+                          type="button"
+                          className="panel-action-btn"
+                          onClick={handleSaveVersion}
+                        >
+                          Save
+                        </button>
+                      </div>
+                      {versionHistory.snapshots.length === 0 ? (
+                        <div className="panel-list-empty">No versions saved yet</div>
+                      ) : (
+                        versionHistory.snapshots.map((snapshot) => (
+                          <div key={snapshot.id} className="panel-item">
+                            <div className="panel-item-header">
+                              <span className="panel-item-text">
+                                {snapshot.description || "Untitled"}
+                              </span>
+                              <span className="panel-item-meta">
+                                {new Date(snapshot.timestamp).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="panel-item-actions">
+                              <button
+                                type="button"
+                                className="panel-item-btn"
+                                onClick={() => versionHistory.restoreVersion(snapshot.id)}
+                              >
+                                Restore
+                              </button>
+                              <button
+                                type="button"
+                                className="panel-item-btn panel-item-btn--danger"
+                                onClick={() => versionHistory.deleteVersion(snapshot.id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+                  {activeTab === "comments" && (
+                    <div className="panel-list">
+                      <div className="panel-action-bar">
+                        <input
+                          type="text"
+                          placeholder="Select text, then add a comment..."
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
+                        />
+                        <button
+                          type="button"
+                          className="panel-action-btn"
+                          onClick={handleAddComment}
+                        >
+                          Add
+                        </button>
+                      </div>
+                      {commentManager.comments.length === 0 ? (
+                        <div className="panel-list-empty">No comments yet</div>
+                      ) : (
+                        commentManager.comments.map((comment) => (
+                          // biome-ignore lint/a11y/useSemanticElements: Card contains nested interactive elements
+                          <div
+                            key={comment.id}
+                            className={`panel-item ${comment.resolved ? "panel-item-resolved" : ""}`}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => commentManager.setActiveComment(comment.id)}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" && commentManager.setActiveComment(comment.id)
+                            }
+                          >
+                            <div className="panel-item-header">
+                              <span className="panel-item-text">{comment.text}</span>
+                              <span className="panel-item-meta">
+                                {comment.author && `${comment.author} · `}
+                                {new Date(comment.createdAt).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="panel-item-actions">
+                              {comment.resolved ? (
+                                <button
+                                  type="button"
+                                  className="panel-item-btn"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    commentManager.reopenComment(comment.id);
+                                  }}
+                                >
+                                  Reopen
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="panel-item-btn"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    commentManager.resolveComment(comment.id);
+                                  }}
+                                >
+                                  Resolve
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                className="panel-item-btn panel-item-btn--danger"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  commentManager.removeComment(comment.id);
+                                }}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                            {comment.replies.length > 0 && (
+                              <div className="panel-replies">
+                                {comment.replies.map((reply) => (
+                                  <div key={reply.id} className="panel-reply">
+                                    <span className="panel-reply-meta">
+                                      {reply.author && `${reply.author} · `}
+                                      {new Date(reply.createdAt).toLocaleString()}
+                                    </span>
+                                    <div>{reply.text}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            <div className="panel-reply-input">
+                              <input
+                                placeholder="Reply..."
+                                value={replyTexts[comment.id] || ""}
+                                onChange={(e) =>
+                                  setReplyTexts((prev) => ({
+                                    ...prev,
+                                    [comment.id]: e.target.value,
+                                  }))
+                                }
+                                onKeyDown={(e) => e.key === "Enter" && handleReply(comment.id)}
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReply(comment.id);
+                                }}
+                              >
+                                Reply
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </VizelProvider>
 
       <footer className="footer">
         <p>

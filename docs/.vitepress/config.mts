@@ -137,7 +137,7 @@ export default withMermaid({
     nav: [
       { text: "Guide", link: "/guide/" },
       { text: "API", link: "/api/" },
-      { text: "Migration", link: "/migration/v1-to-v2" },
+      { text: "Migration", link: "/guide/migration-v1-to-v2" },
       { text: "Demo", link: "/demo/" },
     ],
 
@@ -148,6 +148,14 @@ export default withMermaid({
           items: [
             { text: "What is Vizel?", link: "/guide/" },
             { text: "Getting Started", link: "/guide/getting-started" },
+          ],
+        },
+        {
+          text: "Per-framework Setup",
+          items: [
+            { text: "React", link: "/guide/getting-started-react" },
+            { text: "Vue", link: "/guide/getting-started-vue" },
+            { text: "Svelte", link: "/guide/getting-started-svelte" },
           ],
         },
         {
@@ -164,7 +172,10 @@ export default withMermaid({
         },
         {
           text: "Migration",
-          items: [{ text: "v1 to v2", link: "/migration/v1-to-v2" }],
+          items: [
+            { text: "v1 to v2 (guide)", link: "/guide/migration-v1-to-v2" },
+            { text: "v1 to v2 (reference)", link: "/migration/v1-to-v2" },
+          ],
         },
       ],
       "/migration/": [
