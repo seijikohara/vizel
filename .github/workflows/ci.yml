@@ -12,6 +12,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # `quality` owns lint, typecheck, immutability enforcement, and the
+  # multi-package build. Cross-framework parity checks moved to the
+  # dedicated `parity` job so a parity regression surfaces independently
+  # of a lint or typecheck failure.
   quality:
     name: Quality (lint, typecheck, build)
     runs-on: ubuntu-latest
@@ -39,6 +43,34 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: No-let check
+        run: pnpm check:nolet
+
+      - name: Build
+        run: pnpm build
+
+  # `parity` enforces the cross-framework contracts that keep React, Vue,
+  # and Svelte adapters symmetric. Splitting it from `quality` lets a
+  # parity drift surface as its own red square in the PR view instead of
+  # hiding behind an unrelated lint or typecheck failure.
+  parity:
+    name: Parity (cross-framework, feature manifest, scenarios)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Cross-framework parity
         run: pnpm check:parity
 
@@ -54,8 +86,92 @@ jobs:
       - name: No-let check
         run: pnpm check:nolet
 
-      - name: Build
+  # `bundle-size` measures the gzipped JavaScript footprint per published
+  # package and fails when an adapter ships more than its budget. The
+  # budgets are v2 baselines tuned from the current build output; tighten
+  # them further whenever a measurement comes in well under budget.
+  # Bundle bloat is the most common silent regression in component
+  # libraries, so the check runs on every push and pull request.
+  bundle-size:
+    name: Bundle size
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
         run: pnpm build
+
+      # The check sums the gzipped size of every `*.js` file under each
+      # package's `dist/` and compares the total to a per-package budget
+      # in kilobytes. On overage the step prints the offending package,
+      # the current size, and the budget so the failure is actionable
+      # without re-running the build locally.
+      - name: Measure and enforce per-adapter budgets
+        run: |
+          set -euo pipefail
+
+          # Per-package gzipped budget in kilobytes. Numbers tuned from
+          # the v2 baseline measurement; lower whenever build output
+          # shrinks. Never raise a budget without a recorded rationale.
+          declare -A BUDGET_KB=(
+            [core]=300
+            [headless]=10
+            [react]=40
+            [vue]=40
+            [svelte]=60
+          )
+
+          echo "## Bundle size" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Package | Gzipped JS | Budget | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---------|-----------:|-------:|:------:|" >> "$GITHUB_STEP_SUMMARY"
+
+          failed=0
+          for pkg in core headless react vue svelte; do
+            dist="packages/${pkg}/dist"
+            if [ ! -d "$dist" ]; then
+              echo "::error::Missing build output at ${dist}"
+              failed=1
+              continue
+            fi
+
+            # Concatenate every shipped `.js` chunk, gzip the stream,
+            # and read the resulting byte count. Concatenation matches
+            # what a consumer downloads when importing the whole
+            # adapter; per-file gzip understates due to gzip's
+            # per-stream overhead.
+            gz_bytes=$(find "$dist" -type f -name '*.js' -print0 \
+              | xargs -0 cat \
+              | gzip -c \
+              | wc -c)
+            gz_kb=$(( (gz_bytes + 1023) / 1024 ))
+            budget=${BUDGET_KB[$pkg]}
+
+            if [ "$gz_kb" -gt "$budget" ]; then
+              echo "::error::@vizel/${pkg} ships ${gz_kb} kB gzipped (budget ${budget} kB). Investigate the diff for unintended imports, or update the budget with a recorded rationale."
+              echo "| @vizel/${pkg} | ${gz_kb} kB | ${budget} kB | FAIL |" >> "$GITHUB_STEP_SUMMARY"
+              failed=1
+            else
+              echo "@vizel/${pkg}: ${gz_kb} kB gzipped (budget ${budget} kB)"
+              echo "| @vizel/${pkg} | ${gz_kb} kB | ${budget} kB | OK |" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+
+          if [ "$failed" -ne 0 ]; then
+            exit 1
+          fi
 
   test:
     name: Test (${{ matrix.framework }}/${{ matrix.browser }})

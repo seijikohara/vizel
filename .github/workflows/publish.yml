@@ -1,10 +1,25 @@
 name: Publish to npm
 
+# This workflow ONLY runs on explicit maintainer dispatch. v2.0.0 is a
+# coordinated, breaking release across five packages (`@vizel/core`,
+# `@vizel/headless`, `@vizel/react`, `@vizel/vue`, `@vizel/svelte`), so
+# the maintainer treats the run as a manual checklist item rather than
+# an automated step. Per ADR-0005 the workflow MUST refuse to run
+# without an explicit version input, and MUST NOT auto-publish from any
+# `push`, `pull_request`, or schedule trigger. The workflow body below
+# is deliberately conservative: every push to npm sits behind both
+# `workflow_dispatch` and the `dry-run` toggle.
+#
+# Pull requests that touch this file refine the publish pipeline only
+# — they do not run it. The dry-run summary at the end of the workflow
+# is the one safe step that always executes; it prints what would be
+# published without ever calling `npm publish` for real.
+
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to publish (e.g., 1.0.0, 1.0.0-beta.1)"
+        description: "Version to publish (e.g., 2.0.0, 2.0.0-rc.1). The workflow refuses to run without this input."
         required: true
         type: string
       dry-run:
@@ -30,19 +45,35 @@ jobs:
     outputs:
       version: ${{ steps.validate-version.outputs.version }}
     steps:
+      # Reject any dispatch that omits the version input. The
+      # `required: true` flag on the input rejects empty submissions
+      # via the GitHub UI, and this extra guard catches API-triggered
+      # dispatches that bypass the form. Per ADR-0005 v2 releases are
+      # coordinated manual events; an unintentional run is a defect.
+      - name: Reject missing version input
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ -z "$INPUT_VERSION" ]; then
+            echo "::error::Refusing to run: the version input is required for every dispatch."
+            exit 1
+          fi
+
       - name: Validate version format
         id: validate-version
         env:
           INPUT_VERSION: ${{ inputs.version }}
         run: |
-          # Validate semver format (including prerelease)
+          # Accept any semver, including a prerelease suffix
+          # (`2.0.0-rc.1`). The shared regex below matches both the
+          # legacy v1 line and the v2.0.0 coordinated release.
           if [[ ! "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)?$ ]]; then
             echo "::error::Invalid version format: $INPUT_VERSION"
-            echo "Version must be in semver format (e.g., 1.0.0, 1.0.0-beta.1)"
+            echo "Version must be in semver format (e.g., 2.0.0, 2.0.0-rc.1)"
             exit 1
           fi
           echo "version=$INPUT_VERSION" >> "$GITHUB_OUTPUT"
-          echo "✅ Version format valid: $INPUT_VERSION"
+          echo "Version format valid: $INPUT_VERSION"
 
       - name: Checkout
         uses: actions/checkout@v6
@@ -107,30 +138,41 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Bump every published package in lockstep. The v2.0.0 release
+      # coordinates five packages (`@vizel/core`, `@vizel/headless`,
+      # `@vizel/react`, `@vizel/vue`, `@vizel/svelte`), so a partial
+      # bump would leave the workspace in an inconsistent state.
       - name: Update package versions
         env:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
           pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/headless exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
-          echo "✅ Updated all packages to version $VERSION"
+          echo "Updated all packages to version $VERSION"
 
       - name: Build packages
         run: pnpm build
 
+      # `npm pack --dry-run` lists exactly the file tree that would land
+      # in the published tarball without writing one. The summary table
+      # exists so reviewers can spot accidental inclusion of source maps,
+      # stories, or test fixtures before the publish step runs.
       - name: Verify package contents
         run: |
-          echo "## 📦 Package Contents" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          for pkg in core react vue svelte; do
-            echo "### @vizel/$pkg" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            (cd packages/$pkg && npm pack --dry-run 2>&1) >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-          done
+          {
+            echo "## Package Contents"
+            echo ""
+            for pkg in core headless react vue svelte; do
+              echo "### @vizel/$pkg"
+              echo '```'
+              (cd "packages/$pkg" && npm pack --dry-run 2>&1)
+              echo '```'
+              echo ""
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
@@ -141,7 +183,10 @@ jobs:
             packages/*/package.json
           retention-days: 1
 
-  # Publish core first (other packages depend on it)
+  # Publish `@vizel/core` first because every adapter depends on it.
+  # Splitting `core` into its own job keeps the OIDC provenance token
+  # scoped to a single package, which simplifies revocation if a leak
+  # ever happens.
   publish-core:
     name: Publish @vizel/core
     runs-on: ubuntu-latest
@@ -175,16 +220,65 @@ jobs:
           PUBLISH_OPTS="--provenance --access public --no-git-checks"
           if [ -n "$PRERELEASE_TAG" ]; then
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
-            echo "📌 Publishing @vizel/core with tag: $PRERELEASE_TAG"
+            echo "Publishing @vizel/core with tag: $PRERELEASE_TAG"
           fi
           cd packages/core && npm publish $PUBLISH_OPTS
-          echo "✅ Published @vizel/core@$VERSION"
+          echo "Published @vizel/core@$VERSION"
 
-  # Publish framework packages in parallel (each job has its own OIDC token)
+  # Publish `@vizel/headless` alongside `@vizel/core`. The headless
+  # package ships framework-neutral UI primitives (per ADR-0003) and
+  # depends on neither core nor any adapter, so its publish runs in
+  # parallel with core for the v2.0.0 coordinated release.
+  #
+  # NOTE: `packages/headless/package.json` currently sets
+  # `"private": true`. The maintainer un-privates it before invoking
+  # this workflow for the v2.0.0 release; until then, the dry-run
+  # summary step at the end of this file flags the package as not
+  # publishable, which is the intended behaviour during PR review.
+  publish-headless:
+    name: Publish @vizel/headless
+    runs-on: ubuntu-latest
+    needs: [validate, build]
+    if: ${{ !inputs.dry-run }}
+    environment: npm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: build-artifacts
+          path: packages
+
+      - name: Publish
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          PRERELEASE_TAG=""
+          if [[ "$VERSION" == *-* ]]; then
+            PRERELEASE_TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+          fi
+          PUBLISH_OPTS="--provenance --access public --no-git-checks"
+          if [ -n "$PRERELEASE_TAG" ]; then
+            PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
+            echo "Publishing @vizel/headless with tag: $PRERELEASE_TAG"
+          fi
+          cd packages/headless && npm publish $PUBLISH_OPTS
+          echo "Published @vizel/headless@$VERSION"
+
+  # Publish framework adapters in parallel after the foundation packages
+  # land on npm. Each matrix entry gets its own OIDC provenance token.
   publish-framework:
     name: Publish @vizel/${{ matrix.package }}
     runs-on: ubuntu-latest
-    needs: [validate, build, publish-core]
+    needs: [validate, build, publish-core, publish-headless]
     if: ${{ !inputs.dry-run }}
     environment: npm
     strategy:
@@ -207,16 +301,24 @@ jobs:
           name: build-artifacts
           path: packages
 
-      - name: Update dependency version
+      # Rewrite `workspace:^` ranges to the resolved version. pnpm rewrites
+      # them at pack time when `pnpm publish` runs, but the workflow uses
+      # `npm publish` for npm-trusted-publishing OIDC compatibility, so
+      # the rewrite happens here explicitly. Headless is appended to
+      # the rewrite list so adapters that pick up `@vizel/headless` in a
+      # later commit publish correctly without another workflow edit.
+      - name: Update dependency versions
         env:
+          PACKAGE: ${{ matrix.package }}
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
-          cd packages/${{ matrix.package }}
-          # Replace workspace:^ with actual version for publishing
-          sed -i 's/"@vizel\/core": "workspace:\^"/"@vizel\/core": "^'"$VERSION"'"/' package.json
+          cd "packages/${PACKAGE}"
+          sed -i "s|\"@vizel/core\": \"workspace:\\^\"|\"@vizel/core\": \"^${VERSION}\"|" package.json
+          sed -i "s|\"@vizel/headless\": \"workspace:\\^\"|\"@vizel/headless\": \"^${VERSION}\"|" package.json
 
       - name: Publish
         env:
+          PACKAGE: ${{ matrix.package }}
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
           PRERELEASE_TAG=""
@@ -226,16 +328,18 @@ jobs:
           PUBLISH_OPTS="--provenance --access public --no-git-checks"
           if [ -n "$PRERELEASE_TAG" ]; then
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
-            echo "📌 Publishing @vizel/${{ matrix.package }} with tag: $PRERELEASE_TAG"
+            echo "Publishing @vizel/${PACKAGE} with tag: $PRERELEASE_TAG"
           fi
-          cd packages/${{ matrix.package }} && npm publish $PUBLISH_OPTS
-          echo "✅ Published @vizel/${{ matrix.package }}@$VERSION"
+          cd "packages/${PACKAGE}" && npm publish $PUBLISH_OPTS
+          echo "Published @vizel/${PACKAGE}@${VERSION}"
 
-  # Finalize: commit version changes and create release
+  # Finalize: commit version changes and create release. The v2.0.0
+  # release commits five package bumps in one record so consumers can
+  # trace any published version back to a single repository commit.
   finalize:
     name: Finalize
     runs-on: ubuntu-latest
-    needs: [validate, build, publish-core, publish-framework]
+    needs: [validate, build, publish-core, publish-headless, publish-framework]
     if: ${{ !inputs.dry-run && !inputs.skip-git }}
     steps:
       - name: Generate GitHub App token
@@ -271,6 +375,7 @@ jobs:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
           pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/headless exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
@@ -278,7 +383,7 @@ jobs:
           git commit -m "chore(release): v$VERSION"
           git tag "v$VERSION"
           git push origin main --tags
-          echo "✅ Committed and tagged v$VERSION"
+          echo "Committed and tagged v$VERSION"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
@@ -296,33 +401,92 @@ jobs:
           DRY_RUN: ${{ inputs.dry-run }}
           SKIP_GIT: ${{ inputs.skip-git }}
         run: |
-          echo "## 📦 Publish Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Publish Summary"
+            echo ""
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "**Mode:** Dry Run"
+            elif [ "$SKIP_GIT" = "true" ]; then
+              echo "**Mode:** Published (npm only, no git tag/release)"
+            else
+              echo "**Mode:** Published"
+            fi
+            echo ""
+            echo "**Version:** \`$VERSION\`"
+            echo ""
+            echo "### Packages"
+            echo "| Package | Status |"
+            echo "|---------|--------|"
+            echo "| @vizel/core | published |"
+            echo "| @vizel/headless | published |"
+            echo "| @vizel/react | published |"
+            echo "| @vizel/vue | published |"
+            echo "| @vizel/svelte | published |"
+            if [ "$DRY_RUN" != "true" ]; then
+              echo ""
+              echo "### Links"
+              echo "- [npm: @vizel/core](https://www.npmjs.com/package/@vizel/core)"
+              echo "- [npm: @vizel/headless](https://www.npmjs.com/package/@vizel/headless)"
+              echo "- [npm: @vizel/react](https://www.npmjs.com/package/@vizel/react)"
+              echo "- [npm: @vizel/vue](https://www.npmjs.com/package/@vizel/vue)"
+              echo "- [npm: @vizel/svelte](https://www.npmjs.com/package/@vizel/svelte)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          if [ "$DRY_RUN" = "true" ]; then
-            echo "🔍 **Mode:** Dry Run" >> $GITHUB_STEP_SUMMARY
-          elif [ "$SKIP_GIT" = "true" ]; then
-            echo "🚀 **Mode:** Published (npm only, no git tag/release)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "🚀 **Mode:** Published" >> $GITHUB_STEP_SUMMARY
-          fi
+  # `dry-run-summary` is the safety net step required by Phase 5. It
+  # always runs after the build job, never invokes a real `npm publish`,
+  # and prints what would land on npm if the maintainer flipped the
+  # workflow off dry-run mode. The step exists so a contributor reading
+  # the workflow logs can confirm at a glance that this pull request's
+  # edits did not publish anything.
+  #
+  # IMPORTANT: this job MUST NOT call `npm publish` without `--dry-run`.
+  # The real publish lives in `publish-core`, `publish-headless`, and
+  # `publish-framework`, which are guarded by `if: !inputs.dry-run` and
+  # the `npm` environment. Do not add live publish commands here.
+  dry-run-summary:
+    name: Dry-run summary (never publishes)
+    runs-on: ubuntu-latest
+    needs: [validate, build]
+    # Use `always()` so the summary appears even when an upstream
+    # publish-* job fails. The summary is a diagnostic artefact, not a
+    # gate, so it stays independent of publish outcomes.
+    if: always() && needs.build.result == 'success'
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
 
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Version:** \`$VERSION\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Packages" >> $GITHUB_STEP_SUMMARY
-          echo "| Package | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| @vizel/core | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| @vizel/react | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| @vizel/vue | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| @vizel/svelte | ✅ |" >> $GITHUB_STEP_SUMMARY
+      - name: Download build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: build-artifacts
+          path: packages
 
-          if [ "$DRY_RUN" != "true" ]; then
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "### Links" >> $GITHUB_STEP_SUMMARY
-            echo "- [npm: @vizel/core](https://www.npmjs.com/package/@vizel/core)" >> $GITHUB_STEP_SUMMARY
-            echo "- [npm: @vizel/react](https://www.npmjs.com/package/@vizel/react)" >> $GITHUB_STEP_SUMMARY
-            echo "- [npm: @vizel/vue](https://www.npmjs.com/package/@vizel/vue)" >> $GITHUB_STEP_SUMMARY
-            echo "- [npm: @vizel/svelte](https://www.npmjs.com/package/@vizel/svelte)" >> $GITHUB_STEP_SUMMARY
-          fi
+      - name: Print npm publish dry-run for every package
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## Dry-Run Summary"
+            echo ""
+            echo "This workflow refines the publish pipeline. Pull requests"
+            echo "that change \`publish.yml\` MUST NOT publish anything."
+            echo "Only \`npm publish --dry-run\` runs in this step."
+            echo ""
+            echo "**Target version:** \`$VERSION\`"
+            echo ""
+            for pkg in core headless react vue svelte; do
+              echo "### @vizel/$pkg"
+              echo '```'
+              if (cd "packages/$pkg" && npm publish --dry-run --access public 2>&1); then
+                :
+              else
+                echo "(dry-run exited non-zero; the maintainer resolves any failures before invoking the real publish jobs)"
+              fi
+              echo '```'
+              echo ""
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
