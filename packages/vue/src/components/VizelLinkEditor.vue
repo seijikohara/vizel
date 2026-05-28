@@ -6,7 +6,8 @@ import {
   resolveVizelLinkEditorLabels,
   type VizelLocale,
 } from "@vizel/core";
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { createVizelDismissable } from "@vizel/headless";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -52,33 +53,42 @@ const viewState = computed(() =>
   editorRef.value ? buildVizelLinkEditorSpec(editorRef.value, url.value, props.enableEmbed) : null
 );
 
-function handleClickOutside(event: MouseEvent) {
-  if (!(event.target instanceof Node)) return;
-  if (formRef.value && !formRef.value.contains(event.target)) {
-    emit("close");
-  }
-}
+// Pointer-outside and Escape dismissal route through `createVizelDismissable`
+// (ADR-0003, ADR-0007). `captureEscape: true` runs the Escape handler in the
+// capture phase and calls `stopImmediatePropagation()` so the editor's
+// bubble-phase keymap does not also fire — without that the bubble-phase
+// keymap resets the selection, closes the popover, and drops focus from the
+// input. `deferPointerHandler: true` mirrors v1's `nextTick` install so the
+// pointerdown that opens the link editor does not register as an outside
+// click.
+const dismissable = createVizelDismissable({
+  onPointerOutside: () => emit("close"),
+  onEscape: () => emit("close"),
+  captureEscape: true,
+  deferPointerHandler: true,
+});
 
-function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === "Escape") {
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    emit("close");
-  }
-}
+watch(
+  [viewState, formRef],
+  ([view, form]) => {
+    if (view && form) {
+      dismissable.mount(form);
+    } else {
+      dismissable.unmount();
+    }
+  },
+  { flush: "post" }
+);
 
 onMounted(() => {
   inputRef.value?.focus();
-
-  void nextTick(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-  });
-  document.addEventListener("keydown", handleKeyDown, true);
+  if (viewState.value && formRef.value) {
+    dismissable.mount(formRef.value);
+  }
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener("mousedown", handleClickOutside);
-  document.removeEventListener("keydown", handleKeyDown, true);
+  dismissable.unmount();
 });
 
 function handleSubmit(e: Event) {

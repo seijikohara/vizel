@@ -50,7 +50,8 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@iconify/vue": "^5.0.1"
+    "@iconify/vue": "^5.0.1",
+    "@vizel/headless": "workspace:^"
   },
   "peerDependencies": {
     "@tiptap/extension-bold": "^3.23.4",

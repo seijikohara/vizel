@@ -75,7 +75,7 @@ watch(
 
     // Escape collapses the selection so the bubble menu hides via its
     // shouldShow predicate. The listener lives in a Core controller so
-    // this component does not call `document.addEventListener` directly.
+    // this component does not attach the listener directly.
     const escapeController = createVizelBubbleMenuEscapeController({
       getEditor: () => editor.value,
     });

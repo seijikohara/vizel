@@ -3,12 +3,11 @@ import {
   buildVizelBlockMenuSpec,
   clampMenuPosition,
   createVizelBlockMenuActions,
-  createVizelDismissibleController,
+  createVizelBlockMenuTriggerController,
   createVizelNodeTypes,
   type Editor,
   getVizelTurnIntoOptions,
   shouldFlipSubmenu,
-  VIZEL_BLOCK_MENU_EVENT,
   type VizelBlockMenuAction,
   type VizelBlockMenuOpenDetail,
   type VizelLocale,
@@ -16,6 +15,7 @@ import {
   vizelDefaultBlockMenuActions,
   vizelDefaultNodeTypes,
 } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
@@ -98,25 +98,6 @@ function handleTurnInto(nodeType: VizelNodeTypeOption) {
   close();
 }
 
-function handleOpen(e: Event) {
-  if (!(e instanceof CustomEvent)) return;
-  const detail = e.detail as VizelBlockMenuOpenDetail;
-  if (boundEditor.value && detail.editor !== boundEditor.value) return;
-  menuState.value = {
-    ...detail,
-    x: detail.handleRect.left,
-    y: detail.handleRect.bottom + 4,
-  };
-  showTurnInto.value = false;
-
-  void nextTick(() => {
-    const el = menuRef.value;
-    if (!(el && menuState.value)) return;
-    const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
-    menuState.value = { ...menuState.value, x: clamped.x, y: clamped.y };
-  });
-}
-
 function handleMenuKeyDown(e: KeyboardEvent) {
   if (!menuRef.value) return;
 
@@ -173,26 +154,55 @@ watch(showTurnInto, (isOpen) => {
   });
 });
 
+// The submenu lives inside `menuRef`, so a single mount target covers both
+// surfaces for outside-pointer detection. Escape keeps v1's semantics (close
+// without preventDefault), so `captureEscape` stays off.
+const dismissable = createVizelDismissable({
+  onPointerOutside: close,
+  onEscape: close,
+});
+
 watch(
-  menuState,
-  (state, _prev, onCleanup) => {
-    if (!state) return;
-    const controller = createVizelDismissibleController({
-      getElements: () => [menuRef.value, submenuRef.value],
-      onDismiss: close,
-    });
-    controller.mount();
-    onCleanup(() => controller.unmount());
+  [menuState, menuRef],
+  ([state, menu]) => {
+    if (state && menu) {
+      dismissable.mount(menu);
+    } else {
+      dismissable.unmount();
+    }
   },
   { flush: "post" }
 );
 
+// The drag-handle extension dispatches `VIZEL_BLOCK_MENU_EVENT` on
+// `document`; the trigger controller owns that subscription so this
+// component never attaches the listener directly (ADR-0007).
+const triggerController = createVizelBlockMenuTriggerController({
+  onOpen: (detail: VizelBlockMenuOpenDetail) => {
+    if (boundEditor.value && detail.editor !== boundEditor.value) return;
+    menuState.value = {
+      ...detail,
+      x: detail.handleRect.left,
+      y: detail.handleRect.bottom + 4,
+    };
+    showTurnInto.value = false;
+
+    void nextTick(() => {
+      const el = menuRef.value;
+      if (!(el && menuState.value)) return;
+      const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
+      menuState.value = { ...menuState.value, x: clamped.x, y: clamped.y };
+    });
+  },
+});
+
 onMounted(() => {
-  document.addEventListener(VIZEL_BLOCK_MENU_EVENT, handleOpen);
+  triggerController.mount();
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener(VIZEL_BLOCK_MENU_EVENT, handleOpen);
+  triggerController.unmount();
+  dismissable.unmount();
 });
 </script>
 

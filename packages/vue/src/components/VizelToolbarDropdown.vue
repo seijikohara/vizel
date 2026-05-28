@@ -5,7 +5,8 @@ import {
   formatVizelTooltip,
   resolveVizelListNavigation,
 } from "@vizel/core";
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { createVizelDismissable } from "@vizel/headless";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelToolbarDropdownProps {
@@ -39,20 +40,6 @@ function handleOptionClick(option: VizelToolbarDropdownAction["options"][number]
   close();
 }
 
-function handleOutsideClick(e: MouseEvent) {
-  if (!(e.target instanceof Node)) return;
-  if (containerRef.value && !containerRef.value.contains(e.target)) {
-    close();
-  }
-}
-
-function handleEscapeKey(e: KeyboardEvent) {
-  if (e.key === "Escape") {
-    e.preventDefault();
-    close();
-  }
-}
-
 function handleTriggerKeyDown(e: KeyboardEvent) {
   if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
     e.preventDefault();
@@ -82,19 +69,40 @@ function handleListKeyDown(e: KeyboardEvent) {
 }
 
 watch(isOpen, (open) => {
-  if (open) {
-    focusedIndex.value = 0;
-    document.addEventListener("mousedown", handleOutsideClick);
-    document.addEventListener("keydown", handleEscapeKey);
-  } else {
-    document.removeEventListener("mousedown", handleOutsideClick);
-    document.removeEventListener("keydown", handleEscapeKey);
+  if (open) focusedIndex.value = 0;
+});
+
+// Pointer-outside and Escape dismissal route through `createVizelDismissable`
+// (ADR-0003, ADR-0007). `captureEscape: true` runs the Escape handler in the
+// capture phase and calls `stopImmediatePropagation()` so the editor's
+// bubble-phase keymap does not also fire and reset the selection or drop
+// focus from the trigger while the dropdown popover owns Escape.
+const dismissable = createVizelDismissable({
+  onPointerOutside: close,
+  onEscape: close,
+  captureEscape: true,
+});
+
+watch(
+  [isOpen, containerRef],
+  ([open, container]) => {
+    if (open && container) {
+      dismissable.mount(container);
+    } else {
+      dismissable.unmount();
+    }
+  },
+  { flush: "post" }
+);
+
+onMounted(() => {
+  if (isOpen.value && containerRef.value) {
+    dismissable.mount(containerRef.value);
   }
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener("mousedown", handleOutsideClick);
-  document.removeEventListener("keydown", handleEscapeKey);
+  dismissable.unmount();
 });
 </script>
 
