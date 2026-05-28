@@ -1,6 +1,7 @@
 {
   "name": "vizel",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@11.3.0",
   "scripts": {
     "dev:react": "pnpm --filter @vizel/demo-react dev",
@@ -8,7 +9,7 @@
     "dev:svelte": "pnpm --filter @vizel/demo-svelte dev",
     "dev:all": "concurrently -n react,vue,svelte -c blue,green,magenta \"pnpm dev:react\" \"pnpm dev:vue\" \"pnpm dev:svelte\"",
     "build": "pnpm -r --if-present run build",
-    "docs:api": "typedoc && tsx scripts/postprocess-typedoc.ts",
+    "docs:api": "typedoc && node scripts/postprocess-typedoc.ts",
     "docs:dev": "vitepress dev docs",
     "docs:build": "pnpm build && pnpm docs:api && vitepress build docs && pnpm docs:build:demos",
     "docs:build:demos": "pnpm docs:build:demo:react && pnpm docs:build:demo:vue && pnpm docs:build:demo:svelte && pnpm docs:copy:demos",
@@ -41,27 +42,16 @@
     "format:fix": "biome format --write .",
     "check": "biome check --error-on-warnings .",
     "check:fix": "biome check --write .",
-    "check:parity": "tsx scripts/check-cross-framework-parity.ts",
-    "check:feature-parity": "tsx scripts/check-feature-parity.ts",
-    "check:scenarios": "tsx tests/ct/parity/check-scenarios.ts",
-    "check:adr-compliance": "tsx scripts/check-adr-compliance.ts",
-    "check:ct-parity": "tsx scripts/check-ct-parity.ts",
-    "check:ssr": "tsx scripts/check-ssr-safety.ts",
-    "check:nolet": "tsx scripts/check-no-let.ts",
+    "check:parity": "node scripts/check-cross-framework-parity.ts",
+    "check:feature-parity": "node scripts/check-feature-parity.ts",
+    "check:scenarios": "node tests/ct/parity/check-scenarios.ts",
+    "check:adr-compliance": "node scripts/check-adr-compliance.ts",
+    "check:ct-parity": "node scripts/check-ct-parity.ts",
+    "check:ssr": "node scripts/check-ssr-safety.ts",
+    "check:nolet": "node scripts/check-no-let.ts",
     "prepare": "lefthook install",
     "deps:check": "pnpm dlx taze major -r",
     "deps:update": "pnpm dlx taze major -r -w && pnpm install"
-  },
-  "pnpm": {
-    "overrides": {
-      "@tiptap/core": "$@tiptap/core",
-      "@tiptap/extension-collaboration": "$@tiptap/extension-collaboration",
-      "@tiptap/pm": "$@tiptap/pm",
-      "@tiptap/suggestion": "$@tiptap/suggestion",
-      "react": "$react",
-      "react-dom": "$react-dom",
-      "vite": "$vite"
-    }
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
@@ -126,7 +116,6 @@
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "svelte": "^5.55.9",
-    "tsx": "^4.22.3",
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.11.0",
     "typedoc-vitepress-theme": "^1.1.2",
