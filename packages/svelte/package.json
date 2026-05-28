@@ -49,7 +49,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "svelte-package -i src -o dist && node scripts/compile-svelte.mjs && node scripts/copy-styles.mjs",
+    "build": "svelte-package -i src -o dist && node scripts/compile-svelte.mjs && node scripts/write-style-shims.mjs",
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
