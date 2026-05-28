@@ -46,7 +46,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build && node scripts/copy-styles.mjs",
+    "build": "vite build && node scripts/write-style-shims.mjs",
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
