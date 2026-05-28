@@ -61,11 +61,13 @@ const replyTexts = ref<Record<string, string>>({});
 // Store editor reference from Vizel component
 const editorRef = shallowRef<Editor | null>(null);
 
-// Track editor state for character/word count (only when stats enabled).
-// `useVizelEditorState` migrated to the selector-based API in Phase 3b-step1
-// (ADR-0009). The demo subscribes through the lower-level
-// `useVizelState` + `getVizelEditorState` pair until Phase 4 refactors the
-// demo to use the context-driven selector composable.
+// Track editor state for character/word count.
+// The selector-based `useVizelEditorState(selector, { equalityFn? })`
+// reads the editor from the surrounding `VizelProvider`; in this demo
+// the editor lives in the same component, so we drive reactivity through
+// the lower-level `useVizelState` tick and read the snapshot with
+// `getVizelEditorState`. See `getting-started-vue.md` for the
+// provider-based selector pattern.
 const statsEditor = computed(() => (features.stats ? editorRef.value : null));
 const editorTick = useVizelState(() => statsEditor.value);
 const editorState = computed(() => {
@@ -271,6 +273,9 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
               @create="handleCreate"
               @update="handleUpdate"
             >
+              <!-- Vue scoped slot — the v2 render-prop idiom for Vue.
+                   The slot exposes the bound editor through its props
+                   so consumers can drop in any component that needs it. -->
               <template #default="{ editor: slotEditor }">
                 <VizelFindReplace v-if="slotEditor" :editor="slotEditor" />
               </template>
