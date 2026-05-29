@@ -8,7 +8,7 @@ paths:
 
 `@vizel/svelte` provides Svelte 5 components and runes. The package wraps `@vizel/core` and adds Svelte-specific code only.
 
-See `cross-framework.md` for component, rune, and props parity requirements.
+Feature parity across React, Vue, and Svelte is enforced by the feature manifest (`packages/core/src/feature-manifest.ts`); run `pnpm check:feature-parity`. ADR-0004 governs the Svelte-idiomatic API surface. API symmetry across frameworks is NOT a goal.
 
 ## Svelte 5 Runes
 
@@ -158,19 +158,38 @@ editor.current?.commands.setContent(content);
 
 ### `createVizelEditorState`
 
-`createVizelEditorState` tracks editor state changes.
+`createVizelEditorState` projects a slice of editor state through a
+selector and re-evaluates it on every transaction. Two call forms
+resolve the editor:
 
 ```typescript
-const updateCount = createVizelEditorState(() => editor.current);
-// Read updateCount.current to trigger reactivity.
+// Context form: reads the editor from <Vizel> / <VizelProvider>.
+const characters = createVizelEditorState(
+  ({ editor }) => editor?.storage.characterCount?.characters() ?? 0,
+);
+
+// Explicit-source form: pass `() => Editor | null` to subscribe to an
+// editor held OUTSIDE the provider tree (for example, a status bar).
+const stats = createVizelEditorState(
+  () => editorRef,
+  ({ editor }) => getVizelEditorState(editor),
+);
+// Read stats.current to trigger reactivity.
 ```
+
+The explicit-source getter mirrors the source `createVizelState`,
+`createVizelAutoSave`, and `createVizelComment` already accept, and
+parallels React's `useVizelEditorState` `options.editor` override.
 
 ### Rune Conventions
 
 - Place runes in `*.svelte.ts` files.
 - Return an object with a `current` getter: `{ get current() { return editor; } }`.
 - Use `$effect` for lifecycle management (the Svelte 5 pattern).
-- Initialize state with `$state<Editor | null>(null)`.
+- Hold the editor in `$state.raw<Editor | null>(null)`. The Tiptap
+  `Editor` is an opaque, mutable class instance, so the rune tracks its
+  identity (re-assignment), not field mutation. ADR-0004 mandates
+  `$state.raw` here, mirroring React `useState` and Vue `shallowRef`.
 
 ```typescript
 $effect(() => {
@@ -213,7 +232,10 @@ the page and corrupt sessions when more than one suggestion is open.
 
 ## Context
 
-- `VizelProvider` calls `setContext()`.
+- `<VizelProvider>` and `<Vizel>` publish the editor through the typed
+  `setVizelContext(accessor)` wrapper (ADR-0004), not a raw `setContext`
+  call. The theme and icon providers use the matching
+  `setVizelThemeContext` / `setVizelIconContext` wrappers.
 - Consumers call `getVizelContext()` for required access or `getVizelContextSafe()` for optional access.
 
 `getVizelContext()` returns a reactive accessor (`{ readonly current: Editor | null }`). Keep the accessor bound and read `.current` inside reactive scopes so the read registers as a dependency.

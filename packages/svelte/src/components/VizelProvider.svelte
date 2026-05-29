@@ -13,8 +13,7 @@ export interface VizelProviderProps {
 </script>
 
 <script lang="ts">
-import { setContext } from "svelte";
-import { type VizelContextAccessor, VIZEL_CONTEXT_KEY } from "./VizelContext.js";
+import { type VizelContextAccessor, setVizelContext } from "./VizelContext.js";
 
 let { editor, class: className, children }: VizelProviderProps = $props();
 
@@ -27,7 +26,7 @@ const accessor: VizelContextAccessor = {
     return editor;
   },
 };
-setContext(VIZEL_CONTEXT_KEY, accessor);
+setVizelContext(accessor);
 
 // Always emit the `vizel-root` class so consumers get the CSS variable scope
 // for free (.vizel-root { --vizel-* }). Matches the React provider behavior.

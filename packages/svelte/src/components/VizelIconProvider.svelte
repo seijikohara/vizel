@@ -30,14 +30,13 @@ export interface VizelIconProviderProps {
 </script>
 
 <script lang="ts">
-  import { setContext } from "svelte";
-  import type { VizelIconContextValue } from "@vizel/core";
-  import { VIZEL_ICON_CONTEXT_KEY } from "./VizelIconContext.js";
+  import { setVizelIconContext } from "./VizelIconContext.js";
 
   const { icons, children }: VizelIconProviderProps = $props();
 
-  // Use getter to maintain reactivity when icons prop changes
-  setContext<VizelIconContextValue>(VIZEL_ICON_CONTEXT_KEY, {
+  // Expose `customIcons` through a getter so descendants observe the latest
+  // `icons` prop instead of the value captured at mount.
+  setVizelIconContext({
     get customIcons() { return icons; },
   });
 </script>
