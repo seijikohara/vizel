@@ -1,8 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist"
-  },
+  "_comment": "rootDir stays unset so the cross-package path alias to @vizel/headless source resolves during typecheck, matching the adapter tsconfigs. The Vite build emits declarations through vite-plugin-dts, which carries its own include and outDir and ignores these fields.",
+  "compilerOptions": {},
   "include": ["src/**/*"]
 }

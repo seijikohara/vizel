@@ -16,10 +16,13 @@
  * - `keyboard/` ships list and grid navigation spec builders plus
  *   `keydown`-owning controllers; adapter menus consume the pure
  *   builders.
+ * - `floating/` wraps `@floating-ui/dom` for anchored positioning.
+ * - `popover/` composes `floating/` with `dismissable/` for the
+ *   anchored block menu, toolbar dropdown, node selector, and color
+ *   picker surfaces. `@vizel/core`'s popover controller re-exports it.
  *
- * The remaining primitives (combobox, popover, focus-trap, floating)
- * land in follow-up commits alongside each adapter rewrite that needs
- * them.
+ * The remaining primitives (combobox, focus-trap) land in follow-up
+ * commits alongside each adapter rewrite that needs them.
  */
 
 export {
@@ -27,6 +30,16 @@ export {
   type VizelDismissableController,
   type VizelDismissableOptions,
 } from "./dismissable/index.ts";
+export {
+  buildVizelFloatingSpec,
+  createVizelFloatingController,
+  VIZEL_FLOATING_DEFAULT_OFFSET,
+  VIZEL_FLOATING_DEFAULT_PLACEMENT,
+  type VizelFloatingController,
+  type VizelFloatingControllerOptions,
+  type VizelFloatingSpec,
+  type VizelFloatingSpecOptions,
+} from "./floating/index.ts";
 export {
   buildVizelGridNavSpec,
   buildVizelListNavSpec,
@@ -38,3 +51,11 @@ export {
   type VizelKeyboardListControllerOptions,
   type VizelListNavInput,
 } from "./keyboard/index.ts";
+export {
+  buildVizelPopoverPositionSpec,
+  createVizelPopoverController,
+  type VizelPopoverController,
+  type VizelPopoverControllerOptions,
+  type VizelPopoverPositionSpec,
+  type VizelPopoverPositionSpecOptions,
+} from "./popover/index.ts";

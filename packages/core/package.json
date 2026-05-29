@@ -158,6 +158,7 @@
   },
   "dependencies": {
     "@tiptap/extension-list": "^3.23.6",
+    "@vizel/headless": "workspace:^",
     "@tiptap/extension-node-range": "^3.23.6",
     "@tiptap/extensions": "^3.23.6",
     "@tiptap/y-tiptap": "^3.0.3",

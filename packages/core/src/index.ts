@@ -152,7 +152,6 @@ export {
 export {
   createVizelBlockMenuTriggerController,
   createVizelBubbleMenuEscapeController,
-  createVizelDismissibleController,
   createVizelEditorSubscription,
   createVizelEditorTransactionStore,
   createVizelPopoverController,
@@ -162,8 +161,6 @@ export {
   type VizelBlockMenuTriggerControllerOptions,
   type VizelBubbleMenuEscapeController,
   type VizelBubbleMenuEscapeControllerOptions,
-  type VizelDismissibleController,
-  type VizelDismissibleControllerOptions,
   type VizelEditorEventName,
   type VizelEditorSubscriptionOptions,
   type VizelEditorTransactionStore,

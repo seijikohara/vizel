@@ -27,6 +27,7 @@
     "popover",
     "dismissable",
     "focus-trap",
+    "floating",
     "keyboard"
   ],
   "main": "./dist/index.js",
@@ -43,10 +44,20 @@
       "import": "./dist/dismissable/index.js",
       "default": "./dist/dismissable/index.js"
     },
+    "./floating": {
+      "types": "./dist/floating/index.d.ts",
+      "import": "./dist/floating/index.js",
+      "default": "./dist/floating/index.js"
+    },
     "./keyboard": {
       "types": "./dist/keyboard/index.d.ts",
       "import": "./dist/keyboard/index.js",
       "default": "./dist/keyboard/index.js"
+    },
+    "./popover": {
+      "types": "./dist/popover/index.d.ts",
+      "import": "./dist/popover/index.js",
+      "default": "./dist/popover/index.js"
     }
   },
   "files": [
@@ -55,7 +66,10 @@
   "scripts": {
     "build": "vite build",
     "typecheck": "tsc --noEmit",
-    "test": "node --test \"__tests__/**/*.test.ts\""
+    "test": "node --no-warnings --experimental-test-module-mocks --test \"__tests__/**/*.test.ts\""
+  },
+  "dependencies": {
+    "@floating-ui/dom": "^1.7.6"
   },
   "devDependencies": {
     "vite": "^8.0.14",
