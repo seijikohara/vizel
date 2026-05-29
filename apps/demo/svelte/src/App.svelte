@@ -2,8 +2,8 @@
 import {
   createVizelAutoSave,
   createVizelComment,
+  createVizelEditorState,
   createVizelFindReplaceExtension,
-  createVizelState,
   createVizelVersionHistory,
   type Editor,
   getVizelEditorState,
@@ -60,14 +60,14 @@ let replyTexts = $state<Record<string, string>>({});
 let editorRef: Editor | null = $state(null);
 
 // Track editor state for character/word count (only when stats enabled).
-// The v2 selector-style `createVizelEditorState` reads the editor from
-// `<VizelProvider>` context, so the top-level demo uses `createVizelState`
-// + `getVizelEditorState` to drive the status bar that sits outside `<Vizel>`.
-const editorVersion = createVizelState(() => (features.stats ? editorRef : null));
-const editorState = $derived.by(() => {
-  void editorVersion.version;
-  return getVizelEditorState(features.stats ? editorRef : null);
-});
+// The status bar sits OUTSIDE `<Vizel>`, so it passes an explicit editor
+// getter to `createVizelEditorState`; the selector projects each snapshot
+// onto the full `VizelEditorState`. The rune re-runs on every transaction
+// and short-circuits when the projection is unchanged.
+const editorState = createVizelEditorState(
+  () => (features.stats ? editorRef : null),
+  ({ editor }) => getVizelEditorState(editor)
+);
 
 // Auto-save functionality (only when autoSave enabled)
 const autoSave = createVizelAutoSave(() => (features.autoSave ? editorRef : null), {
@@ -302,9 +302,9 @@ function handleJsonChange(event: Event) {
               {/if}
             {/if}
             {#if features.stats}
-              <span class="status-item">{editorState.characterCount} characters</span>
+              <span class="status-item">{editorState.current.characterCount} characters</span>
               <span class="status-divider">·</span>
-              <span class="status-item">{editorState.wordCount} words</span>
+              <span class="status-item">{editorState.current.wordCount} words</span>
             {/if}
           </div>
         {/if}

@@ -35,13 +35,28 @@ export interface CreateVizelEditorStateOptions<T> {
 }
 
 /**
+ * Reactive editor source: a getter returning the editor to subscribe to,
+ * re-evaluated on every read so a `$state`-backed editor reference (for
+ * example, `() => editorRef`) drives the subscription.
+ */
+export type VizelEditorStateSource = () => Editor | null | undefined;
+
+/**
  * Selector-style editor-state rune. Returns the projection of the
  * latest editor snapshot through `selector`, re-evaluated on every
  * Tiptap `transaction` and `selectionUpdate`.
  *
+ * Two call forms resolve the editor:
+ * - `createVizelEditorState(selector, options?)` reads the editor from
+ *   {@link getVizelContextSafe}, so a consumer under `<Vizel>` or
+ *   `<VizelProvider>` never threads the editor through props.
+ * - `createVizelEditorState(getEditor, selector, options?)` subscribes to
+ *   the editor the getter returns, so a status bar rendered OUTSIDE the
+ *   provider tree still tracks state. The getter mirrors the source
+ *   `createVizelState`, `createVizelAutoSave`, and `createVizelComment`
+ *   already accept, and parallels React's `options.editor` override.
+ *
  * Behavior:
- * - Resolves the editor from {@link getVizelContextSafe}, so consumers
- *   never thread the editor instance manually through props.
  * - Subscribes through `createSubscriber` so the listeners attach
  *   exactly once per consumer effect and detach when every consumer
  *   tears down. The teardown closure detaches `transaction` and
@@ -68,16 +83,58 @@ export interface CreateVizelEditorStateOptions<T> {
  *
  * <span>{characters.current} characters</span>
  * ```
+ *
+ * @example
+ * ```svelte
+ * <script lang="ts">
+ *   // Subscribe to an explicit editor held outside the provider tree.
+ *   const stats = createVizelEditorState(
+ *     () => editorRef,
+ *     ({ editor }) => getVizelEditorState(editor),
+ *   );
+ * </script>
+ *
+ * <span>{stats.current.characterCount} characters</span>
+ * ```
  */
 export function createVizelEditorState<T>(
   selector: (snapshot: VizelEditorStateSnapshot) => T,
-  options: CreateVizelEditorStateOptions<T> = {}
+  options?: CreateVizelEditorStateOptions<T>
+): { readonly current: T };
+export function createVizelEditorState<T>(
+  getEditor: VizelEditorStateSource,
+  selector: (snapshot: VizelEditorStateSnapshot) => T,
+  options?: CreateVizelEditorStateOptions<T>
+): { readonly current: T };
+export function createVizelEditorState<T>(
+  selectorOrGetEditor: ((snapshot: VizelEditorStateSnapshot) => T) | VizelEditorStateSource,
+  selectorOrOptions?:
+    | ((snapshot: VizelEditorStateSnapshot) => T)
+    | CreateVizelEditorStateOptions<T>,
+  maybeOptions?: CreateVizelEditorStateOptions<T>
 ): { readonly current: T } {
+  // Disambiguate the two call forms by the second argument's type. A
+  // function in that slot means the call passed `(getEditor, selector)`;
+  // anything else means `(selector, options)`.
+  const hasExplicitSource = typeof selectorOrOptions === "function";
+  const selector = (hasExplicitSource ? selectorOrOptions : selectorOrGetEditor) as (
+    snapshot: VizelEditorStateSnapshot
+  ) => T;
+  const options = (hasExplicitSource ? maybeOptions : selectorOrOptions) ?? {};
+  const explicitSource = hasExplicitSource ? (selectorOrGetEditor as VizelEditorStateSource) : null;
+
   const equalityFn = options.equalityFn ?? Object.is;
-  // The accessor is `null` outside a `<VizelProvider>`; the rune still
-  // returns a working `{ current }` so consumers can mount before the
-  // provider does without crashing.
-  const accessor = getVizelContextSafe();
+  // Read context only for the context-sourced form. `getVizelContextSafe`
+  // calls `getContext`, which must run during rune init, so the call
+  // happens here rather than inside the `$derived`. The accessor is
+  // `null` outside a provider; the rune still returns a working
+  // `{ current }` so consumers can mount before the provider does
+  // without crashing.
+  const accessor = explicitSource ? null : getVizelContextSafe();
+  // Uniform editor resolver: the explicit getter when supplied, otherwise
+  // the provider accessor. Reading inside the `$derived` registers the
+  // dependency so the selector re-runs when either source changes.
+  const getEditor: VizelEditorStateSource = explicitSource ?? (() => accessor?.current ?? null);
 
   // Latest transaction observed by the listener, paired with the
   // editor that produced it. The `editor` pairing prevents a stale
@@ -134,10 +191,10 @@ export function createVizelEditorState<T>(
   };
 
   const current = $derived.by(() => {
-    // Register dependency on the editor accessor first so swapping a
-    // `<VizelProvider editor>` value re-runs the selector even before
-    // the first transaction lands.
-    const editor = accessor?.current ?? null;
+    // Register dependency on the editor source first so swapping the
+    // provider's editor (or the explicit getter's reference) re-runs the
+    // selector even before the first transaction lands.
+    const editor = getEditor() ?? null;
     if (editor) {
       // Calling `subscribe()` inside a tracking scope registers the
       // dependency on the subscription's version counter and triggers

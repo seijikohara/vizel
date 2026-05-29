@@ -28,6 +28,8 @@ export {
   getVizelContext,
   getVizelContextSafe,
   getVizelIconContext,
+  setVizelContext,
+  setVizelIconContext,
   // Vizel all-in-one
   Vizel,
   // BlockMenu
@@ -47,6 +49,7 @@ export {
   // ColorPicker
   VizelColorPicker,
   type VizelColorPickerProps,
+  type VizelContextAccessor,
   // Editor components
   VizelEditor,
   type VizelEditorProps,

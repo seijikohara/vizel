@@ -7,15 +7,14 @@ import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext.js";
  *
  * The flat `{ current, setTheme }` shape parallels the React hook's
  * `{ theme, setTheme }` and the Vue composable's
- * `{ theme: ComputedRef<…>, setTheme }`. The scalar field is renamed
- * to `current` here so it lines up with every other Svelte rune
- * accessor (`editor.current`, `state.current`, etc.) — the rename is
- * documented as Table 6's "Hook scalar field" idiom exception in
- * `.claude/rules/cross-framework.md`. `current` is the currently
- * applied (resolved) theme so a toggle is a one-liner. `setTheme`
- * accepts only concrete `VizelResolvedTheme` values because entering
- * "system" mode is the provider's `defaultTheme` concern, not a
- * runtime toggle.
+ * `{ theme: ComputedRef<…>, setTheme }`. The scalar field is named
+ * `current` here so it lines up with every other Svelte rune accessor
+ * (`editor.current`, `state.current`, etc.); ADR-0004 favours each
+ * adapter's native idiom over a shared field name across frameworks.
+ * `current` is the currently applied (resolved) theme so a toggle is a
+ * one-liner. `setTheme` accepts only concrete `VizelResolvedTheme`
+ * values because entering "system" mode is the provider's
+ * `defaultTheme` concern, not a runtime toggle.
  */
 export interface GetVizelThemeResult {
   /** Currently applied theme (resolved from the user's preference). */
@@ -30,6 +29,25 @@ export interface GetVizelThemeResult {
    */
   resetToSystem: () => void;
 }
+
+/**
+ * Project a provider `VizelThemeState` onto the public result shape.
+ *
+ * `getVizelTheme` and `getVizelThemeSafe` return identical shapes; the
+ * helper keeps the projection in one place. `current` reads the resolved
+ * theme through a getter so the value stays reactive. `setTheme` is
+ * re-wrapped so the parameter type is physically narrowed to
+ * `VizelResolvedTheme`: `context.setTheme` accepts the wider `VizelTheme`
+ * (including `"system"`), and contravariant assignment would let an
+ * `as VizelTheme` cast slip through; the wrapper closes that hole.
+ */
+const toVizelThemeResult = (context: VizelThemeState): GetVizelThemeResult => ({
+  get current() {
+    return context.resolvedTheme;
+  },
+  setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
+  resetToSystem: () => context.setTheme("system"),
+});
 
 /**
  * Get the editor theme and a setter from context.
@@ -57,23 +75,7 @@ export function getVizelTheme(): GetVizelThemeResult {
     );
   }
 
-  // Surface the resolved theme through the public `current` field. The
-  // underlying `VizelThemeState` keeps `theme` (user setting) and
-  // `resolvedTheme` (applied) separate; v2 collapses both into a single
-  // observable so the toggle pattern stays a one-liner.
-  //
-  // `setTheme` is re-wrapped so the parameter type is physically narrowed
-  // to `VizelResolvedTheme`. The underlying `context.setTheme` accepts the
-  // wider `VizelTheme` (including "system"), and contravariant assignment
-  // would let an `as VizelTheme` cast slip through; the wrapper closes
-  // that hole.
-  return {
-    get current() {
-      return context.resolvedTheme;
-    },
-    setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
-    resetToSystem: () => context.setTheme("system"),
-  };
+  return toVizelThemeResult(context);
 }
 
 /**
@@ -85,11 +87,5 @@ export function getVizelTheme(): GetVizelThemeResult {
 export function getVizelThemeSafe(): GetVizelThemeResult | null {
   const context = getContext<VizelThemeState | undefined>(VIZEL_THEME_CONTEXT_KEY);
   if (!context) return null;
-  return {
-    get current() {
-      return context.resolvedTheme;
-    },
-    setTheme: (next: VizelResolvedTheme) => context.setTheme(next),
-    resetToSystem: () => context.setTheme("system"),
-  };
+  return toVizelThemeResult(context);
 }

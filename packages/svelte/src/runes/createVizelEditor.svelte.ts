@@ -85,7 +85,13 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
   // Store image upload options for event handler
   const imageOptions = typeof features?.content?.image === "object" ? features.content.image : {};
 
-  let editor = $state<Editor | null>(null);
+  // Hold the editor in `$state.raw`: the Tiptap `Editor` is an opaque,
+  // mutable class instance, so deep proxying buys nothing and the rune
+  // tracks identity, not field mutation. Re-assignment on create triggers
+  // reactivity; in-place edits do not, which matches Tiptap's transaction
+  // model. ADR-0004 mandates this idiom, mirroring React `useState` and
+  // Vue `shallowRef`.
+  let editor = $state.raw<Editor | null>(null);
 
   // Create editor on mount and cleanup on destroy (async - optional deps loaded dynamically)
   $effect(() => {

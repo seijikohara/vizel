@@ -22,8 +22,7 @@ export interface VizelThemeProviderProps extends VizelThemeProviderOptions {
     type VizelTheme,
     type VizelThemeState,
   } from "@vizel/core";
-  import { setContext } from "svelte";
-  import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext.js";
+  import { setVizelThemeContext } from "./VizelThemeContext.js";
 
   let {
     children,
@@ -59,7 +58,7 @@ export interface VizelThemeProviderProps extends VizelThemeProviderOptions {
     setTheme,
   };
 
-  setContext(VIZEL_THEME_CONTEXT_KEY, themeState);
+  setVizelThemeContext(themeState);
 
   // Apply theme when resolved theme changes
   $effect(() => {

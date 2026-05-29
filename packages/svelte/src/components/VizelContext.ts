@@ -1,5 +1,5 @@
 import { type Editor, VizelError } from "@vizel/core";
-import { getContext } from "svelte";
+import { getContext, setContext } from "svelte";
 
 export const VIZEL_CONTEXT_KEY = Symbol("vizel-editor");
 
@@ -15,6 +15,24 @@ export const VIZEL_CONTEXT_KEY = Symbol("vizel-editor");
 export interface VizelContextAccessor {
   /** The currently provided editor instance, or `null` when not ready. */
   readonly current: Editor | null;
+}
+
+/**
+ * Publish the editor accessor to descendants through Svelte context.
+ *
+ * Call this typed wrapper instead of `setContext(VIZEL_CONTEXT_KEY, ...)`
+ * so the key and the {@link VizelContextAccessor} value type stay paired
+ * at every call site. ADR-0004 names `setVizelContext` / `getVizelContext`
+ * as the Svelte context idiom; `<Vizel>` and `<VizelProvider>` both
+ * publish the editor through this function.
+ *
+ * @param accessor - Reactive accessor whose `current` getter returns the
+ *   live editor instance, or `null` before mount.
+ * @returns The accessor, so a caller can publish and reuse it in one
+ *   expression.
+ */
+export function setVizelContext(accessor: VizelContextAccessor): VizelContextAccessor {
+  return setContext(VIZEL_CONTEXT_KEY, accessor);
 }
 
 /**
