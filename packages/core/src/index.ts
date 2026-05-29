@@ -155,8 +155,6 @@ export {
   createVizelDismissibleController,
   createVizelEditorSubscription,
   createVizelEditorTransactionStore,
-  createVizelGridController,
-  createVizelListboxController,
   createVizelPopoverController,
   createVizelRelativeTimeTicker,
   createVizelSystemThemeListener,
@@ -169,10 +167,6 @@ export {
   type VizelEditorEventName,
   type VizelEditorSubscriptionOptions,
   type VizelEditorTransactionStore,
-  type VizelGridController,
-  type VizelGridControllerOptions,
-  type VizelListboxController,
-  type VizelListboxControllerOptions,
   type VizelPopoverController,
   type VizelPopoverControllerOptions,
   type VizelPopoverPlacement,
@@ -568,9 +562,6 @@ export {
   resolveVizelFeatures,
   // Markdown flavor utilities
   resolveVizelFlavorConfig,
-  // Keyboard navigation (pure resolvers)
-  resolveVizelGridNavigation,
-  resolveVizelListNavigation,
   setVizelMarkdown,
   // Shallow-equality helpers used by selector-based reactivity layers.
   shallowEqualArray,

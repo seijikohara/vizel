@@ -14,6 +14,7 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, "src/index.ts"),
         "dismissable/index": resolve(__dirname, "src/dismissable/index.ts"),
+        "keyboard/index": resolve(__dirname, "src/keyboard/index.ts"),
       },
       formats: ["es"],
     },

@@ -19,16 +19,6 @@ export {
   type VizelEditorSubscriptionOptions,
 } from "./editorSubscription.ts";
 export {
-  createVizelGridController,
-  type VizelGridController,
-  type VizelGridControllerOptions,
-} from "./gridController.ts";
-export {
-  createVizelListboxController,
-  type VizelListboxController,
-  type VizelListboxControllerOptions,
-} from "./listboxController.ts";
-export {
   createVizelPopoverController,
   type VizelPopoverController,
   type VizelPopoverControllerOptions,

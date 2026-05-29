@@ -1,9 +1,5 @@
-import {
-  buildVizelMentionMenuSpec,
-  resolveVizelListNavigation,
-  type VizelLocale,
-  type VizelMentionItem,
-} from "@vizel/core";
+import { buildVizelMentionMenuSpec, type VizelLocale, type VizelMentionItem } from "@vizel/core";
+import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
 import type { ReactNode, Ref } from "react";
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 
@@ -97,7 +93,11 @@ export function VizelMentionMenu({
         selectItem(selectedIndex);
         return true;
       }
-      const next = resolveVizelListNavigation(event.key, selectedIndex, items.length);
+      const next = buildVizelListNavSpec({
+        key: event.key,
+        currentIndex: selectedIndex,
+        length: items.length,
+      });
       if (next === null) return false;
       setSelectedIndex(next);
       return true;

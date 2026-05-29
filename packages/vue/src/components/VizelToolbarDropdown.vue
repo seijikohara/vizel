@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import type { Editor, VizelToolbarDropdownAction } from "@vizel/core";
-import {
-  buildVizelToolbarDropdownSpec,
-  formatVizelTooltip,
-  resolveVizelListNavigation,
-} from "@vizel/core";
+import { buildVizelToolbarDropdownSpec, formatVizelTooltip } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
+import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -60,9 +57,13 @@ function handleListKeyDown(e: KeyboardEvent) {
     }
     return;
   }
-  // Delegate Arrow/Home/End to the core helper, which short-circuits on
-  // `optionCount === 0` instead of computing `NaN`.
-  const next = resolveVizelListNavigation(e.key, focusedIndex.value, optionCount);
+  // Delegate Arrow/Home/End to the headless builder, which short-circuits
+  // on `optionCount === 0` instead of computing `NaN`.
+  const next = buildVizelListNavSpec({
+    key: e.key,
+    currentIndex: focusedIndex.value,
+    length: optionCount,
+  });
   if (next === null) return;
   e.preventDefault();
   focusedIndex.value = next;
