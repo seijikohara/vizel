@@ -27,6 +27,7 @@ export default defineConfig({
         "react/jsx-runtime",
         "@tiptap/core",
         "@vizel/core",
+        "@vizel/headless",
         "@iconify/react",
       ],
       output: {

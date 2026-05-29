@@ -1,5 +1,6 @@
 import type { Editor, VizelLocale, VizelToolbarActionItem } from "@vizel/core";
 import { formatVizelTooltip, isVizelToolbarDropdownAction, vizelEnLocale } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 import { VizelToolbarButton } from "./VizelToolbarButton.tsx";
@@ -15,6 +16,11 @@ export interface VizelToolbarOverflowProps {
 
 /**
  * An overflow menu that displays hidden toolbar actions in a popover.
+ *
+ * Pointer-outside and Escape dismissal route through
+ * `createVizelDismissable` from `@vizel/headless`, satisfying ADR-0003
+ * and ADR-0007 (the component never attaches document listeners
+ * directly).
  */
 export function VizelToolbarOverflow({
   editor,
@@ -31,29 +37,29 @@ export function VizelToolbarOverflow({
     triggerRef.current?.focus();
   }, []);
 
+  // Hold the latest `close` callback in a ref so the controller calls the
+  // current handler without re-mounting its listeners.
+  const closeRef = useRef(close);
+  closeRef.current = close;
+
   useEffect(() => {
     if (!isOpen) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const handleClick = (e: MouseEvent) => {
-      if (!(e.target instanceof Node)) return;
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        close();
-      }
-    };
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        close();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClick);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-      document.removeEventListener("keydown", handleKey);
-    };
-  }, [isOpen, close]);
+    // `captureEscape: true` runs the Escape handler in the capture phase
+    // and calls `stopImmediatePropagation()`. The overflow popover owns
+    // Escape while open; otherwise the editor's bubble-phase keymap also
+    // fires and resets the selection or drops focus from the trigger.
+    // ADR-0007 delegates this adapter-side contract to the controller.
+    const controller = createVizelDismissable({
+      onPointerOutside: () => closeRef.current(),
+      onEscape: () => closeRef.current(),
+      captureEscape: true,
+    });
+    controller.mount(container);
+    return () => controller.unmount();
+  }, [isOpen]);
 
   if (actions.length === 0) return null;
 
