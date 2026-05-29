@@ -1,18 +1,17 @@
 name: CI
 
 # Behaviour-affecting checks (test matrix, visual regression, a11y) live
-# here. The `paths-ignore` filter skips docs-only PRs because behaviour
-# cannot regress when only Markdown changes; the companion `Quality`
-# workflow still runs on those PRs and covers lint, typecheck, and
-# writing-rule enforcement on Markdown.
+# here. The workflow runs on every pull request so the required
+# `Test Summary` check always reports. A `changes` job detects whether
+# any file outside docs/ and *.md changed; the expensive test matrix
+# runs only when it did, while `Test Summary` still reports on docs-only
+# PRs. The companion `Quality` workflow covers lint, typecheck, and
+# writing-rule enforcement on every PR, including Markdown-only ones.
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "docs/**"
-      - "**/*.md"
   workflow_dispatch:
 
 concurrency:
@@ -20,8 +19,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.detect.outputs.code }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # A push or manual dispatch always exercises the full matrix. On a
+      # pull request the matrix runs only when a file outside docs/ and
+      # *.md changed; a docs-only PR skips it while `Test Summary` below
+      # still reports, so the required check is always satisfied.
+      - name: Detect non-docs changes
+        id: detect
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed=$(git diff --name-only \
+            "${{ github.event.pull_request.base.sha }}" \
+            "${{ github.event.pull_request.head.sha }}")
+          echo "Changed files:"
+          echo "$changed"
+          if echo "$changed" | grep -vE '^docs/|\.md$' | grep -q .; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+          fi
+
   test:
     name: Test (${{ matrix.framework }}/${{ matrix.browser }})
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -154,20 +189,32 @@ jobs:
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    # The former `ssr` and `ct-parity` dependencies moved into the
-    # consolidated `quality-parity` job in `quality.yml`. The summary now
-    # depends only on the test matrix because the other former needs
-    # live in a separate workflow and cannot be referenced from here.
-    needs: [test]
+    # `Test Summary` is the single required status check (the "Protect
+    # main branch" ruleset). It must report on every pull request, so it
+    # depends on `changes` and runs with `if: always()`. On a docs-only
+    # PR the test matrix is skipped and this job reports success;
+    # otherwise it aggregates the matrix results. The former `ssr` and
+    # `ct-parity` needs moved into the `quality-parity` job in
+    # `quality.yml` and cannot be referenced from here.
+    needs: [changes, test]
     if: always()
     steps:
+      - name: Note docs-only run
+        if: ${{ needs.changes.outputs.code != 'true' }}
+        run: |
+          echo "## Test Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Docs-only change: the behaviour test matrix was skipped; no behaviour can regress." >> "$GITHUB_STEP_SUMMARY"
+
       - name: Download all results
+        if: ${{ needs.changes.outputs.code == 'true' }}
         uses: actions/download-artifact@v8
         with:
           pattern: test-result-*
           merge-multiple: false
 
       - name: Generate summary
+        if: ${{ needs.changes.outputs.code == 'true' }}
         run: |
           get_status() {
             case "$1" in
@@ -192,6 +239,7 @@ jobs:
           done
 
       - name: Check overall result
+        if: ${{ needs.changes.outputs.code == 'true' }}
         run: |
           FAILED=0
           for framework in react vue svelte; do
