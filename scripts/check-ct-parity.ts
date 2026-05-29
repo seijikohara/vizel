@@ -15,12 +15,11 @@
  *   Svelte) are considered. Fixture and helper files (`*Fixture.tsx`,
  *   `*.helper.ts`) are intentionally excluded — they live next to
  *   specs but do not represent a coverage unit.
- * - Idiom prefixes mirror the symbol parity rules in
- *   `scripts/check-cross-framework-parity.ts`. React and Vue may
- *   prefix a spec with `Use` (e.g. `UseEditorState.spec.tsx`); Svelte
- *   prefixes the equivalent rune spec with `Create` (e.g.
- *   `CreateEditorState.spec.ts`). Both forms reduce to the same stem
- *   `EditorState`.
+ * - Idiom prefixes follow each framework's naming convention. React
+ *   and Vue may prefix a spec with `Use` (e.g.
+ *   `UseEditorState.spec.tsx`); Svelte prefixes the equivalent rune
+ *   spec with `Create` (e.g. `CreateEditorState.spec.ts`). Both forms
+ *   reduce to the same stem `EditorState`.
  *
  * Exits with code 0 on success, 1 on any spec-name imbalance.
  */

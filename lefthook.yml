@@ -49,9 +49,6 @@ pre-push:
     typecheck:
       run: pnpm typecheck
 
-    parity:
-      run: pnpm check:parity
-
     feature-parity:
       run: pnpm check:feature-parity
 

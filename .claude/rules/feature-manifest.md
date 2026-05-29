@@ -31,7 +31,7 @@ Each feature entry exports a `VizelFeatureDefinition`:
 2. Implement the feature in each adapter under `packages/{react,vue,svelte}/src/`.
 3. Create the scenario folder at `tests/ct/scenarios/<feature-id>/` with a typed scenario interface.
 4. Create per-framework spec files under `tests/ct/{react,vue,svelte}/specs/` that invoke the scenario.
-5. Run `pnpm check:parity` locally; the same script runs in `pre-push` and CI.
+5. Run `pnpm check:feature-parity` locally; the same script runs in `pre-push` and CI.
 
 ## Workflow: modify a feature
 
@@ -48,8 +48,8 @@ Each feature entry exports a `VizelFeatureDefinition`:
 
 ## CI verification
 
-- `pnpm check:parity` — TypeScript-level check: every manifest entry exports a matching symbol from each adapter.
-- `pnpm test:ct:parity` — Playwright-level check: every manifest entry has a scenario that runs across every framework.
-- `pnpm test:ct:scenarios` — scenarios compile without errors.
+- `pnpm check:feature-parity` — TypeScript-level check: every manifest entry exports a matching symbol from each adapter.
+- `pnpm check:ct-parity` — Playwright-level check: every manifest entry has a scenario that runs across every framework.
+- `pnpm check:scenarios` — scenarios compile without errors.
 
-The lefthook `pre-push` hook runs `pnpm check:parity`. The CI matrix runs all three.
+The lefthook `pre-push` hook and the `Quality + Parity` CI job run all three checks.

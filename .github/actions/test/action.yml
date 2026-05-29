@@ -43,10 +43,6 @@ runs:
       shell: bash
       run: pnpm typecheck
 
-    - name: Run cross-framework parity check
-      shell: bash
-      run: pnpm check:parity
-
     - name: Build packages
       shell: bash
       run: pnpm build

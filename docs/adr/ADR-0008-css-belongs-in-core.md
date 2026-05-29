@@ -48,3 +48,36 @@ Follow-up:
 
 - Plan: `/Users/seiji/.claude/plans/starry-petting-planet.md` (R6)
 - Related: [ADR-0003](./ADR-0003-vizel-headless-package.md)
+
+## Update (2026-05-28)
+
+The initial implementation sketch routed adapter `styles.css` imports
+through the `package.json` `exports` map (for example,
+`"./styles.css": "@vizel/core/styles.css"`). Node rejects that target
+shape with `ERR_INVALID_PACKAGE_TARGET` because the `exports` field
+forbids bare module specifiers; the target must be a relative path
+inside the package.
+
+The shipped mechanism therefore uses a tiny build-time shim instead. A
+post-build script (`packages/{react,vue,svelte}/scripts/write-style-shims.mjs`)
+emits a one-line CSS file at `packages/{adapter}/dist/styles.css` that
+re-exports the Core catalogue:
+
+```css
+/* ADR-0008: re-export of @vizel/core/styles.css; do not edit. */
+@import "@vizel/core/styles.css";
+```
+
+The adapter's `exports."./styles.css"` field points at the relative
+path `"./dist/styles.css"` (Node-legal), and the consumer's bundler
+resolves the `@import` through the workspace's `@vizel/core`
+dependency at build time. The sentinel comment on the first line lets
+the ADR-0008 compliance harness distinguish the re-export shim from a
+stale copy of the catalogue and lets future maintainers identify the
+file's purpose without reading the build pipeline.
+
+The shim covers the four subpaths the original decision enumerates —
+the full bundle, the variables-only slice, the components-only slice,
+and the KaTeX mathematics stylesheet. Consumers continue to write a
+single import (`import "@vizel/react/styles.css"`); the redirection
+stays invisible to the consumer.
