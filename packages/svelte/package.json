@@ -53,7 +53,8 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@iconify/svelte": "^5.2.1"
+    "@iconify/svelte": "^5.2.1",
+    "@vizel/headless": "workspace:^"
   },
   "peerDependencies": {
     "@tiptap/extension-bold": "^3.23.4",
