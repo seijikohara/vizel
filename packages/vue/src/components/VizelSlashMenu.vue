@@ -5,7 +5,7 @@ import {
   resolveVizelListNavigation,
   type VizelSlashCommandItem,
 } from "@vizel/core";
-import { computed, nextTick, ref, useSlots, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.vue";
 import VizelSlashMenuItem from "./VizelSlashMenuItem.vue";
 
@@ -34,6 +34,24 @@ export interface VizelSlashMenuProps {
   groupOrder?: string[];
 }
 
+/**
+ * Props passed to the `#item` scoped slot.
+ *
+ * The callback prop uses the lowercase `onclick` name to stay consistent
+ * with `VizelMentionMenu`'s `#item` slot and the Svelte adapter's
+ * `renderItem` snippet (ADR-0004). Slot props are plain object keys, not
+ * DOM event bindings, so the name is a deliberate contract rather than a
+ * native listener.
+ */
+export interface VizelSlashMenuItemSlotProps {
+  /** The slash command item to render */
+  item: VizelSlashCommandItem;
+  /** Whether the item is the active keyboard selection */
+  isSelected: boolean;
+  /** Invoke the item's command */
+  onclick: () => void;
+}
+
 const props = withDefaults(defineProps<VizelSlashMenuProps>(), {
   showGroups: true,
 });
@@ -42,7 +60,12 @@ const emit = defineEmits<{
   select: [item: VizelSlashCommandItem];
 }>();
 
-const slots = useSlots();
+const slots = defineSlots<{
+  /** Replace the default empty-state markup shown when no item matches. */
+  empty?: () => unknown;
+  /** Replace the per-item markup; the container, keyboard, and ARIA wiring stay owned by VizelSlashMenu. */
+  item?: (props: VizelSlashMenuItemSlotProps) => unknown;
+}>();
 const selectedIndex = ref(0);
 const itemRefs = ref<(HTMLElement | null)[]>([]);
 
@@ -140,7 +163,7 @@ defineExpose({
               name="item"
               :item="slot.data.item"
               :is-selected="slot.data.isSelected"
-              :on-click="() => selectItem(slot.index)"
+              :onclick="() => selectItem(slot.index)"
             />
             <VizelSlashMenuItem
               v-else
@@ -162,7 +185,7 @@ defineExpose({
               name="item"
               :item="slot.data.item"
               :is-selected="slot.data.isSelected"
-              :on-click="() => selectItem(slot.index)"
+              :onclick="() => selectItem(slot.index)"
             />
             <VizelSlashMenuItem
               v-else

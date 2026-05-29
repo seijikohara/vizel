@@ -20,8 +20,8 @@ export * from "@vizel/core";
 // ADR-0009 mandates that every adapter implements editor reactivity
 // natively; Vue's adapter holds the implementation in `_reactivity.ts`
 // and re-exports the consumer-facing surface here. The shallow-equality
-// helpers re-export from `@vizel/core` so the cross-framework parity
-// check can resolve them back to a single source.
+// helpers re-export from `@vizel/core` so the feature-manifest parity
+// check resolves them back to a single source.
 export {
   shallowEqualArray,
   shallowEqualObject,
@@ -73,6 +73,7 @@ export {
   type VizelLinkEditorProps,
   // MentionMenu
   VizelMentionMenu,
+  type VizelMentionMenuItemSlotProps,
   type VizelMentionMenuProps,
   type VizelMentionMenuRef,
   // NodeSelector
@@ -97,8 +98,10 @@ export {
   type VizelSlashMenuEmptyProps,
   VizelSlashMenuItem,
   type VizelSlashMenuItemProps,
+  type VizelSlashMenuItemSlotProps,
   type VizelSlashMenuProps,
   type VizelSlashMenuRef,
+  type VizelSlotProps,
   VizelThemeProvider,
   type VizelThemeProviderProps,
   // Toolbar
@@ -114,6 +117,7 @@ export {
   VizelToolbarOverflow,
   type VizelToolbarOverflowProps,
   type VizelToolbarProps,
+  type VizelToolbarSlotProps,
 } from "./components/index.ts";
 
 // Composables

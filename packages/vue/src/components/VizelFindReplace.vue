@@ -7,7 +7,7 @@ import {
   type VizelFindReplaceState,
   type VizelLocale,
 } from "@vizel/core";
-import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, useTemplateRef, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 
 export interface VizelFindReplaceProps {
@@ -36,7 +36,7 @@ const findText = ref("");
 const replaceText = ref("");
 const caseSensitive = ref(false);
 const state = ref<VizelFindReplaceState | null>(null);
-const findInputRef = ref<HTMLInputElement | null>(null);
+const findInputRef = useTemplateRef<HTMLInputElement>("findInputRef");
 
 const labels = computed(() => resolveVizelFindReplaceLabels(props.locale?.findReplace));
 const view = computed(() => buildVizelFindReplaceSpec(state.value, labels.value.noResults));

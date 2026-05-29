@@ -5,7 +5,7 @@ import {
   type Editor,
   type VizelLocale,
 } from "@vizel/core";
-import { computed, ref, useSlots, watch } from "vue";
+import { computed, useTemplateRef, watch } from "vue";
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 
@@ -34,8 +34,14 @@ const props = withDefaults(defineProps<VizelBubbleMenuProps>(), {
   updateDelay: 100,
 });
 
-const slots = useSlots();
-const menuRef = ref<HTMLElement | null>(null);
+// The default slot replaces the built-in formatting menu wholesale; the
+// consumer supplies its own buttons and reads the editor from the
+// surrounding `VizelProvider` / `Vizel` context, so the slot passes no
+// props. Typing it keeps `slots.default` discoverable under Volar.
+const slots = defineSlots<{
+  default?: () => unknown;
+}>();
+const menuRef = useTemplateRef<HTMLElement>("menuRef");
 const contextEditor = useVizelContextSafe();
 const editor = computed(() => props.editor ?? contextEditor?.value ?? null);
 

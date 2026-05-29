@@ -7,7 +7,7 @@ import {
   type VizelLocale,
 } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -38,8 +38,8 @@ const emit = defineEmits<{
   close: [];
 }>();
 
-const formRef = ref<HTMLFormElement | null>(null);
-const inputRef = ref<HTMLInputElement | null>(null);
+const formRef = useTemplateRef<HTMLFormElement>("formRef");
+const inputRef = useTemplateRef<HTMLInputElement>("inputRef");
 
 const labels = computed(() => resolveVizelLinkEditorLabels(props.locale));
 const initialState = computed(() =>

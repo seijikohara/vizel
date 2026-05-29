@@ -16,7 +16,16 @@ import {
   vizelDefaultNodeTypes,
 } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  shallowRef,
+  useTemplateRef,
+  watch,
+} from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -61,8 +70,7 @@ const effectiveNodeTypes = computed(
 const menuState = shallowRef<BlockMenuState | null>(null);
 const showTurnInto = ref(false);
 const submenuFlipped = ref(false);
-const menuRef = ref<HTMLDivElement | null>(null);
-const submenuRef = ref<HTMLDivElement | null>(null);
+const menuRef = useTemplateRef<HTMLDivElement>("menuRef");
 
 const turnIntoOptions = computed(() =>
   menuState.value ? getVizelTurnIntoOptions(menuState.value.editor, effectiveNodeTypes.value) : []
@@ -257,7 +265,6 @@ onBeforeUnmount(() => {
     <!-- Turn into submenu -->
     <div
       v-if="showTurnInto && spec.submenu.sections.length > 0"
-      ref="submenuRef"
       :class="['vizel-block-menu-submenu', { 'vizel-block-menu-submenu--left': submenuFlipped }]"
       :role="spec.submenu.root.role"
       :aria-label="spec.submenu.root['aria-label']"

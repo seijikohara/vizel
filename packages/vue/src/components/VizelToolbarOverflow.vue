@@ -2,7 +2,7 @@
 import type { Editor, VizelLocale, VizelToolbarActionItem } from "@vizel/core";
 import { formatVizelTooltip, isVizelToolbarDropdownAction, vizelEnLocale } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 import VizelToolbarButton from "./VizelToolbarButton.vue";
 import VizelToolbarDropdown from "./VizelToolbarDropdown.vue";
@@ -18,8 +18,8 @@ export interface VizelToolbarOverflowProps {
 const props = defineProps<VizelToolbarOverflowProps>();
 
 const isOpen = ref(false);
-const containerRef = ref<HTMLDivElement | null>(null);
-const triggerRef = ref<HTMLButtonElement | null>(null);
+const containerRef = useTemplateRef<HTMLDivElement>("containerRef");
+const triggerRef = useTemplateRef<HTMLButtonElement>("triggerRef");
 
 function close() {
   isOpen.value = false;

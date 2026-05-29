@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { loadVizelEmbedScripts, resolveVizelEmbedView, type VizelEmbedData } from "@vizel/core";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, useTemplateRef, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelEmbedViewProps {
@@ -14,7 +14,7 @@ export interface VizelEmbedViewProps {
 
 const props = defineProps<VizelEmbedViewProps>();
 
-const containerRef = ref<HTMLDivElement | null>(null);
+const containerRef = useTemplateRef<HTMLDivElement>("containerRef");
 
 const view = computed(() => resolveVizelEmbedView(props.data));
 

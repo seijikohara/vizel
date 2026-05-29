@@ -15,9 +15,23 @@ export interface VizelToolbarProps {
   locale?: VizelLocale;
 }
 
+/**
+ * Props passed to the default scoped slot. The slot only renders once the
+ * editor resolves, so `editor` is non-null.
+ */
+export interface VizelToolbarSlotProps {
+  /** The resolved Tiptap editor instance */
+  editor: Editor;
+}
+
 const props = withDefaults(defineProps<VizelToolbarProps>(), {
   showDefaultToolbar: true,
 });
+
+defineSlots<{
+  /** Replace the default toolbar buttons. Receives the resolved editor. */
+  default?: (props: VizelToolbarSlotProps) => unknown;
+}>();
 
 const contextEditor = useVizelContextSafe();
 const editor = computed(() => props.editor ?? contextEditor?.value ?? null);

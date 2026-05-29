@@ -9,7 +9,7 @@ import {
   type VizelLocale,
 } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
 import VizelColorPicker from "./VizelColorPicker.vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -37,7 +37,7 @@ const props = withDefaults(defineProps<VizelBubbleMenuColorPickerProps>(), {
 
 const isOpen = ref(false);
 const recentColors = ref<string[]>([]);
-const containerRef = ref<HTMLDivElement | null>(null);
+const containerRef = useTemplateRef<HTMLDivElement>("containerRef");
 
 const colorPalette = computed(() => {
   return props.colors ?? (props.type === "textColor" ? VIZEL_TEXT_COLORS : VIZEL_HIGHLIGHT_COLORS);
@@ -61,10 +61,19 @@ watch(isOpen, (open) => {
   }
 });
 
-function handleColorChange(color: string) {
-  applyVizelColorToEditor(props.editor, props.type, color);
-  isOpen.value = false;
-}
+// Bridge `VizelColorPicker`'s `v-model:value` to the editor. The getter
+// reflects the current text/highlight color; the setter applies the
+// chosen color through the Core command and closes the dropdown. A
+// writable computed is required because the bound source (`currentColor`)
+// is a read-only computed that derives from editor attributes.
+const selectedColor = computed<string | undefined>({
+  get: () => currentColor.value,
+  set: (color) => {
+    if (color === undefined) return;
+    applyVizelColorToEditor(props.editor, props.type, color);
+    isOpen.value = false;
+  },
+});
 
 // Pointer-outside dismissal routes through `createVizelDismissable` so this
 // component never attaches the listener directly. ADR-0007 delegates the
@@ -127,8 +136,8 @@ function getTriggerStyle() {
 
     <div v-if="isOpen" class="vizel-color-picker-dropdown">
       <VizelColorPicker
+        v-model:value="selectedColor"
         :colors="colorPalette"
-        :value="currentColor"
         :label="isTextColor ? (props.locale?.colorPicker?.textColorPalette ?? 'Text color palette') : (props.locale?.colorPicker?.highlightPalette ?? 'Highlight color palette')"
         :allow-custom-color="props.allowCustomColor"
         :recent-colors="recentColors"
@@ -138,7 +147,6 @@ function getTriggerStyle() {
         :hex-placeholder="props.locale?.colorPicker?.hexPlaceholder ?? '#000000'"
         :apply-title="props.locale?.colorPicker?.apply ?? 'Apply'"
         :apply-aria-label="props.locale?.colorPicker?.applyAriaLabel ?? 'Apply custom color'"
-        @change="handleColorChange"
       />
     </div>
   </div>

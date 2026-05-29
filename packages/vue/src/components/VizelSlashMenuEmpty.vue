@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useSlots } from "vue";
-
 export interface VizelSlashMenuEmptyProps {
   /** Custom class name */
   class?: string;
@@ -8,7 +6,12 @@ export interface VizelSlashMenuEmptyProps {
 
 defineProps<VizelSlashMenuEmptyProps>();
 
-const slots = useSlots();
+// The default slot replaces the built-in "No results" text. It passes no
+// props, so consumers supply static markup. Typing keeps `slots.default`
+// discoverable under Volar.
+const slots = defineSlots<{
+  default?: () => unknown;
+}>();
 </script>
 
 <template>

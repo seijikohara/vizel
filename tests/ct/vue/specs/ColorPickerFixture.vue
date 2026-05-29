@@ -32,24 +32,19 @@ const selectedColor = ref(props.value ?? "");
 const colorPalette = computed(() => {
   return props.colors ?? (props.useHighlightColors ? VIZEL_HIGHLIGHT_COLORS : VIZEL_TEXT_COLORS);
 });
-
-function handleChange(color: string) {
-  selectedColor.value = color;
-}
 </script>
 
 <template>
   <div>
     <VizelColorPicker
+      v-model:value="selectedColor"
       :colors="colorPalette"
-      :value="selectedColor"
       :label="props.label"
       :class="props.class"
       :allow-custom-color="props.allowCustomColor ?? true"
       :recent-colors="props.recentColors"
       :show-recent-colors="props.showRecentColors ?? true"
       :none-values="props.noneValues"
-      @change="handleChange"
     />
     <div data-testid="selected-color">{{ selectedColor }}</div>
   </div>

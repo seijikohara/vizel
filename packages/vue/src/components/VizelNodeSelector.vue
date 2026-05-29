@@ -8,7 +8,7 @@ import {
   vizelDefaultNodeTypes,
 } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
@@ -38,9 +38,9 @@ const editorStateVersion = useVizelState(() => resolvedEditor.value);
 
 const isOpen = ref(false);
 const focusedIndex = ref(0);
-const containerRef = ref<HTMLDivElement | null>(null);
-const dropdownRef = ref<HTMLDivElement | null>(null);
-const triggerRef = ref<HTMLButtonElement | null>(null);
+const containerRef = useTemplateRef<HTMLDivElement>("containerRef");
+const dropdownRef = useTemplateRef<HTMLDivElement>("dropdownRef");
+const triggerRef = useTemplateRef<HTMLButtonElement>("triggerRef");
 
 const spec = computed(() => {
   void editorStateVersion.value;
