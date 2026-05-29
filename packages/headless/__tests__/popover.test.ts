@@ -179,4 +179,21 @@ describe("createVizelPopoverController dismiss semantics", () => {
     controller.mount();
     assert.equal(fake.document.registrations.length, 0);
   });
+
+  it("dismisses on an outside pointer event when the anchor is virtual", () => {
+    // The block menu anchors to a captured drag-handle rect — a virtual
+    // element with only `getBoundingClientRect` and no `contains`. The
+    // anchor-exclusion guard therefore skips, so a pointer event outside
+    // the body dismisses, matching the block menu's drag-handle behaviour.
+    const calls = { dismiss: 0 };
+    const rect = { left: 1, top: 2, bottom: 3, right: 4, width: 3, height: 1 } as DOMRect;
+    const controller = createVizelPopoverController({
+      getAnchor: () => ({ getBoundingClientRect: () => rect }),
+      getBody: () => env.body as unknown as HTMLElement,
+      onDismiss: () => calls.dismiss++,
+    });
+    controller.mount();
+    fake.document.dispatch("pointerdown", { target: env.outside });
+    assert.equal(calls.dismiss, 1);
+  });
 });

@@ -23,7 +23,6 @@ export interface VizelBlockMenuProps {
 <script lang="ts">
 import {
   buildVizelBlockMenuSpec,
-  clampMenuPosition,
   createVizelBlockMenuActions,
   createVizelBlockMenuTriggerController,
   createVizelNodeTypes,
@@ -33,15 +32,10 @@ import {
   vizelDefaultNodeTypes,
   type VizelBlockMenuOpenDetail,
 } from "@vizel/core";
-import { createVizelDismissable } from "@vizel/headless";
+import { createVizelPopoverController } from "@vizel/headless";
 import { tick } from "svelte";
 import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
-
-interface BlockMenuState extends VizelBlockMenuOpenDetail {
-  x: number;
-  y: number;
-}
 
 let {
   editor: editorProp,
@@ -57,7 +51,7 @@ const boundEditor = $derived<Editor | null>(editorProp ?? contextEditor?.current
 const effectiveActions = $derived(actions ?? (locale ? createVizelBlockMenuActions(locale) : vizelDefaultBlockMenuActions));
 const effectiveNodeTypes = $derived(nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes));
 
-let menuState = $state<BlockMenuState | null>(null);
+let menuState = $state<VizelBlockMenuOpenDetail | null>(null);
 let showTurnInto = $state(false);
 let submenuFlipped = $state(false);
 let menuRef = $state<HTMLDivElement | null>(null);
@@ -137,49 +131,38 @@ $effect(() => {
 // component never attaches the custom-event listener directly
 // (ADR-0003, ADR-0007).
 $effect(() => {
-  const lifecycle = { isMounted: true };
   const controller = createVizelBlockMenuTriggerController({
     onOpen: (detail: VizelBlockMenuOpenDetail) => {
       if (boundEditor && detail.editor !== boundEditor) return;
-      menuState = {
-        ...detail,
-        x: detail.handleRect.left,
-        y: detail.handleRect.bottom + 4,
-      };
+      menuState = detail;
       showTurnInto = false;
-
-      void tick().then(() => {
-        // Guard against menus that close while the microtask is queued —
-        // without the check, a stale `menuState` would be re-published with
-        // clamped coordinates.
-        if (!lifecycle.isMounted) return;
-        const el = menuRef;
-        if (!el || !menuState) return;
-        const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
-        menuState = { ...menuState, x: clamped.x, y: clamped.y };
-      });
     },
   });
   controller.mount();
-  return () => {
-    lifecycle.isMounted = false;
-    controller.unmount();
-  };
+  return () => controller.unmount();
 });
 
-// Pointer-outside and Escape dismissal route through `createVizelDismissable`
-// from `@vizel/headless` so this component never attaches document listeners
-// directly (ADR-0003, ADR-0007). The submenu lives inside `menuRef`, so a
-// single mount target covers both surfaces for outside-pointer detection.
-// Escape keeps the original semantics (close without `preventDefault`), so
-// `captureEscape` stays off.
+// Anchor the menu to the captured drag-handle rect through a virtual
+// element: the handle is a transient overlay node, so the menu reads its
+// geometry rather than holding an element reference. The popover
+// controller positions the body with floating-ui flip/shift (which
+// replaces the former manual clamp) and owns the pointer-outside and
+// Escape listeners. The effect re-runs when `menuState` changes, so each
+// open re-positions against the fresh rect. The submenu lives inside
+// `menuRef`, so the single body mount target also covers it for
+// outside-pointer detection.
 $effect(() => {
   if (!menuState || !menuRef) return;
-  const controller = createVizelDismissable({
-    onPointerOutside: () => close(),
-    onEscape: () => close(),
+  const handleRect = menuState.handleRect;
+  const controller = createVizelPopoverController({
+    getAnchor: () => ({ getBoundingClientRect: () => handleRect }),
+    getBody: () => menuRef,
+    placement: "bottom-start",
+    offset: 4,
+    onDismiss: () => close(),
+    dismissOnEscape: true,
   });
-  controller.mount(menuRef);
+  controller.mount();
   return () => controller.unmount();
 });
 
@@ -202,7 +185,6 @@ $effect(() => {
   <div
     bind:this={menuRef}
     class="vizel-block-menu {className ?? ''}"
-    style="left: {menuState.x}px; top: {menuState.y}px;"
     role={spec.root.role}
     aria-label={spec.root["aria-label"]}
     data-vizel-block-menu

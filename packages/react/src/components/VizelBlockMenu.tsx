@@ -1,7 +1,6 @@
 import type { Editor } from "@vizel/core";
 import {
   buildVizelBlockMenuSpec,
-  clampMenuPosition,
   createVizelBlockMenuActions,
   createVizelBlockMenuTriggerController,
   createVizelNodeTypes,
@@ -15,7 +14,7 @@ import {
   vizelDefaultNodeTypes,
   vizelRequestAnimationFrame,
 } from "@vizel/core";
-import { createVizelDismissable } from "@vizel/headless";
+import { createVizelPopoverController } from "@vizel/headless";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
@@ -38,19 +37,16 @@ export interface VizelBlockMenuProps {
   locale?: VizelLocale;
 }
 
-interface BlockMenuState extends VizelBlockMenuOpenDetail {
-  x: number;
-  y: number;
-}
-
 /**
  * Block context menu that appears when clicking the drag handle.
  *
  * DOM/ARIA scaffolding (sections, submenu trigger, submenu list) comes
  * from `@vizel/core`'s `buildVizelBlockMenuSpec`; the React component
- * owns positioning, focus management, and runtime action binding. Both
- * the open-channel (`VIZEL_BLOCK_MENU_EVENT`) and the dismiss-channel
- * (pointer-outside + Escape) route through controllers so this file
+ * owns focus management and runtime action binding. The open-channel
+ * (`VIZEL_BLOCK_MENU_EVENT`), positioning, and dismissal all route
+ * through controllers: `createVizelPopoverController` anchors the menu to
+ * the captured drag-handle rect (a `@floating-ui/dom` virtual element)
+ * and owns the pointer-outside and Escape listeners, so this file
  * attaches no document-level listeners directly (ADR-0003, ADR-0007).
  */
 export function VizelBlockMenu({
@@ -70,7 +66,7 @@ export function VizelBlockMenu({
     () => nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes),
     [nodeTypes, locale]
   );
-  const [menuState, setMenuState] = useState<BlockMenuState | null>(null);
+  const [menuState, setMenuState] = useState<VizelBlockMenuOpenDetail | null>(null);
   const [showTurnInto, setShowTurnInto] = useState(false);
   const [submenuFlipped, setSubmenuFlipped] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -84,37 +80,16 @@ export function VizelBlockMenu({
   }, []);
 
   useEffect(() => {
-    // `isMounted` guards the rAF callback against the React 19 strict-mode
-    // setup → cleanup → setup sequence, where the rAF scheduled in the
-    // first setup can fire after the first cleanup has detached the
-    // listener — without the guard the callback would call setMenuState
-    // against a stale closure.
-    const lifecycle = { isMounted: true };
     const controller = createVizelBlockMenuTriggerController({
       onOpen: (detail: VizelBlockMenuOpenDetail) => {
         if (boundEditor && detail.editor !== boundEditor) return;
         menuEditorRef.current = detail.editor;
-        setMenuState({
-          ...detail,
-          x: detail.handleRect.left,
-          y: detail.handleRect.bottom + 4,
-        });
+        setMenuState(detail);
         setShowTurnInto(false);
-
-        vizelRequestAnimationFrame(() => {
-          if (!lifecycle.isMounted) return;
-          const el = menuRef.current;
-          if (!el) return;
-          const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
-          setMenuState((prev) => (prev ? { ...prev, x: clamped.x, y: clamped.y } : prev));
-        });
       },
     });
     controller.mount();
-    return () => {
-      lifecycle.isMounted = false;
-      controller.unmount();
-    };
+    return () => controller.unmount();
   }, [boundEditor]);
 
   useEffect(() => {
@@ -135,15 +110,23 @@ export function VizelBlockMenu({
     const menu = menuRef.current;
     if (!menu) return;
 
-    // The submenu lives inside `menuRef`, so a single mount target covers
-    // both surfaces for outside-pointer detection. Escape keeps v1's
-    // semantics (close without preventDefault), so `captureEscape` stays
-    // off.
-    const controller = createVizelDismissable({
-      onPointerOutside: () => closeRef.current(),
-      onEscape: () => closeRef.current(),
+    // Anchor the menu to the captured drag-handle rect through a virtual
+    // element: the handle is a transient overlay node, so the menu reads
+    // its geometry rather than holding an element reference. The popover
+    // controller positions the body with floating-ui flip/shift (which
+    // replaces the former manual clamp) and owns the pointer-outside and
+    // Escape listeners. The submenu lives inside `menuRef`, so the single
+    // body mount target also covers it for outside-pointer detection.
+    const handleRect = menuState.handleRect;
+    const controller = createVizelPopoverController({
+      getAnchor: () => ({ getBoundingClientRect: () => handleRect }),
+      getBody: () => menuRef.current,
+      placement: "bottom-start",
+      offset: 4,
+      onDismiss: () => closeRef.current(),
+      dismissOnEscape: true,
     });
-    controller.mount(menu);
+    controller.mount();
     return () => controller.unmount();
   }, [menuState]);
 
@@ -221,7 +204,6 @@ export function VizelBlockMenu({
     <div
       ref={menuRef}
       className={`vizel-block-menu ${className ?? ""}`}
-      style={{ left: menuState.x, top: menuState.y }}
       role="menu"
       aria-label={spec.root["aria-label"]}
       data-vizel-block-menu=""

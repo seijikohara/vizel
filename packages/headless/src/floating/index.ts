@@ -21,6 +21,28 @@
 import { autoUpdate, computePosition, flip, offset, type Placement, shift } from "@floating-ui/dom";
 
 /**
+ * A virtual anchor for the floating engine.
+ *
+ * `@floating-ui/dom`'s `computePosition` positions a body against any
+ * object exposing `getBoundingClientRect`, not only a live DOM element
+ * (see https://floating-ui.com/docs/virtual-elements). A surface that
+ * captures a rect — for example the block menu, which receives the
+ * drag-handle's `DOMRect` through a custom event rather than a stable
+ * element reference — supplies a `VizelVirtualElement` so the body still
+ * positions, flips, and shifts against the captured geometry.
+ */
+export interface VizelVirtualElement {
+  /** Return the rectangle the body positions against. */
+  readonly getBoundingClientRect: () => DOMRect;
+}
+
+/**
+ * The anchor a floating body positions against: a live element or a
+ * virtual element carrying only a `getBoundingClientRect`.
+ */
+export type VizelFloatingAnchor = HTMLElement | VizelVirtualElement;
+
+/**
  * Default placement applied when the caller omits `placement`. Vizel
  * surfaces open below the trigger and left-align by convention.
  */
@@ -80,8 +102,12 @@ export function buildVizelFloatingSpec(options: VizelFloatingSpecOptions = {}): 
  * Options for {@link createVizelFloatingController}.
  */
 export interface VizelFloatingControllerOptions extends VizelFloatingSpecOptions {
-  /** Return the anchor element the body positions against, or `null`. */
-  readonly getAnchor: () => HTMLElement | null;
+  /**
+   * Return the anchor the body positions against, or `null`. The anchor
+   * is a live element or a {@link VizelVirtualElement} that exposes only
+   * `getBoundingClientRect`.
+   */
+  readonly getAnchor: () => VizelFloatingAnchor | null;
   /** Return the floating body element to position, or `null`. */
   readonly getBody: () => HTMLElement | null;
   /**

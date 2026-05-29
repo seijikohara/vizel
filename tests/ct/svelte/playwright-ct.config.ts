@@ -23,6 +23,14 @@ export default defineConfig({
           "@vizel/svelte": resolve(import.meta.dirname, "../../../packages/svelte/src"),
         },
       },
+      // `@vizel/headless` resolves to source, so Vite discovers
+      // `@floating-ui/dom` only after it has chunked the entry. Pre-bundle
+      // the dependency to a clean ES module up front; without this the
+      // Svelte CT build references esbuild's `__commonJSMin` interop helper
+      // before it is defined and the mount throws at runtime.
+      optimizeDeps: {
+        include: ["@floating-ui/dom"],
+      },
     },
   },
   projects: [

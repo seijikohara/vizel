@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   buildVizelBlockMenuSpec,
-  clampMenuPosition,
   createVizelBlockMenuActions,
   createVizelBlockMenuTriggerController,
   createVizelNodeTypes,
@@ -15,7 +14,7 @@ import {
   vizelDefaultBlockMenuActions,
   vizelDefaultNodeTypes,
 } from "@vizel/core";
-import { createVizelDismissable } from "@vizel/headless";
+import { createVizelPopoverController } from "@vizel/headless";
 import {
   computed,
   nextTick,
@@ -47,11 +46,6 @@ export interface VizelBlockMenuProps {
   locale?: VizelLocale;
 }
 
-interface BlockMenuState extends VizelBlockMenuOpenDetail {
-  x: number;
-  y: number;
-}
-
 const props = defineProps<VizelBlockMenuProps>();
 
 const contextEditor = useVizelContextSafe();
@@ -67,7 +61,7 @@ const effectiveNodeTypes = computed(
     props.nodeTypes ?? (props.locale ? createVizelNodeTypes(props.locale) : vizelDefaultNodeTypes)
 );
 
-const menuState = shallowRef<BlockMenuState | null>(null);
+const menuState = shallowRef<VizelBlockMenuOpenDetail | null>(null);
 const showTurnInto = ref(false);
 const submenuFlipped = ref(false);
 const menuRef = useTemplateRef<HTMLDivElement>("menuRef");
@@ -162,21 +156,33 @@ watch(showTurnInto, (isOpen) => {
   });
 });
 
-// The submenu lives inside `menuRef`, so a single mount target covers both
-// surfaces for outside-pointer detection. Escape keeps v1's semantics (close
-// without preventDefault), so `captureEscape` stays off.
-const dismissable = createVizelDismissable({
-  onPointerOutside: close,
-  onEscape: close,
+// Anchor the menu to the captured drag-handle rect through a virtual
+// element: the handle is a transient overlay node, so the menu reads its
+// geometry rather than holding an element reference. The popover
+// controller positions the body with floating-ui flip/shift (which
+// replaces the former manual clamp) and owns the pointer-outside and
+// Escape listeners. The submenu lives inside `menuRef`, so the single
+// body mount target also covers it for outside-pointer detection.
+const popover = createVizelPopoverController({
+  getAnchor: () => {
+    const rect = menuState.value?.handleRect;
+    return rect ? { getBoundingClientRect: () => rect } : null;
+  },
+  getBody: () => menuRef.value,
+  placement: "bottom-start",
+  offset: 4,
+  onDismiss: close,
+  dismissOnEscape: true,
 });
 
 watch(
   [menuState, menuRef],
   ([state, menu]) => {
+    // Re-mount on every open so floating-ui re-positions against the
+    // fresh drag-handle rect; `unmount` is a no-op when not yet mounted.
+    popover.unmount();
     if (state && menu) {
-      dismissable.mount(menu);
-    } else {
-      dismissable.unmount();
+      popover.mount();
     }
   },
   { flush: "post" }
@@ -188,19 +194,8 @@ watch(
 const triggerController = createVizelBlockMenuTriggerController({
   onOpen: (detail: VizelBlockMenuOpenDetail) => {
     if (boundEditor.value && detail.editor !== boundEditor.value) return;
-    menuState.value = {
-      ...detail,
-      x: detail.handleRect.left,
-      y: detail.handleRect.bottom + 4,
-    };
+    menuState.value = detail;
     showTurnInto.value = false;
-
-    void nextTick(() => {
-      const el = menuRef.value;
-      if (!(el && menuState.value)) return;
-      const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
-      menuState.value = { ...menuState.value, x: clamped.x, y: clamped.y };
-    });
   },
 });
 
@@ -210,7 +205,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   triggerController.unmount();
-  dismissable.unmount();
+  popover.unmount();
 });
 </script>
 
@@ -219,7 +214,6 @@ onBeforeUnmount(() => {
     v-if="menuState"
     ref="menuRef"
     :class="['vizel-block-menu', $props.class]"
-    :style="{ left: menuState.x + 'px', top: menuState.y + 'px' }"
     :role="spec.root.role"
     :aria-label="spec.root['aria-label']"
     data-vizel-block-menu
