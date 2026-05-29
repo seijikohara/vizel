@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "_comment": "The Vite dts build uses this config so the declaration rollup resolves @vizel/headless to its built dist types through node_modules rather than following the root path alias into headless source, which would trip TS6059 (rootDir). Mirrors the adapter tsconfig.build.json pattern.",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "paths": {}
+  }
+}

@@ -15,10 +15,13 @@
 
 export interface VizelDismissableOptions {
   /**
-   * Fires when the user clicks or taps outside the mount target.
+   * Fires when the user clicks or taps outside the mount target. The
+   * callback receives the originating `EventTarget` so a composing
+   * controller can exclude additional elements (for example a popover
+   * trigger that lives outside the body) before dismissing.
    * Implementations typically close the surface from this callback.
    */
-  readonly onPointerOutside?: () => void;
+  readonly onPointerOutside?: (target: EventTarget | null) => void;
   /**
    * Fires when the user presses Escape while the surface is mounted.
    */
@@ -112,7 +115,7 @@ export function createVizelDismissable(
     const handler = (event: PointerEvent): void => {
       if (!(event.target instanceof Node)) return;
       if (target.contains(event.target)) return;
-      state.options.onPointerOutside?.();
+      state.options.onPointerOutside?.(event.target);
     };
     state.pointerHandler = handler;
     document.addEventListener("pointerdown", handler, true);

@@ -467,6 +467,9 @@ importers:
       '@tiptap/y-tiptap':
         specifier: ^3.0.3
         version: 3.0.3(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+      '@vizel/headless':
+        specifier: workspace:^
+        version: link:../headless
       katex:
         specifier: ^0.16.0
         version: 0.16.45
@@ -548,6 +551,10 @@ importers:
         version: 5.0.1(rolldown@1.0.2)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(sass@1.100.0)(yaml@2.9.0))
 
   packages/headless:
+    dependencies:
+      '@floating-ui/dom':
+        specifier: ^1.7.6
+        version: 1.7.6
     devDependencies:
       vite:
         specifier: ^8.0.14

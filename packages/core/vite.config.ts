@@ -8,6 +8,10 @@ export default defineConfig({
       include: ["src/**/*.ts"],
       outDir: "dist",
       rollupTypes: true,
+      // Use the build tsconfig so the declaration rollup resolves
+      // @vizel/headless to its built dist types instead of following the
+      // root path alias into headless source (which trips TS6059).
+      tsconfigPath: resolve(__dirname, "tsconfig.build.json"),
     }),
   ],
   css: {
@@ -29,6 +33,12 @@ export default defineConfig({
         /^@tiptap\/.*/,
         // ProseMirror packages (must be external to share plugin instances)
         /^prosemirror-.*/,
+        // `@vizel/headless` is a declared dependency that ships the popover
+        // primitive Core re-exports; keep it (and its `@floating-ui/dom`
+        // engine) external so Core imports them instead of inlining a copy.
+        // The consumer resolves both once through the shared dependency tree.
+        /^@vizel\/headless(\/.*)?$/,
+        /^@floating-ui\/.*/,
         // Large optional dependencies - externalized to reduce bundle size
         "@hpcc-js/wasm-graphviz",
         "mermaid",

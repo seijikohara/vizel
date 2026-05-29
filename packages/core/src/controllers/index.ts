@@ -9,11 +9,6 @@ export {
   type VizelBubbleMenuEscapeControllerOptions,
 } from "./bubbleMenuEscapeController.ts";
 export {
-  createVizelDismissibleController,
-  type VizelDismissibleController,
-  type VizelDismissibleControllerOptions,
-} from "./dismissibleController.ts";
-export {
   createVizelEditorSubscription,
   type VizelEditorEventName,
   type VizelEditorSubscriptionOptions,

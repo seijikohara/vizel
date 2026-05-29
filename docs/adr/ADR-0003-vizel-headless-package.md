@@ -57,3 +57,9 @@ Follow-up:
 
 - Plan: `/Users/seiji/.claude/plans/starry-petting-planet.md` (Phase 2)
 - Related: [ADR-0007](./ADR-0007-component-size-and-controller-delegation.md), [ADR-0008](./ADR-0008-css-belongs-in-core.md)
+
+## Update (2026-05-29)
+
+The Decision's dependency graph shows each adapter depending on both `@vizel/core` and `@vizel/headless`. As the primitives landed, `@vizel/core` controllers were rebased onto them: `@vizel/core/controllers/popover` re-exports the `@vizel/headless/popover` primitive (composed from `floating` + `dismissable`), and the core list-navigation helpers moved into `@vizel/headless/keyboard`. `@vizel/core` therefore now declares `@vizel/headless` as a dependency. The edge is acyclic — `@vizel/headless` imports no framework runtime and does not depend on `@vizel/core` — and it removes the duplicated primitive logic that previously lived in both packages. The consumer-facing model is unchanged: installing one adapter is sufficient, and `@vizel/core` and `@vizel/headless` remain transitive.
+
+The `floating` primitive wraps `@floating-ui/dom` (declared as a `@vizel/headless` dependency and externalised from the build); see the ADR-0014 update for the bundle-budget note.

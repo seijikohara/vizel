@@ -93,6 +93,29 @@ Follow-up:
   responsible change behind an explicit feature flag rather than
   pushing the budget up.
 
+## Update (2026-05-29): `@vizel/headless` adopts `@floating-ui/dom`
+
+The `floating` and `popover` primitives land in `@vizel/headless` and
+adopt `@floating-ui/dom` as the positioning engine, per ADR-0003. Two
+facts about this record follow:
+
+- `@vizel/headless` now declares `@floating-ui/dom` as a runtime
+  `dependency`. A consumer that installs an adapter gains
+  `@floating-ui/dom` transitively, so the consumer's total page weight
+  grows by the gzipped `@floating-ui/dom` payload (roughly 8 kB). The
+  per-package budgets in this record measure each Vizel package's own
+  shipped `dist/` bytes, not its transitive dependency tree.
+- The headless build externalises `@floating-ui/dom` (the Vite config
+  lists it under `rollupOptions.external`), so the engine's bytes stay
+  out of `packages/headless/dist`. The measured headless bundle after
+  this change is 3 kB gzipped — well under the 10 kB ceiling — because
+  the dist carries only the import statement, not the inlined library.
+
+The 10 kB headless budget stays unchanged: it measures only
+Vizel-authored bytes, and the externalised dependency keeps the package
+within the existing allocation. No `BUDGET_KB` entry in
+`.github/workflows/quality.yml` changes.
+
 ## References
 
 - Plan: `/Users/seiji/.claude/plans/starry-petting-planet.md` (Phase 5)
