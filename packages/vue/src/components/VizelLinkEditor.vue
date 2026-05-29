@@ -6,7 +6,7 @@ import {
   resolveVizelLinkEditorLabels,
   type VizelLocale,
 } from "@vizel/core";
-import { createVizelDismissable } from "@vizel/headless";
+import { createVizelDismissable, createVizelFocusTrapController } from "@vizel/headless";
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
@@ -39,7 +39,6 @@ const emit = defineEmits<{
 }>();
 
 const formRef = useTemplateRef<HTMLFormElement>("formRef");
-const inputRef = useTemplateRef<HTMLInputElement>("inputRef");
 
 const labels = computed(() => resolveVizelLinkEditorLabels(props.locale));
 const initialState = computed(() =>
@@ -68,27 +67,36 @@ const dismissable = createVizelDismissable({
   deferPointerHandler: true,
 });
 
+// The focus trap moves focus to the URL input on open (replacing the
+// former `inputRef.focus()`), keeps Tab cycling inside the form, and
+// returns focus to the bubble-menu trigger on unmount. It ignores Escape
+// so the dismissable stays the sole owner of the close gesture.
+const focusTrap = createVizelFocusTrapController();
+
 watch(
   [viewState, formRef],
   ([view, form]) => {
     if (view && form) {
       dismissable.mount(form);
+      focusTrap.mount(form);
     } else {
       dismissable.unmount();
+      focusTrap.unmount();
     }
   },
   { flush: "post" }
 );
 
 onMounted(() => {
-  inputRef.value?.focus();
   if (viewState.value && formRef.value) {
     dismissable.mount(formRef.value);
+    focusTrap.mount(formRef.value);
   }
 });
 
 onBeforeUnmount(() => {
   dismissable.unmount();
+  focusTrap.unmount();
 });
 
 function handleSubmit(e: Event) {
@@ -128,7 +136,6 @@ function handleVisit() {
   >
     <div class="vizel-link-editor-row">
       <input
-        ref="inputRef"
         v-model="url"
         type="url"
         :placeholder="labels.urlPlaceholder"

@@ -7,6 +7,7 @@ import {
   type VizelFindReplaceState,
   type VizelLocale,
 } from "@vizel/core";
+import { createVizelFocusTrapController } from "@vizel/headless";
 import { computed, nextTick, onBeforeUnmount, ref, useTemplateRef, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 
@@ -36,7 +37,13 @@ const findText = ref("");
 const replaceText = ref("");
 const caseSensitive = ref(false);
 const state = ref<VizelFindReplaceState | null>(null);
-const findInputRef = useTemplateRef<HTMLInputElement>("findInputRef");
+const panelRef = useTemplateRef<HTMLDivElement>("panelRef");
+
+// The focus trap focuses the find input on open (replacing the former
+// `findInputRef.focus()`) and wraps Tab inside the panel. It returns no
+// focus on unmount because `handleClose` focuses `editor.view.dom`
+// directly (ADR-0007).
+const focusTrap = createVizelFocusTrapController({ returnFocusOnUnmount: false });
 
 const labels = computed(() => resolveVizelFindReplaceLabels(props.locale?.findReplace));
 const view = computed(() => buildVizelFindReplaceSpec(state.value, labels.value.noResults));
@@ -64,15 +71,19 @@ watch(
 
 onBeforeUnmount(() => {
   editorRef.value?.off("transaction", updateState);
+  focusTrap.unmount();
 });
 
-// Focus input when panel opens
+// Mount the focus trap when the panel opens and unmount it when it
+// closes. `nextTick` defers the mount until the panel renders so the trap
+// can find the panel element and its inputs.
 watch(isOpen, (open) => {
   if (open) {
     void nextTick(() => {
-      findInputRef.value?.focus();
-      findInputRef.value?.select();
+      if (panelRef.value) focusTrap.mount(panelRef.value);
     });
+  } else {
+    focusTrap.unmount();
   }
 });
 
@@ -139,13 +150,13 @@ function handleKeyDown(e: KeyboardEvent) {
 <template>
   <div
     v-if="isOpen"
+    ref="panelRef"
     :class="['vizel-find-replace-panel', props.class]"
     role="dialog"
     :aria-label="labels.label"
   >
     <div class="vizel-find-replace-row">
       <input
-        ref="findInputRef"
         type="text"
         class="vizel-find-replace-input"
         :placeholder="labels.findPlaceholder"

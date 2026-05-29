@@ -5,7 +5,7 @@ import {
   resolveVizelLinkEditorLabels,
   type VizelLocale,
 } from "@vizel/core";
-import { createVizelDismissable } from "@vizel/headless";
+import { createVizelDismissable, createVizelFocusTrapController } from "@vizel/headless";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
@@ -37,6 +37,9 @@ export interface VizelLinkEditorProps {
  * `createVizelDismissable` from `@vizel/headless`; `deferPointerHandler`
  * mirrors v1's `setTimeout(..., 0)` install so the opening pointerdown
  * does not register as an outside click (ADR-0003, ADR-0007).
+ * `createVizelFocusTrapController` traps Tab inside the form, focuses the
+ * URL input on open, and returns focus to the bubble-menu trigger on
+ * close, so the two headless controllers own every form-level listener.
  */
 export function VizelLinkEditor({
   editor: editorProp,
@@ -56,16 +59,11 @@ export function VizelLinkEditor({
   const [openInNewTab, setOpenInNewTab] = useState(initialState?.initialOpenInNewTab ?? false);
   const [asEmbed, setAsEmbed] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const viewState = useMemo(
     () => (editor ? buildVizelLinkEditorSpec(editor, url, enableEmbed) : null),
     [editor, url, enableEmbed]
   );
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
 
   // Forward the latest `onClose` to the controller without re-mounting so
   // a prop change does not detach the listener mid-interaction.
@@ -96,7 +94,18 @@ export function VizelLinkEditor({
       deferPointerHandler: true,
     });
     controller.mount(form);
-    return () => controller.unmount();
+
+    // The focus trap moves focus to the URL input on open (replacing the
+    // former ad-hoc input focus), keeps Tab cycling inside the form, and
+    // returns focus to the bubble-menu trigger when the form unmounts. It
+    // ignores Escape so the dismissable stays the sole owner of the close
+    // gesture. ADR-0007 delegates these listeners to the controller.
+    const focusTrap = createVizelFocusTrapController();
+    focusTrap.mount(form);
+    return () => {
+      controller.unmount();
+      focusTrap.unmount();
+    };
   }, [hasFormTarget]);
 
   const handleSubmit = useCallback(
@@ -131,7 +140,6 @@ export function VizelLinkEditor({
     <form ref={formRef} onSubmit={handleSubmit} className={`vizel-link-editor ${className ?? ""}`}>
       <div className="vizel-link-editor-row">
         <input
-          ref={inputRef}
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}

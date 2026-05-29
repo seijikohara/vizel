@@ -5,6 +5,7 @@ import {
   resolveVizelFindReplaceLabels,
   type VizelLocale,
 } from "@vizel/core";
+import { createVizelFocusTrapController } from "@vizel/headless";
 import {
   type ChangeEvent,
   type KeyboardEvent,
@@ -36,7 +37,13 @@ export interface VizelFindReplaceProps {
 }
 
 /**
- * Find & Replace panel component for React
+ * Find and replace panel component for React.
+ *
+ * `createVizelFocusTrapController` from `@vizel/headless` traps Tab inside
+ * the panel and focuses the find input on open (replacing the former
+ * ad-hoc input focus). The panel keeps its own Escape and editor-return
+ * handling, so the trap mounts with `returnFocusOnUnmount: false`:
+ * `handleClose` focuses `editor.view.dom` directly (ADR-0007).
  */
 export function VizelFindReplace({
   editor: editorProp,
@@ -50,7 +57,7 @@ export function VizelFindReplace({
   const [findText, setFindText] = useState("");
   const [replaceText, setReplaceText] = useState("");
   const [caseSensitive, setCaseSensitive] = useState(false);
-  const findInputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Read the Find & Replace plugin state through the flagship
   // `useVizelEditorState` primitive (ADR-0004), replacing the hand-rolled
@@ -65,12 +72,18 @@ export function VizelFindReplace({
     { editor }
   );
 
-  // Focus input when panel opens
+  // Trap focus inside the panel while it is open. The trap focuses the
+  // find input on open and wraps Tab within the panel; it returns no
+  // focus on close because `handleClose` focuses `editor.view.dom`
+  // itself. The effect keys on the open state so the trap mounts when the
+  // panel renders and unmounts when it closes (ADR-0007).
   useEffect(() => {
-    if (state?.isOpen) {
-      findInputRef.current?.focus();
-      findInputRef.current?.select();
-    }
+    if (!state?.isOpen) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+    const focusTrap = createVizelFocusTrapController({ returnFocusOnUnmount: false });
+    focusTrap.mount(panel);
+    return () => focusTrap.unmount();
   }, [state?.isOpen]);
 
   const handleFindInputChange = useCallback(
@@ -156,13 +169,13 @@ export function VizelFindReplace({
 
   return (
     <div
+      ref={panelRef}
       className={`vizel-find-replace-panel ${className || ""}`}
       role="dialog"
       aria-label={labels.label}
     >
       <div className="vizel-find-replace-row">
         <input
-          ref={findInputRef}
           type="text"
           className="vizel-find-replace-input"
           placeholder={labels.findPlaceholder}
