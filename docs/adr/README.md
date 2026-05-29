@@ -7,7 +7,8 @@ This directory records the architectural decisions that shape Vizel v2.0.0. Each
 - Records use the `ADR-NNNN-kebab-case-title.md` naming pattern. `NNNN` is a four-digit number that increases monotonically.
 - Status values are `Proposed`, `Accepted`, `Superseded`, or `Deprecated`. A superseded record links forward to the record that replaces it.
 - Records describe one decision each. Bundle related decisions into separate records and cross-link.
-- Records remain immutable after acceptance. Subsequent changes land as new records that supersede earlier ones.
+- A record's **Decision** is immutable after acceptance. Reversing or replacing a Decision lands as a new record that supersedes the earlier one; the superseded record links forward to its replacement.
+- A factual correction that leaves the Decision's intent intact — a renamed script, a moved path, a clarified mechanism — lands as a dated `## Update` section appended to the record, or as an inline fix when the original wording is simply wrong.
 
 ## Index
 

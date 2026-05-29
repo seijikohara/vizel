@@ -6,21 +6,21 @@
 
 ## Context
 
-ADRs 0001 through 0012 declare binding rules that span source code, test layout, package metadata, and `.claude/` artefacts. The Phase plan in `docs/superpowers/plans/` (or `/Users/seiji/.claude/plans/starry-petting-planet.md`) breaks the rebuild into discrete steps, but reviewers had no mechanical way to verify whether a given Phase actually closed the ADR gaps it claimed to.
+The ADRs in this directory declare binding rules that span source code, test layout, package metadata, and `.claude/` artefacts. The Phase plan in `docs/superpowers/plans/` (or `/Users/seiji/.claude/plans/starry-petting-planet.md`) breaks the rebuild into discrete steps, but reviewers had no mechanical way to verify whether a given Phase actually closed the ADR gaps it claimed to.
 
 A recent audit revealed two failure modes:
 
 - A reviewer reported ADR-0009 (no `@tiptap/react` or `@tiptap/vue-3` dependency) as outstanding even though the codebase had already complied since v1. The audit was wrong because no script enforced the invariant.
 - ADR-0007 (zero `document.addEventListener` in framework adapters) drifted between v1 and the start of the v2 rebuild — 21 violations accumulated — because no CI job grepped for them.
 
-Both gaps are mechanical: a small script can verify the invariant in seconds. Verification by inspection does not scale across a 13-ADR catalogue and a 5-Phase rebuild.
+Both gaps are mechanical: a small script can verify the invariant in seconds. Verification by inspection does not scale across the ADR catalogue and a multi-Phase rebuild.
 
 ## Decision
 
 Introduce a single ADR-compliance harness (`scripts/check-adr-compliance.ts`) that walks every ADR with a mechanically-checkable invariant and emits PASS / WARN / FAIL per ADR. The harness:
 
 - Runs locally on `pre-push` (lefthook).
-- Runs in CI as the `adr-compliance` job in the `quality` workflow.
+- Runs in CI as the `ADR compliance harness` step in the `Quality + Parity` job (`quality.yml`).
 - Returns a non-zero exit code when any FAIL is detected. WARN does not block CI but appears in the report.
 
 Each ADR enforced by the harness owns one section in the script with a self-contained check function. The check function returns `{ adr, status, message }`. Adding a new ADR adds one function; the harness does not need a registry update.
@@ -44,6 +44,8 @@ A companion subagent (`.claude/agents/phase-review.md`) handles qualitative revi
 | 0012 | Every entry in `VIZEL_FEATURE_MANIFEST` has a corresponding `tests/ct/scenarios/v2/<feature-id>/index.ts` | Any manifest entry without a scenario folder |
 
 ADR-0001, ADR-0002, ADR-0003, ADR-0004 carry no mechanical invariants on their own; they are enforced indirectly through ADR-0009, the feature manifest, the adapter publish workflow, and code review respectively.
+
+The table above is the initial scope. The shipped harness expands the ADR-0007 and ADR-0009 rows into per-adapter checks (react / vue / svelte), so it reports 14 checks in total. ADR-0014's per-package bundle budget is enforced separately by the `Bundle size` job in `quality.yml`, not by this harness.
 
 ## Status semantics
 

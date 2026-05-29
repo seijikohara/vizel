@@ -15,7 +15,7 @@
 - Hooks-first. Components are functional. Refs use `React.Ref<HTMLElement>`; the custom `VizelEditorRef` retires.
 - `useVizelEditor(options): Editor | null` returns the editor directly. No destructured-getter wrappers.
 - `useVizelEditorState<T>(selector, { equalityFn? }): T` is the selector subscription primitive. Implementation uses `useSyncExternalStore` (see [ADR-0009](./ADR-0009-first-party-editor-reactivity.md)).
-- Imperative APIs surface through `forwardRef`.
+- Imperative APIs surface through React 19's ref-as-prop convention (`ref` is a regular prop; `forwardRef` is intentionally not used — see `.claude/rules/packages/react.md`).
 - Render-props use React's standard pattern: `children` of type `(props) => ReactNode`, or named function props.
 
 ### `@vizel/vue` (Vue 3.5)
@@ -24,10 +24,10 @@
 - Two-way state surfaces via `defineModel<T>("name")`.
 - Imperative APIs surface via `defineExpose({...})`.
 - Scoped slots are typed with `defineSlots<...>()`.
-- ID generation uses `useId()` for SSR-safe ARIA identifiers.
+- ARIA identifiers are derived deterministically from data in `@vizel/core` spec builders (SSR-safe by construction); `useId()` covers any adapter-local identifier a component must mint itself.
 - Refs use `useTemplateRef<T>("name")`.
 - Generic SFCs use `<script setup lang="ts" generic="T">`.
-- The editor context binds through a typed `InjectionKey<ShallowRef<Editor | undefined>>`.
+- The editor context binds through a typed `InjectionKey<ShallowRef<Editor | null>>`.
 
 ### `@vizel/svelte` (Svelte 5)
 
