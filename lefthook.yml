@@ -49,6 +49,9 @@ pre-push:
     typecheck:
       run: pnpm typecheck
 
+    headless-test:
+      run: pnpm --filter @vizel/headless test
+
     feature-parity:
       run: pnpm check:feature-parity
 

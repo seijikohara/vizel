@@ -40,7 +40,8 @@ export interface VizelMentionMenuProps {
 </script>
 
 <script lang="ts">
-import { buildVizelMentionMenuSpec, resolveVizelListNavigation } from "@vizel/core";
+import { buildVizelMentionMenuSpec } from "@vizel/core";
+import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
 import { tick } from "svelte";
 
 let {
@@ -94,7 +95,7 @@ function onKeyDown(event: KeyboardEvent): boolean {
     selectItem(selectedIndex);
     return true;
   }
-  const next = resolveVizelListNavigation(event.key, selectedIndex, items.length);
+  const next = buildVizelListNavSpec({ key: event.key, currentIndex: selectedIndex, length: items.length });
   if (next === null) return false;
   selectedIndex = next;
   scrollToSelected();

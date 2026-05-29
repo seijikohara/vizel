@@ -26,7 +26,8 @@
     "combobox",
     "popover",
     "dismissable",
-    "focus-trap"
+    "focus-trap",
+    "keyboard"
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -41,6 +42,11 @@
       "types": "./dist/dismissable/index.d.ts",
       "import": "./dist/dismissable/index.js",
       "default": "./dist/dismissable/index.js"
+    },
+    "./keyboard": {
+      "types": "./dist/keyboard/index.d.ts",
+      "import": "./dist/keyboard/index.js",
+      "default": "./dist/keyboard/index.js"
     }
   },
   "files": [
@@ -48,7 +54,8 @@
   ],
   "scripts": {
     "build": "vite build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"__tests__/**/*.test.ts\""
   },
   "devDependencies": {
     "vite": "^8.0.14",

@@ -2,9 +2,9 @@
 import {
   buildVizelSlashMenuSpec,
   getNextVizelSlashMenuGroupIndex,
-  resolveVizelListNavigation,
   type VizelSlashCommandItem,
 } from "@vizel/core";
+import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
 import { computed, nextTick, ref, watch } from "vue";
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.vue";
 import VizelSlashMenuItem from "./VizelSlashMenuItem.vue";
@@ -118,11 +118,16 @@ function handleKeyDown(event: KeyboardEvent): boolean {
     selectItem(selectedIndex.value);
     return true;
   }
-  // ArrowUp/ArrowDown/Home/End — delegate to the core helper. It returns
-  // `null` for unknown keys *and* for `count === 0`, so the empty-menu
-  // case naturally falls through and lets Tiptap consume the key instead
-  // of being silently swallowed with a `NaN` write to `selectedIndex`.
-  const next = resolveVizelListNavigation(event.key, selectedIndex.value, count);
+  // ArrowUp/ArrowDown/Home/End — delegate to the headless builder. It
+  // returns `null` for unknown keys *and* for `count === 0`, so the
+  // empty-menu case naturally falls through and lets Tiptap consume the
+  // key instead of being silently swallowed with a `NaN` write to
+  // `selectedIndex`.
+  const next = buildVizelListNavSpec({
+    key: event.key,
+    currentIndex: selectedIndex.value,
+    length: count,
+  });
   if (next === null) return false;
   selectedIndex.value = next;
   return true;

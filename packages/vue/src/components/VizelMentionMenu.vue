@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import {
-  buildVizelMentionMenuSpec,
-  resolveVizelListNavigation,
-  type VizelLocale,
-  type VizelMentionItem,
-} from "@vizel/core";
+import { buildVizelMentionMenuSpec, type VizelLocale, type VizelMentionItem } from "@vizel/core";
+import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
 import { computed, nextTick, ref, watch } from "vue";
 
 export interface VizelMentionMenuRef {
@@ -88,7 +84,11 @@ function onKeyDown(event: KeyboardEvent): boolean {
     selectItem(selectedIndex.value);
     return true;
   }
-  const next = resolveVizelListNavigation(event.key, selectedIndex.value, props.items.length);
+  const next = buildVizelListNavSpec({
+    key: event.key,
+    currentIndex: selectedIndex.value,
+    length: props.items.length,
+  });
   if (next === null) return false;
   selectedIndex.value = next;
   scrollToSelected();

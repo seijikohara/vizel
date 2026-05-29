@@ -54,6 +54,12 @@ jobs:
       - name: No-let check
         run: pnpm check:nolet
 
+      # Run the @vizel/headless primitive unit tests. The package owns the
+      # framework-neutral list/grid navigation and dismissal logic; this
+      # step keeps the primitives covered as adapters migrate onto them.
+      - name: Headless unit tests
+        run: pnpm --filter @vizel/headless test
+
       - name: Feature manifest parity
         run: pnpm check:feature-parity
 

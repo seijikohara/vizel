@@ -1,10 +1,7 @@
 import type { Editor, VizelToolbarDropdownAction } from "@vizel/core";
-import {
-  buildVizelToolbarDropdownSpec,
-  formatVizelTooltip,
-  resolveVizelListNavigation,
-} from "@vizel/core";
+import { buildVizelToolbarDropdownSpec, formatVizelTooltip } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
+import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 
@@ -92,9 +89,13 @@ export function VizelToolbarDropdown({
       }
       return;
     }
-    // Delegate Arrow/Home/End to the core helper, which short-circuits on
-    // `optionCount === 0` instead of computing `NaN`.
-    const next = resolveVizelListNavigation(e.key, focusedIndex, optionCount);
+    // Delegate Arrow/Home/End to the headless builder, which short-circuits
+    // on `optionCount === 0` instead of computing `NaN`.
+    const next = buildVizelListNavSpec({
+      key: e.key,
+      currentIndex: focusedIndex,
+      length: optionCount,
+    });
     if (next === null) return;
     e.preventDefault();
     setFocusedIndex(next);

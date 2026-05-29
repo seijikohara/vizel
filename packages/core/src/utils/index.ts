@@ -65,11 +65,6 @@ export {
 export { groupByConsecutiveField } from "./groupByField.ts";
 // Keyboard shortcut utilities
 export { formatVizelShortcut, formatVizelTooltip, isVizelMacPlatform } from "./keyboard.ts";
-// Keyboard navigation (pure resolvers for 1D and 2D lists)
-export {
-  resolveVizelGridNavigation,
-  resolveVizelListNavigation,
-} from "./keyboard-navigation.ts";
 // Lazy import utility
 export { createLazyLoader } from "./lazy-import.ts";
 // Markdown utilities

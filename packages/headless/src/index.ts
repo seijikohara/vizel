@@ -9,14 +9,17 @@
  *
  * ADR-0003 records the design rationale.
  *
- * Current scope (Phase 2):
- * - `dismissable/` ships the first primitive and is the migration
- *   target for the 21 `document.addEventListener` violations that
- *   v1 adapter components carry.
+ * Current scope:
+ * - `dismissable/` ships click-outside, Escape, and focus-return
+ *   wiring; it is the migration target for the adapter components that
+ *   v1 attached `document` listeners directly.
+ * - `keyboard/` ships list and grid navigation spec builders plus
+ *   `keydown`-owning controllers; adapter menus consume the pure
+ *   builders.
  *
- * Subsequent primitives (combobox, popover, focus-trap, floating,
- * keyboard) land in follow-up commits alongside each Phase 3 adapter
- * rewrite that needs them.
+ * The remaining primitives (combobox, popover, focus-trap, floating)
+ * land in follow-up commits alongside each adapter rewrite that needs
+ * them.
  */
 
 export {
@@ -24,3 +27,14 @@ export {
   type VizelDismissableController,
   type VizelDismissableOptions,
 } from "./dismissable/index.ts";
+export {
+  buildVizelGridNavSpec,
+  buildVizelListNavSpec,
+  createVizelKeyboardGridController,
+  createVizelKeyboardListController,
+  type VizelGridNavInput,
+  type VizelKeyboardController,
+  type VizelKeyboardGridControllerOptions,
+  type VizelKeyboardListControllerOptions,
+  type VizelListNavInput,
+} from "./keyboard/index.ts";
