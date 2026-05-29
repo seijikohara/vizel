@@ -23,7 +23,7 @@ Per-adapter implementation:
 
 - **React 19**: `packages/react/src/_reactivity.ts` provides a `useSyncExternalStore`-backed editor store. `subscribe` attaches `editor.on('transaction')` and returns a cleanup. `getSnapshot` returns a monotonic version counter so the selector re-evaluates. `getServerSnapshot` returns `null` for SSR safety. `useVizelEditor` and `useVizelEditorState(selector, { equalityFn? })` share this store.
 - **Vue 3.5**: `packages/vue/src/_reactivity.ts` holds the editor in `shallowRef<Editor | undefined>` and re-assigns on transaction. The transaction listener attaches inside the composable and detaches in `onScopeDispose`. The composable users cannot leak listeners.
-- **Svelte 5**: `packages/svelte/src/runes/createVizelEditor.ts` holds the editor in `$state.raw<Editor | null>`. Selector subscription uses `createSubscriber` from `svelte/reactivity`, which hooks `editor.on('transaction')` once and registers dependencies through the rune system. `editor.state(selector)` returns a getter that re-runs the selector on every transaction.
+- **Svelte 5**: `packages/svelte/src/runes/createVizelEditor.svelte.ts` holds the editor in `$state.raw<Editor | null>`. Selector subscription uses `createSubscriber` from `svelte/reactivity`, which hooks `editor.on('transaction')` once and registers dependencies through the rune system. `createVizelEditorState(selector, { equalityFn? })` re-runs the selector on every transaction and short-circuits via the equality function.
 
 ## Consequences
 

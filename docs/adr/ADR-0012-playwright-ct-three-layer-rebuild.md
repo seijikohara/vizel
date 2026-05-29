@@ -14,9 +14,9 @@ Patching the v1 scenarios to handle per-framework variation would erode the valu
 
 Rebuild the Playwright CT in three layers:
 
-- **`tests/ct/scenarios/<feature-id>/`** — framework-neutral assertions driven by `VIZEL_FEATURE_MANIFEST`. Each scenario describes *what* a feature must deliver: DOM nodes, ARIA attributes, keyboard interactions, Markdown round-trip outputs, focus transitions. Per-framework spec files call into these scenarios via a framework-specific mount helper and an interaction helper. Scenario assertions live at the rendered-DOM level, not the API-shape level.
-- **`tests/ct/<framework>/<feature-id>.spec.{tsx,ts}`** — framework-idiomatic harness. The harness mounts the component using the framework's idiomatic API (`v-model` for Vue, `bind:markdown` for Svelte, hooks plus refs for React) and runs the shared scenario. The harness also asserts API-shape correctness for that framework (e.g. `defineModel<string>("markdown")` round-trips, Svelte's `onclose` fires, React's selector subscription skips re-renders on irrelevant transactions).
-- **`tests/ct/parity/<feature-id>.parity.ts`** — manifest-driven parity check. Reads `VIZEL_FEATURE_MANIFEST`, asserts every entry has scenario coverage on every framework, fails CI on drift.
+- **`tests/ct/scenarios/v2/<feature-id>/`** — framework-neutral assertions driven by `VIZEL_FEATURE_MANIFEST`. Each scenario describes *what* a feature must deliver: DOM nodes, ARIA attributes, keyboard interactions, Markdown round-trip outputs, focus transitions. Per-framework spec files call into these scenarios via a framework-specific mount helper and an interaction helper. Scenario assertions live at the rendered-DOM level, not the API-shape level.
+- **`tests/ct/<framework>/specs/<feature-id>.spec.{tsx,ts}`** — framework-idiomatic harness. The harness mounts the component using the framework's idiomatic API (`v-model` for Vue, `bind:markdown` for Svelte, hooks plus refs for React) and runs the shared scenario. The harness also asserts API-shape correctness for that framework (e.g. `defineModel<string>("markdown")` round-trips, Svelte's `onclose` fires, React's selector subscription skips re-renders on irrelevant transactions).
+- **`tests/ct/parity/check-scenarios.ts`** — manifest-driven parity check. It reads `VIZEL_FEATURE_MANIFEST`, asserts every entry has a scenario folder under `tests/ct/scenarios/v2/` on every framework, and fails CI on drift. The companion `scripts/check-ct-parity.ts` asserts the per-framework spec files stay in lockstep.
 
 The v1 `tests/ct/scenarios/*.scenario.ts` files are removed, not migrated. The v1 file list serves only as a behavioural reference for which DOM/ARIA outcomes the v2 scenarios must cover.
 
@@ -37,7 +37,7 @@ Follow-up:
 
 - Phase 1.5 lands the scenario foundation before any adapter rewrite consumes it.
 - Phase 3a, 3b, and 3c rewrite each adapter's spec files against the scenarios.
-- Phase 5 adds a CI job for `pnpm test:ct:parity`.
+- Phase 5 runs `pnpm check:scenarios` and `pnpm check:ct-parity` in the `Quality + Parity` CI job.
 
 ## References
 
