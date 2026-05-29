@@ -4,7 +4,7 @@ import {
   getNextVizelSlashMenuGroupIndex,
   type VizelSlashCommandItem,
 } from "@vizel/core";
-import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
+import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import { computed, nextTick, ref, watch } from "vue";
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.vue";
 import VizelSlashMenuItem from "./VizelSlashMenuItem.vue";
@@ -106,31 +106,31 @@ function selectItem(index: number) {
 }
 
 function handleKeyDown(event: KeyboardEvent): boolean {
-  const count = flatItemCount.value;
-  if (event.key === "Tab") {
-    if (count === 0) return false;
-    event.preventDefault();
-    selectedIndex.value = getNextVizelSlashMenuGroupIndex(spec.value, selectedIndex.value);
-    return true;
-  }
-  if (event.key === "Enter") {
-    if (count === 0) return false;
-    selectItem(selectedIndex.value);
-    return true;
-  }
-  // ArrowUp/ArrowDown/Home/End — delegate to the headless builder. It
-  // returns `null` for unknown keys *and* for `count === 0`, so the
-  // empty-menu case naturally falls through and lets Tiptap consume the
-  // key instead of being silently swallowed with a `NaN` write to
-  // `selectedIndex`.
-  const next = buildVizelListNavSpec({
+  // The combobox resolver returns `null` for unknown keys *and* for
+  // `count === 0`, so the empty-menu case falls through and lets Tiptap
+  // consume the key. `groupNext` (Tab) carries the slash-only group jump;
+  // `close` (Escape) is reported unhandled because the menu has no own
+  // close path — Tiptap dismisses it.
+  const action = buildVizelComboboxKeySpec({
     key: event.key,
     currentIndex: selectedIndex.value,
-    length: count,
+    length: flatItemCount.value,
   });
-  if (next === null) return false;
-  selectedIndex.value = next;
-  return true;
+  if (action === null) return false;
+  switch (action.type) {
+    case "navigate":
+      selectedIndex.value = action.index;
+      return true;
+    case "select":
+      selectItem(action.index);
+      return true;
+    case "groupNext":
+      event.preventDefault();
+      selectedIndex.value = getNextVizelSlashMenuGroupIndex(spec.value, selectedIndex.value);
+      return true;
+    default:
+      return false;
+  }
 }
 
 defineExpose({
@@ -144,6 +144,7 @@ defineExpose({
     data-vizel-slash-menu
     :role="spec.root.role"
     :aria-label="spec.root['aria-label']"
+    :aria-activedescendant="spec.root['aria-activedescendant']"
   >
     <template v-if="spec.sections.length === 0">
       <slot v-if="slots.empty" name="empty" />
@@ -172,6 +173,7 @@ defineExpose({
             />
             <VizelSlashMenuItem
               v-else
+              :id="slot.attrs.id"
               :item="slot.data.item"
               :is-selected="slot.data.isSelected"
               @click="selectItem(slot.index)"
@@ -194,6 +196,7 @@ defineExpose({
             />
             <VizelSlashMenuItem
               v-else
+              :id="slot.attrs.id"
               :item="slot.data.item"
               :is-selected="slot.data.isSelected"
               @click="selectItem(slot.index)"

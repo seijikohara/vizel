@@ -41,7 +41,7 @@ export interface VizelMentionMenuProps {
 
 <script lang="ts">
 import { buildVizelMentionMenuSpec } from "@vizel/core";
-import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
+import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import { tick } from "svelte";
 
 let {
@@ -90,16 +90,23 @@ function selectItem(index: number) {
 }
 
 function onKeyDown(event: KeyboardEvent): boolean {
-  if (event.key === "Enter") {
-    if (items.length === 0) return false;
-    selectItem(selectedIndex);
-    return true;
+  // The mention menu is flat: it handles `navigate` and `select` only.
+  // `groupNext` (Tab) and `close` (Escape) fall through as unhandled —
+  // mention has no groups and no own close path — so Tiptap consumes those
+  // keys, matching the menu's pre-adoption behaviour.
+  const action = buildVizelComboboxKeySpec({ key: event.key, currentIndex: selectedIndex, length: items.length });
+  if (action === null) return false;
+  switch (action.type) {
+    case "navigate":
+      selectedIndex = action.index;
+      scrollToSelected();
+      return true;
+    case "select":
+      selectItem(action.index);
+      return true;
+    default:
+      return false;
   }
-  const next = buildVizelListNavSpec({ key: event.key, currentIndex: selectedIndex, length: items.length });
-  if (next === null) return false;
-  selectedIndex = next;
-  scrollToSelected();
-  return true;
 }
 
 // Expose the keyboard handler through the optional ref prop so suggestion

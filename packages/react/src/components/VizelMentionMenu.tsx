@@ -1,5 +1,5 @@
 import { buildVizelMentionMenuSpec, type VizelLocale, type VizelMentionItem } from "@vizel/core";
-import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
+import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import type { ReactNode, Ref } from "react";
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 
@@ -88,19 +88,26 @@ export function VizelMentionMenu({
 
   useImperativeHandle(ref, () => ({
     onKeyDown: (event) => {
-      if (event.key === "Enter") {
-        if (items.length === 0) return false;
-        selectItem(selectedIndex);
-        return true;
-      }
-      const next = buildVizelListNavSpec({
+      // The mention menu is flat: it handles `navigate` and `select` only.
+      // `groupNext` (Tab) and `close` (Escape) fall through as unhandled —
+      // mention has no groups and no own close path — so Tiptap consumes
+      // those keys, matching the menu's pre-adoption behaviour.
+      const action = buildVizelComboboxKeySpec({
         key: event.key,
         currentIndex: selectedIndex,
         length: items.length,
       });
-      if (next === null) return false;
-      setSelectedIndex(next);
-      return true;
+      if (action === null) return false;
+      switch (action.type) {
+        case "navigate":
+          setSelectedIndex(action.index);
+          return true;
+        case "select":
+          selectItem(action.index);
+          return true;
+        default:
+          return false;
+      }
     },
   }));
 
