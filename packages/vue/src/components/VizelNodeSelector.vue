@@ -7,7 +7,8 @@ import {
   type VizelNodeTypeOption,
   vizelDefaultNodeTypes,
 } from "@vizel/core";
-import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { createVizelDismissable } from "@vizel/headless";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useVizelState } from "../composables/useVizelState.ts";
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
@@ -54,23 +55,36 @@ const spec = computed(() => {
   );
 });
 
-function handleClickOutside(event: MouseEvent) {
-  if (!(event.target instanceof Node)) return;
-  if (containerRef.value && !containerRef.value.contains(event.target)) {
+// The dropdown owns Escape and arrow-key navigation inside its own
+// `handleKeyDown`; the controller only handles outside-pointer dismissal.
+// `captureEscape` stays `false` because the dropdown's own keydown listener
+// handles Escape via `event.preventDefault()` plus `triggerRef.value?.focus()`.
+const dismissable = createVizelDismissable({
+  onPointerOutside: () => {
     isOpen.value = false;
-  }
-}
+  },
+});
 
-watch(isOpen, (open) => {
-  if (open) {
-    document.addEventListener("mousedown", handleClickOutside);
-  } else {
-    document.removeEventListener("mousedown", handleClickOutside);
+watch(
+  [isOpen, containerRef],
+  ([open, container]) => {
+    if (open && container) {
+      dismissable.mount(container);
+    } else {
+      dismissable.unmount();
+    }
+  },
+  { flush: "post" }
+);
+
+onMounted(() => {
+  if (isOpen.value && containerRef.value) {
+    dismissable.mount(containerRef.value);
   }
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener("mousedown", handleClickOutside);
+  dismissable.unmount();
 });
 
 watch(isOpen, (newValue) => {

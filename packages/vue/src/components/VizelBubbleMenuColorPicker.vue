@@ -8,7 +8,8 @@ import {
   type VizelColorDefinition,
   type VizelLocale,
 } from "@vizel/core";
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { createVizelDismissable } from "@vizel/headless";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import VizelColorPicker from "./VizelColorPicker.vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -53,7 +54,7 @@ const isTextColor = computed(() => props.type === "textColor");
 
 const noneValues = computed(() => (isTextColor.value ? ["inherit"] : ["transparent"]));
 
-// Load recent colors when dropdown opens
+// Load recent colors when dropdown opens.
 watch(isOpen, (open) => {
   if (open && props.showRecentColors) {
     recentColors.value = getVizelRecentColors(props.type);
@@ -65,23 +66,37 @@ function handleColorChange(color: string) {
   isOpen.value = false;
 }
 
-function handleClickOutside(event: MouseEvent) {
-  if (!(event.target instanceof Node)) return;
-  if (containerRef.value && !containerRef.value.contains(event.target)) {
+// Pointer-outside dismissal routes through `createVizelDismissable` so this
+// component never attaches the listener directly. ADR-0007 delegates the
+// listener wiring to the controller. `captureEscape` stays `false` because
+// the color picker lets the editor's bubble-phase Escape keymap fire (no
+// special Escape semantics).
+const dismissable = createVizelDismissable({
+  onPointerOutside: () => {
     isOpen.value = false;
-  }
-}
+  },
+});
 
-watch(isOpen, (open) => {
-  if (open) {
-    document.addEventListener("mousedown", handleClickOutside);
-  } else {
-    document.removeEventListener("mousedown", handleClickOutside);
+watch(
+  [isOpen, containerRef],
+  ([open, container]) => {
+    if (open && container) {
+      dismissable.mount(container);
+    } else {
+      dismissable.unmount();
+    }
+  },
+  { flush: "post" }
+);
+
+onMounted(() => {
+  if (isOpen.value && containerRef.value) {
+    dismissable.mount(containerRef.value);
   }
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener("mousedown", handleClickOutside);
+  dismissable.unmount();
 });
 
 function getTriggerStyle() {
