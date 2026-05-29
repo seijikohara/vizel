@@ -13,6 +13,7 @@ export default defineConfig({
     lib: {
       entry: {
         index: resolve(__dirname, "src/index.ts"),
+        "combobox/index": resolve(__dirname, "src/combobox/index.ts"),
         "dismissable/index": resolve(__dirname, "src/dismissable/index.ts"),
         "floating/index": resolve(__dirname, "src/floating/index.ts"),
         "focus-trap/index": resolve(__dirname, "src/focus-trap/index.ts"),

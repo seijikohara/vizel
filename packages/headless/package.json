@@ -39,6 +39,11 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
+    "./combobox": {
+      "types": "./dist/combobox/index.d.ts",
+      "import": "./dist/combobox/index.js",
+      "default": "./dist/combobox/index.js"
+    },
     "./dismissable": {
       "types": "./dist/dismissable/index.d.ts",
       "import": "./dist/dismissable/index.js",

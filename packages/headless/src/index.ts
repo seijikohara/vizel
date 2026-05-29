@@ -23,11 +23,22 @@
  * - `focus-trap/` confines keyboard focus to a modal-style surface; the
  *   link editor and find-replace forms mount it to keep Tab inside the
  *   form and to return focus to the trigger on close.
+ * - `combobox/` resolves the slash-menu and mention-menu keyboard contract
+ *   and supplies the `aria-activedescendant` / `aria-expanded` wiring; the
+ *   menus consume the pure resolver because a Tiptap suggestion renderer
+ *   forwards the raw `KeyboardEvent`s.
  *
- * The remaining primitive (combobox) lands in a follow-up commit
- * alongside the adapter rewrite that needs it.
+ * The catalogue is now complete: every primitive ADR-0003 lists ships.
  */
 
+export {
+  buildVizelComboboxKeySpec,
+  createVizelComboboxController,
+  type VizelComboboxAction,
+  type VizelComboboxController,
+  type VizelComboboxControllerOptions,
+  type VizelComboboxKeyInput,
+} from "./combobox/index.ts";
 export {
   createVizelDismissable,
   type VizelDismissableController,
