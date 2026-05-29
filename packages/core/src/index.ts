@@ -510,8 +510,6 @@ export type {
 export {
   type CreateVizelEditorInstanceOptions,
   type CreateVizelEditorInstanceResult,
-  // Menu positioning utilities
-  clampMenuPosition,
   // Editor helpers
   convertVizelCodeBlocksToDiagrams,
   // Lazy import utility
@@ -549,7 +547,6 @@ export {
   isVizelMacPlatform,
   // Color utilities
   isVizelValidHexColor,
-  type MenuPosition,
   mountToVizelPortal,
   mountVizelEditorView,
   normalizeVizelHexColor,

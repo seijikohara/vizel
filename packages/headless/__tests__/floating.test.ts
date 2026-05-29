@@ -12,6 +12,9 @@
 
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it, mock } from "node:test";
+// Type-only import is erased at compile time, so it does not load the
+// module before `mock.module` registers the `@floating-ui/dom` stub.
+import type { VizelVirtualElement } from "../src/floating/index.ts";
 
 interface FloatingMockState {
   readonly computeCalls: { anchor: unknown; body: unknown; config: unknown }[];
@@ -156,5 +159,27 @@ describe("createVizelFloatingController", () => {
     controller.mount();
     assert.equal(floatingMock.computeCalls.length, 0);
     assert.equal(floatingMock.autoUpdateCalls.length, 0);
+  });
+
+  it("positions against a virtual anchor that exposes only getBoundingClientRect", async () => {
+    // The block menu captures the drag-handle rect, not a stable element,
+    // so it supplies a virtual anchor. `getAnchor` accepts the virtual
+    // element without a cast, and the controller forwards it to
+    // `computePosition` so the body still receives fixed-position styles.
+    const rect = { left: 5, top: 7, bottom: 9, right: 11, width: 6, height: 2 } as DOMRect;
+    const virtualAnchor: VizelVirtualElement = { getBoundingClientRect: () => rect };
+    const controller = createVizelFloatingController({
+      getAnchor: () => virtualAnchor,
+      getBody: () => env.body as unknown as HTMLElement,
+    });
+    controller.mount();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    assert.equal(floatingMock.computeCalls[0]?.anchor, virtualAnchor);
+    assert.equal(floatingMock.autoUpdateCalls[0]?.anchor, virtualAnchor);
+    assert.equal(env.body.style.position, "fixed");
+    assert.equal(env.body.style.left, "12px");
+    assert.equal(env.body.style.top, "34px");
   });
 });

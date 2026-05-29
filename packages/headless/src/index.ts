@@ -35,10 +35,12 @@ export {
   createVizelFloatingController,
   VIZEL_FLOATING_DEFAULT_OFFSET,
   VIZEL_FLOATING_DEFAULT_PLACEMENT,
+  type VizelFloatingAnchor,
   type VizelFloatingController,
   type VizelFloatingControllerOptions,
   type VizelFloatingSpec,
   type VizelFloatingSpecOptions,
+  type VizelVirtualElement,
 } from "./floating/index.ts";
 export {
   buildVizelGridNavSpec,

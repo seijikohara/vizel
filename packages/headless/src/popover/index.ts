@@ -28,9 +28,22 @@ import { createVizelDismissable } from "../dismissable/index.ts";
 import {
   buildVizelFloatingSpec,
   createVizelFloatingController,
+  type VizelFloatingAnchor,
   type VizelFloatingSpec,
   type VizelFloatingSpecOptions,
 } from "../floating/index.ts";
+
+/**
+ * Report whether the anchor exposes a DOM `contains` method.
+ *
+ * A live element answers `true`; a {@link VizelFloatingAnchor} virtual
+ * element, which carries only `getBoundingClientRect`, answers `false`.
+ * The guard reads the property without naming the `HTMLElement` global,
+ * which is undefined under Server-Side Rendering (SSR) and in the Node
+ * test runner.
+ */
+const hasContains = (anchor: VizelFloatingAnchor): anchor is HTMLElement =>
+  typeof (anchor as { contains?: unknown }).contains === "function";
 
 /**
  * Options for {@link buildVizelPopoverPositionSpec}.
@@ -68,8 +81,14 @@ export function buildVizelPopoverPositionSpec(
  * Options for {@link createVizelPopoverController}.
  */
 export interface VizelPopoverControllerOptions extends VizelFloatingSpecOptions {
-  /** Return the anchor element the body positions against, or `null`. */
-  readonly getAnchor: () => HTMLElement | null;
+  /**
+   * Return the anchor the body positions against, or `null`. The anchor
+   * is a live element or a {@link VizelFloatingAnchor} virtual element
+   * carrying only `getBoundingClientRect`. A virtual anchor cannot
+   * contain a pointer target, so the controller excludes it from
+   * "outside" detection only when it exposes `contains`.
+   */
+  readonly getAnchor: () => VizelFloatingAnchor | null;
   /** Return the floating body element to position, or `null`. */
   readonly getBody: () => HTMLElement | null;
   /** Called when the controller decides the popover should close. */
@@ -161,9 +180,20 @@ export function createVizelPopoverController(
       // anchor too: the trigger lives outside the body, so toggling the
       // popover by clicking the trigger must not count as an outside
       // click. The legacy core controller modelled this with a multi-
-      // element "outside" set ([anchor, body]).
+      // element "outside" set ([anchor, body]). A virtual anchor exposes
+      // only `getBoundingClientRect`, so probe for `contains` rather than
+      // `instanceof HTMLElement`: the global is undefined under SSR and in
+      // the Node test runner, and the capability check covers both an
+      // element anchor and a virtual one.
       const anchor = options.getAnchor();
-      if (target instanceof Node && anchor?.contains(target)) return;
+      if (
+        target instanceof Node &&
+        anchor !== null &&
+        hasContains(anchor) &&
+        anchor.contains(target)
+      ) {
+        return;
+      }
       options.onDismiss();
     },
     ...(options.dismissOnEscape === false ? {} : { onEscape: () => options.onDismiss() }),

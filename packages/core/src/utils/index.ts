@@ -89,8 +89,8 @@ export {
   vizelObsidianFlavor,
   vizelPandocFlavor,
 } from "./markdown-flavors.ts";
-// Menu positioning utilities
-export { clampMenuPosition, type MenuPosition, shouldFlipSubmenu } from "./menuPositioning.ts";
+// Submenu flip utility
+export { shouldFlipSubmenu } from "./menuPositioning.ts";
 // SSR-safe rAF helpers (used by markdown sync hooks)
 export {
   vizelCancelAnimationFrame,
