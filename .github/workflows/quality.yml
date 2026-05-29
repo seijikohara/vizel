@@ -1,0 +1,175 @@
+name: Quality
+
+# `Quality` runs on every push and pull request without a path filter so
+# Markdown-only changes still receive lint and writing-rule enforcement.
+# The companion `CI` workflow gates behaviour tests behind `paths-ignore`,
+# which would skip quality checks on docs-only PRs if they lived there.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # `quality-parity` folds the former `quality`, `parity`, `ct-parity`, and
+  # `ssr` jobs into one sequential pipeline. Each former job paid the same
+  # ~30s install cost; consolidating trades a small wall-clock penalty per
+  # PR for a four-times reduction in runner-pool footprint, which keeps the
+  # shared queue free for the test matrix.
+  quality-parity:
+    name: Quality + Parity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # Install pnpm before `setup-node` so the cache key resolution finds
+      # the package manager on PATH. Reversing the order breaks the cache.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # `pnpm lint` runs biome with `--error-on-warnings`, so any warning
+      # fails CI. The intent is to prevent warning rot — the codebase ships
+      # at zero warnings, and CI keeps it that way.
+      - name: Lint (fail on warnings)
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: No-let check
+        run: pnpm check:nolet
+
+      - name: Cross-framework parity
+        run: pnpm check:parity
+
+      - name: Feature manifest parity
+        run: pnpm check:feature-parity
+
+      - name: Scenario foundation parity
+        run: pnpm check:scenarios
+
+      - name: ADR compliance harness
+        run: pnpm check:adr-compliance
+
+      - name: CT spec parity across frameworks
+        run: pnpm check:ct-parity
+
+      - name: SSR safety (core stays free of top-level browser globals)
+        run: pnpm check:ssr
+
+      - name: Build
+        run: pnpm build
+
+      # Publish the per-package `dist/` so `bundle-size` measures the exact
+      # bytes this run produced. Sharing the artifact avoids a duplicate
+      # build in the dependent job and keeps the two measurements in sync.
+      - name: Upload build output
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-output
+          path: |
+            packages/core/dist
+            packages/headless/dist
+            packages/react/dist
+            packages/vue/dist
+            packages/svelte/dist
+          retention-days: 1
+          if-no-files-found: error
+
+  # `bundle-size` measures the gzipped JavaScript footprint per published
+  # package and fails when an adapter ships more than its budget. The
+  # budgets are v2 baselines tuned from the current build output; tighten
+  # them further whenever a measurement comes in well under budget.
+  # Bundle bloat is the most common silent regression in component
+  # libraries, so the check runs on every push and pull request.
+  bundle-size:
+    name: Bundle size
+    needs: quality-parity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # `bundle-size` only runs the measurement script, so it does not need
+      # pnpm install. The download step restores the artifact produced by
+      # `quality-parity` instead of rebuilding from source.
+      - name: Download build output
+        uses: actions/download-artifact@v8
+        with:
+          name: build-output
+          path: packages
+
+      # The check sums the gzipped size of every `*.js` file under each
+      # package's `dist/` and compares the total to a per-package budget
+      # in kilobytes. On overage the step prints the offending package,
+      # the current size, and the budget so the failure is actionable
+      # without re-running the build locally.
+      - name: Measure and enforce per-adapter budgets
+        run: |
+          set -euo pipefail
+
+          # Per-package gzipped budget in kilobytes. Numbers tuned from
+          # the v2 baseline measurement; lower whenever build output
+          # shrinks. Never raise a budget without a recorded rationale.
+          declare -A BUDGET_KB=(
+            [core]=300
+            [headless]=10
+            [react]=40
+            [vue]=40
+            [svelte]=60
+          )
+
+          echo "## Bundle size" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Package | Gzipped JS | Budget | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---------|-----------:|-------:|:------:|" >> "$GITHUB_STEP_SUMMARY"
+
+          failed=0
+          for pkg in core headless react vue svelte; do
+            dist="packages/${pkg}/dist"
+            if [ ! -d "$dist" ]; then
+              echo "::error::Missing build output at ${dist}"
+              failed=1
+              continue
+            fi
+
+            # Concatenate every shipped `.js` chunk, gzip the stream,
+            # and read the resulting byte count. Concatenation matches
+            # what a consumer downloads when importing the whole
+            # adapter; per-file gzip understates due to gzip's
+            # per-stream overhead.
+            gz_bytes=$(find "$dist" -type f -name '*.js' -print0 \
+              | xargs -0 cat \
+              | gzip -c \
+              | wc -c)
+            gz_kb=$(( (gz_bytes + 1023) / 1024 ))
+            budget=${BUDGET_KB[$pkg]}
+
+            if [ "$gz_kb" -gt "$budget" ]; then
+              echo "::error::@vizel/${pkg} ships ${gz_kb} kB gzipped (budget ${budget} kB). Investigate the diff for unintended imports, or update the budget with a recorded rationale."
+              echo "| @vizel/${pkg} | ${gz_kb} kB | ${budget} kB | FAIL |" >> "$GITHUB_STEP_SUMMARY"
+              failed=1
+            else
+              echo "@vizel/${pkg}: ${gz_kb} kB gzipped (budget ${budget} kB)"
+              echo "| @vizel/${pkg} | ${gz_kb} kB | ${budget} kB | OK |" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+
+          if [ "$failed" -ne 0 ]; then
+            exit 1
+          fi
