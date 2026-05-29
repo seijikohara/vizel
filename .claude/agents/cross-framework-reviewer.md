@@ -26,7 +26,7 @@ This subagent verifies feature parity and API consistency across the three Vizel
    - Every adapter exports the symbol declared in the manifest.
    - The feature scenario folder under `tests/ct/scenarios/<feature-id>/` exists.
    - Per-framework spec files under `tests/ct/{react,vue,svelte}/specs/` invoke the scenario.
-4. **Check that `pnpm check:parity` passes** by inspecting the relevant outputs.
+4. **Check that `pnpm check:feature-parity` passes** by inspecting the relevant outputs.
 5. **Verify the demos.** Confirm that each demo under `apps/demo/{react,vue,svelte}/` exercises the new feature.
 
 ## Output
@@ -48,7 +48,7 @@ Report findings in the following format. Cite file paths in `path:line` form.
 
 - [ ] Add the missing adapter symbol declared in the manifest.
 - [ ] Add the scenario file at `tests/ct/scenarios/<feature-id>/`.
-- [ ] Confirm `pnpm check:parity` exits 0 after adding the per-framework symbols.
+- [ ] Confirm `pnpm check:feature-parity` exits 0 after adding the per-framework symbols.
 ```
 
 ## Constraints

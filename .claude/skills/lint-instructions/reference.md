@@ -103,7 +103,7 @@ For each fixable violation:
 |---------|---------|
 | `pnpm check` | Auto-fix Biome violations (formatting, imports, exports, naming) |
 | `pnpm typecheck` | Verify type safety |
-| `pnpm check:parity` | Verify cross-framework feature parity against the manifest |
+| `pnpm check:feature-parity` | Verify cross-framework feature parity against the manifest |
 | `pnpm build` | Verify the build succeeds |
 
 ## Common violations

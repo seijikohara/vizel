@@ -75,7 +75,6 @@ Each rule under `.claude/rules/` is the single source of truth (SSOT) for its to
 | `.claude/rules/code-style.md` | Editing source under `packages/`, `apps/`, or `tests/` | TypeScript style, function declarations, type safety |
 | `.claude/rules/writing.md` | Editing any source, test, or documentation file | Technical-writing principles for prose, comments, docstrings, commits |
 | `.claude/rules/feature-manifest.md` | Editing the manifest, any adapter, or any CT scenario | Feature manifest schema and parity workflow |
-| `.claude/rules/cross-framework.md` | Editing under `packages/{react,vue,svelte}/` (deprecated, removed in Phase 1) | v1 API-symmetry contract; superseded by the feature manifest |
 | `.claude/rules/git.md` | Always (commit messages, branches, hooks) | Conventional Commits, branch naming, lefthook |
 | `.claude/rules/testing.md` | Editing under `tests/` or any `playwright-ct.config.ts` | Playwright CT structure and best practices |
 | `.claude/rules/demo.md` | Editing under `apps/demo/` | Demo content, dependencies, and CSS |

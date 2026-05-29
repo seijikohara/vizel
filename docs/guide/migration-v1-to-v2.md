@@ -29,7 +29,7 @@ v2 ships no compatibility shim. The maintainer's directive prioritises a coheren
 
 v1 enforced API symmetry across the three adapters through `.claude/rules/cross-framework.md` (472 lines of prose). Every component prop, hook name, return shape, and event payload had to mirror across React, Vue, and Svelte. The contract prevented each framework from using its native idiom.
 
-v2 replaces the prose contract with a typed feature manifest at `packages/core/src/feature-manifest.ts`. The manifest lists every advertised feature and the symbol each adapter exports. CI runs `pnpm check:parity` against the manifest before any test executes.
+v2 replaces the prose contract with a typed feature manifest at `packages/core/src/feature-manifest.ts`. The manifest lists every advertised feature and the symbol each adapter exports. CI runs `pnpm check:feature-parity` against the manifest before any test executes.
 
 ### What changes for consumers
 

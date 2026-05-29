@@ -19,7 +19,7 @@ The deletion lands in the same pull request that introduces the feature manifest
 - The schema for `VizelFeatureDefinition`.
 - The workflow for adding a feature (manifest entry → adapter implementations → scenarios → parity check).
 - The workflow for modifying a feature (update manifest → coordinated adapter changes → scenario updates).
-- The CI verification commands (`pnpm check:parity`, `pnpm test:ct:parity`).
+- The CI verification commands (`pnpm check:feature-parity`, `pnpm check:ct-parity`).
 
 ## Consequences
 

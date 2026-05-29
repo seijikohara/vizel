@@ -26,6 +26,7 @@ This directory records the architectural decisions that shape Vizel v2.0.0. Each
 | [ADR-0011](./ADR-0011-technical-writing-style.md) | Technical-writing style governs every artefact | Accepted |
 | [ADR-0012](./ADR-0012-playwright-ct-three-layer-rebuild.md) | Playwright Component Tests rebuilt in three layers | Accepted |
 | [ADR-0013](./ADR-0013-adr-compliance-harness.md) | ADR compliance harness | Accepted |
+| [ADR-0014](./ADR-0014-bundle-size-budgets.md) | Bundle-size budgets per package | Accepted |
 
 ## Template
 
