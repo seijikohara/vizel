@@ -90,9 +90,16 @@ const commentManager = createVizelComment(() => (features.comments ? editorRef :
 // Find & Replace extension
 const findReplaceExtensions = [createVizelFindReplaceExtension()];
 
-// Swap content when flavor changes
+// Swap content when flavor changes. `$state.raw` holds the flavor object
+// by reference without deep-proxying it: a plain `$state(flavor)` wraps the
+// object in a reactive Proxy, so `flavor !== prevFlavor` compares the raw
+// derived value against a Proxy and is always true, and the
+// `prevFlavor = flavor` write re-proxies on every run. That re-marks the
+// `prevFlavor` this effect reads as dirty and re-triggers the effect
+// forever (effect_update_depth_exceeded), which aborts the initial render
+// before the editor mounts.
 // svelte-ignore state_referenced_locally
-let prevFlavor = $state(flavor);
+let prevFlavor = $state.raw(flavor);
 $effect(() => {
   if (flavor !== prevFlavor && editorRef) {
     setVizelMarkdown(editorRef, getFlavorContent(flavor), { transformDiagrams: true });
