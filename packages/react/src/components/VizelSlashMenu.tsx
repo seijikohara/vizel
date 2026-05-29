@@ -3,7 +3,7 @@ import {
   getNextVizelSlashMenuGroupIndex,
   type VizelSlashCommandItem,
 } from "@vizel/core";
-import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
+import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import type { ReactNode, Ref } from "react";
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { VizelSlashMenuEmpty } from "./VizelSlashMenuEmpty.tsx";
@@ -106,30 +106,31 @@ export function VizelSlashMenu({
 
   useImperativeHandle(ref, () => ({
     onKeyDown: (event) => {
-      if (event.key === "Tab") {
-        if (flatItemCount === 0) return false;
-        event.preventDefault();
-        setSelectedIndex(getNextVizelSlashMenuGroupIndex(spec, selectedIndex));
-        return true;
-      }
-      if (event.key === "Enter") {
-        if (flatItemCount === 0) return false;
-        selectItem(selectedIndex);
-        return true;
-      }
-      // ArrowUp/ArrowDown/Home/End — delegate to the headless builder. It
-      // returns `null` for unknown keys *and* for `flatItemCount === 0`,
-      // so the empty-menu case naturally falls through and lets Tiptap
-      // consume the key instead of being silently swallowed with a `NaN`
-      // write to `selectedIndex`.
-      const next = buildVizelListNavSpec({
+      // The combobox resolver returns `null` for unknown keys *and* for
+      // `flatItemCount === 0`, so the empty-menu case falls through and lets
+      // Tiptap consume the key. `groupNext` (Tab) carries the slash-only
+      // group jump; `close` (Escape) is reported unhandled because the menu
+      // has no own close path — Tiptap dismisses it.
+      const action = buildVizelComboboxKeySpec({
         key: event.key,
         currentIndex: selectedIndex,
         length: flatItemCount,
       });
-      if (next === null) return false;
-      setSelectedIndex(next);
-      return true;
+      if (action === null) return false;
+      switch (action.type) {
+        case "navigate":
+          setSelectedIndex(action.index);
+          return true;
+        case "select":
+          selectItem(action.index);
+          return true;
+        case "groupNext":
+          event.preventDefault();
+          setSelectedIndex(getNextVizelSlashMenuGroupIndex(spec, selectedIndex));
+          return true;
+        default:
+          return false;
+      }
     },
   }));
 
@@ -152,6 +153,9 @@ export function VizelSlashMenu({
       data-vizel-slash-menu=""
       role="listbox"
       aria-label={spec.root["aria-label"]}
+      {...(spec.root["aria-activedescendant"] && {
+        "aria-activedescendant": spec.root["aria-activedescendant"],
+      })}
     >
       {spec.sections.map((section) => {
         const renderedItems = section.items.map((slot) => {
@@ -163,6 +167,7 @@ export function VizelSlashMenu({
               item={slot.data.item}
               isSelected={slot.data.isSelected}
               onClick={onClick}
+              id={slot.attrs.id}
             />
           );
           return (

@@ -40,13 +40,25 @@ export interface VizelSlashMenuSpecOptions {
 }
 
 /**
+ * Return the stable `role="option"` id for a slash item.
+ *
+ * The id matches the listbox root's `aria-activedescendant` when the item
+ * is the active selection. The prefix mirrors `vizel-mention-${id}` from
+ * `buildVizelMentionMenuSpec` so both suggestion menus follow the same
+ * combobox `aria-activedescendant` relationship.
+ */
+const slashOptionId = (item: VizelSlashCommandItem): string => `vizel-slash-${item.id}`;
+
+/**
  * Build a {@link VizelMenuSpec} for the slash command menu.
  *
  * Slash menus use `role="listbox"` and may render multiple sections
- * (groups) each with a header label. Items defer their own role / ARIA
- * to the framework `VizelSlashMenuItem` component (which is itself a
- * `role="option"` button), so the spec-level item `attrs` are empty —
- * the spec carries identity (key, index) and view data only.
+ * (groups) each with a header label. The active option carries the id the
+ * root's `aria-activedescendant` points at, matching
+ * `buildVizelMentionMenuSpec`. The framework `VizelSlashMenuItem` component
+ * owns the `role="option"` element, so the spec threads the id (and the
+ * selection flag) to that component while leaving the role itself to the
+ * component.
  *
  * The empty `sections` array represents the no-items state; the
  * component renders its default `VizelSlashMenuEmpty` (or a custom
@@ -58,10 +70,16 @@ export function buildVizelSlashMenuSpec(
   options: VizelSlashMenuSpecOptions = {}
 ): VizelMenuSpec<VizelSlashItemView> {
   const { showGroups = true, groupOrder } = options;
-  const rootAttrs = { role: "listbox", "aria-label": "Commands" } as const;
+  const activeItem = items[selectedIndex];
+  const activeId = activeItem ? slashOptionId(activeItem) : undefined;
+  const rootAttrs = {
+    role: "listbox",
+    "aria-label": "Commands",
+    ...(activeId && { "aria-activedescendant": activeId }),
+  } as const;
 
   if (items.length === 0) {
-    return { root: rootAttrs, sections: [] };
+    return { root: { role: "listbox", "aria-label": "Commands" }, sections: [] };
   }
 
   const groups =
@@ -84,7 +102,7 @@ export function buildVizelSlashMenuSpec(
         key: item.id,
         index,
         data: { item, isSelected: index === selectedIndex },
-        attrs: {},
+        attrs: { id: slashOptionId(item) },
       };
     });
     return {

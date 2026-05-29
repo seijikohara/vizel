@@ -35,7 +35,7 @@ export interface VizelSlashMenuProps {
 
 <script lang="ts">
 import { buildVizelSlashMenuSpec, getNextVizelSlashMenuGroupIndex } from "@vizel/core";
-import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
+import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import { tick } from "svelte";
 import VizelSlashMenuItem from "./VizelSlashMenuItem.svelte";
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.svelte";
@@ -97,26 +97,27 @@ function selectItem(index: number) {
 }
 
 function onKeyDown(event: KeyboardEvent): boolean {
-  if (event.key === "Tab") {
-    if (flatItemCount === 0) return false;
-    event.preventDefault();
-    selectedIndex = getNextVizelSlashMenuGroupIndex(spec, selectedIndex);
-    return true;
+  // The combobox resolver returns `null` for unknown keys *and* for
+  // `flatItemCount === 0`, so the empty-menu case falls through and lets
+  // Tiptap consume the key. `groupNext` (Tab) carries the slash-only group
+  // jump; `close` (Escape) is reported unhandled because the menu has no own
+  // close path — Tiptap dismisses it.
+  const action = buildVizelComboboxKeySpec({ key: event.key, currentIndex: selectedIndex, length: flatItemCount });
+  if (action === null) return false;
+  switch (action.type) {
+    case "navigate":
+      selectedIndex = action.index;
+      return true;
+    case "select":
+      selectItem(action.index);
+      return true;
+    case "groupNext":
+      event.preventDefault();
+      selectedIndex = getNextVizelSlashMenuGroupIndex(spec, selectedIndex);
+      return true;
+    default:
+      return false;
   }
-  if (event.key === "Enter") {
-    if (flatItemCount === 0) return false;
-    selectItem(selectedIndex);
-    return true;
-  }
-  // ArrowUp/ArrowDown/Home/End — delegate to the headless builder. It
-  // returns `null` for unknown keys *and* for `flatItemCount === 0`, so
-  // the empty-menu case naturally falls through and lets Tiptap consume
-  // the key instead of being silently swallowed with a `NaN` write to
-  // `selectedIndex`.
-  const next = buildVizelListNavSpec({ key: event.key, currentIndex: selectedIndex, length: flatItemCount });
-  if (next === null) return false;
-  selectedIndex = next;
-  return true;
 }
 
 // Expose the keyboard handler through the optional ref prop so suggestion
@@ -130,11 +131,13 @@ if (ref) {
 }
 </script>
 
+<!-- svelte-ignore a11y_aria_activedescendant_has_tabindex -->
 <div
   class="vizel-slash-menu {className ?? ''}"
   data-vizel-slash-menu
   role={spec.root.role}
   aria-label={spec.root["aria-label"]}
+  aria-activedescendant={spec.root["aria-activedescendant"]}
 >
   {#if spec.sections.length === 0}
     {#if renderEmpty}
@@ -158,6 +161,7 @@ if (ref) {
                 })}
               {:else}
                 <VizelSlashMenuItem
+                  id={slot.attrs.id}
                   item={slot.data.item}
                   isSelected={slot.data.isSelected}
                   onclick={() => selectItem(slot.index)}

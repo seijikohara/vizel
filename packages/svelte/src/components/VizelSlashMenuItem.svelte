@@ -8,6 +8,15 @@ export interface VizelSlashMenuItemProps {
   isSelected?: boolean;
   /** Custom class name */
   class?: string;
+  /**
+   * Stable id for the `role="option"` element. The listbox root's
+   * `aria-activedescendant` points at this id when the item is the active
+   * selection, matching the WAI-ARIA combobox pattern. The spec always
+   * supplies the id for a rendered item; the optional `undefined` keeps the
+   * prop assignable from the optional spec field under
+   * `exactOptionalPropertyTypes`.
+   */
+  id?: string | undefined;
   /** Click handler */
   onclick?: () => void;
   /** Match indices for highlighting (from fuzzy search) */
@@ -23,6 +32,7 @@ let {
   item,
   isSelected = false,
   class: className,
+  id,
   onclick,
   titleMatches,
 }: VizelSlashMenuItemProps = $props();
@@ -32,6 +42,7 @@ const parts = $derived(splitVizelTextByMatches(item.title, titleMatches));
 
 <button
   type="button"
+  {id}
   class="vizel-slash-menu-item {isSelected ? 'is-selected' : ''} {className ?? ''}"
   role="option"
   aria-selected={isSelected}
