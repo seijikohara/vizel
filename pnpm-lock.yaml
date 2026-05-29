@@ -677,6 +677,9 @@ importers:
       '@iconify/vue':
         specifier: ^5.0.1
         version: 5.0.1(vue@3.5.34(typescript@6.0.3))
+      '@vizel/headless':
+        specifier: workspace:^
+        version: link:../headless
       vue:
         specifier: ^3.4
         version: 3.5.34(typescript@6.0.3)

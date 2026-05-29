@@ -20,7 +20,7 @@ export default defineConfig({
       fileName: "index",
     },
     rollupOptions: {
-      external: ["vue", "@tiptap/core", "@vizel/core", "@iconify/vue"],
+      external: ["vue", "@tiptap/core", "@vizel/core", "@vizel/headless", "@iconify/vue"],
       output: {
         preserveModules: true,
         preserveModulesRoot: "src",

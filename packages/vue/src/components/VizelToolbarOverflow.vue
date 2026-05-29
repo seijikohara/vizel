@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Editor, VizelLocale, VizelToolbarActionItem } from "@vizel/core";
 import { formatVizelTooltip, isVizelToolbarDropdownAction, vizelEnLocale } from "@vizel/core";
-import { onBeforeUnmount, ref, watch } from "vue";
+import { createVizelDismissable } from "@vizel/headless";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 import VizelToolbarButton from "./VizelToolbarButton.vue";
 import VizelToolbarDropdown from "./VizelToolbarDropdown.vue";
@@ -36,33 +37,37 @@ function handleActionClick(action: VizelToolbarActionItem) {
   }
 }
 
-function handleOutsideClick(e: MouseEvent) {
-  if (!(e.target instanceof Node)) return;
-  if (containerRef.value && !containerRef.value.contains(e.target)) {
-    close();
-  }
-}
+// Pointer-outside and Escape dismissal route through `createVizelDismissable`
+// (ADR-0003, ADR-0007). `captureEscape: true` runs the Escape handler in the
+// capture phase and calls `stopImmediatePropagation()` so the editor's
+// bubble-phase keymap does not also fire and reset the selection or drop
+// focus from the trigger while the overflow popover owns Escape.
+const dismissable = createVizelDismissable({
+  onPointerOutside: close,
+  onEscape: close,
+  captureEscape: true,
+});
 
-function handleKeydown(e: KeyboardEvent) {
-  if (e.key === "Escape") {
-    e.preventDefault();
-    close();
-  }
-}
+watch(
+  [isOpen, containerRef],
+  ([open, container]) => {
+    if (open && container) {
+      dismissable.mount(container);
+    } else {
+      dismissable.unmount();
+    }
+  },
+  { flush: "post" }
+);
 
-watch(isOpen, (open) => {
-  if (open) {
-    document.addEventListener("mousedown", handleOutsideClick);
-    document.addEventListener("keydown", handleKeydown);
-  } else {
-    document.removeEventListener("mousedown", handleOutsideClick);
-    document.removeEventListener("keydown", handleKeydown);
+onMounted(() => {
+  if (isOpen.value && containerRef.value) {
+    dismissable.mount(containerRef.value);
   }
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener("mousedown", handleOutsideClick);
-  document.removeEventListener("keydown", handleKeydown);
+  dismissable.unmount();
 });
 </script>
 
