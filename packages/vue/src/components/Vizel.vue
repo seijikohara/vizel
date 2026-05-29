@@ -14,7 +14,7 @@ import {
   type VizelLocale,
   type VizelMarkdownFlavor,
 } from "@vizel/core";
-import { computed, provide, useSlots, watch } from "vue";
+import { computed, provide, watch } from "vue";
 import { useVizelEditor } from "../composables/useVizelEditor.ts";
 import VizelBlockMenu from "./VizelBlockMenu.vue";
 import VizelBubbleMenu from "./VizelBubbleMenu.vue";
@@ -28,6 +28,20 @@ import VizelToolbar from "./VizelToolbar.vue";
  */
 export interface VizelRef {
   /** The underlying Tiptap editor instance */
+  editor: Editor | null;
+}
+
+/**
+ * Props passed to every `Vizel` scoped slot (`toolbar`, `bubble-menu`,
+ * and the default content slot).
+ *
+ * The default slot can render before the editor finishes async
+ * initialization, so `editor` is nullable. The `toolbar` and
+ * `bubble-menu` slots only render once the editor exists, but they share
+ * the same type for a single consumer-facing contract.
+ */
+export interface VizelSlotProps {
+  /** The underlying Tiptap editor instance, or `null` before initialization */
   editor: Editor | null;
 }
 
@@ -110,7 +124,14 @@ const emit = defineEmits<{
  */
 const markdown = defineModel<string>("markdown");
 
-const slots = useSlots();
+const slots = defineSlots<{
+  /** Replace the toolbar content. Receives the resolved editor. */
+  toolbar?: (props: VizelSlotProps) => unknown;
+  /** Replace the bubble-menu content. Receives the resolved editor. */
+  "bubble-menu"?: (props: VizelSlotProps) => unknown;
+  /** Render extra content inside the editor root. Receives the resolved editor. */
+  default?: (props: VizelSlotProps) => unknown;
+}>();
 
 const editor = useVizelEditor({
   ...(props.initialContent !== undefined && { initialContent: props.initialContent }),

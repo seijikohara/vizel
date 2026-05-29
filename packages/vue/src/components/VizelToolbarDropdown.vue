@@ -6,7 +6,7 @@ import {
   resolveVizelListNavigation,
 } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelToolbarDropdownProps {
@@ -19,8 +19,8 @@ const props = defineProps<VizelToolbarDropdownProps>();
 
 const isOpen = ref(false);
 const focusedIndex = ref(0);
-const containerRef = ref<HTMLDivElement | null>(null);
-const triggerRef = ref<HTMLButtonElement | null>(null);
+const containerRef = useTemplateRef<HTMLDivElement>("containerRef");
+const triggerRef = useTemplateRef<HTMLButtonElement>("triggerRef");
 
 const spec = computed(() =>
   buildVizelToolbarDropdownSpec(props.dropdown, props.editor, isOpen.value, focusedIndex.value)

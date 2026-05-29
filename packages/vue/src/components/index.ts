@@ -1,5 +1,10 @@
 // Vizel all-in-one component
-export { default as Vizel, type VizelProps, type VizelRef } from "./Vizel.vue";
+export {
+  default as Vizel,
+  type VizelProps,
+  type VizelRef,
+  type VizelSlotProps,
+} from "./Vizel.vue";
 // VizelBlockMenu component
 export {
   default as VizelBlockMenu,
@@ -56,6 +61,7 @@ export {
 // VizelMentionMenu component
 export {
   default as VizelMentionMenu,
+  type VizelMentionMenuItemSlotProps,
   type VizelMentionMenuProps,
   type VizelMentionMenuRef,
 } from "./VizelMentionMenu.vue";
@@ -80,6 +86,7 @@ export {
 // VizelSlashMenu components
 export {
   default as VizelSlashMenu,
+  type VizelSlashMenuItemSlotProps,
   type VizelSlashMenuProps,
   type VizelSlashMenuRef,
 } from "./VizelSlashMenu.vue";
@@ -97,7 +104,11 @@ export {
   type VizelThemeProviderProps,
 } from "./VizelThemeProvider.vue";
 // VizelToolbar components
-export { default as VizelToolbar, type VizelToolbarProps } from "./VizelToolbar.vue";
+export {
+  default as VizelToolbar,
+  type VizelToolbarProps,
+  type VizelToolbarSlotProps,
+} from "./VizelToolbar.vue";
 export {
   default as VizelToolbarButton,
   type VizelToolbarButtonProps,

@@ -18,10 +18,35 @@ export interface VizelMentionMenuProps {
   locale?: VizelLocale;
 }
 
+/**
+ * Props passed to the `#item` scoped slot.
+ *
+ * The callback prop uses the lowercase `onclick` name to stay consistent
+ * with `VizelSlashMenu`'s `#item` slot and the Svelte adapter's
+ * `renderItem` snippet (ADR-0004). Slot props are plain object keys, not
+ * DOM event bindings, so the name is a deliberate contract rather than a
+ * native listener.
+ */
+export interface VizelMentionMenuItemSlotProps {
+  /** The mention item to render */
+  item: VizelMentionItem;
+  /** Whether the item is the active keyboard selection */
+  isSelected: boolean;
+  /** Invoke the item's selection */
+  onclick: () => void;
+}
+
 const props = defineProps<VizelMentionMenuProps>();
 
 const emit = defineEmits<{
   select: [item: VizelMentionItem];
+}>();
+
+defineSlots<{
+  /** Replace the default no-results markup shown when no item matches. */
+  empty?: () => unknown;
+  /** Replace the per-item markup; the container, keyboard, and ARIA wiring stay owned by VizelMentionMenu. */
+  item?: (props: VizelMentionMenuItemSlotProps) => unknown;
 }>();
 
 const selectedIndex = ref(0);

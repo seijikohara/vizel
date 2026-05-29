@@ -10,8 +10,6 @@ import VizelIcon from "./VizelIcon.vue";
 export interface VizelColorPickerProps {
   /** Color palette to display */
   colors: readonly VizelColorDefinition[];
-  /** Currently selected color */
-  value?: string;
   /** Label for accessibility */
   label?: string;
   /** Custom class name */
@@ -46,19 +44,22 @@ const props = withDefaults(defineProps<VizelColorPickerProps>(), {
   applyAriaLabel: "Apply custom color",
 });
 
-const emit = defineEmits<{
-  /** Emitted when the selected color changes */
-  change: [color: string];
-}>();
+/**
+ * Selected color, exposed as a two-way binding (`v-model:value`).
+ * Selecting a swatch or applying a valid HEX value writes the new color
+ * back to the parent through the model, replacing the v1 `change` emit.
+ * The model accepts `undefined` so callers can bind a source that has no
+ * color yet (e.g. an editor attribute that is unset).
+ */
+const value = defineModel<string | undefined>("value");
 
-const currentValue = computed(() => props.value);
+const currentValue = computed(() => value.value);
 
 const GRID_COLUMNS = 4;
 
 const inputValue = ref("");
 const focusedIndex = ref(-1);
 const swatchRefs = ref<(HTMLButtonElement | null)[]>([]);
-const inputRef = ref<HTMLInputElement | null>(null);
 
 // Build flat list of all selectable colors for keyboard navigation
 const allColors = computed(() => [
@@ -97,7 +98,7 @@ function isNoneValue(color: string): boolean {
 
 // Handle swatch selection
 function handleSelect(color: string) {
-  emit("change", color);
+  value.value = color;
   inputValue.value = "";
 }
 
@@ -105,7 +106,7 @@ function handleSelect(color: string) {
 function handleInputSubmit() {
   const normalized = normalizeVizelHexColor(inputValue.value);
   if (isVizelValidHexColor(normalized)) {
-    emit("change", normalized);
+    value.value = normalized;
     inputValue.value = "";
   }
 }
@@ -251,7 +252,6 @@ const previewColor = computed(() =>
         aria-hidden="true"
       />
       <input
-        ref="inputRef"
         type="text"
         class="vizel-color-picker-input"
         :placeholder="props.hexPlaceholder"

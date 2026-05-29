@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type Editor, mountVizelEditorView } from "@vizel/core";
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, onBeforeUnmount, useTemplateRef, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 
 export interface VizelEditorProps {
@@ -25,7 +25,7 @@ export interface VizelEditorRef {
 
 const props = defineProps<VizelEditorProps>();
 
-const containerRef = ref<HTMLDivElement | null>(null);
+const containerRef = useTemplateRef<HTMLDivElement>("containerRef");
 const contextEditor = useVizelContextSafe();
 const resolvedEditor = computed(() => props.editor ?? contextEditor?.value ?? null);
 
