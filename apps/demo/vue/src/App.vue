@@ -2,17 +2,16 @@
 import {
   createVizelFindReplaceExtension,
   type Editor,
-  getVizelEditorState,
   type JSONContent,
   setVizelMarkdown,
   useVizelAutoSave,
   useVizelComment,
-  useVizelState,
   useVizelVersionHistory,
   Vizel,
   VizelFindReplace,
   type VizelMarkdownFlavor,
   VizelOutline,
+  VizelProvider,
   VizelSaveIndicator,
   VizelThemeProvider,
   vizelCommonMarkFlavor,
@@ -24,6 +23,7 @@ import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { getFlavorContent } from "../../shared/content";
 import vueLogo from "../../shared/logos/vue.svg";
 import { mockMentionItems, mockUploadImage } from "../../shared/utils";
+import StatsBar from "./StatsBar.vue";
 import ThemeToggle from "./ThemeToggle.vue";
 
 const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
@@ -58,24 +58,12 @@ const versionDescription = ref("");
 const commentText = ref("");
 const replyTexts = ref<Record<string, string>>({});
 
-// Store editor reference from Vizel component
+// Store editor reference from Vizel component. The Vizel component
+// updates this ref through `@create`; the surrounding `VizelProvider`
+// then forwards the editor to descendants such as `StatsBar`, which
+// drives the character / word count display via the v2
+// `useVizelEditorState` selector API (see `StatsBar.vue`).
 const editorRef = shallowRef<Editor | null>(null);
-
-// Track editor state for character/word count.
-// The selector-based `useVizelEditorState(selector, { equalityFn? })`
-// reads the editor from the surrounding `VizelProvider`; in this demo
-// the editor lives in the same component, so we drive reactivity through
-// the lower-level `useVizelState` tick and read the snapshot with
-// `getVizelEditorState`. See `getting-started-vue.md` for the
-// provider-based selector pattern.
-const statsEditor = computed(() => (features.stats ? editorRef.value : null));
-const editorTick = useVizelState(() => statsEditor.value);
-const editorState = computed(() => {
-  // Read the tick to register a reactivity dependency before the
-  // selector executes; the numeric value is opaque.
-  void editorTick.value;
-  return getVizelEditorState(statsEditor.value);
-});
 
 // Auto-save functionality (only when autoSave enabled)
 const { status, lastSaved } = useVizelAutoSave(() => (features.autoSave ? editorRef.value : null), {
@@ -165,6 +153,7 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
 
 <template>
   <VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
+    <VizelProvider :editor="editorRef">
     <div class="app">
       <header class="header">
         <div class="header-content">
@@ -285,11 +274,10 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
                 <VizelSaveIndicator :status="status" :lastSaved="lastSaved" />
                 <span v-if="features.stats" class="status-divider">·</span>
               </template>
-              <template v-if="features.stats">
-                <span class="status-item">{{ editorState.characterCount }} characters</span>
-                <span class="status-divider">·</span>
-                <span class="status-item">{{ editorState.wordCount }} words</span>
-              </template>
+              <!-- StatsBar consumes the editor through `VizelProvider`
+                   via the v2 selector composable. See `StatsBar.vue`
+                   for the `useVizelEditorState` selector definition. -->
+              <StatsBar v-if="features.stats" />
             </div>
           </div>
         </div>
@@ -477,5 +465,6 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
         </p>
       </footer>
     </div>
+    </VizelProvider>
   </VizelThemeProvider>
 </template>

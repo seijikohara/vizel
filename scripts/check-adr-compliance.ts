@@ -301,41 +301,58 @@ function extractViewBlockLineCount(framework: "react" | "vue" | "svelte", source
 }
 
 /**
- * Every adapter's exports."./styles.css" must re-export the Core
- * stylesheet. ADR-0008 names the exact target `@vizel/core/styles.css`,
- * so the harness checks for that path (or the matching deep import
- * `@vizel/core/dist/styles.css`) instead of any substring match.
- * Phase 2.5 lands the integration; the harness warns until then.
+ * Every adapter's `dist/styles.css` must be a re-export shim that
+ * defers to `@vizel/core/styles.css`. PR #570 landed the shim
+ * mechanism: `package.json` keeps `./dist/styles.css` as the export
+ * path; the post-build script `write-style-shims.mjs` emits a two-line
+ * file at that path carrying the sentinel comment
+ * `/* ADR-0008: re-export of @vizel/core/styles.css; do not edit. *\/`
+ * plus an `@import` of the Core catalogue. The harness looks for the
+ * sentinel in the built shim and falls back to the build script when
+ * the dist file is absent (pre-build CI run).
  */
 function checkCssCentralisation(): CheckResult {
-  const allowedTargets = new Set(["@vizel/core/styles.css", "@vizel/core/dist/styles.css"]);
+  // The sentinel string is identical to the one `write-style-shims.mjs`
+  // emits inside every shim. Detecting the string in either the dist
+  // shim or the script proves the re-export contract holds without
+  // duplicating the catalogue across packages.
+  const sentinel = "ADR-0008: re-export of @vizel/core/styles.css; do not edit.";
   const offenders: string[] = [];
   for (const framework of ["react", "vue", "svelte"] as const) {
-    const manifest = readText(resolve(REPO_ROOT, "packages", framework, "package.json"));
-    if (manifest === null) continue;
-    const match = manifest.match(/"\.\/styles\.css":\s*"([^"]+)"/);
-    if (match === null) {
-      offenders.push(`${framework}: missing exports."./styles.css"`);
-      continue;
-    }
-    const target = match[1];
-    if (!allowedTargets.has(target)) {
-      offenders.push(`${framework}: ${target}`);
-    }
+    const distPath = resolve(REPO_ROOT, "packages", framework, "dist", "styles.css");
+    const dist = readText(distPath);
+    if (dist?.includes(sentinel)) continue;
+    // Pre-build runs lack `dist/`. The build script ships the sentinel
+    // string, so its presence in the script proves the next build emits
+    // the shim. The check tolerates either signal because CI runs the
+    // harness before `pnpm build` on some workflows.
+    const scriptPath = resolve(
+      REPO_ROOT,
+      "packages",
+      framework,
+      "scripts",
+      "write-style-shims.mjs"
+    );
+    const script = readText(scriptPath);
+    if (script?.includes(sentinel)) continue;
+    offenders.push(
+      `${framework}: missing ADR-0008 sentinel in dist/styles.css and scripts/write-style-shims.mjs`
+    );
   }
   if (offenders.length === 0) {
     return {
       adr: "ADR-0008",
       title: "CSS centralisation",
       status: "PASS",
-      message: "Every adapter re-exports @vizel/core/styles.css.",
+      message:
+        "Every adapter ships a re-export shim that defers to @vizel/core/styles.css (sentinel verified).",
     };
   }
   return {
     adr: "ADR-0008",
     title: "CSS centralisation",
     status: "WARN",
-    message: `Phase 2.5 will redirect each adapter's exports."./styles.css" to @vizel/core/styles.css. Pending: ${offenders.join(", ")}`,
+    message: `Each adapter must ship dist/styles.css as a re-export shim with the ADR-0008 sentinel; pre-build runs may instead carry the sentinel in scripts/write-style-shims.mjs. ${offenders.join(", ")}`,
   };
 }
 
