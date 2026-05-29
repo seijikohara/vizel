@@ -6,10 +6,12 @@
 
 .vizel-task-list {
   list-style: none;
-  // Top-level task lists sit flush with the editor's inline edge so the
-  // checkbox aligns with paragraphs. Nested lists pick up the shared
-  // 1.5rem indent step below to match bullet / ordered lists.
-  padding-inline-start: 0;
+  // Task lists share the 1.5rem indent step with bullet / ordered lists
+  // at every nesting level. The checkbox sits in the marker gutter (see
+  // `.vizel-task-item > label` below), so it lands in the same column as
+  // the bullet / number markers and the item text aligns across all three
+  // list types.
+  padding-inline-start: 1.5rem;
   margin: 0.5rem 0;
 
   .vizel-task-list {
@@ -21,13 +23,24 @@
 .vizel-task-item {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
+  // No flex gap: the checkbox occupies a fixed 1.5rem marker gutter (the
+  // label below) pulled into the list's inline-start padding, so the item
+  // text starts at the 1.5rem content edge and aligns with bullet /
+  // ordered list text. Spacing between the checkbox and text comes from
+  // the gutter geometry, not a flex gap.
+  gap: 0;
   margin: 0.25rem 0;
 
   > label {
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    // Occupy the marker gutter: a 1.5rem-wide box pulled left by the
+    // list's 1.5rem inline-start padding so the checkbox lands in the
+    // same column as the bullet / number markers.
+    width: 1.5rem;
+    margin-inline-start: -1.5rem;
     cursor: pointer;
 
     > input[type="checkbox"] {
@@ -82,27 +95,15 @@
     text-decoration: line-through;
     color: v("muted-foreground");
   }
-
-  .vizel-task-list {
-    margin-left: 0;
-    padding-left: 0;
-  }
 }
 
 .vizel-editor {
   ul[data-type="taskList"] {
     list-style: none;
-    padding-inline-start: 0;
-  }
-
-  // Nested task lists pick up the shared 1.5rem indent step so they
-  // line up with bullet / ordered nesting. Without this, the generic
-  // `ul { padding-inline-start: 1.5rem }` rule would also apply, but
-  // ProseMirror renders task lists with the `data-type="taskList"`
-  // attribute on the same element that the parent `padding-inline-start: 0`
-  // resets, so this targeted override re-establishes the indent for
-  // children only.
-  ul[data-type="taskList"] ul[data-type="taskList"] {
+    // Match the 1.5rem indent step of bullet / ordered lists at every
+    // level; nested task lists inherit the same step from this rule. The
+    // checkbox sits in the marker gutter (`.vizel-task-item > label`), so
+    // markers and text align across all three list types.
     padding-inline-start: 1.5rem;
   }
 
