@@ -3,10 +3,10 @@ import {
   buildVizelBlockMenuSpec,
   clampMenuPosition,
   createVizelBlockMenuActions,
+  createVizelBlockMenuTriggerController,
   createVizelNodeTypes,
   getVizelTurnIntoOptions,
   shouldFlipSubmenu,
-  VIZEL_BLOCK_MENU_EVENT,
   type VizelBlockMenuAction,
   type VizelBlockMenuOpenDetail,
   type VizelLocale,
@@ -15,6 +15,7 @@ import {
   vizelDefaultNodeTypes,
   vizelRequestAnimationFrame,
 } from "@vizel/core";
+import { createVizelDismissable } from "@vizel/headless";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
@@ -44,10 +45,13 @@ interface BlockMenuState extends VizelBlockMenuOpenDetail {
 
 /**
  * Block context menu that appears when clicking the drag handle.
+ *
  * DOM/ARIA scaffolding (sections, submenu trigger, submenu list) comes
- * from `@vizel/core`'s `buildVizelBlockMenuSpec`; the React
- * component owns positioning, focus management, and runtime action
- * binding.
+ * from `@vizel/core`'s `buildVizelBlockMenuSpec`; the React component
+ * owns positioning, focus management, and runtime action binding. Both
+ * the open-channel (`VIZEL_BLOCK_MENU_EVENT`) and the dismiss-channel
+ * (pointer-outside + Escape) route through controllers so this file
+ * attaches no document-level listeners directly (ADR-0003, ADR-0007).
  */
 export function VizelBlockMenu({
   editor: editorProp,
@@ -70,7 +74,6 @@ export function VizelBlockMenu({
   const [showTurnInto, setShowTurnInto] = useState(false);
   const [submenuFlipped, setSubmenuFlipped] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const submenuRef = useRef<HTMLDivElement>(null);
   const menuEditorRef = useRef<Editor | null>(null);
 
   const close = useCallback(() => {
@@ -87,31 +90,30 @@ export function VizelBlockMenu({
     // listener — without the guard the callback would call setMenuState
     // against a stale closure.
     const lifecycle = { isMounted: true };
-    const handler = (e: Event) => {
-      if (!(e instanceof CustomEvent)) return;
-      const detail = e.detail as VizelBlockMenuOpenDetail;
-      if (boundEditor && detail.editor !== boundEditor) return;
-      menuEditorRef.current = detail.editor;
-      setMenuState({
-        ...detail,
-        x: detail.handleRect.left,
-        y: detail.handleRect.bottom + 4,
-      });
-      setShowTurnInto(false);
+    const controller = createVizelBlockMenuTriggerController({
+      onOpen: (detail: VizelBlockMenuOpenDetail) => {
+        if (boundEditor && detail.editor !== boundEditor) return;
+        menuEditorRef.current = detail.editor;
+        setMenuState({
+          ...detail,
+          x: detail.handleRect.left,
+          y: detail.handleRect.bottom + 4,
+        });
+        setShowTurnInto(false);
 
-      vizelRequestAnimationFrame(() => {
-        if (!lifecycle.isMounted) return;
-        const el = menuRef.current;
-        if (!el) return;
-        const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
-        setMenuState((prev) => (prev ? { ...prev, x: clamped.x, y: clamped.y } : prev));
-      });
-    };
-
-    document.addEventListener(VIZEL_BLOCK_MENU_EVENT, handler);
+        vizelRequestAnimationFrame(() => {
+          if (!lifecycle.isMounted) return;
+          const el = menuRef.current;
+          if (!el) return;
+          const clamped = clampMenuPosition(detail.handleRect, el.offsetWidth, el.offsetHeight);
+          setMenuState((prev) => (prev ? { ...prev, x: clamped.x, y: clamped.y } : prev));
+        });
+      },
+    });
+    controller.mount();
     return () => {
       lifecycle.isMounted = false;
-      document.removeEventListener(VIZEL_BLOCK_MENU_EVENT, handler);
+      controller.unmount();
     };
   }, [boundEditor]);
 
@@ -123,34 +125,27 @@ export function VizelBlockMenu({
     firstItem?.focus();
   }, [menuState]);
 
+  // Stash `close` in a ref so the controller dispatches to the current
+  // handler without re-mounting whenever React assigns a new closure.
+  const closeRef = useRef(close);
+  closeRef.current = close;
+
   useEffect(() => {
     if (!menuState) return;
+    const menu = menuRef.current;
+    if (!menu) return;
 
-    const handleClick = (e: MouseEvent) => {
-      if (!(e.target instanceof Node)) return;
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(e.target) &&
-        !submenuRef.current?.contains(e.target)
-      ) {
-        close();
-      }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        close();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClick);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [menuState, close]);
+    // The submenu lives inside `menuRef`, so a single mount target covers
+    // both surfaces for outside-pointer detection. Escape keeps v1's
+    // semantics (close without preventDefault), so `captureEscape` stays
+    // off.
+    const controller = createVizelDismissable({
+      onPointerOutside: () => closeRef.current(),
+      onEscape: () => closeRef.current(),
+    });
+    controller.mount(menu);
+    return () => controller.unmount();
+  }, [menuState]);
 
   useEffect(() => {
     if (!(showTurnInto && menuRef.current)) {
@@ -282,7 +277,6 @@ export function VizelBlockMenu({
 
       {showTurnInto && spec.submenu.sections.length > 0 && (
         <div
-          ref={submenuRef}
           className={`vizel-block-menu-submenu${submenuFlipped ? " vizel-block-menu-submenu--left" : ""}`}
           role="menu"
           aria-label={spec.submenu.root["aria-label"]}
