@@ -16,7 +16,10 @@ export {
 } from "./useVizelCollaboration.ts";
 export { type UseVizelCommentResult, useVizelComment } from "./useVizelComment.ts";
 export { type UseVizelEditorOptions, useVizelEditor } from "./useVizelEditor.ts";
-export { useVizelEditorState } from "./useVizelEditorState.ts";
+// `useVizelEditorState` ships from `../_reactivity.ts` per ADR-0009 — the
+// selector-style hook that closes the v1 drift. The legacy convenience
+// hook that combined `useVizelState` + `getVizelEditorState` is removed;
+// consumers select the slice they care about through the v2 selector API.
 export {
   type UseVizelMarkdownOptions,
   type UseVizelMarkdownResult,

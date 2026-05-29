@@ -1,10 +1,18 @@
 name: CI
 
+# Behaviour-affecting checks (test matrix, visual regression, a11y) live
+# here. The `paths-ignore` filter skips docs-only PRs because behaviour
+# cannot regress when only Markdown changes; the companion `Quality`
+# workflow still runs on those PRs and covers lint, typecheck, and
+# writing-rule enforcement on Markdown.
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
   workflow_dispatch:
 
 concurrency:
@@ -12,51 +20,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  quality:
-    name: Quality (lint, typecheck, build)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # `pnpm lint` runs biome with `--error-on-warnings`, so any warning
-      # (not just errors) fails CI. The intent is to prevent warning rot
-      # — the codebase ships at zero warnings, and CI keeps it that way.
-      - name: Lint (fail on warnings)
-        run: pnpm lint
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Cross-framework parity
-        run: pnpm check:parity
-
-      - name: Feature manifest parity
-        run: pnpm check:feature-parity
-
-      - name: Scenario foundation parity
-        run: pnpm check:scenarios
-
-      - name: ADR compliance harness
-        run: pnpm check:adr-compliance
-
-      - name: No-let check
-        run: pnpm check:nolet
-
-      - name: Build
-        run: pnpm build
-
   test:
     name: Test (${{ matrix.framework }}/${{ matrix.browser }})
     runs-on: ubuntu-latest
@@ -95,27 +58,6 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
-  ssr:
-    name: SSR
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Verify core stays free of top-level browser globals
-        run: pnpm check:ssr
-
   visual:
     name: Visual Regression
     # Snapshots are sensitive to subpixel rendering differences between
@@ -128,13 +70,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      # Install pnpm before `setup-node` so the cache key resolution finds
+      # the package manager on PATH. Reversing the order breaks the cache.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -156,27 +101,6 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
-  ct-parity:
-    name: CT Spec Parity
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Verify CT spec parity across frameworks
-        run: pnpm check:ct-parity
-
   a11y:
     name: A11y (${{ matrix.framework }})
     # The Vue a11y job hangs intermittently on the GitHub runner — see
@@ -197,13 +121,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      # Install pnpm before `setup-node` so the cache key resolution finds
+      # the package manager on PATH. Reversing the order breaks the cache.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -227,10 +154,11 @@ jobs:
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    # Drop the a11y dependency while the suite runs on manual
-    # dispatch only. Once the runner-hang root cause lands, restore
-    # `a11y` to the needs list so summary failures still cover Pillar 5.
-    needs: [test, ssr, ct-parity]
+    # The former `ssr` and `ct-parity` dependencies moved into the
+    # consolidated `quality-parity` job in `quality.yml`. The summary now
+    # depends only on the test matrix because the other former needs
+    # live in a separate workflow and cannot be referenced from here.
+    needs: [test]
     if: always()
     steps:
       - name: Download all results
