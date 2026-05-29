@@ -22,8 +22,9 @@ export * from "@vizel/core";
 // ADR-0009 mandates that every adapter implements editor reactivity
 // natively; React's adapter holds the implementation in `_reactivity.ts`
 // and re-exports the consumer-facing surface here. The shallow-equality
-// helpers re-export from `@vizel/core` so the cross-framework parity
-// check can resolve them back to a single source.
+// helpers re-export from `@vizel/core` so the feature manifest
+// (verified by `pnpm check:feature-parity`) resolves them to a single
+// source across frameworks.
 export {
   shallowEqualArray,
   shallowEqualObject,
@@ -57,7 +58,6 @@ export {
   // Editor components
   VizelEditor,
   type VizelEditorProps,
-  type VizelEditorRef,
   // EmbedView
   VizelEmbedView,
   type VizelEmbedViewProps,
@@ -87,7 +87,6 @@ export {
   type VizelProps,
   VizelProvider,
   type VizelProviderProps,
-  type VizelRef,
   // SaveIndicator
   VizelSaveIndicator,
   type VizelSaveIndicatorProps,

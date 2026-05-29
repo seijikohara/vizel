@@ -4,11 +4,12 @@ import {
   filterVizelBubbleMenuActions,
   formatVizelTooltip,
   groupVizelBubbleMenuActions,
+  shallowEqualObject,
   type VizelBubbleMenuAction,
   type VizelLocale,
 } from "@vizel/core";
 import { useMemo, useState } from "react";
-import { useVizelState } from "../hooks/useVizelState.ts";
+import { useVizelEditorState } from "../_reactivity.ts";
 import { VizelBubbleMenuButton } from "./VizelBubbleMenuButton.tsx";
 import { VizelBubbleMenuColorPicker } from "./VizelBubbleMenuColorPicker.tsx";
 import { VizelBubbleMenuDivider } from "./VizelBubbleMenuDivider.tsx";
@@ -39,19 +40,29 @@ export function VizelBubbleMenuDefault({
   enableEmbed,
   locale,
 }: VizelBubbleMenuDefaultProps) {
-  // Subscribe to editor state changes so isActive() reflects the latest state.
-  useVizelState(editor);
   const [showLinkEditor, setShowLinkEditor] = useState(false);
 
-  const { markGroups, linkAction } = useMemo(() => {
+  const { markGroups, linkAction, allActions } = useMemo(() => {
     const all = filterVizelBubbleMenuActions(createVizelBubbleMenuActions(locale), editor);
     const link = all.find((a) => a.id === "link");
     const marks = all.filter((a) => a.id !== "link");
     return {
       markGroups: groupVizelBubbleMenuActions(marks),
       linkAction: link,
+      allActions: all,
     };
   }, [locale, editor]);
+
+  // Read each action's active flag through a selector slice keyed by
+  // action id. `shallowEqualObject` suppresses a re-render unless one of
+  // the marks toggles, replacing the coarse `useVizelState` tick that
+  // re-rendered on every transaction (ADR-0004). The explicit `editor`
+  // keeps the subscription working when the bubble menu renders outside a
+  // `VizelProvider`.
+  const activeById = useVizelEditorState((current) => buildActiveById(allActions, current), {
+    editor,
+    equalityFn: shallowEqualObject,
+  });
 
   if (showLinkEditor) {
     return (
@@ -69,7 +80,7 @@ export function VizelBubbleMenuDefault({
       key={action.id}
       action={action.id}
       onClick={() => action.run(editor)}
-      isActive={action.isActive(editor)}
+      isActive={activeById[action.id] ?? false}
       title={formatVizelTooltip(action.label, action.shortcut)}
     >
       <VizelIcon name={action.icon} />
@@ -93,7 +104,7 @@ export function VizelBubbleMenuDefault({
           <VizelBubbleMenuButton
             action={linkAction.id}
             onClick={() => setShowLinkEditor(true)}
-            isActive={linkAction.isActive(editor)}
+            isActive={activeById[linkAction.id] ?? false}
             title={formatVizelTooltip(linkAction.label, linkAction.shortcut)}
           >
             <VizelIcon name={linkAction.icon} />
@@ -113,4 +124,17 @@ export function VizelBubbleMenuDefault({
       />
     </div>
   );
+}
+
+/**
+ * Project each action's active flag into a plain record keyed by action
+ * id. The record is the selector slice: `shallowEqualObject` compares it
+ * field by field, so the bubble menu re-renders only when a mark toggles.
+ */
+function buildActiveById(
+  actions: readonly VizelBubbleMenuAction[],
+  editor: Editor | null
+): Record<string, boolean> {
+  if (editor === null) return {};
+  return Object.fromEntries(actions.map((action) => [action.id, action.isActive(editor)]));
 }

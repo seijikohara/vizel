@@ -1,28 +1,23 @@
 import { type Editor, mountVizelEditorView } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
-import { useEffect, useImperativeHandle, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 
 export interface VizelEditorProps {
-  /** Ref to access editor container */
-  ref?: Ref<VizelEditorRef>;
+  /**
+   * Forwarded ref to the editable container element.
+   *
+   * The ref resolves to the rendered `<div>`. React 19 treats `ref` as a
+   * regular prop, so the consumer passes a standard `Ref<HTMLDivElement>` and
+   * reads the element directly. To reach the editor instance, call
+   * `useVizelEditor` or `useVizelContext` rather than routing the editor
+   * through this ref (ADR-0004).
+   */
+  ref?: Ref<HTMLDivElement>;
   /** Editor instance. Falls back to the editor from `VizelProvider` / `Vizel` context if omitted. */
   editor?: Editor | null;
   /** Optional className for the editor container */
   className?: string;
-}
-
-export interface VizelEditorRef {
-  /** The container DOM element */
-  container: HTMLDivElement | null;
-  /**
-   * The Tiptap editor instance that this component is rendering.
-   *
-   * Mirrors whichever editor was resolved (explicit prop or context).
-   * Lets callers skip the extra round-trip through `useVizelContext` or
-   * lifting state when they only need imperative access to the editor.
-   */
-  editor: Editor | null;
 }
 
 /**
@@ -40,28 +35,32 @@ export interface VizelEditorRef {
  * // Or directly with editor prop
  * <VizelEditor editor={editor} className="prose" />
  *
- * // With ref to access container DOM
- * const editorRef = useRef<VizelEditorRef>(null);
- * <VizelEditor ref={editorRef} editor={editor} />
- * // editorRef.current?.container gives you the container element
+ * // With a ref to read the container DOM element
+ * const containerRef = useRef<HTMLDivElement>(null);
+ * <VizelEditor ref={containerRef} editor={editor} />
  * ```
  */
 export function VizelEditor({ ref, editor: editorProp, className }: VizelEditorProps): ReactNode {
   const contextEditor = useVizelContextSafe();
   const editor = editorProp ?? contextEditor;
-  const containerRef = useRef<HTMLDivElement>(null);
+  // Keep a private container ref the mount effect can read. The forwarded
+  // `ref` may be a callback or an object ref, so the component cannot read
+  // `.current` off it directly; the callback ref below fans the node out to
+  // both targets.
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Expose container ref and editor instance via imperative handle. The
-  // editor moves into the dependency list so consumers that read
-  // `ref.current?.editor` after the editor resolves see the live value
-  // instead of the `null` snapshot captured at first mount.
-  useImperativeHandle(
-    ref,
-    () => ({
-      container: containerRef.current,
-      editor: editor ?? null,
-    }),
-    [editor]
+  const setContainer = useCallback(
+    (node: HTMLDivElement | null): void => {
+      containerRef.current = node;
+      if (typeof ref === "function") {
+        ref(node);
+        return;
+      }
+      if (ref) {
+        ref.current = node;
+      }
+    },
+    [ref]
   );
 
   useEffect(() => {
@@ -74,5 +73,5 @@ export function VizelEditor({ ref, editor: editorProp, className }: VizelEditorP
     return null;
   }
 
-  return <div ref={containerRef} className={className} data-vizel-content="" />;
+  return <div ref={setContainer} className={className} data-vizel-content="" />;
 }

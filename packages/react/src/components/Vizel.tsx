@@ -9,8 +9,8 @@ import {
   type VizelLocale,
   type VizelMarkdownFlavor,
 } from "@vizel/core";
-import type { ReactNode, Ref } from "react";
-import { useEffect, useImperativeHandle, useMemo } from "react";
+import type { ReactNode } from "react";
+import { useEffect, useMemo } from "react";
 import { useLatest } from "../hooks/useLatest.ts";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
 import { VizelBlockMenu } from "./VizelBlockMenu.tsx";
@@ -20,8 +20,6 @@ import { VizelEditor } from "./VizelEditor.tsx";
 import { VizelToolbar } from "./VizelToolbar.tsx";
 
 export interface VizelProps {
-  /** Ref to access editor instance */
-  ref?: Ref<VizelRef>;
   /** Initial content in JSON format */
   initialContent?: JSONContent;
   /**
@@ -117,16 +115,15 @@ export interface VizelProps {
   onError?: (error: VizelError) => void;
 }
 
-export interface VizelRef {
-  /** The underlying Tiptap editor instance */
-  editor: Editor | null;
-}
-
 /**
  * Vizel - All-in-one editor component
  *
  * A complete editor component that includes VizelEditor and VizelBubbleMenu.
  * This is the recommended way to use Vizel for most use cases.
+ *
+ * To read or drive the underlying Tiptap editor, lift it into state from
+ * `onCreate` or render a descendant that calls `useVizelContext`. The
+ * component intentionally does not expose the editor through a ref (ADR-0004).
  *
  * @example
  * ```tsx
@@ -139,20 +136,19 @@ export interface VizelRef {
  *
  * @example
  * ```tsx
- * import { Vizel, type VizelRef } from '@vizel/react';
- * import { useRef } from 'react';
+ * import { type Editor, Vizel } from '@vizel/react';
+ * import { useState } from 'react';
  *
  * function App() {
- *   const vizelRef = useRef<VizelRef>(null);
+ *   const [editor, setEditor] = useState<Editor | null>(null);
  *
  *   const handleSave = () => {
- *     const content = vizelRef.current?.editor?.getJSON();
- *     console.log(content);
+ *     console.log(editor?.getJSON());
  *   };
  *
  *   return (
  *     <>
- *       <Vizel ref={vizelRef} onUpdate={({ editor }) => console.log(editor.getJSON())} />
+ *       <Vizel onCreate={({ editor: created }) => setEditor(created)} />
  *       <button onClick={handleSave}>Save</button>
  *     </>
  *   );
@@ -160,7 +156,6 @@ export interface VizelRef {
  * ```
  */
 export function Vizel({
-  ref,
   initialContent,
   initialMarkdown,
   transformDiagramsOnImport = true,
@@ -250,15 +245,6 @@ export function Vizel({
       transformDiagrams: transformDiagramsOnImport,
     });
   }, [markdown, editor, transformDiagramsOnImport]);
-
-  // Expose editor instance via ref
-  useImperativeHandle(
-    ref,
-    () => ({
-      editor,
-    }),
-    [editor]
-  );
 
   // Memoize so child components that compare prop identity (toolbar / bubble
   // menu / block menu) don't see a fresh `localeProps` object on every render.
