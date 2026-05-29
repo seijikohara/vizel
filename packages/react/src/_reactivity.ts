@@ -127,6 +127,14 @@ export interface UseVizelEditorStateOptions<T> {
    * the shapes that selectors typically return.
    */
   readonly equalityFn?: (a: T, b: T) => boolean;
+  /**
+   * Editor instance to subscribe to. Defaults to the editor resolved
+   * from the surrounding `VizelProvider`. A component that already
+   * receives the editor as a prop passes it here so the selector
+   * subscribes to that exact instance even when no provider wraps the
+   * component (for example, a standalone `<VizelToolbar editor={...} />`).
+   */
+  readonly editor?: Editor | null;
 }
 
 /**
@@ -134,7 +142,10 @@ export interface UseVizelEditorStateOptions<T> {
  *
  * The hook reads the editor instance from the surrounding `VizelProvider`
  * (or returns `null` while no provider is mounted, mirroring
- * {@link useVizelContextSafe}). It then wraps a per-editor store inside
+ * {@link useVizelContextSafe}). Pass `options.editor` to subscribe to an
+ * explicit instance instead — a component that receives the editor as a
+ * prop uses it so the selector still tracks state when no provider wraps
+ * the component. The hook then wraps a per-editor store inside
  * `useSyncExternalStore` so React re-runs the selector on every
  * transaction. The hook short-circuits via the supplied `equalityFn`
  * (defaulting to `Object.is`), preventing re-renders when the slice is
@@ -165,7 +176,14 @@ export function useVizelEditorState<T>(
   selector: (editor: Editor | null) => T,
   options?: UseVizelEditorStateOptions<T>
 ): T {
-  const editor = useVizelContextSafe();
+  const contextEditor = useVizelContextSafe();
+  // The explicit override wins so a component holding the editor as a
+  // prop subscribes to that instance; otherwise the hook tracks the
+  // provider's editor. `undefined` means "no override supplied"; an
+  // explicit `null` (editor still initializing) falls back to context so
+  // a parent that passes `editor={null}` before mount does not lose the
+  // provider's eventual instance.
+  const editor = options?.editor ?? contextEditor;
 
   // Pin the latest selector / equality predicate inside refs so the
   // snapshot reader closure never goes stale across renders. The

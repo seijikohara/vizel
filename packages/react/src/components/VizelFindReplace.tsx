@@ -3,7 +3,6 @@ import {
   type Editor,
   getVizelFindReplaceState,
   resolveVizelFindReplaceLabels,
-  type VizelFindReplaceState,
   type VizelLocale,
 } from "@vizel/core";
 import {
@@ -15,6 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useVizelEditorState } from "../_reactivity.ts";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 
 export interface VizelFindReplaceProps {
@@ -50,25 +50,20 @@ export function VizelFindReplace({
   const [findText, setFindText] = useState("");
   const [replaceText, setReplaceText] = useState("");
   const [caseSensitive, setCaseSensitive] = useState(false);
-  const [state, setState] = useState<VizelFindReplaceState | null>(null);
   const findInputRef = useRef<HTMLInputElement>(null);
 
-  // Subscribe to plugin state changes
-  useEffect(() => {
-    if (!editor) return;
-
-    const updateState = () => {
-      const pluginState = getVizelFindReplaceState(editor.state);
-      setState(pluginState);
-    };
-
-    updateState();
-    editor.on("transaction", updateState);
-
-    return () => {
-      editor.off("transaction", updateState);
-    };
-  }, [editor]);
+  // Read the Find & Replace plugin state through the flagship
+  // `useVizelEditorState` primitive (ADR-0004), replacing the hand-rolled
+  // `editor.on("transaction")` subscription. The plugin's `apply` returns
+  // the same state reference on transactions that leave the find state
+  // unchanged, so the default `Object.is` equality re-renders the panel
+  // only when the query, matches, or open state actually change. The
+  // explicit `editor` keeps the subscription bound to the prop instance
+  // when the panel renders outside a `VizelProvider`.
+  const state = useVizelEditorState(
+    (current) => (current === null ? null : getVizelFindReplaceState(current.state)),
+    { editor }
+  );
 
   // Focus input when panel opens
   useEffect(() => {

@@ -31,7 +31,7 @@ export interface VizelMentionMenuProps {
   /**
    * Custom render function for items. Receives the item, the selection
    * state, and a click handler that selects the item. Mirrors the
-   * `renderItem` seam on `VizelSlashMenu` (cross-framework Table 6).
+   * `renderItem` seam on `VizelSlashMenu`.
    */
   renderItem?: (props: {
     item: VizelMentionItem;

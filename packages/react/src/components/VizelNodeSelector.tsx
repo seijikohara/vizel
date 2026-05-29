@@ -8,7 +8,7 @@ import {
 } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useVizelState } from "../hooks/useVizelState.ts";
+import { useVizelEditorState } from "../_reactivity.ts";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
 
@@ -43,7 +43,6 @@ export function VizelNodeSelector({
   const editor = editorProp ?? contextEditor;
   const effectiveNodeTypes =
     nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes);
-  useVizelState(editor);
 
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
@@ -51,12 +50,31 @@ export function VizelNodeSelector({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
+  // Track only which node type is active through the flagship
+  // `useVizelEditorState` primitive (ADR-0004). The trigger label and
+  // every row's `aria-selected` derive from the active node type, so a
+  // string slice dedupes through the hook's `Object.is` cache: cursor
+  // moves within the same block type do not re-render, replacing the
+  // coarse `useVizelState` tick.
+  const activeNodeName = useVizelEditorState(
+    (current) =>
+      current === null
+        ? null
+        : (effectiveNodeTypes.find((type) => type.isActive(current))?.name ?? null),
+    { editor }
+  );
+
+  // `activeNodeName` joins the dependency list as a reactive stand-in for
+  // the editor's active-block state: it changes when the caret enters a
+  // block of a different type, so the spec rebuilds with the new active
+  // highlight even though the `editor` identity stays stable.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `activeNodeName` is the reactive trigger for re-reading the editor's active block, which `buildVizelNodeSelectorSpec` reads off the live editor.
   const spec = useMemo(
     () =>
       editor
         ? buildVizelNodeSelectorSpec(editor, effectiveNodeTypes, isOpen, focusedIndex, locale)
         : null,
-    [editor, effectiveNodeTypes, isOpen, focusedIndex, locale]
+    [editor, effectiveNodeTypes, isOpen, focusedIndex, locale, activeNodeName]
   );
 
   useEffect(() => {
