@@ -19,6 +19,7 @@ export default defineConfig({
       resolve: {
         alias: {
           "@vizel/core": resolve(import.meta.dirname, "../../../packages/core/src"),
+          "@vizel/headless": resolve(import.meta.dirname, "../../../packages/headless/src"),
           "@vizel/vue": resolve(import.meta.dirname, "../../../packages/vue/src"),
         },
       },
