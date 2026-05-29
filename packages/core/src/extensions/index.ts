@@ -261,13 +261,6 @@ export {
   type VizelTypographyOptions,
 } from "./typography.ts";
 
-// Visual hierarchy
-export {
-  createVizelVisualHierarchyExtension,
-  type VizelVisualHierarchyOptions,
-  vizelVisualHierarchyPluginKey,
-} from "./visual-hierarchy.ts";
-
 // Wiki link
 export {
   createVizelWikiLinkExtension,

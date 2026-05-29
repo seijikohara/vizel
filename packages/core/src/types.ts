@@ -18,7 +18,6 @@ import type { VizelTableOfContentsOptions } from "./extensions/table-of-contents
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
 import type { VizelTypographyOptions } from "./extensions/typography.ts";
-import type { VizelVisualHierarchyOptions } from "./extensions/visual-hierarchy.ts";
 import type { VizelWikiLinkOptions } from "./extensions/wiki-link.ts";
 import type { VizelLocale } from "./i18n/types.ts";
 import type { VizelMarkdownEncodingOptions, VizelMarkdownFlavor } from "./markdown/types.ts";
@@ -153,12 +152,6 @@ export interface VizelInteractionFeatureOptions {
    * @default 100
    */
   historyDepth?: number;
-  /**
-   * Visual hierarchy decoration that attaches a `data-vizel-depth`
-   * attribute to each block. CSS in `block-hierarchy.scss` renders the
-   * indentation and guide line. Default: on.
-   */
-  visualHierarchy?: VizelVisualHierarchyOptions | boolean;
 }
 
 /**

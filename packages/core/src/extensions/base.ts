@@ -59,7 +59,6 @@ import { createVizelTableOfContentsExtension } from "./table-of-contents.ts";
 import { createVizelTaskListExtensions } from "./task-list.ts";
 import { createVizelTextColorExtensions } from "./text-color.ts";
 import { createVizelTypographyExtension } from "./typography.ts";
-import { createVizelVisualHierarchyExtension } from "./visual-hierarchy.ts";
 import { createVizelWikiLinkExtension } from "./wiki-link.ts";
 
 export interface VizelExtensionsOptions {
@@ -413,20 +412,6 @@ function addCommentsExtension(extensions: Extensions, features: VizelFeatureOpti
 }
 
 /**
- * Add Visual Hierarchy extension (enabled by default).
- *
- * Attaches `data-vizel-depth="N"` to each block-level node so that
- * `block-hierarchy.scss` can render progressive indentation.
- */
-function addVisualHierarchyExtension(extensions: Extensions, features: VizelFeatureOptions): void {
-  const visualHierarchy = features.interaction?.visualHierarchy;
-  if (visualHierarchy === false) return;
-
-  const hierarchyOptions = typeof visualHierarchy === "object" ? visualHierarchy : {};
-  extensions.push(createVizelVisualHierarchyExtension(hierarchyOptions));
-}
-
-/**
  * Add Presence extension if configured (disabled by default).
  *
  * Renders other collaborators' cursors and selections via the supplied
@@ -547,7 +532,6 @@ export async function createVizelExtensions(
   addWikiLinkExtension(extensions, features, flavorConfig, encoding?.wikiLink);
   addMentionExtension(extensions, features, encoding?.mention);
   addCommentsExtension(extensions, features);
-  addVisualHierarchyExtension(extensions, features);
   addPresenceExtension(extensions, features);
 
   // Marks (default on, opt-out via content.*)

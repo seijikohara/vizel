@@ -135,7 +135,6 @@ Heading.configure({
 | FileHandler | `extensions/file-handler.ts` | Paste / drop handler for file uploads |
 | Presence | `extensions/presence.ts` | Cursor / selection presence overlays for collaboration |
 | Typography | `extensions/typography.ts` | Smart quote / em-dash / ellipsis input rules |
-| VisualHierarchy | `extensions/visual-hierarchy.ts` | Visual cues for nested block depth |
 | TableBase | `extensions/table-base.ts` | Base Tiptap Table family (without UI controls) |
 | TableControls | `extensions/table-controls.ts` | Row / column control overlays for the table feature |
 | TableOfContents | `extensions/table-of-contents.ts` | Live-updated outline node sourced from headings |
@@ -158,7 +157,7 @@ placing it in one of these three categories.
 | Category | Consumer question | Examples |
 |----------|--------------------|----------|
 | `content` | What can the document contain? | `image`, `table`, `mathematics`, `diagram`, `embed`, `callout`, `details`, `textColor`, `highlight`, `underline`, `superscript`, `subscript`, `taskList`, `wikiLink`, `tableOfContents` |
-| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth`, `visualHierarchy` |
+| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth` |
 | `collaboration` | Who edits together? | `comments`, `provider`, `versionHistory`, `presence` |
 
 ### Categorization rule
