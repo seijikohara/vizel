@@ -49,6 +49,11 @@
       "import": "./dist/floating/index.js",
       "default": "./dist/floating/index.js"
     },
+    "./focus-trap": {
+      "types": "./dist/focus-trap/index.d.ts",
+      "import": "./dist/focus-trap/index.js",
+      "default": "./dist/focus-trap/index.js"
+    },
     "./keyboard": {
       "types": "./dist/keyboard/index.d.ts",
       "import": "./dist/keyboard/index.js",

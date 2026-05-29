@@ -15,6 +15,7 @@ export default defineConfig({
         index: resolve(__dirname, "src/index.ts"),
         "dismissable/index": resolve(__dirname, "src/dismissable/index.ts"),
         "floating/index": resolve(__dirname, "src/floating/index.ts"),
+        "focus-trap/index": resolve(__dirname, "src/focus-trap/index.ts"),
         "keyboard/index": resolve(__dirname, "src/keyboard/index.ts"),
         "popover/index": resolve(__dirname, "src/popover/index.ts"),
       },

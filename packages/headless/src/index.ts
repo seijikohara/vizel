@@ -20,9 +20,12 @@
  * - `popover/` composes `floating/` with `dismissable/` for the
  *   anchored block menu, toolbar dropdown, node selector, and color
  *   picker surfaces. `@vizel/core`'s popover controller re-exports it.
+ * - `focus-trap/` confines keyboard focus to a modal-style surface; the
+ *   link editor and find-replace forms mount it to keep Tab inside the
+ *   form and to return focus to the trigger on close.
  *
- * The remaining primitives (combobox, focus-trap) land in follow-up
- * commits alongside each adapter rewrite that needs them.
+ * The remaining primitive (combobox) lands in a follow-up commit
+ * alongside the adapter rewrite that needs it.
  */
 
 export {
@@ -42,6 +45,13 @@ export {
   type VizelFloatingSpecOptions,
   type VizelVirtualElement,
 } from "./floating/index.ts";
+export {
+  buildVizelFocusTrapSpec,
+  createVizelFocusTrapController,
+  type VizelFocusTrapController,
+  type VizelFocusTrapOptions,
+  type VizelFocusTrapSpec,
+} from "./focus-trap/index.ts";
 export {
   buildVizelGridNavSpec,
   buildVizelListNavSpec,

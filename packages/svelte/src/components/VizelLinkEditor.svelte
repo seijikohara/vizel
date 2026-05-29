@@ -26,13 +26,16 @@ export interface VizelLinkEditorProps {
  * `createVizelDismissable` from `@vizel/headless`; `deferPointerHandler`
  * mirrors v1's `setTimeout(..., 0)` install so the opening pointerdown
  * does not register as an outside click (ADR-0003, ADR-0007).
+ * `createVizelFocusTrapController` traps Tab inside the form, focuses the
+ * URL input on open, and returns focus to the bubble-menu trigger on
+ * close.
  */
 import {
   applyVizelLinkEdit,
   buildVizelLinkEditorSpec,
   resolveVizelLinkEditorLabels,
 } from "@vizel/core";
-import { createVizelDismissable } from "@vizel/headless";
+import { createVizelDismissable, createVizelFocusTrapController } from "@vizel/headless";
 import { untrack } from "svelte";
 import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
@@ -49,7 +52,6 @@ const contextEditor = getVizelContextSafe();
 const editor = $derived(editorProp ?? contextEditor?.current ?? null);
 
 let formElement = $state<HTMLFormElement | undefined>(undefined);
-let inputElement = $state<HTMLInputElement | undefined>(undefined);
 
 const labels = $derived(resolveVizelLinkEditorLabels(locale));
 let url = $state(
@@ -64,15 +66,9 @@ let asEmbed = $state(false);
 
 const viewState = $derived(editor ? buildVizelLinkEditorSpec(editor, url, enableEmbed) : null);
 
-// Focus the URL input on first mount so keyboard users land in the field
-// without an extra tab.
-$effect(() => {
-  inputElement?.focus();
-});
-
-// Mount the dismissable controller once the form element binds. Reading
-// `formElement` keeps the effect reactive to the bind:this assignment that
-// fires only after `viewState` becomes non-null.
+// Mount the dismissable and focus-trap controllers once the form element
+// binds. Reading `formElement` keeps the effect reactive to the bind:this
+// assignment that fires only after `viewState` becomes non-null.
 $effect(() => {
   if (!formElement) return;
 
@@ -90,7 +86,18 @@ $effect(() => {
     deferPointerHandler: true,
   });
   controller.mount(formElement);
-  return () => controller.unmount();
+
+  // The trap focuses the URL input on open (replacing the former
+  // `inputElement.focus()`), keeps Tab inside the form, and returns focus
+  // to the trigger on close. It ignores Escape so the dismissable stays
+  // the sole owner of the close gesture.
+  const focusTrap = createVizelFocusTrapController();
+  focusTrap.mount(formElement);
+
+  return () => {
+    controller.unmount();
+    focusTrap.unmount();
+  };
 });
 
 function handleSubmit(e: Event) {
@@ -122,7 +129,6 @@ function handleVisit() {
 >
   <div class="vizel-link-editor-row">
     <input
-      bind:this={inputElement}
       bind:value={url}
       type="url"
       placeholder={labels.urlPlaceholder}

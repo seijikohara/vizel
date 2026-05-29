@@ -25,6 +25,7 @@ import {
   resolveVizelFindReplaceLabels,
   type VizelFindReplaceState,
 } from "@vizel/core";
+import { createVizelFocusTrapController } from "@vizel/headless";
 import { tick } from "svelte";
 import { getVizelContextSafe } from "./VizelContext.js";
 
@@ -47,7 +48,7 @@ let findText = $state("");
 let replaceText = $state("");
 let caseSensitive = $state(false);
 let findReplaceState = $state(emptyState);
-let findInputRef: HTMLInputElement | null = $state(null);
+let panelElement: HTMLDivElement | null = $state(null);
 
 const view = $derived(buildVizelFindReplaceSpec(findReplaceState, labels.noResults));
 const isOpen = $derived(view.isOpen);
@@ -70,14 +71,18 @@ $effect(() => {
   return undefined;
 });
 
-// Focus input when panel opens
+// Trap focus inside the panel while it is open. The trap focuses the find
+// input on open (replacing the former `findInputRef.focus()`) and wraps
+// Tab within the panel. It returns no focus on close because `handleClose`
+// focuses `editor.view.dom` itself (ADR-0007).
 $effect(() => {
-  if (isOpen && findInputRef) {
-    void tick().then(() => {
-      findInputRef?.focus();
-      findInputRef?.select();
-    });
+  if (isOpen && panelElement) {
+    const focusTrap = createVizelFocusTrapController({ returnFocusOnUnmount: false });
+    const element = panelElement;
+    void tick().then(() => focusTrap.mount(element));
+    return () => focusTrap.unmount();
   }
+  return undefined;
 });
 
 function handleFindInputChange(e: Event) {
@@ -142,13 +147,13 @@ function handleKeyDown(e: KeyboardEvent) {
 
 {#if isOpen}
   <div
+    bind:this={panelElement}
     class={`vizel-find-replace-panel ${className || ""}`}
     role="dialog"
     aria-label={labels.label}
   >
     <div class="vizel-find-replace-row">
       <input
-        bind:this={findInputRef}
         type="text"
         class="vizel-find-replace-input"
         placeholder={labels.findPlaceholder}
