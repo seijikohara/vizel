@@ -42,7 +42,6 @@ export function vizelDefaultFeatures(): VizelFeatureOptions {
       dragHandle: true,
       characterCount: true,
       typography: true,
-      visualHierarchy: true,
     },
   };
 }

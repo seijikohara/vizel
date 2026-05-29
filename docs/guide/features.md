@@ -103,7 +103,7 @@ You can override the flavor-driven defaults for individual extensions. For examp
 | Category | Consumer question | Examples |
 |----------|-------------------|----------|
 | `content` | What can the document contain? | `image`, `table`, `mathematics`, `diagram`, `embed`, `details`, `callout`, `textColor`, `highlight`, `taskList`, `wikiLink`, `tableOfContents` |
-| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth`, `visualHierarchy` |
+| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth` |
 | `collaboration` | Who edits together? | `comments`, `provider`, `versionHistory`, `presence` |
 
 A leaf accepts `true` (enable with defaults), `false` (disable), or an options object.

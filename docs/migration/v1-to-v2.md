@@ -36,7 +36,7 @@ Toggles are grouped by the consumer question they answer:
 | Category | Question | Examples |
 |----------|----------|----------|
 | `content` | What can the document contain? | `image`, `table`, `mathematics`, `diagram`, `embed`, `callout`, `details`, `textColor`, `highlight`, `underline`, `superscript`, `subscript`, `taskList`, `wikiLink`, `tableOfContents` |
-| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth`, `visualHierarchy` |
+| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth` |
 | `collaboration` | Who edits together? | `comments`, `provider`, `versionHistory`, `presence` |
 
 ### Before
