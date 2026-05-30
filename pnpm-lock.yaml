@@ -245,7 +245,7 @@ importers:
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: ^1.21.7
-        version: 1.21.7
+        version: 1.22.0
       '@types/react':
         specifier: ^19.2.15
         version: 19.2.15
@@ -282,7 +282,7 @@ importers:
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: ^1.21.7
-        version: 1.21.7
+        version: 1.22.0
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.1.2
         version: 7.1.2(svelte@5.55.9)(vite@8.0.14(@types/node@25.9.1)(sass@1.100.0)(yaml@2.9.0))
@@ -313,7 +313,7 @@ importers:
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: ^1.21.7
-        version: 1.21.7
+        version: 1.22.0
       '@vitejs/plugin-vue':
         specifier: ^6.0.7
         version: 6.0.7(vite@8.0.14(@types/node@25.9.1)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.35(typescript@6.0.3))
@@ -951,8 +951,8 @@ packages:
   '@hpcc-js/wasm-graphviz@1.21.5':
     resolution: {integrity: sha512-rgFx1A5gd1BdMrLkrKg44cdOjTvEQVWODf1PDTwgiKDfmJioD+tyoMBvmEJdH6OC7rh1JaeqFJ2+r92F1Ip/sA==}
 
-  '@hpcc-js/wasm-graphviz@1.21.7':
-    resolution: {integrity: sha512-7AGe3P9DoJs1eyS41rfNKq1iR9GSCcTSMdOr2DN5vetJEiwCYxI6rnz5bSyaolF1EDmy8X5zdFugY+t8+KO+CQ==}
+  '@hpcc-js/wasm-graphviz@1.22.0':
+    resolution: {integrity: sha512-/l6m+ev4TzYwiSm2pklMALiKejuheJwFkOHKrTAvFei+US+MVv6Vgk06xMc4Mjn57WiqzheMVGnmNu1iqkcBdA==}
 
   '@iconify-json/lucide@1.2.110':
     resolution: {integrity: sha512-rLeHqnZZBxZbprbVwf6uY7HB5GkGVgvT9VujhjvaUEqFDLKZON6zR8K1f8uD1brBwf5TJ0TIvvW8mz5u2XJU+w==}
@@ -3907,7 +3907,7 @@ snapshots:
 
   '@hpcc-js/wasm-graphviz@1.21.5': {}
 
-  '@hpcc-js/wasm-graphviz@1.21.7': {}
+  '@hpcc-js/wasm-graphviz@1.22.0': {}
 
   '@iconify-json/lucide@1.2.110':
     dependencies:
