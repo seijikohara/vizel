@@ -50,7 +50,8 @@
     "check:nolet": "node scripts/check-no-let.ts",
     "prepare": "lefthook install",
     "deps:check": "pnpm dlx taze major -r",
-    "deps:update": "pnpm dlx taze major -r -w && pnpm install"
+    "deps:update": "pnpm dlx taze major -r -w && pnpm install",
+    "check:publishable": "node scripts/check-publishable.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",

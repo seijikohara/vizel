@@ -78,6 +78,24 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # Pack every publishable package and fail if any dependency still carries
+      # a pnpm `workspace:` spec. A leaked spec aborts a consumer install with
+      # EUNSUPPORTEDPROTOCOL, so this gate blocks a broken release before it
+      # reaches the publish workflow.
+      - name: Publish gate (no workspace leaks)
+        run: pnpm check:publishable
+
+      # publint validates each package's exports, types, and file map against
+      # the actual packed tarball, catching publish-time misconfiguration the
+      # type checker cannot see.
+      - name: Lint published manifests (publint)
+        run: |
+          for pkg in core headless react vue svelte; do
+            echo "::group::publint @vizel/$pkg"
+            npx --yes publint@^0.3.0 packages/$pkg
+            echo "::endgroup::"
+          done
+
       # Publish the per-package `dist/` so `bundle-size` measures the exact
       # bytes this run produced. Sharing the artifact avoids a duplicate
       # build in the dependent job and keeps the two measurements in sync.
