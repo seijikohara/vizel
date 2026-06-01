@@ -3,6 +3,7 @@ import {
   normalizeVizelHexColor,
   type VizelColorDefinition,
 } from "@vizel/core";
+import { createVizelKeyboardGridController } from "@vizel/headless";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VizelIcon } from "./VizelIcon.tsx";
 
@@ -60,6 +61,26 @@ export function VizelColorPicker({
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const swatchRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  // The grid keyboard navigation (arrows, Home, End) is owned by the
+  // shared @vizel/headless controller (ADR-0003, ADR-0007) so the three
+  // adapters no longer duplicate the resolver. The swatches own their own
+  // keydown listener, so this component forwards each event through
+  // `handleKey` instead of letting the controller attach its own listener.
+  const gridController = useMemo(
+    () =>
+      createVizelKeyboardGridController({
+        getRoot: () => gridRef.current,
+        columns: GRID_COLUMNS,
+        itemSelector: "[role=option]",
+        onChange: (index) => {
+          setFocusedIndex(index);
+          swatchRefs.current[index]?.focus();
+        },
+      }),
+    []
+  );
 
   // Build flat list of all selectable colors for keyboard navigation
   const allColors = useMemo(
@@ -114,8 +135,7 @@ export function VizelColorPicker({
   // Keyboard navigation handler
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent, currentIndex: number) => {
-      const totalColors = allColors.length;
-      if (totalColors === 0) return;
+      if (allColors.length === 0) return;
 
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
@@ -126,32 +146,14 @@ export function VizelColorPicker({
         return;
       }
 
-      const newIndex = ((): number | null => {
-        switch (e.key) {
-          case "ArrowRight":
-            return (currentIndex + 1) % totalColors;
-          case "ArrowLeft":
-            return (currentIndex - 1 + totalColors) % totalColors;
-          case "ArrowDown":
-            return Math.min(currentIndex + GRID_COLUMNS, totalColors - 1);
-          case "ArrowUp":
-            return Math.max(currentIndex - GRID_COLUMNS, 0);
-          case "Home":
-            return 0;
-          case "End":
-            return totalColors - 1;
-          default:
-            return null;
-        }
-      })();
-
-      if (newIndex !== null) {
+      // Resolve the focused swatch as the controller's current cell, then
+      // let the shared grid resolver compute the next index.
+      gridController.setSelectedIndex(currentIndex);
+      if (gridController.handleKey(e.nativeEvent)) {
         e.preventDefault();
-        setFocusedIndex(newIndex);
-        swatchRefs.current[newIndex]?.focus();
       }
     },
-    [allColors, handleSelect]
+    [allColors, handleSelect, gridController]
   );
 
   // Update input value when value prop changes
@@ -178,6 +180,7 @@ export function VizelColorPicker({
 
   return (
     <div
+      ref={gridRef}
       className={`vizel-color-picker-content ${className ?? ""}`}
       role="listbox"
       aria-label={label}
