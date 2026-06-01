@@ -33,8 +33,9 @@ export function resolveVizelLinkEditorLabels(
   const le = locale?.linkEditor;
   return {
     // The URL input's aria-label has no locale field today — the
-    // component baselines have always shipped "Link URL". Keep it
-    // hardcoded here so framework components can drop the inline literal.
+    // component baselines have always shipped "Link URL". Keep the
+    // aria-label hardcoded here so framework components can drop the
+    // inline literal.
     urlAriaLabel: "Link URL",
     urlPlaceholder: le?.urlPlaceholder ?? "Enter URL...",
     apply: le?.apply ?? "Apply",

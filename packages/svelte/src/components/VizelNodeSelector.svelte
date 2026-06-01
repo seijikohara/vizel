@@ -16,6 +16,7 @@ export interface VizelNodeSelectorProps {
 <script lang="ts">
 import { buildVizelNodeSelectorSpec, createVizelNodeTypes, vizelDefaultNodeTypes } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
+import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import { createVizelState } from "../runes/createVizelState.svelte.js";
 import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
@@ -42,8 +43,8 @@ const spec = $derived.by(() => {
 });
 
 // Pointer-outside dismissal routes through `createVizelDismissable` from
-// `@vizel/headless` (ADR-0003, ADR-0007). The dropdown owns Escape and
-// arrow-key navigation inside its own `onkeydown` handler, so the
+// `@vizel/headless` (ADR-0003, ADR-0007). The dropdown owns the keydown
+// handler and resolves it through `buildVizelComboboxKeySpec`, so the
 // controller only handles outside-pointer dismissal.
 $effect(() => {
   if (!isOpen || !containerRef) return;
@@ -72,36 +73,43 @@ function handleKeyDown(event: KeyboardEvent) {
     return;
   }
 
-  switch (event.key) {
-    case "Escape":
+  // The open dropdown is a single-group listbox, so it delegates the
+  // navigate / select / close verbs to the shared combobox resolver
+  // (ADR-0003), matching VizelSlashMenu and VizelMentionMenu. The dropdown
+  // root (not a native button) owns the keydown, so Space activates like
+  // Enter; normalise it before resolving. Tab (`groupNext`) has no group to
+  // advance and falls through so focus leaves the dropdown.
+  const action = buildVizelComboboxKeySpec({
+    key: event.key === " " ? "Enter" : event.key,
+    currentIndex: focusedIndex,
+    length: effectiveNodeTypes.length,
+  });
+  if (action === null) return;
+  // The open listbox owns its navigation keys. `stopPropagation` keeps the
+  // Escape `close` from reaching the document-level bubble-menu escape
+  // controller, which would otherwise collapse the selection and unmount the
+  // host bubble menu (and the trigger) before focus can return to it. Tab
+  // (`groupNext`) is the default no-op so focus can leave the dropdown.
+  switch (action.type) {
+    case "navigate":
       event.preventDefault();
-      isOpen = false;
-      triggerRef?.focus();
+      event.stopPropagation();
+      focusedIndex = action.index;
       break;
-    case "ArrowDown":
+    case "select": {
       event.preventDefault();
-      focusedIndex = (focusedIndex + 1) % effectiveNodeTypes.length;
-      break;
-    case "ArrowUp":
-      event.preventDefault();
-      focusedIndex = (focusedIndex - 1 + effectiveNodeTypes.length) % effectiveNodeTypes.length;
-      break;
-    case "Enter":
-    case " ": {
-      event.preventDefault();
-      const selectedNodeType = effectiveNodeTypes[focusedIndex];
+      event.stopPropagation();
+      const selectedNodeType = effectiveNodeTypes[action.index];
       if (selectedNodeType) {
         handleSelectNodeType(selectedNodeType);
       }
       break;
     }
-    case "Home":
+    case "close":
       event.preventDefault();
-      focusedIndex = 0;
-      break;
-    case "End":
-      event.preventDefault();
-      focusedIndex = effectiveNodeTypes.length - 1;
+      event.stopPropagation();
+      isOpen = false;
+      triggerRef?.focus();
       break;
     default:
       break;
