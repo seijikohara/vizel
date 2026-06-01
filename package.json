@@ -8,7 +8,7 @@
     "dev:vue": "pnpm --filter @vizel/demo-vue dev",
     "dev:svelte": "pnpm --filter @vizel/demo-svelte dev",
     "dev:all": "concurrently -n react,vue,svelte -c blue,green,magenta \"pnpm dev:react\" \"pnpm dev:vue\" \"pnpm dev:svelte\"",
-    "build": "pnpm -r --if-present run build",
+    "build": "pnpm -r --if-present run build && node scripts/add-dts-extensions.mjs packages/core/dist packages/headless/dist packages/react/dist packages/vue/dist packages/svelte/dist",
     "docs:api": "typedoc && node scripts/postprocess-typedoc.ts",
     "docs:dev": "vitepress dev docs",
     "docs:build": "pnpm build && pnpm docs:api && vitepress build docs && pnpm docs:build:demos",
