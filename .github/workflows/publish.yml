@@ -112,6 +112,7 @@ jobs:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
           pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/headless exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
@@ -124,7 +125,7 @@ jobs:
         run: |
           echo "## 📦 Package Contents" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          for pkg in core react vue svelte; do
+          for pkg in core headless react vue svelte; do
             echo "### @vizel/$pkg" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
             (cd packages/$pkg && npm pack --dry-run 2>&1) >> $GITHUB_STEP_SUMMARY
@@ -141,9 +142,9 @@ jobs:
             packages/*/package.json
           retention-days: 1
 
-  # Publish core first (other packages depend on it)
-  publish-core:
-    name: Publish @vizel/core
+  # Publish headless first: @vizel/core and every adapter depend on it.
+  publish-headless:
+    name: Publish @vizel/headless
     runs-on: ubuntu-latest
     needs: [validate, build]
     if: ${{ !inputs.dry-run }}
@@ -163,6 +164,55 @@ jobs:
         with:
           name: build-artifacts
           path: packages
+
+      - name: Rewrite workspace dependencies
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: node scripts/rewrite-workspace-deps.mjs packages/headless/package.json "$VERSION"
+
+      - name: Publish
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          PRERELEASE_TAG=""
+          if [[ "$VERSION" == *-* ]]; then
+            PRERELEASE_TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+          fi
+          PUBLISH_OPTS="--provenance --access public --no-git-checks"
+          if [ -n "$PRERELEASE_TAG" ]; then
+            PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
+            echo "📌 Publishing @vizel/headless with tag: $PRERELEASE_TAG"
+          fi
+          cd packages/headless && npm publish $PUBLISH_OPTS
+          echo "✅ Published @vizel/headless@$VERSION"
+
+  # Publish core next: it depends on @vizel/headless and is depended on by the adapters.
+  publish-core:
+    name: Publish @vizel/core
+    runs-on: ubuntu-latest
+    needs: [validate, build, publish-headless]
+    if: ${{ !inputs.dry-run }}
+    environment: npm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: build-artifacts
+          path: packages
+
+      - name: Rewrite workspace dependencies
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: node scripts/rewrite-workspace-deps.mjs packages/core/package.json "$VERSION"
 
       - name: Publish
         env:
@@ -207,13 +257,14 @@ jobs:
           name: build-artifacts
           path: packages
 
-      - name: Update dependency version
+      - name: Rewrite workspace dependencies
         env:
           VERSION: ${{ needs.validate.outputs.version }}
-        run: |
-          cd packages/${{ matrix.package }}
-          # Replace workspace:^ with actual version for publishing
-          sed -i 's/"@vizel\/core": "workspace:\^"/"@vizel\/core": "^'"$VERSION"'"/' package.json
+        # Resolve every workspace:^ spec (@vizel/core and @vizel/headless) to the
+        # release version. npm publish ships workspace: protocol verbatim, which
+        # aborts a consumer install with EUNSUPPORTEDPROTOCOL, so this rewrite is
+        # mandatory before publishing.
+        run: node scripts/rewrite-workspace-deps.mjs packages/${{ matrix.package }}/package.json "$VERSION"
 
       - name: Publish
         env:
@@ -271,6 +322,7 @@ jobs:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
           pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/headless exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version
           pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
@@ -314,6 +366,7 @@ jobs:
           echo "| Package | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| @vizel/core | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| @vizel/headless | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| @vizel/react | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| @vizel/vue | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| @vizel/svelte | ✅ |" >> $GITHUB_STEP_SUMMARY
@@ -322,6 +375,7 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### Links" >> $GITHUB_STEP_SUMMARY
             echo "- [npm: @vizel/core](https://www.npmjs.com/package/@vizel/core)" >> $GITHUB_STEP_SUMMARY
+            echo "- [npm: @vizel/headless](https://www.npmjs.com/package/@vizel/headless)" >> $GITHUB_STEP_SUMMARY
             echo "- [npm: @vizel/react](https://www.npmjs.com/package/@vizel/react)" >> $GITHUB_STEP_SUMMARY
             echo "- [npm: @vizel/vue](https://www.npmjs.com/package/@vizel/vue)" >> $GITHUB_STEP_SUMMARY
             echo "- [npm: @vizel/svelte](https://www.npmjs.com/package/@vizel/svelte)" >> $GITHUB_STEP_SUMMARY
