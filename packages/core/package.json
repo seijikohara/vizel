@@ -4,7 +4,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/seijikohara/vizel",
+    "url": "git+https://github.com/seijikohara/vizel.git",
     "directory": "packages/core"
   },
   "description": "Framework-agnostic core for Vizel block-based Markdown editor built on Tiptap",
@@ -158,10 +158,10 @@
   },
   "dependencies": {
     "@tiptap/extension-list": "^3.23.6",
-    "@vizel/headless": "workspace:^",
     "@tiptap/extension-node-range": "^3.23.6",
     "@tiptap/extensions": "^3.23.6",
     "@tiptap/y-tiptap": "^3.0.3",
+    "@vizel/headless": "workspace:^",
     "markdown-it": "^14.2.0",
     "markdown-it-deflist": "^3.0.1",
     "markdown-it-footnote": "^4.0.0",

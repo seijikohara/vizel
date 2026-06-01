@@ -2,10 +2,9 @@
   "name": "@vizel/headless",
   "version": "2.0.0",
   "type": "module",
-  "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/seijikohara/vizel",
+    "url": "git+https://github.com/seijikohara/vizel.git",
     "directory": "packages/headless"
   },
   "description": "Framework-neutral UI primitives consumed by every Vizel framework adapter",

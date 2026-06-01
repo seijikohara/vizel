@@ -4,7 +4,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/seijikohara/vizel",
+    "url": "git+https://github.com/seijikohara/vizel.git",
     "directory": "packages/svelte"
   },
   "description": "Svelte 5 components and runes for Vizel block-based Markdown editor",
