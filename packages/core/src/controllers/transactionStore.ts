@@ -22,8 +22,8 @@ export interface VizelEditorTransactionStore {
    */
   subscribe(onChange: () => void): () => void;
   /**
-   * Read the current version counter. Increments by 1 (with 32-bit wrap-
-   * around) on every transaction.
+   * Return the current version counter, which increments by 1 (with
+   * 32-bit wrap-around) on every transaction.
    */
   getVersion(): number;
 }

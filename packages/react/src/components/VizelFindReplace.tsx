@@ -237,7 +237,7 @@ export function VizelFindReplace({
             aria-label={labels.replaceAriaLabel}
             title={labels.replaceTitle}
           >
-            Replace
+            {labels.replaceAriaLabel}
           </button>
           <button
             type="button"
@@ -247,7 +247,7 @@ export function VizelFindReplace({
             aria-label={labels.replaceAllAriaLabel}
             title={labels.replaceAllTitle}
           >
-            All
+            {labels.replaceAllAriaLabel}
           </button>
         </div>
       )}

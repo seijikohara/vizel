@@ -7,7 +7,7 @@ import {
   type VizelLocale,
 } from "@vizel/core";
 import { createVizelDismissable, createVizelFocusTrapController } from "@vizel/headless";
-import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
+import { computed, ref, useTemplateRef, watch } from "vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -73,31 +73,24 @@ const dismissable = createVizelDismissable({
 // so the dismissable stays the sole owner of the close gesture.
 const focusTrap = createVizelFocusTrapController();
 
+// A single watch owns the controller lifecycle (ADR-0004 Vue idiom). The
+// `onCleanup` parameter unmounts the controllers before each re-run and on
+// scope disposal, so the cleanup runs even inside a detached `effectScope()`
+// — unlike a separate `onBeforeUnmount` hook. `immediate: true` covers the
+// first mount; `flush: "post"` defers the mount until the form is in the DOM.
 watch(
   [viewState, formRef],
-  ([view, form]) => {
-    if (view && form) {
-      dismissable.mount(form);
-      focusTrap.mount(form);
-    } else {
+  ([view, form], _old, onCleanup) => {
+    if (!(view && form)) return;
+    dismissable.mount(form);
+    focusTrap.mount(form);
+    onCleanup(() => {
       dismissable.unmount();
       focusTrap.unmount();
-    }
+    });
   },
-  { flush: "post" }
+  { immediate: true, flush: "post" }
 );
-
-onMounted(() => {
-  if (viewState.value && formRef.value) {
-    dismissable.mount(formRef.value);
-    focusTrap.mount(formRef.value);
-  }
-});
-
-onBeforeUnmount(() => {
-  dismissable.unmount();
-  focusTrap.unmount();
-});
 
 function handleSubmit(e: Event) {
   e.preventDefault();
