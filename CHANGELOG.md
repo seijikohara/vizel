@@ -4,158 +4,88 @@ All notable changes to Vizel are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2026-05-15
+## [2.0.0] - Unreleased
 
-This release is the v2.x rework that aligns React, Vue, and Svelte adapters
-around a shared, framework-agnostic core. Behavior remains backwards-compatible
-for first-party consumers; the breaking changes listed below only affect
-power users who reach into low-level menu refs or call certain framework
-context APIs by hand.
+v2.0.0 is a breaking rebuild of Vizel. Per
+[ADR-0005](docs/adr/ADR-0005-v2-breaking-release.md), the release abandons
+backward compatibility with v1.x: no API, type, prop, event, or runtime contract
+is preserved. The only bridge for existing consumers is the migration guide at
+[docs/guide/migration-v1-to-v2.md](docs/guide/migration-v1-to-v2.md), which walks
+through every breaking change per framework with side-by-side code.
+
+The rebuild replaces the v1 cross-framework API-symmetry contract with **feature
+parity**: every adapter ships the same capabilities, but each one expresses them
+in its framework's native idiom rather than mirroring a shared API shape.
 
 ### Breaking changes
 
-- **Menu refs.** `VizelSlashMenuRef.onKeyDown` and `VizelMentionMenuRef.onKeyDown`
-  now accept a raw `KeyboardEvent` instead of the `{ event }` wrapper. The
-  Tiptap `SuggestionOptions.onKeyDown` contract is unchanged; only the
-  component ref surface is unified.
-  ```diff
-  - menuRef.current.onKeyDown({ event })
-  + menuRef.current.onKeyDown(event)
-  ```
-- **Svelte context.** `getVizelContext()` / `getVizelContextSafe()` now return
-  a `VizelContextAccessor` (`{ readonly current: Editor | null }`) instead of
-  a bare `() => Editor | null` getter function. This matches the documented
-  cross-framework rule and aligns with how `$state` runes surface values.
-  ```diff
-  - const editor = getVizelContext()();
-  + const editor = getVizelContext().current;
-  ```
-- **Invalid editor configuration.** Supplying both `initialContent` and
-  `initialMarkdown` to `createVizelEditorInstance` now throws a `VizelError`
-  with the new `INVALID_CONFIG` code (previously it logged a `console.warn`
-  and silently fell back to `initialMarkdown`). Programming errors fail
-  loudly so the misuse is caught on first run.
+Every area below is documented in full, with before/after code per framework, in
+the migration guide. This list is the index.
+
+- **API symmetry retires in favour of feature parity.** Adapter APIs no longer
+  mirror each other; each follows its framework's idiom. Parity is enforced by
+  the feature manifest (`packages/core/src/feature-manifest.ts`) rather than by
+  matching signatures. See [ADR-0001](docs/adr/ADR-0001-feature-parity-over-api-symmetry.md).
+- **Editor lifecycle returns the editor directly.** React `useVizelEditor`
+  returns `Editor | null`; Vue returns `ShallowRef<Editor | null>`; Svelte
+  `createVizelEditor` returns `{ readonly current: Editor | null }`.
+- **`useVizelEditorState` becomes a selector subscription.** Each adapter
+  re-renders only when the selected slice changes (React `useSyncExternalStore`,
+  Vue `computed` over a transaction listener, Svelte `createSubscriber`).
+- **Bubble, slash, and mention menus adopt render-prop idioms** — React callback
+  children, Vue scoped slots, Svelte snippets — and Svelte callback props move to
+  the lowercase DOM-attribute convention (`onclose`, `onselect`).
+- **Link editor, find-replace, and color picker restructure** their props and
+  imperative surfaces per framework.
+- **Theme, auto-save, context, and provider APIs** change shape per framework
+  (for example Svelte `getVizelContext()` now returns
+  `{ readonly current: Editor | null }`).
+- **Invalid editor configuration throws.** Supplying both `initialContent` and
+  `initialMarkdown` now throws a `VizelError` with the `INVALID_CONFIG` code
+  instead of warning and silently falling back.
 
 ### Added
 
-- `@vizel/core/interactions/` module exposing framework-agnostic state-machine
-  and event-subscription primitives:
-  - `createVizelEditorTransactionStore(getEditor)` — `{ subscribe, getVersion }`
-    store backing `useVizelState` / `createVizelState` across React, Vue, Svelte.
-  - `createVizelDismissibleController({ getElements, onDismiss })` — owns the
-    outside-click + Escape dismissal listeners with a disposer.
-  - `resolveVizelListNavigation` / `resolveVizelGridNavigation` — pure
-    keyboard-navigation resolvers (ArrowUp / ArrowDown / Home / End wrap and
-    2D grid traversal).
-  - `createVizelEditorSubscription({ getEditor, event, handler })` — one-line
-    Tiptap editor event listener with clean disposer.
-- `mountVizelEditorView(editor, container)` — appends `view.dom` to a
-  container element, sets the editable getter, and returns a disposer.
-  Replaces the three-step pattern hand-written by every framework's
-  `VizelEditor` component.
-- `createVizelRelativeTimeTicker({ getDate, getLocale, onTick })` and
-  `resolveVizelSaveIndicatorView(status, locale, lastSaved, relativeTime, showTimestamp)` —
-  pure helpers consumed by `VizelSaveIndicator` in all three frameworks.
-- `applyVizelColorToEditor(editor, type, color)` — single-call color apply
-  routing (textColor vs highlight, with `"inherit"` / `"transparent"`
-  remove sentinels).
-- `loadVizelEmbedScripts(container, provider?)` and
-  `resolveVizelEmbedView(data) → VizelEmbedViewModel` — embed script
-  re-parenting plus a discriminated union view-model resolver.
-- `resolveVizelFindReplaceLabels(locale)` — shared label resolver consumed
-  by the React, Vue, and Svelte `VizelFindReplace` components.
-- `createVizelBubbleMenuActions(locale)` + `filterVizelBubbleMenuActions` +
-  `groupVizelBubbleMenuActions` + `vizelDefaultBubbleMenuActions` —
-  bubble-menu action list, mirroring the existing toolbar-actions shape.
-- `@vizel/core/skeletons/` module exposing declarative UI scaffolding
-  for the menu and form components. Each framework's component is now a
-  thin transformer that maps the spec to its native template:
-  - `VizelMenuSpec<TData>` — generic spec describing root container ARIA,
-    sections (optionally headed), and per-item attrs (`role`, `id`,
-    `aria-selected`, `aria-haspopup`, `aria-expanded`, `tabIndex`).
-  - `buildVizelMentionMenuSkeleton(items, selectedIndex, locale)` —
-    flat listbox spec for `@vizel/{react,vue,svelte}` `VizelMentionMenu`.
-  - `buildVizelSlashMenuSkeleton(items, selectedIndex, options)` +
-    `getNextVizelSlashMenuGroupIndex(spec, currentIndex)` — grouped
-    listbox spec for `VizelSlashMenu` plus the Tab-to-next-group
-    navigation helper.
-  - `buildVizelBlockMenuSkeleton(actions, turnIntoOptions, showTurnInto,
-    locale)` — main menu + submenu trigger + submenu spec for
-    `VizelBlockMenu`.
-  - `buildVizelToolbarDropdownSkeleton(dropdown, editor, isOpen,
-    focusedIndex)` — trigger + listbox-popover spec for
-    `VizelToolbarDropdown`.
-  - `buildVizelNodeSelectorSkeleton(editor, nodeTypes, isOpen,
-    focusedIndex, locale)` — trigger + listbox-popover spec for
-    `VizelNodeSelector` with active-node-type detection and locale-aware
-    aria-label template.
-  - `resolveVizelLinkEditorLabels(locale)` +
-    `buildVizelLinkEditorViewState(editor, url, enableEmbed)` +
-    `applyVizelLinkEdit(editor, params, canEmbed)` — labels, derived
-    visibility flags, and the chain-command apply logic for
-    `VizelLinkEditor`.
-  - `buildVizelFindReplaceViewState(state, noResultsLabel)` and
-    `buildVizelFindReplaceViewStateFromLocale(state, locale)` — derived
-    match-counter / replace-mode / disabled flags for `VizelFindReplace`.
+- **`@vizel/headless`** — a framework-neutral package of UI primitives consumed
+  transitively by every adapter (combobox, popover, dismissable, focus-trap,
+  floating, and keyboard). Each primitive ships a pure spec builder plus a
+  `{ mount, unmount, update }` controller and guards SSR. See
+  [ADR-0003](docs/adr/ADR-0003-vizel-headless-package.md).
+- **First-party editor reactivity in every adapter.** React uses
+  `useSyncExternalStore`, Vue uses `shallowRef` + an `onScopeDispose`-bound
+  transaction listener, and Svelte uses `$state.raw` + `createSubscriber`.
+  `@tiptap/react` and `@tiptap/vue-3` are no longer dependencies. See
+  [ADR-0009](docs/adr/ADR-0009-first-party-editor-reactivity.md).
+- **Feature manifest as the parity single source of truth.**
+  `VIZEL_FEATURE_MANIFEST` declares every feature; `pnpm check:feature-parity`
+  verifies all three adapters cover every entry. See
+  [ADR-0002](docs/adr/ADR-0002-feature-manifest-as-parity-ssot.md).
+- **Pure spec builders and DOM controllers in `@vizel/core`.** Every menu and
+  form component consumes a `buildVizel<Component>Spec(...)` builder plus a
+  controller that owns its DOM listeners, so adapters never attach global
+  listeners directly. See
+  [ADR-0007](docs/adr/ADR-0007-component-size-and-controller-delegation.md).
+- **Architecture Decision Records** under `docs/adr/` capturing every binding
+  rule, and a per-framework migration guide.
 
 ### Changed
 
-- **Vue / Svelte `useVizelEditor` / `createVizelEditor`** now mirror the
-  `editable` prop through `editor.setEditable()` when it changes after
-  mount (previously React-only).
-- **Markdown sync runtime.** `useVizelMarkdown` in React and Vue now flush
-  any pending debounced markdown export before detaching from an editor,
-  matching the Svelte rune. Editor swaps and unmount no longer drop
-  unsynced markdown.
-- **Vue / Svelte `VizelProvider`** always emit the `vizel-root` class on
-  their wrapper element so the CSS variable scope (`.vizel-root { --vizel-* }`)
-  applies consistently with React.
-- **Svelte `VizelPortal`** migrates from a `use:portal` action (whose
-  closure captured `layer` / `className` at action creation) to a
-  `$effect`-based mount/attribute pair so prop changes propagate to the
-  wrapper element.
-- **Svelte `VizelBubbleMenu`** reads `shouldShow` with `untrack(...)` so
-  value updates flow through the wrapper closure without re-registering
-  the Tiptap plugin (matches the React `shouldShowRef` pattern).
-- **Vue `useVizelComment`** drops a dead options watcher and replaces the
-  `onMounted` + non-immediate watch split with a single
-  `watch(getEditor, ..., { immediate: true })`.
-- **Svelte `createVizelCollaboration`** no longer recreates handlers on
-  the `null → null` provider transition.
-- **Vue `VizelThemeProvider`** watches all three inputs (`resolvedTheme`,
-  `targetSelector`, `disableTransitionOnChange`) and re-applies the theme
-  on any change.
-- **Vue `Vizel.vue`** memoizes its locale-bound props object so child
-  toolbars / bubble-menus / block-menus no longer see a fresh identity
-  each render.
-- **React `VizelBlockMenu`** group key strategy aligned with Vue / Svelte
-  (`groupIndex` instead of `group[0]?.group`).
-- **MentionMenu accessibility.** Each framework's `VizelMentionMenu`
-  container now declares `role="listbox"`, `aria-label`, and
-  `aria-activedescendant`, with stable `id`s on each option.
-- **Bubble-menu defaults.** Each framework's `VizelBubbleMenuDefault`
-  collapses from ~150 lines of repeated buttons to an iteration over the
-  shared `createVizelBubbleMenuActions(locale)` list.
-- **UI skeletonization.** The DOM scaffolding for `VizelMentionMenu`,
-  `VizelSlashMenu`, `VizelBlockMenu`, `VizelToolbarDropdown`,
-  `VizelNodeSelector`, `VizelLinkEditor`, and `VizelFindReplace` is now
-  declared in `@vizel/core/skeletons/`. Each framework component is a
-  thin transformer that maps the spec to its native template instead of
-  duplicating ARIA wiring, identifier schemes, and view-state
-  derivations three times.
+- **CSS centralises in `@vizel/core`.** A single catalogue ships under two
+  selectors (`:root, [data-vizel-theme="light"]` and `[data-vizel-theme="dark"]`)
+  plus the `prefers-color-scheme` fallback; each adapter re-exports the same
+  `styles.css`. See [ADR-0008](docs/adr/ADR-0008-css-belongs-in-core.md).
+- **Controllers replace direct DOM listeners.** Outside-click, Escape, focus
+  trapping, and positioning move into `@vizel/core` controllers and
+  `@vizel/headless` primitives; adapter components stay at or under 120
+  view-template lines.
+- **Tiptap dependency surface narrows.** The only Tiptap runtime dependencies are
+  `@tiptap/core`, `@tiptap/pm`, and the per-feature `@tiptap/extension-*`
+  packages, declared by `@vizel/core`.
 
-### Fixed
+### Removed
 
-- **Vue `VizelSlashMenu` type lie.** The declared
-  `(props: { event }) => boolean` ref signature never matched the
-  underlying `defineExpose` body. Both now agree on
-  `(event: KeyboardEvent) => boolean`.
-- **`docs/guide/{react,vue,svelte}.md`** `VizelPortal` examples no longer
-  show a fictional `container` prop (the component exposes `layer` /
-  `class` / `disabled`).
-
-### Documentation
-
-- `.claude/rules/cross-framework.md` gains sections covering the Provider
-  Root Class convention, the Suggestion Menu Ref convention, and the
-  "Reactive vs Mount-time Editor Options" contract.
+- `@tiptap/react` and `@tiptap/vue-3` dependencies.
+- The v1 cross-framework API-symmetry rule and its prose source of truth
+  (`.claude/rules/cross-framework.md`), retired by
+  [ADR-0006](docs/adr/ADR-0006-retire-cross-framework-rule.md) in favour of the
+  feature manifest and ADRs.
