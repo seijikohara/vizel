@@ -46,7 +46,7 @@ packages. The single permitted asymmetry is the idiom prefix:
 | `UseVizelContext.spec.{tsx,ts}` | `GetVizelContext.spec.ts` | `VizelContext` |
 
 The `Use*` to `Create*` / `Get*` mapping mirrors the symbol parity
-rules in `scripts/check-cross-framework-parity.ts`.
+rules in `scripts/check-ct-parity.ts`.
 
 ### How to verify
 
@@ -60,9 +60,9 @@ Actions job blocks merge.
 ### How to add a parity exception
 
 Spec parity has **no** exception catalog. If a component genuinely
-does not exist on one framework (rare; the cross-framework rules in
-`.claude/rules/cross-framework.md` already forbid this), revisit the
-component before adding a spec asymmetry.
+does not exist on one framework (rare; the feature manifest in
+`packages/core/src/feature-manifest.ts` and `.claude/rules/feature-manifest.md`
+already forbid this), revisit the component before adding a spec asymmetry.
 
 ---
 

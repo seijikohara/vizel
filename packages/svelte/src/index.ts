@@ -17,10 +17,11 @@ initVizelIconRenderer();
 // biome-ignore lint/performance/noReExportAll: mirror the full Core surface so named exports never drift whenever Core adds a symbol.
 export * from "@vizel/core";
 
-// Explicit re-export so the cross-framework literal parity check picks
-// up the shallow-equality helpers from Core. The wildcard above already
-// forwards them; the named declaration keeps `scripts/check-cross-
-// framework-parity.ts`'s same-name literal scan happy.
+// Explicit re-export of the shallow-equality helpers from Core. The
+// wildcard above already forwards them; this named declaration documents
+// the manifest-mandated symbols so the feature manifest (verified by
+// `pnpm check:feature-parity` / `scripts/check-feature-parity.ts`)
+// resolves them to a single source across frameworks.
 export { shallowEqualArray, shallowEqualObject } from "@vizel/core";
 
 // Components

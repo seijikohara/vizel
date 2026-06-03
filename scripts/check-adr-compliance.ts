@@ -114,35 +114,60 @@ function checkPackageVersions(): CheckResult {
 }
 
 /**
- * The cross-framework rule retires in Phase 1 per ADR-0006. The file
- * staying alive past Phase 1 is a drift signal.
+ * ADR-0006 retires `.claude/rules/cross-framework.md`. Retirement means
+ * two things: the file is gone, and no surviving artefact still points at
+ * the retired rule or the never-shipped `check-cross-framework-parity.ts`
+ * scan. The guard fails on either signal so a stale reference cannot rot
+ * undetected after the file leaves the tree.
+ *
+ * The dangling-reference scan covers `.claude/`, each adapter's `src/`,
+ * and `scripts/` for `.md`, `.ts`, and `.tsx` sources. It skips `docs/`
+ * because historical ADRs and plans legitimately cite the retired file as
+ * history, and skips this harness, which carries the literal token in its
+ * own regex. The pattern escapes the dots so `cross-framework-reviewer.md`
+ * (the live subagent file) does not false-match.
  */
 function checkCrossFrameworkRuleRetired(): CheckResult {
-  const path = resolve(REPO_ROOT, ".claude/rules/cross-framework.md");
-  if (!existsSync(path)) {
+  const filePath = resolve(REPO_ROOT, ".claude/rules/cross-framework.md");
+  if (existsSync(filePath)) {
     return {
       adr: "ADR-0006",
       title: "Retire cross-framework.md",
-      status: "PASS",
-      message: ".claude/rules/cross-framework.md is removed.",
+      status: "FAIL",
+      message: ".claude/rules/cross-framework.md still exists; ADR-0006 retires it.",
     };
   }
-  const content = readText(path) ?? "";
-  if (content.includes("DEPRECATED")) {
+  const danglingPattern = /cross-framework\.md|check-cross-framework-parity\.ts/g;
+  const selfPath = resolve(REPO_ROOT, "scripts/check-adr-compliance.ts");
+  const scanRoots = [
+    resolve(REPO_ROOT, ".claude"),
+    resolve(REPO_ROOT, "packages/react/src"),
+    resolve(REPO_ROOT, "packages/vue/src"),
+    resolve(REPO_ROOT, "packages/svelte/src"),
+    resolve(REPO_ROOT, "scripts"),
+  ];
+  const danglingRefs = scanRoots
+    .flatMap((root) => grepFiles(root, danglingPattern, [".md", ".ts", ".tsx"]))
+    // Exclude this harness (carries the literal token in its regex) and any
+    // generated `.d.ts` declaration that mirrors a `.ts` source comment.
+    .filter((hit) => hit.path !== selfPath && !hit.path.endsWith(".d.ts"));
+  if (danglingRefs.length > 0) {
+    const offenders = danglingRefs
+      .map((hit) => `${hit.path.replace(`${REPO_ROOT}/`, "")} (${hit.count})`)
+      .join(", ");
     return {
       adr: "ADR-0006",
       title: "Retire cross-framework.md",
-      status: "WARN",
-      message:
-        ".claude/rules/cross-framework.md carries a deprecation header; the retirement cleanup PR removes the file.",
+      status: "FAIL",
+      message: `.claude/rules/cross-framework.md is removed, but live references to the retired names remain: ${offenders}. Redirect each to .claude/rules/feature-manifest.md, scripts/check-feature-parity.ts, or scripts/check-ct-parity.ts.`,
     };
   }
   return {
     adr: "ADR-0006",
     title: "Retire cross-framework.md",
-    status: "WARN",
+    status: "PASS",
     message:
-      ".claude/rules/cross-framework.md still on main; PR #559 lands the deprecation header and a follow-up PR removes the file. Promote to FAIL after the cleanup PR merges.",
+      ".claude/rules/cross-framework.md is removed and no live reference to the retired names remains.",
   };
 }
 
