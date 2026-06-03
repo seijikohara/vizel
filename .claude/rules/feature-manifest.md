@@ -46,7 +46,7 @@ Each feature entry exports a `VizelFeatureDefinition`:
 
 ## CI verification
 
-- `pnpm check:feature-parity` — TypeScript-level check: every manifest entry exports a matching symbol from each adapter.
+- `pnpm check:feature-parity` — static export-surface check. The script parses each adapter's `src/index.ts` with the TypeScript compiler API and computes its effective export set: the adapter's own named exports unioned with the `@vizel/core` surface that the mandatory `export * from "@vizel/core"` forwards. The Core surface is resolved by recursively walking the re-export declarations rooted at `packages/core/src/index.ts`. The check reads source only — it imports no built artefacts — and fails when any adapter omits a manifest-declared component or companion symbol.
 - `pnpm check:ct-parity` — Playwright-level check: every manifest entry has a scenario that runs across every framework.
 - `pnpm check:scenarios` — scenarios compile without errors.
 
