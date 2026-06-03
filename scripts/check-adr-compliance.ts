@@ -15,6 +15,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(SCRIPT_DIR, "..");
@@ -263,6 +264,103 @@ function stripJsComments(source: string): string {
   return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/[^\n]*/g, "$1");
 }
 
+/** Return `true` when the node is a JSX element, fragment, or self-closing tag. */
+const isJsxNode = (node: ts.Node): boolean =>
+  ts.isJsxElement(node) || ts.isJsxFragment(node) || ts.isJsxSelfClosingElement(node);
+
+/**
+ * Return the name a function-like declaration introduces, or `null`.
+ *
+ * The discovery recognises two component shapes: a `function Vizel()`
+ * declaration and an `export const Vizel = (...) => ...` arrow bound to a
+ * single named variable. Two adapter files (`VizelIconContext`,
+ * `VizelThemeContext`) use the `export const` form, so the AST scan must
+ * read the variable name, not only the function-declaration name.
+ */
+function functionLikeName(node: ts.Node): string | null {
+  if (ts.isFunctionDeclaration(node)) return node.name?.text ?? null;
+  if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
+    const initializer = node.initializer;
+    if (initializer && (ts.isArrowFunction(initializer) || ts.isFunctionExpression(initializer))) {
+      return node.name.text;
+    }
+  }
+  return null;
+}
+
+/**
+ * Return the function body that holds a declaration's render markup.
+ *
+ * A `function` declaration carries its body directly; an `export const`
+ * arrow carries the body on its initializer.
+ */
+function functionLikeBody(node: ts.Node): ts.Node | null {
+  if (ts.isFunctionDeclaration(node)) return node.body ?? null;
+  if (ts.isVariableDeclaration(node)) {
+    const initializer = node.initializer;
+    if (initializer && (ts.isArrowFunction(initializer) || ts.isFunctionExpression(initializer))) {
+      return initializer.body;
+    }
+  }
+  return null;
+}
+
+/** Collect every JSX node contained in `root` into `into`. */
+function collectJsxNodes(root: ts.Node, into: ts.Node[]): void {
+  const visit = (node: ts.Node): void => {
+    if (isJsxNode(node)) into.push(node);
+    ts.forEachChild(node, visit);
+  };
+  visit(root);
+}
+
+/**
+ * Measure a React component's view markup as the line span across the
+ * union of its JSX nodes.
+ *
+ * The TypeScript compiler API parses the `.tsx`, then discovers every
+ * component whose name matches `/^Vizel/` (function declaration or
+ * `export const` arrow) plus every non-component helper render function in
+ * the file. The span runs from the minimum JSX `getStart()` to the maximum
+ * JSX `getEnd()`, counted in lines, so a component that delegates its
+ * markup to a local helper is measured rather than silently scored 0.
+ * Returns 0 when the file contains no JSX.
+ */
+function measureReactViewLineSpan(source: string): number {
+  const sourceFile = ts.createSourceFile(
+    "component.tsx",
+    source,
+    ts.ScriptTarget.Latest,
+    /* setParentNodes */ true,
+    ts.ScriptKind.TSX
+  );
+  const jsxNodes: ts.Node[] = [];
+  const visit = (node: ts.Node): void => {
+    const name = functionLikeName(node);
+    const body = functionLikeBody(node);
+    if (body !== null) {
+      const isComponent = name !== null && /^Vizel/.test(name);
+      const containsJsx: ts.Node[] = [];
+      collectJsxNodes(body, containsJsx);
+      // Include the body's JSX when the declaration is a Vizel* component
+      // or a non-component helper render function (a function that returns
+      // JSX). Both cases contribute to the union so a component that
+      // delegates its markup to a helper is not under-counted.
+      if (isComponent || containsJsx.length > 0) {
+        jsxNodes.push(...containsJsx);
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
+  if (jsxNodes.length === 0) return 0;
+  const start = Math.min(...jsxNodes.map((node) => node.getStart(sourceFile)));
+  const end = Math.max(...jsxNodes.map((node) => node.getEnd()));
+  const startLine = sourceFile.getLineAndCharacterOfPosition(start).line;
+  const endLine = sourceFile.getLineAndCharacterOfPosition(end).line;
+  return endLine - startLine + 1;
+}
+
 /**
  * Extract the view-template block from a component source and return
  * its line count. Returns 0 when the framework has no detectable
@@ -270,8 +368,14 @@ function stripJsComments(source: string): string {
  *
  * Each framework branch resists a known false-positive class:
  *
- * - React: JSDoc `@example` blocks frequently contain `return (` and
- *   the closing `);` shape. Strip JS comments before the regex.
+ * - React: a regex over `return ( ... );` under-counts multi-return,
+ *   early-return, and parenthesis-free components, and silently scores 0
+ *   when a component delegates its markup to a helper. The React branch
+ *   instead parses the `.tsx` with the TypeScript compiler API, discovers
+ *   each Vizel* component (function declaration or `export const` arrow),
+ *   collects the JSX nodes from the union of that component body and every
+ *   non-component helper render function, and measures the line span from
+ *   the minimum JSX `getStart()` to the maximum JSX `getEnd()`.
  * - Vue: nested `<template v-if>` / `<template v-for>` blocks make a
  *   non-greedy `<template>...</template>` stop at the first inner
  *   `</template>`. Slice from the first outermost `<template>` to the
@@ -282,10 +386,7 @@ function stripJsComments(source: string): string {
  */
 function extractViewBlockLineCount(framework: "react" | "vue" | "svelte", source: string): number {
   if (framework === "react") {
-    const stripped = stripJsComments(source);
-    const returnMatch = stripped.match(/return\s*\(([\s\S]*?)\);\s*\n?\s*\}/);
-    if (returnMatch === null) return 0;
-    return returnMatch[1].split("\n").length;
+    return measureReactViewLineSpan(source);
   }
   if (framework === "vue") {
     const openIndex = source.indexOf("<template>");
@@ -510,6 +611,75 @@ function checkWritingRule(): CheckResult {
   };
 }
 
+/**
+ * Verify every adapter uses its mandated first-party reactivity primitive
+ * in code, not only in prose.
+ *
+ * ADR-0009 fixes the primitive per framework: React subscribes through
+ * `useSyncExternalStore`, Vue detaches listeners through `onScopeDispose`,
+ * and Svelte holds the editor in `$state.raw` and subscribes through
+ * `createSubscriber`. The import-absence check (`checkFirstPartyTiptap`)
+ * proves no adapter falls back to `@tiptap/react` or `@tiptap/vue-3`; this
+ * check proves the positive — each adapter actually wires its primitive.
+ *
+ * Each primitive name also appears in the file's JSDoc (for example, the
+ * React module documents `useSyncExternalStore` at line 10). The check
+ * strips comments via `stripJsComments` before scanning so a JSDoc mention
+ * alone does not satisfy the requirement; only a live import or call
+ * counts.
+ */
+function checkReactivityPrimitives(): CheckResult {
+  const requirements = [
+    {
+      framework: "react",
+      file: "packages/react/src/_reactivity.ts",
+      token: "useSyncExternalStore",
+    },
+    {
+      framework: "vue",
+      file: "packages/vue/src/_reactivity.ts",
+      token: "onScopeDispose",
+    },
+    {
+      framework: "svelte",
+      file: "packages/svelte/src/runes/createVizelEditor.svelte.ts",
+      token: "$state.raw",
+    },
+    {
+      framework: "svelte",
+      file: "packages/svelte/src/runes/createVizelEditorState.svelte.ts",
+      token: "createSubscriber",
+    },
+  ] as const;
+  const offenders = requirements.flatMap((requirement) => {
+    const source = readText(resolve(REPO_ROOT, requirement.file));
+    if (source === null) {
+      return [`${requirement.framework}: ${requirement.file} is missing`];
+    }
+    // Strip comments first so a JSDoc mention of the primitive does not
+    // satisfy the check; only a live import or call counts.
+    const code = stripJsComments(source);
+    return code.includes(requirement.token)
+      ? []
+      : [`${requirement.framework}: ${requirement.file} does not use ${requirement.token} in code`];
+  });
+  if (offenders.length === 0) {
+    return {
+      adr: "ADR-0009",
+      title: "first-party reactivity primitives",
+      status: "PASS",
+      message:
+        "React uses useSyncExternalStore, Vue uses onScopeDispose, and Svelte uses $state.raw and createSubscriber in code.",
+    };
+  }
+  return {
+    adr: "ADR-0009",
+    title: "first-party reactivity primitives",
+    status: "FAIL",
+    message: `Each adapter must wire its mandated reactivity primitive in code: ${offenders.join(", ")}`,
+  };
+}
+
 const CHECKS: readonly CheckFunction[] = [
   checkPackageVersions,
   checkCrossFrameworkRuleRetired,
@@ -519,6 +689,7 @@ const CHECKS: readonly CheckFunction[] = [
   checkFirstPartyTiptap,
   checkSkillFrontmatter,
   checkWritingRule,
+  checkReactivityPrimitives,
 ];
 
 function emit(line: string): void {
