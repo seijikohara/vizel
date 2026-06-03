@@ -9,6 +9,7 @@ overrides:
   '@tiptap/extension-collaboration': ^3.23.6
   '@tiptap/pm': ^3.23.6
   '@tiptap/suggestion': ^3.23.6
+  prosemirror-model: 1.25.7
   react: 19.2.7
   react-dom: 19.2.7
   vite: ^8.0.14
@@ -571,6 +572,9 @@ importers:
       '@iconify/react':
         specifier: ^6.0.2
         version: 6.0.2(react@19.2.7)
+      '@vizel/core':
+        specifier: workspace:^
+        version: link:../core
       '@vizel/headless':
         specifier: workspace:^
         version: link:../headless
@@ -623,9 +627,6 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^6.0.2
         version: 6.0.2(vite@8.0.16(@types/node@25.9.1)(sass@1.100.0)(yaml@2.9.0))
-      '@vizel/core':
-        specifier: workspace:^
-        version: link:../core
       vite:
         specifier: ^8.0.14
         version: 8.0.16(@types/node@25.9.1)(sass@1.100.0)(yaml@2.9.0)
@@ -638,6 +639,9 @@ importers:
       '@iconify/svelte':
         specifier: ^5.2.1
         version: 5.2.1(svelte@5.55.10)
+      '@vizel/core':
+        specifier: workspace:^
+        version: link:../core
       '@vizel/headless':
         specifier: workspace:^
         version: link:../headless
@@ -681,9 +685,6 @@ importers:
       '@tiptap/extension-underline':
         specifier: ^3.23.6
         version: 3.23.6(@tiptap/core@3.24.0(@tiptap/pm@3.24.0))
-      '@vizel/core':
-        specifier: workspace:^
-        version: link:../core
       svelte-check:
         specifier: ^4.4.8
         version: 4.5.0(picomatch@4.0.4)(svelte@5.55.10)(typescript@6.0.3)
@@ -693,6 +694,9 @@ importers:
       '@iconify/vue':
         specifier: ^5.0.1
         version: 5.0.1(vue@3.5.35(typescript@6.0.3))
+      '@vizel/core':
+        specifier: workspace:^
+        version: link:../core
       '@vizel/headless':
         specifier: workspace:^
         version: link:../headless
@@ -736,9 +740,6 @@ importers:
       '@vitejs/plugin-vue':
         specifier: ^6.0.7
         version: 6.0.7(vite@8.0.16(@types/node@25.9.1)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.35(typescript@6.0.3))
-      '@vizel/core':
-        specifier: workspace:^
-        version: link:../core
       vite:
         specifier: ^8.0.14
         version: 8.0.16(@types/node@25.9.1)(sass@1.100.0)(yaml@2.9.0)
@@ -1928,7 +1929,7 @@ packages:
     resolution: {integrity: sha512-I7NnntIPR9PgCuBEjZ0hco+eeLvTpMDnXxsyhwn8z7Se0/Ac6RIq903wn6KoMn7FRVXpTtXAfZphFtpErjabVw==}
     engines: {node: '>=16.0.0', npm: '>=8.0.0'}
     peerDependencies:
-      prosemirror-model: ^1.7.1
+      prosemirror-model: 1.25.7
       prosemirror-state: ^1.2.3
       prosemirror-view: ^1.9.10
       y-protocols: ^1.0.1
@@ -3310,9 +3311,6 @@ packages:
   prosemirror-markdown@1.13.4:
     resolution: {integrity: sha512-D98dm4cQ3Hs6EmjK500TdAOew4Z03EV71ajEFiWra3Upr7diytJsjF4mPV2dW+eK5uNectiRj0xFxYI9NLXDbw==}
 
-  prosemirror-model@1.25.4:
-    resolution: {integrity: sha512-PIM7E43PBxKce8OQeezAs9j4TP+5yDpZVbuurd1h5phUxEKIu+G2a+EUZzIC5nS1mJktDJWzbqS23n1tsAf5QA==}
-
   prosemirror-model@1.25.7:
     resolution: {integrity: sha512-A79aN8QEFUwI6cax8Yq4Rpcx1TJZ3Kagn+ii7qLo4/V8H3mMiHrhFyhTyHHvpSnOgMPpWiDGSwM3etwrxE50ug==}
 
@@ -3781,7 +3779,7 @@ packages:
     resolution: {integrity: sha512-NpM99WSdD4Fx4if5xOMDpPtU3oAmTSjlzh5U4353ABbRHl1HtAFUx6HlebLZfyFxXN9jzKMDkVbcRjqOZVkYQg==}
     engines: {node: '>=16.0.0', npm: '>=8.0.0'}
     peerDependencies:
-      prosemirror-model: ^1.7.1
+      prosemirror-model: 1.25.7
       prosemirror-state: ^1.2.3
       prosemirror-view: ^1.9.10
       y-protocols: ^1.0.1
@@ -5009,7 +5007,7 @@ snapshots:
       prosemirror-gapcursor: 1.4.1
       prosemirror-history: 1.5.0
       prosemirror-keymap: 1.2.3
-      prosemirror-model: 1.25.4
+      prosemirror-model: 1.25.7
       prosemirror-schema-list: 1.5.1
       prosemirror-state: 1.4.4
       prosemirror-tables: 1.8.5
@@ -6427,7 +6425,7 @@ snapshots:
 
   prosemirror-commands@1.7.1:
     dependencies:
-      prosemirror-model: 1.25.4
+      prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
 
@@ -6440,7 +6438,7 @@ snapshots:
   prosemirror-gapcursor@1.4.1:
     dependencies:
       prosemirror-keymap: 1.2.3
-      prosemirror-model: 1.25.4
+      prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
       prosemirror-view: 1.41.8
 
@@ -6465,11 +6463,7 @@ snapshots:
     dependencies:
       '@types/markdown-it': 14.1.2
       markdown-it: 14.1.1
-      prosemirror-model: 1.25.4
-
-  prosemirror-model@1.25.4:
-    dependencies:
-      orderedmap: 2.1.1
+      prosemirror-model: 1.25.7
 
   prosemirror-model@1.25.7:
     dependencies:
@@ -6477,31 +6471,31 @@ snapshots:
 
   prosemirror-schema-list@1.5.1:
     dependencies:
-      prosemirror-model: 1.25.4
+      prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
 
   prosemirror-state@1.4.4:
     dependencies:
-      prosemirror-model: 1.25.4
+      prosemirror-model: 1.25.7
       prosemirror-transform: 1.12.0
       prosemirror-view: 1.41.8
 
   prosemirror-tables@1.8.5:
     dependencies:
       prosemirror-keymap: 1.2.3
-      prosemirror-model: 1.25.4
+      prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
       prosemirror-view: 1.41.8
 
   prosemirror-transform@1.12.0:
     dependencies:
-      prosemirror-model: 1.25.4
+      prosemirror-model: 1.25.7
 
   prosemirror-view@1.41.8:
     dependencies:
-      prosemirror-model: 1.25.4
+      prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
 

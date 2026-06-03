@@ -32,14 +32,14 @@ yarn add @vizel/svelte
 
 :::
 
-::: info Peer dependencies
-Framework packages (`@vizel/react` / `@vizel/vue` / `@vizel/svelte`) are thin adapters over `@vizel/core`, `@tiptap/*`, and the framework itself. All of these are declared as peer dependencies and are installed automatically by npm 7+, pnpm, and yarn.
+::: info Dependencies and peer dependencies
+Framework packages (`@vizel/react` / `@vizel/vue` / `@vizel/svelte`) are thin adapters over `@vizel/core`. `@vizel/core` and `@vizel/headless` are regular dependencies of each adapter, so the package manager installs them automatically when you add the adapter. You never list `@vizel/core` or `@vizel/headless` in your own `package.json`.
 
-You only need to list them explicitly in your own `package.json` if you want to pin a specific version. `@vizel/core` will still appear in style imports (for example `import "@vizel/core/styles.css"`) because CSS cannot be re-exported across packages.
+`@vizel/core` still appears in style imports (for example `import "@vizel/core/styles.css"`) because CSS cannot be re-exported across packages. The import resolves through the transitively installed package.
 
-Framework requirements:
+The genuine peer dependencies are `@tiptap/*` and the framework runtime. The package manager installs these automatically (npm 7+, pnpm, and yarn), and you list them explicitly only when you want to pin a specific version:
 
-- `@vizel/react` requires `react@^19` and `react-dom@^19`
+- `@vizel/react` requires `react@^19`, `react-dom@^19`, and `@tiptap/pm`
 - `@vizel/vue` requires `vue@^3.4`
 - `@vizel/svelte` requires `svelte@^5`
 

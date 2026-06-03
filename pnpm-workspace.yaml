@@ -15,11 +15,21 @@ allowBuilds:
 # versions consumed by every workspace package to the same release.
 # Lives in pnpm-workspace.yaml because pnpm v11 stopped reading
 # `pnpm.overrides` from the root package.json.
+#
+# prosemirror-model is pinned to a single version because ProseMirror
+# resolves Schema and Node identity with `instanceof` checks. Two copies
+# of prosemirror-model break those checks across prosemirror-state,
+# prosemirror-view, and prosemirror-transform, which corrupts
+# collaboration and clipboard handling. The root-pinned @tiptap/pm@3.23.6
+# wants 1.25.x and the collaboration runtime (@tiptap/y-tiptap and
+# y-prosemirror) resolves 1.25.7; pinning to 1.25.7 unifies both trees on
+# the newest patch without forcing a downgrade. See WI-10 and ADR-0003.
 overrides:
   "@tiptap/core": "$@tiptap/core"
   "@tiptap/extension-collaboration": "$@tiptap/extension-collaboration"
   "@tiptap/pm": "$@tiptap/pm"
   "@tiptap/suggestion": "$@tiptap/suggestion"
+  "prosemirror-model": "1.25.7"
   "react": "$react"
   "react-dom": "$react-dom"
   "vite": "$vite"
