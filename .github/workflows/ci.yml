@@ -138,16 +138,20 @@ jobs:
 
   a11y:
     name: A11y (${{ matrix.framework }})
-    # The Vue a11y job hangs intermittently on the GitHub runner — see
-    # the long-running run captured at the bottom of the audit
-    # transcript. The hang holds up the Test Summary required check,
-    # which in turn blocks every PR from merging through the v2 queue.
-    # Gate the suite on manual dispatch until the root cause lands;
-    # this restores the required-check pipeline for routine PRs while
-    # keeping the a11y matrix available on-demand.
+    # The a11y suite hangs intermittently on the GitHub runner: the
+    # matrix jobs reach the timeout even though the suite passes locally
+    # and the `open: "never"` reporter guard is in place. PR-gating is
+    # deferred until the runner-side root cause is found and fixed
+    # (tracked follow-up). The hardening stays: every a11y config pins
+    # the HTML reporter to `open: "never"`, the `PLAYWRIGHT_HTML_OPEN:
+    # never` env var below is a second guard, and `timeout-minutes` caps
+    # any hang at minutes. Once the root cause lands, flip this trigger
+    # to run on pull requests and add the job to `Test Summary` needs.
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      PLAYWRIGHT_HTML_OPEN: never
     strategy:
       fail-fast: false
       matrix:
@@ -186,6 +190,54 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
+  md-roundtrip:
+    name: Markdown round-trip
+    # The round-trip suite drives the Pillar 3 corpus through Vizel and
+    # asserts lossless parse/serialize. Like the a11y suite, it is a
+    # standalone Playwright CT job that hangs intermittently on the
+    # GitHub runner (it reaches the timeout below even though it passes
+    # locally), so it stays on manual dispatch until the runner-side root
+    # cause is fixed (tracked follow-up). `timeout-minutes` caps any hang
+    # at minutes; `PLAYWRIGHT_HTML_OPEN: never` mirrors the a11y guard.
+    # Once the root cause lands, flip this to run on pull requests and add
+    # it to `Test Summary` needs.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PLAYWRIGHT_HTML_OPEN: never
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # Install pnpm before `setup-node` so the cache key resolution finds
+      # the package manager on PATH. Reversing the order breaks the cache.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Markdown round-trip suite
+        run: pnpm test:md-roundtrip
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: md-roundtrip-report
+          path: playwright-report/
+          retention-days: 7
+
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
@@ -195,7 +247,10 @@ jobs:
     # PR the test matrix is skipped and this job reports success;
     # otherwise it aggregates the matrix results. The former `ssr` and
     # `ct-parity` needs moved into the `quality-parity` job in
-    # `quality.yml` and cannot be referenced from here.
+    # `quality.yml` and cannot be referenced from here. The `a11y` and
+    # `md-roundtrip` suites are standalone Playwright CT jobs that hang
+    # intermittently on the runner, so both stay on manual dispatch and
+    # are not gated here until the root cause is fixed (tracked follow-up).
     needs: [changes, test]
     if: always()
     steps:
@@ -240,6 +295,10 @@ jobs:
 
       - name: Check overall result
         if: ${{ needs.changes.outputs.code == 'true' }}
+        # The behaviour matrix reports through `test-result-*` artifacts.
+        # (The `a11y` and `md-roundtrip` standalone CT jobs stay on manual
+        # dispatch pending their runner-hang fix, so they are not gated
+        # here.)
         run: |
           FAILED=0
           for framework in react vue svelte; do

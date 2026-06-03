@@ -20,10 +20,16 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : "50%",
-  reporter: "html",
+  // The HTML reporter must never auto-open a browser. Auto-open keeps a
+  // server handle alive and would hold the runner's event loop open after
+  // the run finishes, so the suite is pinned to `open: "never"`. The
+  // PLAYWRIGHT_HTML_OPEN=never CI env var is the belt-and-braces guard.
+  reporter: [["html", { open: "never" }]],
   use: {
     trace: "on-first-retry",
-    ctPort: 3110,
+    // The round-trip suite binds port 3113 to avoid colliding with the
+    // a11y suites on 3110/3111/3112 when CI runs them on the same runner.
+    ctPort: 3113,
     ctViteConfig: {
       plugins: [react()],
       resolve: {

@@ -18,9 +18,16 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : "50%",
-  reporter: "html",
+  // The HTML reporter must never auto-open a browser. Auto-open keeps a
+  // server handle alive and would hold the runner's event loop open after
+  // the run finishes, so the suite is pinned to `open: "never"`. The
+  // PLAYWRIGHT_HTML_OPEN=never CI env var is the belt-and-braces guard.
+  reporter: [["html", { open: "never" }]],
   use: {
     trace: "on-first-retry",
+    // A11y Vue owns port 3111. Each a11y framework plus the round-trip
+    // suite binds a distinct CT port (3110/3111/3112/3113) so the suites
+    // never collide when CI runs them on the same runner.
     ctPort: 3111,
     ctViteConfig: {
       plugins: [vue()],
