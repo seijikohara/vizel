@@ -36,7 +36,17 @@ export interface VizelSlashCommandOptions {
 }
 
 /**
- * Image feature options
+ * Image feature options.
+ *
+ * This interface extends `Partial<VizelImageUploadPluginOptions>`, so it
+ * inherits the plugin's `onError?: (err: VizelError) => void` field. That
+ * inherited `onError` is a per-feature override scoped to image uploads; it
+ * is distinct from the editor-level `VizelEditorOptions.onError`. When both
+ * are set, the editor-level sink takes precedence and the per-feature
+ * `onError` serves as a fallback (see `createVizelUploadEventHandler` and
+ * `addImageExtension`). The two never shadow each other because they live on
+ * different option objects (`features.content.image` versus the top-level
+ * editor options).
  */
 export interface VizelImageFeatureOptions extends Partial<VizelImageUploadPluginOptions> {
   /** Enable image resizing (default: true) */
@@ -275,26 +285,34 @@ export interface VizelEditorOptions {
   /** Callback when editor loses focus */
   onBlur?: (props: { editor: Editor }) => void;
   /**
-   * Callback when an error occurs during editor operations.
-   * Provides structured error information for logging or user feedback.
+   * Editor-level error sink. Receives a typed {@link VizelError} carrying a
+   * stable `code` so the consumer can log, branch, or render user feedback.
    *
-   * Behavior:
-   * - When this callback is supplied, the consumer is treated as having
-   *   handled the failure. The hook/composable/rune does NOT also rethrow.
-   * - When this callback is omitted, the error is rethrown so global
-   *   handlers (Sentry, `window.onunhandledrejection`, test runners) can
-   *   observe initialization failures.
+   * Two delivery paths reach this callback, matching the error model in
+   * `.claude/rules/packages/core.md`:
    *
-   * Supply this callback only when you want to fully take over the error
-   * surface (e.g. translate to UI state, swallow during tests). Leave it
-   * unset to keep the default rethrow contract.
+   * - **Configuration / initialization errors** (`INVALID_CONFIG`,
+   *   `SSR_NOT_SUPPORTED`, ...). The adapter emits the error to `onError`
+   *   *and then rethrows* so global handlers (Sentry,
+   *   `window.onunhandledrejection`, React error boundaries, test runners)
+   *   still observe the failure. Supplying `onError` does not suppress the
+   *   rethrow — a blank editor must never fail silently.
+   * - **Recoverable runtime errors** (`UPLOAD_FAILED`, `EMBED_LOAD_FAILED`,
+   *   the `MARKDOWN_LOSSY` warning, ...). The core emits these through
+   *   `emitVizelError(error, onError)` *without rethrow*; the editor keeps
+   *   running. When no `onError` is set, the fallback writes errors to
+   *   `console.error` and stays silent for warnings.
+   *
+   * Image-upload failures route here in addition to the feature-level
+   * `features.content.image.onUploadError`, so observability sinks see the
+   * failure even when only the feature callback drives UI.
    *
    * @example
    * ```typescript
    * const editor = useVizelEditor({
    *   onError: (error) => {
-   *     console.error(`[${error.code}] ${error.message}`);
-   *     setEditorError(error);
+   *     reportToSentry(error);
+   *     if (error.code === "UPLOAD_FAILED") showToast(error.message);
    *   },
    * });
    * ```

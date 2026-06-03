@@ -121,6 +121,9 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
         cleanupHandler = registerVizelUploadEventHandler({
           getEditor: () => editor,
           getImageOptions: () => imageOptions,
+          // Reach the editor-level `onError` so an upload rejection emits a
+          // `VizelError` (`UPLOAD_FAILED`) to observability sinks.
+          getOnError: () => editorOptions.onError,
         });
       } catch (error) {
         const vizelError = wrapAsVizelError(error, {

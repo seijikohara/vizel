@@ -5,6 +5,7 @@ import type { VizelCharacterCountStorage } from "../extensions/character-count.t
 import { createVizelImageUploader } from "../extensions/image.ts";
 import type { VizelSlashCommandItem } from "../extensions/slash-command.ts";
 import type { VizelEditorState, VizelFeatureOptions, VizelImageFeatureOptions } from "../types.ts";
+import type { VizelError } from "./errorHandling.ts";
 
 /**
  * Mount a Tiptap editor's `view.dom` into a container element and return a
@@ -116,6 +117,16 @@ export interface VizelCreateUploadEventHandlerOptions {
   getEditor: () => Editor | null | undefined;
   /** Function to get the current image options */
   getImageOptions: () => VizelImageFeatureOptions;
+  /**
+   * Function to get the editor-level `onError` sink.
+   *
+   * Threading this getter lets the slash-command upload path reach the
+   * editor's `onError` so an upload rejection emits a `VizelError`
+   * (`UPLOAD_FAILED`) to observability sinks, not only the feature-level
+   * `onUploadError`. Adapters read the latest `onError` lazily because the
+   * consumer may reassign it after mount.
+   */
+  getOnError?: () => ((err: VizelError) => void) | undefined;
 }
 
 /**
@@ -133,6 +144,11 @@ export function createVizelUploadEventHandler(
     const { file } = event.detail;
     const pos = editor.state.selection.from;
     const imageOptions = options.getImageOptions();
+
+    // Resolve the editor-level error sink. Prefer the thread-through
+    // `getOnError` (the editor's `onError`); fall back to a per-feature
+    // `onError` a consumer may have set directly on the image options.
+    const onError = options.getOnError?.() ?? imageOptions.onError;
 
     // Create upload function with configured options
     const uploadFn = createVizelImageUploader({
@@ -156,6 +172,7 @@ export function createVizelUploadEventHandler(
       ...(imageOptions.onUploadError !== undefined && {
         onUploadError: imageOptions.onUploadError,
       }),
+      ...(onError !== undefined && { onError }),
     });
 
     uploadFn(file, editor.view as EditorView, pos);

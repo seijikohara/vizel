@@ -128,6 +128,10 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
     return registerVizelUploadEventHandler({
       getEditor: () => editor,
       getImageOptions: () => imageOptionsRef.current,
+      // Reach the editor-level `onError` so an upload rejection emits a
+      // `VizelError` (`UPLOAD_FAILED`) to observability sinks. Read the
+      // latest value lazily because the consumer may reassign it.
+      getOnError: () => optionsRef.current.editorOptions.onError,
     });
   }, [editor]);
 

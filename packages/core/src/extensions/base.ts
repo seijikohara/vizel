@@ -28,6 +28,7 @@ import type {
   VizelMarkdownLossyEncodingMode,
 } from "../markdown/types.ts";
 import type { VizelFeatureOptions } from "../types.ts";
+import type { VizelError } from "../utils/errorHandling.ts";
 import { resolveVizelFlavorConfig, type VizelFlavorConfig } from "../utils/markdown-flavors.ts";
 import { createVizelBlockClipboardExtension } from "./block-clipboard.ts";
 import { createVizelCalloutExtension } from "./callout.ts";
@@ -88,6 +89,12 @@ export interface VizelExtensionsOptions {
    * If not provided, default English strings are used.
    */
   locale?: VizelLocale;
+  /**
+   * Editor-level error sink threaded into the drop / paste image-upload
+   * plugin so an upload rejection emits a `VizelError` (`UPLOAD_FAILED`)
+   * to observability sinks, not only the feature-level `onUploadError`.
+   */
+  onError?: (err: VizelError) => void;
 }
 
 /**
@@ -169,13 +176,20 @@ function addSlashMenuExtension(extensions: Extensions, features: VizelFeatureOpt
 /**
  * Add Image extension if enabled (enabled by default).
  */
-function addImageExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+function addImageExtension(
+  extensions: Extensions,
+  features: VizelFeatureOptions,
+  onError?: (err: VizelError) => void
+): void {
   const image = features.content?.image;
   if (image === false) return;
 
   const imageOptions = typeof image === "object" ? image : {};
   const onUpload = imageOptions.onUpload ?? vizelDefaultBase64Upload;
   const resizeEnabled = imageOptions.resize !== false;
+  // Prefer the editor-level `onError`; fall back to a per-feature `onError`
+  // a consumer may set directly on the image options.
+  const resolvedOnError = onError ?? imageOptions.onError;
 
   extensions.push(
     ...createVizelImageUploadExtensions({
@@ -189,6 +203,7 @@ function addImageExtension(extensions: Extensions, features: VizelFeatureOptions
         ...(imageOptions.onUploadError !== undefined && {
           onUploadError: imageOptions.onUploadError,
         }),
+        ...(resolvedOnError !== undefined && { onError: resolvedOnError }),
       },
       resize: resizeEnabled ? defaultImageResizeOptions : false,
     })
@@ -484,6 +499,7 @@ export async function createVizelExtensions(
     flavor,
     encoding,
     locale,
+    onError,
   } = options;
 
   const flavorConfig = resolveVizelFlavorConfig(flavor);
@@ -517,7 +533,7 @@ export async function createVizelExtensions(
 
   // Opt-out / opt-in features
   addSlashMenuExtension(extensions, features);
-  addImageExtension(extensions, features);
+  addImageExtension(extensions, features, onError);
   addTaskListExtension(extensions, features);
   addCharacterCountExtension(extensions, features);
   addTextColorExtension(extensions, features);

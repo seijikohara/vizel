@@ -48,9 +48,24 @@ export interface VizelImageUploadPluginOptions {
   onValidationError?: (error: VizelImageValidationError) => void;
 
   /**
-   * Callback for upload errors
+   * Callback for upload errors.
+   *
+   * Receives the raw rejection reason and the offending file. This is the
+   * feature-specific contract that demos and tests rely on; it fires in
+   * addition to the editor-level {@link VizelImageUploadPluginOptions.onError}.
    */
   onUploadError?: (error: Error, file: File) => void;
+
+  /**
+   * Editor-level error sink.
+   *
+   * Upload rejections route through `emitVizelError(error, onError)` as a
+   * `VizelError` with code `UPLOAD_FAILED`, so observability sinks (Sentry,
+   * log pipes) see the failure even when only `onUploadError` is wired up
+   * for feature-specific UI. The adapter threads the editor's `onError`
+   * here via `getOnError`; see `createVizelUploadEventHandler`.
+   */
+  onError?: (err: VizelError) => void;
 }
 
 /**
@@ -203,7 +218,8 @@ export type VizelUploadImageFn = (file: File, view: EditorView, pos: number) => 
 export function createVizelImageUploader(
   options: VizelImageUploadPluginOptions
 ): VizelUploadImageFn {
-  const { onUpload, maxFileSize, allowedTypes, onValidationError, onUploadError } = options;
+  const { onUpload, maxFileSize, allowedTypes, onValidationError, onUploadError, onError } =
+    options;
 
   return (file: File, view: EditorView, pos: number): void => {
     // Validate file
@@ -257,16 +273,17 @@ export function createVizelImageUploader(
           const imageNode = schema.nodes.image?.create({ src: uploadedSrc });
 
           if (!imageNode) {
-            emitVizelError(
-              new VizelError(
-                "INVALID_EXTENSION",
-                "Image node type not found in schema. Ensure the Image extension is registered.",
-                { severity: "error" }
-              ),
-              // `onUploadError` accepts `(error: Error, file: File)`; bridge to
-              // a VizelError sink by ignoring the file param.
-              onUploadError ? (err) => onUploadError(err, file) : undefined
+            const vizelError = new VizelError(
+              "INVALID_EXTENSION",
+              "Image node type not found in schema. Ensure the Image extension is registered.",
+              { severity: "error", context: { fileName: file.name, fileType: file.type } }
             );
+            // Route through both sinks: the editor-level `onError` for
+            // observability and the feature-level `onUploadError` for
+            // feature-specific UI. `onUploadError` accepts `(error, file)`,
+            // so forward the VizelError as the error argument.
+            emitVizelError(vizelError, onError);
+            onUploadError?.(vizelError, file);
             return;
           }
 
@@ -280,6 +297,15 @@ export function createVizelImageUploader(
           view.dispatch(transaction);
         })
         .catch((error: Error) => {
+          // Surface the failure through both sinks: the editor-level
+          // `onError` (observability) and the feature-level `onUploadError`
+          // (feature-specific UI the demos and tests rely on).
+          const vizelError = new VizelError(
+            "UPLOAD_FAILED",
+            `Image upload failed: ${error.message}`,
+            { cause: error, context: { fileName: file.name, fileType: file.type } }
+          );
+          emitVizelError(vizelError, onError);
           onUploadError?.(error, file);
 
           // Remove placeholder on error

@@ -5,6 +5,7 @@
  * caches the result, and provides clear error messages when the dependency
  * is not installed.
  */
+import { VizelError } from "./errorHandling.ts";
 
 /**
  * Creates a lazy loader for an optional dependency.
@@ -46,10 +47,12 @@ export function createLazyLoader<T>(
       },
       (error) => {
         state.loading = null;
-        throw new Error(
+        throw new VizelError(
+          "MISSING_OPTIONAL_DEP",
           `[Vizel] Failed to load "${moduleName}". ` +
             `Please install it: npm install ${moduleName}\n` +
-            `Original error: ${error instanceof Error ? error.message : String(error)}`
+            `Original error: ${error instanceof Error ? error.message : String(error)}`,
+          { cause: error, context: { moduleName } }
         );
       }
     );
