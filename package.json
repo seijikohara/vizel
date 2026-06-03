@@ -48,12 +48,14 @@
     "check:ct-parity": "node scripts/check-ct-parity.ts",
     "check:ssr": "node scripts/check-ssr-safety.ts",
     "check:nolet": "node scripts/check-no-let.ts",
+    "check:attw": "for pkg in core headless react vue svelte; do attw --pack packages/$pkg --config-path .attw.json || exit 1; done",
     "prepare": "lefthook install",
     "deps:check": "pnpm dlx taze major -r",
     "deps:update": "pnpm dlx taze major -r -w && pnpm install",
     "check:publishable": "node scripts/check-publishable.ts"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.3",
     "@axe-core/playwright": "^4.11.3",
     "@biomejs/biome": "^2.4.15",
     "@playwright/experimental-ct-react": "~1.58.2",

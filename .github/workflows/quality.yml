@@ -96,6 +96,14 @@ jobs:
             echo "::endgroup::"
           done
 
+      # `attw` analyses the packed `dist/` and fails when a published package
+      # is unresolvable under Node16 / NodeNext. The gate runs after `pnpm
+      # build` so the emitted `.d.ts` (post add-dts-extensions) exist on disk.
+      # It guards against the source-extension regression that `bundler`
+      # resolution — the only mode `pnpm typecheck` exercises — cannot detect.
+      - name: Type resolution gate (attw)
+        run: pnpm check:attw
+
       # Publish the per-package `dist/` so `bundle-size` measures the exact
       # bytes this run produced. Sharing the artifact avoids a duplicate
       # build in the dependent job and keeps the two measurements in sync.
