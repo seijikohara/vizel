@@ -46,6 +46,12 @@ Framework requirements:
 Optional features (`lowlight` for code highlighting, `katex` for math, `mermaid` / `@hpcc-js/wasm-graphviz` for diagrams, `yjs` + `y-websocket` for collaboration) are declared as optional peers. Install them only when you enable the corresponding feature.
 :::
 
+::: info Node.js toolchain requirement
+Vizel declares `engines.node` as `>=24`. This floor is advisory toolchain guidance for two audiences: contributors who build the monorepo, and the Continuous Integration (CI) pipeline that tests and publishes the packages. The repository pins Node.js 24 in `.nvmrc` and `.node-version`.
+
+The `engines.node` floor does not gate the Node.js runtime of a consumer application that installs `@vizel/react`, `@vizel/vue`, or `@vizel/svelte`. Your app chooses its own Node.js version; npm emits a warning rather than an error when the app's Node.js version falls below the declared floor. The published packages ship as standard ECMAScript Modules (ESM) that bundlers and runtimes resolve without a Node.js 24 minimum at install time. See [ADR-0015](https://github.com/seijikohara/vizel/blob/main/docs/adr/ADR-0015-node-24-baseline.md).
+:::
+
 ## Quick Start
 
 Use the `Vizel` component:

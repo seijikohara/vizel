@@ -26,7 +26,7 @@ Vizel is a block-based visual Markdown editor. The project ships Tiptap-based co
 
 ## Development Commands
 
-Use Node.js LTS and pnpm. Invoke scripts with `pnpm <script>` and external binaries with `pnpm exec <package>`.
+Use Node.js >=24 (the current active LTS line, pinned in `.nvmrc`) and pnpm. The `engines.node` floor is advisory toolchain guidance for contributors and CI; it does not gate a consumer app's Node.js runtime. See [ADR-0015](./docs/adr/ADR-0015-node-24-baseline.md). Invoke scripts with `pnpm <script>` and external binaries with `pnpm exec <package>`.
 
 | Command | Description |
 |---------|-------------|
@@ -64,6 +64,9 @@ The v2.0.0 design records live under `docs/adr/`. Read the relevant ADR before c
 | [ADR-0010](./docs/adr/ADR-0010-claude-config-official-format.md) | `.claude/` artefacts follow Anthropic's official reference |
 | [ADR-0011](./docs/adr/ADR-0011-technical-writing-style.md) | Technical-writing style governs every artefact |
 | [ADR-0012](./docs/adr/ADR-0012-playwright-ct-three-layer-rebuild.md) | Playwright Component Tests rebuilt in three layers |
+| [ADR-0013](./docs/adr/ADR-0013-adr-compliance-harness.md) | ADR compliance harness |
+| [ADR-0014](./docs/adr/ADR-0014-bundle-size-budgets.md) | Bundle-size budgets per package |
+| [ADR-0015](./docs/adr/ADR-0015-node-24-baseline.md) | Node.js 24 runtime baseline |
 
 ## Project Rules
 
