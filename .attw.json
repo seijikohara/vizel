@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/arethetypeswrong/arethetypeswrong.github.io/main/docs/config-schema.json",
+  "profile": "esm-only",
+  "excludeEntrypoints": [
+    "./styles.css",
+    "./styles/variables.css",
+    "./styles/components.css",
+    "./mathematics.css"
+  ]
+}
