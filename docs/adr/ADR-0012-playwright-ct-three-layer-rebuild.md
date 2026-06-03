@@ -20,6 +20,22 @@ Rebuild the Playwright CT in three layers:
 
 The v1 `tests/ct/scenarios/*.scenario.ts` files are removed, not migrated. The v1 file list serves only as a behavioural reference for which DOM/ARIA outcomes the v2 scenarios must cover.
 
+## Update (2026-06-03)
+
+The Decision above stands as the immutable record of intent. The shipped implementation supersedes two of its clauses. This Update governs the current contract.
+
+Superseded clauses:
+
+1. The clause mandating one scenario folder per feature under `tests/ct/scenarios/v2/<feature-id>/`. The `tests/ct/scenarios/v2/` tree shipped as 23 stub folders whose `run()` returned `Promise.reject("pending")`; the stubs verified no behaviour. The tree is deleted.
+2. The clause "The v1 `tests/ct/scenarios/*.scenario.ts` files are removed, not migrated." The flat `tests/ct/scenarios/*.scenario.ts` files are the real behavioral coverage. They are retained, not removed.
+
+Shipped flat-scenario contract:
+
+- Each `tests/ct/scenarios/<feature>.scenario.ts` exports one or more `test*` functions that assert rendered DOM, ARIA, and interaction outcomes. The functions are framework-neutral; they receive a Playwright `Locator` and `Page`.
+- Each per-framework spec under `tests/ct/{react,vue,svelte}/specs/` imports the scenario through the literal specifier `../../scenarios/<feature>.scenario` and invokes its `test*` functions inside Playwright `test(...)` blocks. Spec filenames differ across frameworks (the `Use*`/`Create*`/`Get*` idiom), so coverage is matched by import specifier, never by filename.
+
+`pnpm check:scenarios` (`tests/ct/parity/check-scenarios.ts`) now proves invoked-test coverage rather than folder presence. For every flat scenario it asserts (1) the scenario exports at least one `test*` function and (2) each framework's spec layer imports the scenario specifier and invokes at least one of its `test*` exports. The check exits non-zero with a precise message when a scenario exposes no `test*` export, or when a framework stops importing or invoking it. The companion `scripts/check-ct-parity.ts` still asserts per-framework spec-name balance.
+
 ## Consequences
 
 Positive:

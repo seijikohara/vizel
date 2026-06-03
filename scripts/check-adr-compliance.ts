@@ -15,7 +15,6 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { VIZEL_FEATURE_MANIFEST } from "../packages/core/src/feature-manifest.ts";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(SCRIPT_DIR, "..");
@@ -511,32 +510,6 @@ function checkWritingRule(): CheckResult {
   };
 }
 
-/**
- * Every feature in VIZEL_FEATURE_MANIFEST owns a scenario folder
- * under tests/ct/scenarios/v2/<feature-id>/index.ts.
- */
-function checkScenarioFolders(): CheckResult {
-  const missing: string[] = [];
-  for (const feature of VIZEL_FEATURE_MANIFEST) {
-    const scenarioPath = resolve(REPO_ROOT, "tests/ct/scenarios/v2", feature.id, "index.ts");
-    if (!existsSync(scenarioPath)) missing.push(feature.id);
-  }
-  if (missing.length === 0) {
-    return {
-      adr: "ADR-0012",
-      title: "Playwright CT three-layer (scenario folders)",
-      status: "PASS",
-      message: `Every manifest feature has a v2 scenario folder (${VIZEL_FEATURE_MANIFEST.length} features).`,
-    };
-  }
-  return {
-    adr: "ADR-0012",
-    title: "Playwright CT three-layer (scenario folders)",
-    status: "FAIL",
-    message: `Missing scenario folders: ${missing.join(", ")}`,
-  };
-}
-
 const CHECKS: readonly CheckFunction[] = [
   checkPackageVersions,
   checkCrossFrameworkRuleRetired,
@@ -546,7 +519,6 @@ const CHECKS: readonly CheckFunction[] = [
   checkFirstPartyTiptap,
   checkSkillFrontmatter,
   checkWritingRule,
-  checkScenarioFolders,
 ];
 
 function emit(line: string): void {
