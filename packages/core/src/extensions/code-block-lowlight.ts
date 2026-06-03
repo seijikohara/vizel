@@ -14,6 +14,7 @@ import CodeBlockLowlight, {
 } from "@tiptap/extension-code-block-lowlight";
 import type { VizelLocale } from "../i18n/types.ts";
 import { renderVizelIcon } from "../icons/types.ts";
+import { VizelError } from "../utils/errorHandling.ts";
 
 /**
  * Language definition for the code block language selector
@@ -111,10 +112,12 @@ async function loadLowlightInstance(
     const grammars = languages === "all" ? lowlightMod.all : lowlightMod.common;
     return lowlightMod.createLowlight(grammars);
   } catch (error) {
-    throw new Error(
+    throw new VizelError(
+      "MISSING_OPTIONAL_DEP",
       `[Vizel] Failed to load "lowlight". ` +
         `Please install it for code block syntax highlighting: npm install lowlight\n` +
-        `Original error: ${error instanceof Error ? error.message : String(error)}`
+        `Original error: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error, context: { moduleName: "lowlight" } }
     );
   }
 }

@@ -191,6 +191,68 @@ every safe opt-in (everything except `mention`, `provider`, `comments`,
 configuration to function). Use it when you want the Notion-like
 surface without enumerating each toggle.
 
+## Error Handling
+
+Core uses one error model rooted at `VizelError`. Pass a stable
+`VizelErrorCode`, attach structured `context`, and forward the
+underlying `cause`. No `console` call is allowed inside
+`packages/core/src/` except the single sanctioned site inside
+`emitVizelError`.
+
+### Configuration errors throw with a stable code
+
+Developer mistakes surface at the boundary as a thrown `VizelError`.
+
+```ts
+// packages/core/src/plugin-system.ts
+throw new VizelError("INVALID_CONFIG", `Vizel plugin "${plugin.name}" is already registered`, {
+  context: { plugin: plugin.name },
+});
+```
+
+Every plugin-system validation and dependency-resolution failure throws
+`INVALID_CONFIG` and carries the offending plugin name in
+`context.plugin`.
+
+### Missing optional dependency
+
+The lazy loaders for optional packages (`lowlight`, `mermaid`, ...)
+throw `MISSING_OPTIONAL_DEP`, forwarding the original import error as
+`cause` and the package name in `context.moduleName`.
+
+```ts
+// packages/core/src/utils/lazy-import.ts
+throw new VizelError("MISSING_OPTIONAL_DEP", `[Vizel] Failed to load "${moduleName}". ...`, {
+  cause: error,
+  context: { moduleName },
+});
+```
+
+### Recoverable runtime errors emit through both sinks
+
+Image-upload rejections emit `UPLOAD_FAILED` through
+`emitVizelError(error, onError)` so observability sinks see the failure,
+and *also* call the feature-level `onUploadError(error, file)` that demos
+and tests rely on.
+
+```ts
+// packages/core/src/plugins/image-upload.ts
+const vizelError = new VizelError("UPLOAD_FAILED", `Image upload failed: ${error.message}`, {
+  cause: error,
+  context: { fileName: file.name, fileType: file.type },
+});
+emitVizelError(vizelError, onError);
+onUploadError?.(error, file);
+```
+
+The editor-level `onError` reaches the upload path two ways: adapters
+pass `getOnError` into `registerVizelUploadEventHandler` for the
+slash-command path, and `createVizelEditorInstance` threads `onError`
+into `createVizelExtensions` for the drop / paste plugin. The
+per-feature `features.content.image.onError` (inherited from
+`Partial<VizelImageUploadPluginOptions>`) is a fallback used only when
+the editor-level sink is unset.
+
 ## Command Layer
 
 A single `VizelCommand` represents one user action everywhere it

@@ -142,6 +142,7 @@ export async function createVizelEditorInstance(
     locale,
     extensions: additionalExtensions = [],
     createSlashMenuRenderer,
+    onError,
     onUpdate,
     onCreate,
     onDestroy,
@@ -197,6 +198,10 @@ export async function createVizelEditorInstance(
     ...(flavor !== undefined && { flavor }),
     ...(encoding !== undefined && { encoding }),
     ...(locale !== undefined && { locale }),
+    // Thread the editor-level `onError` into the drop / paste image-upload
+    // plugin so upload rejections reach observability sinks, not only the
+    // feature-level `onUploadError`.
+    ...(onError !== undefined && { onError }),
   });
 
   // Create the editor instance

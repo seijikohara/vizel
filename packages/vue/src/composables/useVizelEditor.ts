@@ -107,6 +107,9 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): ShallowRef<
         cleanup.handler = registerVizelUploadEventHandler({
           getEditor: () => editor.value,
           getImageOptions: () => imageOptions,
+          // Reach the editor-level `onError` so an upload rejection emits a
+          // `VizelError` (`UPLOAD_FAILED`) to observability sinks.
+          getOnError: () => editorOptions.onError,
         });
       } catch (error) {
         const vizelError = wrapAsVizelError(error, {

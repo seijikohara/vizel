@@ -1,5 +1,6 @@
 import type { Editor, Extensions } from "@tiptap/core";
 import type { Transaction } from "@tiptap/pm/state";
+import { VizelError } from "./utils/errorHandling.ts";
 
 // =============================================================================
 // Types
@@ -53,22 +54,36 @@ const SEMVER_REGEX = /^\d+\.\d+\.\d+(?:-[\w.]+)?(?:\+[\w.]+)?$/;
 const PLUGIN_NAME_REGEX = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 
 /**
- * Validates a plugin's required fields and format.
- * Throws a descriptive error if validation fails.
+ * Validate a plugin's required fields and format.
+ *
+ * Throw a typed `VizelError("INVALID_CONFIG", ...)` carrying the offending
+ * plugin name in `context.plugin` when validation fails. A malformed plugin
+ * is a developer mistake, so the error surfaces at the boundary rather than
+ * flowing through `onError`.
  */
 export function validateVizelPlugin(plugin: VizelPlugin): void {
   if (!plugin.name) {
-    throw new Error("Vizel plugin must have a name");
+    throw new VizelError("INVALID_CONFIG", "Vizel plugin must have a name", {
+      context: { plugin: plugin.name },
+    });
   }
   if (!PLUGIN_NAME_REGEX.test(plugin.name)) {
-    throw new Error(`Vizel plugin name "${plugin.name}" must be kebab-case (e.g. "my-plugin")`);
+    throw new VizelError(
+      "INVALID_CONFIG",
+      `Vizel plugin name "${plugin.name}" must be kebab-case (e.g. "my-plugin")`,
+      { context: { plugin: plugin.name } }
+    );
   }
   if (!plugin.version) {
-    throw new Error(`Vizel plugin "${plugin.name}" must have a version`);
+    throw new VizelError("INVALID_CONFIG", `Vizel plugin "${plugin.name}" must have a version`, {
+      context: { plugin: plugin.name },
+    });
   }
   if (!SEMVER_REGEX.test(plugin.version)) {
-    throw new Error(
-      `Vizel plugin "${plugin.name}" version "${plugin.version}" must be valid semver (e.g. "1.0.0")`
+    throw new VizelError(
+      "INVALID_CONFIG",
+      `Vizel plugin "${plugin.name}" version "${plugin.version}" must be valid semver (e.g. "1.0.0")`,
+      { context: { plugin: plugin.name } }
     );
   }
 }
@@ -98,12 +113,18 @@ export function resolveVizelPluginDependencies(plugins: VizelPlugin[]): VizelPlu
 
     if (visiting.has(name)) {
       const cycle = [...path, name].join(" → ");
-      throw new Error(`Circular plugin dependency detected: ${cycle}`);
+      throw new VizelError("INVALID_CONFIG", `Circular plugin dependency detected: ${cycle}`, {
+        context: { plugin: name },
+      });
     }
 
     const plugin = pluginMap.get(name);
     if (!plugin) {
-      throw new Error(`Plugin dependency "${name}" not found (required by "${path.at(-1)}")`);
+      throw new VizelError(
+        "INVALID_CONFIG",
+        `Plugin dependency "${name}" not found (required by "${path.at(-1)}")`,
+        { context: { plugin: name } }
+      );
     }
 
     visiting.add(name);
@@ -190,14 +211,22 @@ export class VizelPluginManager {
     validateVizelPlugin(plugin);
 
     if (this.plugins.has(plugin.name)) {
-      throw new Error(`Vizel plugin "${plugin.name}" is already registered`);
+      throw new VizelError(
+        "INVALID_CONFIG",
+        `Vizel plugin "${plugin.name}" is already registered`,
+        {
+          context: { plugin: plugin.name },
+        }
+      );
     }
 
     // Verify dependencies are registered
     for (const dep of plugin.dependencies ?? []) {
       if (!this.plugins.has(dep)) {
-        throw new Error(
-          `Vizel plugin "${plugin.name}" requires "${dep}" which is not registered. Register dependencies first.`
+        throw new VizelError(
+          "INVALID_CONFIG",
+          `Vizel plugin "${plugin.name}" requires "${dep}" which is not registered. Register dependencies first.`,
+          { context: { plugin: plugin.name } }
         );
       }
     }
@@ -225,13 +254,19 @@ export class VizelPluginManager {
   unregister(pluginName: string): void {
     const plugin = this.plugins.get(pluginName);
     if (!plugin) {
-      throw new Error(`Vizel plugin "${pluginName}" is not registered`);
+      throw new VizelError("INVALID_CONFIG", `Vizel plugin "${pluginName}" is not registered`, {
+        context: { plugin: pluginName },
+      });
     }
 
     // Check if other plugins depend on this one
     for (const [name, p] of this.plugins) {
       if (p.dependencies?.includes(pluginName)) {
-        throw new Error(`Cannot unregister "${pluginName}": plugin "${name}" depends on it`);
+        throw new VizelError(
+          "INVALID_CONFIG",
+          `Cannot unregister "${pluginName}": plugin "${name}" depends on it`,
+          { context: { plugin: pluginName } }
+        );
       }
     }
 

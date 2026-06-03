@@ -10,6 +10,7 @@ import {
   type VizelImageUploadPluginOptions,
   validateVizelImageFile,
 } from "../plugins/image-upload.ts";
+import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
 import { VizelResizableImage } from "./image-resize.ts";
 
 /**
@@ -212,7 +213,8 @@ export interface VizelImageUploadWithFileHandlerOptions extends VizelImageOption
 export function createVizelImageUploadWithFileHandler(
   options: VizelImageUploadWithFileHandlerOptions
 ) {
-  const { onUpload, maxFileSize, allowedTypes, onValidationError, onUploadError } = options.upload;
+  const { onUpload, maxFileSize, allowedTypes, onValidationError, onUploadError, onError } =
+    options.upload;
 
   // Use VizelResizableImage if resize is enabled, otherwise use standard Image
   const resizeEnabled = options.resize !== false;
@@ -272,6 +274,15 @@ export function createVizelImageUploadWithFileHandler(
             editor.chain().focus().setImage({ src: url }).run();
           })
           .catch((error: Error) => {
+            // Route through both sinks: the editor-level `onError` for
+            // observability and the feature-level `onUploadError` for UI.
+            emitVizelError(
+              new VizelError("UPLOAD_FAILED", `Image upload failed: ${error.message}`, {
+                cause: error,
+                context: { fileName: file.name, fileType: file.type },
+              }),
+              onError
+            );
             onUploadError?.(error, file);
           });
       }
@@ -301,6 +312,15 @@ export function createVizelImageUploadWithFileHandler(
             }
           })
           .catch((error: Error) => {
+            // Route through both sinks: the editor-level `onError` for
+            // observability and the feature-level `onUploadError` for UI.
+            emitVizelError(
+              new VizelError("UPLOAD_FAILED", `Image upload failed: ${error.message}`, {
+                cause: error,
+                context: { fileName: file.name, fileType: file.type },
+              }),
+              onError
+            );
             onUploadError?.(error, file);
           });
       }
