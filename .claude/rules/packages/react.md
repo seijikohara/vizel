@@ -7,7 +7,7 @@ paths:
 
 `@vizel/react` provides React 19 components and hooks. The package wraps `@vizel/core` and adds React-specific code only.
 
-See `cross-framework.md` for component, hook, and props parity requirements.
+See `.claude/rules/feature-manifest.md` for component, hook, and props parity requirements; `pnpm check:feature-parity` enforces them.
 
 ## Component Structure
 

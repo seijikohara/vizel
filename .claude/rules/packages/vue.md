@@ -7,7 +7,7 @@ paths:
 
 `@vizel/vue` provides Vue 3 components and composables. The package wraps `@vizel/core` and adds Vue-specific code only.
 
-See `cross-framework.md` for component, composable, and props parity requirements.
+See `.claude/rules/feature-manifest.md` for component, composable, and props parity requirements; `pnpm check:feature-parity` enforces them.
 
 ## Component Structure
 

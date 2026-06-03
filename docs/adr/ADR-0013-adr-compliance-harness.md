@@ -32,7 +32,7 @@ A companion subagent (`.claude/agents/phase-review.md`) handles qualitative revi
 | ADR | Check | FAIL condition |
 |-----|-------|----------------|
 | 0005 | Every `packages/*/package.json` carries `"version": "2.0.0"` | Any other version |
-| 0006 | `.claude/rules/cross-framework.md` does not exist | File present after Phase 1 |
+| 0006 | `.claude/rules/cross-framework.md` does not exist and no live reference to the retired names (`cross-framework.md`, `check-cross-framework-parity.ts`) survives under `.claude/`, `packages/*/src`, or `scripts/` | File present, or any live dangling reference remains |
 | 0007 | `grep -r 'document\.addEventListener' packages/{react,vue,svelte}/src/` returns zero lines | Any match |
 | 0007 | View-template line count in every `Vizel*.{tsx,vue,svelte}` component ≤ 120 | Any file over budget |
 | 0008 | Every adapter `package.json` `exports."./styles.css"` resolves to `@vizel/core/styles.css` | Resolution to a different file |

@@ -48,3 +48,36 @@ Follow-up:
 - Plan: `/Users/seiji/.claude/plans/starry-petting-planet.md` (R3, Phase 3)
 - External: [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore), [`svelte/reactivity` `createSubscriber`](https://svelte.dev/docs/svelte/svelte-reactivity)
 - Related: [ADR-0004](./ADR-0004-per-framework-idiomatic-api.md), [ADR-0007](./ADR-0007-component-size-and-controller-delegation.md)
+
+## Update (2026-06-03)
+
+The Decision bullets above stay immutable. This Update corrects three
+factual drifts between the Decision narrative and the shipped code. The
+corrections describe the current implementation; they do not change the
+decision.
+
+- **React `getServerSnapshot` returns a version counter, not `null`.** The
+  Decision bullet states `getServerSnapshot` returns `null` for SSR safety.
+  The shipped store returns `0` — the initial value of the same monotonic
+  version counter that `getSnapshot` returns on the client (see
+  `packages/react/src/_reactivity.ts`). Returning the counter's zero value
+  keeps the client and server snapshot types identical and satisfies the
+  `useSyncExternalStore` contract.
+- **React `subscribe` attaches both `transaction` and `selectionUpdate`.**
+  The Decision bullet lists only `editor.on('transaction')`. The shipped
+  `subscribe` attaches `editor.on('transaction')` and
+  `editor.on('selectionUpdate')`, and detaches both in its cleanup. The
+  selection listener lets a selector that reads selection-only state
+  re-evaluate when the document content does not change.
+- **The Svelte selector subscription lives in a separate rune file.** The
+  Decision bullet attributes the `createSubscriber` selector subscription to
+  `createVizelEditor.svelte.ts`. The shipped split is:
+  `packages/svelte/src/runes/createVizelEditor.svelte.ts` holds only the
+  `$state.raw<Editor | null>` editor identity, while
+  `packages/svelte/src/runes/createVizelEditorState.svelte.ts` owns the
+  selector projection — it subscribes through `createSubscriber` (hooking
+  `transaction` and `selectionUpdate`) and exposes the result through a
+  `$derived` accessor.
+
+A later work item (WI-8) revises the React selector-input bullet separately;
+this Update stays focused on the factual drift above.
