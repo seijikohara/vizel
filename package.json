@@ -46,6 +46,7 @@
     "check": "biome check --error-on-warnings .",
     "check:fix": "biome check --write .",
     "check:feature-parity": "node scripts/check-feature-parity.ts",
+    "check:aria-contract": "node scripts/check-aria-contract.ts",
     "check:scenarios": "node tests/ct/parity/check-scenarios.ts",
     "check:adr-compliance": "node scripts/check-adr-compliance.ts",
     "check:ct-parity": "node scripts/check-ct-parity.ts",

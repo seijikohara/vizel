@@ -63,6 +63,13 @@ jobs:
       - name: Feature manifest parity
         run: pnpm check:feature-parity
 
+      # Statically enforce the manifest's ARIA contract (role +
+      # requiredAttributes present in component / builder source) and the
+      # keyboard-map command allow-list. Runtime axe / keyboard checks are
+      # Phase 2, deferred to the accessibility CI follow-up.
+      - name: Manifest ARIA/keyboard contract
+        run: pnpm check:aria-contract
+
       - name: Scenario foundation parity
         run: pnpm check:scenarios
 

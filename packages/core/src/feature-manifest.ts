@@ -50,7 +50,21 @@ export type VizelFeatureCategory =
   | "form"
   | "infrastructure";
 
-/** ARIA contract that every adapter implementation must honour. */
+/**
+ * Accessibility contract for a feature's root element.
+ *
+ * `scripts/check-aria-contract.ts` statically enforces this contract: it
+ * resolves each adapter component for the feature and asserts that the
+ * declared `role` and every `requiredAttributes` entry appears in the
+ * component source — either as a literal attribute or through the
+ * feature's resolved builder spec. The check verifies presence in source,
+ * not the rendered Document Object Model (DOM).
+ *
+ * Runtime enforcement (axe assertions and keyboard-interaction tests on
+ * the live DOM) is planned as Phase 2 and is deferred to the
+ * accessibility Continuous Integration (CI) follow-up; this contract does
+ * not yet guarantee runtime behaviour.
+ */
 export interface VizelAriaContract {
   /** Optional ARIA role applied to the feature's root element. */
   readonly role?: string;
@@ -58,10 +72,39 @@ export interface VizelAriaContract {
   readonly requiredAttributes: readonly string[];
 }
 
-/** Keyboard bindings keyed by canonical command name. */
+/**
+ * Keyboard bindings keyed by canonical command name.
+ *
+ * Each key names a command the feature responds to; the value lists the
+ * `KeyboardEvent.key` values bound to that command.
+ * `scripts/check-aria-contract.ts` statically asserts that every key
+ * belongs to the allow-list formed by the union of the `VizelCommand`
+ * registry identifiers under `packages/core/src/commands/registry/` and
+ * the navigation-verb vocabulary in {@link VIZEL_KEYBOARD_COMMANDS}, so a
+ * binding name cannot rot into a string the editor never handles.
+ *
+ * Runtime enforcement (asserting each key actually triggers its command
+ * against the live editor) is planned as Phase 2 and is deferred to the
+ * accessibility CI follow-up.
+ */
 export interface VizelKeyboardMap {
   readonly bindings: Readonly<Record<string, readonly string[]>>;
 }
+
+/**
+ * Canonical navigation-verb vocabulary for {@link VizelKeyboardMap} keys.
+ *
+ * The manifest binds menus, popovers, and forms to abstract interaction
+ * verbs rather than to `VizelCommand` registry identifiers — a slash menu
+ * binds `next`/`previous`/`confirm`/`close`, not `format/bold`. This const
+ * is the Single Source of Truth (SSOT) for those verbs;
+ * `scripts/check-aria-contract.ts` reads it to validate every keyboard-map
+ * key, so adding a new verb requires extending this list.
+ */
+export const VIZEL_KEYBOARD_COMMANDS = ["next", "previous", "confirm", "submit", "close"] as const;
+
+/** A canonical navigation verb usable as a {@link VizelKeyboardMap} key. */
+export type VizelKeyboardCommand = (typeof VIZEL_KEYBOARD_COMMANDS)[number];
 
 /** Public symbol that an adapter exports for a feature. */
 export interface VizelAdapterSymbol {
@@ -119,7 +162,9 @@ export const VIZEL_FEATURE_MANIFEST: readonly VizelFeatureDefinition[] = [
     id: "bubble-menu",
     category: "menu",
     description: "Floating menu surfaced when the user makes a non-empty text selection.",
-    ariaContract: { role: "menu", requiredAttributes: ["aria-label"] },
+    // A row of formatting toggle buttons is a WAI-ARIA toolbar, not a
+    // menu; every adapter renders role="toolbar".
+    ariaContract: { role: "toolbar", requiredAttributes: ["aria-label"] },
     keyboardMap: { bindings: { close: ["Escape"] } },
     scenarios: ["render", "selection-tracking", "keyboard-dismiss"],
     adapters: {
@@ -204,8 +249,11 @@ export const VIZEL_FEATURE_MANIFEST: readonly VizelFeatureDefinition[] = [
     id: "toolbar-dropdown",
     category: "popover",
     description: "Dropdown surface used inside the toolbar for grouped actions.",
+    // The body renders role="option" rows with aria-selected and the
+    // trigger advertises aria-haspopup="listbox"; the surface is a
+    // single-select listbox, not a menu.
     ariaContract: {
-      role: "menu",
+      role: "listbox",
       requiredAttributes: ["aria-expanded", "aria-haspopup"],
     },
     keyboardMap: {
@@ -239,8 +287,11 @@ export const VIZEL_FEATURE_MANIFEST: readonly VizelFeatureDefinition[] = [
     id: "node-selector",
     category: "popover",
     description: "Selector for swapping the current block's node type.",
+    // The body renders role="option" rows with aria-selected and the
+    // trigger advertises aria-haspopup="listbox"; the surface is a
+    // single-select listbox, not a menu.
     ariaContract: {
-      role: "menu",
+      role: "listbox",
       requiredAttributes: ["aria-expanded", "aria-haspopup"],
     },
     keyboardMap: {
@@ -280,9 +331,11 @@ export const VIZEL_FEATURE_MANIFEST: readonly VizelFeatureDefinition[] = [
     id: "find-replace",
     category: "overlay",
     description: "Find-and-replace panel that searches and rewrites editor content.",
+    // The panel is non-modal: it coexists with live editing and never
+    // renders the document inert, so it must not claim aria-modal.
     ariaContract: {
       role: "dialog",
-      requiredAttributes: ["aria-label", "aria-modal"],
+      requiredAttributes: ["aria-label"],
     },
     keyboardMap: {
       bindings: {
@@ -314,8 +367,11 @@ export const VIZEL_FEATURE_MANIFEST: readonly VizelFeatureDefinition[] = [
     id: "outline",
     category: "infrastructure",
     description: "Document outline panel that summarises the heading structure.",
+    // The builder spec types role="tree" and the component renders
+    // role="treeitem" / role="group" children, a WAI-ARIA tree, not a
+    // navigation landmark.
     ariaContract: {
-      role: "navigation",
+      role: "tree",
       requiredAttributes: ["aria-label"],
     },
     keyboardMap: { bindings: {} },
