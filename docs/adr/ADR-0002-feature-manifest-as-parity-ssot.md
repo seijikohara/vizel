@@ -18,7 +18,7 @@ The parity SSOT moves into TypeScript as `packages/core/src/feature-manifest.ts`
 - Each entry also declares the expected adapter symbol for React, Vue, and Svelte (component name, optional hook or composable or rune name).
 - The manifest is the authoritative parity contract. The TypeScript type system enforces structural integrity at compile time. A CI script (`scripts/check-feature-parity.ts`) enforces cross-package coverage at build time.
 
-The CI script imports the manifest, then dynamically imports the declared symbol from each of `@vizel/react`, `@vizel/vue`, and `@vizel/svelte`. Missing entries fail the build. The script runs on `pre-push` and as a CI job before the test matrix.
+The CI script imports the manifest, then resolves each declared symbol against an adapter's statically computed export surface — it never imports built artefacts. The script parses each adapter's `src/index.ts` with the TypeScript compiler API and computes the adapter's effective export set: the adapter's own named exports unioned with the public surface of `@vizel/core`, which every adapter forwards through the mandatory `export * from "@vizel/core"`. The script resolves the Core surface by recursively walking the re-export declarations rooted at `packages/core/src/index.ts`. A manifest-declared symbol that is absent from an adapter's effective set fails the build. The script runs on `pre-push` and as a CI job before the test matrix.
 
 ## Consequences
 
