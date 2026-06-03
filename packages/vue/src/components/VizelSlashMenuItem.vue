@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { splitVizelTextByMatches, type VizelSlashCommandItem } from "@vizel/core";
+import { formatVizelShortcut, splitVizelTextByMatches, type VizelCommandSpec } from "@vizel/core";
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelSlashMenuItemProps {
-  /** The slash command item to display */
-  item: VizelSlashCommandItem;
+  /** The command spec to display (label, description, icon, shortcut). */
+  item: VizelCommandSpec;
   /** Whether the item is selected */
   isSelected?: boolean;
   /** Custom class name */
@@ -43,18 +43,18 @@ const emit = defineEmits<{
     :data-selected="isSelected || undefined"
     @click="emit('click')"
   >
-    <span class="vizel-slash-menu-icon">
+    <span v-if="item.icon" class="vizel-slash-menu-icon">
       <VizelIcon :name="item.icon" />
     </span>
     <div class="vizel-slash-menu-text">
       <span class="vizel-slash-menu-title">
-        <template v-for="(part, idx) in splitVizelTextByMatches(item.title, titleMatches)" :key="idx">
+        <template v-for="(part, idx) in splitVizelTextByMatches(item.label, titleMatches)" :key="idx">
           <mark v-if="part.highlight" class="vizel-slash-menu-highlight">{{ part.text }}</mark>
           <template v-else>{{ part.text }}</template>
         </template>
       </span>
-      <span class="vizel-slash-menu-description">{{ item.description }}</span>
+      <span v-if="item.description" class="vizel-slash-menu-description">{{ item.description }}</span>
     </div>
-    <span v-if="item.shortcut" class="vizel-slash-menu-shortcut">{{ item.shortcut }}</span>
+    <span v-if="item.shortcut" class="vizel-slash-menu-shortcut">{{ formatVizelShortcut(item.shortcut) }}</span>
   </button>
 </template>

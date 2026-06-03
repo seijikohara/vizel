@@ -1,119 +1,18 @@
 import type { Editor } from "@tiptap/core";
 import { deriveVizelCommandSpec } from "../commands/derive.ts";
-import {
-  groupSlashCommands as groupVizelSlashCommands,
-  type SlashCommandItem as VizelSlashCommandItem,
-} from "../commands/slash-items.ts";
 import type { VizelCommand } from "../commands/types.ts";
 import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelCommandSpec, VizelMenuSpec } from "./types.ts";
 
 /**
- * Item-data shape surfaced to the framework `VizelSlashMenu` component.
+ * Return the stable `role="option"` id for a slash command.
  *
- * Carries the original `VizelSlashCommandItem` plus the selection flag so
- * the component can render its default `VizelSlashMenuItem` (or a
- * consumer-supplied custom renderer) without re-deriving `isSelected`
- * from `selectedIndex`.
- */
-export interface VizelSlashItemView {
-  /** The slash-command item as supplied by the consumer. */
-  item: VizelSlashCommandItem;
-  /** Whether this item is the keyboard-active selection. */
-  isSelected: boolean;
-}
-
-/**
- * Options accepted by {@link buildVizelSlashMenuSpec}.
- */
-export interface VizelSlashMenuSpecOptions {
-  /**
-   * Whether to render items grouped by category. When `false`, or when
-   * `items.length <= 5` (typically fuzzy-search results), grouping is
-   * collapsed to a single un-headed section.
-   *
-   * @default true
-   */
-  showGroups?: boolean;
-  /** Custom group display order. Forwarded to `groupVizelSlashCommands`. */
-  groupOrder?: string[];
-}
-
-/**
- * Return the stable `role="option"` id for a slash item.
- *
- * The id matches the listbox root's `aria-activedescendant` when the item
- * is the active selection. The prefix mirrors `vizel-mention-${id}` from
- * `buildVizelMentionMenuSpec` so both suggestion menus follow the same
+ * The id matches the listbox root's `aria-activedescendant` when the
+ * command is the active selection. The prefix mirrors `vizel-mention-${id}`
+ * from `buildVizelMentionMenuSpec` so both suggestion menus follow the same
  * combobox `aria-activedescendant` relationship.
  */
-const slashOptionId = (item: VizelSlashCommandItem): string => `vizel-slash-${item.id}`;
-
-/**
- * Build a {@link VizelMenuSpec} for the slash command menu.
- *
- * Slash menus use `role="listbox"` and may render multiple sections
- * (groups) each with a header label. The active option carries the id the
- * root's `aria-activedescendant` points at, matching
- * `buildVizelMentionMenuSpec`. The framework `VizelSlashMenuItem` component
- * owns the `role="option"` element, so the spec threads the id (and the
- * selection flag) to that component while leaving the role itself to the
- * component.
- *
- * The empty `sections` array represents the no-items state; the
- * component renders its default `VizelSlashMenuEmpty` (or a custom
- * `renderEmpty`).
- */
-export function buildVizelSlashMenuSpec(
-  items: readonly VizelSlashCommandItem[],
-  selectedIndex: number,
-  options: VizelSlashMenuSpecOptions = {}
-): VizelMenuSpec<VizelSlashItemView> {
-  const { showGroups = true, groupOrder } = options;
-  const activeItem = items[selectedIndex];
-  const activeId = activeItem ? slashOptionId(activeItem) : undefined;
-  const rootAttrs = {
-    role: "listbox",
-    "aria-label": "Commands",
-    ...(activeId && { "aria-activedescendant": activeId }),
-  } as const;
-
-  if (items.length === 0) {
-    return { root: { role: "listbox", "aria-label": "Commands" }, sections: [] };
-  }
-
-  const groups =
-    !showGroups || items.length <= 5
-      ? [{ name: "", items: [...items] }]
-      : groupVizelSlashCommands([...items], groupOrder);
-
-  const groupOffsets = groups.reduce<number[]>(
-    (acc, group) => {
-      acc.push((acc.at(-1) ?? 0) + group.items.length);
-      return acc;
-    },
-    [0]
-  );
-  const sections = groups.map((group, gIndex) => {
-    const baseOffset = groupOffsets[gIndex] ?? 0;
-    const sectionItems = group.items.map((item, indexInGroup) => {
-      const index = baseOffset + indexInGroup;
-      return {
-        key: item.id,
-        index,
-        data: { item, isSelected: index === selectedIndex },
-        attrs: { id: slashOptionId(item) },
-      };
-    });
-    return {
-      key: group.name || `__ungrouped_${gIndex}`,
-      ...(group.name && { header: { label: group.name } }),
-      items: sectionItems,
-    };
-  });
-
-  return { root: rootAttrs, sections };
-}
+const slashOptionId = (command: VizelCommand): string => `vizel-slash-${command.id}`;
 
 /**
  * Compute the next-group jump target for Tab-key navigation.
@@ -124,7 +23,7 @@ export function buildVizelSlashMenuSpec(
  * is returned unchanged.
  */
 export function getNextVizelSlashMenuGroupIndex(
-  spec: VizelMenuSpec<VizelSlashItemView>,
+  spec: VizelMenuSpec<VizelCommandSpec>,
   currentIndex: number
 ): number {
   if (spec.sections.length <= 1) return currentIndex;
@@ -139,10 +38,6 @@ export function getNextVizelSlashMenuGroupIndex(
   return nextSection?.items[0]?.index ?? currentIndex;
 }
 
-// ============================================================================
-// VizelCommand-based derivation
-// ============================================================================
-
 /**
  * Options accepted by {@link buildVizelSlashMenuSpecFromCommands}.
  */
@@ -155,7 +50,7 @@ export interface VizelSlashMenuFromCommandsOptions {
   readonly query: string;
   /** Index of the keyboard-active selection (zero-based). */
   readonly selectedIndex: number;
-  /** Whether to render groups with headers. Mirrors {@link buildVizelSlashMenuSpec}. */
+  /** Whether to render groups with headers. */
   readonly showGroups?: boolean;
   /** Custom group display order. */
   readonly groupOrder?: readonly string[];
@@ -182,17 +77,20 @@ function compareSlashPriority(a: VizelCommand, b: VizelCommand): number {
  *
  * Filters by `surfaces.slashMenu`, sorts by priority, applies the
  * query filter, groups by `command.group`, and derives a
- * {@link VizelCommandSpec} for each entry. Returns the same spec shape
- * the framework `VizelSlashMenu` component already consumes — but
- * sections carry `VizelCommandSpec` items (not the legacy
- * `VizelSlashItemView`).
+ * {@link VizelCommandSpec} for each entry. The active option carries the id
+ * the root's `aria-activedescendant` points at, matching
+ * `buildVizelMentionMenuSpec`. The framework `VizelSlashMenuItem` component
+ * owns the `role="option"` element; the spec threads the id and the
+ * selection flag to that component.
+ *
+ * The empty `sections` array represents the no-items state; the component
+ * renders its default `VizelSlashMenuEmpty` (or a custom `renderEmpty`).
  */
 export function buildVizelSlashMenuSpecFromCommands(
   commands: readonly VizelCommand[],
   options: VizelSlashMenuFromCommandsOptions
 ): VizelMenuSpec<VizelCommandSpec> {
   const { editor, locale, query, selectedIndex, showGroups = true, groupOrder } = options;
-  const rootAttrs = { role: "listbox", "aria-label": "Commands" } as const;
 
   const filtered = commands
     .filter((c) => c.surfaces.slashMenu !== undefined)
@@ -201,8 +99,16 @@ export function buildVizelSlashMenuSpecFromCommands(
     .sort(compareSlashPriority);
 
   if (filtered.length === 0) {
-    return { root: rootAttrs, sections: [] };
+    return { root: { role: "listbox", "aria-label": "Commands" }, sections: [] };
   }
+
+  const activeCommand = filtered[selectedIndex];
+  const activeId = activeCommand ? slashOptionId(activeCommand) : undefined;
+  const rootAttrs = {
+    role: "listbox",
+    "aria-label": "Commands",
+    ...(activeId && { "aria-activedescendant": activeId }),
+  } as const;
 
   const collapseGroups = !showGroups || filtered.length <= 5;
   const order = groupOrder ?? DEFAULT_COMMAND_GROUP_ORDER;
@@ -239,6 +145,7 @@ export function buildVizelSlashMenuSpecFromCommands(
         index,
         data: deriveVizelCommandSpec(command, editor, locale),
         attrs: {
+          id: slashOptionId(command),
           "aria-selected": index === selectedIndex,
         },
       };

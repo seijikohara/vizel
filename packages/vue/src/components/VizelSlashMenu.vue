@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import {
-  buildVizelSlashMenuSpec,
+  buildVizelSlashMenuSpecFromCommands,
+  type Editor,
   getNextVizelSlashMenuGroupIndex,
-  type VizelSlashCommandItem,
+  type VizelCommand,
+  type VizelCommandSpec,
+  type VizelLocale,
 } from "@vizel/core";
 import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import { computed, nextTick, ref, watch } from "vue";
@@ -24,8 +27,14 @@ export interface VizelSlashMenuRef {
 }
 
 export interface VizelSlashMenuProps {
-  /** The list of slash command items */
-  items: VizelSlashCommandItem[];
+  /** Commands surfaced in the menu (filtered by `query` internally). */
+  commands: readonly VizelCommand[];
+  /** Editor the commands evaluate `canRun` / `isActive` against. */
+  editor: Editor;
+  /** Locale supplying command `label` / `description` strings. */
+  locale: VizelLocale;
+  /** Current query string. */
+  query: string;
   /** Custom class name */
   class?: string;
   /** Whether to show items grouped by category (default: true when not searching) */
@@ -44,8 +53,8 @@ export interface VizelSlashMenuProps {
  * native listener.
  */
 export interface VizelSlashMenuItemSlotProps {
-  /** The slash command item to render */
-  item: VizelSlashCommandItem;
+  /** The command spec to render */
+  item: VizelCommandSpec;
   /** Whether the item is the active keyboard selection */
   isSelected: boolean;
   /** Invoke the item's command */
@@ -57,7 +66,7 @@ const props = withDefaults(defineProps<VizelSlashMenuProps>(), {
 });
 
 const emit = defineEmits<{
-  select: [item: VizelSlashCommandItem];
+  select: [id: string];
 }>();
 
 const slots = defineSlots<{
@@ -70,7 +79,11 @@ const selectedIndex = ref(0);
 const itemRefs = ref<(HTMLElement | null)[]>([]);
 
 const spec = computed(() =>
-  buildVizelSlashMenuSpec(props.items, selectedIndex.value, {
+  buildVizelSlashMenuSpecFromCommands(props.commands, {
+    editor: props.editor,
+    locale: props.locale,
+    query: props.query,
+    selectedIndex: selectedIndex.value,
     showGroups: props.showGroups,
     ...(props.groupOrder && { groupOrder: props.groupOrder }),
   })
@@ -81,7 +94,7 @@ const flatItemCount = computed(() =>
 );
 
 watch(
-  () => props.items,
+  () => props.query,
   () => {
     selectedIndex.value = 0;
     itemRefs.value = [];
@@ -101,7 +114,7 @@ function selectItem(index: number) {
     .flatMap((section) => section.items)
     .find((s) => s.index === index);
   if (slot) {
-    emit("select", slot.data.item);
+    emit("select", slot.data.id);
   }
 }
 
@@ -167,15 +180,15 @@ defineExpose({
             <slot
               v-if="slots.item"
               name="item"
-              :item="slot.data.item"
-              :is-selected="slot.data.isSelected"
+              :item="slot.data"
+              :is-selected="slot.attrs['aria-selected'] === true"
               :onclick="() => selectItem(slot.index)"
             />
             <VizelSlashMenuItem
               v-else
               :id="slot.attrs.id"
-              :item="slot.data.item"
-              :is-selected="slot.data.isSelected"
+              :item="slot.data"
+              :is-selected="slot.attrs['aria-selected'] === true"
               @click="selectItem(slot.index)"
             />
           </div>
@@ -190,15 +203,15 @@ defineExpose({
             <slot
               v-if="slots.item"
               name="item"
-              :item="slot.data.item"
-              :is-selected="slot.data.isSelected"
+              :item="slot.data"
+              :is-selected="slot.attrs['aria-selected'] === true"
               :onclick="() => selectItem(slot.index)"
             />
             <VizelSlashMenuItem
               v-else
               :id="slot.attrs.id"
-              :item="slot.data.item"
-              :is-selected="slot.data.isSelected"
+              :item="slot.data"
+              :is-selected="slot.attrs['aria-selected'] === true"
               @click="selectItem(slot.index)"
             />
           </div>

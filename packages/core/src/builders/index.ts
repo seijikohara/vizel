@@ -42,12 +42,9 @@ export {
   type VizelOutlineSpec,
 } from "./outline.ts";
 export {
-  buildVizelSlashMenuSpec,
   buildVizelSlashMenuSpecFromCommands,
   getNextVizelSlashMenuGroupIndex,
-  type VizelSlashItemView,
   type VizelSlashMenuFromCommandsOptions,
-  type VizelSlashMenuSpecOptions,
 } from "./slash-menu.ts";
 export {
   buildVizelToolbarSpec,

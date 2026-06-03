@@ -199,20 +199,11 @@ export {
 } from "./presence.ts";
 // Slash command
 export {
-  createVizelSlashCommands,
-  createVizelSlashGroupOrder,
-  filterVizelSlashCommands,
-  flattenVizelSlashCommandGroups,
-  groupVizelSlashCommands,
-  searchVizelSlashCommands,
+  getVizelSlashCommandLocale,
   VizelSlashCommand,
   type VizelSlashCommandExtensionOptions,
-  type VizelSlashCommandGroup,
-  type VizelSlashCommandItem,
-  type VizelSlashCommandRange,
-  type VizelSlashCommandSearchResult,
-  vizelDefaultGroupOrder,
-  vizelDefaultSlashCommands,
+  type VizelSlashCommandStorage,
+  vizelDefaultSlashMenuCommands,
 } from "./slash-command.ts";
 // Table
 export {

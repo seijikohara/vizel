@@ -1,5 +1,5 @@
 <script lang="ts" module>
-import type { VizelSlashCommandItem } from "@vizel/core";
+import type { Editor, VizelCommand, VizelCommandSpec, VizelLocale } from "@vizel/core";
 import type { Snippet } from "svelte";
 
 export interface VizelSlashMenuRef {
@@ -7,18 +7,24 @@ export interface VizelSlashMenuRef {
 }
 
 export interface VizelSlashMenuProps {
-  /** The list of slash command items */
-  items: VizelSlashCommandItem[];
+  /** Commands surfaced in the menu (filtered by `query` internally). */
+  commands: readonly VizelCommand[];
+  /** Editor the commands evaluate `canRun` / `isActive` against. */
+  editor: Editor;
+  /** Locale supplying command `label` / `description` strings. */
+  locale: VizelLocale;
+  /** Current query string. */
+  query: string;
   /** Custom class name */
   class?: string;
-  /** Selection handler invoked when an item is chosen */
-  onselect?: (item: VizelSlashCommandItem) => void;
+  /** Selection handler invoked with the chosen command's id. */
+  onselect?: (id: string) => void;
   /** Whether to show items grouped by category (default: true when not searching) */
   showGroups?: boolean;
   /** Custom group order */
   groupOrder?: string[];
   /** Custom item renderer */
-  renderItem?: Snippet<[{ item: VizelSlashCommandItem; isSelected: boolean; onclick: () => void }]>;
+  renderItem?: Snippet<[{ item: VizelCommandSpec; isSelected: boolean; onclick: () => void }]>;
   /** Custom empty state renderer */
   renderEmpty?: Snippet;
   /**
@@ -34,14 +40,17 @@ export interface VizelSlashMenuProps {
 </script>
 
 <script lang="ts">
-import { buildVizelSlashMenuSpec, getNextVizelSlashMenuGroupIndex } from "@vizel/core";
+import { buildVizelSlashMenuSpecFromCommands, getNextVizelSlashMenuGroupIndex } from "@vizel/core";
 import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import { tick } from "svelte";
 import VizelSlashMenuItem from "./VizelSlashMenuItem.svelte";
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.svelte";
 
 let {
-  items,
+  commands,
+  editor,
+  locale,
+  query,
   class: className,
   onselect,
   showGroups = true,
@@ -55,7 +64,11 @@ let selectedIndex = $state(0);
 let itemRefs: (HTMLElement | null)[] = $state([]);
 
 const spec = $derived(
-  buildVizelSlashMenuSpec(items, selectedIndex, {
+  buildVizelSlashMenuSpecFromCommands(commands, {
+    editor,
+    locale,
+    query,
+    selectedIndex,
     showGroups,
     ...(groupOrder && { groupOrder }),
   })
@@ -72,9 +85,9 @@ $effect(() => {
   }
 });
 
-// Reset selection when items change
+// Reset selection when the query changes
 $effect(() => {
-  items;
+  query;
   selectedIndex = 0;
 });
 
@@ -92,7 +105,7 @@ $effect(() => {
 function selectItem(index: number) {
   const slot = spec.sections.flatMap((section) => section.items).find((s) => s.index === index);
   if (slot) {
-    onselect?.(slot.data.item);
+    onselect?.(slot.data.id);
   }
 }
 
@@ -155,15 +168,15 @@ if (ref) {
             <div bind:this={itemRefs[slot.index]}>
               {#if renderItem}
                 {@render renderItem({
-                  item: slot.data.item,
-                  isSelected: slot.data.isSelected,
+                  item: slot.data,
+                  isSelected: slot.attrs["aria-selected"] === true,
                   onclick: () => selectItem(slot.index),
                 })}
               {:else}
                 <VizelSlashMenuItem
                   id={slot.attrs.id}
-                  item={slot.data.item}
-                  isSelected={slot.data.isSelected}
+                  item={slot.data}
+                  isSelected={slot.attrs["aria-selected"] === true}
                   onclick={() => selectItem(slot.index)}
                 />
               {/if}
@@ -176,14 +189,14 @@ if (ref) {
           <div bind:this={itemRefs[slot.index]}>
             {#if renderItem}
               {@render renderItem({
-                item: slot.data.item,
-                isSelected: slot.data.isSelected,
+                item: slot.data,
+                isSelected: slot.attrs["aria-selected"] === true,
                 onclick: () => selectItem(slot.index),
               })}
             {:else}
               <VizelSlashMenuItem
-                item={slot.data.item}
-                isSelected={slot.data.isSelected}
+                item={slot.data}
+                isSelected={slot.attrs["aria-selected"] === true}
                 onclick={() => selectItem(slot.index)}
               />
             {/if}

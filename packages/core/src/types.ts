@@ -1,6 +1,7 @@
 import type { Editor, Extensions, JSONContent } from "@tiptap/core";
 import type { SuggestionOptions } from "@tiptap/suggestion";
 import type { VizelCollaborationProvider } from "./collaboration-provider.ts";
+import type { VizelCommand } from "./commands/types.ts";
 import type { VizelCalloutOptions } from "./extensions/callout.ts";
 import type { VizelCharacterCountOptions } from "./extensions/character-count.ts";
 import type { VizelCommentMarkOptions } from "./extensions/comment.ts";
@@ -12,7 +13,6 @@ import type { VizelHighlightOptions } from "./extensions/highlight.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
 import type { VizelMentionOptions } from "./extensions/mention.ts";
 import type { VizelPresenceOptions } from "./extensions/presence.ts";
-import type { VizelSlashCommandItem } from "./extensions/slash-command.ts";
 import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTableOfContentsOptions } from "./extensions/table-of-contents.ts";
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
@@ -29,10 +29,13 @@ import type { VizelVersionHistoryOptions } from "./version-history.ts";
  * Slash command feature options
  */
 export interface VizelSlashCommandOptions {
-  /** Custom slash command items */
-  items?: VizelSlashCommandItem[];
+  /**
+   * Commands surfaced in the slash menu. Defaults to the slash-surfaced
+   * subset of `vizelDefaultCommands`.
+   */
+  commands?: readonly VizelCommand[];
   /** Suggestion options (framework-specific renderer) */
-  suggestion?: Partial<SuggestionOptions<VizelSlashCommandItem>>;
+  suggestion?: Partial<SuggestionOptions<VizelCommand>>;
 }
 
 /**

@@ -1,8 +1,10 @@
-import { splitVizelTextByMatches, type VizelSlashCommandItem } from "@vizel/core";
+import { formatVizelShortcut, splitVizelTextByMatches, type VizelCommandSpec } from "@vizel/core";
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelSlashMenuItemProps {
-  item: VizelSlashCommandItem;
+  /** The command spec to display (label, description, icon, shortcut). */
+  item: VizelCommandSpec;
+  /** Whether the item is selected */
   isSelected?: boolean;
   onClick: () => void;
   className?: string;
@@ -42,16 +44,10 @@ const renderHighlightedText = (text: string, matches?: [number, number][]): Reac
 
 /**
  * A menu item component for the VizelSlashMenu.
- * Displays the command icon, title, description, and optional keyboard shortcut.
+ * Displays the command icon, label, description, and optional keyboard shortcut.
  *
- * @example
- * ```tsx
- * <VizelSlashMenuItem
- *   item={{ title: "Heading 1", icon: "H1", description: "Large heading", shortcut: "⌘⌥1" }}
- *   isSelected={selectedIndex === 0}
- *   onClick={() => command(item)}
- * />
- * ```
+ * The shortcut hint renders through {@link formatVizelShortcut}, which
+ * resolves the `{ mac, other }` `VizelShortcutSpec` to the current platform.
  */
 export function VizelSlashMenuItem({
   item,
@@ -71,16 +67,22 @@ export function VizelSlashMenuItem({
       data-selected={isSelected || undefined}
       {...(id && { id })}
     >
-      <span className="vizel-slash-menu-icon">
-        <VizelIcon name={item.icon} />
-      </span>
+      {item.icon && (
+        <span className="vizel-slash-menu-icon">
+          <VizelIcon name={item.icon} />
+        </span>
+      )}
       <div className="vizel-slash-menu-text">
         <span className="vizel-slash-menu-title">
-          {renderHighlightedText(item.title, titleMatches)}
+          {renderHighlightedText(item.label, titleMatches)}
         </span>
-        <span className="vizel-slash-menu-description">{item.description}</span>
+        {item.description && (
+          <span className="vizel-slash-menu-description">{item.description}</span>
+        )}
       </div>
-      {item.shortcut && <span className="vizel-slash-menu-shortcut">{item.shortcut}</span>}
+      {item.shortcut && (
+        <span className="vizel-slash-menu-shortcut">{formatVizelShortcut(item.shortcut)}</span>
+      )}
     </button>
   );
 }

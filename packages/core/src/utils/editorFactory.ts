@@ -1,7 +1,7 @@
 import { Editor, type Extensions } from "@tiptap/core";
 import type { SuggestionOptions } from "@tiptap/suggestion";
+import type { VizelCommand } from "../commands/types.ts";
 import { createVizelExtensions } from "../extensions/base.ts";
-import type { VizelSlashCommandItem } from "../extensions/slash-command.ts";
 import type { VizelEditorOptions, VizelImageFeatureOptions } from "../types.ts";
 import { resolveVizelFeatures, vizelDefaultEditorProps } from "./editorHelpers.ts";
 import { createVizelError } from "./errorHandling.ts";
@@ -81,7 +81,7 @@ export interface CreateVizelEditorInstanceOptions extends VizelEditorOptions {
   /** Additional extensions to include */
   extensions?: Extensions;
   /** Factory function to create the slash menu renderer */
-  createSlashMenuRenderer: () => Partial<SuggestionOptions<VizelSlashCommandItem>>;
+  createSlashMenuRenderer: () => Partial<SuggestionOptions<VizelCommand>>;
 }
 
 /**

@@ -1,7 +1,10 @@
 import {
-  buildVizelSlashMenuSpec,
+  buildVizelSlashMenuSpecFromCommands,
+  type Editor,
   getNextVizelSlashMenuGroupIndex,
-  type VizelSlashCommandItem,
+  type VizelCommand,
+  type VizelCommandSpec,
+  type VizelLocale,
 } from "@vizel/core";
 import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import type { ReactNode, Ref } from "react";
@@ -22,15 +25,23 @@ export interface VizelSlashMenuRef {
 export interface VizelSlashMenuProps {
   /** Ref to access menu methods */
   ref?: Ref<VizelSlashMenuRef>;
-  items: VizelSlashCommandItem[];
-  onSelect: (item: VizelSlashCommandItem) => void;
+  /** Commands surfaced in the menu (filtered by `query` internally). */
+  commands: readonly VizelCommand[];
+  /** Editor the commands evaluate `canRun` / `isActive` against. */
+  editor: Editor;
+  /** Locale supplying command `label` / `description` strings. */
+  locale: VizelLocale;
+  /** Current query string. */
+  query: string;
+  /** Select a command by its `VizelCommandSpec.id`. */
+  onSelect: (id: string) => void;
   /** Custom class name for the menu container */
   className?: string;
   /** Whether to show items grouped by category (default: true when not searching) */
   showGroups?: boolean;
   /** Custom render function for items */
   renderItem?: (props: {
-    item: VizelSlashCommandItem;
+    item: VizelCommandSpec;
     isSelected: boolean;
     onClick: () => void;
   }) => ReactNode;
@@ -44,14 +55,17 @@ export interface VizelSlashMenuProps {
  * Slash command menu component for displaying command suggestions.
  *
  * DOM scaffolding (listbox container, section grouping, item identity
- * + index) comes from `@vizel/core`'s `buildVizelSlashMenuSpec`;
+ * + index) comes from `@vizel/core`'s `buildVizelSlashMenuSpecFromCommands`;
  * this component is the React-flavored binding that maps the spec to
- * JSX. Item rendering (icon + title + description + shortcut) stays in
+ * JSX. Item rendering (icon + label + description + shortcut) stays in
  * `VizelSlashMenuItem`, which keeps `role="option"` ownership.
  */
 export function VizelSlashMenu({
   ref,
-  items,
+  commands,
+  editor,
+  locale,
+  query,
   onSelect,
   className,
   showGroups = true,
@@ -64,11 +78,15 @@ export function VizelSlashMenu({
 
   const spec = useMemo(
     () =>
-      buildVizelSlashMenuSpec(items, selectedIndex, {
+      buildVizelSlashMenuSpecFromCommands(commands, {
+        editor,
+        locale,
+        query,
+        selectedIndex,
         showGroups,
         ...(groupOrder && { groupOrder }),
       }),
-    [items, selectedIndex, showGroups, groupOrder]
+    [commands, editor, locale, query, selectedIndex, showGroups, groupOrder]
   );
 
   const flatItemCount = useMemo(
@@ -89,16 +107,16 @@ export function VizelSlashMenu({
     }
   }, [selectedIndex]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: reset selection when items change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset selection when the query changes
   useEffect(() => {
     setSelectedIndex(0);
-  }, [items]);
+  }, [query]);
 
   const selectItem = useCallback(
     (index: number) => {
       const slot = spec.sections.flatMap((s) => s.items).find((s) => s.index === index);
       if (slot) {
-        onSelect(slot.data.item);
+        onSelect(slot.data.id);
       }
     },
     [spec, onSelect]
@@ -160,12 +178,13 @@ export function VizelSlashMenu({
       {spec.sections.map((section) => {
         const renderedItems = section.items.map((slot) => {
           const onClick = () => selectItem(slot.index);
+          const isSelected = slot.attrs["aria-selected"] === true;
           const content = renderItem ? (
-            renderItem({ item: slot.data.item, isSelected: slot.data.isSelected, onClick })
+            renderItem({ item: slot.data, isSelected, onClick })
           ) : (
             <VizelSlashMenuItem
-              item={slot.data.item}
-              isSelected={slot.data.isSelected}
+              item={slot.data}
+              isSelected={isSelected}
               onClick={onClick}
               id={slot.attrs.id}
             />
