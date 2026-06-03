@@ -426,10 +426,19 @@ git commit -m "feat(core): add command auto-derivation from node types and Comma
 
 ## Out of scope (deferred to a later section)
 
-- Migrating `@vizel/react`, `@vizel/vue`, `@vizel/svelte` components to
+- ~~Migrating `@vizel/react`, `@vizel/vue`, `@vizel/svelte` components to
   consume the new toolbar/bubble/block builders directly. That swap
   retires the legacy `SlashCommandItem` import path and is a separate
-  cross-framework PR after Section 9 stabilizes.
-- Removing `SlashCommandItem` entirely. The legacy item type continues
+  cross-framework PR after Section 9 stabilizes.~~ **Completed by WI-6.**
+  The slash-menu trio (`VizelSlashMenu` + `VizelSlashMenuItem` +
+  `createVizelSlashMenuRenderer`) now consumes
+  `VizelMenuSpec<VizelCommandSpec>` from
+  `buildVizelSlashMenuSpecFromCommands` in all three adapters.
+- ~~Removing `SlashCommandItem` entirely. The legacy item type continues
   to exist as an alternative input to the legacy slash menu builder
-  path until the framework migration above completes.
+  path until the framework migration above completes.~~ **Completed by
+  WI-6.** `packages/core/src/commands/slash-items.ts` is deleted and the
+  public exports `createVizelSlashCommands`, `vizelDefaultSlashCommands`,
+  `vizelDefaultGroupOrder`, `VizelSlashItemView`,
+  `buildVizelSlashMenuSpec`, and `VizelSlashCommandItem` are removed
+  ([ADR-0005](../../adr/ADR-0005-v2-breaking-release.md)).

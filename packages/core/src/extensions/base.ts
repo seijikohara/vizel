@@ -21,6 +21,8 @@ import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import Text from "@tiptap/extension-text";
 import Underline from "@tiptap/extension-underline";
+import { vizelDefaultCommands } from "../commands/registry/index.ts";
+import type { VizelCommand } from "../commands/types.ts";
 import type { VizelLocale } from "../i18n/types.ts";
 import type {
   VizelMarkdownEncodingOptions,
@@ -50,11 +52,7 @@ import { createVizelMathematicsExtensions } from "./mathematics.ts";
 import { createVizelMentionExtension } from "./mention.ts";
 import { createVizelMultiBlockSelectionExtension } from "./multi-block-selection.ts";
 import { createVizelPresenceExtension } from "./presence.ts";
-import {
-  VizelSlashCommand,
-  type VizelSlashCommandItem,
-  vizelDefaultSlashCommands,
-} from "./slash-command.ts";
+import { VizelSlashCommand } from "./slash-command.ts";
 import { createVizelTableExtensions } from "./table.ts";
 import { createVizelTableOfContentsExtension } from "./table-of-contents.ts";
 import { createVizelTaskListExtensions } from "./task-list.ts";
@@ -156,16 +154,21 @@ function createBaseExtensions(
 /**
  * Add SlashMenu extension if enabled (enabled by default).
  */
-function addSlashMenuExtension(extensions: Extensions, features: VizelFeatureOptions): void {
+function addSlashMenuExtension(
+  extensions: Extensions,
+  features: VizelFeatureOptions,
+  locale?: VizelLocale
+): void {
   const slashMenu = features.interaction?.slashMenu;
   if (slashMenu === false) return;
 
   const slashOptions = typeof slashMenu === "object" ? slashMenu : {};
-  const items: VizelSlashCommandItem[] = slashOptions.items ?? vizelDefaultSlashCommands;
+  const commands: readonly VizelCommand[] = slashOptions.commands ?? vizelDefaultCommands;
 
   extensions.push(
     VizelSlashCommand.configure({
-      items,
+      commands,
+      ...(locale !== undefined && { locale }),
       ...(slashOptions.suggestion !== undefined && {
         suggestion: slashOptions.suggestion,
       }),
@@ -532,7 +535,7 @@ export async function createVizelExtensions(
   }
 
   // Opt-out / opt-in features
-  addSlashMenuExtension(extensions, features);
+  addSlashMenuExtension(extensions, features, locale);
   addImageExtension(extensions, features, onError);
   addTaskListExtension(extensions, features);
   addCharacterCountExtension(extensions, features);

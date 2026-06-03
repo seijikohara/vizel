@@ -1,9 +1,10 @@
 import {
   createVizelSuggestionContainer,
+  getVizelSlashCommandLocale,
   handleVizelSuggestionEscape,
   type SuggestionOptions,
   type SuggestionProps,
-  type VizelSlashCommandItem,
+  type VizelCommand,
   type VizelSuggestionRendererOptions,
 } from "@vizel/core";
 import { createElement, type RefObject } from "react";
@@ -15,6 +16,11 @@ export type { VizelSuggestionRendererOptions };
 /**
  * Creates a suggestion render configuration for the SlashCommand extension.
  * This handles the popup positioning and React component lifecycle.
+ *
+ * The menu renders `VizelCommandSpec` items derived from the unified
+ * `VizelCommand` registry. Selecting an item maps its id back to the
+ * matching command and forwards it to Tiptap's `props.command`, which runs
+ * the command after the extension deletes the slash trigger text.
  *
  * @example
  * ```tsx
@@ -32,29 +38,33 @@ export type { VizelSuggestionRendererOptions };
  */
 export function createVizelSlashMenuRenderer(
   options: VizelSuggestionRendererOptions = {}
-): Partial<SuggestionOptions<VizelSlashCommandItem>> {
+): Partial<SuggestionOptions<VizelCommand>> {
   return {
     render: () => {
       const rendererState: {
         root: Root | null;
         suggestionContainer: ReturnType<typeof createVizelSuggestionContainer> | null;
-        items: VizelSlashCommandItem[];
-        commandFn: ((item: VizelSlashCommandItem) => void) | null;
+        props: SuggestionProps<VizelCommand> | null;
       } = {
         root: null,
         suggestionContainer: null,
-        items: [],
-        commandFn: null,
+        props: null,
       };
       const menuRef: RefObject<VizelSlashMenuRef | null> = { current: null };
 
       const renderMenu = () => {
-        const { root, commandFn } = rendererState;
-        if (!(root && commandFn)) return;
+        const { root, props } = rendererState;
+        if (!(root && props)) return;
         root.render(
           createElement(VizelSlashMenu, {
-            items: rendererState.items,
-            onSelect: commandFn,
+            commands: props.items,
+            editor: props.editor,
+            locale: getVizelSlashCommandLocale(props.editor),
+            query: props.query,
+            onSelect: (id: string) => {
+              const command = props.items.find((c) => c.id === id);
+              if (command) props.command(command);
+            },
             ...(options.className !== undefined && { className: options.className }),
             ref: menuRef,
           })
@@ -62,9 +72,8 @@ export function createVizelSlashMenuRenderer(
       };
 
       return {
-        onStart: (props: SuggestionProps<VizelSlashCommandItem>) => {
-          rendererState.items = props.items;
-          rendererState.commandFn = props.command;
+        onStart: (props: SuggestionProps<VizelCommand>) => {
+          rendererState.props = props;
 
           const suggestionContainer = createVizelSuggestionContainer();
           rendererState.suggestionContainer = suggestionContainer;
@@ -73,9 +82,8 @@ export function createVizelSlashMenuRenderer(
           suggestionContainer.updatePosition(props.clientRect);
         },
 
-        onUpdate: (props: SuggestionProps<VizelSlashCommandItem>) => {
-          rendererState.items = props.items;
-          rendererState.commandFn = props.command;
+        onUpdate: (props: SuggestionProps<VizelCommand>) => {
+          rendererState.props = props;
           renderMenu();
           rendererState.suggestionContainer?.updatePosition(props.clientRect);
         },

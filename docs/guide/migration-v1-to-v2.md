@@ -22,6 +22,7 @@ v2 ships no compatibility shim. The maintainer's directive prioritises a coheren
 | [8](#_8-vizel-headless-becomes-a-transitive-dependency) | `@vizel/headless` becomes a transitive dependency | [ADR-0003](/adr/ADR-0003-vizel-headless-package) |
 | [9](#_9-css-centralises-in-vizel-core) | CSS centralises in `@vizel/core`; adapters re-export | [ADR-0008](/adr/ADR-0008-css-belongs-in-core) |
 | [10](#_10-controllers-replace-direct-dom-listeners) | Controllers replace direct DOM listeners | [ADR-0007](/adr/ADR-0007-component-size-and-controller-delegation) |
+| [11](#_11-the-slash-menu-adopts-the-unified-vizelcommand-registry) | The slash menu adopts the unified `VizelCommand` registry; legacy slash-item exports are removed | [ADR-0005](/adr/ADR-0005-v2-breaking-release) |
 
 ---
 
@@ -720,6 +721,67 @@ return () => controller.unmount();
 ```
 
 The controller owns the outside-click listener, the Escape-key handler, and the focus return. The framework code stays inside the 120-line view-template budget [ADR-0007](/adr/ADR-0007-component-size-and-controller-delegation) records.
+
+---
+
+## 11. The slash menu adopts the unified `VizelCommand` registry
+
+v2 ships a single runtime-bearing `VizelCommand` type that defines one user action across every surface (slash menu, toolbar, bubble menu, block menu, keyboard shortcut). The slash menu now consumes the slash-surfaced subset of `vizelDefaultCommands` instead of the legacy `SlashCommandItem` list. [ADR-0005](/adr/ADR-0005-v2-breaking-release) authorises the removal of the legacy public exports as a breaking change.
+
+### Removed public exports
+
+The following symbols no longer exist on `@vizel/core` (or any adapter that re-exports it). Each had a dual-system replacement that v2 keeps as the single path:
+
+| Removed export | Replacement |
+|----------------|-------------|
+| `createVizelSlashCommands(locale)` | `vizelDefaultCommands` / `vizelDefaultSlashMenuCommands` — locale-aware `VizelCommand[]` whose `label` / `description` are locale thunks |
+| `vizelDefaultSlashCommands` | `vizelDefaultSlashMenuCommands` (the slash-surfaced subset) |
+| `vizelDefaultGroupOrder` | The `groupOrder` option on the slash builder; the default order lives inside `buildVizelSlashMenuSpecFromCommands` |
+| `VizelSlashItemView` | `VizelCommandSpec` — the derived view shape the menu renders |
+| `buildVizelSlashMenuSpec(items, selectedIndex, options)` | `buildVizelSlashMenuSpecFromCommands(commands, { editor, locale, query, selectedIndex, ... })` |
+| `VizelSlashCommandItem` (type) | `VizelCommand` (runtime) and `VizelCommandSpec` (view) |
+
+The auxiliary helpers `createVizelSlashGroupOrder`, `filterVizelSlashCommands`, `searchVizelSlashCommands`, `groupVizelSlashCommands`, `flattenVizelSlashCommandGroups`, and the `VizelSlashCommandGroup` / `VizelSlashCommandRange` / `VizelSlashCommandSearchResult` types are removed with the same change; filtering and grouping now live inside `buildVizelSlashMenuSpecFromCommands`.
+
+### The slash-menu feature option renames `items` to `commands`
+
+The `features.interaction.slashMenu` option no longer accepts `items`. Pass a `VizelCommand[]` through `commands` instead.
+
+#### Before (v1)
+
+```ts
+import { useVizelEditor } from "@vizel/react";
+import { createVizelSlashCommands } from "@vizel/core";
+
+const editor = useVizelEditor({
+  features: {
+    interaction: {
+      slashMenu: { items: createVizelSlashCommands(locale) },
+    },
+  },
+});
+```
+
+#### After (v2)
+
+```ts
+import { useVizelEditor } from "@vizel/react";
+import { vizelDefaultCommands } from "@vizel/core";
+
+const editor = useVizelEditor({
+  features: {
+    interaction: {
+      // `commands` defaults to the slash-surfaced subset of
+      // `vizelDefaultCommands`; pass your own `VizelCommand[]` to override.
+      slashMenu: { commands: vizelDefaultCommands },
+    },
+  },
+});
+```
+
+### Custom slash items move from `title` to `label`
+
+The slash menu renders `VizelCommandSpec` items. A custom `renderItem` (Section 4) receives `item.label`, `item.description`, `item.icon`, and `item.shortcut` instead of the legacy `item.title`. The shortcut is a `VizelShortcutSpec` (`{ mac, other }`); render it with `formatVizelShortcut`, which selects the platform string automatically.
 
 ---
 

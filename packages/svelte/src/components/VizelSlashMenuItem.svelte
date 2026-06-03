@@ -1,9 +1,9 @@
 <script lang="ts" module>
-import type { VizelSlashCommandItem } from "@vizel/core";
+import type { VizelCommandSpec } from "@vizel/core";
 
 export interface VizelSlashMenuItemProps {
-  /** The slash command item to display */
-  item: VizelSlashCommandItem;
+  /** The command spec to display (label, description, icon, shortcut). */
+  item: VizelCommandSpec;
   /** Whether the item is selected */
   isSelected?: boolean;
   /** Custom class name */
@@ -25,7 +25,7 @@ export interface VizelSlashMenuItemProps {
 </script>
 
 <script lang="ts">
-import { splitVizelTextByMatches } from "@vizel/core";
+import { formatVizelShortcut, splitVizelTextByMatches } from "@vizel/core";
 import VizelIcon from "./VizelIcon.svelte";
 
 let {
@@ -37,7 +37,7 @@ let {
   titleMatches,
 }: VizelSlashMenuItemProps = $props();
 
-const parts = $derived(splitVizelTextByMatches(item.title, titleMatches));
+const parts = $derived(splitVizelTextByMatches(item.label, titleMatches));
 </script>
 
 <button
@@ -49,9 +49,11 @@ const parts = $derived(splitVizelTextByMatches(item.title, titleMatches));
   data-selected={isSelected || undefined}
   {onclick}
 >
-  <span class="vizel-slash-menu-icon">
-    <VizelIcon name={item.icon} />
-  </span>
+  {#if item.icon}
+    <span class="vizel-slash-menu-icon">
+      <VizelIcon name={item.icon} />
+    </span>
+  {/if}
   <div class="vizel-slash-menu-text">
     <span class="vizel-slash-menu-title">
       {#each parts as part}
@@ -62,9 +64,11 @@ const parts = $derived(splitVizelTextByMatches(item.title, titleMatches));
         {/if}
       {/each}
     </span>
-    <span class="vizel-slash-menu-description">{item.description}</span>
+    {#if item.description}
+      <span class="vizel-slash-menu-description">{item.description}</span>
+    {/if}
   </div>
   {#if item.shortcut}
-    <span class="vizel-slash-menu-shortcut">{item.shortcut}</span>
+    <span class="vizel-slash-menu-shortcut">{formatVizelShortcut(item.shortcut)}</span>
   {/if}
 </button>

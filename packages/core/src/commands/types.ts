@@ -52,9 +52,10 @@ export interface VizelCommandSurfaceSet {
  *
  * A single `VizelCommand` defines one user action for the slash item,
  * toolbar action, bubble menu action, block menu action, and shortcut
- * binding at once. Surface-specific builders (`buildVizelSlashMenuSpec`,
- * `buildVizelToolbarSpec`, `buildVizelBubbleMenuSpec`,
- * `buildVizelBlockMenuSpec`) consume `VizelCommand[]` and derive the
+ * binding at once. Surface-specific builders
+ * (`buildVizelSlashMenuSpecFromCommands`, `buildVizelToolbarSpec`,
+ * `buildVizelBubbleMenuSpec`,
+ * `buildVizelBlockMenuSpecFromCommands`) consume `VizelCommand[]` and derive the
  * matching spec shapes; `registerVizelShortcuts` consumes the same
  * list to wire keyboard bindings.
  *
