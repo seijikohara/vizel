@@ -17,15 +17,21 @@ is what PR review uses to gate coverage.
 |---|--------|--------|---------|
 | 1 | Framework parity | shipped | `scripts/check-ct-parity.ts` + lefthook + CI |
 | 2 | Behavior tests | shipped | `tests/ct/scenarios/` + `tests/ct/{react,vue,svelte}/specs/` |
-| 3 | Markdown round-trip | shipped (sample-light) | `tests/markdown-roundtrip/` |
+| 3 | Markdown round-trip | shipped (sample-light); CI gating deferred | `tests/markdown-roundtrip/` + manual `workflow_dispatch` |
 | 4 | SSR | shipped (Node smoke test) | `scripts/test-static-html.ts` |
-| 5 | Accessibility | not yet | `tests/a11y/` (planned) |
+| 5 | Accessibility | shipped (suite); CI gating deferred | `tests/a11y/{react,vue,svelte}/` + manual `workflow_dispatch` |
 | 6 | Visual regression | not yet | CI-only snapshots (planned) |
 | 7 | Coverage discipline | shipped (this document) | Required-test matrix below |
 
-Pillars 5 and 6 are tracked as follow-up work. Do
-not block PRs on missing a11y or visual snapshots until those suites
-land — but every other pillar gates merge.
+Pillar 6 is tracked as follow-up work. Do not block PRs on missing
+visual snapshots until that suite lands. The Pillar 3 Markdown
+round-trip and Pillar 5 accessibility suites are shipped and run on
+demand, but their PR-gating is deferred: both are standalone Playwright
+CT jobs that hang intermittently on the GitHub runner, so the
+`md-roundtrip` and `a11y` jobs stay on manual `workflow_dispatch` until
+the runner-side root cause is fixed (tracked follow-up). The remaining
+shipped pillars (1, 2, 4, 7) gate merge through the required `Test
+Summary` and `Quality + Parity` checks.
 
 ---
 
@@ -263,27 +269,55 @@ inside function bodies remains permitted.
 
 ---
 
-## Pillar 5 — Accessibility suite (NOT YET SHIPPED)
+## Pillar 5 — Accessibility suite
 
-The target is `tests/a11y/` driven by `@axe-core/playwright`
-asserting WCAG 2.1 AA conformance against every component. The
-spec-based ARIA wiring keeps the per-component cost low.
+`tests/a11y/{react,vue,svelte}/` drives `@axe-core/playwright` against
+every shipped component fixture and asserts WCAG 2.1 AA conformance.
+The shared `tests/a11y/scenarios/axe.scenario.ts` scans the
+`.vizel-root` subtree and prints the full violation list on failure
+so the diff alone identifies the regression. The suite runs
+Chromium-only by design: axe-core reports a single canonical
+violation list, so re-running the same rule set in Firefox and WebKit
+adds nothing but flake.
 
-### Status
+### Files
 
-- Directory: not yet created.
-- Dependency: `@axe-core/playwright` not yet added.
-- Tracking: follow-up work.
+| Path | Purpose |
+|------|---------|
+| `tests/a11y/scenarios/axe.scenario.ts` | Shared `expectNoVizelA11yViolations` axe-core scan |
+| `tests/a11y/{react,vue,svelte}/specs/` | Per-framework `Editor`, `Outline`, `Toolbar` fixtures and specs |
+| `tests/a11y/{react,vue,svelte}/playwright-ct.config.ts` | One CT config per framework |
 
-### How to bootstrap (when work starts)
+### Commands
 
-1. Add `@axe-core/playwright` to root `devDependencies`.
-2. Create `tests/a11y/<framework>/playwright-ct.config.ts` per
-   framework (mirror the CT layout).
-3. Add a shared `axe-scan.scenario.ts` that runs `AxeBuilder` against
-   every component fixture.
-4. Add `pnpm test:a11y` and gate it on CI.
-5. Update this section's status from "NOT YET SHIPPED" to "shipped".
+| Command | Description |
+|---------|-------------|
+| `pnpm test:a11y` | Run all three framework a11y suites in parallel |
+| `pnpm test:a11y:react` | Run the React a11y suite (Chromium only) |
+| `pnpm test:a11y:vue` | Run the Vue a11y suite (Chromium only) |
+| `pnpm test:a11y:svelte` | Run the Svelte a11y suite (Chromium only) |
+
+### CI gate
+
+The `a11y` job in `.github/workflows/ci.yml` runs the React, Vue, and
+Svelte suites in a matrix. It is gated on manual `workflow_dispatch`,
+not on pull requests: the suite passes locally but hangs
+intermittently on the GitHub runner (a matrix job reaches the
+`timeout-minutes: 15` cap even with the reporter guards below), so
+PR-gating and the `Test Summary` wiring are deferred until the
+runner-side root cause is found and fixed (tracked follow-up). The
+hardening is already in place: each CT config pins the HTML reporter
+to `open: "never"`, and the job sets `PLAYWRIGHT_HTML_OPEN: never` as
+a second guard so the reporter never opens a browser and holds the
+runner's event loop open.
+
+### Disabled rules
+
+`axe.scenario.ts` documents a small allow-list in the `DISABLED_RULES`
+JSDoc: `region`, `color-contrast`, and `aria-input-field-name`. Each
+entry carries the upstream rule id and a one-line rationale tied to a
+CT-fixture measurement limitation rather than a Vizel defect. Keep the
+set as small as possible; prefer fixing the markup over expanding it.
 
 ---
 
@@ -335,11 +369,11 @@ explicitly marks the test type as not applicable.
 
 | Feature kind | Pillar 1 (parity) | Pillar 2 (behavior) | Pillar 3 (round-trip) | Pillar 4 (SSR) | Pillar 5 (a11y) | Pillar 6 (visual) |
 |--------------|:-----------------:|:-------------------:|:---------------------:|:--------------:|:---------------:|:-----------------:|
-| New component or controller | required | required | n/a | required | follow-up | follow-up |
+| New component or controller | required | required | n/a | required | required | follow-up |
 | New hook / composable / rune | required | required | n/a | required | n/a | n/a |
 | New command or block operation | required | required | n/a | n/a | n/a | n/a |
 | New Markdown extension or flavor | required | required | required | required | n/a | n/a |
-| New static view mode | required | required | n/a | required | follow-up | follow-up |
+| New static view mode | required | required | n/a | required | required | follow-up |
 | Pure refactor (no behavior change) | required | n/a | n/a | n/a | n/a | n/a |
 
 "n/a" means the pillar does not apply to that feature kind.
@@ -365,8 +399,15 @@ GitHub Actions enforces the pillars on every push and pull request:
 | Job | Pillar | Notes |
 |-----|--------|-------|
 | `test` (matrix of framework x browser) | 2 | React, Vue, Svelte x Chromium, Firefox, WebKit |
+| `a11y` (matrix of framework) | 5 | React, Vue, Svelte x Chromium; runs `pnpm test:a11y:<fw>`. On-demand (`workflow_dispatch`); PR-gating deferred (runner-hang follow-up) |
+| `md-roundtrip` | 3 | Runs `pnpm test:md-roundtrip` (Chromium only). On-demand (`workflow_dispatch`); PR-gating deferred (runner-hang follow-up) |
 | `ssr` | 4 | Builds packages, runs `pnpm test:ssr` |
 | `ct-parity` | 1 | Runs `pnpm check:ct-parity` |
-| `test-summary` | aggregator | Fails if any of the above failed |
+| `test-summary` | aggregator | Fails when any matrix shard failed |
 
-Pillars 5 and 6 will earn their own CI jobs when they ship.
+The `test-summary` job aggregates the framework x browser matrix and is
+the single required check. The `a11y` and `md-roundtrip` suites are
+standalone Playwright CT jobs that hang intermittently on the runner;
+both stay on manual `workflow_dispatch` and are excluded from
+`test-summary` until the runner-side root cause is fixed (tracked
+follow-up). Pillar 6 earns its own CI job when it ships.
