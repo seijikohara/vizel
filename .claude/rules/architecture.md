@@ -1,6 +1,6 @@
 # Architecture
 
-This rule states the binding architecture invariants for Vizel v2.0.0. The detailed rationale for each invariant lives in `docs/adr/`. Read the relevant ADR before changing a binding rule.
+This rule states the binding architecture invariants for Vizel. The detailed rationale for each invariant lives in `docs/adr/`. Read the relevant ADR before changing a binding rule.
 
 ## Product identity
 

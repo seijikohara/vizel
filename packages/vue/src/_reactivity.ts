@@ -16,9 +16,9 @@
  * to suppress no-op recomputations when the slice is structurally
  * unchanged.
  *
- * Phase 3b-step1 lands this primitive. Later phases migrate Vue
- * components onto the same selector contract; `@tiptap/vue-3` retires
- * in Phase 3b-step4.
+ * ADR-0009 mandates a first-party implementation in every adapter, so
+ * Vizel owns the selector contract and cleanup behaviour and depends on
+ * no `@tiptap/vue-3` reactivity layer.
  */
 
 import type { Transaction } from "@tiptap/pm/state";

@@ -3,8 +3,8 @@
 /**
  * First-party React reactivity primitive for the Vizel editor.
  *
- * The module replaces v1's reliance on `@tiptap/react` for selector
- * subscriptions. ADR-0009 mandates a first-party implementation in every
+ * The module owns selector subscriptions without depending on
+ * `@tiptap/react`. ADR-0009 mandates a first-party implementation in every
  * adapter so the SSR boundary, the selector contract, and the cleanup
  * behaviour stay under Vizel's control. The React implementation wraps a
  * monotonic version counter inside `useSyncExternalStore`, which React's
@@ -14,11 +14,9 @@
  * The module exposes one public hook (`useVizelEditorState`) plus two
  * equality helpers re-exported from `@vizel/core`. Consumers select the
  * slice they care about and optionally supply an equality function to
- * suppress re-renders when the slice is structurally unchanged.
- *
- * Phase 3a-step1 lands this primitive. Later steps migrate every
- * framework component to consume it; `useVizelEditor` itself moves onto
- * the same store in Phase 3a-step4.
+ * suppress re-renders when the slice is structurally unchanged. Every
+ * framework component, including `useVizelEditor`, subscribes through the
+ * same store so selector behaviour stays uniform.
  */
 
 import { type Editor, shallowEqualArray, shallowEqualObject } from "@vizel/core";
@@ -60,8 +58,8 @@ export interface VizelReactEditorStore {
  * Build a {@link VizelReactEditorStore} for the supplied editor.
  *
  * The factory is an internal building block consumed by
- * {@link useVizelEditorState} and, in later Phase 3a steps, by the
- * `useVizelEditor` hook itself. The factory is intentionally
+ * {@link useVizelEditorState} and by the `useVizelEditor` hook itself.
+ * The factory is intentionally
  * framework-agnostic at the function-signature level — it only depends
  * on Tiptap's `Editor.on` / `Editor.off` event surface — so the test
  * suite can exercise it without rendering React.

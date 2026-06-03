@@ -33,9 +33,9 @@ export const vizelInsertCommands: readonly VizelCommand[] = [
     keywords: ["picture", "photo", "img", "url"],
     canRun: (editor) => typeof editor.commands.setImage === "function",
     run: (editor) => {
-      // window.prompt is the legacy slash-menu UX. Section 11 replaces
-      // it with a proper VizelLinkEditor-style form; the run callback
-      // continues to work in the meantime.
+      // window.prompt is a placeholder slash-menu UX pending a proper
+      // VizelLinkEditor-style form. The run callback stays functional so
+      // image insertion works today.
       if (typeof window === "undefined") return false;
       const url = window.prompt("Enter image URL:");
       if (!url) return false;

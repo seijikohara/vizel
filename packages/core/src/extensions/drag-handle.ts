@@ -167,7 +167,7 @@ export function createVizelDragHandleExtension(options: VizelDragHandleOptions =
       edgeDetection: "none",
     },
     onElementDragStart() {
-      // Multi-block forwarding (Section 11c). When a multi-block range
+      // Multi-block forwarding. When a multi-block range
       // is active and the drag handle's current node falls inside that
       // range, expand the editor selection to cover the entire range
       // before the underlying `dragHandler` runs. `dragHandler` checks

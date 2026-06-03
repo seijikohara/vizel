@@ -9,7 +9,7 @@ import {
 import { RoundtripFixture } from "./RoundtripFixture";
 
 /**
- * Markdown round-trip suite (spec Section 10, lines 854-859).
+ * Markdown round-trip suite.
  *
  * Each test mounts {@link RoundtripFixture}, then drives
  * `assertMarkdownRoundtrip(flavor, samples)` through `page.evaluate`
@@ -17,9 +17,9 @@ import { RoundtripFixture } from "./RoundtripFixture";
  * browser. The fixture itself does nothing more than publish the
  * helper and the five built-in flavors on `window`.
  *
- * The samples are a representative cross-section, not the full
- * Section 10 target of 100+ × 5 flavors. The follow-up work tracked
- * on the v2.0.0 release plan extends the sample buckets.
+ * The samples are a representative cross-section, not the full target
+ * of 100+ × 5 flavors. Expanding the sample buckets is tracked as
+ * follow-up work.
  */
 
 interface FlavorEvalResult {

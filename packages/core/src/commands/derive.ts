@@ -9,7 +9,7 @@ import type { VizelCommand } from "./types.ts";
  * Surface builders call this helper for each command they include in
  * their output so the resulting spec carries the localized strings and
  * the runtime-evaluated `isEnabled` / `isActive` flags expected by the
- * Section 2 spec shapes.
+ * spec shapes.
  */
 export function deriveVizelCommandSpec(
   command: VizelCommand,

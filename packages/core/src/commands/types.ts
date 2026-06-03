@@ -50,12 +50,12 @@ export interface VizelCommandSurfaceSet {
 /**
  * Unified runtime-bearing command shared across editor surfaces.
  *
- * A single `VizelCommand` replaces the legacy slash item, toolbar
- * action, bubble menu action, block menu action, and shortcut binding.
- * Surface-specific builders (`buildVizelSlashMenuSpec`,
+ * A single `VizelCommand` defines one user action for the slash item,
+ * toolbar action, bubble menu action, block menu action, and shortcut
+ * binding at once. Surface-specific builders (`buildVizelSlashMenuSpec`,
  * `buildVizelToolbarSpec`, `buildVizelBubbleMenuSpec`,
- * `buildVizelBlockMenuSpec`) consume `VizelCommand[]` and derive
- * Section 2 spec shapes; `registerVizelShortcuts` consumes the same
+ * `buildVizelBlockMenuSpec`) consume `VizelCommand[]` and derive the
+ * matching spec shapes; `registerVizelShortcuts` consumes the same
  * list to wire keyboard bindings.
  *
  * @example

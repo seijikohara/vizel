@@ -54,7 +54,7 @@ export function useVizelTheme(): UseVizelThemeResult {
 
   // Surface only the resolved theme through the public `theme` field. The
   // underlying `VizelThemeState` keeps `theme` (user setting) and
-  // `resolvedTheme` (applied) separate; v2 collapses both into a single
+  // `resolvedTheme` (applied) separate; the hook collapses both into a single
   // observable so the toggle pattern stays a one-liner.
   //
   // `setTheme` is re-wrapped so the parameter type is physically narrowed

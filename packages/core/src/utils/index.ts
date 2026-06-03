@@ -1,26 +1,5 @@
 // Editor helpers
 
-// Portal utilities (relocated to controllers/ in v2.0.0 Section 1; re-exported here for compat)
-export {
-  createVizelPortalElement,
-  getVizelPortalContainer,
-  hasVizelPortalContainer,
-  mountToVizelPortal,
-  removeVizelPortalContainer,
-  unmountFromVizelPortal,
-  VIZEL_PORTAL_ID,
-  VIZEL_PORTAL_Z_INDEX,
-  type VizelMountPortalOptions,
-  type VizelPortalLayer,
-} from "../controllers/portal.ts";
-// Suggestion container utilities (relocated to controllers/ in v2.0.0 Section 1; re-exported here for compat)
-export {
-  createVizelSuggestionContainer,
-  handleVizelSuggestionEscape,
-  VIZEL_SUGGESTION_Z_INDEX,
-  type VizelDOMRectGetter,
-  type VizelSuggestionContainer,
-} from "../controllers/suggestionContainer.ts";
 // Block path utilities
 export { getVizelBlockPath, type VizelBlockPathSegment } from "./block-path.ts";
 // Color utilities
@@ -96,7 +75,7 @@ export {
   vizelCancelAnimationFrame,
   vizelRequestAnimationFrame,
 } from "./raf.ts";
-// SSR utilities (Section 12)
+// SSR utilities
 export {
   type VizelThemeInitScriptOptions,
   vizelThemeInitScript,

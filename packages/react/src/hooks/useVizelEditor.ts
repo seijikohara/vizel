@@ -107,9 +107,9 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
         // Always emit to the consumer handler so observability sinks
         // (Sentry, log pipes) see configuration failures, *and* always
         // rethrow so global handlers / React error boundaries can react.
-        // Earlier v2.0.0 suppressed the rethrow when a handler was set,
-        // which silently blanked the editor when an `onError` was wired up
-        // purely for telemetry — a real consumer-review footgun.
+        // Suppressing the rethrow when a handler is set silently blanks the
+        // editor whenever an `onError` is wired up purely for telemetry, so
+        // the rethrow stays unconditional.
         opts.editorOptions.onError?.(vizelError);
         throw vizelError;
       }

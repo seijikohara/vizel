@@ -36,10 +36,10 @@ export interface VizelThemeInitScriptOptions {
  * the wrong theme.
  *
  * The script touches only `document.documentElement` — Vizel's other
- * code stays scoped to the editor wrapper, per the theme policy in
- * Section 13 of the v2.0 design. The output is a self-contained IIFE
- * that the framework adapter places inside a `<script>` tag using
- * the framework's idiomatic inline-script mechanism.
+ * code stays scoped to the editor wrapper, per the theme policy. The
+ * output is a self-contained IIFE that the framework adapter places
+ * inside a `<script>` tag using the framework's idiomatic inline-script
+ * mechanism.
  *
  * The script body is fully synthesized from typed options inside this
  * helper and never embeds consumer-supplied raw markup, so it carries

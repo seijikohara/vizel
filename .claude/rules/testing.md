@@ -6,10 +6,10 @@ paths:
 
 # Testing
 
-Vizel ships seven testing pillars. Section 14 of the v2.0.0 spec
-(`docs/superpowers/specs/2026-05-16-vizel-v2-ideal-interface-design.md`,
-lines 1175-1210) is the SSOT; this file is the project-rule projection
-of that spec and is what PR review uses to gate coverage.
+Vizel ships seven testing pillars. The design spec
+(`docs/superpowers/specs/2026-05-16-vizel-v2-ideal-interface-design.md`)
+is the SSOT; this file is the project-rule projection of that spec and
+is what PR review uses to gate coverage.
 
 ## The Seven Pillars
 
@@ -23,7 +23,7 @@ of that spec and is what PR review uses to gate coverage.
 | 6 | Visual regression | not yet | CI-only snapshots (planned) |
 | 7 | Coverage discipline | shipped (this document) | Required-test matrix below |
 
-Pillars 5 and 6 are tracked as follow-up work for the v2.0.0 push. Do
+Pillars 5 and 6 are tracked as follow-up work. Do
 not block PRs on missing a11y or visual snapshots until those suites
 land — but every other pillar gates merge.
 
@@ -62,9 +62,8 @@ component before adding a spec asymmetry.
 
 ## Pillar 2 — Behavior tests for every shipped feature
 
-Sections 1-13 of the v2.0.0 spec each introduce features (builders,
-controllers, commands, block operations, static view modes, etc.).
-Each feature receives:
+Every shipped feature (builders, controllers, commands, block
+operations, static view modes, etc.) receives:
 
 1. A shared scenario at `tests/ct/scenarios/<feature>.scenario.ts`.
 2. Three per-framework specs at
@@ -195,11 +194,11 @@ await expect(element).toContainText("Hello");
 
 ## Pillar 3 — Markdown round-trip suite
 
-`tests/markdown-roundtrip/` drives the Section 10 round-trip matrix:
+`tests/markdown-roundtrip/` drives the round-trip matrix:
 every supported flavor parses and re-serializes a corpus of samples
 without lossy edits.
 
-The Section 10 long-term target is 100+ samples per flavor. The
+The long-term target is 100+ samples per flavor. The
 current corpus ships a representative cross-section (heading,
 paragraph, list, blockquote, inline emphasis, inline code, fenced
 code, image, link, plus the flavor-specific syntax). Expanding the
@@ -266,15 +265,15 @@ inside function bodies remains permitted.
 
 ## Pillar 5 — Accessibility suite (NOT YET SHIPPED)
 
-The Section 14 target is `tests/a11y/` driven by `@axe-core/playwright`
+The target is `tests/a11y/` driven by `@axe-core/playwright`
 asserting WCAG 2.1 AA conformance against every component. The
-Section 2 spec-based ARIA wiring keeps the per-component cost low.
+spec-based ARIA wiring keeps the per-component cost low.
 
 ### Status
 
 - Directory: not yet created.
 - Dependency: `@axe-core/playwright` not yet added.
-- Tracking: follow-up work for the v2.0.0 release push.
+- Tracking: follow-up work.
 
 ### How to bootstrap (when work starts)
 
@@ -324,7 +323,7 @@ pnpm test:visual:update
 The shipped suite covers a representative slice; broader coverage
 (slash menu open, bubble menu over selection, block menu, color
 picker, outline, link editor, find/replace) is a
-follow-up tracked against the v2.0.0 polish milestone.
+follow-up tracked against the polish milestone.
 
 ---
 
@@ -353,7 +352,7 @@ become "required" once it lands.
 2. For each "required" pillar, confirm a spec / scenario / sample /
    case exists in the PR diff.
 3. For each "follow-up" pillar, note the future work in the PR body
-   under "Follow-up" so the v2.0.0 push retains the tracking.
+   under "Follow-up" so the tracking is retained.
 4. Run `pnpm check:ct-parity` and the relevant `pnpm test:*` commands
    before requesting review.
 

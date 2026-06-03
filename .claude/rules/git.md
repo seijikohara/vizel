@@ -40,7 +40,7 @@ This project uses Conventional Commits. The lefthook `commit-msg` hook validates
 | `docs` | VitePress docs site under `docs/` |
 | `ct` | Playwright Component Tests under `tests/ct/` |
 | `deps` | Dependency-only changes (typically `chore(deps)`) |
-| `spec` | v2 design spec under `docs/superpowers/specs/` |
+| `spec` | design spec under `docs/superpowers/specs/` |
 | `guide` | User-facing guide pages under `docs/guide/` |
 | `plan` | Implementation plans under `docs/superpowers/plans/` |
 | `i18n` | Locale files |

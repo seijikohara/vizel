@@ -48,7 +48,7 @@ const props = withDefaults(defineProps<VizelColorPickerProps>(), {
 /**
  * Selected color, exposed as a two-way binding (`v-model:value`).
  * Selecting a swatch or applying a valid HEX value writes the new color
- * back to the parent through the model, replacing the v1 `change` emit.
+ * back to the parent through the model, the idiomatic Vue two-way pattern.
  * The model accepts `undefined` so callers can bind a source that has no
  * color yet (e.g. an editor attribute that is unset).
  */

@@ -11,10 +11,9 @@ export {
 export { type UseVizelCommentResult, useVizelComment } from "./useVizelComment.ts";
 export { type UseVizelEditorOptions, useVizelEditor } from "./useVizelEditor.ts";
 // `useVizelEditorState` ships from `../_reactivity.ts` per ADR-0009 — the
-// selector-style composable that closes the v1 drift. The legacy
-// convenience composable that combined `useVizelState` +
-// `getVizelEditorState` is removed; consumers select the slice they care
-// about through the v2 selector API.
+// selector-style composable. Consumers select the slice of editor state
+// they care about through the selector API, which subscribes only to the
+// selected value and avoids re-rendering on unrelated transactions.
 export {
   type UseVizelMarkdownOptions,
   type UseVizelMarkdownResult,

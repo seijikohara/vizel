@@ -141,8 +141,7 @@ export interface VizelInteractionFeatureOptions {
   typography?: VizelTypographyOptions | boolean;
   /**
    * Placeholder text shown when the editor is empty.
-   * Replaces the top-level `VizelEditorOptions.placeholder` option from
-   * v1.x. Default: "Type '/' for commands...".
+   * Default: "Type '/' for commands...".
    */
   placeholder?: string;
   /**

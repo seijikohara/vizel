@@ -18,7 +18,7 @@ export interface VizelToolbarSpecOptions {
  * Build the toolbar spec from a {@link VizelCommand} array.
  *
  * Filters by `surfaces.toolbar`, sorts by priority ascending (lower
- * priority appears first), and projects each command into a Section 2
+ * priority appears first), and projects each command into a
  * {@link VizelCommandSpec}. The framework `VizelToolbar` component
  * iterates the result to render its buttons.
  */

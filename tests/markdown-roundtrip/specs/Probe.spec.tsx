@@ -14,9 +14,8 @@ import { RoundtripFixture } from "./RoundtripFixture";
  * `pnpm test:md-roundtrip --grep probe` to refresh the catalog.
  *
  * This spec is skipped by default and lives in-tree only to make it
- * cheap to debug round-trip failures locally. It carries no
- * Section 10 acceptance criteria; the real assertions live in
- * `Roundtrip.spec.tsx`.
+ * cheap to debug round-trip failures locally. It carries no acceptance
+ * criteria; the real assertions live in `Roundtrip.spec.tsx`.
  */
 
 const ALL_SAMPLES: Record<string, readonly { name: string; input: string }[]> = {

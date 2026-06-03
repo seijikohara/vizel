@@ -1,4 +1,4 @@
-// VizelMarkdownFlavor as a first-class plugin type (Section 10).
+// VizelMarkdownFlavor as a first-class plugin type.
 export {
   composeVizelMarkdownFlavors,
   vizelCommonMarkFlavor,

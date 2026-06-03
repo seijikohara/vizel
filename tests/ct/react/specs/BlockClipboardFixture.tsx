@@ -2,7 +2,7 @@ import { useVizelEditor, useVizelState, VizelEditor, VizelProvider } from "@vize
 import { useEffect } from "react";
 
 /**
- * Fixture for the block-aware clipboard scenarios (Section 11c).
+ * Fixture for the block-aware clipboard scenarios.
  *
  * Exposes the editor on `window.vizelTestEditor` so the scenarios can
  * drive selection and dispatch synthetic clipboard events.

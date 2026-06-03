@@ -6,9 +6,9 @@ import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState 
 export interface VizelMentionMenuRef {
   /**
    * Handle keyboard navigation events.
-   * The renderer forwards the raw `KeyboardEvent`; the React component
-   * previously accepted `{ event }`. v2.0 unifies the signature across
-   * React/Vue/Svelte to the raw-event form.
+   * The renderer forwards the raw `KeyboardEvent`. React, Vue, and Svelte
+   * share the raw-event signature so the renderer wires the same way in
+   * every adapter.
    */
   onKeyDown: (event: KeyboardEvent) => boolean;
 }

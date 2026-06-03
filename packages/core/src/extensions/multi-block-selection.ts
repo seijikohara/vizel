@@ -7,8 +7,8 @@
  * keyboard shortcuts (Backspace / Delete / Tab / Shift+Tab) that apply
  * to every block in the range.
  *
- * This is part of the always-on core (Section 11b of the v2.0.0 spec)
- * and ships without an opt-in feature flag.
+ * This extension is part of the always-on core and ships without an
+ * opt-in feature flag.
  */
 import { Extension } from "@tiptap/core";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";

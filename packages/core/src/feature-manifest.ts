@@ -7,10 +7,11 @@
  * (`@vizel/react`, `@vizel/vue`, `@vizel/svelte`) exports the declared
  * symbol for every entry.
  *
- * The manifest deliberately replaces v1's `cross-framework.md` prose
- * tables. ADR-0001, ADR-0002, and ADR-0006 explain the rationale; the
- * companion rule `.claude/rules/feature-manifest.md` documents the
- * workflow for adding, modifying, and removing features.
+ * The manifest replaces prose parity tables with type-checked entries
+ * so an adapter can never silently drift from the declared surface.
+ * ADR-0001, ADR-0002, and ADR-0006 explain the rationale; the companion
+ * rule `.claude/rules/feature-manifest.md` documents the workflow for
+ * adding, modifying, and removing features.
  */
 
 /** Stable identifier for every advertised Vizel feature. */
@@ -86,8 +87,7 @@ export interface VizelFeatureDefinition {
   readonly keyboardMap: VizelKeyboardMap;
   /**
    * Scenario identifiers under `tests/ct/scenarios/<feature-id>/`.
-   * Phase 1.5 populates the scenario folders; entries can stay empty
-   * until that work lands.
+   * An entry may stay empty until its scenario folder is populated.
    */
   readonly scenarios: readonly string[];
   readonly adapters: VizelFeatureAdapters;

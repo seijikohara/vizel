@@ -69,10 +69,10 @@ const isBrowser = (): boolean => typeof document !== "undefined";
 /**
  * Construct a dismissable controller for a floating surface.
  *
- * The controller is the home for the listener wiring that v1
- * framework components attached directly to `document`. Adapter code
- * obtains the controller through `@vizel/headless`, passes its root
- * element into `mount`, and detaches via `unmount` on lifecycle
+ * The controller centralizes the global `document` listener wiring so
+ * adapter components never attach those listeners themselves. Adapter
+ * code obtains the controller through `@vizel/headless`, passes its
+ * root element into `mount`, and detaches via `unmount` on lifecycle
  * teardown.
  */
 export function createVizelDismissable(

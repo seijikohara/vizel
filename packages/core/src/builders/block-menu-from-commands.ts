@@ -18,7 +18,7 @@ export interface VizelBlockMenuFromCommandsOptions {
  * Build the block-menu action list from a {@link VizelCommand} array.
  *
  * Filters by `surfaces.blockMenu`, sorts by priority ascending, and
- * projects each command into a Section 2 {@link VizelCommandSpec}.
+ * projects each command into a {@link VizelCommandSpec}.
  *
  * The framework `VizelBlockMenu` component composes the resulting
  * action list with the popover spec built by `buildVizelBlockMenuSpec`

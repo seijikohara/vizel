@@ -49,8 +49,8 @@ export type VizelFloatingAnchor = HTMLElement | VizelVirtualElement;
 export const VIZEL_FLOATING_DEFAULT_PLACEMENT = "bottom-start" satisfies Placement;
 
 /**
- * Default gap, in pixels, between the anchor and the body. Matches the
- * spacing the legacy core popover controller applied.
+ * Default gap, in pixels, between the anchor and the body. The value
+ * keeps anchored surfaces visually attached to their trigger.
  */
 export const VIZEL_FLOATING_DEFAULT_OFFSET = 4;
 

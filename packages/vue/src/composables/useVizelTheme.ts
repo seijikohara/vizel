@@ -57,8 +57,8 @@ export function useVizelTheme(): UseVizelThemeResult {
   return {
     // Surface the resolved theme through the public `theme` field. The
     // underlying `VizelThemeState` keeps `theme` (user setting) and
-    // `resolvedTheme` (applied) separate; v2 collapses both into a single
-    // observable so the toggle pattern stays a one-liner.
+    // `resolvedTheme` (applied) separate; the composable collapses both into
+    // a single observable so the toggle pattern stays a one-liner.
     theme: computed<VizelResolvedTheme>(() => context.resolvedTheme),
     // Physically narrow `setTheme` to `VizelResolvedTheme` so the public
     // type matches the runtime guarantee; the underlying provider's

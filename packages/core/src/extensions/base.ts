@@ -130,9 +130,9 @@ function createBaseExtensions(
     Dropcursor.configure({ color: "#3b82f6", width: 2 }),
     Gapcursor,
     ListKeymap,
-    // Multi-block range selection — always-on (Section 11b)
+    // Multi-block range selection — always-on
     createVizelMultiBlockSelectionExtension(),
-    // Block-aware clipboard — always-on (Section 11c)
+    // Block-aware clipboard — always-on
     createVizelBlockClipboardExtension(),
   ];
 

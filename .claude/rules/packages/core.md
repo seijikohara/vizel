@@ -71,7 +71,7 @@ Every UI scaffold consumes one of five canonical spec types. New builders produc
 | `VizelCommandSpec` | Actionable item shared across command surfaces | slash item, toolbar action, bubble menu action, block menu item |
 | `VizelGridSpec<TCell>` | Two-dimensional cell grid | color picker grid, future emoji picker |
 
-Builder function names follow the pattern `buildVizel<Component>Spec(...)`. Section 2 of the v2.0.0 redesign retires the legacy `*Skeleton` naming and migrates each existing builder to one of the five spec types above.
+Builder function names follow the pattern `buildVizel<Component>Spec(...)`. Each builder returns one of the five spec types above.
 
 Component composition (target state):
 
@@ -198,7 +198,7 @@ appears. The same logical command (e.g. "format/bold") shows up in
 the toolbar, the bubble menu, and the keyboard shortcut table without
 being defined more than once. Surface-specific builders consume a
 `readonly VizelCommand[]` and project each entry into the matching
-Section 2 spec for a specific editor and locale.
+spec for a specific editor and locale.
 
 ### Surfaces and builders
 
@@ -257,7 +257,7 @@ reason in a comment on the command definition.
 
 ## Markdown Pipeline
 
-The Markdown extension is part of the always-on core (Section 8) — it
+The Markdown extension is part of the always-on core — it
 loads without an opt-in flag, and consumer Markdown output is governed
 by the `markdown` option on `VizelEditorOptions`:
 
@@ -481,7 +481,7 @@ toggles, no host-environment side effects.
 A single CSS entry per framework package
 (`@vizel/<framework>/styles.css`) makes every built-in component
 render correctly. Three import patterns are supported via the
-subpath exports landed in Section 6c:
+package's subpath exports:
 
 | Pattern | Import | Use case |
 |---------|--------|----------|

@@ -15,10 +15,10 @@
  * DOM. `createVizelPopoverController` owns the positioning subscription
  * and the dismiss listeners.
  *
- * Dismiss semantics match the legacy core popover controller: a pointer
- * event inside the body or inside the anchor does not dismiss; a pointer
- * event truly outside both dismisses; Escape dismisses when
- * `dismissOnEscape` stays enabled. The anchor exclusion is necessary
+ * Dismiss semantics: a pointer event inside the body or inside the
+ * anchor does not dismiss; a pointer event truly outside both
+ * dismisses; Escape dismisses when `dismissOnEscape` stays enabled.
+ * The anchor exclusion is necessary
  * because the trigger lives outside the body element the dismissable
  * controller mounts, so clicking the trigger to toggle the popover must
  * not also register as an outside click.
@@ -179,12 +179,11 @@ export function createVizelPopoverController(
       // The dismissable controller already excluded the body. Exclude the
       // anchor too: the trigger lives outside the body, so toggling the
       // popover by clicking the trigger must not count as an outside
-      // click. The legacy core controller modelled this with a multi-
-      // element "outside" set ([anchor, body]). A virtual anchor exposes
-      // only `getBoundingClientRect`, so probe for `contains` rather than
-      // `instanceof HTMLElement`: the global is undefined under SSR and in
-      // the Node test runner, and the capability check covers both an
-      // element anchor and a virtual one.
+      // click. The "outside" set therefore spans both the anchor and the
+      // body. A virtual anchor exposes only `getBoundingClientRect`, so
+      // probe for `contains` rather than `instanceof HTMLElement`: the
+      // global is undefined under SSR and in the Node test runner, and the
+      // capability check covers both an element anchor and a virtual one.
       const anchor = options.getAnchor();
       if (
         target instanceof Node &&

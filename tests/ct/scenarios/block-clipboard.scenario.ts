@@ -2,8 +2,8 @@ import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
 /**
- * Shared scenarios for the block-aware clipboard extension
- * (Section 11c). The fixture exposes the editor on
+ * Shared scenarios for the block-aware clipboard extension.
+ * The fixture exposes the editor on
  * `window.vizelTestEditor` so the scenarios can drive selection state
  * through Tiptap's command bus — synthetic keystrokes for
  * `ControlOrMeta+Home` and similar chords behave differently across

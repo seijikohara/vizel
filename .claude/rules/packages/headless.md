@@ -7,8 +7,6 @@ paths:
 
 `@vizel/headless` provides framework-neutral UI primitives that every adapter consumes. The rationale lives in [ADR-0003](../../../docs/adr/ADR-0003-vizel-headless-package.md).
 
-> **Status as of 2026-05-28**: this rule documents the target contract. The package scaffolds in Phase 2. Until then, treat this rule as the design specification.
-
 ## What the package contains
 
 | Primitive | Purpose |
@@ -38,6 +36,6 @@ Each primitive exports `{ buildSpec, createController }`. The spec is a pure fun
 
 `@vizel/headless` ships no CSS. The single CSS catalogue lives in `@vizel/core/styles.css` (see [ADR-0008](../../../docs/adr/ADR-0008-css-belongs-in-core.md)).
 
-## Migration target
+## Global listeners
 
-The 21 `document.addEventListener` calls that currently live inside adapter components migrate into the `dismissable/` primitive during Phase 2. Adapter components consume the primitive thereafter; they never attach global listeners directly.
+Global `document.addEventListener` calls live inside the `dismissable/` primitive, never inside adapter components. Adapter components consume the primitive; they never attach global listeners directly.

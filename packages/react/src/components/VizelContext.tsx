@@ -6,7 +6,7 @@ import { createContext, type ReactNode, useContext } from "react";
  * `Vizel` down to descendants.
  *
  * The context value is the editor itself (or `null` while it is still
- * initializing). The wrapping `{ editor }` object was removed in v2.0 so the
+ * initializing). The context carries no wrapping `{ editor }` object so the
  * public hook surface (`useVizelContext`) returns the editor directly,
  * matching the React idiom that "the hook is the value" (ADR-0004).
  *

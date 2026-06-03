@@ -73,7 +73,7 @@ export interface VizelMentionOptions {
   deleteTriggerWithBackspace?: boolean;
 
   /**
-   * Markdown encoding mode (Section 10).
+   * Markdown encoding mode.
    *
    * - `"default"` emits the lossy form `@username`. The mention id is
    *   lost on round-trip if the label and id differ.

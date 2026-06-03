@@ -190,11 +190,10 @@ export interface VizelShortcutSpec {
  * fuzzy-match keywords, and the runtime-evaluated enable / active
  * flags.
  *
- * Section 9 of the v2.0.0 redesign introduces `VizelCommand` (the
- * runtime-bearing form with `canRun`, `isActive`, `run`); builders use
- * `VizelCommand` to derive a `VizelCommandSpec` for a specific editor
- * instance. Until Section 9 ships, builders construct
- * `VizelCommandSpec` values directly from the legacy item-view types.
+ * `VizelCommand` carries the runtime-bearing form (`canRun`, `isActive`,
+ * `run`); builders derive a `VizelCommandSpec` from a `VizelCommand` for
+ * a specific editor instance, stripping the runtime fields so renderers
+ * receive view-only data.
  */
 export interface VizelCommandSpec {
   /** Stable identifier shared across surfaces (e.g. "format/bold"). */
