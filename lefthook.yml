@@ -55,6 +55,9 @@ pre-push:
     feature-parity:
       run: pnpm check:feature-parity
 
+    aria-contract:
+      run: pnpm check:aria-contract
+
     scenarios:
       run: pnpm check:scenarios
 
