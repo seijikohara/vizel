@@ -1,6 +1,7 @@
 import { test } from "@playwright/experimental-ct-react";
 import {
   testEqualityFnShortCircuitsConsumer,
+  testSelectorReadsTransaction,
   testSelectorReceivesEditorOnMount,
   testSelectorRerunsOnTransaction,
 } from "../../scenarios/use-vizel-editor-state.scenario";
@@ -20,5 +21,10 @@ test.describe("useVizelEditorState - React", () => {
   test("equalityFn short-circuits downstream consumers", async ({ mount, page }) => {
     const component = await mount(<UseVizelEditorStateFixture />);
     await testEqualityFnShortCircuitsConsumer(component, page);
+  });
+
+  test("selector reads the transaction off the snapshot", async ({ mount, page }) => {
+    const component = await mount(<UseVizelEditorStateFixture />);
+    await testSelectorReadsTransaction(component, page);
   });
 });

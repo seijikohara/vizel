@@ -17,7 +17,7 @@ export {
 export {
   type CreateVizelEditorStateOptions,
   createVizelEditorState,
-  type VizelEditorStateSnapshot,
+  type VizelEditorSnapshot,
 } from "./createVizelEditorState.svelte.js";
 export {
   type CreateVizelMarkdownOptions,

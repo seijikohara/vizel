@@ -14,7 +14,7 @@
 
 - Hooks-first. Components are functional. Refs use `React.Ref<HTMLElement>`; the custom `VizelEditorRef` retires.
 - `useVizelEditor(options): Editor | null` returns the editor directly. No destructured-getter wrappers.
-- `useVizelEditorState<T>(selector, { equalityFn? }): T` is the selector subscription primitive. Implementation uses `useSyncExternalStore` (see [ADR-0009](./ADR-0009-first-party-editor-reactivity.md)).
+- `useVizelEditorState<T>(selector, { equalityFn? }): T` is the selector subscription primitive. The selector receives a `{ editor, transaction }` snapshot, the React-idiomatic single-argument shape `useSyncExternalStore` / `useSelector` expect; the snapshot also lets the React selector read the transaction the feature manifest requires every adapter to expose. The selector INPUT shape converges across React, Vue, and Svelte only as a consequence of each framework idiom plus feature parity — not for API symmetry. The RETURN/delivery stays framework-native: this hook returns `T`, Vue returns a `ComputedRef<T>`, Svelte returns a `$derived` accessor. Implementation uses `useSyncExternalStore` (see [ADR-0009](./ADR-0009-first-party-editor-reactivity.md)).
 - Imperative APIs surface through React 19's ref-as-prop convention (`ref` is a regular prop; `forwardRef` is intentionally not used — see `.claude/rules/packages/react.md`).
 - Render-props use React's standard pattern: `children` of type `(props) => ReactNode`, or named function props.
 

@@ -611,6 +611,9 @@ importers:
       '@tiptap/extension-underline':
         specifier: ^3.23.6
         version: 3.23.6(@tiptap/core@3.24.0(@tiptap/pm@3.24.0))
+      '@tiptap/pm':
+        specifier: ^3.23.6
+        version: 3.24.0
       '@types/react':
         specifier: ^19.2.15
         version: 19.2.16

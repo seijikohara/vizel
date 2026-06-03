@@ -30,6 +30,7 @@ export {
   shallowEqualObject,
   type UseVizelEditorStateOptions,
   useVizelEditorState,
+  type VizelEditorSnapshot,
 } from "./_reactivity.ts";
 // Components
 export {

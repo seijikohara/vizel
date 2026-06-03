@@ -47,7 +47,7 @@ export function VizelOutline({
   // memoised by a shallow comparator — deriving a primitive signature
   // keeps the subscription stable.
   const signature = useVizelEditorState(
-    (current) => (current === null ? null : buildVizelOutlineSignature(current)),
+    ({ editor: current }) => (current === null ? null : buildVizelOutlineSignature(current)),
     { editor }
   );
 

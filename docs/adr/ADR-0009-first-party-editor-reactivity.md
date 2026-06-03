@@ -29,7 +29,7 @@ Per-adapter implementation:
 
 Positive:
 
-- Reactivity semantics stay under Vizel's control. SSR boundaries, selector semantics, and cleanup behave identically across adapters because Vizel writes the same contract three times.
+- Reactivity semantics stay under Vizel's control. SSR boundaries, selector semantics, and cleanup stay under one owner across adapters. The selector INPUT shape converges on a `{ editor, transaction }` snapshot only as a consequence of each framework's selector idiom plus the feature-parity requirement that every adapter read the transaction — not because Vizel pursues API symmetry. The RETURN/delivery stays framework-native: React returns `T`, Vue a `ComputedRef<T>`, Svelte a `$derived` accessor.
 - The Tiptap dependency surface shrinks. The runtime closure no longer pulls in two framework integrations the project does not consume.
 - The Svelte implementation is no longer the divergent case. Every adapter follows the same "first-party reactivity" pattern.
 
@@ -81,3 +81,34 @@ decision.
 
 A later work item (WI-8) revises the React selector-input bullet separately;
 this Update stays focused on the factual drift above.
+
+## Update (2026-06-03, WI-8)
+
+This Update records the selector-input correction the WI-9 Update deferred.
+The Decision bullets above stay immutable; the correction describes the
+shipped React selector contract.
+
+- **The React `useVizelEditorState` selector receives a
+  `{ editor, transaction }` snapshot, not the bare editor.** The Decision
+  bullet writes the React signature as
+  `useVizelEditorState(selector, { equalityFn? })` and the React adapter
+  originally passed the selector the bare `Editor | null`. The shipped
+  selector now receives a `VizelEditorSnapshot`
+  (`{ editor: Editor | null; transaction: Transaction | null }`), matching
+  the Vue and Svelte adapters. Two forces land on this shape independently:
+  React's `useSyncExternalStore` / selector convention passes a selector a
+  single snapshot object, and the feature manifest requires every adapter's
+  selector to be able to read the transaction (only Vue and Svelte could
+  before). The input shape therefore converges across adapters as a
+  consequence of each framework idiom plus parity — not for API symmetry.
+  The RETURN/delivery stays framework-native: React returns `T`, Vue a
+  `ComputedRef<T>`, Svelte a `$derived` accessor.
+- **Tearing-safety is preserved.** `getSnapshot` still returns the
+  monotonic version counter, so the `useSyncExternalStore` referential
+  contract is unchanged. The store records the latest transaction
+  alongside the counter, and the hook rebuilds the `{ editor, transaction }`
+  snapshot object only when the version counter advances (a new
+  `transaction` / `selectionUpdate`) or the editor identity changes —
+  mirroring the existing `useMemo([editor])` stability — so the snapshot
+  object identity stays stable across no-op reads and the equality
+  short-circuit holds under concurrent rendering.

@@ -59,10 +59,13 @@ export function VizelBubbleMenuDefault({
   // re-rendered on every transaction (ADR-0004). The explicit `editor`
   // keeps the subscription working when the bubble menu renders outside a
   // `VizelProvider`.
-  const activeById = useVizelEditorState((current) => buildActiveById(allActions, current), {
-    editor,
-    equalityFn: shallowEqualObject,
-  });
+  const activeById = useVizelEditorState(
+    ({ editor: current }) => buildActiveById(allActions, current),
+    {
+      editor,
+      equalityFn: shallowEqualObject,
+    }
+  );
 
   if (showLinkEditor) {
     return (
