@@ -89,7 +89,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version-file: .nvmrc
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -156,7 +156,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version-file: .nvmrc
           registry-url: "https://registry.npmjs.org"
 
       - name: Download build artifacts
@@ -200,7 +200,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version-file: .nvmrc
           registry-url: "https://registry.npmjs.org"
 
       - name: Download build artifacts
@@ -248,7 +248,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version-file: .nvmrc
           registry-url: "https://registry.npmjs.org"
 
       - name: Download build artifacts
@@ -304,7 +304,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version-file: .nvmrc
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6

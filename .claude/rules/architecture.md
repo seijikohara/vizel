@@ -31,4 +31,4 @@ These invariants are binding. If a feature seems to require deviation, write an 
 
 ## Decision records
 
-See `docs/adr/README.md` for the full ADR index covering API parity, feature manifest, headless package, per-framework idiom, breaking-release policy, CSS centralisation, first-party reactivity, `.claude/` format, technical-writing style, and the Playwright CT three-layer rebuild.
+See `docs/adr/README.md` for the full ADR index covering API parity, feature manifest, headless package, per-framework idiom, breaking-release policy, CSS centralisation, first-party reactivity, `.claude/` format, technical-writing style, the Playwright CT three-layer rebuild, the ADR compliance harness, bundle-size budgets, and the Node.js 24 runtime baseline ([ADR-0015](../../docs/adr/ADR-0015-node-24-baseline.md)).

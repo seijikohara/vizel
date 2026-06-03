@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.3.0",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev:react": "pnpm --filter @vizel/demo-react dev",
     "dev:vue": "pnpm --filter @vizel/demo-vue dev",
