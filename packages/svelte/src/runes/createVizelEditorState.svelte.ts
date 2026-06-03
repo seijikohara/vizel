@@ -11,10 +11,19 @@ type VizelTransaction = Editor["state"]["tr"];
 
 /**
  * Snapshot delivered to a {@link createVizelEditorState} selector on
- * every re-evaluation. Mirrors the React adapter's `_reactivity` shape
- * (ADR-0009) so cross-framework selector code stays portable.
+ * every re-evaluation.
+ *
+ * Svelte's `$derived` selector idiom projects a single value, so the
+ * Svelte-idiomatic form passes the selector a snapshot rather than a
+ * bare editor, and the snapshot exposes the transaction the feature
+ * manifest requires every adapter to read. The selector INPUT shape
+ * converges across the React, Vue, and Svelte adapters only as a
+ * consequence of each framework idiom plus feature parity — not for API
+ * symmetry. The RETURN/delivery diverges idiomatically: this rune
+ * returns a `$derived` accessor, React returns `T`, and Vue returns a
+ * `ComputedRef<T>`.
  */
-export interface VizelEditorStateSnapshot {
+export interface VizelEditorSnapshot {
   /** Current editor instance, or `null` before mount and during SSR. */
   readonly editor: Editor | null;
   /** Latest Tiptap transaction, or `null` before the first one fires. */
@@ -98,19 +107,17 @@ export type VizelEditorStateSource = () => Editor | null | undefined;
  * ```
  */
 export function createVizelEditorState<T>(
-  selector: (snapshot: VizelEditorStateSnapshot) => T,
+  selector: (snapshot: VizelEditorSnapshot) => T,
   options?: CreateVizelEditorStateOptions<T>
 ): { readonly current: T };
 export function createVizelEditorState<T>(
   getEditor: VizelEditorStateSource,
-  selector: (snapshot: VizelEditorStateSnapshot) => T,
+  selector: (snapshot: VizelEditorSnapshot) => T,
   options?: CreateVizelEditorStateOptions<T>
 ): { readonly current: T };
 export function createVizelEditorState<T>(
-  selectorOrGetEditor: ((snapshot: VizelEditorStateSnapshot) => T) | VizelEditorStateSource,
-  selectorOrOptions?:
-    | ((snapshot: VizelEditorStateSnapshot) => T)
-    | CreateVizelEditorStateOptions<T>,
+  selectorOrGetEditor: ((snapshot: VizelEditorSnapshot) => T) | VizelEditorStateSource,
+  selectorOrOptions?: ((snapshot: VizelEditorSnapshot) => T) | CreateVizelEditorStateOptions<T>,
   maybeOptions?: CreateVizelEditorStateOptions<T>
 ): { readonly current: T } {
   // Disambiguate the two call forms by the second argument's type. A
@@ -118,7 +125,7 @@ export function createVizelEditorState<T>(
   // anything else means `(selector, options)`.
   const hasExplicitSource = typeof selectorOrOptions === "function";
   const selector = (hasExplicitSource ? selectorOrOptions : selectorOrGetEditor) as (
-    snapshot: VizelEditorStateSnapshot
+    snapshot: VizelEditorSnapshot
   ) => T;
   const options = (hasExplicitSource ? maybeOptions : selectorOrOptions) ?? {};
   const explicitSource = hasExplicitSource ? (selectorOrGetEditor as VizelEditorStateSource) : null;
@@ -212,7 +219,7 @@ export function createVizelEditorState<T>(
       latest.transaction = null;
     }
 
-    const snapshot: VizelEditorStateSnapshot = {
+    const snapshot: VizelEditorSnapshot = {
       editor,
       transaction: latest.transaction,
     };

@@ -135,5 +135,6 @@ export {
   createVizelVersionHistory,
   getVizelTheme,
   getVizelThemeSafe,
+  type VizelEditorSnapshot,
   type VizelSuggestionRendererOptions,
 } from "./runes/index.js";

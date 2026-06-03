@@ -130,7 +130,7 @@ type PanelTab = "markdown" | "json" | "history" | "comments";
  */
 function StatsBar() {
   const stats = useVizelEditorState(
-    (editor) => ({
+    ({ editor }) => ({
       characters: editor?.storage.characterCount?.characters() ?? 0,
       words: editor?.storage.characterCount?.words() ?? 0,
     }),

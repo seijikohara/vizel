@@ -59,10 +59,13 @@ export function VizelToolbarDefault({
   // flags flips, replacing the coarse `useVizelState` full-tick re-render
   // (ADR-0004). The explicit `editor` keeps the subscription bound when
   // the toolbar renders without a surrounding `VizelProvider`.
-  const stateById = useVizelEditorState((current) => buildButtonStateById(buttonActions, current), {
-    editor,
-    equalityFn: shallowEqualObject,
-  });
+  const stateById = useVizelEditorState(
+    ({ editor: current }) => buildButtonStateById(buttonActions, current),
+    {
+      editor,
+      equalityFn: shallowEqualObject,
+    }
+  );
 
   return (
     <div className={`vizel-toolbar-content ${className ?? ""}`} data-vizel-toolbar="">

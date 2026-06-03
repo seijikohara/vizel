@@ -68,7 +68,7 @@ export function VizelFindReplace({
   // explicit `editor` keeps the subscription bound to the prop instance
   // when the panel renders outside a `VizelProvider`.
   const state = useVizelEditorState(
-    (current) => (current === null ? null : getVizelFindReplaceState(current.state)),
+    ({ editor: current }) => (current === null ? null : getVizelFindReplaceState(current.state)),
     { editor }
   );
 

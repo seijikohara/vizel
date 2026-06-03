@@ -41,6 +41,32 @@ export async function testSelectorRerunsOnTransaction(
 }
 
 /**
+ * Verify the selector reads the transaction off the snapshot. The
+ * fixture renders a `has-transaction` flag derived from
+ * `snapshot.transaction`. The flag starts `false` because no
+ * transaction has fired before the first keystroke, then flips to
+ * `true` once typing dispatches the first Tiptap transaction. The
+ * assertion runs identically across React, Vue, and Svelte, proving
+ * every adapter's selector now receives the transaction.
+ */
+export async function testSelectorReadsTransaction(component: Locator, page: Page): Promise<void> {
+  const editor = component.locator(".vizel-editor");
+  const ready = component.locator("[data-testid='editor-ready']");
+  const hasTransaction = component.locator("[data-testid='has-transaction']");
+
+  // Wait for the editor to mount; no transaction has fired yet, so the
+  // snapshot still carries `transaction: null`.
+  await expect(ready).toHaveText("true", { timeout: 10_000 });
+  await expect(hasTransaction).toHaveText("false");
+
+  // Typing dispatches the first transaction, so the snapshot now
+  // carries a non-null transaction the selector reads.
+  await editor.click();
+  await page.keyboard.type("a");
+  await expect(hasTransaction).toHaveText("true");
+}
+
+/**
  * Verify `equalityFn` short-circuits downstream re-renders when the
  * projection is structurally identical. The fixture maps the selector
  * onto a constant projection once the editor is ready and counts how

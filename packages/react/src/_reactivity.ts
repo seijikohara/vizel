@@ -11,6 +11,16 @@
  * official guidance recommends for editor-style external stores that must
  * stay tearing-safe under concurrent rendering.
  *
+ * The selector receives a `{ editor, transaction }` snapshot. React's
+ * `useSyncExternalStore` / selector convention passes a selector a single
+ * snapshot object, so the React-idiomatic form lands on a snapshot rather
+ * than a bare editor. That same shape lets a React selector read the
+ * transaction, closing the feature-parity gap the Vue and Svelte adapters
+ * already covered. The input shape converges across adapters only as a
+ * consequence of each framework idiom plus parity; the return value stays
+ * framework-native — React returns `T`, Vue a `ComputedRef<T>`, Svelte a
+ * `$derived` accessor.
+ *
  * The module exposes one public hook (`useVizelEditorState`) plus two
  * equality helpers re-exported from `@vizel/core`. Consumers select the
  * slice they care about and optionally supply an equality function to
@@ -19,9 +29,27 @@
  * same store so selector behaviour stays uniform.
  */
 
+import type { Transaction } from "@tiptap/pm/state";
 import { type Editor, shallowEqualArray, shallowEqualObject } from "@vizel/core";
 import { useMemo, useRef, useSyncExternalStore } from "react";
 import { useVizelContextSafe } from "./components/VizelContext.tsx";
+
+/**
+ * Snapshot delivered to a {@link useVizelEditorState} selector on every
+ * re-evaluation.
+ *
+ * The snapshot pairs the editor identity with the transaction that drove
+ * the most recent notification. `transaction` is `null` until the first
+ * `transaction` or `selectionUpdate` event fires — most commonly during
+ * the SSR pass and the first browser render before Tiptap has dispatched
+ * any transaction.
+ */
+export interface VizelEditorSnapshot {
+  /** The active editor instance, or `null` while it is still initializing. */
+  readonly editor: Editor | null;
+  /** The transaction that triggered the most recent re-evaluation, or `null` before the first event. */
+  readonly transaction: Transaction | null;
+}
 
 /**
  * Shape returned by {@link createEditorStore} — a `useSyncExternalStore`
@@ -30,7 +58,9 @@ import { useVizelContextSafe } from "./components/VizelContext.tsx";
  * The store does not surface the editor itself. The version counter
  * (returned by `getSnapshot`) increments on every transaction, which
  * forces React to invoke the selector against the latest editor state
- * without changing the snapshot's referential identity contract.
+ * without changing the snapshot's referential identity contract. The
+ * store also records the most recent transaction so the hook can build a
+ * `{ editor, transaction }` snapshot for the selector.
  */
 export interface VizelReactEditorStore {
   /**
@@ -52,6 +82,13 @@ export interface VizelReactEditorStore {
    * stable value avoids hydration mismatches.
    */
   getServerSnapshot(): number;
+  /**
+   * Read the transaction that drove the most recent notification, or
+   * `null` before the first `transaction` / `selectionUpdate` event. The
+   * hook reads this lazily when it rebuilds the snapshot, so the value
+   * never enters the version counter's referential-stability contract.
+   */
+  getTransaction(): Transaction | null;
 }
 
 /**
@@ -69,8 +106,13 @@ export interface VizelReactEditorStore {
 export function createEditorStore(editor: Editor | null): VizelReactEditorStore {
   // Closure-shared mutable state. A typed object keeps the binding
   // const-safe at the file scope and survives `Find Usages` better than
-  // a free `let` would (see `.claude/rules/code-style.md`).
-  const state = { version: 0 };
+  // a free `let` would (see `.claude/rules/code-style.md`). `transaction`
+  // holds the payload from the most recent notification; the version
+  // counter alone drives `getSnapshot`'s referential-stability contract.
+  const state: { version: number; transaction: Transaction | null } = {
+    version: 0,
+    transaction: null,
+  };
 
   const bumpVersion = (): void => {
     // 32-bit wrap-around stops the counter from drifting toward
@@ -89,7 +131,13 @@ export function createEditorStore(editor: Editor | null): VizelReactEditorStore 
           /* no-op cleanup when the editor is still initializing */
         };
       }
-      const handler = (): void => {
+      const handler = (payload: { editor: Editor; transaction: Transaction }): void => {
+        // Record the transaction before bumping the version so the
+        // snapshot the hook rebuilds on the next read pairs the editor
+        // with the transaction that drove this notification. Tiptap
+        // surfaces the transaction on both events, so the selector
+        // observes a consistent shape regardless of which signal fired.
+        state.transaction = payload.transaction;
         bumpVersion();
         onChange();
       };
@@ -110,6 +158,9 @@ export function createEditorStore(editor: Editor | null): VizelReactEditorStore 
     },
     getServerSnapshot() {
       return 0;
+    },
+    getTransaction() {
+      return state.transaction;
     },
   };
 }
@@ -156,13 +207,13 @@ export interface UseVizelEditorStateOptions<T> {
  *
  * @example
  * ```tsx
- * const isBold = useVizelEditorState((editor) => editor?.isActive("bold") ?? false);
+ * const isBold = useVizelEditorState(({ editor }) => editor?.isActive("bold") ?? false);
  * ```
  *
  * @example
  * ```tsx
  * const marks = useVizelEditorState(
- *   (editor) => ({
+ *   ({ editor }) => ({
  *     bold: editor?.isActive("bold") ?? false,
  *     italic: editor?.isActive("italic") ?? false,
  *   }),
@@ -171,7 +222,7 @@ export interface UseVizelEditorStateOptions<T> {
  * ```
  */
 export function useVizelEditorState<T>(
-  selector: (editor: Editor | null) => T,
+  selector: (snapshot: VizelEditorSnapshot) => T,
   options?: UseVizelEditorStateOptions<T>
 ): T {
   const contextEditor = useVizelContextSafe();
@@ -204,13 +255,38 @@ export function useVizelEditorState<T>(
     type SnapshotCache = { kind: "empty" } | { kind: "cached"; value: T };
     const cache: { current: SnapshotCache } = { current: { kind: "empty" } };
 
+    // Memoise the `{ editor, transaction }` snapshot object keyed on the
+    // store's version counter. The object identity must stay stable
+    // across `getSnapshot` reads that report no new notification;
+    // rebuilding it on every read would force every selector that
+    // closes over the snapshot to recompute even when nothing changed.
+    // The version counter advances exactly once per `transaction` /
+    // `selectionUpdate`, which is the only moment the transaction
+    // payload changes — so keying the snapshot on the version mirrors
+    // the existing `useMemo([editor])` editor-identity stability and
+    // keeps the `useSyncExternalStore` equality short-circuit intact
+    // under concurrent rendering.
+    type SnapshotMemo = { version: number; snapshot: VizelEditorSnapshot };
+    const snapshotMemo: { current: SnapshotMemo | null } = { current: null };
+
+    const readSnapshot = (): VizelEditorSnapshot => {
+      const version = store.getSnapshot();
+      const memo = snapshotMemo.current;
+      if (memo !== null && memo.version === version) {
+        return memo.snapshot;
+      }
+      const snapshot: VizelEditorSnapshot = { editor, transaction: store.getTransaction() };
+      snapshotMemo.current = { version, snapshot };
+      return snapshot;
+    };
+
     const getClientSnapshot = (): T => {
       // `getSnapshot` runs each time React reads from the store. The
-      // selector executes against the live editor; the cached previous
-      // value short-circuits when `equalityFn` declares the slice
-      // unchanged so consumers can rely on `Object.is` against the
+      // selector executes against the version-keyed snapshot; the cached
+      // previous value short-circuits when `equalityFn` declares the
+      // slice unchanged so consumers can rely on `Object.is` against the
       // hook's return value.
-      const next = selectorRef.current(editor);
+      const next = selectorRef.current(readSnapshot());
       const previous = cache.current;
       if (previous.kind === "cached" && equalityRef.current(previous.value, next)) {
         return previous.value;
@@ -221,10 +297,10 @@ export function useVizelEditorState<T>(
 
     const getServerSnapshot = (): T =>
       // React calls `getServerSnapshot` during server rendering, where
-      // the editor has not yet mounted. The selector receives `null` so
-      // the consumer's selector observes the same absence shape as the
+      // the editor has not yet mounted. The selector receives the
+      // absence snapshot so the consumer observes the same shape as the
       // first browser render before mount completes.
-      selectorRef.current(null);
+      selectorRef.current({ editor: null, transaction: null });
 
     return { subscribe: store.subscribe, getClientSnapshot, getServerSnapshot };
   }, [editor]);

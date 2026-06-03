@@ -8,6 +8,12 @@ import { untrack } from "svelte";
 // child of the provider.
 const editorReady = createVizelEditorState(({ editor }) => editor !== null);
 
+// Read the transaction directly off the snapshot. The flag flips from
+// `false` to `true` once typing dispatches the first Tiptap
+// transaction; the shared scenario asserts the transition uniformly
+// across all three frameworks.
+const hasTransaction = createVizelEditorState(({ transaction }) => transaction !== null);
+
 // Plain object holds the selector-run counter so the rune itself drives
 // the increment; the counter strictly grows on every Tiptap transaction
 // (no `let` needed at module scope).
@@ -44,3 +50,4 @@ $effect(() => {
 <div data-testid="editor-ready">{String(editorReady.current)}</div>
 <div data-testid="selector-runs">{selectorRuns.current.runs}</div>
 <div data-testid="consumer-runs">{consumerRuns}</div>
+<div data-testid="has-transaction">{String(hasTransaction.current)}</div>

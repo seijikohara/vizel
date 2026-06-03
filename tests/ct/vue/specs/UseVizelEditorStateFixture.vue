@@ -18,6 +18,12 @@ const StateConsumer = defineComponent({
   setup() {
     const editorReady = useVizelEditorState(({ editor }) => editor !== null);
 
+    // Read the transaction directly off the snapshot. The flag flips
+    // from `false` to `true` once typing dispatches the first Tiptap
+    // transaction; the shared scenario asserts the transition uniformly
+    // across all three frameworks.
+    const hasTransaction = useVizelEditorState(({ transaction }) => transaction !== null);
+
     const selectorMetrics = { runs: 0 };
     const selectorRuns = useVizelEditorState(({ editor }) => {
       selectorMetrics.runs += 1;
@@ -45,6 +51,7 @@ const StateConsumer = defineComponent({
       h("div", { "data-testid": "editor-ready" }, String(editorReady.value)),
       h("div", { "data-testid": "selector-runs" }, String(selectorRuns.value.runs)),
       h("div", { "data-testid": "consumer-runs" }, String(consumerMetrics.runs)),
+      h("div", { "data-testid": "has-transaction" }, String(hasTransaction.value)),
     ];
   },
 });

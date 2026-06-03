@@ -59,7 +59,7 @@ export function VizelNodeSelector({
   // moves within the same block type do not re-render, replacing the
   // coarse `useVizelState` tick.
   const activeNodeName = useVizelEditorState(
-    (current) =>
+    ({ editor: current }) =>
       current === null
         ? null
         : (effectiveNodeTypes.find((type) => type.isActive(current))?.name ?? null),

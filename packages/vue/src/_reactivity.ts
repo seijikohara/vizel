@@ -10,6 +10,17 @@
  * the composable and detach through `onScopeDispose`, so consumers cannot
  * leak handlers regardless of where they call `useVizelEditorState`.
  *
+ * The selector receives a `{ editor, transaction }` snapshot. Vue's
+ * `computed`-based selector idiom passes the selector a single value, so
+ * the Vue-idiomatic form lands on a snapshot rather than a bare editor,
+ * and the snapshot exposes the transaction the feature manifest requires
+ * every adapter to read. The selector INPUT shape converges across the
+ * React, Vue, and Svelte adapters only as a consequence of each
+ * framework idiom plus feature parity — not for API symmetry. The
+ * RETURN/delivery diverges idiomatically: this composable returns a
+ * `ComputedRef<T>`, React returns `T`, and Svelte returns a `$derived`
+ * accessor.
+ *
  * The composable exposes a single public function (`useVizelEditorState`)
  * plus two equality helpers re-exported from `@vizel/core`. Consumers
  * select the slice they care about and optionally supply an `equalityFn`
