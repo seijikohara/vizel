@@ -1,10 +1,9 @@
 /**
  * Block-aware clipboard extension.
  *
- * Section 11c of the v2.0.0 spec promotes the clipboard pipeline into
- * the always-on core. The extension hooks `copy`, `cut`, and `paste`
- * DOM events on the editor view through a single ProseMirror plugin
- * and:
+ * The clipboard pipeline is part of the always-on core. The extension
+ * hooks `copy`, `cut`, and `paste` DOM events on the editor view
+ * through a single ProseMirror plugin and:
  *
  * - **Copy / Cut.** When the active selection covers a multi-block
  *   range (resolved via `getVizelMultiBlockSelectionState`), it writes

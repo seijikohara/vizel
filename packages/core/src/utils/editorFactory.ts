@@ -121,9 +121,8 @@ export async function createVizelEditorInstance(
   // Refuse to construct an editor on the server. Tiptap mounts to a
   // contenteditable element that only exists in the browser, so
   // calling this factory from a Node / edge runtime is a programming
-  // error. Section 12 of the v2.0 design surfaces this as the
-  // `SSR_NOT_SUPPORTED` typed error so consumers can distinguish it
-  // from runtime failures.
+  // error. Surface this as the `SSR_NOT_SUPPORTED` typed error so
+  // consumers can distinguish it from runtime failures.
   if (typeof document === "undefined") {
     throw createVizelError(
       "SSR_NOT_SUPPORTED",

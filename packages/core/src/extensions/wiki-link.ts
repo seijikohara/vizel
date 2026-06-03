@@ -76,7 +76,7 @@ export interface VizelWikiLinkOptions {
   serializeAsWikiLink?: boolean;
 
   /**
-   * Markdown encoding mode (Section 10).
+   * Markdown encoding mode.
    *
    * - `"default"` emits the lossy form (`[[page]]` for Obsidian-style
    *   flavors, `[display](wiki://page)` otherwise). The page identifier
@@ -330,10 +330,9 @@ function registerWikiLinkRule(md: MarkdownIt): void {
 /**
  * Escape a value for inclusion inside a `vizel:` metadata comment.
  *
- * Mirrors the escape table from spec A.3: `&`, `"`, `<`, `>`, and the
- * literal `-->` sequence map to their HTML-entity equivalents so the
- * value cannot prematurely close the host HTML comment or collide
- * with the attribute delimiter.
+ * Escapes `&`, `"`, `<`, `>`, and the literal `-->` sequence to their
+ * HTML-entity equivalents so the value cannot prematurely close the
+ * host HTML comment or collide with the attribute delimiter.
  */
 function escapeMetadataCommentValue(value: string): string {
   return value

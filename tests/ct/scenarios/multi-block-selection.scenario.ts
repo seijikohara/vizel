@@ -2,8 +2,8 @@ import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
 /**
- * Shared scenarios for the multi-block range selection extension
- * (Section 11b). The fixture exposes the active block range through a
+ * Shared scenarios for the multi-block range selection extension.
+ * The fixture exposes the active block range through a
  * `[data-testid="multi-block-state"]` element so the scenarios can
  * assert plugin state without driving the UI.
  *

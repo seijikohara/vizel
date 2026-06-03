@@ -61,7 +61,7 @@ const replyTexts = ref<Record<string, string>>({});
 // Store editor reference from Vizel component. The Vizel component
 // updates this ref through `@create`; the surrounding `VizelProvider`
 // then forwards the editor to descendants such as `StatsBar`, which
-// drives the character / word count display via the v2
+// drives the character / word count display via the
 // `useVizelEditorState` selector API (see `StatsBar.vue`).
 const editorRef = shallowRef<Editor | null>(null);
 
@@ -262,7 +262,7 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
               @create="handleCreate"
               @update="handleUpdate"
             >
-              <!-- Vue scoped slot — the v2 render-prop idiom for Vue.
+              <!-- Vue scoped slot — the render-prop idiom for Vue.
                    The slot exposes the bound editor through its props
                    so consumers can drop in any component that needs it. -->
               <template #default="{ editor: slotEditor }">
@@ -275,7 +275,7 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
                 <span v-if="features.stats" class="status-divider">·</span>
               </template>
               <!-- StatsBar consumes the editor through `VizelProvider`
-                   via the v2 selector composable. See `StatsBar.vue`
+                   via the selector composable. See `StatsBar.vue`
                    for the `useVizelEditorState` selector definition. -->
               <StatsBar v-if="features.stats" />
             </div>

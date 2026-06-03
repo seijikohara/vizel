@@ -1,6 +1,6 @@
 // Base extensions
 export { createVizelExtensions, type VizelExtensionsOptions } from "./base.ts";
-// Block-aware clipboard (Section 11c)
+// Block-aware clipboard
 export {
   createVizelBlockClipboardExtension,
   type VizelBlockClipboardOptions,
@@ -38,7 +38,7 @@ export {
   type VizelCodeBlockLanguage,
   type VizelCodeBlockOptions,
 } from "./code-block-lowlight.ts";
-// Command shortcuts (Section 9)
+// Command shortcuts
 export {
   createVizelCommandShortcutsExtension,
   type VizelCommandShortcutsOptions,
@@ -172,7 +172,7 @@ export {
   type VizelMentionItem,
   type VizelMentionOptions,
 } from "./mention.ts";
-// Multi-block range selection (Section 11b)
+// Multi-block range selection
 export {
   createVizelMultiBlockSelectionExtension,
   getVizelMultiBlockSelectionState,

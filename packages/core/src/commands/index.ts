@@ -1,4 +1,4 @@
-// VizelCommand unified abstraction (Section 9).
+// VizelCommand unified abstraction.
 export { deriveVizelCommandSpec } from "./derive.ts";
 export {
   vizelBlockCommands,

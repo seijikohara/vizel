@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/experimental-ct-vue";
 import vue from "@vitejs/plugin-vue";
 
 /**
- * Pillar 5 — accessibility (Section 14).
+ * Pillar 5 — accessibility.
  *
  * Runs `@axe-core/playwright` against each shipped component to assert
  * WCAG 2.1 AA conformance. Chromium-only by design: axe-core reports a

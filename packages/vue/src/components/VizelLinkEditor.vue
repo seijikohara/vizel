@@ -57,9 +57,9 @@ const viewState = computed(() =>
 // capture phase and calls `stopImmediatePropagation()` so the editor's
 // bubble-phase keymap does not also fire — without that the bubble-phase
 // keymap resets the selection, closes the popover, and drops focus from the
-// input. `deferPointerHandler: true` mirrors v1's `nextTick` install so the
-// pointerdown that opens the link editor does not register as an outside
-// click.
+// input. `deferPointerHandler: true` installs the pointer-outside handler on
+// the next tick so the pointerdown that opens the link editor does not
+// register as an outside click.
 const dismissable = createVizelDismissable({
   onPointerOutside: () => emit("close"),
   onEscape: () => emit("close"),

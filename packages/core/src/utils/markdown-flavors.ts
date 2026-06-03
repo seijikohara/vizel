@@ -53,10 +53,9 @@ export function resolveVizelFlavorConfig(
   return { calloutFormat, wikiLinkSerialize };
 }
 
-// Surface the built-in flavors here so existing import sites that pull
-// from `utils/markdown-flavors.ts` (Section 10 will retire these in
-// favor of `@vizel/core` root re-exports) keep working without the
-// callers having to chase the new module path.
+// Surface the built-in flavors here so import sites that pull from
+// `utils/markdown-flavors.ts` keep working alongside the `@vizel/core`
+// root re-exports without chasing a separate module path.
 export {
   vizelCommonMarkFlavor,
   vizelDocusaurusFlavor,

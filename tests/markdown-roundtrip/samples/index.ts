@@ -3,16 +3,14 @@ import type { VizelRoundtripSample } from "@vizel/core";
 /**
  * Representative Markdown round-trip samples for each built-in flavor.
  *
- * The Section 10 long-term target (spec
- * `docs/superpowers/specs/2026-05-16-vizel-v2-ideal-interface-design.md`,
- * lines 854-859) is 100+ samples per flavor drawn from CommonMark / GFM
- * conformance suites, Obsidian-style notes, Docusaurus admonitions, and
- * Pandoc extension fixtures. This file ships a representative
- * cross-section — at least ten samples per flavor covering heading,
- * paragraph, list, blockquote, inline emphasis, inline code, fenced
- * code, image, link, and the flavor-specific syntax (e.g. GFM tables,
- * Obsidian wiki-links). Authors who add new flavor-specific syntax
- * must extend the corresponding bucket.
+ * The long-term target is 100+ samples per flavor drawn from
+ * CommonMark / GFM conformance suites, Obsidian-style notes, Docusaurus
+ * admonitions, and Pandoc extension fixtures. This file ships a
+ * representative cross-section — at least ten samples per flavor
+ * covering heading, paragraph, list, blockquote, inline emphasis,
+ * inline code, fenced code, image, link, and the flavor-specific syntax
+ * (e.g. GFM tables, Obsidian wiki-links). Authors who add new
+ * flavor-specific syntax must extend the corresponding bucket.
  *
  * Each sample is paired with the exact Markdown form Vizel emits via
  * the selected flavor; whitespace differences within a single trailing

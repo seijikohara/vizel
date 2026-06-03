@@ -56,7 +56,7 @@ function duplicateCurrentBlock(editor: Editor): boolean {
 }
 
 /**
- * Built-in block-operation commands (Section 11).
+ * Built-in block-operation commands.
  *
  * Each command joins the block menu surface plus a keyboard shortcut.
  * They build on Tiptap's command APIs (`joinBackward`, `splitBlock`,

@@ -2,10 +2,10 @@
  * Module augmentation that makes the Markdown extension's runtime
  * surface available on the `Editor` type unconditionally.
  *
- * Vizel always installs the Markdown extension (Section 8 of the
- * v2.0.0 spec promotes it to the always-on core), so consumers can
- * call `editor.getMarkdown()` and `editor.markdown.parse(md)` without
- * a capability check. This file declares the augmentation; the runtime
+ * Vizel always installs the Markdown extension as part of the always-on
+ * core, so consumers can call `editor.getMarkdown()` and
+ * `editor.markdown.parse(md)` without a capability check. This file
+ * declares the augmentation; the runtime
  * implementation lives in `extensions/markdown.ts` via the
  * `tiptap-markdown` extension's `onBeforeCreate` hook plus a per-editor
  * wrapper that pins `editor.markdown` / `editor.getMarkdown`.

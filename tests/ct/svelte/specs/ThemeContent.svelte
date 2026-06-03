@@ -9,10 +9,10 @@ function toggleTheme() {
 </script>
 
 <!--
-  The v2 rune collapses `theme` (user setting) and `resolvedTheme` (applied)
-  into a single resolved value. Render the same source under both legacy
-  testids so existing scenarios keep passing without depending on the
-  removed `VizelThemeState` shape.
+  The rune exposes a single resolved theme value rather than separate
+  `theme` (user setting) and `resolvedTheme` (applied) fields. Render
+  that one source under both testids so a scenario can assert either
+  without depending on a split-state shape.
 -->
 <div data-testid="theme-content">
   <span data-testid="current-theme">{themeState.current}</span>

@@ -11,8 +11,9 @@
  *
  * Current scope:
  * - `dismissable/` ships click-outside, Escape, and focus-return
- *   wiring; it is the migration target for the adapter components that
- *   v1 attached `document` listeners directly.
+ *   wiring; adapter components mount this controller instead of
+ *   attaching global `document` listeners themselves, so the wiring
+ *   lives in one place and detaches deterministically on teardown.
  * - `keyboard/` ships list and grid navigation spec builders plus
  *   `keydown`-owning controllers; adapter menus consume the pure
  *   builders.

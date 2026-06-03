@@ -121,7 +121,7 @@ interface DemoFeatures {
 type PanelTab = "markdown" | "json" | "history" | "comments";
 
 /**
- * Read character and word counts via the v2 selector API.
+ * Read character and word counts via the selector API.
  *
  * `useVizelEditorState` reads the editor from the surrounding
  * `VizelProvider` and re-renders only when the selector slice changes

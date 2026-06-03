@@ -5,12 +5,10 @@ import type { JSONContent } from "@tiptap/core";
  * plugins interact with at registration time.
  *
  * Defined locally so consumers do not need `@types/markdown-it`
- * installed to author a flavor plugin. When the eventual library
- * swap (Section 10b) wires the real markdown-it instance through,
- * `markdownItPlugins` callbacks receive the full markdown-it API —
- * the structural type below covers the `.use()` registration that
- * every plugin needs, and any narrower call is available via a
- * `(md as any).foo()` cast inside the callback.
+ * installed to author a flavor plugin. `markdownItPlugins` callbacks
+ * receive the full markdown-it API — the structural type below covers
+ * the `.use()` registration that every plugin needs, and any narrower
+ * call is available via a `(md as any).foo()` cast inside the callback.
  */
 export interface VizelMarkdownItInstance {
   // biome-ignore lint/suspicious/noExplicitAny: structural placeholder mirrors markdown-it's open plugin signature
@@ -109,9 +107,9 @@ export type VizelMarkdownLossyEncodingMode = "default" | "metadata-comment";
 /**
  * Per-node encoding mode map.
  *
- * Keys correspond to the lossy node types listed in spec Section 10
- * (`embed`, `mention`, `wikiLink`). Other node types are unaffected
- * and follow the flavor's serializer hooks.
+ * Keys correspond to the lossy node types (`embed`, `mention`,
+ * `wikiLink`). Other node types are unaffected and follow the flavor's
+ * serializer hooks.
  */
 export interface VizelMarkdownEncodingOptions {
   readonly embed?: VizelMarkdownLossyEncodingMode;

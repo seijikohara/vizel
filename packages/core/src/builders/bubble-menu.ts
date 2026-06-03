@@ -19,7 +19,7 @@ export interface VizelBubbleMenuSpecOptions {
  *
  * Filters by `surfaces.bubbleMenu`, applies each command's optional
  * `showWhen` predicate against the editor, sorts by priority
- * ascending, and projects each command into a Section 2
+ * ascending, and projects each command into a
  * {@link VizelCommandSpec}.
  */
 export function buildVizelBubbleMenuSpec(

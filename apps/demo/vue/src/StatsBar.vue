@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { shallowEqualObject, useVizelEditorState } from "@vizel/vue";
 
-// Read character and word counts via the v2 selector composable.
+// Read character and word counts via the selector composable.
 //
 // `useVizelEditorState` reads the editor from the surrounding
 // `VizelProvider` and re-evaluates the selector only when the selector

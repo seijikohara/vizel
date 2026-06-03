@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/experimental-ct-svelte";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 
 /**
- * Pillar 5 — accessibility (Section 14).
+ * Pillar 5 — accessibility.
  *
  * Runs `@axe-core/playwright` against each shipped component to assert
  * WCAG 2.1 AA conformance. Chromium-only by design: axe-core reports a

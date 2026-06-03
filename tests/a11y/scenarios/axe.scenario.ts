@@ -39,7 +39,7 @@ const DISABLED_RULES: readonly string[] = ["region", "color-contrast", "aria-inp
 
 /**
  * WCAG conformance tags axe-core checks for. WCAG 2.1 AA is the
- * Section 14 Pillar 5 target.
+ * Pillar 5 accessibility target.
  */
 const WCAG_TAGS: readonly string[] = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 

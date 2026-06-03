@@ -8,16 +8,16 @@
  */
 
 // Side-effect import: augment `@tiptap/core`'s Editor with the always-on
-// `getMarkdown()` / `markdown.parse(md)` surface (Section 10 of the v2.0.0
-// spec). Must load before any consumer touches the augmented members.
+// `getMarkdown()` / `markdown.parse(md)` surface. Must load before any
+// consumer touches the augmented members.
 import "./markdown/augment.ts";
 
 // =============================================================================
 // Tiptap Re-exports (for framework packages)
 // =============================================================================
-// Tiptap symbol re-exports — see Section 6 of the v2.0.0 spec. Consumers
-// can install only one Vizel framework package and import these without
-// adding @tiptap/core to their dependencies.
+// Re-export the Tiptap symbols that adapters need. Consumers can install
+// only one Vizel framework package and import these without adding
+// @tiptap/core to their dependencies.
 export type {
   ChainedCommands,
   Editor,
@@ -44,7 +44,7 @@ export {
   type VizelStorageBackend,
 } from "./auto-save.ts";
 // =============================================================================
-// Builders (Section 2)
+// Builders
 // =============================================================================
 export {
   applyVizelLinkEdit,
@@ -119,7 +119,7 @@ export {
 } from "./collaboration.ts";
 export type { VizelCollaborationProvider } from "./collaboration-provider.ts";
 // =============================================================================
-// Commands (Section 9 — VizelCommand unified abstraction)
+// Commands (VizelCommand unified abstraction)
 // =============================================================================
 export {
   deriveVizelCommandSpec,
@@ -171,6 +171,27 @@ export {
   type VizelRelativeTimeTickerOptions,
   type VizelSystemThemeListener,
 } from "./controllers/index.ts";
+// Portal controller: shared layered overlay container for adapter portals.
+export {
+  createVizelPortalElement,
+  getVizelPortalContainer,
+  hasVizelPortalContainer,
+  mountToVizelPortal,
+  removeVizelPortalContainer,
+  unmountFromVizelPortal,
+  VIZEL_PORTAL_ID,
+  VIZEL_PORTAL_Z_INDEX,
+  type VizelMountPortalOptions,
+  type VizelPortalLayer,
+} from "./controllers/portal.ts";
+// Suggestion container controller: positioned container for slash and mention menus.
+export {
+  createVizelSuggestionContainer,
+  handleVizelSuggestionEscape,
+  VIZEL_SUGGESTION_Z_INDEX,
+  type VizelDOMRectGetter,
+  type VizelSuggestionContainer,
+} from "./controllers/suggestionContainer.ts";
 // =============================================================================
 // Extensions
 // =============================================================================
@@ -178,7 +199,7 @@ export {
   // Text color
   addVizelRecentColor,
   applyVizelColorToEditor,
-  // Block-aware clipboard (Section 11c)
+  // Block-aware clipboard
   createVizelBlockClipboardExtension,
   // Block menu (locale-aware)
   createVizelBlockMenuActions,
@@ -188,7 +209,7 @@ export {
   createVizelCharacterCountExtension,
   // Code block with syntax highlighting
   createVizelCodeBlockExtension,
-  // Command shortcuts (Section 9)
+  // Command shortcuts
   createVizelCommandShortcutsExtension,
   // Comment
   createVizelCommentExtension,
@@ -225,7 +246,7 @@ export {
   createVizelMathematicsExtensions,
   // Mention
   createVizelMentionExtension,
-  // Multi-block range selection (Section 11b)
+  // Multi-block range selection
   createVizelMultiBlockSelectionExtension,
   // Node types (locale-aware)
   createVizelNodeTypes,
@@ -433,7 +454,7 @@ export {
   vizelDefaultIconIds,
 } from "./icons/index.ts";
 // =============================================================================
-// Markdown flavor plugin types (Section 10)
+// Markdown flavor plugin types
 // =============================================================================
 export {
   assertMarkdownRoundtrip,
@@ -520,9 +541,6 @@ export {
   createVizelError,
   // Markdown utilities
   createVizelMarkdownSyncHandlers,
-  createVizelPortalElement,
-  // Suggestion container utilities
-  createVizelSuggestionContainer,
   createVizelUploadEventHandler,
   emitVizelError,
   // Keyboard shortcut utilities
@@ -532,13 +550,10 @@ export {
   getVizelBlockPath,
   getVizelEditorState,
   getVizelMarkdown,
-  getVizelPortalContainer,
   // Collection utilities
   groupByConsecutiveField,
-  handleVizelSuggestionEscape,
   // Type guard utilities
   hasFunction,
-  hasVizelPortalContainer,
   initializeVizelMarkdownContent,
   isOptionalString,
   isRecord,
@@ -547,12 +562,10 @@ export {
   isVizelMacPlatform,
   // Color utilities
   isVizelValidHexColor,
-  mountToVizelPortal,
   mountVizelEditorView,
   normalizeVizelHexColor,
   parseVizelMarkdown,
   registerVizelUploadEventHandler,
-  removeVizelPortalContainer,
   resolveVizelFeatures,
   // Markdown flavor utilities
   resolveVizelFlavorConfig,
@@ -564,30 +577,22 @@ export {
   // Text highlight utilities
   splitVizelTextByMatches,
   transformVizelDiagramCodeBlocks,
-  unmountFromVizelPortal,
   VIZEL_DEFAULT_FLAVOR,
   VIZEL_DEFAULT_MARKDOWN_DEBOUNCE_MS,
-  VIZEL_PORTAL_ID,
-  VIZEL_PORTAL_Z_INDEX,
-  VIZEL_SUGGESTION_Z_INDEX,
   VIZEL_UPLOAD_IMAGE_EVENT,
   type VizelBlockPathSegment,
   type VizelCalloutMarkdownFormat,
   type VizelContentNode,
   type VizelCreateUploadEventHandlerOptions,
-  type VizelDOMRectGetter,
   VizelError,
   type VizelErrorCode,
   type VizelErrorOptions,
   type VizelErrorSeverity,
   type VizelFlavorConfig,
   type VizelMarkdownSyncHandlers,
-  type VizelMountPortalOptions,
-  type VizelPortalLayer,
   type VizelResolveFeaturesOptions,
-  type VizelSuggestionContainer,
   type VizelTextSegment,
-  // SSR utilities (Section 12)
+  // SSR utilities
   type VizelThemeInitScriptOptions,
   vizelCancelAnimationFrame,
   vizelCommonMarkFlavor,

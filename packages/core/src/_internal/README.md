@@ -9,14 +9,13 @@ must not appear in the public API.
 - Framework packages (`@vizel/react`, `@vizel/vue`, `@vizel/svelte`) must
   not re-export symbols from this directory.
 - The directory exists to give internal helpers a clear home and to let
-  `scripts/check-reexport-mirror.ts` (introduced in Section 6 of the
-  v2.0.0 redesign) distinguish public from internal exports physically
-  rather than by convention.
+  `scripts/check-reexport-mirror.ts` distinguish public from internal
+  exports physically rather than by convention.
 
 ## Examples of suitable contents
 
-- Lazy-loader helper (`createLazyOptionalLoader`, Section 10)
-- Diagnostic emitter (`emitVizelError`, Section 7)
+- Lazy-loader helper (`createLazyOptionalLoader`)
+- Diagnostic emitter (`emitVizelError`)
 - Test fixtures shared across internal tests but not exposed to
   consumers
 

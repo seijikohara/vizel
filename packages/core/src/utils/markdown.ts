@@ -17,8 +17,7 @@ export const VIZEL_DEFAULT_MARKDOWN_DEBOUNCE_MS = 300;
  *
  * The Markdown extension is always installed by Vizel, so
  * `editor.getMarkdown()` is guaranteed to exist when the editor is
- * non-null (Section 10 of the v2.0.0 spec). Returns an empty string
- * when the editor is missing.
+ * non-null. Returns an empty string when the editor is missing.
  *
  * @param editor - The editor instance
  * @param _onError - Reserved for future use. The current implementation

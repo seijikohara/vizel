@@ -140,7 +140,7 @@ export function getNextVizelSlashMenuGroupIndex(
 }
 
 // ============================================================================
-// VizelCommand-based derivation (Section 9)
+// VizelCommand-based derivation
 // ============================================================================
 
 /**

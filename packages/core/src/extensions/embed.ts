@@ -391,7 +391,7 @@ export interface VizelEmbedOptions {
    */
   onFetchError?: (error: Error, url: string) => void;
   /**
-   * Markdown encoding mode (Section 10).
+   * Markdown encoding mode.
    *
    * - `"default"` emits the lossy form `[title || url](url)`. Metadata
    *   such as `type` and `provider` is lost on round-trip.

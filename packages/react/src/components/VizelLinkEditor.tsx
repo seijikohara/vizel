@@ -35,8 +35,8 @@ export interface VizelLinkEditorProps {
  * skeleton helpers. The component owns input state and event wiring.
  * Pointer-outside and Escape dismissal route through
  * `createVizelDismissable` from `@vizel/headless`; `deferPointerHandler`
- * mirrors v1's `setTimeout(..., 0)` install so the opening pointerdown
- * does not register as an outside click (ADR-0003, ADR-0007).
+ * installs the outside-click listener on the next tick so the opening
+ * pointerdown does not register as an outside click (ADR-0003, ADR-0007).
  * `createVizelFocusTrapController` traps Tab inside the form, focuses the
  * URL input on open, and returns focus to the bubble-menu trigger on
  * close, so the two headless controllers own every form-level listener.
@@ -89,8 +89,9 @@ export function VizelLinkEditor({
       onPointerOutside: () => onCloseRef.current?.(),
       onEscape: () => onCloseRef.current?.(),
       captureEscape: true,
-      // Mirrors v1's `setTimeout(..., 0)` so the pointerdown that opens the
-      // link editor does not immediately register as an outside click.
+      // Defer the outside-click listener to the next tick so the pointerdown
+      // that opens the link editor does not immediately register as an
+      // outside click.
       deferPointerHandler: true,
     });
     controller.mount(form);
