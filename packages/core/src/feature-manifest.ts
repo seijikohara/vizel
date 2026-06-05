@@ -80,7 +80,7 @@ export interface VizelAriaContract {
  * `scripts/check-aria-contract.ts` statically asserts that every key
  * belongs to the allow-list formed by the union of the `VizelCommand`
  * registry identifiers under `packages/core/src/commands/registry/` and
- * the navigation-verb vocabulary in {@link VIZEL_KEYBOARD_COMMANDS}, so a
+ * the navigation-verb vocabulary in `VIZEL_KEYBOARD_COMMANDS`, so a
  * binding name cannot rot into a string the editor never handles.
  *
  * Runtime enforcement (asserting each key actually triggers its command

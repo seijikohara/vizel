@@ -1154,7 +1154,7 @@ export function loadVizelEmbedScripts(container: HTMLElement, provider?: string)
 }
 
 /**
- * Discriminated view-model for {@link VizelEmbedView}.
+ * Discriminated view-model for the framework `VizelEmbedView` components.
  *
  * Each variant maps to one of the four render branches (oEmbed,
  * OGP, title-link, plain-link) plus the loading state. Framework
