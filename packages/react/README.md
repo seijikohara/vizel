@@ -8,7 +8,7 @@ React 19 components and hooks for Vizel block-based Markdown editor.
 npm install @vizel/react
 ```
 
-`@vizel/core`, the required `@tiptap/*` packages, and ProseMirror are declared as peer dependencies and are installed automatically by npm 7+, pnpm, and yarn. Add them to your own `package.json` only if you want to pin specific versions. `@vizel/core` still appears in style imports because CSS cannot be re-exported across packages.
+The required `@tiptap/*` packages and ProseMirror are declared as peer dependencies and are installed automatically by npm 7+, pnpm, and yarn. Add them to your own `package.json` only if you want to pin specific versions. `@vizel/core` ships as a regular dependency, so installing `@vizel/react` is sufficient; it still appears in style imports because CSS cannot be re-exported across packages.
 
 Optional features require extra packages installed manually:
 
