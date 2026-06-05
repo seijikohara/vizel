@@ -260,14 +260,14 @@ export function formatVizelRelativeTime(date: Date, locale?: VizelLocale): strin
 }
 
 /**
- * Resolved view-model for {@link VizelSaveIndicator}.
+ * Resolved view-model for the framework `VizelSaveIndicator` components.
  *
  * Captures the status → display mapping so each framework only has to
  * render the icon and text once, instead of hand-writing a `switch`
  * inside both `<script>` and template.
  */
 export interface VizelSaveIndicatorView {
-  /** Name of the {@link VizelIcon} to render. */
+  /** Name of the icon to render. */
   iconName: "check" | "loader" | "circle" | "warning";
   /** Whether the icon should be wrapped in the `vizel-save-indicator-spinner` element. */
   isSpinner: boolean;

@@ -20,7 +20,10 @@ declare module "@tiptap/core" {
   interface Editor {
     /** Serialize the current document to a Markdown string. */
     getMarkdown(): string;
-    /** Markdown parser surface attached by the Vizel Markdown extension. */
+    // The `markdown` surface intentionally carries no doc comment here:
+    // `tiptap-markdown` already declares `Editor.markdown` with one, and a
+    // second comment makes TypeDoc warn and pick an arbitrary description.
+    // The module-level JSDoc above documents the surface instead.
     markdown: {
       /** Parse a Markdown string into a Tiptap JSON document. */
       parse(md: string): JSONContent;

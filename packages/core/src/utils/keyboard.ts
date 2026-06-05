@@ -37,7 +37,7 @@ export function isVizelMacPlatform(): boolean {
 }
 
 /**
- * Type guard for the {@link VizelPlatformShortcut} object shape.
+ * Type guard for the `VizelPlatformShortcut` object shape.
  */
 const isVizelPlatformShortcut = (value: unknown): value is VizelPlatformShortcut =>
   typeof value === "object" && value !== null && "mac" in value && "other" in value;
@@ -45,7 +45,7 @@ const isVizelPlatformShortcut = (value: unknown): value is VizelPlatformShortcut
 /**
  * Format a keyboard shortcut for the current platform.
  *
- * Accepts either a plain shortcut string or a {@link VizelPlatformShortcut}
+ * Accepts either a plain shortcut string or a `VizelPlatformShortcut`
  * object. For the object form, the function selects the `mac` or `other`
  * string via {@link isVizelMacPlatform}. Both separators are recognized:
  * the `+` notation used by the legacy slash hints and the `-` notation used
