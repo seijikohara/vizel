@@ -103,7 +103,7 @@ import '@vizel/core/mathematics.css'; // KaTeX styles for math rendering
 Vizel uses OKLCH color values by default, which are compatible with shadcn/ui's theming system. For shadcn/ui projects, import `components.css` (without CSS variable definitions) and map your theme colors:
 
 ```typescript
-import '@vizel/core/components.css';
+import '@vizel/core/styles/components.css';
 ```
 
 ```css
@@ -401,7 +401,7 @@ import '@vizel/core/styles.css';
 For shadcn/ui projects, use components-only styles (without CSS variable definitions):
 
 ```typescript
-import '@vizel/core/components.css';
+import '@vizel/core/styles/components.css';
 ```
 
 ### Custom Theming

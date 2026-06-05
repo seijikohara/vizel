@@ -4,7 +4,7 @@ Framework-agnostic core for Vizel block-based Markdown editor built on Tiptap.
 
 ## Installation
 
-If you already installed a framework adapter (`@vizel/react`, `@vizel/vue`, or `@vizel/svelte`), this package is already present in your dependency tree because framework adapters declare it as a peer dependency. Install it explicitly only when you use the framework-agnostic APIs directly:
+If you already installed a framework adapter (`@vizel/react`, `@vizel/vue`, or `@vizel/svelte`), this package is already present in your dependency tree because framework adapters declare it as a regular dependency. Install it explicitly only when you use the framework-agnostic APIs directly:
 
 ```bash
 npm install @vizel/core
@@ -27,7 +27,7 @@ This package provides:
 
 | Category | Examples |
 |----------|---------|
-| Types | `VizelEditorOptions`, `VizelFeatureOptions`, `VizelEditorState`, `VizelSlashCommandItem` |
+| Types | `VizelEditorOptions`, `VizelFeatureOptions`, `VizelEditorState`, `VizelCommand` |
 | Extensions | `createVizelExtensions()`, `resolveVizelFeatures()` |
 | Utilities | `getVizelEditorState()`, `getVizelMarkdown()`, `createVizelImageUploader()` |
 | Theme | `VIZEL_DEFAULT_THEME`, `resolveVizelTheme()` |
@@ -38,7 +38,7 @@ This package provides:
 | Plugin System | `VizelPluginManager`, `validateVizelPlugin()` |
 | Find & Replace | `createVizelFindReplaceExtension()`, `getVizelFindReplaceState()`, `vizelFindReplacePluginKey` |
 | i18n | `VizelLocale`, `vizelEnLocale`, `createVizelLocale()` |
-| Constants | `VIZEL_TEXT_COLORS`, `VIZEL_HIGHLIGHT_COLORS`, `vizelDefaultSlashCommands` |
+| Constants | `VIZEL_TEXT_COLORS`, `VIZEL_HIGHLIGHT_COLORS`, `vizelDefaultCommands` |
 
 ## CSS Entry Points
 
