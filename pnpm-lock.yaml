@@ -475,8 +475,8 @@ importers:
         specifier: workspace:^
         version: link:../headless
       katex:
-        specifier: ^0.16.0
-        version: 0.16.45
+        specifier: ^0.16.0 || ^0.17.0
+        version: 0.17.0
       linkedom:
         specifier: ^0.18.0
         version: 0.18.12
