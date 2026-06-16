@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core";
-import type { VizelStorageBackend } from "./storage.ts";
+import { resolveVizelArrayStorageBackend, type VizelStorageBackend } from "./storage.ts";
 
 // =============================================================================
 // Types
@@ -123,40 +123,12 @@ export function getVizelCommentStorageBackend(
   save: (comments: VizelComment[]) => Promise<void>;
   load: () => Promise<VizelComment[]>;
 } {
-  if (storage === "localStorage" || storage === "sessionStorage") {
-    return {
-      save: (comments: VizelComment[]) => {
-        if (typeof window === "undefined") return Promise.resolve();
-        try {
-          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
-          storageObject.setItem(key, JSON.stringify(comments));
-        } catch {
-          return Promise.reject(new Error("Failed to write comments to web storage"));
-        }
-        return Promise.resolve();
-      },
-      load: () => {
-        if (typeof window === "undefined") return Promise.resolve([]);
-        try {
-          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
-          const data = storageObject.getItem(key);
-          if (!data) return Promise.resolve([]);
-          const parsed: unknown = JSON.parse(data);
-          if (!Array.isArray(parsed)) return Promise.resolve([]);
-          return Promise.resolve(parsed.filter(isVizelComment));
-        } catch {
-          return Promise.resolve([]);
-        }
-      },
-    };
-  }
-
-  return {
-    save: async (comments: VizelComment[]) => {
-      await storage.save(comments);
-    },
-    load: async () => (await storage.load()) ?? [],
-  };
+  return resolveVizelArrayStorageBackend<VizelComment>(
+    storage,
+    key,
+    isVizelComment,
+    "Failed to write comments to web storage"
+  );
 }
 
 // =============================================================================
