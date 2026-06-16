@@ -136,27 +136,38 @@ Type `/` to open the command menu for block insertion.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `items` | `VizelSlashCommandItem[]` | Custom command items |
-| `suggestion` | `object` | Suggestion configuration |
+| `commands` | `readonly VizelCommand[]` | Commands surfaced in the slash menu. Defaults to the slash-surfaced subset of `vizelDefaultCommands`. |
+| `suggestion` | `Partial<SuggestionOptions<VizelCommand>>` | Framework-specific suggestion renderer options. |
 
 ### Custom Commands
 
-```typescript
-import type { VizelSlashCommandItem } from '@vizel/core';
+The slash menu consumes the unified `VizelCommand` type. Each command defines
+one action across every surface; `surfaces.slashMenu` opts it into the menu.
+The `label` and `description` fields are locale thunks, so a single command
+localizes without duplication.
 
-const customItems: VizelSlashCommandItem[] = [
+```typescript
+import type { VizelCommand } from '@vizel/core';
+
+const customCommands: VizelCommand[] = [
   {
-    title: 'Custom Block',
-    description: 'Insert a custom block',
+    id: 'custom/custom-block',
+    label: () => 'Custom Block',
+    description: () => 'Insert a custom block',
     icon: 'lucide:box',
     keywords: ['custom', 'block'],
     group: 'custom',
-    command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).insertContent({
-        type: 'paragraph',
-        content: [{ type: 'text', text: 'Custom content' }],
-      }).run();
-    },
+    canRun: (editor) => editor.isEditable,
+    run: (editor) =>
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'Custom content' }],
+        })
+        .run(),
+    surfaces: { slashMenu: {} },
   },
 ];
 
@@ -164,7 +175,7 @@ const editor = useVizelEditor({
   features: {
     interaction: {
       slashMenu: {
-        items: customItems, // Add custom items
+        commands: customCommands, // Override the slash-surfaced commands
       },
     },
   },
