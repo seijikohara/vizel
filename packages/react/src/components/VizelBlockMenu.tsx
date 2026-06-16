@@ -47,7 +47,7 @@ export interface VizelBlockMenuProps {
  * through controllers: `createVizelPopoverController` anchors the menu to
  * the captured drag-handle rect (a `@floating-ui/dom` virtual element)
  * and owns the pointer-outside and Escape listeners, so this file
- * attaches no document-level listeners directly (ADR-0003, ADR-0007).
+ * attaches no document-level listeners directly.
  */
 export function VizelBlockMenu({
   editor: editorProp,

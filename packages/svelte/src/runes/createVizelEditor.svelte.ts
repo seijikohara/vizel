@@ -89,7 +89,7 @@ export function createVizelEditor(options: CreateVizelEditorOptions = {}) {
   // mutable class instance, so deep proxying buys nothing and the rune
   // tracks identity, not field mutation. Re-assignment on create triggers
   // reactivity; in-place edits do not, which matches Tiptap's transaction
-  // model. ADR-0004 mandates this idiom, mirroring React `useState` and
+  // model. This idiom mirrors React `useState` and
   // Vue `shallowRef`.
   let editor = $state.raw<Editor | null>(null);
 

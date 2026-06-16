@@ -108,8 +108,8 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 
   // The open dropdown is a single-group listbox, so it delegates the
-  // navigate / select / close verbs to the shared combobox resolver
-  // (ADR-0003), matching VizelSlashMenu and VizelMentionMenu. The dropdown
+  // navigate / select / close verbs to the shared combobox resolver,
+  // matching VizelSlashMenu and VizelMentionMenu. The dropdown
   // root (not a native button) owns the keydown, so Space activates like
   // Enter; normalise it before resolving. Tab (`groupNext`) has no group to
   // advance and falls through so focus leaves the dropdown.

@@ -19,9 +19,9 @@ initVizelIconRenderer();
 // biome-ignore lint/performance/noReExportAll: mirror the full Core surface so named exports never drift whenever Core adds a symbol.
 export * from "@vizel/core";
 // First-party `useSyncExternalStore`-backed reactivity primitive.
-// ADR-0009 mandates that every adapter implements editor reactivity
-// natively; React's adapter holds the implementation in `_reactivity.ts`
-// and re-exports the consumer-facing surface here. The shallow-equality
+// Every adapter implements editor reactivity natively; React's adapter holds
+// the implementation in `_reactivity.ts` and re-exports the consumer-facing
+// surface here. The shallow-equality
 // helpers re-export from `@vizel/core` so the feature manifest
 // (verified by `pnpm check:feature-parity`) resolves them to a single
 // source across frameworks.

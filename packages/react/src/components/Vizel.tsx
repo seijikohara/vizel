@@ -123,7 +123,7 @@ export interface VizelProps {
  *
  * To read or drive the underlying Tiptap editor, lift it into state from
  * `onCreate` or render a descendant that calls `useVizelContext`. The
- * component intentionally does not expose the editor through a ref (ADR-0004).
+ * component intentionally does not expose the editor through a ref.
  *
  * @example
  * ```tsx

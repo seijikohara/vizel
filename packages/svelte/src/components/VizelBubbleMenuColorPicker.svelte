@@ -71,7 +71,7 @@ function handleColorChange(color: string) {
 
 // Pointer-outside dismissal routes through `createVizelDismissable` from
 // `@vizel/headless` so this component never attaches document listeners
-// directly (ADR-0003, ADR-0007).
+// directly.
 $effect(() => {
   if (!isOpen || !containerRef) return;
   const controller = createVizelDismissable({

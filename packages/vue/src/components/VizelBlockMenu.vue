@@ -190,7 +190,7 @@ watch(
 
 // The drag-handle extension dispatches `VIZEL_BLOCK_MENU_EVENT` on
 // `document`; the trigger controller owns that subscription so this
-// component never attaches the listener directly (ADR-0007).
+// component never attaches the listener directly.
 const triggerController = createVizelBlockMenuTriggerController({
   onOpen: (detail: VizelBlockMenuOpenDetail) => {
     if (boundEditor.value && detail.editor !== boundEditor.value) return;

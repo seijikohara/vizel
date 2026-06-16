@@ -56,8 +56,8 @@ export function VizelToolbarDefault({
 
   // Read each button's active/enabled flags through a selector slice.
   // `shallowEqualObject` re-renders the toolbar only when one of those
-  // flags flips, replacing the coarse `useVizelState` full-tick re-render
-  // (ADR-0004). The explicit `editor` keeps the subscription bound when
+  // flags flips, replacing the coarse `useVizelState` full-tick re-render.
+  // The explicit `editor` keeps the subscription bound when
   // the toolbar renders without a surrounding `VizelProvider`.
   const stateById = useVizelEditorState(
     ({ editor: current }) => buildButtonStateById(buttonActions, current),

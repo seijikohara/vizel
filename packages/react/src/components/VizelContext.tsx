@@ -8,7 +8,7 @@ import { createContext, type ReactNode, useContext } from "react";
  * The context value is the editor itself (or `null` while it is still
  * initializing). The context carries no wrapping `{ editor }` object so the
  * public hook surface (`useVizelContext`) returns the editor directly,
- * matching the React idiom that "the hook is the value" (ADR-0004).
+ * matching the React idiom that "the hook is the value".
  *
  * A `symbol` sentinel disambiguates "no provider mounted" from "provider
  * mounted but the editor is still `null`" without requiring a wrapper object.

@@ -4,9 +4,9 @@
  * Provides the roving-selection logic every Vizel listbox and grid
  * surface needs: arrow-key movement, Home/End jumps, and (for lists)
  * wraparound. The module ships two pure spec builders and two
- * controllers. ADR-0003 (headless package) records why this logic lives
- * in `@vizel/headless` rather than each adapter; ADR-0007 (controller
- * delegation) records why the DOM-listener variants follow the
+ * controllers. This logic lives in `@vizel/headless` rather than each
+ * adapter so the three adapters share one implementation; the
+ * DOM-listener variants follow the
  * `{ mount, unmount, update }` contract.
  *
  * `buildVizelListNavSpec` and `buildVizelGridNavSpec` are pure: they

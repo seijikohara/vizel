@@ -9,8 +9,8 @@ import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext.js";
  * `{ theme, setTheme }` and the Vue composable's
  * `{ theme: ComputedRef<…>, setTheme }`. The scalar field is named
  * `current` here so it lines up with every other Svelte rune accessor
- * (`editor.current`, `state.current`, etc.); ADR-0004 favours each
- * adapter's native idiom over a shared field name across frameworks.
+ * (`editor.current`, `state.current`, etc.); each adapter follows its
+ * native idiom rather than a shared field name across frameworks.
  * `current` is the currently applied (resolved) theme so a toggle is a
  * one-liner. `setTheme` accepts only concrete `VizelResolvedTheme`
  * values because entering "system" mode is the provider's

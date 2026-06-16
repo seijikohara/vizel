@@ -36,7 +36,7 @@ export interface VizelLinkEditorProps {
  * Pointer-outside and Escape dismissal route through
  * `createVizelDismissable` from `@vizel/headless`; `deferPointerHandler`
  * installs the outside-click listener on the next tick so the opening
- * pointerdown does not register as an outside click (ADR-0003, ADR-0007).
+ * pointerdown does not register as an outside click.
  * `createVizelFocusTrapController` traps Tab inside the form, focuses the
  * URL input on open, and returns focus to the bubble-menu trigger on
  * close, so the two headless controllers own every form-level listener.
@@ -84,7 +84,7 @@ export function VizelLinkEditor({
     // and calls `stopImmediatePropagation()`. The link editor owns Escape
     // while open; otherwise the editor's bubble-phase keymap also fires
     // and resets the selection, closing the popover and dropping focus
-    // from the input. ADR-0007 delegates this contract to the controller.
+    // from the input. The controller owns this contract.
     const controller = createVizelDismissable({
       onPointerOutside: () => onCloseRef.current?.(),
       onEscape: () => onCloseRef.current?.(),
@@ -100,7 +100,7 @@ export function VizelLinkEditor({
     // former ad-hoc input focus), keeps Tab cycling inside the form, and
     // returns focus to the bubble-menu trigger when the form unmounts. It
     // ignores Escape so the dismissable stays the sole owner of the close
-    // gesture. ADR-0007 delegates these listeners to the controller.
+    // gesture. The controller owns these listeners.
     const focusTrap = createVizelFocusTrapController();
     focusTrap.mount(form);
     return () => {

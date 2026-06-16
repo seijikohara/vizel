@@ -62,7 +62,7 @@ let inputRef: HTMLInputElement | null = $state(null);
 let gridRef: HTMLElement | null = $state(null);
 
 // The grid keyboard navigation (arrows, Home, End) is owned by the shared
-// @vizel/headless controller (ADR-0003, ADR-0007) so the three adapters no
+// @vizel/headless controller so the three adapters no
 // longer duplicate the resolver. The swatches own their own keydown
 // listener, so this component forwards each event through `handleKey`
 // instead of letting the controller attach its own listener.

@@ -5,8 +5,8 @@
  * dismiss: pointer activity outside the surface, the `Escape` key, and
  * focus that leaves the surface entirely. The controller owns the
  * `document`-level listeners so framework adapters never attach them
- * directly. ADR-0007 (controller delegation) and ADR-0003 (headless
- * package) record the constraints this controller honours.
+ * directly. Controller delegation and the headless package boundary are
+ * the constraints this controller honours.
  *
  * The factory returns a `{ mount, unmount, update }` controller. Each
  * `mount(target)` activates the listeners against the supplied target;

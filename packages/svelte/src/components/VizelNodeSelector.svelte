@@ -43,7 +43,7 @@ const spec = $derived.by(() => {
 });
 
 // Pointer-outside dismissal routes through `createVizelDismissable` from
-// `@vizel/headless` (ADR-0003, ADR-0007). The dropdown owns the keydown
+// `@vizel/headless`. The dropdown owns the keydown
 // handler and resolves it through `buildVizelComboboxKeySpec`, so the
 // controller only handles outside-pointer dismissal.
 $effect(() => {
@@ -74,8 +74,8 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 
   // The open dropdown is a single-group listbox, so it delegates the
-  // navigate / select / close verbs to the shared combobox resolver
-  // (ADR-0003), matching VizelSlashMenu and VizelMentionMenu. The dropdown
+  // navigate / select / close verbs to the shared combobox resolver,
+  // matching VizelSlashMenu and VizelMentionMenu. The dropdown
   // root (not a native button) owns the keydown, so Space activates like
   // Enter; normalise it before resolving. Tab (`groupNext`) has no group to
   // advance and falls through so focus leaves the dropdown.

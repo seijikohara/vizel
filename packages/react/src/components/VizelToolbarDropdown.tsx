@@ -17,8 +17,8 @@ export interface VizelToolbarDropdownProps {
  * DOM/ARIA scaffolding (trigger + listbox popover) comes from
  * `@vizel/core`'s `buildVizelToolbarDropdownSpec`. Pointer-outside and
  * Escape dismissal route through `createVizelDismissable` from
- * `@vizel/headless` to satisfy ADR-0003 and ADR-0007 (no direct
- * document listeners in adapter code).
+ * `@vizel/headless`, so adapter code attaches no document listeners
+ * directly.
  */
 export function VizelToolbarDropdown({
   editor,
@@ -49,7 +49,7 @@ export function VizelToolbarDropdown({
     // and calls `stopImmediatePropagation()`. The dropdown popover owns
     // Escape while open; otherwise the editor's bubble-phase keymap also
     // fires and resets the selection or drops focus from the trigger.
-    // ADR-0007 delegates this adapter-side contract to the controller.
+    // The controller owns this adapter-side contract.
     const controller = createVizelDismissable({
       onPointerOutside: () => closeRef.current(),
       onEscape: () => closeRef.current(),

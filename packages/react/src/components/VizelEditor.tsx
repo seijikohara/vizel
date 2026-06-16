@@ -11,7 +11,7 @@ export interface VizelEditorProps {
    * regular prop, so the consumer passes a standard `Ref<HTMLDivElement>` and
    * reads the element directly. To reach the editor instance, call
    * `useVizelEditor` or `useVizelContext` rather than routing the editor
-   * through this ref (ADR-0004).
+   * through this ref.
    */
   ref?: Ref<HTMLDivElement>;
   /** Editor instance. Falls back to the editor from `VizelProvider` / `Vizel` context if omitted. */

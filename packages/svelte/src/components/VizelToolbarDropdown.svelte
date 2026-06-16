@@ -79,15 +79,15 @@ $effect(() => {
 
 // Pointer-outside and Escape dismissal route through `createVizelDismissable`
 // from `@vizel/headless` so this component never attaches document listeners
-// directly (ADR-0003, ADR-0007).
+// directly.
 $effect(() => {
   if (!isOpen || !containerEl) return;
 
   // `captureEscape: true` runs the Escape handler in the capture phase and
   // calls `stopImmediatePropagation()`. The dropdown popover owns Escape
   // while open; otherwise the editor's bubble-phase keymap also fires and
-  // resets the selection or drops focus from the trigger. ADR-0007
-  // delegates this adapter-side contract to the controller.
+  // resets the selection or drops focus from the trigger. The
+  // controller owns this adapter-side contract.
   const controller = createVizelDismissable({
     onPointerOutside: () => close(),
     onEscape: () => close(),

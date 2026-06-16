@@ -9,9 +9,8 @@
  *
  * The manifest replaces prose parity tables with type-checked entries
  * so an adapter can never silently drift from the declared surface.
- * ADR-0001, ADR-0002, and ADR-0006 explain the rationale; the companion
- * rule `.claude/rules/feature-manifest.md` documents the workflow for
- * adding, modifying, and removing features.
+ * The companion rule `.claude/rules/feature-manifest.md` documents the
+ * workflow for adding, modifying, and removing features.
  */
 
 /** Stable identifier for every advertised Vizel feature. */

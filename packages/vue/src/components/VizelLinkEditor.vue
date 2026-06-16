@@ -52,8 +52,8 @@ const viewState = computed(() =>
   editorRef.value ? buildVizelLinkEditorSpec(editorRef.value, url.value, props.enableEmbed) : null
 );
 
-// Pointer-outside and Escape dismissal route through `createVizelDismissable`
-// (ADR-0003, ADR-0007). `captureEscape: true` runs the Escape handler in the
+// Pointer-outside and Escape dismissal route through `createVizelDismissable`.
+// `captureEscape: true` runs the Escape handler in the
 // capture phase and calls `stopImmediatePropagation()` so the editor's
 // bubble-phase keymap does not also fire — without that the bubble-phase
 // keymap resets the selection, closes the popover, and drops focus from the
@@ -73,7 +73,7 @@ const dismissable = createVizelDismissable({
 // so the dismissable stays the sole owner of the close gesture.
 const focusTrap = createVizelFocusTrapController();
 
-// A single watch owns the controller lifecycle (ADR-0004 Vue idiom). The
+// A single watch owns the controller lifecycle, the Vue idiom. The
 // `onCleanup` parameter unmounts the controllers before each re-run and on
 // scope disposal, so the cleanup runs even inside a detached `effectScope()`
 // — unlike a separate `onBeforeUnmount` hook. `immediate: true` covers the

@@ -37,8 +37,8 @@ function handleActionClick(action: VizelToolbarActionItem) {
   }
 }
 
-// Pointer-outside and Escape dismissal route through `createVizelDismissable`
-// (ADR-0003, ADR-0007). `captureEscape: true` runs the Escape handler in the
+// Pointer-outside and Escape dismissal route through `createVizelDismissable`.
+// `captureEscape: true` runs the Escape handler in the
 // capture phase and calls `stopImmediatePropagation()` so the editor's
 // bubble-phase keymap does not also fire and reset the selection or drop
 // focus from the trigger while the overflow popover owns Escape.

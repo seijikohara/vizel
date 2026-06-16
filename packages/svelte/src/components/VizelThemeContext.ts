@@ -16,7 +16,7 @@ export const VIZEL_THEME_CONTEXT_KEY = Symbol("VizelThemeContext");
  * Call this typed wrapper instead of `setContext(VIZEL_THEME_CONTEXT_KEY,
  * ...)` so the key and the `VizelThemeState` value type stay paired.
  * `getVizelTheme` reads the same context. The wrapper mirrors the editor
- * context's `setVizelContext` idiom (ADR-0004) so no provider calls
+ * context's `setVizelContext` idiom so no provider calls
  * `setContext` with a raw key.
  *
  * @param state - Reactive theme state exposing `theme`, `resolvedTheme`,

@@ -5,10 +5,9 @@
  * surface is open. Vizel's link editor and find-replace forms open over
  * the editor as popover forms; a keyboard user who presses Tab past the
  * last field must wrap to the first field instead of escaping into the
- * page behind the form. ADR-0003 (headless package) records why the trap
- * lives in `@vizel/headless` rather than each adapter, and lists the link
- * editor and find-replace as its intended consumers; ADR-0007 (controller
- * delegation) records why the DOM-touching variant follows the
+ * page behind the form. The trap lives in `@vizel/headless` rather than
+ * each adapter so the link editor and find-replace forms share one
+ * implementation; the DOM-touching variant follows the
  * `{ mount, unmount, update }` contract so adapter components attach no
  * listeners themselves.
  *
@@ -139,8 +138,7 @@ export function buildVizelFocusTrapSpec(options: VizelFocusTrapOptions = {}): Vi
  * Returned by {@link createVizelFocusTrapController}.
  *
  * The controller owns the `keydown` listener on the trapped element and
- * the focus moves, following the `{ mount, unmount, update }` contract
- * ADR-0007 mandates.
+ * the focus moves, following the `{ mount, unmount, update }` contract.
  */
 export interface VizelFocusTrapController {
   /**

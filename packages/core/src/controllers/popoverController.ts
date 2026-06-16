@@ -9,9 +9,9 @@ import {
  * The controller falls back to the opposite side when the preferred side
  * would overflow the viewport. The values are a subset of
  * `@floating-ui/dom`'s `Placement` union — the placements Vizel surfaces
- * actually request. ADR-0003 names `@floating-ui/dom` as the positioning
- * engine; the wrapper restricts the union so existing core call sites
- * keep their narrow type.
+ * actually request. `@floating-ui/dom` is the positioning engine; the
+ * wrapper restricts the union so existing core call sites keep their
+ * narrow type.
  */
 export type VizelPopoverPlacement =
   | "bottom-start"
@@ -68,8 +68,8 @@ export interface VizelPopoverController {
  * The controller delegates to `@vizel/headless`'s popover primitive,
  * which composes `@floating-ui/dom` positioning with the dismissable
  * listener wiring. The wrapper exists so existing `@vizel/core` call
- * sites keep importing `createVizelPopoverController` from Core; ADR-0003
- * moves the implementation into the headless package, and the headless
+ * sites keep importing `createVizelPopoverController` from Core; the
+ * implementation lives in the headless package, and the headless
  * popover de-duplicates the dismiss logic that previously lived in a
  * separate Core controller.
  *
