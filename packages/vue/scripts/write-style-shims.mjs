@@ -2,7 +2,7 @@
 /**
  * Post-build step: emit re-export shims that defer to @vizel/core/styles.css.
  *
- * ADR-0008 establishes @vizel/core/styles.css as the single CSS source of
+ * @vizel/core/styles.css is the single CSS source of
  * truth. Each adapter must NOT ship its own copy of the catalogue, because
  * the duplication forces a token edit to touch three identical files.
  *
@@ -41,9 +41,9 @@ await mkdir(resolve(distDir, "styles"), { recursive: true });
 await Promise.all(
   shims.map(async ({ src, dest }) => {
     const target = resolve(distDir, dest);
-    // The leading sentinel comment helps the ADR-0008 harness detect that
+    // The leading sentinel comment helps the CSS-centralisation harness detect that
     // the file is a re-export, not a stale copy of the catalogue.
-    const body = `/* ADR-0008: re-export of @vizel/core/styles.css; do not edit. */\n@import "${src}";\n`;
+    const body = `/* vizel-style-shim: re-export of @vizel/core/styles.css; do not edit. */\n@import "${src}";\n`;
     await writeFile(target, body);
     console.log(`Wrote ${dest} -> ${src}`);
   })

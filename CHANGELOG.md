@@ -6,8 +6,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.0.0] - Unreleased
 
-v2.0.0 is a breaking rebuild of Vizel. Per
-[ADR-0005](docs/adr/ADR-0005-v2-breaking-release.md), the release abandons
+v2.0.0 is a breaking rebuild of Vizel. The release abandons
 backward compatibility with v1.x: no API, type, prop, event, or runtime contract
 is preserved. The only bridge for existing consumers is the migration guide at
 [docs/guide/migration-v1-to-v2.md](docs/guide/migration-v1-to-v2.md), which walks
@@ -25,7 +24,7 @@ the migration guide. This list is the index.
 - **API symmetry retires in favour of feature parity.** Adapter APIs no longer
   mirror each other; each follows its framework's idiom. Parity is enforced by
   the feature manifest (`packages/core/src/feature-manifest.ts`) rather than by
-  matching signatures. See [ADR-0001](docs/adr/ADR-0001-feature-parity-over-api-symmetry.md).
+  matching signatures.
 - **Editor lifecycle returns the editor directly.** React `useVizelEditor`
   returns `Editor | null`; Vue returns `ShallowRef<Editor | null>`; Svelte
   `createVizelEditor` returns `{ readonly current: Editor | null }`.
@@ -49,31 +48,26 @@ the migration guide. This list is the index.
 - **`@vizel/headless`** — a framework-neutral package of UI primitives consumed
   transitively by every adapter (combobox, popover, dismissable, focus-trap,
   floating, and keyboard). Each primitive ships a pure spec builder plus a
-  `{ mount, unmount, update }` controller and guards SSR. See
-  [ADR-0003](docs/adr/ADR-0003-vizel-headless-package.md).
+  `{ mount, unmount, update }` controller and guards SSR.
 - **First-party editor reactivity in every adapter.** React uses
   `useSyncExternalStore`, Vue uses `shallowRef` + an `onScopeDispose`-bound
   transaction listener, and Svelte uses `$state.raw` + `createSubscriber`.
-  `@tiptap/react` and `@tiptap/vue-3` are no longer dependencies. See
-  [ADR-0009](docs/adr/ADR-0009-first-party-editor-reactivity.md).
+  `@tiptap/react` and `@tiptap/vue-3` are no longer dependencies.
 - **Feature manifest as the parity single source of truth.**
   `VIZEL_FEATURE_MANIFEST` declares every feature; `pnpm check:feature-parity`
-  verifies all three adapters cover every entry. See
-  [ADR-0002](docs/adr/ADR-0002-feature-manifest-as-parity-ssot.md).
+  verifies all three adapters cover every entry.
 - **Pure spec builders and DOM controllers in `@vizel/core`.** Every menu and
   form component consumes a `buildVizel<Component>Spec(...)` builder plus a
   controller that owns its DOM listeners, so adapters never attach global
-  listeners directly. See
-  [ADR-0007](docs/adr/ADR-0007-component-size-and-controller-delegation.md).
-- **Architecture Decision Records** under `docs/adr/` capturing every binding
-  rule, and a per-framework migration guide.
+  listeners directly.
+- **A v1-to-v2 migration guide** documenting every breaking change per framework.
 
 ### Changed
 
 - **CSS centralises in `@vizel/core`.** A single catalogue ships under two
   selectors (`:root, [data-vizel-theme="light"]` and `[data-vizel-theme="dark"]`)
   plus the `prefers-color-scheme` fallback; each adapter re-exports the same
-  `styles.css`. See [ADR-0008](docs/adr/ADR-0008-css-belongs-in-core.md).
+  `styles.css`.
 - **Controllers replace direct DOM listeners.** Outside-click, Escape, focus
   trapping, and positioning move into `@vizel/core` controllers and
   `@vizel/headless` primitives; adapter components stay at or under 120
@@ -86,6 +80,4 @@ the migration guide. This list is the index.
 
 - `@tiptap/react` and `@tiptap/vue-3` dependencies.
 - The v1 cross-framework API-symmetry rule and its prose source of truth
-  (`.claude/rules/cross-framework.md`), retired by
-  [ADR-0006](docs/adr/ADR-0006-retire-cross-framework-rule.md) in favour of the
-  feature manifest and ADRs.
+  (`.claude/rules/cross-framework.md`), retired in favour of the feature manifest.

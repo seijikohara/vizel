@@ -8,7 +8,7 @@ paths:
 
 # Feature Manifest
 
-Vizel expresses cross-framework feature parity as TypeScript, not prose. The Single Source of Truth (SSOT) is `packages/core/src/feature-manifest.ts`. The full rationale lives in [ADR-0002](../../docs/adr/ADR-0002-feature-manifest-as-parity-ssot.md). `scripts/check-feature-parity.ts` verifies coverage against the manifest.
+Vizel expresses cross-framework feature parity as TypeScript, not prose. The Single Source of Truth (SSOT) is `packages/core/src/feature-manifest.ts`. `scripts/check-feature-parity.ts` verifies coverage against the manifest.
 
 ## What the manifest contains
 

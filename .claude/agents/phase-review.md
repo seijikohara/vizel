@@ -15,7 +15,7 @@ This subagent verifies that a completed milestone actually closed the plan deliv
 
 - The milestone identifier from the plan.
 - The implementation plan at `/Users/seiji/.claude/plans/starry-petting-planet.md`.
-- The ADRs under `docs/adr/`.
+- The binding architecture rules under `.claude/rules/`.
 - The mechanical harness output from `pnpm check:adr-compliance`.
 - The `git log` since the previous milestone's merge commit.
 
@@ -59,7 +59,7 @@ Report findings in the following format. Cite file paths in `path:line` form.
 ### Recommendations
 
 - [ ] Add the missing harness script before merging.
-- [ ] Record the deferral in `docs/adr/ADR-0008-css-belongs-in-core.md`.
+- [ ] Record the deferral in the relevant rule under `.claude/rules/`.
 ```
 
 ## Constraints

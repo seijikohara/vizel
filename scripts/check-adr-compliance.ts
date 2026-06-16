@@ -1,15 +1,16 @@
 /**
- * ADR compliance harness.
+ * Architecture invariant compliance harness.
  *
- * Walks every ADR with a mechanically-checkable invariant and emits
- * PASS / WARN / FAIL per ADR. WARN indicates an in-flight Phase
+ * Walks every binding architecture invariant that is mechanically
+ * checkable and emits PASS / WARN / FAIL. WARN indicates an in-flight
  * transition; FAIL exits non-zero and blocks the build.
  *
- * Add a new ADR check by appending a function to `CHECKS` below. Each
- * function returns `{ adr, title, status, message }`. The harness does
- * not need a registry update.
+ * Add a new check by appending a function to `CHECKS` below. Each
+ * function returns `{ adr, title, status, message }`, where `adr` is a
+ * stable identifier for the invariant. The harness does not need a
+ * registry update.
  *
- * See ADR-0013 for the design rationale.
+ * The binding invariants live in `.claude/rules/architecture.md`.
  */
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
@@ -431,7 +432,7 @@ function extractViewBlockLineCount(framework: "react" | "vue" | "svelte", source
  * mechanism: `package.json` keeps `./dist/styles.css` as the export
  * path; the post-build script `write-style-shims.mjs` emits a two-line
  * file at that path carrying the sentinel comment
- * `/* ADR-0008: re-export of @vizel/core/styles.css; do not edit. *\/`
+ * `/* vizel-style-shim: re-export of @vizel/core/styles.css; do not edit. *\/`
  * plus an `@import` of the Core catalogue. The harness looks for the
  * sentinel in the built shim and falls back to the build script when
  * the dist file is absent (pre-build CI run).
@@ -441,7 +442,7 @@ function checkCssCentralisation(): CheckResult {
   // emits inside every shim. Detecting the string in either the dist
   // shim or the script proves the re-export contract holds without
   // duplicating the catalogue across packages.
-  const sentinel = "ADR-0008: re-export of @vizel/core/styles.css; do not edit.";
+  const sentinel = "vizel-style-shim: re-export of @vizel/core/styles.css; do not edit.";
   const offenders: string[] = [];
   for (const framework of ["react", "vue", "svelte"] as const) {
     const distPath = resolve(REPO_ROOT, "packages", framework, "dist", "styles.css");
@@ -461,7 +462,7 @@ function checkCssCentralisation(): CheckResult {
     const script = readText(scriptPath);
     if (script?.includes(sentinel)) continue;
     offenders.push(
-      `${framework}: missing ADR-0008 sentinel in dist/styles.css and scripts/write-style-shims.mjs`
+      `${framework}: missing the re-export sentinel in dist/styles.css and scripts/write-style-shims.mjs`
     );
   }
   if (offenders.length === 0) {

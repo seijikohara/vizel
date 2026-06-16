@@ -28,7 +28,7 @@ Import the stylesheet once at the application entry point:
 import "@vizel/vue/styles.css";
 ```
 
-The subpath resolves to `@vizel/core/styles.css` ([ADR-0008](/adr/ADR-0008-css-belongs-in-core)). The bundle ships under exactly two selectors — `:root, [data-vizel-theme="light"]` and `[data-vizel-theme="dark"]` — plus the `prefers-color-scheme: dark` fallback.
+The subpath resolves to `@vizel/core/styles.css`. The bundle ships under exactly two selectors — `:root, [data-vizel-theme="light"]` and `[data-vizel-theme="dark"]` — plus the `prefers-color-scheme: dark` fallback.
 
 ## Minimal editor
 
@@ -53,7 +53,7 @@ const markdown = ref("# Hello, Vizel");
 
 ## Composable-driven editor
 
-`useVizelEditor` returns a `ShallowRef<Editor | null>`. Read `.value` in script; templates auto-unwrap top-level refs. The first-party reactivity primitive uses `shallowRef` plus `onScopeDispose`-bound listeners ([ADR-0009](/adr/ADR-0009-first-party-editor-reactivity)).
+`useVizelEditor` returns a `ShallowRef<Editor | null>`. Read `.value` in script; templates auto-unwrap top-level refs. The first-party reactivity primitive uses `shallowRef` plus `onScopeDispose`-bound listeners.
 
 ```vue
 <script setup lang="ts">

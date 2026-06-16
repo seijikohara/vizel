@@ -23,7 +23,6 @@ guards Server-Side Rendering (SSR) and imports no framework runtime.
 
 ## Design
 
-The rationale lives in [ADR-0003](https://github.com/seijikohara/vizel/blob/main/docs/adr/ADR-0003-vizel-headless-package.md).
 The package depends only on `@floating-ui/dom` and standard DOM APIs.
 
 ## License

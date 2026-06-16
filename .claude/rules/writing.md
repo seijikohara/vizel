@@ -7,9 +7,7 @@ paths:
 
 # Technical Writing Style
 
-Every authored sentence in this repository follows a single technical-writing standard. The standard covers source-code comments, JSDoc, README files, design documents, ADRs, the migration guide, demo descriptions, commit messages, pull-request bodies, and rule files under `.claude/rules/**`.
-
-The full rationale lives in [ADR-0011](../../docs/adr/ADR-0011-technical-writing-style.md).
+Every authored sentence in this repository follows a single technical-writing standard. The standard covers source-code comments, JSDoc, README files, design documents, the migration guide, demo descriptions, commit messages, pull-request bodies, and rule files under `.claude/rules/**`.
 
 ## Binding principles
 
@@ -55,7 +53,7 @@ counter += 1;
 ```
 feat(react): add useVizelEditorState selector subscription
 fix(svelte): re-attach createSubscriber after editor reassignment
-docs: add ADR-0001 for feature parity over API symmetry
+docs: record the feature-manifest parity workflow
 ```
 
 ### Function docstrings

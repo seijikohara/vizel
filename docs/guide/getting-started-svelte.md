@@ -28,7 +28,7 @@ Import the stylesheet once at the application entry point:
 import "@vizel/svelte/styles.css";
 ```
 
-The subpath resolves to `@vizel/core/styles.css` ([ADR-0008](/adr/ADR-0008-css-belongs-in-core)). The bundle ships under exactly two selectors — `:root, [data-vizel-theme="light"]` and `[data-vizel-theme="dark"]` — plus the `prefers-color-scheme: dark` fallback.
+The subpath resolves to `@vizel/core/styles.css`. The bundle ships under exactly two selectors — `:root, [data-vizel-theme="light"]` and `[data-vizel-theme="dark"]` — plus the `prefers-color-scheme: dark` fallback.
 
 ## Minimal editor
 
@@ -47,7 +47,7 @@ let markdown = $state("# Hello, Vizel");
 
 ## Rune-driven editor
 
-`createVizelEditor` returns `{ readonly current: Editor | null }`. Read `.current` inside `$derived`, `$effect`, or templates so the read registers as a reactive dependency. The first-party reactivity primitive uses `$state.raw` plus `createSubscriber` from `svelte/reactivity` ([ADR-0009](/adr/ADR-0009-first-party-editor-reactivity)).
+`createVizelEditor` returns `{ readonly current: Editor | null }`. Read `.current` inside `$derived`, `$effect`, or templates so the read registers as a reactive dependency. The first-party reactivity primitive uses `$state.raw` plus `createSubscriber` from `svelte/reactivity`.
 
 ```svelte
 <script lang="ts">
@@ -102,7 +102,7 @@ const state = createVizelEditorState(() => editor.current);
 ```
 
 ::: info Selector contract per framework
-React (`useVizelEditorState(selector, { equalityFn? }): T`) and Vue (`useVizelEditorState(selector, { equalityFn? }): ComputedRef<T>`) ship a selector argument because their reactivity primitives recompute on every transaction. Svelte 5 tracks reads through the compiler, so the rune collapses to the getter form. [ADR-0009](/adr/ADR-0009-first-party-editor-reactivity) records the per-framework primitive.
+React (`useVizelEditorState(selector, { equalityFn? }): T`) and Vue (`useVizelEditorState(selector, { equalityFn? }): ComputedRef<T>`) ship a selector argument because their reactivity primitives recompute on every transaction. Svelte 5 tracks reads through the compiler, so the rune collapses to the getter form.
 :::
 
 ## Two-way Markdown with `bind:markdown`
@@ -158,7 +158,7 @@ import ThemeToggle from "./ThemeToggle.svelte";
 
 ## Event prop casing
 
-Svelte 5 uses lowercase DOM-attribute names for event props ([ADR-0004](/adr/ADR-0004-per-framework-idiomatic-api)). React and Vue keep camelCase; Svelte does not:
+Svelte 5 uses lowercase DOM-attribute names for event props. React and Vue keep camelCase; Svelte does not:
 
 ```svelte
 <!-- Svelte: lowercase. -->

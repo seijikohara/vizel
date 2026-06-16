@@ -442,7 +442,7 @@ See [_tokens.scss](packages/core/src/styles/_tokens.scss) for all available desi
 
 ## Development
 
-Contributors build the monorepo on Node.js >=24 (pinned in `.nvmrc`) and pnpm. This `engines.node` floor is advisory toolchain guidance for contributors and CI; it does not gate the Node.js runtime of a consumer app that installs `@vizel/react`, `@vizel/vue`, or `@vizel/svelte`. See [ADR-0015](./docs/adr/ADR-0015-node-24-baseline.md).
+Contributors build the monorepo on Node.js >=24 (pinned in `.nvmrc`) and pnpm. This `engines.node` floor is advisory toolchain guidance for contributors and CI; it does not gate the Node.js runtime of a consumer app that installs `@vizel/react`, `@vizel/vue`, or `@vizel/svelte`.
 
 ```bash
 # Install dependencies

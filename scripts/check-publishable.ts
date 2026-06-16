@@ -15,8 +15,8 @@
  * Two further guards protect the v2 packaging contract:
  *
  * 1. Each adapter (react, vue, svelte) must declare @vizel/core in
- *    `dependencies` and must NOT declare it in `peerDependencies`. ADR-0003
- *    and the architecture rule require @vizel/core to be a transitive
+ *    `dependencies` and must NOT declare it in `peerDependencies`. The
+ *    architecture rule requires @vizel/core to be a transitive
  *    dependency so "install one adapter is sufficient" holds without relying
  *    on a package manager's auto-install-peers behaviour.
  * 2. The workspace must resolve a single prosemirror-model version. ProseMirror
@@ -160,7 +160,7 @@ const main = (): void => {
     ...(packageFailures.some((result) => result.coreDependencyViolations.length > 0)
       ? [
           "@vizel/core must be a regular dependency of every adapter and never a peer dependency. " +
-            "See ADR-0003 and .claude/rules/architecture.md.",
+            "See .claude/rules/architecture.md.",
         ]
       : []),
     ...(prosemirrorDuplicated

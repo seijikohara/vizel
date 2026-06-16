@@ -5,7 +5,7 @@ paths:
 
 # `@vizel/headless` Package
 
-`@vizel/headless` provides framework-neutral UI primitives that every adapter consumes. The rationale lives in [ADR-0003](../../../docs/adr/ADR-0003-vizel-headless-package.md).
+`@vizel/headless` provides framework-neutral UI primitives that every adapter consumes.
 
 ## What the package contains
 
@@ -34,7 +34,7 @@ Each primitive exports `{ buildSpec, createController }`. The spec is a pure fun
 
 ## CSS
 
-`@vizel/headless` ships no CSS. The single CSS catalogue lives in `@vizel/core/styles.css` (see [ADR-0008](../../../docs/adr/ADR-0008-css-belongs-in-core.md)).
+`@vizel/headless` ships no CSS. The single CSS catalogue lives in `@vizel/core/styles.css`.
 
 ## Global listeners
 

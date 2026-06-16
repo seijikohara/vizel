@@ -8,8 +8,7 @@ import { shallowEqualObject, useVizelEditorState } from "@vizel/vue";
 // slice changes (`shallowEqualObject`). The selector receives a
 // snapshot with the editor instance plus the most recent transaction;
 // the count fields fall back to zero when Tiptap has not finished
-// mounting. See ADR-0009 for the first-party reactivity primitive
-// that backs the composable.
+// mounting. The first-party reactivity primitive backs the composable.
 const stats = useVizelEditorState(
   ({ editor }) => ({
     characters: editor?.storage.characterCount?.characters() ?? 0,

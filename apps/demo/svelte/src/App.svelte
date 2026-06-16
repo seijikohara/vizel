@@ -281,8 +281,7 @@ function handleJsonChange(event: Event) {
           onCreate={handleCreate}
           onUpdate={handleUpdate}
         >
-          <!-- Svelte 5 snippet — the render-prop idiom for Svelte
-               (ADR-0004). The snippet receives the bound editor; the
+          <!-- Svelte 5 snippet — the render-prop idiom for Svelte. The snippet receives the bound editor; the
                find-replace panel re-renders against it on every
                transaction. Lowercase event props (`onclick`,
                `onclose`, `onselect`) follow the DOM-attribute

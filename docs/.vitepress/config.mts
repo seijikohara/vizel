@@ -161,6 +161,7 @@ export default withMermaid({
         {
           text: "Core Concepts",
           items: [
+            { text: "Architecture", link: "/guide/architecture" },
             { text: "Editor", link: "/guide/editor" },
             { text: "Blocks", link: "/guide/blocks" },
             { text: "Markdown", link: "/guide/markdown" },
@@ -172,16 +173,7 @@ export default withMermaid({
         },
         {
           text: "Migration",
-          items: [
-            { text: "v1 to v2 (guide)", link: "/guide/migration-v1-to-v2" },
-            { text: "v1 to v2 (reference)", link: "/migration/v1-to-v2" },
-          ],
-        },
-      ],
-      "/migration/": [
-        {
-          text: "Migration",
-          items: [{ text: "v1 to v2", link: "/migration/v1-to-v2" }],
+          items: [{ text: "v1 to v2", link: "/guide/migration-v1-to-v2" }],
         },
       ],
       "/api/": [
