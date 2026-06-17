@@ -70,22 +70,22 @@
     "react-dom": "^19"
   },
   "devDependencies": {
-    "@tiptap/extension-bold": "^3.23.6",
-    "@tiptap/extension-code": "^3.23.6",
-    "@tiptap/extension-color": "^3.23.6",
-    "@tiptap/extension-highlight": "^3.23.6",
-    "@tiptap/extension-italic": "^3.23.6",
-    "@tiptap/extension-strike": "^3.23.6",
-    "@tiptap/extension-subscript": "^3.23.6",
-    "@tiptap/extension-superscript": "^3.23.6",
-    "@tiptap/extension-text-style": "^3.23.6",
-    "@tiptap/extension-underline": "^3.23.6",
-    "@tiptap/pm": "^3.23.6",
-    "@types/react": "^19.2.15",
+    "@tiptap/extension-bold": "^3.26.1",
+    "@tiptap/extension-code": "^3.26.1",
+    "@tiptap/extension-color": "^3.26.1",
+    "@tiptap/extension-highlight": "^3.26.1",
+    "@tiptap/extension-italic": "^3.26.1",
+    "@tiptap/extension-strike": "^3.26.1",
+    "@tiptap/extension-subscript": "^3.26.1",
+    "@tiptap/extension-superscript": "^3.26.1",
+    "@tiptap/extension-text-style": "^3.26.1",
+    "@tiptap/extension-underline": "^3.26.1",
+    "@tiptap/pm": "^3.26.1",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
     "@vizel/core": "workspace:^",
-    "vite": "^8.0.14",
-    "vite-plugin-dts": "^5.0.1"
+    "vite": "^8.0.16",
+    "vite-plugin-dts": "^5.0.2"
   }
 }
