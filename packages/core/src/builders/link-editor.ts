@@ -1,6 +1,6 @@
 import type { Editor } from "@tiptap/core";
-import { detectVizelEmbedProvider } from "../extensions/embed.ts";
 import type { VizelLocale } from "../i18n/types.ts";
+import { detectVizelEmbedProvider } from "../utils/embed-providers.ts";
 
 /**
  * Localized labels for the `VizelLinkEditor` form, resolved from a

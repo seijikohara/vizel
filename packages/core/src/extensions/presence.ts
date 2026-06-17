@@ -54,12 +54,6 @@ export interface VizelPresenceOptions {
   readonly awareness: VizelPresenceAwareness;
   /** Identity of the local user. */
   readonly currentUser: VizelPresenceUser;
-  /**
-   * Optional resolver to hydrate user identities not present in the
-   * awareness payload. Used when the awareness protocol carries only
-   * ids and Vizel must look up names / colors elsewhere.
-   */
-  readonly resolveUser?: (id: string) => Promise<VizelPresenceUser>;
 }
 
 export const vizelPresencePluginKey = new PluginKey<DecorationSet>("vizelPresence");

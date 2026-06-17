@@ -1,7 +1,11 @@
 import type { Editor, JSONContent } from "@tiptap/core";
 import type { VizelLocale } from "./i18n/types.ts";
 import { formatRelativeTimeWithLocale } from "./i18n/utils.ts";
-import { isVizelJsonContent, type VizelStorageBackend } from "./storage.ts";
+import {
+  isVizelJsonContent,
+  resolveVizelValueStorageBackend,
+  type VizelStorageBackend,
+} from "./storage.ts";
 
 export type { VizelStorageBackend } from "./storage.ts";
 
@@ -87,7 +91,10 @@ function debounce<T extends (...args: Parameters<T>) => void>(
 }
 
 /**
- * Gets the storage object based on backend type
+ * Resolve the auto-save storage backend for a document.
+ *
+ * Delegates to {@link resolveVizelValueStorageBackend}; a parsed value that
+ * fails {@link isVizelJsonContent} resolves to `null`.
  */
 export function getVizelStorageBackend(
   storage: VizelStorageBackend,
@@ -96,42 +103,12 @@ export function getVizelStorageBackend(
   save: (content: JSONContent) => Promise<void>;
   load: () => Promise<JSONContent | null>;
 } {
-  if (storage === "localStorage" || storage === "sessionStorage") {
-    return {
-      save: (content: JSONContent) => {
-        if (typeof window === "undefined") return Promise.resolve();
-        try {
-          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
-          storageObject.setItem(key, JSON.stringify(content));
-        } catch {
-          // Storage quota exceeded or access denied; surface via the caller's catch.
-          return Promise.reject(new Error("Failed to write to web storage"));
-        }
-        return Promise.resolve();
-      },
-      load: () => {
-        if (typeof window === "undefined") return Promise.resolve(null);
-        try {
-          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
-          const data = storageObject.getItem(key);
-          if (!data) return Promise.resolve(null);
-          const parsed: unknown = JSON.parse(data);
-          if (!isVizelJsonContent(parsed)) return Promise.resolve(null);
-          return Promise.resolve(parsed);
-        } catch {
-          return Promise.resolve(null);
-        }
-      },
-    };
-  }
-
-  // Custom storage backend
-  return {
-    save: async (content: JSONContent) => {
-      await storage.save(content);
-    },
-    load: async () => await storage.load(),
-  };
+  return resolveVizelValueStorageBackend<JSONContent>(
+    storage,
+    key,
+    (parsed) => (isVizelJsonContent(parsed) ? parsed : null),
+    "Failed to write to web storage"
+  );
 }
 
 /**

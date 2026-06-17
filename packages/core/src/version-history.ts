@@ -1,5 +1,9 @@
 import type { Editor, JSONContent } from "@tiptap/core";
-import { isVizelJsonContent, type VizelStorageBackend } from "./storage.ts";
+import {
+  isVizelJsonContent,
+  resolveVizelArrayStorageBackend,
+  type VizelStorageBackend,
+} from "./storage.ts";
 
 // =============================================================================
 // Types
@@ -102,41 +106,12 @@ export function getVizelVersionStorageBackend(
   save: (snapshots: VizelVersionSnapshot[]) => Promise<void>;
   load: () => Promise<VizelVersionSnapshot[]>;
 } {
-  if (storage === "localStorage" || storage === "sessionStorage") {
-    return {
-      save: (snapshots: VizelVersionSnapshot[]) => {
-        if (typeof window === "undefined") return Promise.resolve();
-        try {
-          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
-          storageObject.setItem(key, JSON.stringify(snapshots));
-        } catch {
-          return Promise.reject(new Error("Failed to write version history to web storage"));
-        }
-        return Promise.resolve();
-      },
-      load: () => {
-        if (typeof window === "undefined") return Promise.resolve([]);
-        try {
-          const storageObject = storage === "localStorage" ? localStorage : sessionStorage;
-          const data = storageObject.getItem(key);
-          if (!data) return Promise.resolve([]);
-          const parsed: unknown = JSON.parse(data);
-          if (!Array.isArray(parsed)) return Promise.resolve([]);
-          return Promise.resolve(parsed.filter(isVizelVersionSnapshot));
-        } catch {
-          return Promise.resolve([]);
-        }
-      },
-    };
-  }
-
-  // Custom storage backend
-  return {
-    save: async (snapshots: VizelVersionSnapshot[]) => {
-      await storage.save(snapshots);
-    },
-    load: async () => (await storage.load()) ?? [],
-  };
+  return resolveVizelArrayStorageBackend<VizelVersionSnapshot>(
+    storage,
+    key,
+    isVizelVersionSnapshot,
+    "Failed to write version history to web storage"
+  );
 }
 
 // =============================================================================
