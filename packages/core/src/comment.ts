@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core";
 import { resolveVizelArrayStorageBackend, type VizelStorageBackend } from "./storage.ts";
+import { generateVizelId } from "./utils/id.ts";
 
 // =============================================================================
 // Types
@@ -135,10 +136,6 @@ export function getVizelCommentStorageBackend(
 // Handlers
 // =============================================================================
 
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
 /**
  * Creates comment handlers for an editor.
  *
@@ -215,7 +212,7 @@ export function createVizelCommentHandlers(
 
     try {
       const comment: VizelComment = {
-        id: generateId(),
+        id: generateVizelId(),
         text,
         createdAt: Date.now(),
         resolved: false,
@@ -313,7 +310,7 @@ export function createVizelCommentHandlers(
       if (!comment) return null;
 
       const reply: VizelCommentReply = {
-        id: generateId(),
+        id: generateVizelId(),
         text,
         createdAt: Date.now(),
         ...(author !== undefined && { author }),

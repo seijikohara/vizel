@@ -23,7 +23,8 @@ import {
   vizelDefaultEmbedProviders,
 } from "../utils/embed-providers.ts";
 import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
-import { escapeMetadataCommentValue, registerEmbedRule } from "./embed-markdown.ts";
+import { escapeMetadataCommentValue } from "../utils/metadata-comment.ts";
+import { registerEmbedRule } from "./embed-markdown.ts";
 import { renderLink, renderLoading, renderOembed, renderOgpCard } from "./embed-renderers.ts";
 
 export {
