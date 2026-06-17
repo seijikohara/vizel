@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -41,10 +41,10 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
 
       "complexity": {
-        "recommended": true,
+        "preset": "recommended",
         "noExcessiveCognitiveComplexity": {
           "level": "warn",
           "options": { "maxAllowedComplexity": 20 }
@@ -61,7 +61,7 @@
       },
 
       "correctness": {
-        "recommended": true,
+        "preset": "recommended",
         "noUnusedImports": "error",
         "noUnusedVariables": "error",
         "noUnusedPrivateClassMembers": "error",
@@ -73,14 +73,14 @@
       },
 
       "performance": {
-        "recommended": true,
+        "preset": "recommended",
         "noAccumulatingSpread": "warn",
         "noBarrelFile": "off",
         "noReExportAll": "warn"
       },
 
       "style": {
-        "recommended": true,
+        "preset": "recommended",
         "noDefaultExport": "error",
         "noNamespace": "error",
         "noNegationElse": "error",
@@ -153,7 +153,7 @@
       },
 
       "suspicious": {
-        "recommended": true,
+        "preset": "recommended",
         "noApproximativeNumericConstant": "error",
         "noAssignInExpressions": "error",
         "noConfusingVoidType": "error",
@@ -225,6 +225,19 @@
           },
           "nursery": {
             "useExplicitType": "off"
+          },
+          "style": {
+            "useVueMultiWordComponentNames": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.svg"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noSvgWithoutTitle": "off"
           }
         }
       }
