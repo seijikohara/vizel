@@ -111,12 +111,14 @@ jobs:
         env:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
-          pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version
-          pnpm --filter @vizel/headless exec npm version "$VERSION" --no-git-tag-version
-          pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version
-          pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version
-          pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
-          echo "✅ Updated all packages to version $VERSION"
+          # The source ships at the release version, so `npm version` is often
+          # a no-op; `--allow-same-version` keeps it from erroring in that case.
+          pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          pnpm --filter @vizel/headless exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          echo "✅ Set all packages to version $VERSION"
 
       - name: Build packages
         run: pnpm build
@@ -321,16 +323,18 @@ jobs:
         env:
           VERSION: ${{ needs.validate.outputs.version }}
         run: |
-          pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version
-          pnpm --filter @vizel/headless exec npm version "$VERSION" --no-git-tag-version
-          pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version
-          pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version
-          pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version
+          pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          pnpm --filter @vizel/headless exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          pnpm --filter @vizel/react exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          pnpm --filter @vizel/vue exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          pnpm --filter @vizel/svelte exec npm version "$VERSION" --no-git-tag-version --allow-same-version
           git add -A
-          git commit -m "chore(release): v$VERSION"
+          # The source may already be at the release version; commit only when
+          # `npm version` changed a file. The tag is the load-bearing artifact.
+          git diff --staged --quiet || git commit -m "chore(release): v$VERSION"
           git tag "v$VERSION"
           git push origin main --tags
-          echo "✅ Committed and tagged v$VERSION"
+          echo "✅ Tagged v$VERSION"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
