@@ -28,7 +28,7 @@ Import the stylesheet once at the application entry point:
 import "@vizel/react/styles.css";
 ```
 
-The subpath resolves to `@vizel/core/styles.css` ([ADR-0008](/adr/ADR-0008-css-belongs-in-core)). The bundle ships under exactly two selectors — `:root, [data-vizel-theme="light"]` and `[data-vizel-theme="dark"]` — plus the `prefers-color-scheme: dark` fallback.
+The subpath resolves to `@vizel/core/styles.css`. The bundle ships under exactly two selectors — `:root, [data-vizel-theme="light"]` and `[data-vizel-theme="dark"]` — plus the `prefers-color-scheme: dark` fallback.
 
 ## Minimal editor
 

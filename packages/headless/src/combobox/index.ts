@@ -4,15 +4,15 @@
  * Resolves the keyboard contract shared by every Vizel autocomplete-style
  * menu — the slash menu and the mention menu — and supplies the
  * `aria-activedescendant` / `aria-expanded` wiring the WAI-ARIA combobox
- * pattern requires. ADR-0003 (headless package) lists combobox as the
- * primitive that backs typeahead and roving-tabindex menus; this module is
- * the last entry in that catalogue.
+ * pattern requires. Combobox is the primitive that backs typeahead and
+ * roving-tabindex menus; this module is the last entry in the headless
+ * catalogue.
  *
  * The module composes the keyboard primitive rather than re-deriving
  * navigation: {@link buildVizelComboboxKeySpec} delegates the arrow / Home
  * / End geometry to {@link buildVizelListNavSpec} and only adds the
- * combobox-specific verbs (select, close, group-next). ADR-0007
- * (controller delegation) records why the DOM-touching variant follows the
+ * combobox-specific verbs (select, close, group-next). The DOM-touching
+ * variant follows the
  * `{ mount, unmount, update }` contract.
  *
  * A Vizel suggestion menu does not own its `keydown` listener: a Tiptap

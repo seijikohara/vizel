@@ -142,4 +142,4 @@ Jump into the concept-first guide:
 - [SSR](/guide/ssr) - Server-side rendering and static HTML generation
 - [Collaboration](/guide/collaboration) - Real-time editing, comments, version history
 - [Accessibility](/guide/accessibility) - Keyboard navigation and screen reader support
-- [Migration v1 to v2](/migration/v1-to-v2) - Upgrade from Vizel 1.x
+- [Migration v1 to v2](/guide/migration-v1-to-v2) - Upgrade from Vizel 1.x

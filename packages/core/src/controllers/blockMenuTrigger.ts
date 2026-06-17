@@ -15,7 +15,7 @@ export interface VizelBlockMenuTriggerControllerOptions {
 /**
  * Returned by {@link createVizelBlockMenuTriggerController}.
  *
- * Mirrors the canonical controller shape from ADR-0007 so framework
+ * Mirrors the canonical controller shape so framework
  * adapters never attach the custom-event listener themselves.
  */
 export interface VizelBlockMenuTriggerController {
@@ -32,8 +32,8 @@ export interface VizelBlockMenuTriggerController {
  *
  * The drag-handle extension dispatches the event on `document`; this
  * controller owns the subscription so adapter components never call
- * `document.addEventListener` directly. ADR-0007 forbids that direct
- * call in framework code.
+ * `document.addEventListener` directly. Framework code never makes that
+ * direct call.
  */
 export function createVizelBlockMenuTriggerController(
   initialOptions: VizelBlockMenuTriggerControllerOptions

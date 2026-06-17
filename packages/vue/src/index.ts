@@ -17,8 +17,8 @@ initVizelIconRenderer();
 // biome-ignore lint/performance/noReExportAll: mirror the full Core surface so named exports never drift whenever Core adds a symbol.
 export * from "@vizel/core";
 // First-party `shallowRef`-backed reactivity primitive.
-// ADR-0009 mandates that every adapter implements editor reactivity
-// natively; Vue's adapter holds the implementation in `_reactivity.ts`
+// Every adapter implements editor reactivity natively; Vue's adapter holds
+// the implementation in `_reactivity.ts`
 // and re-exports the consumer-facing surface here. The shallow-equality
 // helpers re-export from `@vizel/core` so the feature-manifest parity
 // check resolves them back to a single source.

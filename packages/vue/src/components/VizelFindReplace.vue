@@ -42,7 +42,7 @@ const panelRef = useTemplateRef<HTMLDivElement>("panelRef");
 // The focus trap focuses the find input on open (replacing the former
 // `findInputRef.focus()`) and wraps Tab inside the panel. It returns no
 // focus on unmount because `handleClose` focuses `editor.view.dom`
-// directly (ADR-0007).
+// directly.
 const focusTrap = createVizelFocusTrapController({ returnFocusOnUnmount: false });
 
 const labels = computed(() => resolveVizelFindReplaceLabels(props.locale?.findReplace));

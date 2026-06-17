@@ -7,8 +7,6 @@
  * focus-trap, floating, and keyboard helpers. Adapter packages depend
  * on this package; consumers do not.
  *
- * ADR-0003 records the design rationale.
- *
  * Current scope:
  * - `dismissable/` ships click-outside, Escape, and focus-return
  *   wiring; adapter components mount this controller instead of
@@ -29,7 +27,7 @@
  *   menus consume the pure resolver because a Tiptap suggestion renderer
  *   forwards the raw `KeyboardEvent`s.
  *
- * The catalogue is now complete: every primitive ADR-0003 lists ships.
+ * The catalogue is now complete: every primitive ships.
  */
 
 export {

@@ -25,7 +25,7 @@ export interface VizelLinkEditorProps {
  * Pointer-outside and Escape dismissal route through
  * `createVizelDismissable` from `@vizel/headless`; `deferPointerHandler`
  * defers the outside-click listener install so the opening pointerdown
- * does not register as an outside click (ADR-0003, ADR-0007).
+ * does not register as an outside click.
  * `createVizelFocusTrapController` traps Tab inside the form, focuses the
  * URL input on open, and returns focus to the bubble-menu trigger on
  * close.
@@ -76,7 +76,7 @@ $effect(() => {
   // calls `stopImmediatePropagation()`. The link editor owns Escape while
   // open; otherwise the editor's bubble-phase keymap also fires and resets
   // the selection, closing the popover and dropping focus from the input.
-  // ADR-0007 delegates this adapter-side contract to the controller.
+  // The controller owns this adapter-side contract.
   const controller = createVizelDismissable({
     onPointerOutside: () => onclose?.(),
     onEscape: () => onclose?.(),

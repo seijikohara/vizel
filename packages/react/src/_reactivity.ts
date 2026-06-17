@@ -4,9 +4,9 @@
  * First-party React reactivity primitive for the Vizel editor.
  *
  * The module owns selector subscriptions without depending on
- * `@tiptap/react`. ADR-0009 mandates a first-party implementation in every
- * adapter so the SSR boundary, the selector contract, and the cleanup
- * behaviour stay under Vizel's control. The React implementation wraps a
+ * `@tiptap/react`. Every adapter implements reactivity first-party so the
+ * SSR boundary, the selector contract, and the cleanup behaviour stay under
+ * Vizel's control. The React implementation wraps a
  * monotonic version counter inside `useSyncExternalStore`, which React's
  * official guidance recommends for editor-style external stores that must
  * stay tearing-safe under concurrent rendering.

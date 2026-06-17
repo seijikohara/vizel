@@ -23,7 +23,7 @@ allowBuilds:
 # collaboration and clipboard handling. The root-pinned @tiptap/pm@3.23.6
 # wants 1.25.x and the collaboration runtime (@tiptap/y-tiptap and
 # y-prosemirror) resolves 1.25.7; pinning to 1.25.7 unifies both trees on
-# the newest patch without forcing a downgrade. See WI-10 and ADR-0003.
+# the newest patch without forcing a downgrade. See WI-10.
 overrides:
   "@tiptap/core": "$@tiptap/core"
   "@tiptap/extension-collaboration": "$@tiptap/extension-collaboration"

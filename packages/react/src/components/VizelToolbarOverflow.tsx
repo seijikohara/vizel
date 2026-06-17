@@ -18,9 +18,8 @@ export interface VizelToolbarOverflowProps {
  * An overflow menu that displays hidden toolbar actions in a popover.
  *
  * Pointer-outside and Escape dismissal route through
- * `createVizelDismissable` from `@vizel/headless`, satisfying ADR-0003
- * and ADR-0007 (the component never attaches document listeners
- * directly).
+ * `createVizelDismissable` from `@vizel/headless`, so the component never
+ * attaches document listeners directly.
  */
 export function VizelToolbarOverflow({
   editor,
@@ -51,7 +50,7 @@ export function VizelToolbarOverflow({
     // and calls `stopImmediatePropagation()`. The overflow popover owns
     // Escape while open; otherwise the editor's bubble-phase keymap also
     // fires and resets the selection or drops focus from the trigger.
-    // ADR-0007 delegates this adapter-side contract to the controller.
+    // The controller owns this adapter-side contract.
     const controller = createVizelDismissable({
       onPointerOutside: () => closeRef.current(),
       onEscape: () => closeRef.current(),

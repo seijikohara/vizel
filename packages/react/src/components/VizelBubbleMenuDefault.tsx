@@ -56,7 +56,7 @@ export function VizelBubbleMenuDefault({
   // Read each action's active flag through a selector slice keyed by
   // action id. `shallowEqualObject` suppresses a re-render unless one of
   // the marks toggles, replacing the coarse `useVizelState` tick that
-  // re-rendered on every transaction (ADR-0004). The explicit `editor`
+  // re-rendered on every transaction. The explicit `editor`
   // keeps the subscription working when the bubble menu renders outside a
   // `VizelProvider`.
   const activeById = useVizelEditorState(

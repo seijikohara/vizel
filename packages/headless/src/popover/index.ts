@@ -6,9 +6,9 @@
  * `{ mount, unmount, update }` lifecycle. Every Vizel surface that opens
  * a body element against a trigger — the block menu, the toolbar
  * dropdown, the node selector, and the color picker — shares this
- * controller. ADR-0003 (headless package) records why the composition
- * lives in `@vizel/headless`; ADR-0007 (controller delegation) records
- * the lifecycle contract.
+ * controller. The composition lives in `@vizel/headless` so the three
+ * adapters share one implementation, and the controller follows the
+ * `{ mount, unmount, update }` lifecycle contract.
  *
  * `buildVizelPopoverPositionSpec` is pure and re-exports the floating
  * spec so a caller reads the resolved placement and offset without a

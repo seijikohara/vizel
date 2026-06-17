@@ -125,8 +125,7 @@ type PanelTab = "markdown" | "json" | "history" | "comments";
  *
  * `useVizelEditorState` reads the editor from the surrounding
  * `VizelProvider` and re-renders only when the selector slice changes
- * (`shallowEqualObject`). See ADR-0009 for the first-party reactivity
- * primitive that backs the hook.
+ * (`shallowEqualObject`). The first-party reactivity primitive backs the hook.
  */
 function StatsBar() {
   const stats = useVizelEditorState(

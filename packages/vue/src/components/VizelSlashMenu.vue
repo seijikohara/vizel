@@ -48,7 +48,7 @@ export interface VizelSlashMenuProps {
  *
  * The callback prop uses the lowercase `onclick` name to stay consistent
  * with `VizelMentionMenu`'s `#item` slot and the Svelte adapter's
- * `renderItem` snippet (ADR-0004). Slot props are plain object keys, not
+ * `renderItem` snippet. Slot props are plain object keys, not
  * DOM event bindings, so the name is a deliberate contract rather than a
  * native listener.
  */

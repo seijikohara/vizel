@@ -25,8 +25,7 @@ export default defineConfig({
     rollupOptions: {
       // Externalise `@floating-ui/dom` so its bytes stay out of the
       // headless `dist`; consumers resolve it transitively through the
-      // adapter's dependency on `@vizel/headless`. ADR-0014's headless
-      // budget measures only Vizel-authored bytes for this reason.
+      // adapter's dependency on `@vizel/headless`. The headless bundle-size      // budget measures only Vizel-authored bytes for this reason.
       external: ["@floating-ui/dom"],
       output: {
         preserveModules: true,

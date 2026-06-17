@@ -128,8 +128,7 @@ $effect(() => {
 
 // The drag-handle extension dispatches `VIZEL_BLOCK_MENU_EVENT` on
 // `document`. The subscription lives in a Core controller so this
-// component never attaches the custom-event listener directly
-// (ADR-0003, ADR-0007).
+// component never attaches the custom-event listener directly.
 $effect(() => {
   const controller = createVizelBlockMenuTriggerController({
     onOpen: (detail: VizelBlockMenuOpenDetail) => {

@@ -8,7 +8,7 @@ paths:
 
 `@vizel/svelte` provides Svelte 5 components and runes. The package wraps `@vizel/core` and adds Svelte-specific code only.
 
-Feature parity across React, Vue, and Svelte is enforced by the feature manifest (`packages/core/src/feature-manifest.ts`); run `pnpm check:feature-parity`. ADR-0004 governs the Svelte-idiomatic API surface. API symmetry across frameworks is NOT a goal.
+Feature parity across React, Vue, and Svelte is enforced by the feature manifest (`packages/core/src/feature-manifest.ts`); run `pnpm check:feature-parity`. API symmetry across frameworks is NOT a goal.
 
 ## Svelte 5 Runes
 
@@ -188,7 +188,7 @@ parallels React's `useVizelEditorState` `options.editor` override.
 - Use `$effect` for lifecycle management (the Svelte 5 pattern).
 - Hold the editor in `$state.raw<Editor | null>(null)`. The Tiptap
   `Editor` is an opaque, mutable class instance, so the rune tracks its
-  identity (re-assignment), not field mutation. ADR-0004 mandates
+  identity (re-assignment), not field mutation. the Svelte idiom mandates
   `$state.raw` here, mirroring React `useState` and Vue `shallowRef`.
 
 ```typescript
@@ -233,7 +233,7 @@ the page and corrupt sessions when more than one suggestion is open.
 ## Context
 
 - `<VizelProvider>` and `<Vizel>` publish the editor through the typed
-  `setVizelContext(accessor)` wrapper (ADR-0004), not a raw `setContext`
+  `setVizelContext(accessor)` wrapper, not a raw `setContext`
   call. The theme and icon providers use the matching
   `setVizelThemeContext` / `setVizelIconContext` wrappers.
 - Consumers call `getVizelContext()` for required access or `getVizelContextSafe()` for optional access.

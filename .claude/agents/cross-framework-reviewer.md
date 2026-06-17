@@ -56,4 +56,4 @@ Report findings in the following format. Cite file paths in `path:line` form.
 - Report findings only; the `disallowedTools` frontmatter prevents accidental edits.
 - Defer general code-style enforcement to the `lint-instructions` skill.
 - Defer commit-message validation to the lefthook `commit-msg` hook.
-- The manifest in `packages/core/src/feature-manifest.ts` is the authoritative parity contract; any divergence cited as an exception requires an ADR under `docs/adr/`.
+- The manifest in `packages/core/src/feature-manifest.ts` is the authoritative parity contract; any divergence cited as an exception requires explicit justification recorded in the rule.

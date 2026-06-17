@@ -43,7 +43,7 @@ export interface VizelFindReplaceProps {
  * the panel and focuses the find input on open (replacing the former
  * ad-hoc input focus). The panel keeps its own Escape and editor-return
  * handling, so the trap mounts with `returnFocusOnUnmount: false`:
- * `handleClose` focuses `editor.view.dom` directly (ADR-0007).
+ * `handleClose` focuses `editor.view.dom` directly.
  */
 export function VizelFindReplace({
   editor: editorProp,
@@ -60,7 +60,7 @@ export function VizelFindReplace({
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Read the Find & Replace plugin state through the flagship
-  // `useVizelEditorState` primitive (ADR-0004), replacing the hand-rolled
+  // `useVizelEditorState` primitive, replacing the hand-rolled
   // `editor.on("transaction")` subscription. The plugin's `apply` returns
   // the same state reference on transactions that leave the find state
   // unchanged, so the default `Object.is` equality re-renders the panel
@@ -76,7 +76,7 @@ export function VizelFindReplace({
   // find input on open and wraps Tab within the panel; it returns no
   // focus on close because `handleClose` focuses `editor.view.dom`
   // itself. The effect keys on the open state so the trap mounts when the
-  // panel renders and unmounts when it closes (ADR-0007).
+  // panel renders and unmounts when it closes.
   useEffect(() => {
     if (!state?.isOpen) return;
     const panel = panelRef.current;

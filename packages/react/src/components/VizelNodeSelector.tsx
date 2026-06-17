@@ -30,7 +30,7 @@ export interface VizelNodeSelectorProps {
  * DOM/ARIA scaffolding (trigger + listbox popover) comes from
  * `@vizel/core`'s `buildVizelNodeSelectorSpec`. Pointer-outside
  * dismissal routes through `createVizelDismissable` from
- * `@vizel/headless` (ADR-0003, ADR-0007). The dropdown root owns the
+ * `@vizel/headless`. The dropdown root owns the
  * keydown listener but delegates navigate / select / close resolution to
  * the shared `buildVizelComboboxKeySpec`, matching the slash and mention
  * menus.
@@ -53,7 +53,7 @@ export function VizelNodeSelector({
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Track only which node type is active through the flagship
-  // `useVizelEditorState` primitive (ADR-0004). The trigger label and
+  // `useVizelEditorState` primitive. The trigger label and
   // every row's `aria-selected` derive from the active node type, so a
   // string slice dedupes through the hook's `Object.is` cache: cursor
   // moves within the same block type do not re-render, replacing the
@@ -110,8 +110,8 @@ export function VizelNodeSelector({
     }
 
     // The open dropdown is a single-group listbox, so it delegates the
-    // navigate / select / close verbs to the shared combobox resolver
-    // (ADR-0003), matching VizelSlashMenu and VizelMentionMenu. The dropdown
+    // navigate / select / close verbs to the shared combobox resolver,
+    // matching VizelSlashMenu and VizelMentionMenu. The dropdown
     // root (not a native button) owns the keydown, so Space activates like
     // Enter; normalise it before resolving. Tab (`groupNext`) has no group to
     // advance and falls through so focus leaves the dropdown.

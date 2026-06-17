@@ -37,7 +37,7 @@ export function VizelOutline({
   const resolvedLocale = locale ?? vizelEnLocale;
 
   // Gate re-renders on a doc-and-selection signature read through the
-  // flagship `useVizelEditorState` primitive (ADR-0004), replacing the
+  // flagship `useVizelEditorState` primitive, replacing the
   // coarse `useVizelState` tick. The signature changes whenever a
   // heading is edited or the caret moves, which is exactly when the
   // outline's entries or active highlight must update; transactions that

@@ -76,8 +76,8 @@ const selectedColor = computed<string | undefined>({
 });
 
 // Pointer-outside dismissal routes through `createVizelDismissable` so this
-// component never attaches the listener directly. ADR-0007 delegates the
-// listener wiring to the controller. `captureEscape` stays `false` because
+// component never attaches the listener directly. The controller owns the
+// listener wiring. `captureEscape` stays `false` because
 // the color picker lets the editor's bubble-phase Escape keymap fire (no
 // special Escape semantics).
 const dismissable = createVizelDismissable({

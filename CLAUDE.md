@@ -26,7 +26,7 @@ Vizel is a block-based visual Markdown editor. The project ships Tiptap-based co
 
 ## Development Commands
 
-Use Node.js >=24 (the current active LTS line, pinned in `.nvmrc`) and pnpm. The `engines.node` floor is advisory toolchain guidance for contributors and CI; it does not gate a consumer app's Node.js runtime. See [ADR-0015](./docs/adr/ADR-0015-node-24-baseline.md). Invoke scripts with `pnpm <script>` and external binaries with `pnpm exec <package>`.
+Use Node.js >=24 (the current active LTS line, pinned in `.nvmrc`) and pnpm. The `engines.node` floor is advisory toolchain guidance for contributors and CI; it does not gate a consumer app's Node.js runtime. Invoke scripts with `pnpm <script>` and external binaries with `pnpm exec <package>`.
 
 | Command | Description |
 |---------|-------------|
@@ -46,35 +46,13 @@ Use Node.js >=24 (the current active LTS line, pinned in `.nvmrc`) and pnpm. The
 | `pnpm deps:check` | List outdated dependencies (read-only) |
 | `pnpm deps:update` | Bump dependencies via `taze major -r -w` and run `pnpm install` |
 
-## Architecture Decision Records
-
-The v2.0.0 design records live under `docs/adr/`. Read the relevant ADR before changing a binding rule.
-
-| ID | Title |
-|----|-------|
-| [ADR-0001](./docs/adr/ADR-0001-feature-parity-over-api-symmetry.md) | Feature parity over API symmetry |
-| [ADR-0002](./docs/adr/ADR-0002-feature-manifest-as-parity-ssot.md) | Feature manifest as parity SSOT |
-| [ADR-0003](./docs/adr/ADR-0003-vizel-headless-package.md) | `@vizel/headless` as a transitive package |
-| [ADR-0004](./docs/adr/ADR-0004-per-framework-idiomatic-api.md) | Per-framework idiomatic API contract |
-| [ADR-0005](./docs/adr/ADR-0005-v2-breaking-release.md) | v2.0.0 as a breaking release |
-| [ADR-0006](./docs/adr/ADR-0006-retire-cross-framework-rule.md) | Retire `cross-framework.md` |
-| [ADR-0007](./docs/adr/ADR-0007-component-size-and-controller-delegation.md) | 120-line component size and controller delegation |
-| [ADR-0008](./docs/adr/ADR-0008-css-belongs-in-core.md) | CSS belongs in `@vizel/core` |
-| [ADR-0009](./docs/adr/ADR-0009-first-party-editor-reactivity.md) | First-party editor reactivity in every adapter |
-| [ADR-0010](./docs/adr/ADR-0010-claude-config-official-format.md) | `.claude/` artefacts follow Anthropic's official reference |
-| [ADR-0011](./docs/adr/ADR-0011-technical-writing-style.md) | Technical-writing style governs every artefact |
-| [ADR-0012](./docs/adr/ADR-0012-playwright-ct-three-layer-rebuild.md) | Playwright Component Tests rebuilt in three layers |
-| [ADR-0013](./docs/adr/ADR-0013-adr-compliance-harness.md) | ADR compliance harness |
-| [ADR-0014](./docs/adr/ADR-0014-bundle-size-budgets.md) | Bundle-size budgets per package |
-| [ADR-0015](./docs/adr/ADR-0015-node-24-baseline.md) | Node.js 24 runtime baseline |
-
 ## Project Rules
 
 Each rule under `.claude/rules/` is the single source of truth (SSOT) for its topic. Claude Code auto-discovers `.claude/rules/**/*.md` and loads each rule on demand: rules with a `paths:` frontmatter load when Claude reads a file matching the pattern; rules without `paths:` load at startup with the same priority as this file.
 
 | Rule | Loads When | Topic |
 |------|------------|-------|
-| `.claude/rules/architecture.md` | Always (project-wide invariants) | Binding architecture invariants and ADR index |
+| `.claude/rules/architecture.md` | Always (project-wide invariants) | Binding architecture invariants |
 | `.claude/rules/code-style.md` | Editing source under `packages/`, `apps/`, or `tests/` | TypeScript style, function declarations, type safety |
 | `.claude/rules/writing.md` | Editing any source, test, or documentation file | Technical-writing principles for prose, comments, docstrings, commits |
 | `.claude/rules/feature-manifest.md` | Editing the manifest, any adapter, or any CT scenario | Feature manifest schema and parity workflow |

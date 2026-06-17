@@ -4,10 +4,9 @@
  * Wraps `@floating-ui/dom` so every Vizel popover, dropdown, and menu
  * anchors its body element against a trigger with consistent flip and
  * shift behaviour. The module ships one pure spec builder and one
- * controller. ADR-0003 (headless package) records why the positioning
- * logic lives in `@vizel/headless` rather than each adapter, and names
- * `@floating-ui/dom` as the positioning engine; ADR-0007 (controller
- * delegation) records why the DOM-touching variant follows the
+ * controller. The positioning logic lives in `@vizel/headless` rather
+ * than each adapter, and `@floating-ui/dom` is the positioning engine;
+ * the DOM-touching variant follows the
  * `{ mount, unmount, update }` contract.
  *
  * `buildVizelFloatingSpec` is pure: it merges caller options with the

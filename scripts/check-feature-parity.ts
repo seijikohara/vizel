@@ -5,7 +5,7 @@
  * `@vizel/svelte`) exports the `component` and `companion` symbols the
  * feature manifest declares for each feature. The manifest in
  * `packages/core/src/feature-manifest.ts` is the parity SSOT; see
- * ADR-0002 and `.claude/rules/feature-manifest.md`.
+ * `.claude/rules/feature-manifest.md`.
  *
  * Mechanism — static export-surface resolution (build-independent):
  *

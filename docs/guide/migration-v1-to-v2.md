@@ -2,27 +2,36 @@
 
 Vizel v2 abandons the symmetric API contract that v1 enforced across React, Vue, and Svelte. Each adapter now delivers the framework's native idiom. Feature parity holds across the three packages, but the surface that exposes each feature differs.
 
-This guide enumerates every breaking change with side-by-side v1 / v2 code samples for all three frameworks. Apply the sections in order — later sections assume earlier ones are already resolved. The motivating Architecture Decision Records (ADRs) are linked inline.
+This guide enumerates every breaking change with side-by-side v1 / v2 code samples for all three frameworks. Apply the sections in order — later sections assume earlier ones are already resolved.
 
 ::: tip Why a clean break
-v2 ships no compatibility shim. The maintainer's directive prioritises a coherent surface over deprecation cycles. [ADR-0005](/adr/ADR-0005-v2-breaking-release) records the decision. v1.x stays on npm at its published versions and receives no further patches.
+v2 ships no compatibility shim. The maintainer's directive prioritises a coherent surface over deprecation cycles. v1.x stays on npm at its published versions and receives no further patches.
 :::
 
 ## At a glance
 
-| Section | Change | ADR |
-|---------|--------|-----|
-| [1](#_1-the-cross-framework-symmetry-contract-retires) | Cross-framework symmetry retires; parity moves to a typed manifest | [ADR-0001](/adr/ADR-0001-feature-parity-over-api-symmetry), [ADR-0002](/adr/ADR-0002-feature-manifest-as-parity-ssot) |
-| [2](#_2-editor-lifecycle-returns-the-editor-directly) | Editor lifecycle hooks return the editor directly | [ADR-0004](/adr/ADR-0004-per-framework-idiomatic-api), [ADR-0009](/adr/ADR-0009-first-party-editor-reactivity) |
-| [3](#_3-usevizeleditorstate-becomes-a-selector-subscription) | `useVizelEditorState` becomes a selector subscription | [ADR-0009](/adr/ADR-0009-first-party-editor-reactivity) |
-| [4](#_4-bubble-menu-slash-menu-and-mention-menu-adopt-render-prop-idioms) | Bubble menu, slash menu, and mention menu adopt render-prop idioms | [ADR-0004](/adr/ADR-0004-per-framework-idiomatic-api) |
-| [5](#_5-link-editor-find-replace-and-color-picker-restructure) | Link editor, find-replace, and color picker restructure | [ADR-0007](/adr/ADR-0007-component-size-and-controller-delegation) |
-| [6](#_6-theme-provider-and-theme-hooks) | Theme provider exposes `resetToSystem`; theme hooks reshape | [ADR-0004](/adr/ADR-0004-per-framework-idiomatic-api) |
-| [7](#_7-auto-save-shapes) | Auto-save composables adopt framework-native return shapes | [ADR-0004](/adr/ADR-0004-per-framework-idiomatic-api) |
-| [8](#_8-vizel-headless-becomes-a-transitive-dependency) | `@vizel/headless` becomes a transitive dependency | [ADR-0003](/adr/ADR-0003-vizel-headless-package) |
-| [9](#_9-css-centralises-in-vizel-core) | CSS centralises in `@vizel/core`; adapters re-export | [ADR-0008](/adr/ADR-0008-css-belongs-in-core) |
-| [10](#_10-controllers-replace-direct-dom-listeners) | Controllers replace direct DOM listeners | [ADR-0007](/adr/ADR-0007-component-size-and-controller-delegation) |
-| [11](#_11-the-slash-menu-adopts-the-unified-vizelcommand-registry) | The slash menu adopts the unified `VizelCommand` registry; legacy slash-item exports are removed | [ADR-0005](/adr/ADR-0005-v2-breaking-release) |
+| Section | Change |
+|---------|--------|
+| [1](#_1-the-cross-framework-symmetry-contract-retires) | Cross-framework symmetry retires; parity moves to a typed manifest |
+| [2](#_2-editor-lifecycle-returns-the-editor-directly) | Editor lifecycle hooks return the editor directly |
+| [3](#_3-usevizeleditorstate-becomes-a-selector-subscription) | `useVizelEditorState` becomes a selector subscription |
+| [4](#_4-bubble-menu-slash-menu-and-mention-menu-adopt-render-prop-idioms) | Bubble menu, slash menu, and mention menu adopt render-prop idioms |
+| [5](#_5-link-editor-find-replace-and-color-picker-restructure) | Link editor, find-replace, and color picker restructure |
+| [6](#_6-theme-provider-and-theme-hooks) | Theme provider exposes `resetToSystem`; theme hooks reshape |
+| [7](#_7-auto-save-shapes) | Auto-save composables adopt framework-native return shapes |
+| [8](#_8-vizel-headless-becomes-a-transitive-dependency) | `@vizel/headless` becomes a transitive dependency |
+| [9](#_9-css-centralises-in-vizel-core) | CSS centralises in `@vizel/core`; adapters re-export; subpath exports added |
+| [10](#_10-controllers-replace-direct-dom-listeners) | Controllers replace direct DOM listeners |
+| [11](#_11-the-slash-menu-adopts-the-unified-vizelcommand-registry) | The slash menu adopts the unified `VizelCommand` registry; legacy slash-item exports are removed |
+| [12](#_12-feature-options-are-now-three-tier) | Feature options become three-tier `content` / `interaction` / `collaboration` |
+| [13](#_13-markdown-options-moved-under-markdown) | Markdown options move under a single `markdown` object |
+| [14](#_14-tiptap-markdown-replaces-tiptap-markdown) | `tiptap-markdown` replaces `@tiptap/markdown` |
+| [15](#_15-skeleton-types-renamed-to-spec) | `*Skeleton` types rename to `*Spec` |
+| [16](#_16-unified-error-reporting-through-vizelerror) | Error reporting unifies through `VizelError` and `emitVizelError` |
+| [17](#_17-deprecated-fields-removed) | Deprecated fields removed |
+| [18](#_18-vizeldefaultfeatures-curation) | `vizelDefaultFeatures()` curates safe opt-ins |
+| [19](#_19-ssr-throws-a-typed-error) | SSR throws a typed error; static HTML rendering added |
+| [20](#_20-removed-and-renamed-exports) | Removed and renamed exports |
 
 ---
 
@@ -38,15 +47,11 @@ v2 replaces the prose contract with a typed feature manifest at `packages/core/s
 - Component prop shapes diverge where the framework's slot or callback idiom differs. The feature set is identical.
 - Cross-framework navigation goes through the migration guide, the manifest, and the per-framework guides — not through a single symmetric reference.
 
-[ADR-0001](/adr/ADR-0001-feature-parity-over-api-symmetry) records the decision. [ADR-0002](/adr/ADR-0002-feature-manifest-as-parity-ssot) records the manifest design. [ADR-0006](/adr/ADR-0006-retire-cross-framework-rule) retires the prose rule.
-
 ---
 
 ## 2. Editor lifecycle returns the editor directly
 
 v1 returned a destructured-getter wrapper around the editor instance. The wrapper added indirection that React, Vue, and Svelte each absorbed differently. v2 returns the editor in the shape each framework already expects.
-
-[ADR-0004](/adr/ADR-0004-per-framework-idiomatic-api) records the idiomatic API contract. [ADR-0009](/adr/ADR-0009-first-party-editor-reactivity) records the first-party reactivity primitive each adapter now ships.
 
 ### React: `useVizelEditor` returns `Editor | null`
 
@@ -165,7 +170,7 @@ v1 derived a fixed-shape state record (`{ characterCount, wordCount, canUndo, ..
 
 v2 turns the hook into a selector subscription. The consumer picks the slice; the hook re-renders only when the slice changes. The hook reads the editor from the surrounding `VizelProvider` automatically — pass no editor argument.
 
-[ADR-0009](/adr/ADR-0009-first-party-editor-reactivity) records the first-party reactivity contract. React uses `useSyncExternalStore`; Vue uses `shallowRef` plus `onScopeDispose`; Svelte uses `$state.raw` plus `createSubscriber`.
+React uses `useSyncExternalStore`; Vue uses `shallowRef` plus `onScopeDispose`; Svelte uses `$state.raw` plus `createSubscriber`.
 
 ### React
 
@@ -435,7 +440,7 @@ The same shape applies to `VizelBubbleMenu` (children render the menu body) and 
 
 ## 5. Link editor, find-replace, and color picker restructure
 
-The three popover components shrank below the 120-line view-template budget that [ADR-0007](/adr/ADR-0007-component-size-and-controller-delegation) sets. Form state moved into Core; the framework code only renders the spec.
+The three popover components shrank below the 120-line view-template budget. Form state moved into Core; the framework code only renders the spec.
 
 ### `VizelLinkEditor`
 
@@ -651,8 +656,6 @@ const autoSave = createVizelAutoSave(() => editor.current, {
 
 v2 introduces `@vizel/headless`, a framework-neutral package that hosts the dismissable layer, popover positioning, combobox keyboard map, focus trap, and floating positioning. Each adapter package declares `@vizel/headless` as a *dependency* (not a peer dependency) so consumers never import from it directly.
 
-[ADR-0003](/adr/ADR-0003-vizel-headless-package) records the package decision.
-
 ### Consumer impact
 
 - Add no entry for `@vizel/headless` to `package.json`. The framework adapter pulls it in transitively.
@@ -668,8 +671,6 @@ If your build tool surfaces transitive dependencies during dedup (pnpm's `pnpm.o
 v1 shipped CSS per adapter. Each `@vizel/<framework>/styles.css` duplicated the token catalogue. A token edit required three coordinated changes.
 
 v2 keeps the consumer import unchanged but resolves it to a single source. Every adapter's `package.json` declares an `exports."./styles.css"` entry that re-exports `@vizel/core/styles.css`.
-
-[ADR-0008](/adr/ADR-0008-css-belongs-in-core) records the decision.
 
 ### Consumer impact
 
@@ -692,11 +693,23 @@ Host-environment selectors (`.dark`, `.light`, `[data-theme="*"]`) remain banned
 
 If you wrote v1 overrides that targeted `[data-theme="dark"]` directly inside Vizel, switch them to `[data-vizel-theme="dark"]`. The host-theme bridge lives in your application code now.
 
+### CSS subpath exports
+
+`@vizel/core` now exposes three CSS entries so consumers can opt out of the token catalog if they own theming. The framework packages forward the same patterns through their own subpath exports.
+
+| Pattern | Import | When to use |
+|---------|--------|-------------|
+| Full | `@vizel/core/styles.css` | Default — Vizel ships its own tokens |
+| Variables only | `@vizel/core/styles/variables.css` | Consumer supplies their own component CSS |
+| Components only | `@vizel/core/styles/components.css` | Consumer maps another design system to Vizel tokens |
+
+The default Vizel import surface remains `@vizel/<framework>/styles.css`, which still bundles tokens plus components for the zero-config path.
+
 ---
 
 ## 10. Controllers replace direct DOM listeners
 
-[ADR-0007](/adr/ADR-0007-component-size-and-controller-delegation) bans `document.addEventListener`, `window.addEventListener`, `MutationObserver`, and `ResizeObserver` calls inside `packages/{react,vue,svelte}/src/`. CI fails the build when the grep check finds one.
+v2 bans `document.addEventListener`, `window.addEventListener`, `MutationObserver`, and `ResizeObserver` calls inside `packages/{react,vue,svelte}/src/`. CI fails the build when the grep check finds one.
 
 ### Consumer impact
 
@@ -720,13 +733,13 @@ controller.mount(menuElement);
 return () => controller.unmount();
 ```
 
-The controller owns the outside-click listener, the Escape-key handler, and the focus return. The framework code stays inside the 120-line view-template budget [ADR-0007](/adr/ADR-0007-component-size-and-controller-delegation) records.
+The controller owns the outside-click listener, the Escape-key handler, and the focus return. The framework code stays inside the 120-line view-template budget.
 
 ---
 
 ## 11. The slash menu adopts the unified `VizelCommand` registry
 
-v2 ships a single runtime-bearing `VizelCommand` type that defines one user action across every surface (slash menu, toolbar, bubble menu, block menu, keyboard shortcut). The slash menu now consumes the slash-surfaced subset of `vizelDefaultCommands` instead of the legacy `SlashCommandItem` list. [ADR-0005](/adr/ADR-0005-v2-breaking-release) authorises the removal of the legacy public exports as a breaking change.
+v2 ships a single runtime-bearing `VizelCommand` type that defines one user action across every surface (slash menu, toolbar, bubble menu, block menu, keyboard shortcut). The slash menu now consumes the slash-surfaced subset of `vizelDefaultCommands` instead of the legacy `SlashCommandItem` list. The removal of the legacy public exports is a breaking change.
 
 ### Removed public exports
 
@@ -785,14 +798,229 @@ The slash menu renders `VizelCommandSpec` items. A custom `renderItem` (Section 
 
 ---
 
+## 12. Feature options are now three-tier
+
+`VizelFeatureOptions` no longer holds every feature at the top level. Toggles are grouped by the consumer question they answer:
+
+| Category | Question | Examples |
+|----------|----------|----------|
+| `content` | What can the document contain? | `image`, `table`, `mathematics`, `diagram`, `embed`, `callout`, `details`, `textColor`, `highlight`, `underline`, `superscript`, `subscript`, `taskList`, `wikiLink`, `tableOfContents` |
+| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth` |
+| `collaboration` | Who edits together? | `comments`, `provider`, `versionHistory`, `presence` |
+
+### Before
+
+```ts
+useVizelEditor({
+  features: {
+    image: true,
+    slashMenu: true,
+    mention: { items: lookup },
+    comments: true,
+    provider: yProvider,
+  },
+});
+```
+
+### After
+
+```ts
+useVizelEditor({
+  features: {
+    content: { image: true },
+    interaction: { slashMenu: true, mention: { items: lookup } },
+    collaboration: { comments: true, provider: yProvider },
+  },
+});
+```
+
+The factory now also validates feature dependencies and throws `VizelError("INVALID_CONFIG")` when, for example, `collaboration.comments` is enabled without `collaboration.provider`.
+
+---
+
+## 13. Markdown options moved under `markdown`
+
+The top-level `flavor` field and ad-hoc encoding flags are gone. Pass a single `markdown` object that selects the flavor and per-node encoding strategy.
+
+### Before
+
+```ts
+useVizelEditor({
+  flavor: vizelGfmFlavor,
+});
+```
+
+### After
+
+```ts
+useVizelEditor({
+  markdown: {
+    flavor: vizelGfmFlavor,
+    encoding: {
+      embed: "metadata-comment",
+      mention: "metadata-comment",
+      wikiLink: "default",
+    },
+  },
+});
+```
+
+The available encoding values for each lossy node are documented in [Guide: Markdown](/guide/markdown). `"default"` produces portable Markdown; `"metadata-comment"` is lossless.
+
+---
+
+## 14. `tiptap-markdown` replaces `@tiptap/markdown`
+
+The Markdown pipeline now runs on `tiptap-markdown` (a markdown-it base) instead of the marked-based `@tiptap/markdown` from v1. Custom extensions that register Markdown hooks must update their signatures:
+
+### Before
+
+```ts
+// v1 used marked-style helpers
+parseMarkdown(token, helpers) { /* ... */ }
+renderMarkdown(node, helpers) { /* ... */ }
+```
+
+### After
+
+```ts
+addStorage() {
+  return {
+    markdown: {
+      parse: { setup(md) { /* markdown-it plugins */ } },
+      serialize(state, node, parent, index) {
+        // prosemirror-markdown MarkdownSerializerState API
+      },
+    },
+  };
+}
+```
+
+The legacy hook shape is no longer recognized at runtime and silently drops your extension's Markdown support. Remove every reference to `parseMarkdown` / `renderMarkdown` and adopt the `tiptap-markdown` API.
+
+---
+
+## 15. `*Skeleton` types renamed to `*Spec`
+
+Every UI scaffold type previously named `*Skeleton` is now `*Spec`. The shape is unchanged.
+
+| v1 | v2 |
+|----|----|
+| `VizelSlashMenuSkeleton` | `VizelMenuSpec<VizelCommandSpec>` |
+| `VizelMentionMenuSkeleton` | `VizelMenuSpec<VizelMentionItemView>` |
+| `VizelBlockMenuSkeleton` | `VizelBlockMenuSpec` |
+| `VizelLinkEditorSkeleton` | `VizelFormSpec<{ url, text, embed }>` |
+| `VizelFindReplaceSkeleton` | `VizelFormSpec<{ find, replace }>` |
+| `VizelColorPickerSkeleton` | `VizelPopoverSpec` + `VizelGridSpec<VizelColorCell>` |
+
+The corresponding builder functions follow the `buildVizel<Component>Spec(...)` naming. The legacy `Skeleton` aliases have been removed; update your imports.
+
+---
+
+## 16. Unified error reporting through `VizelError`
+
+Vizel no longer mixes `console.warn`, ad-hoc `Error`, and per-feature callback hooks. Every error in the editor flows through a single typed model.
+
+| Category | Delivery | Examples |
+|----------|----------|----------|
+| Developer mistake (boundary) | `throw new VizelError(...)` | `INVALID_CONFIG`, `MISSING_CONTEXT`, `SSR_NOT_SUPPORTED` |
+| Runtime error (recoverable) | `emitVizelError(err, options.onError)` | `UPLOAD_FAILED`, `EMBED_LOAD_FAILED` |
+| Warning (advisory) | `emitVizelError(err, options.onError)` with `severity: "warning"` | `MARKDOWN_LOSSY` |
+
+### Before
+
+```ts
+useVizelEditor({
+  features: { image: { onUploadError: (err) => log(err) } },
+});
+```
+
+### After
+
+```ts
+useVizelEditor({
+  onError: (err) => {
+    // err is a VizelError with a stable `code` field
+    log(err.code, err.context, err.cause);
+  },
+});
+```
+
+Inside `@vizel/core` itself, `console.warn` and `console.error` are banned; the only sanctioned `console.error` lives inside `emitVizelError`'s fallback when the consumer supplies no callback.
+
+---
+
+## 17. Deprecated fields removed
+
+The following `@deprecated` shims from the 1.x line are gone in v2:
+
+- `VizelError.originalError` — use the standard [`Error.cause`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error/cause) property.
+- `VizelSlashMenuRendererOptions` (alias to the canonical renderer options type) — import the canonical type directly.
+
+The replacements have been available since v1.x, so existing deprecation-clean call sites need no change.
+
+---
+
+## 18. `vizelDefaultFeatures()` curation
+
+Every safe opt-in (everything except `mention`, `provider`, `comments`, `versionHistory`, and `presence` — features that need consumer-supplied configuration to function) is enabled by `vizelDefaultFeatures()`.
+
+### Before
+
+```ts
+useVizelEditor({
+  features: {
+    image: true,
+    table: true,
+    mathematics: true,
+    diagram: true,
+    embed: true,
+    callout: true,
+    /* ...long enumeration... */
+  },
+});
+```
+
+### After
+
+```ts
+import { vizelDefaultFeatures } from "@vizel/core";
+
+useVizelEditor({
+  features: vizelDefaultFeatures(),
+});
+```
+
+You can still merge consumer-supplied options on top of the curated defaults using the three-tier object.
+
+---
+
+## 19. SSR throws a typed error
+
+Constructing the editor on the server now throws `VizelError("SSR_NOT_SUPPORTED")` instead of letting Tiptap explode with `ReferenceError: document is not defined`. Move `createVizelEditorInstance` and `useVizelEditor` / `createVizelEditor` calls into a client-only lifecycle hook (`useEffect`, `onMounted`, `onMount`).
+
+### Static HTML rendering
+
+When you need server-rendered Markdown output (preview thumbnails, search indexing, RSS feeds), call the new `generateVizelStaticHtml(markdown, options?)` helper. It runs on Node behind a lazy `linkedom` shim and produces the same HTML the live editor would write on the client. See [Guide: Static HTML rendering](/guide/ssr) for details.
+
+---
+
+## 20. Removed and renamed exports
+
+The following symbols are gone from the public API:
+
+| v1 export | Replacement |
+|-----------|-------------|
+| `parseMarkdown` (low-level helper) | `editor.commands.setContent(md)` |
+| `renderMarkdown` (low-level helper) | `editor.getMarkdown()` |
+| `@vizel/core/dist/...` deep imports | Public exports listed in [API Reference](/api/) |
+| `VizelTheme.applyTheme` (deprecated) | `applyVizelTheme(resolvedTheme)` |
+
+---
+
 ## Reading order
 
-After applying the migration:
-
-1. Read the per-framework getting-started page that matches your codebase: [React](/guide/getting-started-react), [Vue](/guide/getting-started-vue), or [Svelte](/guide/getting-started-svelte).
-2. Read [ADR-0001](/adr/ADR-0001-feature-parity-over-api-symmetry) for the parity-over-symmetry rationale.
-3. Read [ADR-0004](/adr/ADR-0004-per-framework-idiomatic-api) for the per-framework idiom contract.
-4. Read [ADR-0009](/adr/ADR-0009-first-party-editor-reactivity) for the reactivity primitive details.
+After applying the migration, read the per-framework getting-started page that matches your codebase: [React](/guide/getting-started-react), [Vue](/guide/getting-started-vue), or [Svelte](/guide/getting-started-svelte).
 
 ---
 

@@ -74,7 +74,7 @@ $effect(() => {
 // Trap focus inside the panel while it is open. The trap focuses the find
 // input on open (replacing the former `findInputRef.focus()`) and wraps
 // Tab within the panel. It returns no focus on close because `handleClose`
-// focuses `editor.view.dom` itself (ADR-0007).
+// focuses `editor.view.dom` itself.
 $effect(() => {
   if (isOpen && panelElement) {
     const focusTrap = createVizelFocusTrapController({ returnFocusOnUnmount: false });

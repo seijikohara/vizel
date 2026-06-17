@@ -34,7 +34,7 @@ export interface VizelBubbleMenuColorPickerProps {
  * Supports text color and highlight color selection with custom colors
  * and recent colors. Pointer-outside dismissal routes through
  * `createVizelDismissable` from `@vizel/headless` so the component
- * never attaches document listeners directly (ADR-0003, ADR-0007).
+ * never attaches document listeners directly.
  */
 export function VizelBubbleMenuColorPicker({
   editor,

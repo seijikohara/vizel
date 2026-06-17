@@ -1,8 +1,8 @@
 /**
  * First-party Vue reactivity primitive for the Vizel editor.
  *
- * ADR-0009 mandates a first-party implementation of selector subscriptions
- * in every adapter so the SSR boundary, the selector contract, and the
+ * Every adapter implements selector subscriptions first-party so the SSR
+ * boundary, the selector contract, and the
  * cleanup behaviour stay under Vizel's control. The Vue implementation
  * holds the editor in a `shallowRef<Editor | undefined>` and bumps a
  * monotonic `ref<number>` counter inside `editor.on('transaction')` and
@@ -27,7 +27,7 @@
  * to suppress no-op recomputations when the slice is structurally
  * unchanged.
  *
- * ADR-0009 mandates a first-party implementation in every adapter, so
+ * Every adapter implements reactivity first-party, so
  * Vizel owns the selector contract and cleanup behaviour and depends on
  * no `@tiptap/vue-3` reactivity layer.
  */
