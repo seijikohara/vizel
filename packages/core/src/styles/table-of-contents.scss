@@ -6,7 +6,7 @@
   background: var(--vizel-background-secondary);
 
   &-empty {
-    color: var(--vizel-text-secondary);
+    color: var(--vizel-foreground-muted);
     font-style: italic;
     margin: 0;
   }
@@ -50,7 +50,7 @@
     display: block;
     padding: 0.25rem 0.5rem;
     border-radius: var(--vizel-radius-sm, 0.25rem);
-    color: var(--vizel-text-primary);
+    color: var(--vizel-foreground);
     text-decoration: none;
     font-size: 0.875rem;
     line-height: 1.5;
