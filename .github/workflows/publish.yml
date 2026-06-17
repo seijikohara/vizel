@@ -175,6 +175,12 @@ jobs:
       - name: Publish
         env:
           VERSION: ${{ needs.validate.outputs.version }}
+          # Token auth (granular access token with publish rights to the
+          # @vizel scope). Required to create the new @vizel/headless package;
+          # OIDC trusted publishing cannot bootstrap a package that does not
+          # exist yet. `--provenance` still attaches an attestation via the
+          # workflow's id-token permission.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           PRERELEASE_TAG=""
           if [[ "$VERSION" == *-* ]]; then
@@ -219,6 +225,12 @@ jobs:
       - name: Publish
         env:
           VERSION: ${{ needs.validate.outputs.version }}
+          # Token auth (granular access token with publish rights to the
+          # @vizel scope). Required to create the new @vizel/headless package;
+          # OIDC trusted publishing cannot bootstrap a package that does not
+          # exist yet. `--provenance` still attaches an attestation via the
+          # workflow's id-token permission.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           PRERELEASE_TAG=""
           if [[ "$VERSION" == *-* ]]; then
@@ -271,6 +283,12 @@ jobs:
       - name: Publish
         env:
           VERSION: ${{ needs.validate.outputs.version }}
+          # Token auth (granular access token with publish rights to the
+          # @vizel scope). Required to create the new @vizel/headless package;
+          # OIDC trusted publishing cannot bootstrap a package that does not
+          # exist yet. `--provenance` still attaches an attestation via the
+          # workflow's id-token permission.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           PRERELEASE_TAG=""
           if [[ "$VERSION" == *-* ]]; then
