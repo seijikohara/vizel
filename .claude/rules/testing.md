@@ -17,21 +17,21 @@ is what PR review uses to gate coverage.
 |---|--------|--------|---------|
 | 1 | Framework parity | shipped | `scripts/check-ct-parity.ts` + lefthook + CI |
 | 2 | Behavior tests | shipped | `tests/ct/scenarios/` + `tests/ct/{react,vue,svelte}/specs/` |
-| 3 | Markdown round-trip | shipped (sample-light); CI gating deferred | `tests/markdown-roundtrip/` + manual `workflow_dispatch` |
+| 3 | Markdown round-trip | shipped (sample-light); CI-gated | `tests/markdown-roundtrip/` + `pull_request` |
 | 4 | SSR | shipped (Node smoke test) | `scripts/test-static-html.ts` |
-| 5 | Accessibility | shipped (suite); CI gating deferred | `tests/a11y/{react,vue,svelte}/` + manual `workflow_dispatch` |
+| 5 | Accessibility | shipped (suite); CI-gated | `tests/a11y/{react,vue,svelte}/` + `pull_request` |
 | 6 | Visual regression | not yet | CI-only snapshots (planned) |
 | 7 | Coverage discipline | shipped (this document) | Required-test matrix below |
 
 Pillar 6 is tracked as follow-up work. Do not block PRs on missing
 visual snapshots until that suite lands. The Pillar 3 Markdown
-round-trip and Pillar 5 accessibility suites are shipped and run on
-demand, but their PR-gating is deferred: both are standalone Playwright
-CT jobs that hang intermittently on the GitHub runner, so the
-`md-roundtrip` and `a11y` jobs stay on manual `workflow_dispatch` until
-the runner-side root cause is fixed (tracked follow-up). The remaining
-shipped pillars (1, 2, 4, 7) gate merge through the required `Test
-Summary` and `Quality + Parity` checks.
+round-trip and Pillar 5 accessibility suites gate pull requests through
+the required `Test Summary` check: on CI their standalone configs load
+the `tests/_support/ct-runner-diagnostics.ts` reporter, which logs the
+leaking resources and force-exits with the run's status so the
+runner-side post-run hang (#630) no longer turns a clean pass into a
+timeout. The shipped pillars (1, 2, 3, 4, 5, 7) gate merge through the
+required `Test Summary` and `Quality + Parity` checks.
 
 ---
 
@@ -300,16 +300,14 @@ adds nothing but flake.
 ### CI gate
 
 The `a11y` job in `.github/workflows/ci.yml` runs the React, Vue, and
-Svelte suites in a matrix. It is gated on manual `workflow_dispatch`,
-not on pull requests: the suite passes locally but hangs
-intermittently on the GitHub runner (a matrix job reaches the
-`timeout-minutes: 15` cap even with the reporter guards below), so
-PR-gating and the `Test Summary` wiring are deferred until the
-runner-side root cause is found and fixed (tracked follow-up). The
-hardening is already in place: each CT config pins the HTML reporter
-to `open: "never"`, and the job sets `PLAYWRIGHT_HTML_OPEN: never` as
-a second guard so the reporter never opens a browser and holds the
-runner's event loop open.
+Svelte suites in a matrix on every pull request and gates merge through
+`Test Summary`. The experimental-ct dev server leaks a handle on the
+Linux runner, so the suite passes but the Node process never exits and
+the job would time out (#630). On CI each standalone config loads the
+`tests/_support/ct-runner-diagnostics.ts` reporter: its `onEnd` logs the
+resources still keeping the process alive (`getActiveResourcesInfo`) and
+then force-exits with the run's own status. The `timeout-minutes: 15`
+cap stays as a safety net for a genuine mid-run hang.
 
 ### Disabled rules
 
@@ -399,15 +397,14 @@ GitHub Actions enforces the pillars on every push and pull request:
 | Job | Pillar | Notes |
 |-----|--------|-------|
 | `test` (matrix of framework x browser) | 2 | React, Vue, Svelte x Chromium, Firefox, WebKit |
-| `a11y` (matrix of framework) | 5 | React, Vue, Svelte x Chromium; runs `pnpm test:a11y:<fw>`. On-demand (`workflow_dispatch`); PR-gating deferred (runner-hang follow-up) |
-| `md-roundtrip` | 3 | Runs `pnpm test:md-roundtrip` (Chromium only). On-demand (`workflow_dispatch`); PR-gating deferred (runner-hang follow-up) |
+| `a11y` (matrix of framework) | 5 | React, Vue, Svelte x Chromium; runs `pnpm test:a11y:<fw>`. Gates pull requests through `Test Summary` |
+| `md-roundtrip` | 3 | Runs `pnpm test:md-roundtrip` (Chromium only). Gates pull requests through `Test Summary` |
 | `ssr` | 4 | Builds packages, runs `pnpm test:ssr` |
 | `ct-parity` | 1 | Runs `pnpm check:ct-parity` |
 | `test-summary` | aggregator | Fails when any matrix shard failed |
 
 The `test-summary` job aggregates the framework x browser matrix and is
-the single required check. The `a11y` and `md-roundtrip` suites are
-standalone Playwright CT jobs that hang intermittently on the runner;
-both stay on manual `workflow_dispatch` and are excluded from
-`test-summary` until the runner-side root cause is fixed (tracked
-follow-up). Pillar 6 earns its own CI job when it ships.
+the single required check. The `a11y` and `md-roundtrip` standalone
+Playwright CT jobs run on every pull request and gate through
+`test-summary`: their job-level results join the matrix in the overall
+result check. Pillar 6 earns its own CI job when it ships.

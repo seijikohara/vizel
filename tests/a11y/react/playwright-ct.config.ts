@@ -18,11 +18,14 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : "50%",
-  // The HTML reporter must never auto-open a browser. Auto-open keeps a
-  // server handle alive and would hold the runner's event loop open after
-  // the run finishes, so the suite is pinned to `open: "never"`. The
-  // PLAYWRIGHT_HTML_OPEN=never CI env var is the belt-and-braces guard.
-  reporter: [["html", { open: "never" }]],
+  // On CI the standalone Component-Test process hangs after the run on the
+  // Linux runner (#630), so the suite runs the `ct-runner-diagnostics`
+  // reporter: it logs the leaking resources and force-exits with the run's
+  // status. Locally it keeps the HTML reporter, pinned to `open: "never"`
+  // so it never starts a report server.
+  reporter: process.env.CI
+    ? [["list"], [resolve(import.meta.dirname, "../../_support/ct-runner-diagnostics.ts")]]
+    : [["html", { open: "never" }]],
   use: {
     trace: "on-first-retry",
     // A11y React owns port 3110. Each a11y framework plus the round-trip

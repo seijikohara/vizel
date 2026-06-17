@@ -138,16 +138,14 @@ jobs:
 
   a11y:
     name: A11y (${{ matrix.framework }})
-    # The a11y suite hangs intermittently on the GitHub runner: the
-    # matrix jobs reach the timeout even though the suite passes locally
-    # and the `open: "never"` reporter guard is in place. PR-gating is
-    # deferred until the runner-side root cause is found and fixed
-    # (tracked follow-up). The hardening stays: every a11y config pins
-    # the HTML reporter to `open: "never"`, the `PLAYWRIGHT_HTML_OPEN:
-    # never` env var below is a second guard, and `timeout-minutes` caps
-    # any hang at minutes. Once the root cause lands, flip this trigger
-    # to run on pull requests and add the job to `Test Summary` needs.
-    if: github.event_name == 'workflow_dispatch'
+    # Pillar 5 accessibility suite. The experimental-ct dev server leaks a
+    # handle on the Linux runner, so the suite passes but the Node process
+    # never exits and the job times out (#630). On CI the suite runs the
+    # `ct-runner-diagnostics` reporter, which logs the leaking resources and
+    # force-exits with the run's status, so the job gates pull requests
+    # through `Test Summary`. `timeout-minutes` stays as a safety net.
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -192,16 +190,15 @@ jobs:
 
   md-roundtrip:
     name: Markdown round-trip
-    # The round-trip suite drives the Pillar 3 corpus through Vizel and
-    # asserts lossless parse/serialize. Like the a11y suite, it is a
-    # standalone Playwright CT job that hangs intermittently on the
-    # GitHub runner (it reaches the timeout below even though it passes
-    # locally), so it stays on manual dispatch until the runner-side root
-    # cause is fixed (tracked follow-up). `timeout-minutes` caps any hang
-    # at minutes; `PLAYWRIGHT_HTML_OPEN: never` mirrors the a11y guard.
-    # Once the root cause lands, flip this to run on pull requests and add
-    # it to `Test Summary` needs.
-    if: github.event_name == 'workflow_dispatch'
+    # Pillar 3 round-trip suite: drives the corpus through Vizel and
+    # asserts lossless parse/serialize. Like the a11y suite, the
+    # experimental-ct dev server leaks a handle on the Linux runner, so the
+    # process hangs after the suite passes (#630). On CI the suite runs the
+    # `ct-runner-diagnostics` reporter, which logs the leaking resources and
+    # force-exits with the run's status, so the job gates pull requests
+    # through `Test Summary`. `timeout-minutes` stays as a safety net.
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -248,10 +245,10 @@ jobs:
     # otherwise it aggregates the matrix results. The former `ssr` and
     # `ct-parity` needs moved into the `quality-parity` job in
     # `quality.yml` and cannot be referenced from here. The `a11y` and
-    # `md-roundtrip` suites are standalone Playwright CT jobs that hang
-    # intermittently on the runner, so both stay on manual dispatch and
-    # are not gated here until the root cause is fixed (tracked follow-up).
-    needs: [changes, test]
+    # `md-roundtrip` standalone Playwright CT jobs now run on pull requests
+    # (the Vite-watcher fix in #630 cleared the runner hang) and gate here
+    # through their job-level results.
+    needs: [changes, test, a11y, md-roundtrip]
     if: always()
     steps:
       - name: Note docs-only run
@@ -296,9 +293,13 @@ jobs:
       - name: Check overall result
         if: ${{ needs.changes.outputs.code == 'true' }}
         # The behaviour matrix reports through `test-result-*` artifacts.
-        # (The `a11y` and `md-roundtrip` standalone CT jobs stay on manual
-        # dispatch pending their runner-hang fix, so they are not gated
-        # here.)
+        # The `a11y` and `md-roundtrip` standalone CT jobs report through
+        # their job-level results, gated here alongside the matrix. The
+        # result values come from the `needs` context (controlled GitHub
+        # values), passed through `env` rather than inlined into the script.
+        env:
+          A11Y_RESULT: ${{ needs.a11y.result }}
+          MD_ROUNDTRIP_RESULT: ${{ needs.md-roundtrip.result }}
         run: |
           FAILED=0
           for framework in react vue svelte; do
@@ -310,6 +311,15 @@ jobs:
               fi
             done
           done
+
+          if [ "$A11Y_RESULT" != "success" ]; then
+            echo "❌ a11y: $A11Y_RESULT"
+            FAILED=1
+          fi
+          if [ "$MD_ROUNDTRIP_RESULT" != "success" ]; then
+            echo "❌ md-roundtrip: $MD_ROUNDTRIP_RESULT"
+            FAILED=1
+          fi
 
           if [ "$FAILED" = "1" ]; then
             echo "❌ Some tests failed"

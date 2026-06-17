@@ -321,7 +321,8 @@
         "**/tailwind.config.ts",
         "**/postcss.config.js",
         "**/playwright-ct.config.ts",
-        "docs/.vitepress/config.mts"
+        "docs/.vitepress/config.mts",
+        "tests/_support/**"
       ],
       "linter": {
         "rules": {
