@@ -29,7 +29,7 @@ overrides:
   "@tiptap/extension-collaboration": "$@tiptap/extension-collaboration"
   "@tiptap/pm": "$@tiptap/pm"
   "@tiptap/suggestion": "$@tiptap/suggestion"
-  "prosemirror-model": "1.25.8"
+  "prosemirror-model": "1.25.9"
   "react": "$react"
   "react-dom": "$react-dom"
   "vite": "$vite"
