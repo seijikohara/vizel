@@ -4,6 +4,7 @@ import {
   resolveVizelArrayStorageBackend,
   type VizelStorageBackend,
 } from "./storage.ts";
+import { generateVizelId } from "./utils/id.ts";
 
 // =============================================================================
 // Types
@@ -118,10 +119,6 @@ export function getVizelVersionStorageBackend(
 // Handlers
 // =============================================================================
 
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
 /**
  * Creates version history handlers for an editor.
  *
@@ -188,7 +185,7 @@ export function createVizelVersionHistoryHandlers(
 
     try {
       const snapshot: VizelVersionSnapshot = {
-        id: generateId(),
+        id: generateVizelId(),
         content: editor.getJSON(),
         timestamp: Date.now(),
         ...(description !== undefined && { description }),

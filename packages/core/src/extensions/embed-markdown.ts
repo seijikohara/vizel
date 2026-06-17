@@ -7,38 +7,7 @@
  */
 
 import type MarkdownIt from "markdown-it";
-
-/**
- * Escape a value for inclusion inside a `vizel:` metadata comment.
- *
- * Order matters: `&` is escaped first so subsequent replacements do
- * not double-escape ampersand-introduced entities. The literal
- * `-->` sequence becomes `--&gt;` so the value cannot prematurely
- * close the host HTML comment.
- */
-export function escapeMetadataCommentValue(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/-->/g, "--&gt;");
-}
-
-/**
- * Decode a value previously escaped by
- * {@link escapeMetadataCommentValue}.
- *
- * Reverses the same replacements in inverse order so the original
- * characters are restored verbatim on parse.
- */
-function unescapeMetadataCommentValue(value: string): string {
-  return value
-    .replace(/&gt;/g, ">")
-    .replace(/&lt;/g, "<")
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, "&");
-}
+import { unescapeMetadataCommentValue } from "../utils/metadata-comment.ts";
 
 /**
  * Parse the attribute list of a `<!-- vizel:embed key="value" -->`

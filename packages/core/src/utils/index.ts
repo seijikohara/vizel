@@ -40,8 +40,6 @@ export {
   type WrapAsVizelErrorOptions,
   wrapAsVizelError,
 } from "./errorHandling.ts";
-// Collection utilities
-export { groupByConsecutiveField } from "./groupByField.ts";
 // Keyboard shortcut utilities
 export { formatVizelShortcut, formatVizelTooltip, isVizelMacPlatform } from "./keyboard.ts";
 // Lazy import utility
@@ -82,5 +80,3 @@ export {
 } from "./ssr.ts";
 // Text highlight utilities
 export { splitVizelTextByMatches, type VizelTextSegment } from "./textHighlight.ts";
-// Type guard utilities
-export { hasFunction, isOptionalString, isRecord, isString } from "./typeGuards.ts";

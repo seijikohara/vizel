@@ -538,14 +538,7 @@ export {
   getVizelBlockPath,
   getVizelEditorState,
   getVizelMarkdown,
-  // Collection utilities
-  groupByConsecutiveField,
-  // Type guard utilities
-  hasFunction,
   initializeVizelMarkdownContent,
-  isOptionalString,
-  isRecord,
-  isString,
   isVizelError,
   isVizelMacPlatform,
   // Color utilities

@@ -35,13 +35,13 @@ export type VizelDiagramType = "mermaid" | "graphviz";
 /**
  * Valid diagram type values for type guard.
  */
-const VALID_DIAGRAM_TYPES: readonly VizelDiagramType[] = ["mermaid", "graphviz"];
+const VALID_DIAGRAM_TYPES = ["mermaid", "graphviz"] as const satisfies readonly VizelDiagramType[];
 
 /**
  * Type guard to check if a value is a valid VizelDiagramType.
  */
 export function isVizelDiagramType(value: unknown): value is VizelDiagramType {
-  return typeof value === "string" && VALID_DIAGRAM_TYPES.includes(value as VizelDiagramType);
+  return typeof value === "string" && (VALID_DIAGRAM_TYPES as readonly string[]).includes(value);
 }
 
 /**

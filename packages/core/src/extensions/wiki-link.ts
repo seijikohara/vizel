@@ -3,6 +3,10 @@ import type { Mark as PMMark, Node as PMNode } from "@tiptap/pm/model";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type MarkdownIt from "markdown-it";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
+import {
+  escapeMetadataCommentValue,
+  unescapeMetadataCommentValue,
+} from "../utils/metadata-comment.ts";
 
 // =============================================================================
 // Types
@@ -325,33 +329,6 @@ function registerWikiLinkRule(md: MarkdownIt): void {
       .replace(/>/g, "&gt;");
     return `<a data-wiki-link="" data-wiki-page="${escapedPage}" href="#${escapedPage}">${text}</a>`;
   };
-}
-
-/**
- * Escape a value for inclusion inside a `vizel:` metadata comment.
- *
- * Escapes `&`, `"`, `<`, `>`, and the literal `-->` sequence to their
- * HTML-entity equivalents so the value cannot prematurely close the
- * host HTML comment or collide with the attribute delimiter.
- */
-function escapeMetadataCommentValue(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/-->/g, "--&gt;");
-}
-
-/**
- * Reverse {@link escapeMetadataCommentValue}.
- */
-function unescapeMetadataCommentValue(value: string): string {
-  return value
-    .replace(/&gt;/g, ">")
-    .replace(/&lt;/g, "<")
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, "&");
 }
 
 /**

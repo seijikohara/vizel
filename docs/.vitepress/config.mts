@@ -172,6 +172,32 @@ export default withMermaid({
           ],
         },
         {
+          text: "Configuration",
+          items: [
+            { text: "Features", link: "/guide/features" },
+            { text: "Performance", link: "/guide/performance" },
+          ],
+        },
+        {
+          text: "Framework Guides",
+          items: [
+            { text: "React in Depth", link: "/guide/react" },
+            { text: "Vue in Depth", link: "/guide/vue" },
+            { text: "Svelte in Depth", link: "/guide/svelte" },
+          ],
+        },
+        {
+          text: "Extensibility",
+          items: [
+            { text: "Plugins", link: "/guide/plugins" },
+            { text: "Wiki Links", link: "/guide/wiki-links" },
+          ],
+        },
+        {
+          text: "Support",
+          items: [{ text: "Troubleshooting", link: "/guide/troubleshooting" }],
+        },
+        {
           text: "Migration",
           items: [{ text: "v1 to v2", link: "/guide/migration-v1-to-v2" }],
         },
