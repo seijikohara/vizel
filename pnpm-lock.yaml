@@ -475,8 +475,8 @@ importers:
         specifier: workspace:^
         version: link:../headless
       katex:
-        specifier: ^0.16.0
-        version: 0.16.45
+        specifier: ^0.17.0
+        version: 0.17.0
       linkedom:
         specifier: ^0.18.0
         version: 0.18.12
@@ -515,7 +515,7 @@ importers:
         version: 13.6.30
     devDependencies:
       '@iconify-json/lucide':
-        specifier: ^1.2.112
+        specifier: ^1.2.113
         version: 1.2.113
       '@iconify/utils':
         specifier: ^3.1.3
