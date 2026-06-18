@@ -184,3 +184,48 @@ export async function testTaskListCheckedInputRule(component: Locator, page: Pag
 
   await expect(taskItem).toHaveAttribute("data-checked", "true");
 }
+
+/**
+ * Verify content list markers survive a host CSS reset.
+ *
+ * Tailwind v4 Preflight emits `@layer base { ol, ul, menu { list-style: none } }`,
+ * which strips the User-Agent bullet and number markers. Vizel ships unlayered
+ * CSS, so its explicit `list-style-type` wins over the layered reset for content
+ * lists, while the task-list opt-out stays marker-less. Regression guard for
+ * issue #666.
+ */
+export async function testListMarkersSurviveHostReset(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  // Reproduce Tailwind Preflight: a layered reset that removes the UA markers.
+  await page.addStyleTag({ content: "@layer base { ol, ul, menu { list-style: none; } }" });
+
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+
+  // Build a bullet list, an ordered list, and a task list as separate blocks.
+  await page.keyboard.type("- Bullet item");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("1. Ordered item");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("[ ] Task item");
+
+  const bulletList = editor.locator("ul:not([data-type='taskList'])").first();
+  const orderedList = editor.locator("ol").first();
+  const taskList = editor.locator("ul[data-type='taskList']").first();
+
+  await expect(bulletList).toBeVisible();
+  await expect(orderedList).toBeVisible();
+  await expect(taskList).toBeVisible({ timeout: 3000 });
+
+  const bulletMarker = await bulletList.evaluate((el) => getComputedStyle(el).listStyleType);
+  const orderedMarker = await orderedList.evaluate((el) => getComputedStyle(el).listStyleType);
+  const taskMarker = await taskList.evaluate((el) => getComputedStyle(el).listStyleType);
+
+  expect(bulletMarker).toBe("disc");
+  expect(orderedMarker).toBe("decimal");
+  expect(taskMarker).toBe("none");
+}

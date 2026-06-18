@@ -7,6 +7,7 @@ import {
   testEditorTyping,
   testHeadingShortcut,
   testItalicShortcut,
+  testListMarkersSurviveHostReset,
   testOrderedList,
   testTaskListCheckboxToggle,
   testTaskListCheckedInputRule,
@@ -68,5 +69,10 @@ test.describe("Editor - React", () => {
   test("creates checked task with [x] input rule", async ({ mount, page }) => {
     const component = await mount(<EditorFixture />);
     await testTaskListCheckedInputRule(component, page);
+  });
+
+  test("keeps list markers under a host CSS reset", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testListMarkersSurviveHostReset(component, page);
   });
 });
