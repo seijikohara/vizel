@@ -123,6 +123,32 @@ jobs:
       - name: Build packages
         run: pnpm build
 
+      - name: Verify built artifacts match release version
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          # Guard against shipping a stale or mismatched build: every built
+          # package.json must report the release version, and core must carry a
+          # non-empty CSS catalogue. A mismatch here aborts the release before
+          # the artifact is uploaded, so a wrong-version tarball never reaches
+          # the registry. See issue #666.
+          fail=0
+          for pkg in core headless react vue svelte; do
+            built=$(node -p "require('./packages/$pkg/package.json').version")
+            if [ "$built" != "$VERSION" ]; then
+              echo "::error::@vizel/$pkg built version '$built' does not match release version '$VERSION'"
+              fail=1
+            fi
+          done
+          if [ ! -s packages/core/dist/styles.css ]; then
+            echo "::error::packages/core/dist/styles.css is missing or empty (stale or partial build)"
+            fail=1
+          fi
+          if [ "$fail" -ne 0 ]; then
+            exit 1
+          fi
+          echo "✅ All built packages report version $VERSION"
+
       - name: Verify package contents
         run: |
           echo "## 📦 Package Contents" >> $GITHUB_STEP_SUMMARY
