@@ -30,6 +30,7 @@ const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
 
 import { getFlavorContent } from "../../shared/content";
 import svelteLogo from "../../shared/logos/svelte.svg";
+import { applyDemoPreflight } from "../../shared/preflight";
 import { mockMentionItems, mockUploadImage } from "../../shared/utils";
 import ThemeToggle from "./ThemeToggle.svelte";
 
@@ -43,6 +44,7 @@ let features = $state({
   comments: true,
   history: true,
   outline: true,
+  preflight: false,
 });
 
 let flavorName = $state<string>(vizelGfmFlavor.name);
@@ -105,6 +107,11 @@ $effect(() => {
     setVizelMarkdown(editorRef, getFlavorContent(flavor), { transformDiagrams: true });
   }
   prevFlavor = flavor;
+});
+
+// Inject or remove a Tailwind Preflight-like host reset to exercise CSS robustness.
+$effect(() => {
+  applyDemoPreflight(features.preflight);
 });
 
 const showPanel = $derived(features.syncPanel || features.history || features.comments);
@@ -220,6 +227,10 @@ function handleJsonChange(event: Event) {
       <label class="feature-toggle">
         <input type="checkbox" bind:checked={features.outline} />
         <span class="feature-toggle-label">Outline</span>
+      </label>
+      <label class="feature-toggle">
+        <input type="checkbox" bind:checked={features.preflight} />
+        <span class="feature-toggle-label">Preflight reset</span>
       </label>
       <label class="feature-toggle">
         <span class="feature-toggle-label">Flavor</span>

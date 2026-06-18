@@ -24,6 +24,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getFlavorContent } from "../../shared/content";
 import reactLogo from "../../shared/logos/react.svg";
+import { applyDemoPreflight } from "../../shared/preflight";
 import { mockMentionItems, mockUploadImage } from "../../shared/utils";
 
 const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
@@ -116,6 +117,7 @@ interface DemoFeatures {
   comments: boolean;
   history: boolean;
   outline: boolean;
+  preflight: boolean;
 }
 
 type PanelTab = "markdown" | "json" | "history" | "comments";
@@ -155,6 +157,7 @@ function AppContent() {
     comments: true,
     history: true,
     outline: true,
+    preflight: false,
   });
 
   const [flavorName, setFlavorName] = useState<string>(vizelGfmFlavor.name);
@@ -200,6 +203,11 @@ function AppContent() {
       prevFlavorRef.current = flavor;
     }
   }, [flavor, editor]);
+
+  // Inject or remove a Tailwind Preflight-like host reset to exercise CSS robustness.
+  useEffect(() => {
+    applyDemoPreflight(features.preflight);
+  }, [features.preflight]);
 
   // Find & Replace extension (stable reference)
   const findReplaceExtensions = useMemo(() => [createVizelFindReplaceExtension()], []);
@@ -317,6 +325,11 @@ function AppContent() {
             label="Outline"
             checked={features.outline}
             onChange={(v) => updateFeature("outline", v)}
+          />
+          <FeatureToggle
+            label="Preflight reset"
+            checked={features.preflight}
+            onChange={(v) => updateFeature("preflight", v)}
           />
           <label className="feature-toggle">
             <span className="feature-toggle-label">Flavor</span>
