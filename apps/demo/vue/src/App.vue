@@ -22,6 +22,7 @@ import {
 import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { getFlavorContent } from "../../shared/content";
 import vueLogo from "../../shared/logos/vue.svg";
+import { applyDemoPreflight } from "../../shared/preflight";
 import { mockMentionItems, mockUploadImage } from "../../shared/utils";
 import StatsBar from "./StatsBar.vue";
 import ThemeToggle from "./ThemeToggle.vue";
@@ -43,6 +44,7 @@ const features = reactive({
   comments: true,
   history: true,
   outline: true,
+  preflight: false,
 });
 
 const flavorName = ref<string>(vizelGfmFlavor.name);
@@ -92,6 +94,9 @@ watch(flavor, (newFlavor) => {
     setVizelMarkdown(editorRef.value, getFlavorContent(newFlavor), { transformDiagrams: true });
   }
 });
+
+// Inject or remove a Tailwind Preflight-like host reset to exercise CSS robustness.
+watch(() => features.preflight, applyDemoPreflight, { immediate: true });
 
 function handleCreate({ editor }: { editor: Editor }) {
   editorRef.value = editor;
@@ -206,6 +211,10 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
           <label class="feature-toggle">
             <input type="checkbox" v-model="features.outline" />
             <span class="feature-toggle-label">Outline</span>
+          </label>
+          <label class="feature-toggle">
+            <input type="checkbox" v-model="features.preflight" />
+            <span class="feature-toggle-label">Preflight reset</span>
           </label>
           <label class="feature-toggle">
             <span class="feature-toggle-label">Flavor</span>
