@@ -79,6 +79,21 @@
     padding-inline-start: 1.5rem;
   }
 
+  // Set content-list markers explicitly so they survive a host CSS reset.
+  // Tailwind Preflight emits `ol, ul, menu { list-style: none }` in
+  // `@layer base`; with no Vizel `list-style-type`, the layered reset removes
+  // the User-Agent markers. Vizel ships unlayered CSS, so these declarations
+  // win. Exclude the marker-less opt-outs — task lists and the table-of-contents
+  // node both render a <ul> inside `.vizel-editor` — so the rule never overrides
+  // their `list-style: none` by specificity. See #666.
+  ul:not([data-type="taskList"]):not(.vizel-toc-list) {
+    list-style-type: disc;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
   li {
     margin: 0.25em 0;
   }
@@ -88,6 +103,22 @@
     padding-left: 1em;
     color: v("foreground-secondary");
     font-style: italic;
+
+    // Make inter-block spacing deterministic across hosts. Vizel sets no
+    // `p { margin }`, so multi-paragraph quotes relied on the UA default that a
+    // host reset (Preflight `* { margin: 0 }`) removes. Trim the outer edges and
+    // restore an explicit inter-sibling gap; unlayered CSS survives the reset.
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+
+    > * + * {
+      margin-top: 0.75em;
+    }
   }
 
   code {

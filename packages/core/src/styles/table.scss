@@ -26,6 +26,14 @@
       text-align: inherit;
     }
 
+    // Space non-paragraph blocks (headings, lists) stacked in a cell.
+    // Paragraphs stay flush via the higher-specificity `p` rule above; other
+    // blocks relied on UA margins a host reset (Preflight `* { margin: 0 }`)
+    // removes. See #666.
+    > * + * {
+      margin-top: 0.5em;
+    }
+
     &.selectedCell {
       background: v("primary-bg-hover");
     }

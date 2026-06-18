@@ -1,5 +1,6 @@
 import { test } from "@playwright/experimental-ct-react";
 import {
+  testBlockSpacingSurvivesHostReset,
   testBoldShortcut,
   testBulletList,
   testEditorPlaceholder,
@@ -7,11 +8,14 @@ import {
   testEditorTyping,
   testHeadingShortcut,
   testItalicShortcut,
+  testLinkInputBackgroundSurvivesHostReset,
+  testListMarkersSurviveHostReset,
   testOrderedList,
   testTaskListCheckboxToggle,
   testTaskListCheckedInputRule,
   testTaskListInputRule,
 } from "../../scenarios/editor.scenario";
+import { CssResetFixture } from "./CssResetFixture";
 import { EditorFixture } from "./EditorFixture";
 
 test.describe("Editor - React", () => {
@@ -68,5 +72,20 @@ test.describe("Editor - React", () => {
   test("creates checked task with [x] input rule", async ({ mount, page }) => {
     const component = await mount(<EditorFixture />);
     await testTaskListCheckedInputRule(component, page);
+  });
+
+  test("keeps list markers under a host CSS reset", async ({ mount, page }) => {
+    const component = await mount(<EditorFixture />);
+    await testListMarkersSurviveHostReset(component, page);
+  });
+
+  test("keeps block spacing under a host CSS reset", async ({ mount, page }) => {
+    const component = await mount(<CssResetFixture />);
+    await testBlockSpacingSurvivesHostReset(component, page);
+  });
+
+  test("keeps the link input opaque under a host CSS reset", async ({ mount, page }) => {
+    const component = await mount(<CssResetFixture />);
+    await testLinkInputBackgroundSurvivesHostReset(component, page);
   });
 });

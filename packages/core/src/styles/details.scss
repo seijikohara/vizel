@@ -140,6 +140,13 @@
       margin-bottom: 0;
     }
 
+    // Restore inter-block spacing inside the disclosure body. Vizel sets no
+    // `p` / heading margin, so a host reset (Preflight `* { margin: 0 }`) would
+    // collapse multi-block content. Unlayered CSS survives the reset. See #666.
+    > * + * {
+      margin-top: 0.75em;
+    }
+
     &.is-empty::before {
       content: "Add content here...";
       color: v("muted-foreground");

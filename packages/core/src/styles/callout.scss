@@ -28,6 +28,13 @@
     margin-bottom: 0;
   }
 
+  // Restore inter-block spacing inside multi-block callouts. Vizel sets no
+  // `p` / heading margin, so a host reset (Preflight `* { margin: 0 }`) would
+  // collapse the body. Unlayered CSS survives the reset. See #666.
+  > * + * {
+    margin-top: 0.75em;
+  }
+
   // Selection ring
   &.ProseMirror-selectednode {
     outline: 2px solid v("primary");
