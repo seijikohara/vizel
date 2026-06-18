@@ -229,3 +229,150 @@ export async function testListMarkersSurviveHostReset(
   expect(orderedMarker).toBe("decimal");
   expect(taskMarker).toBe("none");
 }
+
+/**
+ * A Tailwind v4 Preflight-like reset scoped to `@layer base`. It strips the
+ * User-Agent defaults Vizel must not depend on: margins, padding, borders, list
+ * markers, heading sizing, and the native input background.
+ */
+const VIZEL_PREFLIGHT_RESET = `@layer base {
+  *, ::before, ::after { margin: 0; padding: 0; border: 0 solid; }
+  ol, ul, menu { list-style: none; }
+  h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
+  input, textarea, select, button { background-color: transparent; }
+}`;
+
+/**
+ * A document whose nested containers each hold two block siblings, so a missing
+ * inter-block margin is observable. The table cell pairs a paragraph with a
+ * heading because the cell paragraph reset keeps paragraphs flush; the heading
+ * is the block that must regain spacing.
+ */
+const VIZEL_RESET_DOC = {
+  type: "doc",
+  content: [
+    {
+      type: "blockquote",
+      content: [
+        { type: "paragraph", content: [{ type: "text", text: "Quote paragraph one." }] },
+        { type: "paragraph", content: [{ type: "text", text: "Quote paragraph two." }] },
+      ],
+    },
+    {
+      type: "callout",
+      attrs: { type: "info" },
+      content: [
+        { type: "paragraph", content: [{ type: "text", text: "Callout paragraph one." }] },
+        { type: "paragraph", content: [{ type: "text", text: "Callout paragraph two." }] },
+      ],
+    },
+    {
+      type: "details",
+      attrs: { open: true },
+      content: [
+        { type: "detailsSummary", content: [{ type: "text", text: "Summary" }] },
+        {
+          type: "detailsContent",
+          content: [
+            { type: "paragraph", content: [{ type: "text", text: "Details paragraph one." }] },
+            { type: "paragraph", content: [{ type: "text", text: "Details paragraph two." }] },
+          ],
+        },
+      ],
+    },
+    {
+      type: "table",
+      content: [
+        {
+          type: "tableRow",
+          content: [
+            {
+              type: "tableCell",
+              content: [
+                { type: "paragraph", content: [{ type: "text", text: "Cell paragraph." }] },
+                {
+                  type: "heading",
+                  attrs: { level: 3 },
+                  content: [{ type: "text", text: "Cell heading" }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+/** Seed the editor with rich block content through the exposed test editor. */
+async function seedResetDoc(page: Page): Promise<void> {
+  await page.waitForFunction(() =>
+    Boolean((window as unknown as { vizelTestEditor?: unknown }).vizelTestEditor)
+  );
+  await page.evaluate((doc) => {
+    const win = window as unknown as {
+      vizelTestEditor: { commands: { setContent: (content: unknown) => void } };
+    };
+    // A JS object bypasses the markdown setContent override and loads as JSON.
+    win.vizelTestEditor.commands.setContent(doc);
+  }, VIZEL_RESET_DOC);
+}
+
+/**
+ * Verify inter-block spacing inside nested containers survives a host CSS reset.
+ *
+ * Callouts, details, blockquotes, and table cells set no paragraph or heading
+ * margin of their own, so they relied on the User-Agent default that a host
+ * reset removes. Each container now restores an explicit `> * + *` gap that, as
+ * unlayered CSS, wins over the layered reset. Regression guard for issue #666.
+ */
+export async function testBlockSpacingSurvivesHostReset(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  await page.addStyleTag({ content: VIZEL_PREFLIGHT_RESET });
+  await seedResetDoc(page);
+
+  const editor = component.locator(".vizel-editor");
+  const containers = [
+    "blockquote > * + *",
+    ".vizel-callout > * + *",
+    ".vizel-details-content > * + *",
+    ".vizel-table-cell > * + *",
+  ];
+  for (const selector of containers) {
+    const secondChild = editor.locator(selector).first();
+    await expect(secondChild).toBeVisible();
+    const marginTop = await secondChild.evaluate((node) => getComputedStyle(node).marginTop);
+    expect(marginTop, `${selector} keeps a top margin under a host reset`).not.toBe("0px");
+  }
+}
+
+/**
+ * Verify the link-editor input keeps an opaque surface under a host CSS reset.
+ *
+ * Preflight sets `input { background-color: transparent }`; the field now
+ * declares an explicit background so the popover does not show through it.
+ * Regression guard for issue #666.
+ */
+export async function testLinkInputBackgroundSurvivesHostReset(
+  component: Locator,
+  page: Page
+): Promise<void> {
+  await page.addStyleTag({ content: VIZEL_PREFLIGHT_RESET });
+
+  const editor = component.locator(".vizel-editor");
+  await editor.click();
+  await page.keyboard.type("Linkable text");
+  await page.keyboard.press("ControlOrMeta+a");
+
+  const bubbleMenu = component.locator("[data-vizel-bubble-menu]");
+  await expect(bubbleMenu).toBeVisible();
+  await bubbleMenu.locator('[data-action="link"]').click();
+
+  const input = component.locator(".vizel-link-input");
+  await expect(input).toBeVisible();
+  const background = await input.evaluate((node) => getComputedStyle(node).backgroundColor);
+  expect(background).not.toBe("rgba(0, 0, 0, 0)");
+  expect(background).not.toBe("transparent");
+}

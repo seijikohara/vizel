@@ -1,5 +1,6 @@
 import { test } from "@playwright/experimental-ct-vue";
 import {
+  testBlockSpacingSurvivesHostReset,
   testBoldShortcut,
   testBulletList,
   testEditorPlaceholder,
@@ -7,12 +8,14 @@ import {
   testEditorTyping,
   testHeadingShortcut,
   testItalicShortcut,
+  testLinkInputBackgroundSurvivesHostReset,
   testListMarkersSurviveHostReset,
   testOrderedList,
   testTaskListCheckboxToggle,
   testTaskListCheckedInputRule,
   testTaskListInputRule,
 } from "../../scenarios/editor.scenario";
+import CssResetFixture from "./CssResetFixture.vue";
 import EditorFixture from "./EditorFixture.vue";
 
 test.describe("Editor - Vue", () => {
@@ -76,5 +79,15 @@ test.describe("Editor - Vue", () => {
   test("keeps list markers under a host CSS reset", async ({ mount, page }) => {
     const component = await mount(EditorFixture);
     await testListMarkersSurviveHostReset(component, page);
+  });
+
+  test("keeps block spacing under a host CSS reset", async ({ mount, page }) => {
+    const component = await mount(CssResetFixture);
+    await testBlockSpacingSurvivesHostReset(component, page);
+  });
+
+  test("keeps the link input opaque under a host CSS reset", async ({ mount, page }) => {
+    const component = await mount(CssResetFixture);
+    await testLinkInputBackgroundSurvivesHostReset(component, page);
   });
 });

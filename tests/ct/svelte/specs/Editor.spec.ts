@@ -1,5 +1,6 @@
 import { test } from "@playwright/experimental-ct-svelte";
 import {
+  testBlockSpacingSurvivesHostReset,
   testBoldShortcut,
   testBulletList,
   testEditorPlaceholder,
@@ -7,12 +8,14 @@ import {
   testEditorTyping,
   testHeadingShortcut,
   testItalicShortcut,
+  testLinkInputBackgroundSurvivesHostReset,
   testListMarkersSurviveHostReset,
   testOrderedList,
   testTaskListCheckboxToggle,
   testTaskListCheckedInputRule,
   testTaskListInputRule,
 } from "../../scenarios/editor.scenario";
+import CssResetFixture from "./CssResetFixture.svelte";
 import EditorFixture from "./EditorFixture.svelte";
 
 test.describe("Editor - Svelte", () => {
@@ -76,5 +79,15 @@ test.describe("Editor - Svelte", () => {
   test("keeps list markers under a host CSS reset", async ({ mount, page }) => {
     const component = await mount(EditorFixture);
     await testListMarkersSurviveHostReset(component, page);
+  });
+
+  test("keeps block spacing under a host CSS reset", async ({ mount, page }) => {
+    const component = await mount(CssResetFixture);
+    await testBlockSpacingSurvivesHostReset(component, page);
+  });
+
+  test("keeps the link input opaque under a host CSS reset", async ({ mount, page }) => {
+    const component = await mount(CssResetFixture);
+    await testLinkInputBackgroundSurvivesHostReset(component, page);
   });
 });
