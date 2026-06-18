@@ -45,6 +45,10 @@
     padding: 0.25rem 0.5rem;
     border: 1px solid v("border");
     border-radius: v("radius-sm");
+    // Set an explicit surface so a host reset (Preflight makes inputs
+    // `background-color: transparent`) does not show the popover through the
+    // field. Matches the other Vizel inputs. See #666.
+    background: v("background");
     font-size: 0.875rem;
     width: 300px;
     outline: none;
