@@ -26,7 +26,7 @@ jobs:
       code: ${{ steps.detect.outputs.code }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -65,7 +65,7 @@ jobs:
         browser: [chromium, firefox, webkit]
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Run tests
         uses: ./.github/actions/test
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Install pnpm before `setup-node` so the cache key resolution finds
       # the package manager on PATH. Reversing the order breaks the cache.
@@ -158,7 +158,7 @@ jobs:
         framework: [react, vue, svelte]
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Install pnpm before `setup-node` so the cache key resolution finds
       # the package manager on PATH. Reversing the order breaks the cache.
@@ -208,7 +208,7 @@ jobs:
       PLAYWRIGHT_HTML_OPEN: never
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Install pnpm before `setup-node` so the cache key resolution finds
       # the package manager on PATH. Reversing the order breaks the cache.
