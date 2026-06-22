@@ -11,10 +11,14 @@ allowBuilds:
   lefthook: true
   leveldown: true
 
-# Resolution overrides lock @tiptap, React, and Vite to one release across
-# every workspace package. The versions live in the `catalog` below; the
-# overrides reference them through the `catalog:` protocol. pnpm v11
-# deprecated the earlier `$name` reference syntax, so the catalog replaces it.
+# Resolution overrides pin the singleton dependencies to one resolved version
+# across every workspace package: @tiptap/core (with @tiptap/pm,
+# @tiptap/suggestion, and @tiptap/extension-collaboration), React, and Vite.
+# The remaining @tiptap extensions are deliberately not pinned here; they float
+# on their own package.json ranges and share the single pinned @tiptap/core.
+# The versions live in the `catalog` below and the overrides reference them
+# through the `catalog:` protocol; pnpm v11 deprecated the earlier `$name`
+# reference syntax, so the catalog replaces it.
 #
 # @tiptap/core uses an exact version on purpose. A range such as `^3.26.1`
 # lets pnpm resolve two @tiptap/core copies; the extensions then augment the
