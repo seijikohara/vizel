@@ -86,6 +86,16 @@
       automerge: true,
     },
 
+    // pnpm lives in the `packageManager` field, not devDependencies, so the
+    // generic "minor devDependency" rule below never matches it. Auto-merge its
+    // minor and patch bumps explicitly; major upgrades stay manual.
+    {
+      description: "Auto-merge pnpm minor and patch updates",
+      matchPackageNames: ["pnpm"],
+      matchUpdateTypes: ["minor", "patch"],
+      automerge: true,
+    },
+
     // Default automerge rules
     {
       description: "Auto-merge patch updates",
