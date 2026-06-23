@@ -27,6 +27,18 @@ export const MOD_KEY = isApplePlatform ? "Meta" : "Control";
 // WebKit. Spec files gate those cases with `test.skipIf(isFirefox)`.
 export const isFirefox = typeof navigator !== "undefined" && /firefox/i.test(navigator.userAgent);
 
+// WebKitGTK (the WebKit build Playwright drives on Linux CI) does not complete a
+// synthesized HTML5 drag-and-drop: the constructed DragEvent / DataTransfer
+// sequence does not move the dragged node, so ProseMirror's drop never reorders
+// the document. The same flows pass on Chromium and Firefox (and on WebKit on
+// macOS). Detect WebKit by its Safari user agent, which carries AppleWebKit
+// without a Chrome/Chromium or Firefox token. Spec files gate the genuine-DnD
+// reorder cases with `test.skipIf(isWebkit)`.
+export const isWebkit =
+  typeof navigator !== "undefined" &&
+  /applewebkit/i.test(navigator.userAgent) &&
+  !/chrome|chromium|firefox/i.test(navigator.userAgent);
+
 /**
  * Press a keyboard chord in @testing-library/user-event syntax. Every argument
  * except the last is held as a modifier around the final key, so

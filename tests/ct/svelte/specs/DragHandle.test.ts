@@ -4,6 +4,7 @@ import "@vizel/core/styles/index.scss";
 import { describe, test } from "vitest";
 import { page } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
+import { isWebkit } from "../../scenarios/_vitest-context";
 import {
   testDragBulletListItemReorder,
   testDragHandleAccessibility,
@@ -73,22 +74,22 @@ describe("DragHandle (Vitest Browser) - Svelte", () => {
     await testMoveTaskItemWithKeyboard(page.elementLocator(document.body));
   });
 
-  test("reorders a bullet list item by dragging", async () => {
+  test.skipIf(isWebkit)("reorders a bullet list item by dragging", async () => {
     render(EditorFixture);
     await testDragBulletListItemReorder(page.elementLocator(document.body));
   });
 
-  test("reorders an ordered list item by dragging", async () => {
+  test.skipIf(isWebkit)("reorders an ordered list item by dragging", async () => {
     render(EditorFixture);
     await testDragOrderedListItemReorder(page.elementLocator(document.body));
   });
 
-  test("preserves task item checked state after drag", async () => {
+  test.skipIf(isWebkit)("preserves task item checked state after drag", async () => {
     render(EditorFixture);
     await testDragTaskItemPreservesCheckState(page.elementLocator(document.body));
   });
 
-  test("reorders a nested list item by dragging", async () => {
+  test.skipIf(isWebkit)("reorders a nested list item by dragging", async () => {
     render(EditorFixture);
     await testDragNestedListItemReorder(page.elementLocator(document.body));
   });
