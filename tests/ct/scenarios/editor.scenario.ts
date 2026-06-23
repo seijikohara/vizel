@@ -366,8 +366,11 @@ export const testLinkInputBackgroundSurvivesHostReset: VizelBcScenario = async (
   await userEvent.type(editor, "Linkable text");
   await pressKeyChord("Mod", "a");
 
+  // The bubble menu appears on selection and is positioned asynchronously by
+  // floating-ui; the link input then mounts after its action click. Under the
+  // contended Firefox run both can exceed a short budget, so poll generously.
   await expect
-    .poll(() => document.querySelector("[data-vizel-bubble-menu]"), { timeout: 5_000 })
+    .poll(() => document.querySelector("[data-vizel-bubble-menu]"), { timeout: 15_000 })
     .not.toBeNull();
   const bubbleMenu = document.querySelector<HTMLElement>("[data-vizel-bubble-menu]");
   if (bubbleMenu === null) throw new Error("expected a bubble menu");
@@ -376,7 +379,7 @@ export const testLinkInputBackgroundSurvivesHostReset: VizelBcScenario = async (
   await userEvent.click(page.elementLocator(linkAction));
 
   await expect
-    .poll(() => document.querySelector(".vizel-link-input"), { timeout: 5_000 })
+    .poll(() => document.querySelector(".vizel-link-input"), { timeout: 15_000 })
     .not.toBeNull();
   const input = document.querySelector<HTMLElement>(".vizel-link-input");
   if (input === null) throw new Error("expected a link input");

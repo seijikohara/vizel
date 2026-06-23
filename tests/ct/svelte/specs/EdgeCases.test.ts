@@ -1,6 +1,7 @@
 import { describe, test } from "vitest";
 import { page } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
+import { isFirefox } from "../../scenarios/_vitest-context";
 import {
   testEditorEmptyState,
   testHtmlEscaping,
@@ -29,7 +30,8 @@ describe("Edge Cases (Vitest Browser) - Svelte", () => {
   });
 
   describe("Special Characters", () => {
-    test("handles Unicode and emoji characters", async () => {
+    // Firefox ignores synthesized ClipboardEvent payloads (see _vitest-context).
+    test.skipIf(isFirefox)("handles Unicode and emoji characters", async () => {
       render(EditorFixture);
       await testSpecialCharacters(page.elementLocator(document.body));
     });
@@ -60,7 +62,8 @@ describe("Edge Cases (Vitest Browser) - Svelte", () => {
   });
 
   describe("Markdown Edge Cases", () => {
-    test("markdown export preserves special characters", async () => {
+    // Firefox ignores synthesized ClipboardEvent payloads (see _vitest-context).
+    test.skipIf(isFirefox)("markdown export preserves special characters", async () => {
       render(MarkdownFixture);
       await testMarkdownSpecialCharsExport(page.elementLocator(document.body));
     });

@@ -20,6 +20,13 @@ const isApplePlatform =
 /** Platform modifier ProseMirror binds to "Mod" (Meta on Apple, Control elsewhere). */
 export const MOD_KEY = isApplePlatform ? "Meta" : "Control";
 
+// Firefox ignores the `clipboardData` passed to a synthesized `ClipboardEvent`
+// constructor (it exposes a read-only null on untrusted events), so the
+// copy/cut/paste scenarios that drive ProseMirror through synthetic clipboard
+// events cannot exchange a payload there. The same flows pass on Chromium and
+// WebKit. Spec files gate those cases with `test.skipIf(isFirefox)`.
+export const isFirefox = typeof navigator !== "undefined" && /firefox/i.test(navigator.userAgent);
+
 /**
  * Press a keyboard chord in @testing-library/user-event syntax. Every argument
  * except the last is held as a modifier around the final key, so

@@ -175,8 +175,15 @@ export const testCodeBlockSyntaxHighlighting: VizelBcScenario = async () => {
   await userEvent.fill(inputLocator, "javascript");
   await expect.element(inputLocator).toHaveValue("javascript");
 
-  // Return focus to the editor and type code for lowlight to highlight.
-  await userEvent.click(page.elementLocator(codeBlock));
+  // Return focus to the editor and type code for lowlight to highlight. Click
+  // the `pre` element, not the `.vizel-code-block` wrapper: the wrapper also
+  // spans the language toolbar, so a wrapper click can land outside the
+  // editable region and leave the caret unset on Firefox, which then drops
+  // the typed keystrokes. The empty `code` contentDOM has zero size and is
+  // not clickable, but its `pre` parent has padding and stays clickable.
+  const pre = codeBlock.querySelector("pre");
+  if (pre === null) throw new Error("expected a pre element inside the code block");
+  await userEvent.click(page.elementLocator(pre));
   await userEvent.keyboard("const x = 42;");
 
   const code = codeBlock.querySelector("code");
