@@ -2,10 +2,9 @@
 // framework-agnostic. Each framework's spec renders its fixture, then calls a
 // scenario. Scenarios locate component-scoped nodes via document queries wrapped
 // in `page.elementLocator` and use `page` for portals (menus rendered to body).
-import { type Locator, page, userEvent } from "vitest/browser";
+import type { Locator } from "vitest/browser";
 
-export { page, userEvent };
-export type { Locator };
+export { page, userEvent } from "vitest/browser";
 
 // `root` is the rendered fixture's container element wrapped as a Locator.
 export type VizelBcScenario = (root: Locator) => Promise<void>;

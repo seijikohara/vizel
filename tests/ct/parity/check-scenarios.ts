@@ -82,8 +82,11 @@ function collectExportedTestFunctions(scenarioPath: string): readonly string[] {
 
 /** List every flat scenario basename (without the `.scenario.ts` suffix). */
 function listScenarioBasenames(): readonly string[] {
+  // Exclude in-migration Vitest Browser scenarios (`*-bc.scenario.ts`). They
+  // run through their own `.bc.test` specs, outside the Playwright parity model,
+  // until every framework adopts Vitest Browser Mode (see the migration spec).
   return readdirSync(SCENARIOS_DIR)
-    .filter((entry) => entry.endsWith(SCENARIO_SUFFIX))
+    .filter((entry) => entry.endsWith(SCENARIO_SUFFIX) && !entry.endsWith("-bc.scenario.ts"))
     .map((entry) => entry.slice(0, -SCENARIO_SUFFIX.length))
     .sort();
 }

@@ -1,6 +1,6 @@
 import { describe, test } from "vitest";
-import { render } from "vitest-browser-react";
 import { page } from "vitest/browser";
+import { render } from "vitest-browser-react";
 import { testEditorRenders } from "../../scenarios/editor-bc.scenario";
 import { EditorFixture } from "./EditorFixture";
 

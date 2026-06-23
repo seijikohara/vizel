@@ -1,5 +1,5 @@
-import { render } from "vitest-browser-react";
 import { expect, test } from "vitest";
+import { render } from "vitest-browser-react";
 
 function Hello() {
   return <button type="button">Vitest Browser</button>;
