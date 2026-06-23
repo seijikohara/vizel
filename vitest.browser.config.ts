@@ -46,10 +46,14 @@ const testInclude = ["specs/**/*.test.{ts,tsx}"] as const;
 // project: the real-browser editor tests are timing-sensitive, and several
 // concurrent tabs saturate the machine and flake on focus and async mount.
 // The raised timeouts absorb the residual slowness of a contended run.
+// `retry` re-runs a failed test: real-browser interaction with asynchronously
+// positioned menus (floating-ui) is occasionally flaky under load, especially on
+// Firefox, the same reason the Playwright CT suite ran with retries.
 const sharedTestOptions = {
   testTimeout: 30_000,
   hookTimeout: 30_000,
   fileParallelism: false,
+  retry: 2,
 } as const;
 
 const frameworkPlugin: Record<Framework, () => Plugin | Plugin[]> = { react, vue, svelte };
