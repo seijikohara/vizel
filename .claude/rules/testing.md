@@ -89,7 +89,7 @@ operations, static view modes, etc.) receives:
 ```
 tests/ct/
 ├── scenarios/                # Framework-agnostic shared scenarios
-│   ├── _vitest-context.ts    # Exports page, userEvent, MOD_KEY, pressKeyChord, isFirefox, VizelBcScenario
+│   ├── _vitest-context.ts    # Exports page, userEvent, MOD_KEY, pressKeyChord, isFirefox, isWebkit, VizelBcScenario
 │   └── *.scenario.ts
 ├── parity/                   # Parity harness scripts
 ├── react/
@@ -160,11 +160,19 @@ pnpm exec vitest run --config vitest.browser.config.ts --project=react-chromium 
 
 ### Cross-browser notes
 
-The component matrix passes on Chromium, Firefox, and WebKit. Five
-synthetic-clipboard cases skip on Firefox via `test.skipIf(isFirefox)`:
-the three `BlockClipboard` tests and two `UnicodeEdgeCases` tests skip
-because Firefox ignores the `clipboardData` of a constructed
-`ClipboardEvent`. Those cases run on Chromium and WebKit.
+The component matrix passes on Chromium, Firefox, and WebKit. Two
+engine-specific limitations gate a small set of cases:
+
+- **Firefox** ignores the `clipboardData` of a constructed `ClipboardEvent`,
+  so five synthetic-clipboard cases skip via `test.skipIf(isFirefox)`: the
+  three `BlockClipboard` tests and two Unicode `EdgeCases` tests. They run on
+  Chromium and WebKit.
+- **WebKit** (the WebKitGTK build Playwright drives on Linux CI) does not
+  complete a synthesized HTML5 drag-and-drop, so the four `DragHandle` reorder
+  cases skip via `test.skipIf(isWebkit)`. They run on Chromium and Firefox.
+  The keyboard-driven block-move cases run on every engine.
+
+`isFirefox` and `isWebkit` are exported from `_vitest-context.ts`.
 
 ### Authoring a shared scenario
 
