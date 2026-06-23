@@ -183,6 +183,9 @@ importers:
       '@vue/compiler-dom':
         specifier: ^3.5.38
         version: 3.5.38
+      axe-core:
+        specifier: ^4.11.0
+        version: 4.11.4
       c8:
         specifier: ^11.0.0
         version: 11.0.0
