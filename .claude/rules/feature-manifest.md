@@ -57,7 +57,7 @@ When you change a feature's `ariaContract` or `keyboardMap`, run `pnpm check:ari
 
 - `pnpm check:feature-parity` — static export-surface check. The script parses each adapter's `src/index.ts` with the TypeScript compiler API and computes its effective export set: the adapter's own named exports unioned with the `@vizel/core` surface that the mandatory `export * from "@vizel/core"` forwards. The Core surface is resolved by recursively walking the re-export declarations rooted at `packages/core/src/index.ts`. The check reads source only — it imports no built artefacts — and fails when any adapter omits a manifest-declared component or companion symbol.
 - `pnpm check:aria-contract` — static ARIA / keyboard contract check (Phase 1). See the section above for the resolution rules and the static-versus-runtime split.
-- `pnpm check:ct-parity` — Playwright-level check: every manifest entry has a scenario that runs across every framework.
+- `pnpm check:ct-parity` — Vitest Browser Mode spec parity check: every manifest entry has a scenario that runs across every framework.
 - `pnpm check:scenarios` — flat-scenario coverage check (`tests/ct/parity/check-scenarios.ts`). For every `tests/ct/scenarios/<feature>.scenario.ts`, the check asserts the scenario exports at least one `test*` function and that each framework's spec layer imports the scenario through `../../scenarios/<feature>.scenario` and invokes at least one of its `test*` exports. The check matches the import specifier, not the spec filename, so the `Use*`/`Create*` idiom does not break detection.
 
 The lefthook `pre-push` hook and the `Quality + Parity` CI job run these checks.

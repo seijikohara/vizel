@@ -1,8 +1,8 @@
 # Vitest Browser Mode migration design
 
 - Date: 2026-06-23
-- Status: Approved (brainstorming)
-- Supersedes (on completion): ADR-0012 (Playwright Component Tests rebuilt in three layers)
+- Status: Implemented
+- Supersedes: ADR-0012 (Playwright Component Tests rebuilt in three layers)
 
 ## Context
 
@@ -131,8 +131,20 @@ parity guarantee, and C loses portal scoping.
 
 ### Decision record
 
-A new ADR supersedes ADR-0012. It records the runner choice, the provider, the
-version pins, and the preserved three-layer parity model.
+No `docs/adr/` tree exists in this repository, so this spec serves as
+the decision record. The key decisions are:
+
+- **Runner:** Vitest 4.x Browser Mode.
+- **Provider:** `@vitest/browser-playwright` (Playwright provider). The
+  `playwright` package stays as the browser driver.
+- **Render libraries:** `vitest-browser-react`, `vitest-browser-vue`, and
+  `vitest-browser-svelte`.
+- **Three-layer parity model preserved:** shared scenarios in
+  `tests/ct/scenarios/`, per-framework specs in
+  `tests/ct/{react,vue,svelte}/specs/`, and the parity harness
+  (`check:scenarios`, `check:ct-parity`) are unchanged in intent.
+  The harness now reads `.test.{ts,tsx}` specs and recognises
+  arrow-const `test*` scenario exports.
 
 ## Phased rollout
 
