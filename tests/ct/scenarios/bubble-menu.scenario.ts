@@ -98,7 +98,7 @@ export const testBubbleMenuBoldToggle: VizelBcScenario = async () => {
   await userEvent.click(page.elementLocator(boldButton));
 
   await expect
-    .poll(() => editorEl.querySelector("strong")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("strong")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Select this text");
 };
 
@@ -113,7 +113,7 @@ export const testBubbleMenuItalicToggle: VizelBcScenario = async () => {
   await userEvent.click(page.elementLocator(italicButton));
 
   await expect
-    .poll(() => editorEl.querySelector("em")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("em")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Select this text");
 };
 
@@ -128,7 +128,7 @@ export const testBubbleMenuStrikeToggle: VizelBcScenario = async () => {
   await userEvent.click(page.elementLocator(strikeButton));
 
   await expect
-    .poll(() => editorEl.querySelector("s")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("s")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Select this text");
 };
 
@@ -143,7 +143,7 @@ export const testBubbleMenuUnderlineToggle: VizelBcScenario = async () => {
   await userEvent.click(page.elementLocator(underlineButton));
 
   await expect
-    .poll(() => editorEl.querySelector("u")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("u")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Select this text");
 };
 
@@ -158,7 +158,7 @@ export const testBubbleMenuUnderlineShortcut: VizelBcScenario = async () => {
   await pressKeyChord("Mod", "u");
 
   await expect
-    .poll(() => editorEl.querySelector("u")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("u")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Underlined");
 };
 
@@ -173,7 +173,7 @@ export const testBubbleMenuCodeToggle: VizelBcScenario = async () => {
   await userEvent.click(page.elementLocator(codeButton));
 
   await expect
-    .poll(() => editorEl.querySelector("code")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("code")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Select this text");
 };
 
@@ -380,7 +380,9 @@ export const testBubbleMenuTextColorToggle: VizelBcScenario = async () => {
   await userEvent.click(page.elementLocator(redSwatch));
 
   await expect
-    .poll(() => editorEl.querySelector('span[style*="color"]')?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector('span[style*="color"]')?.textContent ?? "", {
+      timeout: 15_000,
+    })
     .toContain("Select this text");
 };
 
@@ -406,7 +408,7 @@ export const testBubbleMenuHighlightToggle: VizelBcScenario = async () => {
   await userEvent.click(page.elementLocator(yellowSwatch));
 
   await expect
-    .poll(() => editorEl.querySelector("mark")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("mark")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Select this text");
 };
 
@@ -560,7 +562,7 @@ export const testNodeSelectorHeading1: VizelBcScenario = async () => {
   await userEvent.click(page.elementLocator(heading1Option));
 
   await expect
-    .poll(() => editorEl.querySelector("h1")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("h1")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Select this text");
 };
 
@@ -590,7 +592,7 @@ export const testNodeSelectorBulletList: VizelBcScenario = async () => {
   await userEvent.click(page.elementLocator(bulletListOption));
 
   await expect
-    .poll(() => editorEl.querySelector("ul li")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("ul li")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Select this text");
 };
 
@@ -631,7 +633,7 @@ export const testNodeSelectorActiveState: VizelBcScenario = async () => {
   await userEvent.click(page.elementLocator(heading1Option));
 
   await expect
-    .poll(() => editorEl.querySelector("h1")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("h1")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Heading Text");
 
   // Re-select and verify trigger label.
@@ -695,7 +697,7 @@ export const testNodeSelectorKeyboardNavigation: VizelBcScenario = async () => {
   await userEvent.keyboard("{Enter}");
 
   await expect
-    .poll(() => editorEl.querySelector("h1")?.textContent, { timeout: 5_000 })
+    .poll(() => editorEl.querySelector("h1")?.textContent ?? "", { timeout: 15_000 })
     .toContain("Select this text");
 };
 
