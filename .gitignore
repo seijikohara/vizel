@@ -58,3 +58,7 @@ CLAUDE.local.md
 
 # Claude Code transient lock file
 .claude/scheduled_tasks.lock
+
+# Vitest browser failure screenshots (generated)
+tests/ct/*/specs-bc/__screenshots__/
+tests/ct/*/.vitest-attachments/
