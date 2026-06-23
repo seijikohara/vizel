@@ -43,6 +43,19 @@ CT dependency while keeping real-browser fidelity.
 - Changing product code under `packages/`. The migration touches `tests/`,
   configuration, CI, and docs only.
 
+### Documented deviation: `mountVizelEditorView` disposer guard
+
+The migration uncovered one latent product bug and fixes it, deviating from the
+"product code under `packages/`" non-goal. The editor-mount disposer in
+`packages/core/src/utils/editorHelpers.ts` read `editor.view.dom` unconditionally.
+When a framework destroys the editor before detaching its view — the exact
+ordering a per-test render-and-cleanup cycle produces — reading `editor.view`
+on a destroyed editor throws. The fix adds an `if (editor.isDestroyed) return;`
+guard. The bug also affects real consumers that unmount an editor after disposing
+it, so the fix is a genuine robustness improvement, not a test-only accommodation.
+The guard lets each Vitest spec render a fresh editor per test and rely on the
+render library's automatic cleanup, which keeps the migrated specs simple.
+
 ## Approach
 
 Approach A — preserve the three-layer architecture and swap only the runner.

@@ -31,6 +31,11 @@ export function mountVizelEditorView(editor: Editor, container: HTMLElement): ()
     editable: () => editor.isEditable,
   });
   return () => {
+    // The framework may destroy the editor before this disposer runs (an
+    // unmount that disposes the editor ahead of detaching its view); reading
+    // `editor.view` on a destroyed editor then throws. Skip detaching a view
+    // that no longer exists.
+    if (editor.isDestroyed) return;
     if (editor.view.dom.parentNode === container) {
       container.removeChild(editor.view.dom);
     }
