@@ -36,6 +36,14 @@ const PLAIN_MARKDOWN = `# Plain heading
 
 A single paragraph.`;
 
+// Allow a 2% pixel-mismatch budget so antialiasing and subpixel rendering
+// differences between the recording machine and another environment do not fail
+// the comparison. This mirrors the Playwright suite's prior `maxDiffPixelRatio`.
+const SCREENSHOT_OPTIONS = {
+  comparatorName: "pixelmatch",
+  comparatorOptions: { allowedMismatchedPixelRatio: 0.02 },
+} as const;
+
 // Suppress caret blink so the snapshot pixels are deterministic.
 function suppressCaret(): void {
   const style = document.createElement("style");
@@ -58,7 +66,7 @@ describe("VizelEditor visual regression (Vitest Browser)", () => {
     await render(<Vizel initialMarkdown={SAMPLE_MARKDOWN} showToolbar autofocus={false} />);
     const root = await resolveVizelRoot();
     suppressCaret();
-    await expect(root).toMatchScreenshot("editor-light");
+    await expect(root).toMatchScreenshot("editor-light", SCREENSHOT_OPTIONS);
   });
 
   test("dark theme renders the sample document with default chrome", async () => {
@@ -66,7 +74,7 @@ describe("VizelEditor visual regression (Vitest Browser)", () => {
     await render(<Vizel initialMarkdown={SAMPLE_MARKDOWN} showToolbar autofocus={false} />);
     const root = await resolveVizelRoot();
     suppressCaret();
-    await expect(root).toMatchScreenshot("editor-dark");
+    await expect(root).toMatchScreenshot("editor-dark", SCREENSHOT_OPTIONS);
   });
 
   test("toolbar-only chrome (no bubble menu) light", async () => {
@@ -81,6 +89,6 @@ describe("VizelEditor visual regression (Vitest Browser)", () => {
     );
     const root = await resolveVizelRoot();
     suppressCaret();
-    await expect(root).toMatchScreenshot("editor-toolbar-only-light");
+    await expect(root).toMatchScreenshot("editor-toolbar-only-light", SCREENSHOT_OPTIONS);
   });
 });
