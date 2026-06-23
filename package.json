@@ -22,6 +22,7 @@
     "docs:copy:demos": "mkdir -p docs/.vitepress/dist/demo && cp -r apps/demo/react/dist docs/.vitepress/dist/demo/react && cp -r apps/demo/vue/dist docs/.vitepress/dist/demo/vue && cp -r apps/demo/svelte/dist docs/.vitepress/dist/demo/svelte",
     "docs:preview": "vitepress preview docs",
     "test": "pnpm -r --if-present run test",
+    "test:bc:react": "vitest run --config vitest.browser.config.ts",
     "test:ct": "concurrently -g -n react,vue,svelte -c blue,green,magenta \"pnpm test:ct:react\" \"pnpm test:ct:vue\" \"pnpm test:ct:svelte\"",
     "test:ct:seq": "pnpm test:ct:react && pnpm test:ct:vue && pnpm test:ct:svelte",
     "test:ct:react": "playwright test -c tests/ct/react/playwright-ct.config.ts",
@@ -111,6 +112,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
     "@vitejs/plugin-vue": "^6.0.7",
+    "@vitest/browser-playwright": "^4.1.9",
     "@vue/compiler-dom": "^3.5.38",
     "c8": "^11.0.0",
     "concurrently": "^10.0.3",
@@ -129,6 +131,8 @@
     "vite": "^8.0.16",
     "vitepress": "^2.0.0-alpha.17",
     "vitepress-plugin-mermaid": "^2.0.17",
+    "vitest": "^4.1.9",
+    "vitest-browser-react": "^2.2.0",
     "vue": "^3.5.38"
   }
 }
