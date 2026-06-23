@@ -1,798 +1,518 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 /**
- * Shared test scenarios for table controls functionality.
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
+ * Shared, framework-agnostic Vitest Browser scenarios for table controls.
+ *
+ * The controls rely on real pointer geometry. The wrapper reveals its overlay
+ * buttons and handles through a CSS `:hover` rule, so the scenarios trigger
+ * `userEvent.hover` to surface them. The handle position and the row / column
+ * the controls act on are computed inside a `mousemove` handler that reads
+ * `event.clientX` / `event.clientY` against the cell rectangles, so the
+ * scenarios dispatch a `mousemove` carrying explicit coordinates over the
+ * target cell. The row / column menus open on the handle `mousedown`, which
+ * `userEvent.click` produces, and each menu renders to `document.body`.
+ *
+ * Opacity assertions read `getComputedStyle` through the CSS opacity transition,
+ * so the scenarios poll until the value settles rather than reading once.
  */
 
-const TABLE_WRAPPER_SELECTOR = ".vizel-table-controls-wrapper";
-const TABLE_SELECTOR = ".vizel-table";
-const COLUMN_INSERT_SELECTOR = ".vizel-table-column-insert";
-const ROW_INSERT_SELECTOR = ".vizel-table-row-insert";
-const ROW_HANDLE_SELECTOR = ".vizel-table-row-handle";
-const COLUMN_HANDLE_SELECTOR = ".vizel-table-column-handle";
-const TABLE_MENU_SELECTOR = ".vizel-table-menu";
+const EDITOR = ".vizel-editor";
+const TABLE_WRAPPER = ".vizel-table-controls-wrapper";
+const TABLE = ".vizel-table";
+const COLUMN_INSERT = ".vizel-table-column-insert";
+const ROW_INSERT = ".vizel-table-row-insert";
+const ROW_HANDLE = ".vizel-table-row-handle";
+const COLUMN_HANDLE = ".vizel-table-column-handle";
+const TABLE_MENU = ".vizel-table-menu";
 
-/** Helper to insert a table via slash command */
-async function insertTable(page: Page): Promise<void> {
-  await page.keyboard.type("/table");
-  await page.keyboard.press("Enter");
+// Resolve the editor contenteditable root. Tiptap mounts asynchronously, so
+// poll with a generous budget before querying. The full three-browser matrix
+// runs nine browser instances in parallel and the async mount can exceed the
+// default 1s poll budget under that contention.
+async function resolveEditor(): Promise<HTMLElement> {
+  await expect.poll(() => document.querySelector(EDITOR), { timeout: 15_000 }).not.toBeNull();
+  const el = document.querySelector<HTMLElement>(EDITOR);
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
 }
 
-/** Verify table with controls wrapper is rendered */
-export async function testTableRendersWithControls(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+const requireElement = <T extends HTMLElement>(selector: string, root: ParentNode): T => {
+  const el = root.querySelector<T>(selector);
+  if (el === null) throw new Error(`expected a ${selector} element`);
+  return el;
+};
 
-  // Insert a table
-  await insertTable(page);
+// Insert a default 3x3 table via the slash command, then wait until the table
+// wrapper and its cells render.
+async function insertTable(): Promise<HTMLElement> {
+  const el = await resolveEditor();
+  await userEvent.click(page.elementLocator(el));
+  await userEvent.keyboard("/table");
+  await expect
+    .poll(() => document.querySelector("[data-vizel-slash-menu]"), { timeout: 5_000 })
+    .not.toBeNull();
+  await userEvent.keyboard("{Enter}");
 
-  // Verify table wrapper exists
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  await expect(wrapper).toBeVisible();
-
-  // Verify table exists inside wrapper
-  const table = wrapper.locator(TABLE_SELECTOR);
-  await expect(table).toBeVisible();
-
-  // Verify default table structure (3x3 with header)
-  const headerCells = table.locator("th");
-  const bodyCells = table.locator("td");
-  await expect(headerCells).toHaveCount(3);
-  await expect(bodyCells).toHaveCount(6); // 2 rows x 3 columns
+  await expect.poll(() => el.querySelector(TABLE_WRAPPER), { timeout: 5_000 }).not.toBeNull();
+  await expect.poll(() => el.querySelectorAll(`${TABLE} th`).length, { timeout: 5_000 }).toBe(3);
+  return el;
 }
 
-/** Verify column insert button appears on hover near column border */
-export async function testColumnInsertButtonAppearsOnHover(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-  const columnInsertBtn = wrapper.locator(COLUMN_INSERT_SELECTOR);
-
-  // Wait for table to be fully rendered with cells
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-  await expect(table.locator("th").first()).toBeVisible();
-
-  // Move mouse outside the wrapper to ensure hover state is reset
-  await page.mouse.move(0, 0);
-
-  // CSS-based approach: button has opacity: 0 initially, opacity: 1 on hover
-  // Initially button should be hidden (opacity: 0)
-  await expect(columnInsertBtn).toHaveCSS("opacity", "0");
-
-  // Hover over the wrapper to trigger CSS :hover
-  await wrapper.hover();
-
-  // Button should now be visible (opacity: 1)
-  await expect(columnInsertBtn).toHaveCSS("opacity", "1");
+// Poll an element's computed opacity until it matches the expected value. The
+// controls fade through a CSS opacity transition, so a single read can catch an
+// intermediate value.
+async function expectOpacity(el: HTMLElement, expected: string): Promise<void> {
+  await expect.poll(() => getComputedStyle(el).opacity, { timeout: 5_000 }).toBe(expected);
 }
 
-/** Verify clicking column insert button adds a column */
-export async function testColumnInsertButtonAddsColumn(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-  const columnInsertBtn = wrapper.locator(COLUMN_INSERT_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-  await expect(table.locator("th").first()).toBeVisible();
-
-  // Get initial column count
-  await expect(table.locator("th")).toHaveCount(3);
-
-  // Click on a cell first to set up editor focus
-  const firstHeaderCell = table.locator("th").first();
-  await firstHeaderCell.click({ force: true });
-
-  // Hover over wrapper to show button (CSS :hover)
-  await wrapper.hover();
-  await expect(columnInsertBtn).toHaveCSS("opacity", "1");
-
-  // Click the column insert button
-  await columnInsertBtn.click({ force: true });
-
-  // Verify column was added (auto-retrying assertion)
-  await expect(table.locator("th")).toHaveCount(4);
+// Place the editor cursor in a cell by dispatching native mouse events at the
+// cell centre. `userEvent.click` re-resolves a cell locator by ARIA role and
+// accessible name, which is ambiguous once a cell holds text; the native events
+// reach ProseMirror's click handler directly and set the selection.
+function clickCell(cell: HTMLElement): void {
+  const rect = cell.getBoundingClientRect();
+  const clientX = rect.left + rect.width / 2;
+  const clientY = rect.top + rect.height / 2;
+  for (const type of ["mousedown", "mouseup", "click"] as const) {
+    cell.dispatchEvent(
+      new MouseEvent(type, { bubbles: true, cancelable: true, view: window, clientX, clientY })
+    );
+  }
 }
 
-/** Verify row insert button appears on hover near row border */
-export async function testRowInsertButtonAppearsOnHover(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
+const dispatchMove = (wrapper: HTMLElement, cell: HTMLElement): void => {
+  const rect = cell.getBoundingClientRect();
+  wrapper.dispatchEvent(
+    new MouseEvent("mousemove", {
+      bubbles: true,
+      cancelable: true,
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2,
+    })
+  );
+};
 
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-  const rowInsertBtn = wrapper.locator(ROW_INSERT_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-  await expect(table.locator("th").first()).toBeVisible();
-
-  // Move mouse outside the wrapper to ensure hover state is reset
-  await page.mouse.move(0, 0);
-
-  // CSS-based approach: button has opacity: 0 initially, opacity: 1 on hover
-  // Initially button should be hidden (opacity: 0)
-  await expect(rowInsertBtn).toHaveCSS("opacity", "0");
-
-  // Hover over the wrapper to trigger CSS :hover
-  await wrapper.hover();
-
-  // Button should now be visible (opacity: 1)
-  await expect(rowInsertBtn).toHaveCSS("opacity", "1");
+// Record the hovered row / column and position the handles by dispatching a
+// `mousemove` over a cell; the handler reads `clientX` / `clientY` against the
+// cell rectangle. The handler throttles to one move per 16ms, and the preceding
+// `userEvent.hover` fires its own move at the wrapper centre, so dispatch twice
+// across the throttle window to guarantee the cell-centred move is processed.
+async function moveOverCell(wrapper: HTMLElement, cell: HTMLElement): Promise<void> {
+  dispatchMove(wrapper, cell);
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  dispatchMove(wrapper, cell);
 }
 
-/** Verify clicking row insert button adds a row */
-export async function testRowInsertButtonAddsRow(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-  const rowInsertBtn = wrapper.locator(ROW_INSERT_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-  await expect(table.locator("th").first()).toBeVisible();
-
-  // Get initial row count (1 header row + 2 body rows = 3 rows)
-  await expect(table.locator("tr")).toHaveCount(3);
-
-  // Click on a cell first to set up editor focus
-  const firstCell = table.locator("td").first();
-  await firstCell.click({ force: true });
-
-  // Hover over wrapper to show button (CSS :hover)
-  await wrapper.hover();
-  await expect(rowInsertBtn).toHaveCSS("opacity", "1");
-
-  // Click the row insert button
-  await rowInsertBtn.click({ force: true });
-
-  // Verify row was added (auto-retrying assertion)
-  await expect(table.locator("tr")).toHaveCount(4);
+// Reveal the row handle for the first body cell and click it to open the row
+// menu. The hover surfaces the handle via CSS, the `mousemove` sets the hovered
+// row, and the click opens the menu on the handle `mousedown`.
+async function openRowMenu(wrapper: HTMLElement, cell: HTMLElement): Promise<HTMLElement> {
+  clickCell(cell);
+  await userEvent.hover(page.elementLocator(wrapper));
+  await moveOverCell(wrapper, cell);
+  const rowHandle = requireElement<HTMLElement>(ROW_HANDLE, wrapper);
+  await expectOpacity(rowHandle, "1");
+  await userEvent.click(page.elementLocator(rowHandle));
+  await expect.poll(() => document.querySelector(TABLE_MENU), { timeout: 5_000 }).not.toBeNull();
+  return requireElement<HTMLElement>(TABLE_MENU, document);
 }
 
-/** Verify row handle appears on cell hover */
-export async function testRowHandleAppearsOnCellHover(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-  const rowHandle = wrapper.locator(ROW_HANDLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-  await expect(table.locator("td").first()).toBeVisible();
-
-  // Move mouse outside the wrapper to ensure hover state is reset
-  await page.mouse.move(0, 0);
-
-  // CSS-based approach: handle has opacity: 0 initially, opacity: 1 on hover
-  // Initially handle should be hidden (opacity: 0)
-  await expect(rowHandle).toHaveCSS("opacity", "0");
-
-  // Hover over the wrapper to trigger CSS :hover
-  await wrapper.hover();
-
-  // Handle should now be visible (opacity: 1)
-  await expect(rowHandle).toHaveCSS("opacity", "1");
+// Reveal the column handle for the given column and click it to open the column
+// menu.
+async function openColumnMenu(
+  wrapper: HTMLElement,
+  table: HTMLElement,
+  columnIndex: number
+): Promise<HTMLElement> {
+  const targetCell = table.querySelectorAll<HTMLElement>("th")[columnIndex];
+  if (targetCell === undefined) throw new Error(`expected a header cell at index ${columnIndex}`);
+  clickCell(targetCell);
+  await userEvent.hover(page.elementLocator(wrapper));
+  await moveOverCell(wrapper, targetCell);
+  const columnHandle = requireElement<HTMLElement>(COLUMN_HANDLE, wrapper);
+  await expectOpacity(columnHandle, "1");
+  await userEvent.click(page.elementLocator(columnHandle));
+  await expect.poll(() => document.querySelector(TABLE_MENU), { timeout: 5_000 }).not.toBeNull();
+  return requireElement<HTMLElement>(TABLE_MENU, document);
 }
 
-/** Verify clicking row handle opens menu */
-export async function testRowHandleOpensMenu(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Show row handle and click it
-  await showRowHandleAndClick(page);
-
-  // Verify menu appears (menu is rendered to document.body)
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await expect(menu).toBeVisible();
-}
-
-/** Helper to show row handle and click it */
-async function showRowHandleAndClick(page: Page): Promise<void> {
-  const firstCell = page.locator(".vizel-table td").first();
-  const rowHandle = page.locator(ROW_HANDLE_SELECTOR);
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-
-  // First click on a cell to set up selection
-  await firstCell.click({ force: true });
-
-  // Hover over the cell to trigger mousemove (sets currentHoveredRow)
-  // This also shows the row handle via CSS :hover on wrapper
-  await firstCell.hover();
-  await expect(rowHandle).toHaveCSS("opacity", "1");
-
-  // Click the row handle
-  await rowHandle.click({ force: true });
-
-  // Wait for menu to appear (auto-retrying assertion)
-  await expect(menu).toBeVisible();
-}
-
-/** Helper to show column handle and click it for a specific column */
-async function showColumnHandleAndClick(page: Page, columnIndex: number): Promise<void> {
-  const table = page.locator(".vizel-table");
-  const columnHandle = page.locator(COLUMN_HANDLE_SELECTOR);
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-
-  // Get the cell in the specified column (first row) to determine column position
-  const headerCells = table.locator("th");
-  const targetCell = headerCells.nth(columnIndex);
-
-  // Click on cell to set up selection
-  await targetCell.click({ force: true });
-
-  // Hover over the cell to trigger mousemove (sets currentHoveredColumn)
-  await targetCell.hover();
-  await expect(columnHandle).toHaveCSS("opacity", "1");
-
-  // Click the column handle
-  await columnHandle.click({ force: true });
-
-  // Wait for menu to appear (auto-retrying assertion)
-  await expect(menu).toBeVisible();
-}
-
-/** Verify row menu contains expected items */
-export async function testMenuContainsExpectedItems(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Open row menu via row handle
-  await showRowHandleAndClick(page);
-
-  // Verify row menu items
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await expect(menu).toBeVisible();
-
-  // Check for row-specific menu items
-  await expect(menu.getByText("Add row above")).toBeVisible();
-  await expect(menu.getByText("Add row below")).toBeVisible();
-  await expect(menu.getByText("Delete row")).toBeVisible();
-  await expect(menu.getByText("Toggle header row")).toBeVisible();
-  await expect(menu.getByText("Delete table")).toBeVisible();
-}
-
-/** Verify menu action adds row */
-export async function testMenuAddRowAction(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  const initialRows = await table.locator("tr").count();
-
-  // Open menu
-  await showRowHandleAndClick(page);
-
-  // Click "Add row below"
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await menu.getByText("Add row below").click();
-
-  // Verify row was added
-  const newRows = await table.locator("tr").count();
-  expect(newRows).toBe(initialRows + 1);
-
-  // Menu should be closed
-  await expect(menu).not.toBeVisible();
-}
-
-/** Verify menu action deletes row */
-export async function testMenuDeleteRowAction(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  const initialRows = await table.locator("tr").count();
-  expect(initialRows).toBe(3); // 1 header + 2 body
-
-  // Open menu
-  await showRowHandleAndClick(page);
-
-  // Click "Delete row"
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await menu.getByText("Delete row").click();
-
-  // Verify row was deleted
-  const newRows = await table.locator("tr").count();
-  expect(newRows).toBe(initialRows - 1);
-}
-
-/** Verify menu action deletes table */
-export async function testMenuDeleteTableAction(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Open menu
-  await showRowHandleAndClick(page);
-
-  // Click "Delete table"
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await menu.getByText("Delete table").click();
-
-  // Verify table was deleted
-  await expect(wrapper).not.toBeVisible();
-}
-
-/** Verify menu closes on escape key */
-export async function testMenuClosesOnEscape(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Open menu
-  await showRowHandleAndClick(page);
-
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await expect(menu).toBeVisible();
-
-  // Press escape
-  await page.keyboard.press("Escape");
-
-  // Menu should be closed
-  await expect(menu).not.toBeVisible();
-}
-
-/** Verify menu closes on click outside */
-export async function testMenuClosesOnClickOutside(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Open menu
-  await showRowHandleAndClick(page);
-
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await expect(menu).toBeVisible();
-
-  // Click outside the menu and verify it closes
-  // The click-outside handler is registered via setTimeout, so we use expect.toPass()
-  // to retry both the click and the verification until successful
-  await expect(async () => {
-    const viewport = page.viewportSize();
-    const clickX = viewport ? viewport.width - 10 : 700;
-    const clickY = viewport ? viewport.height - 10 : 500;
-    await page.mouse.click(clickX, clickY);
-    await expect(menu).not.toBeVisible({ timeout: 1000 });
-  }).toPass({ timeout: 10000, intervals: [100, 200, 500, 1000] });
-}
-
-/** Verify text alignment via column handle menu (Markdown compatible - column-wide) */
-export async function testTextAlignmentViaMenu(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Type some content in the second column
-  const secondHeaderCell = table.locator("th").nth(1);
-  await secondHeaderCell.click({ force: true });
-  await page.keyboard.type("Header");
-
-  const secondBodyCell = table.locator("td").nth(1);
-  await secondBodyCell.click({ force: true });
-  await page.keyboard.type("Content");
-
-  // Open column handle menu for the second column (index 1)
-  await showColumnHandleAndClick(page, 1);
-
-  // Click "Align center"
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await expect(menu).toBeVisible();
-  await menu.getByText("Align center").click();
-
-  // Verify alignment was applied to ALL cells in the column (Markdown compatible)
-  await expect(secondHeaderCell).toHaveCSS("text-align", "center");
-  await expect(secondBodyCell).toHaveCSS("text-align", "center");
-
-  // Verify other columns are NOT affected
-  const firstHeaderCell = table.locator("th").first();
-  const firstBodyCell = table.locator("td").first();
-  await expect(firstHeaderCell).not.toHaveCSS("text-align", "center");
-  await expect(firstBodyCell).not.toHaveCSS("text-align", "center");
-}
-
-/** Verify column handle appears on cell hover */
-export async function testColumnHandleAppearsOnCellHover(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-  const columnHandle = wrapper.locator(COLUMN_HANDLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-  await expect(table.locator("th").first()).toBeVisible();
-
-  // Move mouse outside the wrapper to ensure hover state is reset
-  await page.mouse.move(0, 0);
-
-  // CSS-based approach: handle has opacity: 0 initially, opacity: 1 on hover
-  await expect(columnHandle).toHaveCSS("opacity", "0");
-
-  // Hover over the wrapper to trigger CSS :hover
-  await wrapper.hover();
-
-  // Handle should now be visible (opacity: 1)
-  await expect(columnHandle).toHaveCSS("opacity", "1");
-}
-
-/** Verify clicking column handle opens menu */
-export async function testColumnHandleOpensMenu(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Show column handle and click it
-  await showColumnHandleAndClick(page, 0);
-
-  // Verify menu appears (menu is rendered to document.body)
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await expect(menu).toBeVisible();
-}
-
-/** Verify column menu contains expected items */
-export async function testColumnMenuContainsExpectedItems(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Open column menu via column handle
-  await showColumnHandleAndClick(page, 0);
-
-  // Verify column menu items
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await expect(menu).toBeVisible();
-
-  // Check for column-specific menu items
-  await expect(menu.getByText("Add column left")).toBeVisible();
-  await expect(menu.getByText("Add column right")).toBeVisible();
-  await expect(menu.getByText("Delete column")).toBeVisible();
-  await expect(menu.getByText("Align left")).toBeVisible();
-  await expect(menu.getByText("Align center")).toBeVisible();
-  await expect(menu.getByText("Align right")).toBeVisible();
-  await expect(menu.getByText("Delete table")).toBeVisible();
-}
-
-/** Verify menu action adds column to the left */
-export async function testMenuAddColumnLeftAction(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Type content in first column to verify position
-  const firstHeaderCell = table.locator("th").first();
-  await firstHeaderCell.click({ force: true });
-  await page.keyboard.type("First");
-
-  const initialColumns = await table.locator("th").count();
-  expect(initialColumns).toBe(3);
-
-  // Open column menu for first column
-  await showColumnHandleAndClick(page, 0);
-
-  // Click "Add column left"
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await menu.getByText("Add column left").click();
-
-  // Verify column was added
-  const newColumns = await table.locator("th").count();
-  expect(newColumns).toBe(4);
-
-  // Verify the original first column moved to second position
-  const secondHeaderCell = table.locator("th").nth(1);
-  await expect(secondHeaderCell).toContainText("First");
-}
-
-/** Verify menu action adds column to the right */
-export async function testMenuAddColumnRightAction(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Type content in first column
-  const firstHeaderCell = table.locator("th").first();
-  await firstHeaderCell.click({ force: true });
-  await page.keyboard.type("First");
-
-  const initialColumns = await table.locator("th").count();
-  expect(initialColumns).toBe(3);
-
-  // Open column menu for first column
-  await showColumnHandleAndClick(page, 0);
-
-  // Click "Add column right"
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await menu.getByText("Add column right").click();
-
-  // Verify column was added
-  const newColumns = await table.locator("th").count();
-  expect(newColumns).toBe(4);
-
-  // Verify the original first column stayed in first position
-  await expect(firstHeaderCell).toContainText("First");
-}
-
-/** Verify menu action deletes column */
-export async function testMenuDeleteColumnAction(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  const initialColumns = await table.locator("th").count();
-  expect(initialColumns).toBe(3);
-
-  // Open column menu
-  await showColumnHandleAndClick(page, 0);
-
-  // Click "Delete column"
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await menu.getByText("Delete column").click();
-
-  // Verify column was deleted
-  const newColumns = await table.locator("th").count();
-  expect(newColumns).toBe(2);
-}
-
-/** Verify menu action adds row above */
-export async function testMenuAddRowAboveAction(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Type content in first body cell to verify position
-  const firstBodyCell = table.locator("td").first();
-  await firstBodyCell.click({ force: true });
-  await page.keyboard.type("Original");
-
-  const initialRows = await table.locator("tr").count();
-  expect(initialRows).toBe(3); // 1 header + 2 body
-
-  // Open row menu
-  await showRowHandleAndClick(page);
-
-  // Click "Add row above"
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await menu.getByText("Add row above").click();
-
-  // Verify row was added
-  const newRows = await table.locator("tr").count();
-  expect(newRows).toBe(4);
-
-  // Verify the original first body row moved down (now second body row)
-  const secondBodyRow = table.locator("tr").nth(2);
-  await expect(secondBodyRow.locator("td").first()).toContainText("Original");
-}
-
-/** Verify toggle header row action */
-export async function testMenuToggleHeaderRowAction(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Initially should have header cells (th) - first row is header
-  await expect(table.locator("th")).toHaveCount(3);
-
-  // Click on a header cell first (toggle header row affects first row)
-  const firstHeaderCell = table.locator("th").first();
-  await firstHeaderCell.click({ force: true });
-
-  // Hover and click row handle
-  await firstHeaderCell.hover();
-  const rowHandle = page.locator(ROW_HANDLE_SELECTOR);
-  await expect(rowHandle).toHaveCSS("opacity", "1");
-  await rowHandle.click({ force: true });
-
-  // Click "Toggle header row" - this toggles the first row's header state
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await expect(menu).toBeVisible();
-  await menu.getByText("Toggle header row").click();
-
-  // After toggle, header cells should become body cells (first row is no longer header)
-  await expect(table.locator("th")).toHaveCount(0);
-
-  // All cells are now td (body cells)
-  await expect(table.locator("td")).toHaveCount(9); // 3 rows x 3 columns
-}
-
-/** Verify text alignment left via column handle menu */
-export async function testTextAlignmentLeftViaMenu(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // First, set center alignment
-  await showColumnHandleAndClick(page, 0);
-  await page.locator(TABLE_MENU_SELECTOR).getByText("Align center").click();
-
-  // Verify center alignment was applied
-  const firstHeaderCell = table.locator("th").first();
-  await expect(firstHeaderCell).toHaveCSS("text-align", "center");
-
-  // Now change to left alignment
-  await showColumnHandleAndClick(page, 0);
-  await page.locator(TABLE_MENU_SELECTOR).getByText("Align left").click();
-
-  // Verify left alignment was applied
-  await expect(firstHeaderCell).toHaveCSS("text-align", "left");
-}
-
-/** Verify text alignment right via column handle menu */
-export async function testTextAlignmentRightViaMenu(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await insertTable(page);
-
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  const table = wrapper.locator(TABLE_SELECTOR);
-
-  // Wait for table to be fully rendered
-  await expect(wrapper).toBeVisible();
-  await expect(table).toBeVisible();
-
-  // Set right alignment
-  await showColumnHandleAndClick(page, 0);
-  const menu = page.locator(TABLE_MENU_SELECTOR);
-  await menu.getByText("Align right").click();
-
-  // Verify right alignment was applied to all cells in the column
-  const firstHeaderCell = table.locator("th").first();
-  const firstBodyCell = table.locator("td").first();
-  await expect(firstHeaderCell).toHaveCSS("text-align", "right");
-  await expect(firstBodyCell).toHaveCSS("text-align", "right");
-}
+// Find a menu item by its visible text and click it.
+const clickMenuItem = async (menu: HTMLElement, text: string): Promise<void> => {
+  const item = Array.from(menu.querySelectorAll<HTMLElement>("*")).find(
+    (node) => node.textContent?.trim() === text
+  );
+  if (item === undefined) throw new Error(`expected a menu item with text "${text}"`);
+  await userEvent.click(page.elementLocator(item));
+};
+
+// Read the live computed `text-align` of the nth cell of the given tag.
+// `setNodeMarkup` replaces the cell DOM node, so a held reference goes stale;
+// re-query the cell on every read.
+const cellTextAlign = (table: HTMLElement, tag: "th" | "td", index: number): string => {
+  const cell = table.querySelectorAll<HTMLElement>(tag)[index];
+  return cell === undefined ? "" : getComputedStyle(cell).textAlign;
+};
+
+const expectMenuHasText = (menu: HTMLElement, text: string): void => {
+  const found = Array.from(menu.querySelectorAll<HTMLElement>("*")).some(
+    (node) => node.textContent?.trim() === text
+  );
+  expect(found, `menu contains "${text}"`).toBe(true);
+};
+
+/** Verify the table wrapper renders with the default 3x3 structure. */
+export const testTableRendersWithControls: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  await expect.element(page.elementLocator(wrapper)).toBeVisible();
+
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  await expect.element(page.elementLocator(table)).toBeVisible();
+  expect(table.querySelectorAll("th").length).toBe(3);
+  expect(table.querySelectorAll("td").length).toBe(6);
+};
+
+/** Verify the column insert button is hidden until the wrapper is hovered. */
+export const testColumnInsertButtonAppearsOnHover: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const columnInsertBtn = requireElement<HTMLElement>(COLUMN_INSERT, wrapper);
+
+  await expectOpacity(columnInsertBtn, "0");
+  await userEvent.hover(page.elementLocator(wrapper));
+  await expectOpacity(columnInsertBtn, "1");
+};
+
+/** Verify clicking the column insert button adds a column. */
+export const testColumnInsertButtonAddsColumn: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const columnInsertBtn = requireElement<HTMLElement>(COLUMN_INSERT, wrapper);
+
+  await userEvent.click(page.elementLocator(requireElement<HTMLElement>("th", table)));
+  await userEvent.hover(page.elementLocator(wrapper));
+  await expectOpacity(columnInsertBtn, "1");
+  await userEvent.click(page.elementLocator(columnInsertBtn));
+
+  await expect.poll(() => table.querySelectorAll("th").length, { timeout: 5_000 }).toBe(4);
+};
+
+/** Verify the row insert button is hidden until the wrapper is hovered. */
+export const testRowInsertButtonAppearsOnHover: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const rowInsertBtn = requireElement<HTMLElement>(ROW_INSERT, wrapper);
+
+  await expectOpacity(rowInsertBtn, "0");
+  await userEvent.hover(page.elementLocator(wrapper));
+  await expectOpacity(rowInsertBtn, "1");
+};
+
+/** Verify clicking the row insert button adds a row. */
+export const testRowInsertButtonAddsRow: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const rowInsertBtn = requireElement<HTMLElement>(ROW_INSERT, wrapper);
+
+  expect(table.querySelectorAll("tr").length).toBe(3);
+  await userEvent.click(page.elementLocator(requireElement<HTMLElement>("td", table)));
+  await userEvent.hover(page.elementLocator(wrapper));
+  await expectOpacity(rowInsertBtn, "1");
+  await userEvent.click(page.elementLocator(rowInsertBtn));
+
+  await expect.poll(() => table.querySelectorAll("tr").length, { timeout: 5_000 }).toBe(4);
+};
+
+/** Verify the row handle is hidden until the wrapper is hovered. */
+export const testRowHandleAppearsOnCellHover: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const rowHandle = requireElement<HTMLElement>(ROW_HANDLE, wrapper);
+
+  await expectOpacity(rowHandle, "0");
+  await userEvent.hover(page.elementLocator(wrapper));
+  await expectOpacity(rowHandle, "1");
+};
+
+/** Verify clicking the row handle opens the row menu. */
+export const testRowHandleOpensMenu: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  await expect.element(page.elementLocator(menu)).toBeVisible();
+};
+
+/** Verify the column handle is hidden until the wrapper is hovered. */
+export const testColumnHandleAppearsOnCellHover: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const columnHandle = requireElement<HTMLElement>(COLUMN_HANDLE, wrapper);
+
+  await expectOpacity(columnHandle, "0");
+  await userEvent.hover(page.elementLocator(wrapper));
+  await expectOpacity(columnHandle, "1");
+};
+
+/** Verify clicking the column handle opens the column menu. */
+export const testColumnHandleOpensMenu: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const menu = await openColumnMenu(wrapper, table, 0);
+  await expect.element(page.elementLocator(menu)).toBeVisible();
+};
+
+/** Verify the row menu lists the expected row actions. */
+export const testMenuContainsExpectedItems: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  expectMenuHasText(menu, "Add row above");
+  expectMenuHasText(menu, "Add row below");
+  expectMenuHasText(menu, "Delete row");
+  expectMenuHasText(menu, "Toggle header row");
+  expectMenuHasText(menu, "Delete table");
+};
+
+/** Verify the row menu "Add row below" action appends a row. */
+export const testMenuAddRowAction: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const initialRows = table.querySelectorAll("tr").length;
+
+  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  await clickMenuItem(menu, "Add row below");
+
+  await expect
+    .poll(() => table.querySelectorAll("tr").length, { timeout: 5_000 })
+    .toBe(initialRows + 1);
+  await expect.poll(() => document.querySelector(TABLE_MENU), { timeout: 5_000 }).toBeNull();
+};
+
+/** Verify the row menu "Delete row" action removes a row. */
+export const testMenuDeleteRowAction: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  expect(table.querySelectorAll("tr").length).toBe(3);
+
+  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  await clickMenuItem(menu, "Delete row");
+
+  await expect.poll(() => table.querySelectorAll("tr").length, { timeout: 5_000 }).toBe(2);
+};
+
+/** Verify the row menu "Delete table" action removes the table. */
+export const testMenuDeleteTableAction: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  await clickMenuItem(menu, "Delete table");
+
+  await expect.poll(() => el.querySelector(TABLE_WRAPPER), { timeout: 5_000 }).toBeNull();
+};
+
+/** Verify the row menu closes when the Escape key is pressed. */
+export const testMenuClosesOnEscape: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  await userEvent.keyboard("{Escape}");
+
+  await expect.poll(() => document.querySelector(TABLE_MENU), { timeout: 5_000 }).toBeNull();
+};
+
+/** Verify the row menu closes when a click lands outside it. */
+export const testMenuClosesOnClickOutside: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+
+  // The click-outside handler registers via setTimeout, so the first click may
+  // race ahead of the listener. Retry the click until the menu closes.
+  await expect
+    .poll(
+      async () => {
+        await userEvent.click(page.elementLocator(document.body));
+        return document.querySelector(TABLE_MENU);
+      },
+      { timeout: 10_000, interval: 300 }
+    )
+    .toBeNull();
+};
+
+/** Verify the column menu lists the expected column actions. */
+export const testColumnMenuContainsExpectedItems: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const menu = await openColumnMenu(wrapper, table, 0);
+  expectMenuHasText(menu, "Add column left");
+  expectMenuHasText(menu, "Add column right");
+  expectMenuHasText(menu, "Delete column");
+  expectMenuHasText(menu, "Align left");
+  expectMenuHasText(menu, "Align center");
+  expectMenuHasText(menu, "Align right");
+  expectMenuHasText(menu, "Delete table");
+};
+
+/** Verify the column menu "Add column left" action inserts before the column. */
+export const testMenuAddColumnLeftAction: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const firstHeaderCell = requireElement<HTMLElement>("th", table);
+  await userEvent.click(page.elementLocator(firstHeaderCell));
+  await userEvent.keyboard("First");
+  expect(table.querySelectorAll("th").length).toBe(3);
+
+  const menu = await openColumnMenu(wrapper, table, 0);
+  await clickMenuItem(menu, "Add column left");
+
+  await expect.poll(() => table.querySelectorAll("th").length, { timeout: 5_000 }).toBe(4);
+  const secondHeaderCell = table.querySelectorAll<HTMLElement>("th")[1];
+  await expect
+    .poll(() => secondHeaderCell?.textContent ?? "", { timeout: 5_000 })
+    .toContain("First");
+};
+
+/** Verify the column menu "Add column right" action inserts after the column. */
+export const testMenuAddColumnRightAction: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const firstHeaderCell = requireElement<HTMLElement>("th", table);
+  await userEvent.click(page.elementLocator(firstHeaderCell));
+  await userEvent.keyboard("First");
+  expect(table.querySelectorAll("th").length).toBe(3);
+
+  const menu = await openColumnMenu(wrapper, table, 0);
+  await clickMenuItem(menu, "Add column right");
+
+  await expect.poll(() => table.querySelectorAll("th").length, { timeout: 5_000 }).toBe(4);
+  await expect
+    .poll(() => table.querySelector("th")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("First");
+};
+
+/** Verify the column menu "Delete column" action removes a column. */
+export const testMenuDeleteColumnAction: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  expect(table.querySelectorAll("th").length).toBe(3);
+
+  const menu = await openColumnMenu(wrapper, table, 0);
+  await clickMenuItem(menu, "Delete column");
+
+  await expect.poll(() => table.querySelectorAll("th").length, { timeout: 5_000 }).toBe(2);
+};
+
+/** Verify the row menu "Add row above" action inserts before the row. */
+export const testMenuAddRowAboveAction: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const firstBodyCell = requireElement<HTMLElement>("td", table);
+  await userEvent.click(page.elementLocator(firstBodyCell));
+  await userEvent.keyboard("Original");
+  expect(table.querySelectorAll("tr").length).toBe(3);
+
+  const menu = await openRowMenu(wrapper, firstBodyCell);
+  await clickMenuItem(menu, "Add row above");
+
+  await expect.poll(() => table.querySelectorAll("tr").length, { timeout: 5_000 }).toBe(4);
+  await expect
+    .poll(() => table.querySelectorAll("tr")[2]?.querySelector("td")?.textContent ?? "", {
+      timeout: 5_000,
+    })
+    .toContain("Original");
+};
+
+/** Verify the row menu "Toggle header row" action converts the header row. */
+export const testMenuToggleHeaderRowAction: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  expect(table.querySelectorAll("th").length).toBe(3);
+
+  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("th", table));
+  await clickMenuItem(menu, "Toggle header row");
+
+  await expect.poll(() => table.querySelectorAll("th").length, { timeout: 5_000 }).toBe(0);
+  await expect.poll(() => table.querySelectorAll("td").length, { timeout: 5_000 }).toBe(9);
+};
+
+/** Verify the column menu "Align center" action centres the whole column. */
+export const testTextAlignmentViaMenu: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const secondHeaderCell = table.querySelectorAll<HTMLElement>("th")[1];
+  if (secondHeaderCell === undefined) throw new Error("expected a second header cell");
+  await userEvent.click(page.elementLocator(secondHeaderCell));
+  await userEvent.keyboard("Header");
+
+  const secondBodyCell = table.querySelectorAll<HTMLElement>("td")[1];
+  if (secondBodyCell === undefined) throw new Error("expected a second body cell");
+  await userEvent.click(page.elementLocator(secondBodyCell));
+  await userEvent.keyboard("Content");
+
+  const menu = await openColumnMenu(wrapper, table, 1);
+  await clickMenuItem(menu, "Align center");
+
+  await expect.poll(() => cellTextAlign(table, "th", 1), { timeout: 5_000 }).toBe("center");
+  await expect.poll(() => cellTextAlign(table, "td", 1), { timeout: 5_000 }).toBe("center");
+
+  // Other columns stay left-aligned (alignment is column-scoped).
+  expect(cellTextAlign(table, "th", 0)).not.toBe("center");
+  expect(cellTextAlign(table, "td", 0)).not.toBe("center");
+};
+
+/** Verify switching column alignment from center back to left. */
+export const testTextAlignmentLeftViaMenu: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const centerMenu = await openColumnMenu(wrapper, table, 0);
+  await clickMenuItem(centerMenu, "Align center");
+  await expect.poll(() => cellTextAlign(table, "th", 0), { timeout: 5_000 }).toBe("center");
+
+  const leftMenu = await openColumnMenu(wrapper, table, 0);
+  await clickMenuItem(leftMenu, "Align left");
+  await expect.poll(() => cellTextAlign(table, "th", 0), { timeout: 5_000 }).toBe("left");
+};
+
+/** Verify the column menu "Align right" action right-aligns the whole column. */
+export const testTextAlignmentRightViaMenu: VizelBcScenario = async () => {
+  const el = await insertTable();
+  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const table = requireElement<HTMLElement>(TABLE, wrapper);
+
+  const menu = await openColumnMenu(wrapper, table, 0);
+  await clickMenuItem(menu, "Align right");
+
+  await expect.poll(() => cellTextAlign(table, "th", 0), { timeout: 5_000 }).toBe("right");
+  await expect.poll(() => cellTextAlign(table, "td", 0), { timeout: 5_000 }).toBe("right");
+};

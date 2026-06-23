@@ -7,16 +7,18 @@ interface Props {
 
 let { initialContent = "Test content" }: Props = $props();
 
-// Store editor in state (triggers re-renders when editor is set)
+// `$state` is the Svelte 5 reactive primitive. When `handleCreate` assigns the
+// editor instance, Svelte triggers a re-render so the count elements reflect
+// the live state rather than the null-editor defaults.
 let editor = $state<Editor | null>(null);
 
-// Track editor state for character/word count
-// The updateCount changes on every editor transaction
+// `createVizelState` returns a reactive object whose `.version` increments on
+// every Tiptap transaction. Referencing `.version` inside `$derived.by` makes
+// `editorState` recompute on each update.
 const updateCount = createVizelState(() => editor);
 
-// Use $derived.by to access updateCount.version and create dependency
 const editorState = $derived.by(() => {
-  void updateCount.version; // Create dependency on updateCount
+  void updateCount.version;
   return getVizelEditorState(editor);
 });
 

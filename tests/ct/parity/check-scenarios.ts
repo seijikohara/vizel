@@ -5,7 +5,7 @@
  * Each scenario exports one or more `test*` functions; per-framework specs
  * under `tests/ct/{react,vue,svelte}/specs/` import the scenario through the
  * literal specifier `../../scenarios/<basename>.scenario` and invoke its
- * `test*` exports inside Playwright `test(...)` blocks.
+ * `test*` exports inside Vitest Browser Mode `test(...)` blocks.
  *
  * This check proves the coverage is real, not declared:
  *
@@ -62,19 +62,29 @@ const hasExportModifier = (node: ts.Statement): boolean =>
 /**
  * Collect the exported `test*` function names declared in a scenario file.
  *
- * The contract recognises function declarations only; helper exports such as
- * `simulateFileDrop` or `createMockImageFile` carry no `test` prefix and are
- * ignored.
+ * Recognises both `export function testFoo()` declarations and
+ * `export const testFoo = (...) => {}` arrow/function-expression consts — the
+ * Vitest scenarios use the arrow-const form to satisfy the no-default-export
+ * and function-style rules. Helper exports such as `simulateFileDrop` or
+ * `createMockImageFile` carry no `test` prefix and are ignored.
  */
 function collectExportedTestFunctions(scenarioPath: string): readonly string[] {
   const source = parseSourceFile(scenarioPath);
   return source.statements.flatMap((statement) => {
-    if (
-      ts.isFunctionDeclaration(statement) &&
-      hasExportModifier(statement) &&
-      statement.name?.text.startsWith(TEST_FN_PREFIX)
-    ) {
+    if (!hasExportModifier(statement)) return [];
+    if (ts.isFunctionDeclaration(statement) && statement.name?.text.startsWith(TEST_FN_PREFIX)) {
       return [statement.name.text];
+    }
+    if (ts.isVariableStatement(statement)) {
+      return statement.declarationList.declarations.flatMap((declaration) =>
+        ts.isIdentifier(declaration.name) &&
+        declaration.name.text.startsWith(TEST_FN_PREFIX) &&
+        declaration.initializer !== undefined &&
+        (ts.isArrowFunction(declaration.initializer) ||
+          ts.isFunctionExpression(declaration.initializer))
+          ? [declaration.name.text]
+          : []
+      );
     }
     return [];
   });
@@ -82,11 +92,8 @@ function collectExportedTestFunctions(scenarioPath: string): readonly string[] {
 
 /** List every flat scenario basename (without the `.scenario.ts` suffix). */
 function listScenarioBasenames(): readonly string[] {
-  // Exclude in-migration Vitest Browser scenarios (`*-bc.scenario.ts`). They
-  // run through their own `.bc.test` specs, outside the Playwright parity model,
-  // until every framework adopts Vitest Browser Mode (see the migration spec).
   return readdirSync(SCENARIOS_DIR)
-    .filter((entry) => entry.endsWith(SCENARIO_SUFFIX) && !entry.endsWith("-bc.scenario.ts"))
+    .filter((entry) => entry.endsWith(SCENARIO_SUFFIX))
     .map((entry) => entry.slice(0, -SCENARIO_SUFFIX.length))
     .sort();
 }
@@ -95,7 +102,7 @@ function listScenarioBasenames(): readonly string[] {
 function listSpecFiles(framework: Framework): readonly string[] {
   const specsDir = resolve(CT_ROOT, framework, "specs");
   return readdirSync(specsDir)
-    .filter((entry) => entry.endsWith(".spec.ts") || entry.endsWith(".spec.tsx"))
+    .filter((entry) => entry.endsWith(".test.ts") || entry.endsWith(".test.tsx"))
     .map((entry) => resolve(specsDir, entry));
 }
 

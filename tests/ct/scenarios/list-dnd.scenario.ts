@@ -1,154 +1,171 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 /**
- * Shared test scenarios for list item keyboard navigation and reordering.
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
+ * Shared, framework-agnostic Vitest Browser scenarios for list item keyboard
+ * navigation and reordering.
+ *
+ * Every reorder and indent flow is keyboard-driven (Tab, Shift+Tab,
+ * Alt+ArrowUp), so the port replaces Playwright key presses with userEvent
+ * keyboard input rather than HTML5 drag-and-drop.
  */
 
-/** Verify Tab indents a bullet list item (sinks it) */
-export async function testBulletListTabIndent(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+const EDITOR = ".vizel-editor";
 
-  // Create a bullet list with two items
-  await page.keyboard.type("- First item");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second item");
-
-  // Cursor is in the second item, press Tab to indent
-  await page.keyboard.press("Tab");
-
-  // The second item should now be nested inside the first item
-  // This creates a nested list: <ul><li>First item<ul><li>Second item</li></ul></li></ul>
-  const nestedList = editor.locator("ul ul");
-  await expect(nestedList).toBeVisible();
-  await expect(nestedList.locator("li")).toContainText("Second item");
+// Resolve the editor contenteditable root. Tiptap mounts asynchronously, so
+// poll until the element appears rather than querying once.
+async function resolveEditor(): Promise<HTMLElement> {
+  // Allow a generous window: the full three-browser matrix runs nine browser
+  // instances in parallel, and the asynchronous Tiptap mount can exceed the
+  // default 1s poll budget under that contention.
+  await expect.poll(() => document.querySelector(EDITOR), { timeout: 15_000 }).not.toBeNull();
+  const el = document.querySelector<HTMLElement>(EDITOR);
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
 }
 
-/** Verify Shift+Tab outdents a bullet list item (lifts it) */
-export async function testBulletListShiftTabOutdent(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+// Create a two-item task list via the slash menu. The "/task" filter selects the
+// "Task List" item, and Enter converts the current paragraph to a task list.
+async function createTwoTaskItems(el: HTMLElement, editor: ReturnType<typeof page.elementLocator>) {
+  await userEvent.click(editor);
+  await userEvent.keyboard("/task");
+  await expect
+    .poll(() => document.querySelector("[data-vizel-slash-menu]"), { timeout: 5_000 })
+    .not.toBeNull();
+  await userEvent.keyboard("{Enter}");
+  await expect.poll(() => el.querySelector(".vizel-task-list"), { timeout: 5_000 }).not.toBeNull();
 
-  // Create a bullet list with two items
-  await page.keyboard.type("- First item");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second item");
-
-  // Indent the second item first
-  await page.keyboard.press("Tab");
-
-  // Verify it's nested
-  const nestedList = editor.locator("ul ul");
-  await expect(nestedList).toBeVisible();
-
-  // Now outdent it
-  await page.keyboard.press("Shift+Tab");
-
-  // The second item should be back at the top level
-  const topLevelItems = editor.locator(":scope > ul > li");
-  await expect(topLevelItems).toHaveCount(2);
-  await expect(topLevelItems.nth(1)).toContainText("Second item");
+  await userEvent.keyboard("Task one");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.keyboard("Task two");
 }
 
-/** Verify Tab indents a task list item (sinks it) */
-export async function testTaskListTabIndent(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify Tab indents a bullet list item (sinks it). */
+export const testBulletListTabIndent: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Create a task list with two items using slash command
-  await page.keyboard.type("/task");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Task one");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Task two");
+  await userEvent.type(editor, "- First item");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second item");
 
-  // Cursor is in the second task, press Tab to indent
-  await page.keyboard.press("Tab");
+  // Tab sinks the second item into the first, producing a nested list.
+  await userEvent.keyboard("{Tab}");
 
-  // The second task should now be nested inside the first
-  const nestedTaskList = editor.locator("ul[data-type='taskList'] ul[data-type='taskList']");
-  await expect(nestedTaskList).toBeVisible();
-  await expect(nestedTaskList.locator("li")).toContainText("Task two");
-}
+  await expect.poll(() => el.querySelector("ul ul"), { timeout: 5_000 }).not.toBeNull();
+  const nestedList = el.querySelector<HTMLElement>("ul ul");
+  if (nestedList === null) throw new Error("expected a nested ul ul element");
+  await expect.element(page.elementLocator(nestedList)).toBeVisible();
+  expect(nestedList.querySelector("li")?.textContent ?? "").toContain("Second item");
+};
 
-/** Verify Shift+Tab outdents a task list item (lifts it) */
-export async function testTaskListShiftTabOutdent(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify Shift+Tab outdents a bullet list item (lifts it). */
+export const testBulletListShiftTabOutdent: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Create a task list with two items using slash command
-  await page.keyboard.type("/task");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Task one");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Task two");
+  await userEvent.type(editor, "- First item");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second item");
 
-  // Indent the second task
-  await page.keyboard.press("Tab");
+  // Sink the second item first, then confirm the nested list exists.
+  await userEvent.keyboard("{Tab}");
+  await expect.poll(() => el.querySelector("ul ul"), { timeout: 5_000 }).not.toBeNull();
 
-  // Verify it's nested
-  const nestedTaskList = editor.locator("ul[data-type='taskList'] ul[data-type='taskList']");
-  await expect(nestedTaskList).toBeVisible();
+  // Shift+Tab lifts the second item back to the top level.
+  await userEvent.keyboard("{Shift>}{Tab}{/Shift}");
 
-  // Now outdent it
-  await page.keyboard.press("Shift+Tab");
+  await expect.poll(() => el.querySelectorAll(":scope > ul > li").length).toBe(2);
+  const topLevelItems = el.querySelectorAll<HTMLElement>(":scope > ul > li");
+  expect(topLevelItems[1]?.textContent ?? "").toContain("Second item");
+};
 
-  // The second task should be back at the top level
-  const topLevelTasks = editor.locator(":scope > ul[data-type='taskList'] > li");
-  await expect(topLevelTasks).toHaveCount(2);
-  await expect(topLevelTasks.nth(1)).toContainText("Task two");
-}
+/** Verify Tab indents a task list item (sinks it). */
+export const testTaskListTabIndent: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await createTwoTaskItems(el, editor);
 
-/** Verify Alt+Up/Down reorders bullet list items */
-export async function testBulletListAltArrowReorder(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+  // Cursor is in the second task; Tab sinks it into the first.
+  await userEvent.keyboard("{Tab}");
 
-  // Create a bullet list with three items
-  await page.keyboard.type("- Apple");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Banana");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Cherry");
+  const nestedSelector = "ul[data-type='taskList'] ul[data-type='taskList']";
+  await expect.poll(() => el.querySelector(nestedSelector), { timeout: 5_000 }).not.toBeNull();
+  const nestedTaskList = el.querySelector<HTMLElement>(nestedSelector);
+  if (nestedTaskList === null) throw new Error("expected a nested task list");
+  await expect.element(page.elementLocator(nestedTaskList)).toBeVisible();
+  expect(nestedTaskList.querySelector("li")?.textContent ?? "").toContain("Task two");
+};
 
-  // Cursor is in "Cherry" (third item), move it up
-  await page.keyboard.press("Alt+ArrowUp");
+/** Verify Shift+Tab outdents a task list item (lifts it). */
+export const testTaskListShiftTabOutdent: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await createTwoTaskItems(el, editor);
 
-  // Now order should be: Apple, Cherry, Banana
-  const listItems = editor.locator("ul li");
-  await expect(listItems.nth(0)).toContainText("Apple");
-  await expect(listItems.nth(1)).toContainText("Cherry");
-  await expect(listItems.nth(2)).toContainText("Banana");
+  const nestedSelector = "ul[data-type='taskList'] ul[data-type='taskList']";
+  await userEvent.keyboard("{Tab}");
+  await expect.poll(() => el.querySelector(nestedSelector), { timeout: 5_000 }).not.toBeNull();
 
-  // Move Cherry up again to first position
-  await page.keyboard.press("Alt+ArrowUp");
+  // Shift+Tab lifts the second task back to the top level.
+  await userEvent.keyboard("{Shift>}{Tab}{/Shift}");
 
-  // Now order should be: Cherry, Apple, Banana
-  await expect(listItems.nth(0)).toContainText("Cherry");
-  await expect(listItems.nth(1)).toContainText("Apple");
-  await expect(listItems.nth(2)).toContainText("Banana");
-}
+  await expect
+    .poll(() => el.querySelectorAll(":scope > ul[data-type='taskList'] > li").length)
+    .toBe(2);
+  const topLevelTasks = el.querySelectorAll<HTMLElement>(":scope > ul[data-type='taskList'] > li");
+  expect(topLevelTasks[1]?.textContent ?? "").toContain("Task two");
+};
 
-/** Verify ordered list items can be reordered with Alt+Up/Down */
-export async function testOrderedListAltArrowReorder(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify Alt+Up reorders bullet list items. */
+export const testBulletListAltArrowReorder: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Create an ordered list with two items
-  await page.keyboard.type("1. First");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second");
+  await userEvent.type(editor, "- Apple");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Banana");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Cherry");
 
-  // Cursor is in "Second", move it up
-  await page.keyboard.press("Alt+ArrowUp");
+  // Cursor is in "Cherry" (third item); Alt+ArrowUp moves it above "Banana".
+  await userEvent.keyboard("{Alt>}{ArrowUp}{/Alt}");
 
-  // Now "Second" should be first
-  const listItems = editor.locator("ol li");
-  await expect(listItems.first()).toContainText("Second");
-  await expect(listItems.nth(1)).toContainText("First");
-}
+  await expect
+    .poll(() => Array.from(el.querySelectorAll("ul li")).map((item) => item.textContent ?? ""), {
+      timeout: 5_000,
+    })
+    .toEqual(["Apple", "Cherry", "Banana"]);
+
+  // Move "Cherry" up again to the first position.
+  await userEvent.keyboard("{Alt>}{ArrowUp}{/Alt}");
+
+  await expect
+    .poll(() => Array.from(el.querySelectorAll("ul li")).map((item) => item.textContent ?? ""), {
+      timeout: 5_000,
+    })
+    .toEqual(["Cherry", "Apple", "Banana"]);
+};
+
+/** Verify ordered list items reorder with Alt+Up. */
+export const testOrderedListAltArrowReorder: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+
+  await userEvent.type(editor, "1. First");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second");
+
+  // Cursor is in "Second"; Alt+ArrowUp moves it above "First".
+  await userEvent.keyboard("{Alt>}{ArrowUp}{/Alt}");
+
+  await expect
+    .poll(() => Array.from(el.querySelectorAll("ol li")).map((item) => item.textContent ?? ""), {
+      timeout: 5_000,
+    })
+    .toEqual(["Second", "First"]);
+};

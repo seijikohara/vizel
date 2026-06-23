@@ -1,195 +1,252 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, pressKeyChord, userEvent, type VizelBcScenario } from "./_vitest-context";
 
-/**
- * Shared edge case test scenarios.
- * These scenarios test error handling, boundary conditions, and composite operations.
- */
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously
+// after the framework renders, so poll until the element appears to avoid a
+// race with the async mount under the nine-instance contention budget.
+async function resolveEditor(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(".vizel-editor"), { timeout: 15_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(".vizel-editor");
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
+}
+
+// Resolve a button by data-testid. Buttons render at fixture mount time, so
+// a short poll budget suffices.
+async function resolveButton(testId: string): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(`[data-testid="${testId}"]`), { timeout: 5_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+  if (el === null) throw new Error(`expected [data-testid="${testId}"]`);
+  return el;
+}
 
 // ============================================================================
 // Empty State Edge Cases
 // ============================================================================
 
-/** Verify empty editor has correct initial state */
-export async function testEditorEmptyState(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+/** Verify the empty editor has the correct initial DOM state. */
+export const testEditorEmptyState: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Empty editor should have a single empty paragraph
-  const paragraphs = editor.locator("p");
-  await expect(paragraphs).toHaveCount(1);
+  // An empty Tiptap document renders exactly one paragraph.
+  await expect.poll(() => el.querySelectorAll("p").length, { timeout: 5_000 }).toBe(1);
 
-  // The empty paragraph should have the empty node class from Placeholder extension
-  await expect(paragraphs.first()).toHaveClass(/vizel-node-empty/);
-}
+  // The Placeholder extension marks the sole empty paragraph with this class.
+  await expect
+    .poll(() => el.querySelector("p")?.classList.contains("vizel-node-empty") ?? false, {
+      timeout: 5_000,
+    })
+    .toBe(true);
+};
 
-/** Verify empty editor markdown export produces empty/minimal output */
-export async function testMarkdownEmptyExport(component: Locator, _page: Page): Promise<void> {
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
+/** Verify the empty editor exports empty or near-empty Markdown. */
+export const testMarkdownEmptyExport: VizelBcScenario = async () => {
+  await resolveEditor();
 
-  // Empty editor may produce empty string or "&nbsp;" (browser-dependent)
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
-  await expect(markdownOutput).toHaveText(/^(\s*|&nbsp;)$/);
-}
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
+
+  const output = document.querySelector<HTMLElement>("[data-testid='markdown-output']");
+  if (output === null) throw new Error("expected [data-testid='markdown-output']");
+
+  // Empty editor may produce an empty string or "&nbsp;" depending on the browser.
+  await expect.poll(() => output.textContent ?? "", { timeout: 5_000 }).toMatch(/^(\s*|&nbsp;)$/);
+};
 
 // ============================================================================
 // Special Characters Edge Cases
 // ============================================================================
 
-/** Verify editor handles Unicode and emoji characters */
-export async function testSpecialCharacters(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify the editor accepts Unicode and emoji characters without corruption. */
+export const testSpecialCharacters: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  // Paste via ClipboardEvent rather than simulating keypresses: userEvent.type
+  // and userEvent.keyboard both process each codeunit separately and corrupt
+  // surrogate pairs (emoji) into U+FFFD replacement characters. A paste event
+  // delivers the full string to ProseMirror's clipboard handler, matching how
+  // real browser emoji keyboard input arrives.
+  const text = "日本語テスト emoji: 🎉🚀 symbols: ©®™";
+  const dt = new DataTransfer();
+  dt.setData("text/plain", text);
+  el.dispatchEvent(
+    new ClipboardEvent("paste", { clipboardData: dt, bubbles: true, cancelable: true })
+  );
 
-  await page.keyboard.type("日本語テスト emoji: 🎉🚀 symbols: ©®™");
-  await expect(editor).toContainText("日本語テスト");
-  await expect(editor).toContainText("🎉🚀");
-  await expect(editor).toContainText("©®™");
-}
+  await expect.poll(() => el.textContent ?? "", { timeout: 5_000 }).toContain("日本語テスト");
+  await expect.poll(() => el.textContent ?? "", { timeout: 5_000 }).toContain("🎉🚀");
+  await expect.poll(() => el.textContent ?? "", { timeout: 5_000 }).toContain("©®™");
+};
 
-/** Verify HTML-like characters are not rendered as HTML elements */
-export async function testHtmlEscaping(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify angle brackets and ampersands are stored as text, not rendered as HTML. */
+export const testHtmlEscaping: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Type raw angle brackets and ampersand - these should appear as text, not HTML
-  await page.keyboard.type("<script>alert(1)</script> & test");
-  await expect(editor).toContainText("<script>");
-  await expect(editor).toContainText("</script>");
-  await expect(editor).toContainText("& test");
+  // Type raw angle brackets — Tiptap's schema must treat them as text nodes,
+  // not inject a live <script> element into the DOM.
+  await userEvent.keyboard("<script>alert(1)</script> & test");
 
-  // Verify no actual <script> element was created in the editor DOM
-  const scriptElements = editor.locator("script");
-  await expect(scriptElements).toHaveCount(0);
+  await expect.poll(() => el.textContent ?? "", { timeout: 5_000 }).toContain("<script>");
+  await expect.poll(() => el.textContent ?? "").toContain("</script>");
+  await expect.poll(() => el.textContent ?? "").toContain("& test");
 
-  // The text should be inside a paragraph, not rendered as HTML structure
-  const paragraph = editor.locator("p");
-  await expect(paragraph).toContainText("<script>alert(1)</script>");
-}
+  // No actual script element must exist inside the editor.
+  expect(el.querySelectorAll("script").length).toBe(0);
+
+  // The text is inside a paragraph, not a rendered HTML structure.
+  const paragraph = el.querySelector("p");
+  if (paragraph === null) throw new Error("expected a paragraph in the editor");
+  expect(paragraph.textContent).toContain("<script>alert(1)</script>");
+};
 
 // ============================================================================
 // Undo/Redo Composite Operations
 // ============================================================================
 
-/** Verify undo/redo works across formatting operations */
-export async function testUndoRedoFormatting(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify undo and redo cycle correctly across a bold formatting operation. */
+export const testUndoRedoFormatting: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("Hello World");
 
-  // Type text
-  await page.keyboard.type("Hello World");
-  await expect(editor).toContainText("Hello World");
+  await expect.poll(() => el.textContent ?? "", { timeout: 5_000 }).toContain("Hello World");
 
-  // Select all and apply bold
-  await page.keyboard.press("ControlOrMeta+a");
-  await page.keyboard.press("ControlOrMeta+b");
+  // Select all and apply bold.
+  await pressKeyChord("Mod", "a");
+  await pressKeyChord("Mod", "b");
 
-  // Verify bold is applied
-  const bold = editor.locator("strong");
-  await expect(bold).toContainText("Hello World");
+  await expect
+    .poll(() => el.querySelector("strong")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Hello World");
 
-  // Undo bold
-  await page.keyboard.press("ControlOrMeta+z");
-  await expect(editor.locator("strong")).toHaveCount(0);
-  await expect(editor).toContainText("Hello World");
+  // Undo bold — the <strong> must disappear while the text remains.
+  await pressKeyChord("Mod", "z");
+  await expect.poll(() => el.querySelectorAll("strong").length, { timeout: 5_000 }).toBe(0);
+  await expect.poll(() => el.textContent ?? "").toContain("Hello World");
 
-  // Redo bold
-  await page.keyboard.press("ControlOrMeta+Shift+z");
-  await expect(editor.locator("strong")).toContainText("Hello World");
-}
+  // Redo bold — the <strong> must reappear.
+  await pressKeyChord("Mod", "Shift", "z");
+  await expect
+    .poll(() => el.querySelector("strong")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Hello World");
+};
 
-/** Verify undo works across multiple operation types */
-export async function testUndoMultipleOperations(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify sequential undo correctly reverses each formatting step. */
+export const testUndoMultipleOperations: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("Hello");
 
-  // Type text
-  await page.keyboard.type("Hello");
-  await expect(editor).toContainText("Hello");
+  await expect.poll(() => el.textContent ?? "", { timeout: 5_000 }).toContain("Hello");
 
-  // Apply bold
-  await page.keyboard.press("ControlOrMeta+a");
-  await page.keyboard.press("ControlOrMeta+b");
-  await expect(editor.locator("strong")).toContainText("Hello");
+  // Apply bold.
+  await pressKeyChord("Mod", "a");
+  await pressKeyChord("Mod", "b");
+  await expect
+    .poll(() => el.querySelector("strong")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Hello");
 
-  // Apply italic on top
-  await page.keyboard.press("ControlOrMeta+i");
-  await expect(editor.locator("em")).toContainText("Hello");
+  // Apply italic on top of bold.
+  await pressKeyChord("Mod", "i");
+  await expect.poll(() => el.querySelector("em"), { timeout: 5_000 }).not.toBeNull();
+  await expect.poll(() => el.querySelector("em")?.textContent ?? "").toContain("Hello");
 
-  // Undo italic
-  await page.keyboard.press("ControlOrMeta+z");
-  await expect(editor.locator("em")).toHaveCount(0);
-  // Bold should still be there
-  await expect(editor.locator("strong")).toContainText("Hello");
+  // Undo italic — em disappears, strong remains.
+  await pressKeyChord("Mod", "z");
+  await expect.poll(() => el.querySelectorAll("em").length, { timeout: 5_000 }).toBe(0);
+  await expect.poll(() => el.querySelector("strong")?.textContent ?? "").toContain("Hello");
 
-  // Undo bold
-  await page.keyboard.press("ControlOrMeta+z");
-  await expect(editor.locator("strong")).toHaveCount(0);
-  await expect(editor).toContainText("Hello");
-}
+  // Undo bold — strong disappears, text remains.
+  await pressKeyChord("Mod", "z");
+  await expect.poll(() => el.querySelectorAll("strong").length, { timeout: 5_000 }).toBe(0);
+  await expect.poll(() => el.textContent ?? "").toContain("Hello");
+};
 
 // ============================================================================
 // Rapid Operations Edge Cases
 // ============================================================================
 
-/** Verify rapid formatting toggles don't corrupt state */
-export async function testRapidFormattingToggles(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/**
+ * Verify rapid bold toggles do not corrupt the editor state.
+ *
+ * Five toggles (odd count) must leave bold active; one more toggle turns it off.
+ * The regression target is ProseMirror losing track of mark state under rapid
+ * command dispatch.
+ */
+export const testRapidFormattingToggles: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("Test");
+  await pressKeyChord("Mod", "a");
 
-  await page.keyboard.type("Test");
-  await page.keyboard.press("ControlOrMeta+a");
-
-  // Rapidly toggle bold 5 times (odd = bold on)
+  // Toggle bold five times (odd count → bold active).
   for (let i = 0; i < 5; i++) {
-    await page.keyboard.press("ControlOrMeta+b");
+    await pressKeyChord("Mod", "b");
   }
 
-  // After odd number of toggles, bold should be active
-  const bold = editor.locator("strong");
-  await expect(bold).toBeVisible();
-  await expect(bold).toContainText("Test");
+  await expect.poll(() => el.querySelector("strong"), { timeout: 5_000 }).not.toBeNull();
+  await expect.poll(() => el.querySelector("strong")?.textContent ?? "").toContain("Test");
 
-  // Toggle once more (even = bold off)
-  await page.keyboard.press("ControlOrMeta+b");
-  await expect(editor.locator("strong")).toHaveCount(0);
-  await expect(editor).toContainText("Test");
-}
+  // One more toggle (even count → bold off).
+  await pressKeyChord("Mod", "b");
+  await expect.poll(() => el.querySelectorAll("strong").length, { timeout: 5_000 }).toBe(0);
+  await expect.poll(() => el.textContent ?? "").toContain("Test");
+};
 
 // ============================================================================
 // Markdown Edge Cases
 // ============================================================================
 
-/** Verify markdown export preserves special characters */
-export async function testMarkdownSpecialCharsExport(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify the Markdown export preserves Unicode and emoji characters. */
+export const testMarkdownSpecialCharsExport: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  // Use a paste ClipboardEvent for the same reason as testSpecialCharacters:
+  // emoji require full-string delivery to avoid surrogate-pair corruption.
+  const text = "Special: 日本語 🎉 ©";
+  const dt = new DataTransfer();
+  dt.setData("text/plain", text);
+  el.dispatchEvent(
+    new ClipboardEvent("paste", { clipboardData: dt, bubbles: true, cancelable: true })
+  );
 
-  await page.keyboard.type("Special: 日本語 🎉 ©");
+  await expect.poll(() => el.textContent ?? "", { timeout: 5_000 }).toContain("日本語");
 
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
 
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
-  await expect(markdownOutput).toContainText("日本語");
-  await expect(markdownOutput).toContainText("🎉");
-}
+  const output = document.querySelector<HTMLElement>("[data-testid='markdown-output']");
+  if (output === null) throw new Error("expected [data-testid='markdown-output']");
 
-/** Verify markdown import renders blockquote correctly */
-export async function testMarkdownNestedContent(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+  await expect.poll(() => output.textContent ?? "", { timeout: 5_000 }).toContain("日本語");
+  await expect.poll(() => output.textContent ?? "").toContain("🎉");
+};
 
-  // Import markdown with blockquote (uses existing fixture button)
-  const importButton = component.locator("[data-testid='import-blockquote-button']");
-  await importButton.click();
+/** Verify Markdown import renders a blockquote node correctly. */
+export const testMarkdownNestedContent: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Verify blockquote was rendered correctly
-  const blockquote = editor.locator("blockquote");
-  await expect(blockquote).toBeVisible();
-  await expect(blockquote).toContainText("This is a quote");
-}
+  // The fixture button imports "> This is a quote" as Markdown.
+  const importButton = await resolveButton("import-blockquote-button");
+  await userEvent.click(page.elementLocator(importButton));
+
+  await expect.poll(() => el.querySelector("blockquote"), { timeout: 5_000 }).not.toBeNull();
+
+  const blockquote = el.querySelector<HTMLElement>("blockquote");
+  if (blockquote === null) throw new Error("expected a blockquote element");
+  await expect.element(page.elementLocator(blockquote)).toBeVisible();
+  expect(blockquote.textContent).toContain("This is a quote");
+};

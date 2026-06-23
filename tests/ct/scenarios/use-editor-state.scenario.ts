@@ -1,139 +1,148 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, pressKeyChord, userEvent, type VizelBcScenario } from "./_vitest-context";
 
-/**
- * Test that useEditorState updates when editor state changes
- */
-export async function testEditorStateUpdatesOnChange(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const updateCounter = component.locator("[data-testid='update-count']");
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously,
+// so poll until the element appears. `.vizel-editor` is a div, not an ARIA
+// textbox, so the query uses a class selector.
+async function resolveEditor(): Promise<HTMLElement> {
+  // Use a generous window because the concurrent three-browser matrix saturates
+  // the machine and can push the asynchronous Tiptap mount beyond the default 1s
+  // poll budget.
+  await expect
+    .poll(() => document.querySelector(".vizel-editor"), { timeout: 15_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(".vizel-editor");
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
+}
 
-  // Get initial count
-  await expect(updateCounter).toBeVisible();
-  const initialCount = await updateCounter.textContent();
-
-  // Type text to trigger state change
-  await editor.click();
-  await page.keyboard.type("Hello");
-
-  // Count should have increased
-  await expect(updateCounter).not.toHaveText(initialCount ?? "0");
+// Resolve a data-testid element. Poll rather than read once because the fixture
+// renders synchronously before Tiptap mounts, and the initial render may arrive
+// before the browser paints the first frame.
+async function resolveTestId(testId: string): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(`[data-testid="${testId}"]`), { timeout: 5_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+  if (el === null) throw new Error(`expected [data-testid="${testId}"]`);
+  return el;
 }
 
 /**
- * Test that useEditorState tracks bold formatting state
+ * Verify useVizelState increments the update counter when the editor state
+ * changes. The counter starts at some initial value; typing text must produce a
+ * different (higher) value because each Tiptap transaction fires an update event
+ * that the state hook captures.
  */
-export async function testEditorStateTracksBoldActive(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const boldIndicator = component.locator("[data-testid='bold-active']");
+export const testEditorStateUpdatesOnChange: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const updateCounter = await resolveTestId("update-count");
 
-  await editor.click();
-  await page.keyboard.type("Test text");
+  const initialCount = updateCounter.textContent ?? "0";
 
-  // Select all text
-  await page.keyboard.press("ControlOrMeta+a");
+  await userEvent.click(page.elementLocator(el));
+  await userEvent.type(page.elementLocator(el), "Hello");
 
-  // Initially not bold
-  await expect(boldIndicator).toHaveText("false");
-
-  // Apply bold
-  await page.keyboard.press("ControlOrMeta+b");
-
-  // Should now show bold as active
-  await expect(boldIndicator).toHaveText("true");
-
-  // Toggle off
-  await page.keyboard.press("ControlOrMeta+b");
-  await expect(boldIndicator).toHaveText("false");
-}
+  // Each keystroke dispatches a Tiptap transaction; the counter must diverge.
+  await expect.poll(() => updateCounter.textContent, { timeout: 5_000 }).not.toBe(initialCount);
+};
 
 /**
- * Test that useEditorState tracks italic formatting state
+ * Verify useVizelState reflects bold mark activation. After selecting all text
+ * and pressing Mod+B, the bold indicator must read "true"; pressing Mod+B again
+ * must toggle it back to "false".
  */
-export async function testEditorStateTracksItalicActive(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const italicIndicator = component.locator("[data-testid='italic-active']");
+export const testEditorStateTracksBoldActive: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const boldIndicator = await resolveTestId("bold-active");
 
-  await editor.click();
-  await page.keyboard.type("Test text");
-  await page.keyboard.press("ControlOrMeta+a");
+  await userEvent.click(page.elementLocator(el));
+  await userEvent.type(page.elementLocator(el), "Test text");
+  await pressKeyChord("Mod", "a");
 
-  await expect(italicIndicator).toHaveText("false");
-  await page.keyboard.press("ControlOrMeta+i");
-  await expect(italicIndicator).toHaveText("true");
-}
+  await expect.poll(() => boldIndicator.textContent, { timeout: 5_000 }).toBe("false");
+
+  await pressKeyChord("Mod", "b");
+  await expect.poll(() => boldIndicator.textContent, { timeout: 5_000 }).toBe("true");
+
+  await pressKeyChord("Mod", "b");
+  await expect.poll(() => boldIndicator.textContent, { timeout: 5_000 }).toBe("false");
+};
 
 /**
- * Test that useEditorState works with null editor
+ * Verify useVizelState reflects italic mark activation. After selecting all
+ * text and pressing Mod+I, the italic indicator must read "true".
  */
-export async function testEditorStateWithNullEditor(
-  component: Locator,
-  _page: Page
-): Promise<void> {
-  const updateCounter = component.locator("[data-testid='update-count']");
+export const testEditorStateTracksItalicActive: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const italicIndicator = await resolveTestId("italic-active");
 
-  // Should render with count 0 when editor is null
-  await expect(updateCounter).toHaveText("0");
-}
+  await userEvent.click(page.elementLocator(el));
+  await userEvent.type(page.elementLocator(el), "Test text");
+  await pressKeyChord("Mod", "a");
+
+  await expect.poll(() => italicIndicator.textContent, { timeout: 5_000 }).toBe("false");
+
+  await pressKeyChord("Mod", "i");
+  await expect.poll(() => italicIndicator.textContent, { timeout: 5_000 }).toBe("true");
+};
 
 /**
- * Test that getEditorState returns character count
+ * Verify useVizelState behaves safely when the editor is null. The update
+ * counter must read "0" because no transactions are dispatched without an
+ * editor instance.
  */
-export async function testEditorStateCharacterCount(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const charCountElement = component.locator("[data-testid='character-count']");
-  const wordCountElement = component.locator("[data-testid='word-count']");
-
-  // Initially empty
-  await expect(charCountElement).toHaveText("0");
-  await expect(wordCountElement).toHaveText("0");
-
-  // Type some text
-  await editor.click();
-  await page.keyboard.type("Hello World");
-
-  // Should show correct counts (11 characters, 2 words)
-  await expect(charCountElement).toHaveText("11");
-  await expect(wordCountElement).toHaveText("2");
-
-  // Add more text
-  await page.keyboard.type(" Test");
-
-  // Should update counts (16 characters, 3 words)
-  await expect(charCountElement).toHaveText("16");
-  await expect(wordCountElement).toHaveText("3");
-}
+export const testEditorStateWithNullEditor: VizelBcScenario = async () => {
+  const updateCounter = await resolveTestId("update-count");
+  // The fixture renders with nullEditor=true, so the counter stays at zero.
+  await expect.element(page.elementLocator(updateCounter)).toHaveTextContent("0");
+};
 
 /**
- * Test that getEditorState returns correct empty/focus state
+ * Verify getVizelEditorState returns accurate character and word counts after
+ * typing. The counts must update synchronously with each Tiptap transaction.
  */
-export async function testEditorStateEmptyAndFocus(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const isEmptyElement = component.locator("[data-testid='is-empty']");
-  const isFocusedElement = component.locator("[data-testid='is-focused']");
+export const testEditorStateCharacterCount: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const charCountEl = await resolveTestId("character-count");
+  const wordCountEl = await resolveTestId("word-count");
 
-  // Initially empty and not focused
-  await expect(isEmptyElement).toHaveText("true");
-  await expect(isFocusedElement).toHaveText("false");
+  await expect.element(page.elementLocator(charCountEl)).toHaveTextContent("0");
+  await expect.element(page.elementLocator(wordCountEl)).toHaveTextContent("0");
 
-  // Click to focus
-  await editor.click();
-  await expect(isFocusedElement).toHaveText("true");
+  await userEvent.click(page.elementLocator(el));
+  await userEvent.type(page.elementLocator(el), "Hello World");
 
-  // Type text - no longer empty
-  await page.keyboard.type("Hello");
-  await expect(isEmptyElement).toHaveText("false");
+  await expect.poll(() => charCountEl.textContent, { timeout: 5_000 }).toBe("11");
+  await expect.poll(() => wordCountEl.textContent, { timeout: 5_000 }).toBe("2");
 
-  // Click outside to blur
-  await component.click({ position: { x: 0, y: 0 } });
-  await expect(isFocusedElement).toHaveText("false");
-}
+  await userEvent.type(page.elementLocator(el), " Test");
+
+  await expect.poll(() => charCountEl.textContent, { timeout: 5_000 }).toBe("16");
+  await expect.poll(() => wordCountEl.textContent, { timeout: 5_000 }).toBe("3");
+};
+
+/**
+ * Verify getVizelEditorState tracks the isEmpty and isFocused flags. The editor
+ * starts empty and unfocused; clicking focuses it; typing clears isEmpty;
+ * clicking outside blurs the editor.
+ */
+export const testEditorStateEmptyAndFocus: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const isEmptyEl = await resolveTestId("is-empty");
+  const isFocusedEl = await resolveTestId("is-focused");
+
+  await expect.element(page.elementLocator(isEmptyEl)).toHaveTextContent("true");
+  await expect.element(page.elementLocator(isFocusedEl)).toHaveTextContent("false");
+
+  await userEvent.click(page.elementLocator(el));
+  await expect.poll(() => isFocusedEl.textContent, { timeout: 5_000 }).toBe("true");
+
+  await userEvent.type(page.elementLocator(el), "Hello");
+  await expect.poll(() => isEmptyEl.textContent, { timeout: 5_000 }).toBe("false");
+
+  // Click outside the editor to trigger a blur event. The body is always present
+  // and outside the editor subtree, so a click on it reliably blurs ProseMirror.
+  await userEvent.click(page.elementLocator(document.body));
+  await expect.poll(() => isFocusedEl.textContent, { timeout: 5_000 }).toBe("false");
+};

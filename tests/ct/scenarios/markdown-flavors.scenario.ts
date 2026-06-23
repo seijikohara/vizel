@@ -1,195 +1,197 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
+
+// Resolve the .vizel-editor root. Tiptap mounts asynchronously after the
+// framework renders, so poll until the element appears to avoid a race with
+// the async mount.
+async function resolveEditor(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(".vizel-editor"), { timeout: 15_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(".vizel-editor");
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
+}
+
+// Resolve a button by data-testid, polling until it appears. The fixture
+// renders buttons at mount time so the poll budget is short.
+async function resolveButton(testId: string): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(`[data-testid="${testId}"]`), { timeout: 5_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+  if (el === null) throw new Error(`expected [data-testid="${testId}"]`);
+  return el;
+}
 
 /**
- * Shared test scenarios for Markdown flavor-specific output.
+ * Verify the editor serializes callouts as GFM alert syntax (> [!NOTE]).
  *
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
- * They test that callout nodes are serialized differently depending on the
- * configured Markdown flavor (gfm, obsidian, docusaurus, commonmark).
+ * GFM uses uppercase alert type keywords; the fixture must be mounted with
+ * `flavor="gfm"` for this assertion to hold.
+ */
+export const testCalloutGfmOutput: VizelBcScenario = async () => {
+  await resolveEditor();
+
+  const insertButton = await resolveButton("insert-callout");
+  await userEvent.click(page.elementLocator(insertButton));
+
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
+
+  const output = document.querySelector<HTMLElement>("[data-testid='markdown-output']");
+  if (output === null) throw new Error("expected [data-testid='markdown-output']");
+
+  await expect.poll(() => output.textContent ?? "", { timeout: 5_000 }).toMatch(/>\s*\[!NOTE\]/);
+  expect(output.textContent).toContain("Test callout content");
+};
+
+/**
+ * Verify the editor serializes callouts as Obsidian callout syntax (> [!info]).
  *
- * The fixture must provide:
- * - A button `[data-testid="insert-callout"]` that inserts a callout with type "info"
- *   and content "Test callout content"
- * - A button `[data-testid="export-button"]` that exports markdown to `[data-testid="markdown-output"]`
- * - A button `[data-testid="import-callout-gfm"]` that imports GFM-style callout markdown
- * - A button `[data-testid="import-callout-obsidian"]` that imports Obsidian-style callout markdown
- * - A button `[data-testid="import-callout-docusaurus"]` that imports Docusaurus-style callout markdown
+ * Obsidian uses lowercase type keywords; the fixture must be mounted with
+ * `flavor="obsidian"` for this assertion to hold.
  */
+export const testCalloutObsidianOutput: VizelBcScenario = async () => {
+  await resolveEditor();
+
+  const insertButton = await resolveButton("insert-callout");
+  await userEvent.click(page.elementLocator(insertButton));
+
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
+
+  const output = document.querySelector<HTMLElement>("[data-testid='markdown-output']");
+  if (output === null) throw new Error("expected [data-testid='markdown-output']");
+
+  await expect.poll(() => output.textContent ?? "", { timeout: 5_000 }).toMatch(/>\s*\[!info\]/);
+  expect(output.textContent).toContain("Test callout content");
+};
 
 /**
- * Wait for the editor to be ready before interacting.
+ * Verify the editor serializes callouts as Docusaurus directive syntax (:::info).
+ *
+ * The fixture must be mounted with `flavor="docusaurus"` for this assertion to hold.
  */
-async function waitForEditor(component: Locator): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible({ timeout: 10000 });
-}
+export const testCalloutDocusaurusOutput: VizelBcScenario = async () => {
+  await resolveEditor();
+
+  const insertButton = await resolveButton("insert-callout");
+  await userEvent.click(page.elementLocator(insertButton));
+
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
+
+  const output = document.querySelector<HTMLElement>("[data-testid='markdown-output']");
+  if (output === null) throw new Error("expected [data-testid='markdown-output']");
+
+  await expect.poll(() => output.textContent ?? "", { timeout: 5_000 }).toContain(":::info");
+  expect(output.textContent).toContain("Test callout content");
+  expect(output.textContent).toContain(":::");
+};
 
 /**
- * Test that the editor serializes callouts according to the GFM flavor.
- * Expected output: `> [!NOTE]\n> content`
+ * Verify the editor serializes callouts as CommonMark blockquote fallback (> **Info**:).
+ *
+ * CommonMark has no native callout syntax, so the serializer falls back to a
+ * bold-label blockquote. The fixture must be mounted with `flavor="commonmark"`.
  */
-export async function testCalloutGfmOutput(component: Locator, _page: Page): Promise<void> {
-  await waitForEditor(component);
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
+export const testCalloutCommonmarkOutput: VizelBcScenario = async () => {
+  await resolveEditor();
 
-  // Insert callout via button
-  const insertButton = component.locator("[data-testid='insert-callout']");
-  await insertButton.click();
+  const insertButton = await resolveButton("insert-callout");
+  await userEvent.click(page.elementLocator(insertButton));
 
-  // Export markdown
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
 
-  // GFM uses uppercase alert syntax: > [!NOTE]
-  await expect(markdownOutput).toContainText("> [!NOTE]");
-  await expect(markdownOutput).toContainText("Test callout content");
-}
+  const output = document.querySelector<HTMLElement>("[data-testid='markdown-output']");
+  if (output === null) throw new Error("expected [data-testid='markdown-output']");
+
+  await expect
+    .poll(() => output.textContent ?? "", { timeout: 5_000 })
+    .toMatch(/>\s*\*\*Info\*\*:/);
+  expect(output.textContent).toContain("Test callout content");
+};
 
 /**
- * Test that the editor serializes callouts according to the Obsidian flavor.
- * Expected output: `> [!info]\n> content`
+ * Verify GFM-style callout markdown (> [!NOTE]) is parsed correctly regardless
+ * of the configured output flavor.
+ *
+ * Input parsing is always tolerant: all known callout syntaxes are accepted even
+ * when the output serializer targets a different flavor.
  */
-export async function testCalloutObsidianOutput(component: Locator, _page: Page): Promise<void> {
-  await waitForEditor(component);
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
+export const testCalloutParseGfm: VizelBcScenario = async () => {
+  const el = await resolveEditor();
 
-  // Insert callout via button
-  const insertButton = component.locator("[data-testid='insert-callout']");
-  await insertButton.click();
+  const importButton = await resolveButton("import-callout-gfm");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Export markdown
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
+  await expect.poll(() => el.querySelector("[data-callout]"), { timeout: 5_000 }).not.toBeNull();
 
-  // Obsidian uses lowercase callout syntax: > [!info]
-  await expect(markdownOutput).toContainText("> [!info]");
-  await expect(markdownOutput).toContainText("Test callout content");
-}
+  const callout = el.querySelector<HTMLElement>("[data-callout]");
+  if (callout === null) throw new Error("expected a [data-callout] element");
+  await expect.element(page.elementLocator(callout)).toBeVisible();
+  expect(callout.textContent).toContain("GFM callout content");
+};
 
 /**
- * Test that the editor serializes callouts according to the Docusaurus flavor.
- * Expected output: `:::info\ncontent\n:::`
+ * Verify Obsidian-style callout markdown (> [!note]) is parsed correctly
+ * regardless of the configured output flavor.
  */
-export async function testCalloutDocusaurusOutput(component: Locator, _page: Page): Promise<void> {
-  await waitForEditor(component);
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
+export const testCalloutParseObsidian: VizelBcScenario = async () => {
+  const el = await resolveEditor();
 
-  // Insert callout via button
-  const insertButton = component.locator("[data-testid='insert-callout']");
-  await insertButton.click();
+  const importButton = await resolveButton("import-callout-obsidian");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Export markdown
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
+  await expect.poll(() => el.querySelector("[data-callout]"), { timeout: 5_000 }).not.toBeNull();
 
-  // Docusaurus uses directive syntax: :::info
-  await expect(markdownOutput).toContainText(":::info");
-  await expect(markdownOutput).toContainText("Test callout content");
-  // Closing directive
-  await expect(markdownOutput).toContainText(":::");
-}
+  const callout = el.querySelector<HTMLElement>("[data-callout]");
+  if (callout === null) throw new Error("expected a [data-callout] element");
+  await expect.element(page.elementLocator(callout)).toBeVisible();
+  expect(callout.textContent).toContain("Obsidian callout content");
+};
 
 /**
- * Test that the editor serializes callouts according to the CommonMark flavor.
- * Expected output: `> **Info**: content`
+ * Verify Docusaurus-style callout markdown (:::info ... :::) is parsed correctly
+ * regardless of the configured output flavor.
  */
-export async function testCalloutCommonmarkOutput(component: Locator, _page: Page): Promise<void> {
-  await waitForEditor(component);
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
+export const testCalloutParseDocusaurus: VizelBcScenario = async () => {
+  const el = await resolveEditor();
 
-  // Insert callout via button
-  const insertButton = component.locator("[data-testid='insert-callout']");
-  await insertButton.click();
+  const importButton = await resolveButton("import-callout-docusaurus");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Export markdown
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
+  await expect.poll(() => el.querySelector("[data-callout]"), { timeout: 5_000 }).not.toBeNull();
 
-  // CommonMark uses blockquote fallback: > **Info**: content
-  await expect(markdownOutput).toContainText("> **Info**:");
-  await expect(markdownOutput).toContainText("Test callout content");
-}
+  const callout = el.querySelector<HTMLElement>("[data-callout]");
+  if (callout === null) throw new Error("expected a [data-callout] element");
+  await expect.element(page.elementLocator(callout)).toBeVisible();
+  expect(callout.textContent).toContain("Docusaurus callout content");
+};
 
 /**
- * Test that GFM-style callout markdown is parsed correctly regardless of flavor.
- * Input parsing is always tolerant.
+ * Verify the import-then-export roundtrip produces output matching the
+ * configured flavor's syntax.
+ *
+ * The fixture always imports GFM-style callout markdown (all flavors accept
+ * it), then exports and checks that the output matches `expectedPattern`.
+ * This separates the parse path from the serialize path.
  */
-export async function testCalloutParseGfm(component: Locator, _page: Page): Promise<void> {
-  await waitForEditor(component);
-  const editor = component.locator(".vizel-editor");
+export const testCalloutRoundtrip = async (expectedPattern: RegExp): Promise<void> => {
+  const el = await resolveEditor();
 
-  // Import GFM-style callout
-  const importButton = component.locator("[data-testid='import-callout-gfm']");
-  await importButton.click();
+  const importButton = await resolveButton("import-callout-gfm");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Verify callout was rendered in the editor
-  const callout = editor.locator("[data-callout]");
-  await expect(callout).toBeVisible();
-  await expect(callout).toContainText("GFM callout content");
-}
+  await expect.poll(() => el.querySelector("[data-callout]"), { timeout: 5_000 }).not.toBeNull();
 
-/**
- * Test that Obsidian-style callout markdown is parsed correctly regardless of flavor.
- * Input parsing is always tolerant.
- */
-export async function testCalloutParseObsidian(component: Locator, _page: Page): Promise<void> {
-  await waitForEditor(component);
-  const editor = component.locator(".vizel-editor");
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
 
-  // Import Obsidian-style callout
-  const importButton = component.locator("[data-testid='import-callout-obsidian']");
-  await importButton.click();
+  const output = document.querySelector<HTMLElement>("[data-testid='markdown-output']");
+  if (output === null) throw new Error("expected [data-testid='markdown-output']");
 
-  // Verify callout was rendered in the editor
-  const callout = editor.locator("[data-callout]");
-  await expect(callout).toBeVisible();
-  await expect(callout).toContainText("Obsidian callout content");
-}
-
-/**
- * Test that Docusaurus-style callout markdown is parsed correctly regardless of flavor.
- * Input parsing is always tolerant.
- */
-export async function testCalloutParseDocusaurus(component: Locator, _page: Page): Promise<void> {
-  await waitForEditor(component);
-  const editor = component.locator(".vizel-editor");
-
-  // Import Docusaurus-style callout
-  const importButton = component.locator("[data-testid='import-callout-docusaurus']");
-  await importButton.click();
-
-  // Verify callout was rendered in the editor
-  const callout = editor.locator("[data-callout]");
-  await expect(callout).toBeVisible();
-  await expect(callout).toContainText("Docusaurus callout content");
-}
-
-/**
- * Test roundtrip: import callout markdown, then export and verify the output matches
- * the configured flavor format.
- */
-export async function testCalloutRoundtrip(
-  component: Locator,
-  _page: Page,
-  expectedPattern: RegExp
-): Promise<void> {
-  await waitForEditor(component);
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
-
-  // Import GFM-style callout (all flavors should parse this)
-  const importButton = component.locator("[data-testid='import-callout-gfm']");
-  await importButton.click();
-
-  // Verify callout was rendered
-  const editor = component.locator(".vizel-editor");
-  const callout = editor.locator("[data-callout]");
-  await expect(callout).toBeVisible();
-
-  // Export and verify the output matches the configured flavor
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
-
-  const output = await markdownOutput.textContent();
-  expect(output).toMatch(expectedPattern);
-}
+  await expect.poll(() => output.textContent ?? "", { timeout: 5_000 }).toMatch(expectedPattern);
+};

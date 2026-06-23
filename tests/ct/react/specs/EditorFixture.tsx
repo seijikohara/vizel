@@ -2,29 +2,17 @@ import { useVizelEditor, VizelBubbleMenu, VizelEditor, VizelProvider } from "@vi
 
 export interface EditorFixtureProps {
   placeholder?: string;
-  initialContent?: string;
-  showBubbleMenu?: boolean;
 }
 
-export function EditorFixture({
-  placeholder = "Type something...",
-  initialContent,
-  showBubbleMenu = true,
-}: EditorFixtureProps) {
+export function EditorFixture({ placeholder = "Type something..." }: EditorFixtureProps) {
   const editor = useVizelEditor({
     placeholder,
-    initialContent,
-    features: {
-      content: {
-        mathematics: true,
-      },
-    },
+    features: { content: { mathematics: true } },
   });
-
   return (
     <VizelProvider editor={editor}>
       <VizelEditor />
-      {showBubbleMenu && <VizelBubbleMenu />}
+      <VizelBubbleMenu />
     </VizelProvider>
   );
 }

@@ -38,7 +38,7 @@ const sharedOptimizeIncludes = [
 // tests/*/scenarios and the @vizel source under packages/*/src.
 const fsAllow = { fs: { allow: [resolve(rootDir)] } } as const;
 
-const testInclude = ["specs-bc/**/*.bc.test.{ts,tsx}"] as const;
+const testInclude = ["specs/**/*.test.{ts,tsx}"] as const;
 
 // Shared per-project test options. Projects do NOT inherit the root `test`
 // block in browser mode, so spread these into every project's `test`.

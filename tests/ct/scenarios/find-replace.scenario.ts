@@ -1,8 +1,9 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 /**
- * Shared, framework-agnostic scenarios for the find-and-replace panel.
+ * Shared, framework-agnostic Vitest Browser scenarios for the find-and-replace
+ * panel.
  *
  * Each fixture mounts an editor preloaded with the paragraph
  * "alpha beta alpha gamma alpha" (the term "alpha" appears three times) plus a
@@ -17,59 +18,102 @@ const INPUT = ".vizel-find-replace-input";
 const COUNT = ".vizel-find-replace-count";
 const EDITOR = ".vizel-editor";
 
-const openReplacePanel = async (component: Locator): Promise<void> => {
-  // The editor mounts asynchronously (immediatelyRender: false), so wait for its
-  // content before triggering the open command — clicking earlier no-ops against
-  // a still-null editor and the panel never appears.
-  await expect(component.locator(EDITOR)).toContainText("alpha");
-  await component.locator("[data-testid='open-replace']").click();
-  await expect(component.locator(PANEL)).toBeVisible();
+// Wait for the editor content to appear, then click the open-replace button and
+// wait for the panel to become visible. The editor mounts asynchronously
+// (`immediatelyRender: false`), so polling for editor content before clicking
+// prevents the button click from no-oping against an uninitialized editor.
+async function openReplacePanel(): Promise<void> {
+  await expect
+    .poll(() => document.querySelector<HTMLElement>(EDITOR)?.textContent?.includes("alpha"), {
+      timeout: 15_000,
+    })
+    .toBe(true);
+
+  const openBtn = document.querySelector<HTMLElement>("[data-testid='open-replace']");
+  if (openBtn === null) throw new Error("expected [data-testid='open-replace'] button");
+  await userEvent.click(page.elementLocator(openBtn));
+
+  await expect.poll(() => document.querySelector(PANEL), { timeout: 5_000 }).not.toBeNull();
+}
+
+// Find the first button inside the panel whose accessible name matches `name`.
+// Playwright's `getByRole("button", { name })` checks the accessible name
+// (aria-label, visible text, etc.). Here we scan `<button>` elements by
+// their trimmed textContent since the panel renders visible button labels.
+function findButtonByLabel(label: string): HTMLElement | null {
+  const buttons = document.querySelectorAll<HTMLElement>(`${PANEL} button`);
+  for (const btn of buttons) {
+    if (btn.textContent?.trim() === label) return btn;
+  }
+  return null;
+}
+
+/** Verify the panel opens in replace mode with both input rows present. */
+export const testFindReplaceOpens: VizelBcScenario = async () => {
+  await openReplacePanel();
+  // Replace mode renders two rows: the find input and the replace input.
+  await expect.poll(() => document.querySelectorAll(INPUT).length, { timeout: 5_000 }).toBe(2);
 };
 
-/** Verify the panel opens in replace mode with both rows present. */
-export async function testFindReplaceOpens(component: Locator, _page: Page): Promise<void> {
-  await openReplacePanel(component);
-  // Find-row input plus replace-row input.
-  await expect(component.locator(INPUT)).toHaveCount(2);
-}
-
-/** Verify the two replace buttons render the localized labels, not a bare "All". */
-export async function testReplaceButtonsAreLocalized(
-  component: Locator,
-  _page: Page
-): Promise<void> {
-  await openReplacePanel(component);
-  await expect(component.getByRole("button", { name: "Replace", exact: true })).toBeVisible();
-  await expect(component.getByRole("button", { name: "Replace all", exact: true })).toBeVisible();
-}
+/** Verify the two replace buttons render localized labels, not a bare "All". */
+export const testReplaceButtonsAreLocalized: VizelBcScenario = async () => {
+  await openReplacePanel();
+  await expect.poll(() => findButtonByLabel("Replace"), { timeout: 5_000 }).not.toBeNull();
+  await expect.poll(() => findButtonByLabel("Replace all"), { timeout: 5_000 }).not.toBeNull();
+};
 
 /** Verify typing a term highlights every match and reports the count. */
-export async function testFindReportsMatchCount(component: Locator, _page: Page): Promise<void> {
-  await openReplacePanel(component);
-  await component.locator(INPUT).first().fill("alpha");
-  await expect(component.locator(COUNT)).toContainText("3");
-}
+export const testFindReportsMatchCount: VizelBcScenario = async () => {
+  await openReplacePanel();
 
-/** Verify "Replace" swaps a single match and leaves the rest. */
-export async function testReplaceOne(component: Locator, _page: Page): Promise<void> {
-  await openReplacePanel(component);
-  await component.locator(INPUT).first().fill("alpha");
-  await component.locator(INPUT).nth(1).fill("ZULU");
-  await component.getByRole("button", { name: "Replace", exact: true }).click();
+  const inputs = document.querySelectorAll<HTMLElement>(INPUT);
+  if (inputs.length === 0) throw new Error("expected at least one find-replace input");
+  await userEvent.fill(page.elementLocator(inputs[0]), "alpha");
 
-  await expect(component.locator(EDITOR)).toContainText("ZULU");
-  // Two "alpha" occurrences remain after replacing one.
-  await expect(component.locator(COUNT)).toContainText("2");
-}
+  await expect
+    .poll(() => document.querySelector(COUNT)?.textContent?.includes("3"), { timeout: 5_000 })
+    .toBe(true);
+};
+
+/** Verify "Replace" swaps a single match and leaves the remaining two. */
+export const testReplaceOne: VizelBcScenario = async () => {
+  await openReplacePanel();
+
+  const inputs = document.querySelectorAll<HTMLElement>(INPUT);
+  if (inputs.length < 2) throw new Error("expected two find-replace inputs");
+  await userEvent.fill(page.elementLocator(inputs[0]), "alpha");
+  await userEvent.fill(page.elementLocator(inputs[1]), "ZULU");
+
+  const replaceBtn = findButtonByLabel("Replace");
+  if (replaceBtn === null) throw new Error('expected a "Replace" button');
+  await userEvent.click(page.elementLocator(replaceBtn));
+
+  const editor = document.querySelector<HTMLElement>(EDITOR);
+  if (editor === null) throw new Error("expected a .vizel-editor element");
+  await expect.poll(() => editor.textContent?.includes("ZULU"), { timeout: 5_000 }).toBe(true);
+  // Two "alpha" occurrences remain after replacing the first.
+  await expect
+    .poll(() => document.querySelector(COUNT)?.textContent?.includes("2"), { timeout: 5_000 })
+    .toBe(true);
+};
 
 /** Verify "Replace all" swaps every remaining match. */
-export async function testReplaceAll(component: Locator, _page: Page): Promise<void> {
-  await openReplacePanel(component);
-  await component.locator(INPUT).first().fill("alpha");
-  await component.locator(INPUT).nth(1).fill("ZULU");
-  await component.getByRole("button", { name: "Replace all", exact: true }).click();
+export const testReplaceAll: VizelBcScenario = async () => {
+  await openReplacePanel();
 
-  const editor = component.locator(EDITOR);
-  await expect(editor).not.toContainText("alpha");
-  await expect(editor).toContainText("ZULU");
-}
+  const inputs = document.querySelectorAll<HTMLElement>(INPUT);
+  if (inputs.length < 2) throw new Error("expected two find-replace inputs");
+  await userEvent.fill(page.elementLocator(inputs[0]), "alpha");
+  await userEvent.fill(page.elementLocator(inputs[1]), "ZULU");
+
+  const replaceAllBtn = findButtonByLabel("Replace all");
+  if (replaceAllBtn === null) throw new Error('expected a "Replace all" button');
+  await userEvent.click(page.elementLocator(replaceAllBtn));
+
+  const editor = document.querySelector<HTMLElement>(EDITOR);
+  if (editor === null) throw new Error("expected a .vizel-editor element");
+  await expect
+    .poll(() => editor.textContent?.includes("alpha") === false, { timeout: 5_000 })
+    .toBe(true);
+  await expect.poll(() => editor.textContent?.includes("ZULU"), { timeout: 5_000 }).toBe(true);
+};

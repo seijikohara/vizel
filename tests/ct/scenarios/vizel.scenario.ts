@@ -1,108 +1,164 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, pressKeyChord, userEvent, type VizelBcScenario } from "./_vitest-context";
+
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously
+// after the framework renders, so poll until the element appears. Allow 15 s:
+// the full nine-instance matrix saturates the machine and the async mount can
+// exceed the default 1 s budget.
+async function resolveEditor(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(".vizel-editor"), { timeout: 15_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(".vizel-editor");
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
+}
+
+// Resolve the bubble menu element. The bubble menu is attached to the DOM on
+// mount but becomes visible only after a text selection is made.
+async function resolveBubbleMenu(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector("[data-vizel-bubble-menu]"), { timeout: 5_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>("[data-vizel-bubble-menu]");
+  if (el === null) throw new Error("expected a [data-vizel-bubble-menu] element");
+  return el;
+}
+
+// Type text into the editor and select all so the bubble menu becomes visible.
+async function selectTextInEditor(editorEl: HTMLElement): Promise<void> {
+  const editorLocator = page.elementLocator(editorEl);
+  await userEvent.click(editorLocator);
+  await userEvent.type(editorLocator, "Select this text");
+  await pressKeyChord("Mod", "a");
+  await expect
+    .poll(() => document.querySelector("[data-vizel-bubble-menu]"), { timeout: 5_000 })
+    .not.toBeNull();
+}
 
 /**
- * Shared test scenarios for the Vizel all-in-one component.
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
+ * Verify the Vizel all-in-one component renders with an editor and a bubble menu.
+ *
+ * The bubble menu element is attached to the DOM on mount (not detached) even
+ * when no selection is active; the editor must be visible and editable.
  */
+export const testVizelRenders: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
+  expect(el.getAttribute("contenteditable")).toBe("true");
 
-/** Verify the Vizel component renders with editor and bubble menu */
-export async function testVizelRenders(_component: Locator, page: Page): Promise<void> {
-  // Vizel root should be present - use page.locator since component IS the root
-  const root = page.locator("[data-vizel-root]");
-  await expect(root).toBeVisible();
+  // The bubble menu renders into a portal on document.body. The Playwright
+  // original asserts `toBeAttached`, which maps to `not.toBeNull()` here.
+  await expect
+    .poll(() => document.querySelector("[data-vizel-bubble-menu]"), { timeout: 5_000 })
+    .not.toBeNull();
+};
 
-  // Editor should be rendered
-  const editor = root.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
-  await expect(editor).toHaveAttribute("contenteditable", "true");
+/**
+ * Verify the placeholder attribute is propagated to the editor node.
+ *
+ * The placeholder renders as a CSS `::before` pseudo-element driven by the
+ * `data-placeholder` attribute on the paragraph node, so the scenario asserts
+ * the attribute value rather than visible text content.
+ */
+export const testVizelPlaceholder = async (expectedPlaceholder: string): Promise<void> => {
+  const el = await resolveEditor();
+  await expect
+    .poll(() => el.querySelector("[data-placeholder]")?.getAttribute("data-placeholder"), {
+      timeout: 5_000,
+    })
+    .toBe(expectedPlaceholder);
+};
 
-  // Bubble menu should be present (hidden by default) - use page.locator for portal
-  const bubbleMenu = page.locator("[data-vizel-bubble-menu]");
-  await expect(bubbleMenu).toBeAttached();
-}
+/**
+ * Verify the Vizel component accepts typed text.
+ *
+ * The scenario clicks the editor to place focus, types a sentence, and then
+ * asserts the sentence is present in the editor's text content.
+ */
+export const testVizelTyping: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editorLocator = page.elementLocator(el);
+  await userEvent.click(editorLocator);
+  await userEvent.type(editorLocator, "Hello from Vizel!");
+  await expect.element(editorLocator).toHaveTextContent("Hello from Vizel!");
+};
 
-/** Verify the Vizel component works with placeholder */
-export async function testVizelPlaceholder(
-  _component: Locator,
-  page: Page,
-  expectedPlaceholder: string
-): Promise<void> {
-  const editor = page.locator("[data-vizel-root] .vizel-editor");
-  await expect(editor.locator("[data-placeholder]")).toHaveAttribute(
-    "data-placeholder",
-    expectedPlaceholder
-  );
-}
+/**
+ * Verify the bubble menu becomes visible after a text selection is made.
+ *
+ * The bubble menu renders into a portal on `document.body`, so the scenario
+ * queries the document directly rather than the fixture root.
+ */
+export const testVizelBubbleMenuOnSelection: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+  await expect.element(page.elementLocator(bubbleMenu)).toBeVisible();
+};
 
-/** Verify typing in the Vizel component */
-export async function testVizelTyping(_component: Locator, page: Page): Promise<void> {
-  const editor = page.locator("[data-vizel-root] .vizel-editor");
-  await editor.click();
-  await page.keyboard.type("Hello from Vizel!");
-  await expect(editor).toContainText("Hello from Vizel!");
-}
+/**
+ * Verify the Vizel component renders without a bubble menu when `showBubbleMenu`
+ * is `false`.
+ *
+ * The Playwright original asserts `not.toBeAttached`, meaning the element is
+ * absent from the DOM. Here the scenario confirms the selector returns null.
+ */
+export const testVizelWithoutBubbleMenu: VizelBcScenario = async () => {
+  await resolveEditor();
+  // When showBubbleMenu is false the portal element is never mounted. Poll
+  // briefly to confirm absence rather than checking once (the fixture mounts
+  // asynchronously and the element could still be arriving).
+  await expect
+    .poll(() => document.querySelector("[data-vizel-bubble-menu]"), { timeout: 3_000 })
+    .toBeNull();
+};
 
-/** Verify bubble menu appears on text selection */
-export async function testVizelBubbleMenuOnSelection(
-  _component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = page.locator("[data-vizel-root] .vizel-editor");
-  await editor.click();
-  await page.keyboard.type("Select this text");
+/**
+ * Verify the slash command menu appears when the user types `/` in the editor.
+ *
+ * The slash menu renders into a portal on `document.body`; the scenario polls
+ * the document for the selector that Vizel mounts on slash-menu open.
+ */
+export const testVizelSlashMenu: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editorLocator = page.elementLocator(el);
+  await userEvent.click(editorLocator);
+  await userEvent.type(editorLocator, "/");
+  await expect
+    .poll(() => document.querySelector("[data-vizel-slash-menu]"), { timeout: 5_000 })
+    .not.toBeNull();
+  const slashMenu = document.querySelector<HTMLElement>("[data-vizel-slash-menu]");
+  if (slashMenu === null) throw new Error("expected a [data-vizel-slash-menu] element");
+  await expect.element(page.elementLocator(slashMenu)).toBeVisible();
+};
 
-  // Select all text
-  await page.keyboard.press("ControlOrMeta+a");
+/**
+ * Verify the bubble menu bold button wraps the selected text in `<strong>`.
+ *
+ * The scenario types text, selects all, waits for the bubble menu, clicks the
+ * bold action, and then checks for a `<strong>` element in the editor.
+ */
+export const testVizelBubbleMenuFormatting: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  const editorLocator = page.elementLocator(editorEl);
+  await userEvent.click(editorLocator);
+  await userEvent.type(editorLocator, "Format this");
 
-  // Wait for bubble menu to become visible - use page.locator for portal
-  const bubbleMenu = page.locator("[data-vizel-bubble-menu]");
-  await expect(bubbleMenu).toBeVisible({ timeout: 3000 });
-}
+  await pressKeyChord("Mod", "a");
 
-/** Verify Vizel without bubble menu when showBubbleMenu is false */
-export async function testVizelWithoutBubbleMenu(_component: Locator, page: Page): Promise<void> {
-  // Editor should be rendered
-  const editor = page.locator("[data-vizel-root] .vizel-editor");
-  await expect(editor).toBeVisible();
+  await expect
+    .poll(() => document.querySelector("[data-vizel-bubble-menu]"), { timeout: 5_000 })
+    .not.toBeNull();
+  const bubbleMenu = document.querySelector<HTMLElement>("[data-vizel-bubble-menu]");
+  if (bubbleMenu === null) throw new Error("expected a [data-vizel-bubble-menu] element");
+  await expect.element(page.elementLocator(bubbleMenu)).toBeVisible();
 
-  // Bubble menu should NOT be present - use page.locator for portal
-  const bubbleMenu = page.locator("[data-vizel-bubble-menu]");
-  await expect(bubbleMenu).not.toBeAttached();
-}
+  const boldButton = bubbleMenu.querySelector<HTMLElement>('[data-action="bold"]');
+  if (boldButton === null) throw new Error("expected a bold button in the bubble menu");
+  await userEvent.click(page.elementLocator(boldButton));
 
-/** Verify slash menu works in Vizel component */
-export async function testVizelSlashMenu(_component: Locator, page: Page): Promise<void> {
-  const editor = page.locator("[data-vizel-root] .vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/");
-
-  // Slash menu should appear - use page.locator for portal
-  const slashMenu = page.locator("[data-vizel-slash-menu]");
-  await expect(slashMenu).toBeVisible({ timeout: 3000 });
-}
-
-/** Verify formatting via bubble menu in Vizel component */
-export async function testVizelBubbleMenuFormatting(
-  _component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = page.locator("[data-vizel-root] .vizel-editor");
-  await editor.click();
-  await page.keyboard.type("Format this");
-
-  // Select all text
-  await page.keyboard.press("ControlOrMeta+a");
-
-  // Wait for bubble menu to become visible (auto-retries, no waitForTimeout needed)
-  const bubbleMenu = page.locator("[data-vizel-bubble-menu]");
-  await expect(bubbleMenu).toBeVisible({ timeout: 5000 });
-
-  // Click bold button - use data-action attribute
-  const boldButton = bubbleMenu.locator('[data-action="bold"]');
-  await boldButton.click();
-
-  // Verify text is bold
-  const bold = editor.locator("strong");
-  await expect(bold).toContainText("Format this");
-}
+  await expect
+    .poll(() => editorEl.querySelector("strong")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Format this");
+};

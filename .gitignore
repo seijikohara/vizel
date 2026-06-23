@@ -59,6 +59,9 @@ CLAUDE.local.md
 # Claude Code transient lock file
 .claude/scheduled_tasks.lock
 
-# Vitest browser failure screenshots (generated)
-tests/ct/*/specs-bc/__screenshots__/
-tests/ct/*/.vitest-attachments/
+# Vitest browser failure screenshots and attachments (generated).
+# The visual suite's committed baselines under tests/visual/specs/__screenshots__
+# are intentionally tracked and excluded from these patterns.
+tests/ct/*/specs/__screenshots__/
+tests/a11y/*/specs/__screenshots__/
+tests/**/.vitest-attachments/

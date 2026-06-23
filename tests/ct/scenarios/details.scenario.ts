@@ -1,154 +1,182 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 /**
- * Shared test scenarios for Details (collapsible content) functionality.
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
+ * Shared, framework-agnostic Vitest Browser scenarios for the Details
+ * (collapsible content) functionality.
+ *
+ * The slash menu renders as a portal appended to document.body, so menu
+ * queries target document directly rather than a fixture-scoped locator.
  */
 
-/** Helper to type slash command and select from menu */
-async function selectSlashCommand(page: Page, command: string): Promise<void> {
-  await page.keyboard.type(`/${command}`);
-  // Wait for slash menu to appear
-  await expect(page.locator(".vizel-slash-menu")).toBeVisible();
-  await page.keyboard.press("Enter");
+const SLASH_MENU = "[data-vizel-slash-menu]";
+const EDITOR = ".vizel-editor";
+
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously
+// after the framework renders, so poll until the element appears rather than
+// querying once.
+async function resolveEditor(): Promise<HTMLElement> {
+  // Allow a generous window: the full three-browser matrix runs nine browser
+  // instances in parallel, and under that contention the asynchronous Tiptap
+  // mount can exceed the default 1s poll budget before the editor view appears.
+  await expect.poll(() => document.querySelector(EDITOR), { timeout: 15_000 }).not.toBeNull();
+  const el = document.querySelector<HTMLElement>(EDITOR);
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
 }
 
-/** Verify Details can be inserted via slash command */
-export async function testDetailsInsertedViaSlashCommand(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  await selectSlashCommand(page, "details");
-
-  // Verify details block was created
-  const details = editor.locator(".vizel-details");
-  await expect(details).toBeVisible();
-
-  // Verify summary is present
-  const summary = editor.locator(".vizel-details-summary");
-  await expect(summary).toBeVisible();
-
-  // Verify content area exists (may be hidden when collapsed)
-  const content = editor.locator(".vizel-details-content");
-  await expect(content).toBeAttached();
+// Type the slash command keyword and press Enter to confirm the selection.
+// The slash menu appears asynchronously after typing "/", so poll until visible
+// before committing the selection.
+async function selectSlashCommand(editorEl: HTMLElement, command: string): Promise<void> {
+  const editor = page.elementLocator(editorEl);
+  await userEvent.click(editor);
+  await userEvent.keyboard(`/${command}`);
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("{Enter}");
 }
 
-/** Verify Details block renders with correct structure */
-export async function testDetailsBlockStructure(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify a Details block inserts via the slash command "/details". */
+export const testDetailsInsertedViaSlashCommand: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await selectSlashCommand(el, "details");
 
-  await selectSlashCommand(page, "details");
+  // The details block must appear after the slash command executes.
+  await expect.poll(() => el.querySelector(".vizel-details"), { timeout: 5_000 }).not.toBeNull();
+  const details = el.querySelector<HTMLElement>(".vizel-details");
+  if (details === null) throw new Error("expected a .vizel-details element");
+  await expect.element(page.elementLocator(details)).toBeVisible();
 
-  // Verify the details element structure
-  const details = editor.locator(".vizel-details");
-  await expect(details).toBeVisible();
+  // The summary child must be present and visible.
+  await expect
+    .poll(() => el.querySelector(".vizel-details-summary"), { timeout: 5_000 })
+    .not.toBeNull();
+  const summary = el.querySelector<HTMLElement>(".vizel-details-summary");
+  if (summary === null) throw new Error("expected a .vizel-details-summary element");
+  await expect.element(page.elementLocator(summary)).toBeVisible();
 
-  // Summary should be a clickable element
-  const summary = editor.locator(".vizel-details-summary");
-  await expect(summary).toBeVisible();
+  // The content area must be attached to the DOM (it may be hidden when collapsed).
+  await expect
+    .poll(() => el.querySelector(".vizel-details-content"), { timeout: 5_000 })
+    .not.toBeNull();
+};
 
-  // Content area should exist
-  const content = editor.locator(".vizel-details-content");
-  await expect(content).toBeAttached();
-}
+/** Verify the Details block renders with the correct element structure. */
+export const testDetailsBlockStructure: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await selectSlashCommand(el, "details");
 
-/** Verify Details can be toggled open/closed */
-export async function testDetailsToggle(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+  await expect.poll(() => el.querySelector(".vizel-details"), { timeout: 5_000 }).not.toBeNull();
+  const details = el.querySelector<HTMLElement>(".vizel-details");
+  if (details === null) throw new Error("expected a .vizel-details element");
+  await expect.element(page.elementLocator(details)).toBeVisible();
 
-  await selectSlashCommand(page, "details");
+  // Summary must be a clickable element rendered inside the details block.
+  const summary = el.querySelector<HTMLElement>(".vizel-details-summary");
+  if (summary === null) throw new Error("expected a .vizel-details-summary element");
+  await expect.element(page.elementLocator(summary)).toBeVisible();
 
-  const details = editor.locator(".vizel-details");
-  const summary = editor.locator(".vizel-details-summary");
-  const content = editor.locator(".vizel-details-content");
+  // Content area must exist in the DOM (visibility depends on open state).
+  const content = el.querySelector<HTMLElement>(".vizel-details-content");
+  if (content === null) throw new Error("expected a .vizel-details-content element");
+};
 
-  // Ensure summary is visible first
-  await expect(summary).toBeVisible();
+/** Verify clicking the summary toggles the Details block open/closed. */
+export const testDetailsToggle: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await selectSlashCommand(el, "details");
 
-  // Click summary to toggle - content visibility should change
-  // First, ensure content is attached
-  await expect(content).toBeAttached();
+  await expect.poll(() => el.querySelector(".vizel-details"), { timeout: 5_000 }).not.toBeNull();
+  const details = el.querySelector<HTMLElement>(".vizel-details");
+  if (details === null) throw new Error("expected a .vizel-details element");
+  const summary = el.querySelector<HTMLElement>(".vizel-details-summary");
+  if (summary === null) throw new Error("expected a .vizel-details-summary element");
+  const content = el.querySelector<HTMLElement>(".vizel-details-content");
+  if (content === null) throw new Error("expected a .vizel-details-content element");
 
-  // Click to toggle
-  await summary.click();
+  await expect.element(page.elementLocator(summary)).toBeVisible();
 
-  // The details block should still be visible (auto-retrying assertion)
-  await expect(details).toBeVisible();
-}
+  // Click the summary to toggle the open state.
+  await userEvent.click(page.elementLocator(summary));
 
-/** Verify content can be added to Details summary */
-export async function testDetailsSummaryEditable(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+  // The details block itself remains visible regardless of open state.
+  await expect.element(page.elementLocator(details)).toBeVisible();
+};
 
-  await selectSlashCommand(page, "details");
+/** Verify the Details summary accepts typed text as editable content. */
+export const testDetailsSummaryEditable: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await selectSlashCommand(el, "details");
 
-  const summary = editor.locator(".vizel-details-summary");
-  await summary.click();
+  await expect
+    .poll(() => el.querySelector(".vizel-details-summary"), { timeout: 5_000 })
+    .not.toBeNull();
+  const summary = el.querySelector<HTMLElement>(".vizel-details-summary");
+  if (summary === null) throw new Error("expected a .vizel-details-summary element");
 
-  // Type some text in the summary
-  await page.keyboard.type("Click to expand");
+  await userEvent.click(page.elementLocator(summary));
+  await userEvent.keyboard("Click to expand");
 
-  // Verify the text was added
-  await expect(summary).toContainText("Click to expand");
-}
+  await expect
+    .poll(() => summary.textContent?.includes("Click to expand") ?? false, { timeout: 5_000 })
+    .toBe(true);
+};
 
-/** Verify content can be added to Details content area */
-export async function testDetailsContentEditable(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/**
+ * Verify the Details content area accepts typed text as editable content.
+ *
+ * Tiptap's Details extension hides the content via an attribute rather than
+ * the native `<details>` collapse mechanism, so the scenario manually removes
+ * the hidden attribute to make the content area visible before clicking into it.
+ */
+export const testDetailsContentEditable: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await selectSlashCommand(el, "details");
 
-  await selectSlashCommand(page, "details");
+  await expect.poll(() => el.querySelector(".vizel-details"), { timeout: 5_000 }).not.toBeNull();
+  const details = el.querySelector<HTMLElement>(".vizel-details");
+  if (details === null) throw new Error("expected a .vizel-details element");
+  const summary = el.querySelector<HTMLElement>(".vizel-details-summary");
+  if (summary === null) throw new Error("expected a .vizel-details-summary element");
+  const content = el.querySelector<HTMLElement>(".vizel-details-content");
+  if (content === null) throw new Error("expected a .vizel-details-content element");
 
-  const details = editor.locator(".vizel-details");
-  const summary = editor.locator(".vizel-details-summary");
-  const content = editor.locator(".vizel-details-content");
+  await expect.element(page.elementLocator(summary)).toBeVisible();
 
-  // Ensure summary is visible first
-  await expect(summary).toBeVisible();
+  // Force the details block open and remove the hidden attribute so the
+  // content area is interactable. Tiptap manages open/hidden state via
+  // attributes rather than the native <details> element, so direct DOM
+  // manipulation is the only reliable way to expose the area in a test.
+  details.setAttribute("open", "true");
+  content.removeAttribute("hidden");
 
-  // Wait for content to be attached
-  await expect(content).toBeAttached();
+  await expect.element(page.elementLocator(content)).toBeVisible();
 
-  // Expand the details block
-  // Tiptap's Details extension uses a hidden attribute on content, not native details behavior
-  await details.evaluate((el) => el.setAttribute("open", "true"));
-  await content.evaluate((el) => el.removeAttribute("hidden"));
+  await userEvent.click(page.elementLocator(content));
+  await userEvent.keyboard("This is the hidden content");
 
-  // Now content should be visible (auto-retrying assertion)
-  await expect(content).toBeVisible();
+  await expect
+    .poll(() => content.textContent?.includes("This is the hidden content") ?? false, {
+      timeout: 5_000,
+    })
+    .toBe(true);
+};
 
-  // Click on the content area to focus it
-  await content.click();
+/** Verify the Details block and its children carry the expected CSS classes. */
+export const testDetailsCssClasses: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await selectSlashCommand(el, "details");
 
-  // Type in the content area
-  await page.keyboard.type("This is the hidden content");
+  await expect.poll(() => el.querySelector(".vizel-details"), { timeout: 5_000 }).not.toBeNull();
+  const details = el.querySelector<HTMLElement>(".vizel-details");
+  if (details === null) throw new Error("expected a .vizel-details element");
+  await expect.element(page.elementLocator(details)).toBeVisible();
 
-  // Verify the text was added
-  await expect(content).toContainText("This is the hidden content");
-}
+  const summary = el.querySelector<HTMLElement>(".vizel-details-summary");
+  if (summary === null) throw new Error("expected a .vizel-details-summary element");
+  await expect.element(page.elementLocator(summary)).toBeVisible();
 
-/** Verify Details block has proper CSS classes */
-export async function testDetailsCssClasses(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  await selectSlashCommand(page, "details");
-
-  // Check all required CSS classes
-  const details = editor.locator(".vizel-details");
-  await expect(details).toBeVisible();
-
-  const summary = editor.locator(".vizel-details-summary");
-  await expect(summary).toBeVisible();
-
-  // Content exists (may be hidden when collapsed)
-  const content = editor.locator(".vizel-details-content");
-  await expect(content).toBeAttached();
-}
+  // Content exists in the DOM (may be hidden when collapsed).
+  const content = el.querySelector<HTMLElement>(".vizel-details-content");
+  if (content === null) throw new Error("expected a .vizel-details-content element");
+};

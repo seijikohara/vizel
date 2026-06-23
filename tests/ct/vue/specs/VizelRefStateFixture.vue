@@ -10,16 +10,16 @@ const props = withDefaults(defineProps<Props>(), {
   initialContent: "Test content",
 });
 
-// Store editor in state (triggers re-renders when editor is set)
+// Store editor in a shallowRef so Vue's reactivity tracks its identity. The
+// `useVizelState` composable returns a ref that increments on every Tiptap
+// transaction; referencing `updateCount.value` inside the computed creates the
+// dependency that re-runs `getVizelEditorState` on each update.
 const editor = shallowRef<Editor | null>(null);
 
-// Track editor state for character/word count
-// The updateCount ref changes on every editor transaction
 const updateCount = useVizelState(() => editor.value);
 
-// Use updateCount in computed to create dependency
 const editorState = computed(() => {
-  void updateCount.value; // Create dependency on updateCount
+  void updateCount.value;
   return getVizelEditorState(editor.value);
 });
 

@@ -1,115 +1,132 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
-/**
- * Shared scenarios for the multi-block range selection extension.
- * The fixture exposes the active block range through a
- * `[data-testid="multi-block-state"]` element so the scenarios can
- * assert plugin state without driving the UI.
- *
- * The editor element is `.vizel-editor` — the contenteditable element
- * itself carries that class, not a wrapper.
- */
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously,
+// so poll until the element appears. `.vizel-editor` is a div, not an ARIA
+// textbox, so the query uses a class selector.
+async function resolveEditor(): Promise<HTMLElement> {
+  // Allow a generous window: the concurrent three-browser matrix saturates the
+  // machine and the asynchronous Tiptap mount can exceed the default 1 s budget.
+  await expect
+    .poll(() => document.querySelector(".vizel-editor"), { timeout: 15_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(".vizel-editor");
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
+}
 
-/**
- * Drive a `TextSelection` from `from` to `to` on the editor by reaching
- * through Tiptap's command bus. Playwright's `keyboard.press` for
- * `ControlOrMeta+Home` / `Shift+End` is browser-dependent (WebKit
- * collapses some chord combinations on macOS), so the scenarios drive
- * selection state through the editor command rather than synthetic
- * keystrokes. The fixture exposes the editor on
- * `window.vizelTestEditor` for this purpose.
- */
-async function applyEditorSelection(page: Page, from: number, to: number): Promise<void> {
-  await page.evaluate(
-    ({ from: f, to: t }) => {
-      const editor = (
-        window as unknown as {
-          vizelTestEditor?: {
-            commands: { setTextSelection: (range: { from: number; to: number }) => boolean };
-            view: { focus: () => void };
-          };
-        }
-      ).vizelTestEditor;
-      if (!editor) throw new Error("vizelTestEditor not exposed by fixture");
-      editor.view.focus();
-      editor.commands.setTextSelection({ from: f, to: t });
-    },
-    { from, to }
-  );
+// Minimal view of the editor instance the fixture publishes on
+// `window.vizelTestEditor`. The scenarios reach it through this narrow shape
+// rather than importing a framework type into the neutral scenario layer.
+interface VizelTestEditor {
+  commands: {
+    setTextSelection: (range: { from: number; to: number }) => boolean;
+  };
+  view: { focus: () => void };
+  state: { doc: { content: { size: number } } };
+}
+
+const isVizelTestEditor = (value: unknown): value is VizelTestEditor =>
+  typeof value === "object" &&
+  value !== null &&
+  "commands" in value &&
+  "view" in value &&
+  "state" in value;
+
+// Resolve the editor instance the fixture publishes on `window.vizelTestEditor`.
+// The fixture assigns the instance inside its mount effect after Tiptap mounts,
+// so poll rather than read once.
+async function resolveTestEditor(): Promise<VizelTestEditor> {
+  await expect
+    .poll(() => isVizelTestEditor((window as { vizelTestEditor?: unknown }).vizelTestEditor), {
+      timeout: 15_000,
+    })
+    .toBe(true);
+  const candidate = (window as { vizelTestEditor?: unknown }).vizelTestEditor;
+  if (!isVizelTestEditor(candidate)) {
+    throw new Error("expected window.vizelTestEditor; mount a fixture that exposes the editor");
+  }
+  return candidate;
+}
+
+// Resolve the [data-testid="multi-block-state"] element the fixture renders.
+async function resolveStateEl(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector("[data-testid='multi-block-state']"), { timeout: 5_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>("[data-testid='multi-block-state']");
+  if (el === null) throw new Error("expected [data-testid='multi-block-state']");
+  return el;
+}
+
+// Drive a TextSelection from `from` to `to` through Tiptap's command bus.
+// Synthetic keystrokes for chord combinations (ControlOrMeta+Home, Shift+End)
+// behave differently across browsers, so the selection is applied via the
+// editor command instead of key events. This matches the Playwright original.
+function applyEditorSelection(editor: VizelTestEditor, from: number, to: number): void {
+  editor.view.focus();
+  editor.commands.setTextSelection({ from, to });
 }
 
 /**
- * Resolve the document end position via the exposed editor instance.
+ * Verify a text selection spanning two paragraphs activates the multi-block
+ * range and decorates each block with `data-vizel-block-selected`.
  */
-function readDocSize(page: Page): Promise<number> {
-  return page.evaluate(() => {
-    const editor = (
-      window as unknown as {
-        vizelTestEditor?: { state: { doc: { content: { size: number } } } };
-      }
-    ).vizelTestEditor;
-    if (!editor) throw new Error("vizelTestEditor not exposed by fixture");
-    return editor.state.doc.content.size;
-  });
-}
+export const testShiftDownSelectsTwoBlocks: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  const stateEl = await resolveStateEl();
+
+  await userEvent.click(editor);
+  await userEvent.type(editor, "First paragraph");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second paragraph");
+
+  // Select the full document programmatically — driving the same range through
+  // synthetic keystrokes is fragile across browsers.
+  const testEditor = await resolveTestEditor();
+  const docSize = testEditor.state.doc.content.size;
+  applyEditorSelection(testEditor, 1, docSize - 1);
+
+  await expect.poll(() => stateEl.textContent, { timeout: 5_000 }).toContain("blocks=2");
+
+  // Each paragraph in the selection receives the decoration attribute.
+  await expect
+    .poll(() => el.querySelectorAll("p[data-vizel-block-selected='true']").length, {
+      timeout: 5_000,
+    })
+    .toBe(2);
+};
 
 /**
- * Verify a text selection that spans two paragraphs activates the
- * multi-block range and decorates each block with
- * `data-vizel-block-selected`.
+ * Verify Backspace on an active multi-block range deletes every block in a
+ * single transaction, leaving the third paragraph intact.
  */
-export async function testShiftDownSelectsTwoBlocks(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const state = component.locator("[data-testid='multi-block-state']");
+export const testBackspaceDeletesMultiBlockRange: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  const stateEl = await resolveStateEl();
 
-  await editor.click();
-  await page.keyboard.type("First paragraph");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second paragraph");
+  await userEvent.click(editor);
+  await userEvent.type(editor, "First paragraph");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second paragraph");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Third paragraph");
 
-  // Select the full document by setting the selection programmatically
-  // — driving the same range through synthetic keystrokes is fragile
-  // across browsers in Playwright.
-  const docSize = await readDocSize(page);
-  await applyEditorSelection(page, 1, docSize - 1);
+  // Select the first two paragraphs only — the third must survive Backspace.
+  // The first paragraph spans positions 1..16 ("First paragraph" is 15 chars),
+  // the second 18..34 ("Second paragraph" is 16 chars). Selecting (1, 34) covers
+  // both block bodies but stops before the third paragraph.
+  const testEditor = await resolveTestEditor();
+  applyEditorSelection(testEditor, 1, 34);
+  await expect.poll(() => stateEl.textContent, { timeout: 5_000 }).toContain("blocks=2");
 
-  await expect(state).toContainText("blocks=2");
+  await userEvent.keyboard("{Backspace}");
 
-  const decorated = editor.locator("p[data-vizel-block-selected='true']");
-  await expect(decorated).toHaveCount(2);
-}
-
-/**
- * Verify Backspace on an active multi-block range deletes every block
- * in a single transaction.
- */
-export async function testBackspaceDeletesMultiBlockRange(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const state = component.locator("[data-testid='multi-block-state']");
-
-  await editor.click();
-  await page.keyboard.type("First paragraph");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second paragraph");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Third paragraph");
-
-  // Select the first two paragraphs only — the third must survive
-  // Backspace. The first paragraph spans positions 1..16 ("First
-  // paragraph" is 15 chars), the second 18..34 ("Second paragraph" is
-  // 16 chars). Selecting (1, 34) hits both block bodies but stops
-  // before the third paragraph.
-  await applyEditorSelection(page, 1, 34);
-  await expect(state).toContainText("blocks=2");
-
-  await page.keyboard.press("Backspace");
-
-  // Only the trailing paragraph remains.
-  const paragraphs = editor.locator("p");
-  await expect(paragraphs).toHaveCount(1);
-  await expect(paragraphs.first()).toContainText("Third paragraph");
-}
+  // Only the trailing paragraph remains after the multi-block delete.
+  await expect.poll(() => el.querySelectorAll("p").length, { timeout: 5_000 }).toBe(1);
+  await expect
+    .poll(() => el.querySelector("p")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Third paragraph");
+};

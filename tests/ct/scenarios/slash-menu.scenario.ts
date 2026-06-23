@@ -1,288 +1,373 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 /**
- * Shared test scenarios for SlashMenu functionality.
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
+ * Shared, framework-agnostic Vitest Browser scenarios for the slash menu.
  *
- * Note: SlashMenu is rendered as a popup appended to document.body,
- * so we use page.locator() instead of component.locator() for the menu.
+ * The slash menu renders as a popup appended to document.body rather than
+ * inside the editor component tree, so all menu queries target document
+ * directly rather than a fixture-scoped locator.
  */
 
-const SLASH_MENU_SELECTOR = "[data-vizel-slash-menu]";
+const SLASH_MENU = "[data-vizel-slash-menu]";
+const EDITOR = ".vizel-editor";
 
-/** Verify slash menu appears when typing "/" */
-export async function testSlashMenuAppears(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/");
-
-  // SlashMenu is rendered in document.body, not inside the component
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
+// Resolve the editor contenteditable root. Tiptap mounts asynchronously, so
+// poll until the element appears rather than querying once.
+async function resolveEditor(): Promise<HTMLElement> {
+  // Allow a generous window: the full three-browser matrix runs nine browser
+  // instances in parallel, and the asynchronous Tiptap mount can exceed the
+  // default 1s poll budget under that contention.
+  await expect.poll(() => document.querySelector(EDITOR), { timeout: 15_000 }).not.toBeNull();
+  const el = document.querySelector<HTMLElement>(EDITOR);
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
 }
 
-/** Verify slash menu hides when pressing Escape */
-export async function testSlashMenuEscape(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/");
-
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
-
-  // Escape closes the menu via Backspace to delete the "/" character
-  await page.keyboard.press("Backspace");
-  await expect(slashMenu).not.toBeVisible();
+// Open the slash menu by clicking the editor and typing "/".
+async function openSlashMenu(): Promise<void> {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("/");
+  // The slash menu renders to document.body asynchronously; poll until visible.
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
 }
 
-/** Verify slash menu filters items when typing */
-export async function testSlashMenuFiltering(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/head");
+/** Verify the slash menu appears when typing "/". */
+export const testSlashMenuAppears: VizelBcScenario = async () => {
+  await openSlashMenu();
+  const menu = document.querySelector<HTMLElement>(SLASH_MENU);
+  if (menu === null) throw new Error("expected a [data-vizel-slash-menu] element");
+  await expect.element(page.elementLocator(menu)).toBeVisible();
+};
 
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
+/** Verify the slash menu hides when deleting the "/" character with Backspace. */
+export const testSlashMenuEscape: VizelBcScenario = async () => {
+  await openSlashMenu();
+  const menu = document.querySelector<HTMLElement>(SLASH_MENU);
+  if (menu === null) throw new Error("expected a [data-vizel-slash-menu] element");
+  await expect.element(page.elementLocator(menu)).toBeVisible();
 
-  // Should show heading items - look for menu items containing "Heading"
-  const headingItem = slashMenu.locator(".vizel-slash-menu-item", {
-    hasText: "Heading",
-  });
-  await expect(headingItem.first()).toBeVisible();
-}
+  // Pressing Backspace deletes the "/" that triggered the menu; the menu closes.
+  await userEvent.keyboard("{Backspace}");
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).toBeNull();
+};
 
-/** Verify selecting heading from slash menu */
-export async function testSlashMenuHeading(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify the slash menu filters items when additional characters are typed. */
+export const testSlashMenuFiltering: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("/head");
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
 
-  // Type "/" to open slash menu
-  await page.keyboard.type("/");
+  // At least one menu item matching "Heading" must be visible after filtering.
+  await expect
+    .poll(
+      () => {
+        const items = document.querySelectorAll<HTMLElement>(".vizel-slash-menu-item");
+        return Array.from(items).some((item) => item.textContent?.includes("Heading"));
+      },
+      { timeout: 5_000 }
+    )
+    .toBe(true);
+};
 
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
+/** Verify clicking "Heading 1" in the slash menu inserts an H1 block. */
+export const testSlashMenuHeading: VizelBcScenario = async () => {
+  await openSlashMenu();
 
-  // Find and click "Heading 1" item directly
-  const headingItem = slashMenu.locator(".vizel-slash-menu-item", {
-    hasText: "Heading 1",
-  });
-  await headingItem.click();
+  // Find and click the "Heading 1" menu item.
+  await expect
+    .poll(
+      () => {
+        const items = document.querySelectorAll<HTMLElement>(".vizel-slash-menu-item");
+        return Array.from(items).find((item) => item.textContent?.includes("Heading 1")) ?? null;
+      },
+      { timeout: 5_000 }
+    )
+    .not.toBeNull();
+  const headingItem = Array.from(
+    document.querySelectorAll<HTMLElement>(".vizel-slash-menu-item")
+  ).find((item) => item.textContent?.includes("Heading 1"));
+  if (headingItem === undefined) throw new Error('expected a "Heading 1" slash menu item');
+  await userEvent.click(page.elementLocator(headingItem));
 
-  // Wait for menu to close and heading to be inserted
-  await expect(slashMenu).not.toBeVisible();
+  // The menu closes and an H1 appears in the editor.
+  const el = document.querySelector<HTMLElement>(EDITOR);
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  await expect.poll(() => el.querySelector("h1"), { timeout: 5_000 }).not.toBeNull();
 
-  // Ensure editor has focus and wait for the heading to exist
-  const heading = editor.locator("h1");
-  await expect(heading).toBeVisible();
+  // Type content into the new heading block.
+  await userEvent.click(page.elementLocator(el));
+  await userEvent.keyboard("My Heading");
+  await expect
+    .poll(() => el.querySelector("h1")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("My Heading");
+};
 
-  // Click editor to ensure focus, then type heading content
-  await editor.click();
-  await page.keyboard.type("My Heading");
+/**
+ * Verify typing "/bullet" and pressing Enter inserts a bullet list.
+ *
+ * The first Enter key selects the highlighted menu item and converts the
+ * current paragraph to a bullet-list node.
+ */
+export const testSlashMenuBulletList: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("/bullet");
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("{Enter}");
 
-  await expect(heading).toContainText("My Heading");
-}
+  // Type content to confirm the bullet list is active.
+  await userEvent.keyboard("List item");
+  await expect.poll(() => el.querySelector("ul"), { timeout: 5_000 }).not.toBeNull();
+};
 
-/** Verify selecting bullet list from slash menu */
-export async function testSlashMenuBulletList(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/bullet");
-  await page.keyboard.press("Enter");
+/**
+ * Verify typing "/numbered" and pressing Enter inserts an ordered list.
+ *
+ * The keyword "numbered" matches the "Numbered List" (ol) item in the menu.
+ */
+export const testSlashMenuOrderedList: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("/numbered");
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("{Enter}");
 
-  // Type list content
-  await page.keyboard.type("List item");
+  await userEvent.keyboard("List item");
+  await expect.poll(() => el.querySelector("ol"), { timeout: 5_000 }).not.toBeNull();
+};
 
-  const list = editor.locator("ul");
-  await expect(list).toBeVisible();
-}
+/** Verify typing "/task" and pressing Enter inserts a task list with a checkbox. */
+export const testSlashMenuTaskList: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("/task");
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("{Enter}");
 
-/** Verify selecting ordered list from slash menu */
-export async function testSlashMenuOrderedList(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/numbered");
-  await page.keyboard.press("Enter");
+  await expect.poll(() => el.querySelector(".vizel-task-list"), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("My task");
 
-  // Type list content
-  await page.keyboard.type("List item");
+  const taskItem = el.querySelector<HTMLElement>(".vizel-task-item");
+  if (taskItem === null) throw new Error("expected a .vizel-task-item element");
+  const checkbox = taskItem.querySelector<HTMLInputElement>("input[type='checkbox']");
+  if (checkbox === null) throw new Error("expected a task-item checkbox");
+  await expect.element(page.elementLocator(checkbox)).toBeVisible();
+};
 
-  const list = editor.locator("ol");
-  await expect(list).toBeVisible();
-}
+/** Verify typing "/code" and pressing Enter inserts a code block. */
+export const testSlashMenuCodeBlock: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("/code");
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("{Enter}");
 
-/** Verify selecting task list from slash menu */
-export async function testSlashMenuTaskList(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/task");
-  await page.keyboard.press("Enter");
+  await userEvent.keyboard("const x = 1;");
+  await expect.poll(() => el.querySelector("pre"), { timeout: 5_000 }).not.toBeNull();
+};
 
-  // Wait for task list to be created (use class selector)
-  const taskList = editor.locator(".vizel-task-list");
-  await expect(taskList).toBeVisible({ timeout: 3000 });
+/** Verify typing "/quote" and pressing Enter inserts a blockquote. */
+export const testSlashMenuBlockquote: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("/quote");
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("{Enter}");
 
-  // Type task content
-  await page.keyboard.type("My task");
+  await userEvent.keyboard("A wise quote");
+  await expect.poll(() => el.querySelector("blockquote"), { timeout: 5_000 }).not.toBeNull();
+};
 
-  // Checkbox is nested inside task item
-  const taskItem = editor.locator(".vizel-task-item");
-  const checkbox = taskItem.locator("input[type='checkbox']");
-  await expect(checkbox).toBeVisible();
-}
+/**
+ * Verify keyboard navigation moves the selection indicator inside the menu.
+ *
+ * Two ArrowDown keypresses advance the selection; `data-selected="true"` marks
+ * the active item.
+ */
+export const testSlashMenuKeyboardNavigation: VizelBcScenario = async () => {
+  await openSlashMenu();
 
-/** Verify selecting code block from slash menu */
-export async function testSlashMenuCodeBlock(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/code");
-  await page.keyboard.press("Enter");
+  await userEvent.keyboard("{ArrowDown}");
+  await userEvent.keyboard("{ArrowDown}");
 
-  // Type code content
-  await page.keyboard.type("const x = 1;");
+  await expect
+    .poll(() => document.querySelector("[data-selected='true']"), { timeout: 5_000 })
+    .not.toBeNull();
+  const selectedItem = document.querySelector<HTMLElement>("[data-selected='true']");
+  if (selectedItem === null) throw new Error("expected a [data-selected='true'] element");
+  await expect.element(page.elementLocator(selectedItem)).toBeVisible();
+};
 
-  const codeBlock = editor.locator("pre");
-  await expect(codeBlock).toBeVisible();
-}
+/** Verify the empty state element appears when no items match the filter. */
+export const testSlashMenuEmptyState: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("/xyznonexistent");
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
 
-/** Verify selecting blockquote from slash menu */
-export async function testSlashMenuBlockquote(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/quote");
-  await page.keyboard.press("Enter");
+  const emptyState = document.querySelector<HTMLElement>("[data-vizel-slash-menu-empty]");
+  if (emptyState === null) {
+    throw new Error("expected a [data-vizel-slash-menu-empty] element");
+  }
+  await expect.element(page.elementLocator(emptyState)).toBeVisible();
+};
 
-  // Type quote content
-  await page.keyboard.type("A wise quote");
+/**
+ * Verify group headers are displayed and the "Text" group header is visible.
+ *
+ * The slash menu groups items under labelled section headers.
+ */
+export const testSlashMenuGroupHeaders: VizelBcScenario = async () => {
+  await openSlashMenu();
 
-  const quote = editor.locator("blockquote");
-  await expect(quote).toBeVisible();
-}
+  await expect
+    .poll(() => document.querySelector<HTMLElement>(".vizel-slash-menu-group-header"), {
+      timeout: 5_000,
+    })
+    .not.toBeNull();
+  const firstHeader = document.querySelector<HTMLElement>(".vizel-slash-menu-group-header");
+  if (firstHeader === null) throw new Error("expected a .vizel-slash-menu-group-header element");
+  await expect.element(page.elementLocator(firstHeader)).toBeVisible();
 
-/** Verify keyboard navigation in slash menu */
-export async function testSlashMenuKeyboardNavigation(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/");
+  // The "Text" group header must be present in the initial unfiltered list.
+  const textHeader = Array.from(
+    document.querySelectorAll<HTMLElement>(".vizel-slash-menu-group-header")
+  ).find((el) => el.textContent?.includes("Text"));
+  if (textHeader === undefined) throw new Error('expected a group header containing "Text"');
+  await expect.element(page.elementLocator(textHeader)).toBeVisible();
+};
 
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
+/**
+ * Verify the "Heading 1" item displays its keyboard shortcut hint.
+ *
+ * Each item that has an associated shortcut renders a `.vizel-slash-menu-shortcut`
+ * child element.
+ */
+export const testSlashMenuShortcuts: VizelBcScenario = async () => {
+  await openSlashMenu();
 
-  // Navigate down
-  await page.keyboard.press("ArrowDown");
-  await page.keyboard.press("ArrowDown");
+  // Wait for menu items to render.
+  await expect
+    .poll(
+      () => {
+        const items = document.querySelectorAll<HTMLElement>(".vizel-slash-menu-item");
+        return Array.from(items).find((item) => item.textContent?.includes("Heading 1")) ?? null;
+      },
+      { timeout: 5_000 }
+    )
+    .not.toBeNull();
+  const headingItem = Array.from(
+    document.querySelectorAll<HTMLElement>(".vizel-slash-menu-item")
+  ).find((item) => item.textContent?.includes("Heading 1"));
+  if (headingItem === undefined) throw new Error('expected a "Heading 1" slash menu item');
+  await expect.element(page.elementLocator(headingItem)).toBeVisible();
 
-  // Check that an item is selected (has data-selected attribute)
-  const selectedItem = slashMenu.locator("[data-selected='true']");
-  await expect(selectedItem).toBeVisible();
-}
+  const shortcut = headingItem.querySelector<HTMLElement>(".vizel-slash-menu-shortcut");
+  if (shortcut === null) throw new Error("expected a .vizel-slash-menu-shortcut inside Heading 1");
+  await expect.element(page.elementLocator(shortcut)).toBeVisible();
+};
 
-/** Verify empty state when no items match filter */
-export async function testSlashMenuEmptyState(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/xyznonexistent");
+/**
+ * Verify the Tab key moves the selection to the first item of the next group.
+ *
+ * On initial open the first item (in the Text group) is selected. Tab advances
+ * to the first item of the Lists group ("Bullet List").
+ */
+export const testSlashMenuTabNavigation: VizelBcScenario = async () => {
+  await openSlashMenu();
 
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
+  // The first item must be selected and must be a heading.
+  await expect
+    .poll(() => document.querySelector("[data-selected='true']"), { timeout: 5_000 })
+    .not.toBeNull();
+  const firstSelected = document.querySelector<HTMLElement>("[data-selected='true']");
+  if (firstSelected === null) throw new Error("expected a [data-selected='true'] element");
+  await expect.element(page.elementLocator(firstSelected)).toBeVisible();
+  expect(firstSelected.textContent ?? "").toMatch(/Heading/);
 
-  const emptyState = slashMenu.locator("[data-vizel-slash-menu-empty]");
-  await expect(emptyState).toBeVisible();
-}
+  // Tab advances the selection to the first item of the next group.
+  await userEvent.keyboard("{Tab}");
 
-/** Verify group headers are displayed when slash menu opens */
-export async function testSlashMenuGroupHeaders(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/");
+  await expect
+    .poll(
+      () => {
+        const sel = document.querySelector<HTMLElement>("[data-selected='true']");
+        return sel?.textContent?.includes("Bullet List") ?? false;
+      },
+      { timeout: 5_000 }
+    )
+    .toBe(true);
+  const nextSelected = document.querySelector<HTMLElement>("[data-selected='true']");
+  if (nextSelected === null) throw new Error("expected a [data-selected='true'] element after Tab");
+  await expect.element(page.elementLocator(nextSelected)).toBeVisible();
+  expect(nextSelected.textContent ?? "").toContain("Bullet List");
+};
 
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
+/**
+ * Verify keyword search finds an item whose keyword matches the query.
+ *
+ * Typing "/checkbox" should surface the "Task List" item because "checkbox"
+ * is registered as a keyword for that block type.
+ */
+export const testSlashMenuKeywordSearch: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("/checkbox");
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
 
-  // Check for group headers
-  const groupHeaders = slashMenu.locator(".vizel-slash-menu-group-header");
-  await expect(groupHeaders.first()).toBeVisible();
+  await expect
+    .poll(
+      () => {
+        const items = document.querySelectorAll<HTMLElement>(".vizel-slash-menu-item");
+        return Array.from(items).some((item) => item.textContent?.includes("Task List"));
+      },
+      { timeout: 5_000 }
+    )
+    .toBe(true);
+  const taskItem = Array.from(
+    document.querySelectorAll<HTMLElement>(".vizel-slash-menu-item")
+  ).find((item) => item.textContent?.includes("Task List"));
+  if (taskItem === undefined) throw new Error('expected a "Task List" slash menu item');
+  await expect.element(page.elementLocator(taskItem)).toBeVisible();
+};
 
-  // Verify at least Text group is visible
-  const textGroup = slashMenu.locator(".vizel-slash-menu-group-header", { hasText: "Text" });
-  await expect(textGroup).toBeVisible();
-}
+/**
+ * Verify partial-string fuzzy matching surfaces the correct item.
+ *
+ * Typing "/bul" must still find "Bullet List" even though the query does not
+ * include the full item title.
+ */
+export const testSlashMenuFuzzySearch: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("/bul");
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
 
-/** Verify keyboard shortcut hints are displayed */
-export async function testSlashMenuShortcuts(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/");
-
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
-
-  // Find an item with a shortcut (Heading 1 has ⌘⌥1)
-  const headingItem = slashMenu.locator(".vizel-slash-menu-item", { hasText: "Heading 1" });
-  await expect(headingItem).toBeVisible();
-
-  // Check for shortcut display within the item
-  const shortcut = headingItem.locator(".vizel-slash-menu-shortcut");
-  await expect(shortcut).toBeVisible();
-}
-
-/** Verify Tab key navigates between groups */
-export async function testSlashMenuTabNavigation(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("/");
-
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
-
-  // First item should be selected (in Text group)
-  const selectedItem = slashMenu.locator("[data-selected='true']");
-  await expect(selectedItem).toBeVisible();
-  await expect(selectedItem).toContainText("Heading");
-
-  // Press Tab to go to next group (Lists)
-  await page.keyboard.press("Tab");
-
-  // The selected item now points at the first item of the next group.
-  await expect(slashMenu.locator("[data-selected='true']")).toBeVisible();
-  await expect(slashMenu.locator("[data-selected='true']")).toContainText("Bullet List");
-}
-
-/** Verify fuzzy search works with keywords */
-export async function testSlashMenuKeywordSearch(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Search by keyword "checkbox" which should match "Task List"
-  await page.keyboard.type("/checkbox");
-
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
-
-  // Should find Task List item via keyword match
-  const taskListItem = slashMenu.locator(".vizel-slash-menu-item", {
-    hasText: "Task List",
-  });
-  await expect(taskListItem).toBeVisible();
-}
-
-/** Verify fuzzy search partial matching */
-export async function testSlashMenuFuzzySearch(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Partial match for "bullet" - typing "bul" should still find it
-  await page.keyboard.type("/bul");
-
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
-
-  // Should find Bullet List via fuzzy match
-  const bulletItem = slashMenu.locator(".vizel-slash-menu-item", {
-    hasText: "Bullet List",
-  });
-  await expect(bulletItem).toBeVisible();
-}
+  await expect
+    .poll(
+      () => {
+        const items = document.querySelectorAll<HTMLElement>(".vizel-slash-menu-item");
+        return Array.from(items).some((item) => item.textContent?.includes("Bullet List"));
+      },
+      { timeout: 5_000 }
+    )
+    .toBe(true);
+  const bulletItem = Array.from(
+    document.querySelectorAll<HTMLElement>(".vizel-slash-menu-item")
+  ).find((item) => item.textContent?.includes("Bullet List"));
+  if (bulletItem === undefined) throw new Error('expected a "Bullet List" slash menu item');
+  await expect.element(page.elementLocator(bulletItem)).toBeVisible();
+};

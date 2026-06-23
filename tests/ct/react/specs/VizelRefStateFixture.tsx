@@ -6,20 +6,17 @@ interface VizelRefStateFixtureProps {
 }
 
 /**
- * Fixture that tests the correct pattern for using Vizel with state tracking.
+ * Fixture for the vizel-ref-state scenario.
  *
- * This pattern uses useState to store the editor reference, which triggers
- * a re-render when the editor is created in the onCreate callback.
- *
- * This is the CORRECT pattern that should be used in demo apps.
+ * Stores the editor in React state rather than a ref so the `onCreate`
+ * callback triggers a re-render. `useVizelState` then tracks transactions
+ * so `getVizelEditorState` returns live character and word counts.
  */
 export function VizelRefStateFixture({
   initialContent = "Test content",
 }: VizelRefStateFixtureProps) {
-  // Store editor in state (triggers re-renders when editor is set)
   const [editor, setEditor] = useState<Editor | null>(null);
 
-  // Track editor state for character/word count
   useVizelState(editor);
   const editorState = getVizelEditorState(editor);
 

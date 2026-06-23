@@ -5,6 +5,12 @@ export interface EmbedFixtureProps {
   initialContent?: string;
 }
 
+// Resolve immediately so in-flight fetches never outlive the editor instance.
+// The real oEmbed endpoint requires a network round-trip that the test
+// environment does not make; a fast-resolving stub prevents the post-unmount
+// `editor.chain()` call that would otherwise produce an unhandled rejection.
+const stubFetchEmbedData = (url: string) => Promise.resolve({ type: "link" as const, url });
+
 export function EmbedFixture({
   placeholder = "Type something...",
   initialContent,
@@ -14,7 +20,7 @@ export function EmbedFixture({
     initialContent,
     features: {
       content: {
-        embed: true,
+        embed: { fetchEmbedData: stubFetchEmbedData },
       },
     },
   });
