@@ -186,6 +186,13 @@ export default defineConfig({
         browsers: chromiumOnly,
         extraOptimize: ["axe-core"],
       }),
+      // Visual regression — Chromium only; baselines are environment-specific.
+      frameworkProject({
+        name: "visual",
+        framework: "react",
+        root: "tests/visual",
+        browsers: chromiumOnly,
+      }),
       // Markdown round-trip — Chromium only.
       roundtripProject(),
     ],
