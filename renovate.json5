@@ -1,112 +1,83 @@
 {
+  // Shared Renovate policy across seijikohara repositories.
+  // Schema: https://docs.renovatebot.com/renovate-schema.json
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  extends: ["config:recommended"],
+  extends: [
+    // Maintainer-recommended superset of config:recommended. Pins GitHub Action
+    // and Docker digests, enables config migration, dev-dependency pinning,
+    // weekly lock file maintenance, and the npm minimum-release-age cooldown.
+    "config:best-practices",
+    // Conventional Commits with a unified `chore(deps): ...` subject.
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    ":semanticCommitScope(deps)",
+  ],
   timezone: "Asia/Tokyo",
-  schedule: ["every weekend"],
-  semanticCommitType: "chore",
-  semanticCommitScope: "deps",
+  schedule: ["before 9am on monday"],
   labels: ["dependencies"],
-  rangeStrategy: "auto",
+  // Keep update branches rebased on main and merge via rebase once CI passes.
+  rebaseWhen: "behind-base-branch",
   platformAutomerge: true,
+  automergeStrategy: "rebase",
+  // Hold every release for 3 days so a hijacked publish cannot ride automerge on day zero.
+  minimumReleaseAge: "3 days",
+  // Auto-merge the weekly pnpm-lock.yaml refresh together with regular updates.
+  lockFileMaintenance: { automerge: true },
   packageRules: [
-    // GitHub Actions
     {
-      description: "Group GitHub Actions and use ci commit type",
+      description: "Auto-merge non-major updates once CI passes",
+      matchUpdateTypes: ["minor", "patch", "pin", "digest"],
+      automerge: true,
+    },
+    {
+      description: "Hold major updates for manual review via the dependency dashboard",
+      matchUpdateTypes: ["major"],
+      automerge: false,
+      dependencyDashboardApproval: true,
+      addLabels: ["major"],
+    },
+    {
+      description: "Group and label GitHub Actions updates",
       matchManagers: ["github-actions"],
-      semanticCommitType: "ci",
       groupName: "github-actions",
-      automerge: true,
+      addLabels: ["github-actions"],
     },
-
-    // Tiptap (30+ packages)
     {
-      description: "Group all Tiptap packages",
-      matchPackageNames: ["@tiptap/*"],
+      description: "Group the Tiptap editor packages",
       groupName: "tiptap",
-      automerge: true,
-      matchUpdateTypes: ["minor", "patch"],
-    },
-    {
-      description: "Group Tiptap major updates (manual review)",
       matchPackageNames: ["@tiptap/*"],
-      groupName: "tiptap-major",
-      matchUpdateTypes: ["major"],
     },
-
-    // Playwright
     {
-      description: "Group Playwright packages with automerge",
-      matchPackageNames: ["playwright", "@playwright/*"],
-      groupName: "playwright",
-      automerge: true,
-    },
-
-    // Vite ecosystem
-    {
-      description: "Group Vite ecosystem",
-      matchPackageNames: [
-        "vite",
-        "@vitejs/*",
-        "vite-plugin-*",
-        "@sveltejs/vite-plugin-svelte",
-        "vitepress",
-        "vitepress-plugin-*",
-      ],
+      description: "Group the Vite ecosystem",
       groupName: "vite",
-      automerge: true,
-      matchUpdateTypes: ["minor", "patch"],
+      matchPackageNames: ["vite", "@vitejs/*", "vite-plugin-*", "@sveltejs/vite-plugin-svelte", "vitepress", "vitepress-plugin-*"],
     },
     {
-      description: "Group Vite major updates (manual review)",
-      matchPackageNames: [
-        "vite",
-        "@vitejs/*",
-        "vite-plugin-*",
-        "@sveltejs/vite-plugin-svelte",
-        "vitepress",
-        "vitepress-plugin-*",
-      ],
-      groupName: "vite-major",
-      matchUpdateTypes: ["major"],
+      description: "Group Playwright packages",
+      groupName: "playwright",
+      matchPackageNames: ["playwright", "@playwright/*"],
     },
-
-    // Iconify
     {
       description: "Group Iconify packages",
-      matchPackageNames: ["@iconify/*", "@iconify-json/*"],
       groupName: "iconify",
-      automerge: true,
+      matchPackageNames: ["@iconify/*", "@iconify-json/*"],
     },
-
-    // TypeScript type definitions
+    {
+      description: "Group linting and formatting tools",
+      groupName: "linting and formatting",
+      matchPackageNames: ["@biomejs/biome", "prettier"],
+    },
     {
       description: "Group TypeScript type definitions",
-      matchPackageNames: ["@types/*"],
-      groupName: "type-definitions",
-      automerge: true,
-    },
-
-    // pnpm lives in the `packageManager` field, not devDependencies, so the
-    // generic "minor devDependency" rule below never matches it. Auto-merge its
-    // minor and patch bumps explicitly; major upgrades stay manual.
-    {
-      description: "Auto-merge pnpm minor and patch updates",
-      matchPackageNames: ["pnpm"],
-      matchUpdateTypes: ["minor", "patch"],
-      automerge: true,
-    },
-
-    // Default automerge rules
-    {
-      description: "Auto-merge patch updates",
-      matchUpdateTypes: ["patch"],
-      automerge: true,
-    },
-    {
-      description: "Auto-merge minor devDependency updates",
-      matchDepTypes: ["devDependencies"],
-      matchUpdateTypes: ["minor"],
-      automerge: true,
+      groupName: "type definitions",
+      matchPackageNames: ["@types/*", "@tsconfig/*"],
     },
   ],
+  vulnerabilityAlerts: {
+    description: "Raise security fixes immediately and require manual review",
+    schedule: ["at any time"],
+    minimumReleaseAge: null,
+    addLabels: ["security"],
+    automerge: false,
+  },
 }
