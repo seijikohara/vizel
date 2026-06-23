@@ -49,7 +49,7 @@ runs:
 
     - name: Get Playwright version
       shell: bash
-      run: echo "PLAYWRIGHT_VERSION=$(pnpm list @playwright/test --depth=0 --json | jq -r '.[0].devDependencies["@playwright/test"].version')" >> $GITHUB_ENV
+      run: echo "PLAYWRIGHT_VERSION=$(pnpm list playwright --depth=0 --json | jq -r '.[0].devDependencies["playwright"].version')" >> $GITHUB_ENV
 
     - name: Cache Playwright browsers
       uses: actions/cache@v5
@@ -68,6 +68,6 @@ runs:
       shell: bash
       run: pnpm exec playwright install-deps ${{ inputs.browser }}
 
-    - name: Run E2E tests
+    - name: Run browser tests
       shell: bash
-      run: pnpm test:ct:${{ inputs.framework }} --project=${{ inputs.browser }}
+      run: pnpm exec vitest run --config vitest.browser.config.ts --project=${{ inputs.framework }}-${{ inputs.browser }}

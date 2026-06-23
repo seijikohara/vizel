@@ -85,14 +85,6 @@ jobs:
           path: result.txt
           retention-days: 1
 
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report-${{ matrix.framework }}-${{ matrix.browser }}
-          path: playwright-report/
-          retention-days: 7
-
   visual:
     name: Visual Regression
     # Snapshots are sensitive to subpixel rendering differences between
@@ -128,30 +120,17 @@ jobs:
       - name: Run visual regression tests
         run: pnpm test:visual
 
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report-visual
-          path: playwright-report/
-          retention-days: 7
-
   a11y:
     name: A11y (${{ matrix.framework }})
-    # The a11y suite hangs intermittently on the GitHub runner: the
-    # matrix jobs reach the timeout even though the suite passes locally
-    # and the `open: "never"` reporter guard is in place. PR-gating is
-    # deferred until the runner-side root cause is found and fixed
-    # (tracked follow-up). The hardening stays: every a11y config pins
-    # the HTML reporter to `open: "never"`, the `PLAYWRIGHT_HTML_OPEN:
-    # never` env var below is a second guard, and `timeout-minutes` caps
-    # any hang at minutes. Once the root cause lands, flip this trigger
-    # to run on pull requests and add the job to `Test Summary` needs.
+    # The a11y suite now runs on Vitest Browser Mode (axe-core in-browser),
+    # which removes the Playwright CT reporter hang that forced manual
+    # dispatch. The job stays on manual dispatch as a conservative default
+    # while the migrated suite proves stable on the runner; promoting it to
+    # pull-request gating and adding it to `Test Summary` needs is a tracked
+    # follow-up. `timeout-minutes` caps any hang.
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      PLAYWRIGHT_HTML_OPEN: never
     strategy:
       fail-fast: false
       matrix:
@@ -182,30 +161,17 @@ jobs:
           FRAMEWORK: ${{ matrix.framework }}
         run: pnpm "test:a11y:${FRAMEWORK}"
 
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
-        with:
-          name: a11y-report-${{ matrix.framework }}
-          path: playwright-report/
-          retention-days: 7
-
   md-roundtrip:
     name: Markdown round-trip
     # The round-trip suite drives the Pillar 3 corpus through Vizel and
-    # asserts lossless parse/serialize. Like the a11y suite, it is a
-    # standalone Playwright CT job that hangs intermittently on the
-    # GitHub runner (it reaches the timeout below even though it passes
-    # locally), so it stays on manual dispatch until the runner-side root
-    # cause is fixed (tracked follow-up). `timeout-minutes` caps any hang
-    # at minutes; `PLAYWRIGHT_HTML_OPEN: never` mirrors the a11y guard.
-    # Once the root cause lands, flip this to run on pull requests and add
-    # it to `Test Summary` needs.
+    # asserts lossless parse/serialize. It now runs on Vitest Browser Mode
+    # (the round-trip helper calls the live `@vizel/core` build in-browser).
+    # Like the a11y suite it stays on manual dispatch as a conservative
+    # default; promoting it to pull-request gating is a tracked follow-up.
+    # `timeout-minutes` caps any hang.
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      PLAYWRIGHT_HTML_OPEN: never
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -230,14 +196,6 @@ jobs:
       - name: Run Markdown round-trip suite
         run: pnpm test:md-roundtrip
 
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
-        with:
-          name: md-roundtrip-report
-          path: playwright-report/
-          retention-days: 7
-
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
@@ -248,9 +206,9 @@ jobs:
     # otherwise it aggregates the matrix results. The former `ssr` and
     # `ct-parity` needs moved into the `quality-parity` job in
     # `quality.yml` and cannot be referenced from here. The `a11y` and
-    # `md-roundtrip` suites are standalone Playwright CT jobs that hang
-    # intermittently on the runner, so both stay on manual dispatch and
-    # are not gated here until the root cause is fixed (tracked follow-up).
+    # `md-roundtrip` suites stay on manual dispatch as a conservative
+    # default after the Vitest migration, so both are not gated here;
+    # promoting them to this aggregator is a tracked follow-up.
     needs: [changes, test]
     if: always()
     steps:
