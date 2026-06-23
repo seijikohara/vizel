@@ -45,6 +45,13 @@ const testInclude = ["specs-bc/**/*.bc.test.{ts,tsx}"] as const;
 // browser iframes. `optimizeDeps.entries` points the crawl at the test glob.
 export default defineConfig({
   test: {
+    // The asynchronous Tiptap mount plus real-browser interaction overruns the
+    // default 5s test budget when several browser instances run concurrently and
+    // saturate the machine (notably the full nine-instance matrix). Raise the
+    // ceiling so contention slows tests without failing them. Projects inherit
+    // this value.
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
     projects: [
       {
         root: resolve(rootDir, "tests/ct/react"),

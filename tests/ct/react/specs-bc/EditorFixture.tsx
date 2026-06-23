@@ -1,8 +1,12 @@
 import { useVizelEditor, VizelBubbleMenu, VizelEditor, VizelProvider } from "@vizel/react";
 
-export function EditorFixture() {
+export interface EditorFixtureProps {
+  placeholder?: string;
+}
+
+export function EditorFixture({ placeholder = "Type something..." }: EditorFixtureProps) {
   const editor = useVizelEditor({
-    placeholder: "Type something...",
+    placeholder,
     features: { content: { mathematics: true } },
   });
   return (

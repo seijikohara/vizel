@@ -5,14 +5,13 @@ import { testEditorRenders, testEditorTyping } from "../../scenarios/editor-bc.s
 import EditorFixture from "./EditorFixture.vue";
 
 describe("Editor (Vitest Browser) - Vue", () => {
-  // Render once and run both scenarios sequentially. A second `render()` in the
-  // same file races the auto-cleanup disposer in `mountVizelEditorView`, which
-  // detaches the editor view while Tiptap is mid-teardown and throws. One render
-  // per file keeps the editor view stable across both assertions.
-  test("renders, is editable, and accepts typed text", async () => {
+  test("renders and is editable", async () => {
     render(EditorFixture);
-    const root = page.elementLocator(document.body);
-    await testEditorRenders(root);
-    await testEditorTyping(root);
+    await testEditorRenders(page.elementLocator(document.body));
+  });
+
+  test("accepts typed text", async () => {
+    render(EditorFixture);
+    await testEditorTyping(page.elementLocator(document.body));
   });
 });
