@@ -39,19 +39,24 @@ const fsAllow = { fs: { allow: [resolve(rootDir)] } } as const;
 
 const testInclude = ["specs-bc/**/*.bc.test.{ts,tsx}"] as const;
 
+// Shared per-project test options. Projects do NOT inherit the root `test`
+// block in browser mode, so spread these into every project's `test`.
+// `fileParallelism: false` runs one spec file (one browser tab) at a time per
+// project: the real-browser editor tests are timing-sensitive, and several
+// concurrent tabs saturate the machine and flake on focus and async mount.
+// The raised timeouts absorb the residual slowness of a contended run.
+const sharedTestOptions = {
+  testTimeout: 30_000,
+  hookTimeout: 30_000,
+  fileParallelism: false,
+} as const;
+
 // One project per framework. Each project scopes Vite's root at its own CT
 // subtree so the dependency optimizer scans only that subtree instead of the
 // entire pnpm monorepo store, which would stall a cold start and time out the
 // browser iframes. `optimizeDeps.entries` points the crawl at the test glob.
 export default defineConfig({
   test: {
-    // The asynchronous Tiptap mount plus real-browser interaction overruns the
-    // default 5s test budget when several browser instances run concurrently and
-    // saturate the machine (notably the full nine-instance matrix). Raise the
-    // ceiling so contention slows tests without failing them. Projects inherit
-    // this value.
-    testTimeout: 30_000,
-    hookTimeout: 30_000,
     projects: [
       {
         root: resolve(rootDir, "tests/ct/react"),
@@ -72,6 +77,7 @@ export default defineConfig({
           ],
         },
         test: {
+          ...sharedTestOptions,
           name: "react",
           include: [...testInclude],
           browser: {
@@ -92,6 +98,7 @@ export default defineConfig({
           include: ["vue", ...sharedOptimizeIncludes],
         },
         test: {
+          ...sharedTestOptions,
           name: "vue",
           include: [...testInclude],
           browser: {
@@ -119,6 +126,7 @@ export default defineConfig({
           include: ["svelte", "@floating-ui/dom", ...sharedOptimizeIncludes],
         },
         test: {
+          ...sharedTestOptions,
           name: "svelte",
           include: [...testInclude],
           browser: {

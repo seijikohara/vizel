@@ -1,0 +1,20 @@
+import { describe, test } from "vitest";
+import { page } from "vitest/browser";
+import { render } from "vitest-browser-vue";
+import {
+  testOutlineClickMovesSelection,
+  testOutlineRendersHeadings,
+} from "../../scenarios/outline-bc.scenario";
+import OutlineFixture from "./OutlineFixture.vue";
+
+describe("VizelOutline (Vitest Browser) - Vue", () => {
+  test("renders one entry per heading", async () => {
+    render(OutlineFixture);
+    await testOutlineRendersHeadings(page.elementLocator(document.body));
+  });
+
+  test("clicking an entry moves the selection", async () => {
+    render(OutlineFixture);
+    await testOutlineClickMovesSelection(page.elementLocator(document.body));
+  });
+});
