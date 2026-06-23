@@ -14,6 +14,9 @@ overrides:
   react-dom: 19.2.7
   vite: 8.0.16
 
+patchedDependencies:
+  '@vitest/browser@4.1.9': 1a368d9ce702cef3b77f3d433759d5d684c48a65d9170d6e834bdbb965fd4087
+
 importers:
 
   .:
@@ -5400,7 +5403,7 @@ snapshots:
 
   '@vitest/browser-playwright@4.1.9(playwright@1.58.2)(vite@8.0.16(@types/node@25.9.4)(sass@1.101.0)(yaml@2.9.0))(vitest@4.1.9)':
     dependencies:
-      '@vitest/browser': 4.1.9(vite@8.0.16(@types/node@25.9.4)(sass@1.101.0)(yaml@2.9.0))(vitest@4.1.9)
+      '@vitest/browser': 4.1.9(patch_hash=1a368d9ce702cef3b77f3d433759d5d684c48a65d9170d6e834bdbb965fd4087)(vite@8.0.16(@types/node@25.9.4)(sass@1.101.0)(yaml@2.9.0))(vitest@4.1.9)
       '@vitest/mocker': 4.1.9(vite@8.0.16(@types/node@25.9.4)(sass@1.101.0)(yaml@2.9.0))
       playwright: 1.58.2
       tinyrainbow: 3.1.0
@@ -5411,7 +5414,7 @@ snapshots:
       - utf-8-validate
       - vite
 
-  '@vitest/browser@4.1.9(vite@8.0.16(@types/node@25.9.4)(sass@1.101.0)(yaml@2.9.0))(vitest@4.1.9)':
+  '@vitest/browser@4.1.9(patch_hash=1a368d9ce702cef3b77f3d433759d5d684c48a65d9170d6e834bdbb965fd4087)(vite@8.0.16(@types/node@25.9.4)(sass@1.101.0)(yaml@2.9.0))(vitest@4.1.9)':
     dependencies:
       '@blazediff/core': 1.9.1
       '@vitest/mocker': 4.1.9(vite@8.0.16(@types/node@25.9.4)(sass@1.101.0)(yaml@2.9.0))
