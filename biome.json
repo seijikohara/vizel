@@ -333,7 +333,6 @@
         "**/svelte.config.js",
         "**/tailwind.config.ts",
         "**/postcss.config.js",
-        "**/playwright-ct.config.ts",
         "**/vitest.browser.config.ts",
         "docs/.vitepress/config.mts"
       ],
