@@ -85,32 +85,38 @@ function grepFiles(
 }
 
 /**
- * Verify every package under packages/ carries the expected version.
+ * Verify every package under packages/ carries one synchronized version on the
+ * v2 major line.
+ *
+ * ADR-0005 ships v2 as a single breaking release with all packages versioned in
+ * lockstep. The check asserts the lockstep (one shared version) and the major
+ * line (`2.x`) rather than a fixed `2.0.0`, so ongoing patch and minor releases
+ * (2.0.1, 2.0.2, …) stay compliant.
  */
 function checkPackageVersions(): CheckResult {
-  const expected = "2.0.0";
-  const violations: string[] = [];
-  for (const entry of readdirSync(resolve(REPO_ROOT, "packages"))) {
+  const versions = readdirSync(resolve(REPO_ROOT, "packages")).flatMap((entry) => {
     const manifest = readText(resolve(REPO_ROOT, "packages", entry, "package.json"));
-    if (manifest === null) continue;
+    if (manifest === null) return [];
     const match = manifest.match(/"version":\s*"([^"]+)"/);
-    if (match === null || match[1] !== expected) {
-      violations.push(`${entry}: ${match?.[1] ?? "unset"}`);
-    }
-  }
-  if (violations.length > 0) {
+    return [{ pkg: entry, version: match?.[1] ?? "unset" }];
+  });
+  const distinct = [...new Set(versions.map((entry) => entry.version))];
+  const allOnV2 = versions.every((entry) => /^2\.\d+\.\d+/.test(entry.version));
+  if (distinct.length !== 1 || !allOnV2) {
     return {
       adr: "ADR-0005",
       title: "v2.0.0 breaking release",
       status: "FAIL",
-      message: `Every package must declare version ${expected}: ${violations.join(", ")}`,
+      message: `Every package must share one synchronized 2.x version: ${versions
+        .map((entry) => `${entry.pkg}=${entry.version}`)
+        .join(", ")}`,
     };
   }
   return {
     adr: "ADR-0005",
     title: "v2.0.0 breaking release",
     status: "PASS",
-    message: `Every package declares ${expected}.`,
+    message: `Every package declares ${distinct[0]} (synchronized, 2.x line).`,
   };
 }
 
