@@ -3,15 +3,12 @@ import { createVizelEditor, VizelBubbleMenu, VizelEditor, VizelProvider } from "
 
 interface Props {
   placeholder?: string;
-  initialContent?: string;
-  showBubbleMenu?: boolean;
 }
 
 const props = $props<Props>();
 
 const editor = createVizelEditor({
   placeholder: props.placeholder ?? "Type something...",
-  initialContent: props.initialContent,
   features: {
     content: {
       mathematics: true,
@@ -22,7 +19,5 @@ const editor = createVizelEditor({
 
 <VizelProvider editor={editor.current}>
   <VizelEditor />
-  {#if props.showBubbleMenu ?? true}
-    <VizelBubbleMenu />
-  {/if}
+  <VizelBubbleMenu />
 </VizelProvider>

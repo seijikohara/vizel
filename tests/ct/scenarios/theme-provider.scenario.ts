@@ -1,166 +1,164 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent } from "./_vitest-context";
 
-/**
- * Shared test scenarios for ThemeProvider component
- */
-
-/**
- * Test that ThemeProvider renders correctly with default theme
- */
-export async function testThemeProviderDefaultTheme(
-  page: Page,
-  _component: Locator
-): Promise<void> {
-  // Should have data-vizel-theme attribute on document
-  const html = page.locator("html");
-  await expect(html).toHaveAttribute("data-vizel-theme", /(light|dark)/);
+// Resolve the toggle button rendered by the fixture. Framework components
+// mount synchronously, but the VDOM patch may run in the next microtask, so
+// poll with a generous budget rather than querying once.
+async function resolveToggleButton(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector<HTMLElement>("[data-testid='toggle-theme']"), {
+      timeout: 5_000,
+    })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>("[data-testid='toggle-theme']");
+  if (el === null) throw new Error("expected a [data-testid='toggle-theme'] element");
+  return el;
 }
 
 /**
- * Test that theme can be toggled
+ * Verify ThemeProvider renders with a default theme.
+ *
+ * The provider sets `data-vizel-theme` on `<html>` to either "light" or
+ * "dark", resolving "system" against `prefers-color-scheme`. The scenario
+ * asserts the attribute exists and holds one of the two concrete values.
  */
-export async function testThemeProviderToggle(page: Page, toggleButton: Locator): Promise<void> {
-  const html = page.locator("html");
+export async function testThemeProviderDefaultTheme(): Promise<void> {
+  await expect
+    .poll(() => document.documentElement.getAttribute("data-vizel-theme"), { timeout: 5_000 })
+    .toMatch(/^(light|dark)$/);
+}
 
-  // Get initial theme (auto-retrying assertion ensures attribute exists)
-  await expect(html).toHaveAttribute("data-vizel-theme", /(light|dark)/);
-  const initialTheme = (await html.getAttribute("data-vizel-theme")) ?? "";
+/**
+ * Verify the theme toggles when the user clicks the toggle button.
+ *
+ * The test reads the initial resolved theme, clicks the button, confirms the
+ * theme flips to the opposite value, then clicks again and confirms the theme
+ * returns to the initial value.
+ */
+export async function testThemeProviderToggle(): Promise<void> {
+  const btn = await resolveToggleButton();
 
-  // Click toggle button
-  await toggleButton.click();
+  // Wait for the provider to apply the initial theme before reading it.
+  await expect
+    .poll(() => document.documentElement.getAttribute("data-vizel-theme"), { timeout: 5_000 })
+    .toMatch(/^(light|dark)$/);
+  const initialTheme = document.documentElement.getAttribute("data-vizel-theme") ?? "";
 
-  // Theme should be different (auto-retrying)
+  await userEvent.click(page.elementLocator(btn));
+
   const expectedAfterToggle = initialTheme === "light" ? "dark" : "light";
-  await expect(html).toHaveAttribute("data-vizel-theme", expectedAfterToggle);
+  await expect
+    .poll(() => document.documentElement.getAttribute("data-vizel-theme"), { timeout: 5_000 })
+    .toBe(expectedAfterToggle);
 
-  // Toggle back
-  await toggleButton.click();
-
-  // Should be back to initial theme (auto-retrying)
-  await expect(html).toHaveAttribute("data-vizel-theme", initialTheme);
+  // Toggle back and confirm the theme returns to the initial value.
+  await userEvent.click(page.elementLocator(btn));
+  await expect
+    .poll(() => document.documentElement.getAttribute("data-vizel-theme"), { timeout: 5_000 })
+    .toBe(initialTheme);
 }
 
 /**
- * Test that theme is persisted to localStorage
+ * Verify the provider persists the user's theme choice to `localStorage`.
+ *
+ * Clicking the toggle button must write the resolved theme under the given
+ * storage key. `localStorage` is directly accessible in the browser context,
+ * so no `page.evaluate` is needed.
  */
 export async function testThemeProviderPersistence(
-  page: Page,
-  toggleButton: Locator,
   storageKey: string = "vizel-theme"
 ): Promise<void> {
-  // Click toggle to change theme
-  await toggleButton.click();
+  const btn = await resolveToggleButton();
+  await userEvent.click(page.elementLocator(btn));
 
-  // Check localStorage (use expect.poll for auto-retry on async evaluation)
+  // Read localStorage directly; poll because the write may be synchronous-but-batched.
   await expect
-    .poll(() => page.evaluate((key) => localStorage.getItem(key), storageKey))
-    .toMatch(/(light|dark)/);
+    .poll(() => localStorage.getItem(storageKey), { timeout: 5_000 })
+    .toMatch(/^(light|dark)$/);
 }
 
 /**
- * Test that theme shows current resolved theme
+ * Verify the resolved theme label renders inside the fixture.
+ *
+ * The fixture exposes the resolved theme as text under
+ * `[data-testid="resolved-theme"]`. The displayed value must be one of the
+ * two concrete theme names ("light" or "dark").
  */
-export async function testThemeProviderShowsResolvedTheme(
-  _page: Page,
-  themeDisplay: Locator
-): Promise<void> {
-  // Should display current theme
-  await expect(themeDisplay).toHaveText(/(light|dark)/);
+export async function testThemeProviderShowsResolvedTheme(): Promise<void> {
+  await expect
+    .poll(() => document.querySelector("[data-testid='resolved-theme']")?.textContent?.trim(), {
+      timeout: 5_000,
+    })
+    .toMatch(/^(light|dark)$/);
 }
 
 /**
- * Test that CSS variables are applied correctly for light theme
- * Note: Values are checked for existence rather than specific format
- * to support both HEX and OKLCH color formats.
+ * Verify core CSS variables are defined for the light theme.
+ *
+ * The scenario sets `data-vizel-theme="light"` directly on `<html>` so the
+ * correct CSS selector activates, then reads the CSS custom properties with
+ * `getComputedStyle`. Values are checked for presence rather than an exact
+ * format because the palette uses OKLCH in modern browsers and HEX elsewhere.
+ *
+ * The spec file must import `@vizel/core/styles/index.scss` so the stylesheet
+ * is loaded; without that import the variables resolve to empty strings.
  */
-export async function testThemeProviderLightCSS(page: Page): Promise<void> {
-  const html = page.locator("html");
-  await html.evaluate((el) => el.setAttribute("data-vizel-theme", "light"));
+export async function testThemeProviderLightCSS(): Promise<void> {
+  document.documentElement.setAttribute("data-vizel-theme", "light");
 
-  // Check core CSS variables are set for light theme
-  const variables = await page.evaluate(() => {
-    const style = getComputedStyle(document.documentElement);
-    return {
-      background: style.getPropertyValue("--vizel-background").trim(),
-      foreground: style.getPropertyValue("--vizel-foreground").trim(),
-      primary: style.getPropertyValue("--vizel-primary").trim(),
-      border: style.getPropertyValue("--vizel-border").trim(),
-    };
-  });
-
-  // Verify that CSS variables are defined and not empty
-  expect(variables.background).toBeTruthy();
-  expect(variables.foreground).toBeTruthy();
-  expect(variables.primary).toBeTruthy();
-  expect(variables.border).toBeTruthy();
+  const style = getComputedStyle(document.documentElement);
+  // Poll because the CSS cascade may not update until the next animation frame.
+  await expect
+    .poll(() => style.getPropertyValue("--vizel-background").trim(), { timeout: 5_000 })
+    .toBeTruthy();
+  expect(style.getPropertyValue("--vizel-foreground").trim()).toBeTruthy();
+  expect(style.getPropertyValue("--vizel-primary").trim()).toBeTruthy();
+  expect(style.getPropertyValue("--vizel-border").trim()).toBeTruthy();
 }
 
 /**
- * Test that CSS variables are applied correctly for dark theme
- * Note: Values are checked for existence rather than specific format
- * to support both HEX and OKLCH color formats.
+ * Verify core CSS variables are defined for the dark theme.
+ *
+ * Same approach as `testThemeProviderLightCSS` but switches to the dark
+ * theme selector. Values are checked for presence only.
  */
-export async function testThemeProviderDarkCSS(page: Page): Promise<void> {
-  const html = page.locator("html");
-  await html.evaluate((el) => el.setAttribute("data-vizel-theme", "dark"));
+export async function testThemeProviderDarkCSS(): Promise<void> {
+  document.documentElement.setAttribute("data-vizel-theme", "dark");
 
-  // Check core CSS variables are set for dark theme
-  const variables = await page.evaluate(() => {
-    const style = getComputedStyle(document.documentElement);
-    return {
-      background: style.getPropertyValue("--vizel-background").trim(),
-      foreground: style.getPropertyValue("--vizel-foreground").trim(),
-      primary: style.getPropertyValue("--vizel-primary").trim(),
-      border: style.getPropertyValue("--vizel-border").trim(),
-    };
-  });
-
-  // Verify that CSS variables are defined and not empty
-  expect(variables.background).toBeTruthy();
-  expect(variables.foreground).toBeTruthy();
-  expect(variables.primary).toBeTruthy();
-  expect(variables.border).toBeTruthy();
+  const style = getComputedStyle(document.documentElement);
+  await expect
+    .poll(() => style.getPropertyValue("--vizel-background").trim(), { timeout: 5_000 })
+    .toBeTruthy();
+  expect(style.getPropertyValue("--vizel-foreground").trim()).toBeTruthy();
+  expect(style.getPropertyValue("--vizel-primary").trim()).toBeTruthy();
+  expect(style.getPropertyValue("--vizel-border").trim()).toBeTruthy();
 }
 
 /**
- * Test that typography CSS variables are defined
+ * Verify typography CSS variables are set to the expected design-token values.
+ *
+ * These variables are theme-independent; the spec file must import the
+ * Vizel stylesheet before calling this scenario.
  */
-export async function testThemeProviderTypographyVariables(page: Page): Promise<void> {
-  const variables = await page.evaluate(() => {
-    const style = getComputedStyle(document.documentElement);
-    return {
-      fontSizeBase: style.getPropertyValue("--vizel-font-size-base").trim(),
-      fontSizeSm: style.getPropertyValue("--vizel-font-size-sm").trim(),
-      fontSizeLg: style.getPropertyValue("--vizel-font-size-lg").trim(),
-      lineHeightNormal: style.getPropertyValue("--vizel-line-height-normal").trim(),
-    };
-  });
-
-  expect(variables.fontSizeBase).toBe("1rem");
-  expect(variables.fontSizeSm).toBe("0.875rem");
-  expect(variables.fontSizeLg).toBe("1.125rem");
-  expect(variables.lineHeightNormal).toBe("1.5");
+export function testThemeProviderTypographyVariables(): void {
+  const style = getComputedStyle(document.documentElement);
+  expect(style.getPropertyValue("--vizel-font-size-base").trim()).toBe("1rem");
+  expect(style.getPropertyValue("--vizel-font-size-sm").trim()).toBe("0.875rem");
+  expect(style.getPropertyValue("--vizel-font-size-lg").trim()).toBe("1.125rem");
+  expect(style.getPropertyValue("--vizel-line-height-normal").trim()).toBe("1.5");
 }
 
 /**
- * Test that spacing CSS variables are defined
+ * Verify spacing and radius CSS variables are set to the expected design-token values.
+ *
+ * These variables are theme-independent; the spec file must import the
+ * Vizel stylesheet before calling this scenario.
  */
-export async function testThemeProviderSpacingVariables(page: Page): Promise<void> {
-  const variables = await page.evaluate(() => {
-    const style = getComputedStyle(document.documentElement);
-    return {
-      spacing1: style.getPropertyValue("--vizel-spacing-1").trim(),
-      spacing2: style.getPropertyValue("--vizel-spacing-2").trim(),
-      spacing4: style.getPropertyValue("--vizel-spacing-4").trim(),
-      radiusMd: style.getPropertyValue("--vizel-radius-md").trim(),
-      radiusLg: style.getPropertyValue("--vizel-radius-lg").trim(),
-    };
-  });
-
-  expect(variables.spacing1).toBe("0.25rem");
-  expect(variables.spacing2).toBe("0.5rem");
-  expect(variables.spacing4).toBe("1rem");
-  expect(variables.radiusMd).toBe("0.375rem");
-  expect(variables.radiusLg).toBe("0.5rem");
+export function testThemeProviderSpacingVariables(): void {
+  const style = getComputedStyle(document.documentElement);
+  expect(style.getPropertyValue("--vizel-spacing-1").trim()).toBe("0.25rem");
+  expect(style.getPropertyValue("--vizel-spacing-2").trim()).toBe("0.5rem");
+  expect(style.getPropertyValue("--vizel-spacing-4").trim()).toBe("1rem");
+  expect(style.getPropertyValue("--vizel-radius-md").trim()).toBe("0.375rem");
+  expect(style.getPropertyValue("--vizel-radius-lg").trim()).toBe("0.5rem");
 }

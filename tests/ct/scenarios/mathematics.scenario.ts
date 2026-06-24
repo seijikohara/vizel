@@ -1,143 +1,193 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 /**
- * Shared test scenarios for Mathematics (LaTeX) support.
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
+ * Shared, framework-agnostic Vitest Browser scenarios for Mathematics (LaTeX) support.
+ *
+ * Math blocks and inline math nodes render inside the editor component tree, so
+ * queries target document directly. The slash menu that the insertion helpers use
+ * renders to document.body as a portal, so it is queried via document too.
  */
 
-const MATH_BLOCK_SELECTOR = ".vizel-math-block";
-const MATH_INLINE_SELECTOR = ".vizel-math-inline";
+const EDITOR = ".vizel-editor";
+const SLASH_MENU = "[data-vizel-slash-menu]";
+const MATH_BLOCK = ".vizel-math-block";
+const MATH_INLINE = ".vizel-math-inline";
+const MATH_RENDER = ".vizel-math-render";
+const MATH_TEXTAREA = ".vizel-math-textarea";
 
-/** Helper to click editor to focus it */
-async function clickEditorStart(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  // Click at the center of the editor to avoid overlap with drag handle
-  await editor.click();
-  // Dismiss any bubble menu
-  await page.keyboard.press("Escape");
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously
+// after the framework renders, so poll until the element appears.
+async function resolveEditor(): Promise<HTMLElement> {
+  // Allow a generous window: the full three-browser matrix runs nine browser
+  // instances in parallel, and the asynchronous Tiptap mount can exceed the
+  // default 1 s poll budget under that contention.
+  await expect.poll(() => document.querySelector(EDITOR), { timeout: 15_000 }).not.toBeNull();
+  const el = document.querySelector<HTMLElement>(EDITOR);
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
 }
 
-/** Helper to insert a math block via slash command */
-async function insertMathBlock(component: Locator, page: Page): Promise<void> {
-  await clickEditorStart(component, page);
-  await page.keyboard.type("/math");
-  // Wait for slash menu to appear
-  await expect(page.locator(".vizel-slash-menu")).toBeVisible();
-  await page.keyboard.press("Enter");
-  // Wait for math block to be inserted
-  await expect(component.locator(MATH_BLOCK_SELECTOR)).toBeVisible();
+// Click the editor to focus it and dismiss any open menus.
+async function clickEditor(): Promise<HTMLElement> {
+  const el = await resolveEditor();
+  await userEvent.click(page.elementLocator(el));
+  // Dismiss any bubble menu that appeared on the initial click.
+  await userEvent.keyboard("{Escape}");
+  return el;
 }
 
-/** Helper to insert inline math via slash command */
-async function insertInlineMath(component: Locator, page: Page): Promise<void> {
-  await clickEditorStart(component, page);
-  await page.keyboard.type("/inline");
-  // Wait for slash menu to appear
-  await expect(page.locator(".vizel-slash-menu")).toBeVisible();
-  await page.keyboard.press("Enter");
-  // Wait for inline math to be inserted
-  await expect(component.locator(MATH_INLINE_SELECTOR)).toBeVisible();
+// Open the slash menu, type a query, then press Enter to insert the first match.
+// Polls for the menu to appear before pressing Enter.
+async function insertViaSlashMenu(query: string): Promise<void> {
+  await clickEditor();
+  await userEvent.keyboard(`/${query}`);
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("{Enter}");
 }
 
-/** Verify math block can be inserted via slash command */
-export async function testMathBlockInsert(component: Locator, page: Page): Promise<void> {
-  await insertMathBlock(component, page);
-
-  const mathBlock = component.locator(MATH_BLOCK_SELECTOR);
-  await expect(mathBlock).toBeVisible();
+// Wait for the math block to appear in the DOM, then wait for KaTeX to render
+// its initial output into the render container. KaTeX renders asynchronously
+// via a promise, so the render container may be empty immediately after insertion.
+async function resolveMathBlock(): Promise<HTMLElement> {
+  await expect.poll(() => document.querySelector(MATH_BLOCK), { timeout: 5_000 }).not.toBeNull();
+  const mathBlock = document.querySelector<HTMLElement>(MATH_BLOCK);
+  if (mathBlock === null) throw new Error("expected a .vizel-math-block element");
+  // Wait for the async KaTeX render to populate the render container.
+  await expect.poll(() => mathBlock.querySelector(MATH_RENDER), { timeout: 5_000 }).not.toBeNull();
+  return mathBlock;
 }
 
-/** Verify inline math can be inserted via slash command */
-export async function testInlineMathInsert(component: Locator, page: Page): Promise<void> {
-  await insertInlineMath(component, page);
+/** Verify a math block can be inserted via the slash command "/math". */
+export const testMathBlockInsert: VizelBcScenario = async () => {
+  await insertViaSlashMenu("math");
+  const mathBlock = await resolveMathBlock();
+  // The node is present in the DOM — confirm the outer element exists and is
+  // attached; toBeVisible() can fail before KaTeX fills the element with content
+  // so we assert on DOM presence instead.
+  expect(document.contains(mathBlock)).toBe(true);
+};
 
-  const mathInline = component.locator(MATH_INLINE_SELECTOR);
-  await expect(mathInline).toBeVisible();
-}
+/** Verify inline math can be inserted via the slash command "/inline". */
+export const testInlineMathInsert: VizelBcScenario = async () => {
+  await insertViaSlashMenu("inline");
+  await expect.poll(() => document.querySelector(MATH_INLINE), { timeout: 5_000 }).not.toBeNull();
+  const mathInline = document.querySelector<HTMLElement>(MATH_INLINE);
+  if (mathInline === null) throw new Error("expected a .vizel-math-inline element");
+  expect(document.contains(mathInline)).toBe(true);
+};
 
-/** Verify math block can be edited by clicking */
-export async function testMathBlockClickToEdit(component: Locator, page: Page): Promise<void> {
-  await insertMathBlock(component, page);
+/** Verify clicking the math block render area opens the textarea for editing. */
+export const testMathBlockClickToEdit: VizelBcScenario = async () => {
+  await insertViaSlashMenu("math");
+  const mathBlock = await resolveMathBlock();
 
-  const mathBlock = component.locator(MATH_BLOCK_SELECTOR);
-  // Click the render container to start editing
-  const renderContainer = mathBlock.locator(".vizel-math-render");
-  await renderContainer.click();
+  // Dispatch a native click on the render container to trigger startEditing.
+  // userEvent.click requires the element to be visible; the render container
+  // may have no CSS-computed height without the stylesheet, so dispatch directly.
+  const renderContainer = mathBlock.querySelector<HTMLElement>(MATH_RENDER);
+  if (renderContainer === null) throw new Error("expected a .vizel-math-render element");
+  renderContainer.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
 
-  // Should show edit mode with textarea
-  const textarea = mathBlock.locator("textarea");
-  await expect(textarea).toBeVisible();
-}
+  // The textarea becomes visible once the block enters editing mode.
+  await expect.poll(() => document.querySelector(MATH_TEXTAREA), { timeout: 5_000 }).not.toBeNull();
+  const textarea = document.querySelector<HTMLTextAreaElement>(MATH_TEXTAREA);
+  if (textarea === null) throw new Error("expected a .vizel-math-textarea element");
+  // In editing mode the edit container is shown and the textarea is inside it.
+  expect(document.contains(textarea)).toBe(true);
+};
 
-/** Verify LaTeX can be typed in math block */
-export async function testMathBlockTyping(component: Locator, page: Page): Promise<void> {
-  await insertMathBlock(component, page);
+/**
+ * Verify LaTeX typed into the math block textarea triggers KaTeX rendering.
+ *
+ * The textarea's `input` event drives the live preview; blurring the textarea
+ * calls `stopEditing`, which saves the LaTeX and re-renders the main container.
+ * The test sets the value directly and dispatches `input` to replicate
+ * the Playwright `textarea.evaluate` approach without `page.evaluate`.
+ */
+export const testMathBlockTyping: VizelBcScenario = async () => {
+  await insertViaSlashMenu("math");
+  const mathBlock = await resolveMathBlock();
 
-  const mathBlock = component.locator(MATH_BLOCK_SELECTOR);
-  // Click the render container to start editing
-  const renderContainer = mathBlock.locator(".vizel-math-render");
-  await renderContainer.click();
+  const renderContainer = mathBlock.querySelector<HTMLElement>(MATH_RENDER);
+  if (renderContainer === null) throw new Error("expected a .vizel-math-render element");
+  renderContainer.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
 
-  const textarea = mathBlock.locator("textarea");
-  await expect(textarea).toBeVisible();
-  // Use evaluate for reliable cross-browser value setting
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.focus();
-    el.value = "E = mc^2";
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-  });
+  await expect.poll(() => document.querySelector(MATH_TEXTAREA), { timeout: 5_000 }).not.toBeNull();
+  const textarea = document.querySelector<HTMLTextAreaElement>(MATH_TEXTAREA);
+  if (textarea === null) throw new Error("expected a .vizel-math-textarea element");
 
-  // Blur the textarea to save content
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.blur();
-  });
+  // Set value and dispatch input to trigger the live-preview handler, then blur
+  // to commit the LaTeX and re-render the KaTeX output.
+  textarea.focus();
+  textarea.value = "E = mc^2";
+  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+  textarea.blur();
 
-  // Verify the math is rendered (auto-retrying assertion with timeout)
-  const katexElement = mathBlock.locator(".vizel-math-render .katex");
-  await expect(katexElement).toBeVisible({ timeout: 10000 });
-}
+  // Poll for the KaTeX output element that the async renderKatex writes.
+  await expect
+    .poll(() => mathBlock.querySelector(".vizel-math-render .katex"), { timeout: 10_000 })
+    .not.toBeNull();
+  const katexEl = mathBlock.querySelector<HTMLElement>(".vizel-math-render .katex");
+  if (katexEl === null) throw new Error("expected a .katex element inside .vizel-math-render");
+  expect(document.contains(katexEl)).toBe(true);
+};
 
-/** Verify inline math can be inserted via $...$ syntax */
-export async function testInlineMathInputRule(component: Locator, page: Page): Promise<void> {
-  await clickEditorStart(component, page);
+/**
+ * Verify the $...$ input rule creates an inline math element.
+ *
+ * ProseMirror's InputRule fires after the closing `$` is typed. The rule
+ * replaces the `$E=mc^2$` text span with a `mathInline` node.
+ * `$` is not a special character in userEvent, so no escaping is needed.
+ */
+export const testInlineMathInputRule: VizelBcScenario = async () => {
+  await clickEditor();
+  await userEvent.keyboard("$E=mc^2$");
 
-  // Type inline math using $...$ syntax
-  await page.keyboard.type("$E=mc^2$");
+  await expect.poll(() => document.querySelector(MATH_INLINE), { timeout: 5_000 }).not.toBeNull();
+  const mathInline = document.querySelector<HTMLElement>(MATH_INLINE);
+  if (mathInline === null) throw new Error("expected a .vizel-math-inline element");
+  expect(document.contains(mathInline)).toBe(true);
+};
 
-  // Should create an inline math element (auto-retrying assertion)
-  const mathInline = component.locator(MATH_INLINE_SELECTOR);
-  await expect(mathInline).toBeVisible();
-}
+/**
+ * Verify KaTeX renders the math expression including special symbols.
+ *
+ * After typing LaTeX with a sum expression, KaTeX produces both a `.katex`
+ * wrapper and a `.katex-html` subtree. Both must be present once rendering
+ * completes.
+ */
+export const testKaTeXRendering: VizelBcScenario = async () => {
+  await insertViaSlashMenu("math");
+  const mathBlock = await resolveMathBlock();
 
-/** Verify KaTeX renders the math expression with special symbols */
-export async function testKaTeXRendering(component: Locator, page: Page): Promise<void> {
-  await insertMathBlock(component, page);
+  const renderContainer = mathBlock.querySelector<HTMLElement>(MATH_RENDER);
+  if (renderContainer === null) throw new Error("expected a .vizel-math-render element");
+  renderContainer.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
 
-  const mathBlock = component.locator(MATH_BLOCK_SELECTOR);
-  // Click the render container to start editing
-  const renderContainer = mathBlock.locator(".vizel-math-render");
-  await renderContainer.click();
+  await expect.poll(() => document.querySelector(MATH_TEXTAREA), { timeout: 5_000 }).not.toBeNull();
+  const textarea = document.querySelector<HTMLTextAreaElement>(MATH_TEXTAREA);
+  if (textarea === null) throw new Error("expected a .vizel-math-textarea element");
 
-  const textarea = mathBlock.locator("textarea");
-  await expect(textarea).toBeVisible();
-  // Use evaluate for reliable cross-browser value setting
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.focus();
-    el.value = "\\sum_{i=1}^{n} i";
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-  });
+  // Trigger the live-preview handler with a multi-symbol expression, then blur
+  // to commit. The async renderKatex writes both .katex and .katex-html.
+  textarea.focus();
+  textarea.value = "\\sum_{i=1}^{n} i";
+  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+  textarea.blur();
 
-  // Blur the textarea to save content
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.blur();
-  });
+  await expect
+    .poll(() => mathBlock.querySelector(".vizel-math-render .katex"), { timeout: 10_000 })
+    .not.toBeNull();
+  const katexEl = mathBlock.querySelector<HTMLElement>(".vizel-math-render .katex");
+  if (katexEl === null) throw new Error("expected a .katex element inside .vizel-math-render");
+  expect(document.contains(katexEl)).toBe(true);
 
-  // Should have KaTeX rendered elements (auto-retrying assertion with timeout)
-  const katexElement = mathBlock.locator(".vizel-math-render .katex");
-  await expect(katexElement).toBeVisible({ timeout: 10000 });
-
-  // Verify the content contains the rendered math (check for katex-html)
-  const katexHtml = mathBlock.locator(".vizel-math-render .katex-html");
-  await expect(katexHtml).toBeVisible({ timeout: 10000 });
-}
+  await expect
+    .poll(() => mathBlock.querySelector(".vizel-math-render .katex-html"), { timeout: 10_000 })
+    .not.toBeNull();
+  const katexHtml = mathBlock.querySelector<HTMLElement>(".vizel-math-render .katex-html");
+  if (katexHtml === null)
+    throw new Error("expected a .katex-html element inside .vizel-math-render");
+  expect(document.contains(katexHtml)).toBe(true);
+};

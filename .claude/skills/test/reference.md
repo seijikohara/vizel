@@ -11,9 +11,9 @@ The pillars come from `.claude/rules/testing.md`. The skill drives every pillar 
 | 1. Framework parity | shipped | `pnpm check:ct-parity` |
 | 2. Behaviour tests | shipped | `pnpm test:ct` (and the per-framework variants) |
 | 3. Markdown round-trip | shipped | `pnpm test:md-roundtrip` |
-| 4. SSR static-HTML smoke | shipped | `pnpm test:ssr` |
-| 5. Accessibility | not yet | `tests/a11y/` is tracked as follow-up |
-| 6. Visual regression | not yet | CI-only suite tracked as follow-up |
+| 4. SSR static-HTML smoke | shipped | `pnpm check:ssr` |
+| 5. Accessibility | shipped | `pnpm test:a11y` (and the per-framework variants) |
+| 6. Visual regression | shipped | `pnpm test:visual` / `pnpm test:visual:update` |
 | 7. Coverage discipline | shipped | reviewed at PR time against the Pillar 7 matrix |
 
 ### Full local matrix
@@ -22,28 +22,30 @@ The pillars come from `.claude/rules/testing.md`. The skill drives every pillar 
 pnpm check:ct-parity   # Pillar 1
 pnpm test:ct           # Pillar 2
 pnpm test:md-roundtrip # Pillar 3
-pnpm test:ssr          # Pillar 4
+pnpm check:ssr         # Pillar 4
+pnpm test:a11y         # Pillar 5
+pnpm test:visual       # Pillar 6
 ```
 
 ### CT spec parity
 
-`pnpm check:ct-parity` confirms that every `*.spec.{tsx,ts}` file exists across `tests/ct/{react,vue,svelte}/specs/`, modulo the idiom prefix (`Use*` on React and Vue, `Create*` / `Get*` on Svelte). A non-zero exit means a spec exists in one or two frameworks but not all three.
+`pnpm check:ct-parity` confirms that every `*.test.{tsx,ts}` file exists across `tests/ct/{react,vue,svelte}/specs/`, modulo the idiom prefix (`Use*` on React and Vue, `Create*` / `Get*` on Svelte). A non-zero exit means a spec exists in one or two frameworks but not all three.
 
 ### Markdown round-trip
 
-`pnpm test:md-roundtrip` drives `generateVizelStaticHtml` against every sample in `tests/markdown-roundtrip/samples/index.ts` and asserts the round-tripped Markdown matches the input. Append a new sample to the relevant `<flavor>Samples` array to extend coverage.
+`pnpm test:md-roundtrip` drives `Roundtrip.test.ts` against every sample in `tests/markdown-roundtrip/samples/index.ts` and asserts the round-tripped Markdown matches the input. Append a new sample to the relevant `<flavor>Samples` array to extend coverage.
 
 ### SSR static-HTML smoke
 
-`pnpm test:ssr` runs `scripts/test-static-html.ts`. The script boots the Core SSR path in Node, renders fixed Markdown samples, and asserts the produced HTML contains the expected DOM markers. Append a `StaticHtmlCase` entry to the same script to cover a new case.
+`pnpm check:ssr` runs `scripts/check-ssr-safety.ts`. The script performs a static lint that confirms Core contains no top-level `document` or `window` access. Lazy access inside function bodies remains permitted.
 
-### Accessibility (planned)
+### Accessibility
 
-`tests/a11y/` will run `@axe-core/playwright` against every component. The directory and dependency are tracked as follow-up work. The skill will gain a `pnpm test:a11y` command once the suite lands.
+`pnpm test:a11y` runs `tests/a11y/{react,vue,svelte}/` in Chromium. Each suite mounts every shipped component fixture in a Vitest browser context and asserts Web Content Accessibility Guidelines (WCAG) 2.1 AA conformance using bare `axe-core`. The shared `tests/a11y/scenarios/axe.scenario.ts` provides the `expectNoVizelA11yViolations` helper.
 
-### Visual regression (planned)
+### Visual regression
 
-A CI-only visual-snapshot suite covering ~20 essential views is planned. Local execution stays skipped to avoid OS-level rendering noise. The skill will gain a `pnpm test:visual` (CI-only) command once the suite lands.
+`pnpm test:visual` compares screenshots against baselines committed under `tests/visual/specs/__screenshots__/`. Baselines are environment-specific (`<name>-chromium-<platform>.png`). Run `pnpm test:visual:update` to re-record baselines and commit the resulting PNG files.
 
 ## Process
 
@@ -64,19 +66,13 @@ Pick the test scope based on the changed paths.
 
 ### 2. Run tests
 
-#### All frameworks (parallel)
+#### All frameworks (sequential)
 
 ```bash
 pnpm test:ct
 ```
 
-Parallel runs across all frameworks and all browsers can hit timeouts. Use `--project=chromium` for a faster, more reliable parallel run when investigating a failure.
-
-#### All frameworks (sequential)
-
-```bash
-pnpm test:ct:seq
-```
+`pnpm test:ct` runs the full framework × browser matrix sequentially. Use per-framework or `--project` filtering when investigating a specific failure.
 
 #### Single framework
 
@@ -86,24 +82,20 @@ pnpm test:ct:vue
 pnpm test:ct:svelte
 ```
 
-#### Specific browser
+#### Single project and browser
 
 ```bash
-pnpm test:ct:react --project=chromium
-pnpm test:ct:react --project=firefox
-pnpm test:ct:react --project=webkit
+pnpm exec vitest run --config vitest.browser.config.ts --project=react-chromium
+pnpm exec vitest run --config vitest.browser.config.ts --project=react-firefox
+pnpm exec vitest run --config vitest.browser.config.ts --project=react-webkit
 ```
 
-#### Specific test file
+Browser instances are named `<project>-<browser>` (e.g. `react-firefox`, `vue-chromium`, `svelte-webkit`).
+
+#### Specific spec file (substring match)
 
 ```bash
-pnpm test:ct:react tests/ct/react/specs/Editor.spec.tsx
-```
-
-#### Headed mode (visible browser)
-
-```bash
-pnpm test:ct:react --headed
+pnpm exec vitest run --config vitest.browser.config.ts --project=react-chromium Editor
 ```
 
 ### 3. Analyse results
@@ -226,34 +218,32 @@ pnpm exec playwright install
 Increase the timeout for the affected test:
 
 ```ts
-test("slow test", async ({ mount, page }) => {
+test("slow test", async () => {
   test.setTimeout(30000); // 30 seconds.
   // ...
 });
 ```
 
-### Parallel execution timeout
+### Narrowing a failure
 
-Parallel runs across all frameworks and all browsers can fail with messages like:
+When a failure is hard to isolate, run a single project on a single browser:
 
+```bash
+pnpm exec vitest run --config vitest.browser.config.ts --project=react-chromium Editor
 ```
-browserContext.newPage: Test timeout of 10000ms exceeded
-```
 
-Mitigations:
-
-1. Use a single browser: `pnpm test:ct --project=chromium`.
-2. Run sequentially: `pnpm test:ct:seq`.
-3. Reduce the worker count in the config (currently 50% CPU).
+Use a spec name substring to limit the run to the relevant spec file.
 
 ### Element not found
 
 Check whether the element renders to `document.body` (a portal):
 
 ```ts
-// Inside the mount target.
-const element = component.locator(".selector");
+// Inside the mounted fixture root.
+const element = page.elementLocator(document.querySelector(".selector")!);
 
-// Rendered to document.body.
-const popup = page.locator(".selector");
+// Rendered to document.body (portal, slash menu, bubble menu).
+const popup = page.getByRole("menu");
+// or:
+const popup = document.querySelector("[data-vizel-popup]");
 ```

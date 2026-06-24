@@ -1,544 +1,740 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
-
-/**
- * Shared test scenarios for BubbleMenu functionality.
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
- */
+import { expect } from "vitest";
+import { page, pressKeyChord, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 const BUBBLE_MENU_SELECTOR = "[data-vizel-bubble-menu]";
-
-/** Helper to select text in the editor */
-async function selectTextInEditor(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-  await page.keyboard.type("Select this text");
-  await page.keyboard.press("ControlOrMeta+a");
-  // Wait for bubble menu to appear after selection
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  await expect(bubbleMenu).toBeVisible();
-}
-
-/** Verify bubble menu appears when text is selected */
-export async function testBubbleMenuAppears(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  await expect(bubbleMenu).toBeVisible();
-}
-
-/** Verify bubble menu hides when Escape key is pressed */
-export async function testBubbleMenuHides(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  await expect(bubbleMenu).toBeVisible();
-
-  // Hide bubble menu by pressing Escape to collapse selection
-  await page.keyboard.press("Escape");
-  await expect(bubbleMenu).not.toBeVisible();
-}
-
-/** Verify bold button toggles bold formatting */
-export async function testBubbleMenuBoldToggle(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const boldButton = bubbleMenu.locator('[data-action="bold"]');
-
-  await boldButton.click();
-
-  const editor = component.locator(".vizel-editor");
-  const bold = editor.locator("strong");
-  await expect(bold).toContainText("Select this text");
-}
-
-/** Verify italic button toggles italic formatting */
-export async function testBubbleMenuItalicToggle(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const italicButton = bubbleMenu.locator('[data-action="italic"]');
-
-  await italicButton.click();
-
-  const editor = component.locator(".vizel-editor");
-  const italic = editor.locator("em");
-  await expect(italic).toContainText("Select this text");
-}
-
-/** Verify strike button toggles strikethrough formatting */
-export async function testBubbleMenuStrikeToggle(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const strikeButton = bubbleMenu.locator('[data-action="strike"]');
-
-  await strikeButton.click();
-
-  const editor = component.locator(".vizel-editor");
-  const strike = editor.locator("s");
-  await expect(strike).toContainText("Select this text");
-}
-
-/** Verify underline button toggles underline formatting */
-export async function testBubbleMenuUnderlineToggle(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const underlineButton = bubbleMenu.locator('[data-action="underline"]');
-
-  await underlineButton.click();
-
-  const editor = component.locator(".vizel-editor");
-  const underline = editor.locator("u");
-  await expect(underline).toContainText("Select this text");
-}
-
-/** Verify underline keyboard shortcut (Cmd+U) works */
-export async function testBubbleMenuUnderlineShortcut(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Type text with underline using keyboard shortcut
-  await page.keyboard.press("ControlOrMeta+u");
-  await page.keyboard.type("Underlined");
-  await page.keyboard.press("ControlOrMeta+u");
-
-  const underline = editor.locator("u");
-  await expect(underline).toContainText("Underlined");
-}
-
-/** Verify code button toggles inline code formatting */
-export async function testBubbleMenuCodeToggle(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const codeButton = bubbleMenu.locator('[data-action="code"]');
-
-  await codeButton.click();
-
-  const editor = component.locator(".vizel-editor");
-  const code = editor.locator("code");
-  await expect(code).toContainText("Select this text");
-}
-
-/** Verify link editor opens when link button is clicked */
-export async function testBubbleMenuLinkEditor(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const linkButton = bubbleMenu.locator('[data-action="link"]');
-
-  await linkButton.click();
-
-  const linkEditor = component.locator(".vizel-link-editor");
-  await expect(linkEditor).toBeVisible();
-}
-
-/** Verify link editor closes when Escape key is pressed */
-export async function testBubbleMenuLinkEditorEscapeCloses(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const linkButton = bubbleMenu.locator('[data-action="link"]');
-
-  await linkButton.click();
-
-  const linkEditor = component.locator(".vizel-link-editor");
-  await expect(linkEditor).toBeVisible();
-
-  // Press Escape to close link editor
-  await page.keyboard.press("Escape");
-
-  // Link editor should close, toolbar should show
-  await expect(linkEditor).not.toBeVisible();
-  await expect(bubbleMenu.locator(".vizel-bubble-menu-toolbar")).toBeVisible();
-}
-
-/** Verify link editor closes when clicking outside */
-export async function testBubbleMenuLinkEditorClickOutsideCloses(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const linkButton = bubbleMenu.locator('[data-action="link"]');
-
-  await linkButton.click();
-
-  const linkEditor = component.locator(".vizel-link-editor");
-  await expect(linkEditor).toBeVisible();
-
-  // Click outside the link editor (on the editor area)
-  const editor = component.locator(".vizel-editor");
-  await editor.click({ position: { x: 10, y: 100 } });
-
-  // Link editor should close
-  await expect(linkEditor).not.toBeVisible();
-}
-
-/** Verify link can be set via link editor */
-export async function testBubbleMenuLinkEditorSetLink(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const linkButton = bubbleMenu.locator('[data-action="link"]');
-
-  await linkButton.click();
-
-  const linkEditor = component.locator(".vizel-link-editor");
-  await expect(linkEditor).toBeVisible();
-
-  // Enter URL and submit
-  const urlInput = linkEditor.locator(".vizel-link-input");
-  await urlInput.fill("https://example.com");
-  await linkEditor.locator('button[type="submit"]').click();
-
-  // Link editor should close
-  await expect(linkEditor).not.toBeVisible();
-
-  // Verify link was created
-  const editor = component.locator(".vizel-editor");
-  const link = editor.locator("a");
-  await expect(link).toHaveAttribute("href", "https://example.com");
-}
-
-/** Verify link can be removed via link editor */
-export async function testBubbleMenuLinkEditorRemoveLink(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const linkButton = bubbleMenu.locator('[data-action="link"]');
-  const editor = component.locator(".vizel-editor");
-  const link = editor.locator("a");
-
-  // First, set a link
-  await linkButton.click();
-  const linkEditor = component.locator(".vizel-link-editor");
-  const urlInput = linkEditor.locator(".vizel-link-input");
-  await urlInput.fill("https://example.com");
-  await linkEditor.locator('button[type="submit"]').click();
-
-  // Wait for link editor to close and link to be applied
-  await expect(linkEditor).not.toBeVisible();
-  await expect(link).toHaveCount(1);
-
-  // Re-select text and open link editor
-  await page.keyboard.press("ControlOrMeta+a");
-  await expect(bubbleMenu).toBeVisible();
-  await linkButton.click();
-  await expect(linkEditor).toBeVisible();
-
-  // Click remove button
-  const removeButton = linkEditor.locator(".vizel-link-remove");
-  await removeButton.click();
-
-  // Wait for link editor to close
-  await expect(linkEditor).not.toBeVisible();
-
-  // Link should be removed
-  await expect(link).toHaveCount(0);
-}
-
-/** Verify active state is shown for formatted text */
-export async function testBubbleMenuActiveState(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Type bold text
-  await page.keyboard.press("ControlOrMeta+b");
-  await page.keyboard.type("Bold");
-  await page.keyboard.press("ControlOrMeta+b");
-
-  // Select the bold text
-  await page.keyboard.press("ControlOrMeta+a");
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  await expect(bubbleMenu).toBeVisible();
-
-  const boldButton = bubbleMenu.locator('[data-action="bold"]');
-  // Check if button has is-active class (the data-active might not be set correctly)
-  await expect(boldButton).toHaveClass(/is-active/);
-}
-
-/** Verify text color picker dropdown opens and applies color */
-export async function testBubbleMenuTextColorToggle(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const textColorButton = bubbleMenu.locator('[data-action="textColor"]');
-
-  await textColorButton.click();
-
-  // Dropdown should be visible (rendered inside the color picker container)
-  const dropdown = bubbleMenu.locator(".vizel-color-picker-dropdown");
-  await expect(dropdown).toBeVisible();
-
-  // Click a color swatch (red)
-  const redSwatch = dropdown.locator('[data-color="#ef4444"]');
-  await redSwatch.click();
-
-  // Verify color is applied
-  const editor = component.locator(".vizel-editor");
-  const coloredText = editor.locator('span[style*="color"]');
-  await expect(coloredText).toContainText("Select this text");
-}
-
-/** Verify highlight color picker dropdown opens and applies highlight */
-export async function testBubbleMenuHighlightToggle(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const highlightButton = bubbleMenu.locator('[data-action="highlight"]');
-
-  await highlightButton.click();
-
-  // Dropdown should be visible
-  const dropdown = bubbleMenu.locator(".vizel-color-picker-dropdown");
-  await expect(dropdown).toBeVisible();
-
-  // Click a highlight swatch (yellow)
-  const yellowSwatch = dropdown.locator('[data-color="#fef08a"]');
-  await yellowSwatch.click();
-
-  // Verify highlight is applied
-  const editor = component.locator(".vizel-editor");
-  const highlightedText = editor.locator("mark");
-  await expect(highlightedText).toContainText("Select this text");
-}
-
-/** Verify text color can be reset to default */
-export async function testBubbleMenuTextColorReset(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const textColorButton = bubbleMenu.locator('[data-action="textColor"]');
-
-  // First apply a color
-  await textColorButton.click();
-  const dropdown = bubbleMenu.locator(".vizel-color-picker-dropdown");
-  const redSwatch = dropdown.locator('[data-color="#ef4444"]');
-  await redSwatch.click();
-
-  // Verify color is applied
-  const editor = component.locator(".vizel-editor");
-  await expect(editor.locator('span[style*="color"]')).toContainText("Select this text");
-
-  // Re-select the text
-  await page.keyboard.press("ControlOrMeta+a");
-  await expect(bubbleMenu).toBeVisible();
-
-  // Reset the color
-  await textColorButton.click();
-  const defaultSwatch = dropdown.locator('[data-color="inherit"]');
-  await defaultSwatch.click();
-
-  // Verify color is removed
-  await expect(editor.locator('span[style*="color"]')).toHaveCount(0);
-}
-
-/** Verify highlight can be removed */
-export async function testBubbleMenuHighlightReset(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const highlightButton = bubbleMenu.locator('[data-action="highlight"]');
-
-  // First apply a highlight
-  await highlightButton.click();
-  const dropdown = bubbleMenu.locator(".vizel-color-picker-dropdown");
-  const yellowSwatch = dropdown.locator('[data-color="#fef08a"]');
-  await yellowSwatch.click();
-
-  // Verify highlight is applied
-  const editor = component.locator(".vizel-editor");
-  await expect(editor.locator("mark")).toContainText("Select this text");
-
-  // Re-select the text
-  await page.keyboard.press("ControlOrMeta+a");
-  await expect(bubbleMenu).toBeVisible();
-
-  // Remove the highlight
-  await highlightButton.click();
-  const transparentSwatch = dropdown.locator('[data-color="transparent"]');
-  await transparentSwatch.click();
-
-  // Verify highlight is removed
-  await expect(editor.locator("mark")).toHaveCount(0);
-}
-
-// Node Selector Tests
-
 const NODE_SELECTOR_SELECTOR = "[data-vizel-node-selector]";
 
-/** Verify node selector appears in bubble menu */
-export async function testNodeSelectorAppears(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  await expect(bubbleMenu).toBeVisible();
-
-  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
-  await expect(nodeSelector).toBeVisible();
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously
+// after the framework renders, so poll until the element appears.
+async function resolveEditor(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(".vizel-editor"), { timeout: 15_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(".vizel-editor");
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
 }
 
-/** Verify node selector dropdown opens on click */
-export async function testNodeSelectorDropdownOpens(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
-  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
-
-  await trigger.click();
-
-  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
-  await expect(dropdown).toBeVisible();
+// Resolve the bubble menu element. Tiptap shows the bubble menu only after a
+// text selection is made, so poll until the element appears.
+async function resolveBubbleMenu(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(BUBBLE_MENU_SELECTOR), { timeout: 5_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(BUBBLE_MENU_SELECTOR);
+  if (el === null) throw new Error("expected a [data-vizel-bubble-menu] element");
+  return el;
 }
 
-/** Verify selecting heading 1 converts text */
-export async function testNodeSelectorHeading1(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
-  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
-
-  await trigger.click();
-
-  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
-  const heading1Option = dropdown
-    .locator(".vizel-node-selector-option")
-    .filter({ hasText: "Heading 1" });
-  await heading1Option.click();
-
-  const editor = component.locator(".vizel-editor");
-  const heading1 = editor.locator("h1");
-  await expect(heading1).toContainText("Select this text");
+// Type text into the editor and select all. This triggers the bubble menu,
+// which appears only when the editor has a non-empty text selection.
+async function selectTextInEditor(editorEl: HTMLElement): Promise<void> {
+  const editorLocator = page.elementLocator(editorEl);
+  await userEvent.click(editorLocator);
+  await userEvent.type(editorLocator, "Select this text");
+  await pressKeyChord("Mod", "a");
+  // Wait for the bubble menu to appear before returning, so callers do not race.
+  await expect
+    .poll(() => document.querySelector(BUBBLE_MENU_SELECTOR), { timeout: 5_000 })
+    .not.toBeNull();
 }
 
-/** Verify selecting bullet list converts paragraph */
-export async function testNodeSelectorBulletList(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
-  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
-
-  await trigger.click();
-
-  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
-  const bulletListOption = dropdown
-    .locator(".vizel-node-selector-option")
-    .filter({ hasText: "Bullet List" });
-  await bulletListOption.click();
-
-  const editor = component.locator(".vizel-editor");
-  const bulletList = editor.locator("ul li");
-  await expect(bulletList).toContainText("Select this text");
+// Wait until the bubble menu is no longer visible in the DOM. The bubble menu
+// element stays in the DOM but is hidden when the selection collapses, so poll
+// visibility via `offsetParent` (null when `display:none` or `visibility:hidden`)
+// or check computed style rather than relying on `toBeVisible`, which throws
+// when the locator's underlying element is detached.
+async function waitForBubbleMenuHidden(): Promise<void> {
+  await expect
+    .poll(
+      () => {
+        const el = document.querySelector<HTMLElement>(BUBBLE_MENU_SELECTOR);
+        if (el === null) return true;
+        // An element with `visibility:hidden` or `display:none` is not visible.
+        const style = getComputedStyle(el);
+        return (
+          style.visibility === "hidden" || style.display === "none" || el.offsetParent === null
+        );
+      },
+      { timeout: 5_000 }
+    )
+    .toBe(true);
 }
 
-/** Verify active node type shows check mark */
-export async function testNodeSelectorActiveState(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Type text and convert to heading via NodeSelector
-  await page.keyboard.type("Heading Text");
-  await page.keyboard.press("ControlOrMeta+a");
-
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  await expect(bubbleMenu).toBeVisible();
-
-  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
-  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
-
-  // Convert to Heading 1
-  await trigger.click();
-  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
-  const heading1Option = dropdown
-    .locator(".vizel-node-selector-option")
-    .filter({ hasText: "Heading 1" });
-  await heading1Option.click();
-
-  // Verify heading was created
-  const heading1 = editor.locator("h1");
-  await expect(heading1).toContainText("Heading Text");
-
-  // Re-select the heading and check trigger shows Heading 1
-  await page.keyboard.press("ControlOrMeta+a");
-  await expect(bubbleMenu).toBeVisible();
-
-  // Trigger should now show Heading 1
-  await expect(trigger).toContainText("Heading 1");
-
-  // Open dropdown and verify active state
-  await trigger.click();
-  const heading1OptionAgain = dropdown
-    .locator(".vizel-node-selector-option")
-    .filter({ hasText: "Heading 1" });
-  await expect(heading1OptionAgain).toHaveClass(/is-active/);
+// Wait until a selector produces no match in the document. Prefer this over
+// `expect.element(locator).not.toBeVisible()` when the element may be removed
+// from the DOM, because the locator throws when its backing element is detached.
+async function waitForSelectorGone(selector: string): Promise<void> {
+  await expect.poll(() => document.querySelector(selector), { timeout: 5_000 }).toBeNull();
 }
 
-/** Verify keyboard navigation works in node selector */
-export async function testNodeSelectorKeyboardNavigation(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  await selectTextInEditor(component, page);
+/** Verify the bubble menu appears when text is selected. */
+export const testBubbleMenuAppears: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+  await expect.element(page.elementLocator(bubbleMenu)).toBeVisible();
+};
 
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
-  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
+/** Verify the bubble menu hides when Escape collapses the selection. */
+export const testBubbleMenuHides: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+  await expect.element(page.elementLocator(bubbleMenu)).toBeVisible();
 
-  // Open dropdown by clicking
-  await trigger.click();
+  await userEvent.keyboard("{Escape}");
+  await waitForBubbleMenuHidden();
+};
 
-  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
-  await expect(dropdown).toBeVisible();
+/** Verify the bold button wraps the selection in `<strong>`. */
+export const testBubbleMenuBoldToggle: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
 
-  // Navigate down to Heading 1 (first item is Text, so one ArrowDown gets to Heading 1)
-  await page.keyboard.press("ArrowDown");
-  const heading1Option = dropdown
-    .locator(".vizel-node-selector-option")
-    .filter({ hasText: "Heading 1" });
-  await expect(heading1Option).toHaveClass(/is-focused/);
+  const boldButton = bubbleMenu.querySelector<HTMLElement>('[data-action="bold"]');
+  if (boldButton === null) throw new Error("expected a bold button in the bubble menu");
+  await userEvent.click(page.elementLocator(boldButton));
 
-  // Select with Enter
-  await page.keyboard.press("Enter");
+  await expect
+    .poll(() => editorEl.querySelector("strong")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Select this text");
+};
 
-  const editor = component.locator(".vizel-editor");
-  const heading1 = editor.locator("h1");
-  await expect(heading1).toContainText("Select this text");
-}
+/** Verify the italic button wraps the selection in `<em>`. */
+export const testBubbleMenuItalicToggle: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
 
-/** Verify Escape closes the dropdown */
-export async function testNodeSelectorEscapeCloses(component: Locator, page: Page): Promise<void> {
-  await selectTextInEditor(component, page);
+  const italicButton = bubbleMenu.querySelector<HTMLElement>('[data-action="italic"]');
+  if (italicButton === null) throw new Error("expected an italic button in the bubble menu");
+  await userEvent.click(page.elementLocator(italicButton));
 
-  const bubbleMenu = component.locator(BUBBLE_MENU_SELECTOR);
-  const nodeSelector = bubbleMenu.locator(NODE_SELECTOR_SELECTOR);
-  const trigger = nodeSelector.locator(".vizel-node-selector-trigger");
+  await expect
+    .poll(() => editorEl.querySelector("em")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Select this text");
+};
 
-  await trigger.click();
+/** Verify the strike button wraps the selection in `<s>`. */
+export const testBubbleMenuStrikeToggle: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
 
-  const dropdown = nodeSelector.locator("[data-vizel-node-selector-dropdown]");
-  await expect(dropdown).toBeVisible();
+  const strikeButton = bubbleMenu.querySelector<HTMLElement>('[data-action="strike"]');
+  if (strikeButton === null) throw new Error("expected a strike button in the bubble menu");
+  await userEvent.click(page.elementLocator(strikeButton));
 
-  await page.keyboard.press("Escape");
-  await expect(dropdown).not.toBeVisible();
-}
+  await expect
+    .poll(() => editorEl.querySelector("s")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Select this text");
+};
+
+/** Verify the underline button wraps the selection in `<u>`. */
+export const testBubbleMenuUnderlineToggle: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const underlineButton = bubbleMenu.querySelector<HTMLElement>('[data-action="underline"]');
+  if (underlineButton === null) throw new Error("expected an underline button in the bubble menu");
+  await userEvent.click(page.elementLocator(underlineButton));
+
+  await expect
+    .poll(() => editorEl.querySelector("u")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Select this text");
+};
+
+/** Verify Cmd+U applies underline formatting without using the bubble menu. */
+export const testBubbleMenuUnderlineShortcut: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  const editorLocator = page.elementLocator(editorEl);
+  // Click to focus first; pressKeyChord does not focus the target.
+  await userEvent.click(editorLocator);
+  await pressKeyChord("Mod", "u");
+  await userEvent.keyboard("Underlined");
+  await pressKeyChord("Mod", "u");
+
+  await expect
+    .poll(() => editorEl.querySelector("u")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Underlined");
+};
+
+/** Verify the code button wraps the selection in `<code>`. */
+export const testBubbleMenuCodeToggle: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const codeButton = bubbleMenu.querySelector<HTMLElement>('[data-action="code"]');
+  if (codeButton === null) throw new Error("expected a code button in the bubble menu");
+  await userEvent.click(page.elementLocator(codeButton));
+
+  await expect
+    .poll(() => editorEl.querySelector("code")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Select this text");
+};
+
+/** Verify clicking the link button opens the link editor. */
+export const testBubbleMenuLinkEditor: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const linkButton = bubbleMenu.querySelector<HTMLElement>('[data-action="link"]');
+  if (linkButton === null) throw new Error("expected a link button in the bubble menu");
+  await userEvent.click(page.elementLocator(linkButton));
+
+  await expect
+    .poll(() => document.querySelector(".vizel-link-editor"), { timeout: 5_000 })
+    .not.toBeNull();
+  const linkEditor = document.querySelector<HTMLElement>(".vizel-link-editor");
+  if (linkEditor === null) throw new Error("expected a .vizel-link-editor element");
+  await expect.element(page.elementLocator(linkEditor)).toBeVisible();
+};
+
+/** Verify Escape closes the link editor and restores the bubble menu toolbar. */
+export const testBubbleMenuLinkEditorEscapeCloses: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const linkButton = bubbleMenu.querySelector<HTMLElement>('[data-action="link"]');
+  if (linkButton === null) throw new Error("expected a link button in the bubble menu");
+  await userEvent.click(page.elementLocator(linkButton));
+
+  await expect
+    .poll(() => document.querySelector(".vizel-link-editor"), { timeout: 5_000 })
+    .not.toBeNull();
+  const linkEditor = document.querySelector<HTMLElement>(".vizel-link-editor");
+  if (linkEditor === null) throw new Error("expected a .vizel-link-editor element");
+  await expect.element(page.elementLocator(linkEditor)).toBeVisible();
+
+  await userEvent.keyboard("{Escape}");
+
+  // The link editor closes on Escape; poll until it disappears from the DOM.
+  await waitForSelectorGone(".vizel-link-editor");
+
+  // The toolbar view restores after the link editor closes.
+  await expect
+    .poll(() => bubbleMenu.querySelector(".vizel-bubble-menu-toolbar"), { timeout: 5_000 })
+    .not.toBeNull();
+  const toolbar = bubbleMenu.querySelector<HTMLElement>(".vizel-bubble-menu-toolbar");
+  if (toolbar === null) throw new Error("expected a .vizel-bubble-menu-toolbar element");
+  await expect.element(page.elementLocator(toolbar)).toBeVisible();
+};
+
+/** Verify clicking outside the link editor closes the link editor. */
+export const testBubbleMenuLinkEditorClickOutsideCloses: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const linkButton = bubbleMenu.querySelector<HTMLElement>('[data-action="link"]');
+  if (linkButton === null) throw new Error("expected a link button in the bubble menu");
+  await userEvent.click(page.elementLocator(linkButton));
+
+  await expect
+    .poll(() => document.querySelector(".vizel-link-editor"), { timeout: 5_000 })
+    .not.toBeNull();
+  const linkEditor = document.querySelector<HTMLElement>(".vizel-link-editor");
+  if (linkEditor === null) throw new Error("expected a .vizel-link-editor element");
+  await expect.element(page.elementLocator(linkEditor)).toBeVisible();
+
+  // Dispatch a pointerdown event on the editor element outside the link editor.
+  // The Playwright original clicked the editor body at a specific pixel offset.
+  // In Vitest Browser Mode, `createVizelDismissable` listens for `pointerdown`
+  // on the document, so dispatching a synthetic event on a sibling element
+  // triggers the same outside-click dismissal path. `deferPointerHandler: true`
+  // means the listener is not active on the first tick, but the link editor
+  // mount happens synchronously before this line runs.
+  editorEl.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+
+  // The link editor closes when the outside-click handler fires.
+  await waitForSelectorGone(".vizel-link-editor");
+};
+
+/** Verify the link editor submits a URL and creates an anchor element. */
+export const testBubbleMenuLinkEditorSetLink: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const linkButton = bubbleMenu.querySelector<HTMLElement>('[data-action="link"]');
+  if (linkButton === null) throw new Error("expected a link button in the bubble menu");
+  await userEvent.click(page.elementLocator(linkButton));
+
+  await expect
+    .poll(() => document.querySelector(".vizel-link-editor"), { timeout: 5_000 })
+    .not.toBeNull();
+  const linkEditor = document.querySelector<HTMLElement>(".vizel-link-editor");
+  if (linkEditor === null) throw new Error("expected a .vizel-link-editor element");
+
+  const urlInput = linkEditor.querySelector<HTMLElement>(".vizel-link-input");
+  if (urlInput === null) throw new Error("expected a .vizel-link-input element");
+  await userEvent.fill(page.elementLocator(urlInput), "https://example.com");
+
+  const submitButton = linkEditor.querySelector<HTMLElement>('button[type="submit"]');
+  if (submitButton === null) throw new Error("expected a submit button in the link editor");
+  await userEvent.click(page.elementLocator(submitButton));
+
+  // The link editor closes after submission.
+  await waitForSelectorGone(".vizel-link-editor");
+
+  await expect
+    .poll(() => editorEl.querySelector("a")?.getAttribute("href"), { timeout: 5_000 })
+    .toBe("https://example.com");
+};
+
+/** Verify the link editor removes an existing link via the remove button. */
+export const testBubbleMenuLinkEditorRemoveLink: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const linkButton = bubbleMenu.querySelector<HTMLElement>('[data-action="link"]');
+  if (linkButton === null) throw new Error("expected a link button in the bubble menu");
+
+  // Set a link first.
+  await userEvent.click(page.elementLocator(linkButton));
+  await expect
+    .poll(() => document.querySelector(".vizel-link-editor"), { timeout: 5_000 })
+    .not.toBeNull();
+  const linkEditor = document.querySelector<HTMLElement>(".vizel-link-editor");
+  if (linkEditor === null) throw new Error("expected a .vizel-link-editor element");
+
+  const urlInput = linkEditor.querySelector<HTMLElement>(".vizel-link-input");
+  if (urlInput === null) throw new Error("expected a .vizel-link-input element");
+  await userEvent.fill(page.elementLocator(urlInput), "https://example.com");
+
+  const submitButton = linkEditor.querySelector<HTMLElement>('button[type="submit"]');
+  if (submitButton === null) throw new Error("expected a submit button in the link editor");
+  await userEvent.click(page.elementLocator(submitButton));
+
+  await waitForSelectorGone(".vizel-link-editor");
+  await expect.poll(() => editorEl.querySelectorAll("a").length, { timeout: 5_000 }).toBe(1);
+
+  // Re-select text and open the link editor to remove the link. Re-query the
+  // bubble menu and link button after re-selection: the bubble menu re-renders
+  // when the selection changes, so the original `linkButton` reference is stale.
+  await pressKeyChord("Mod", "a");
+  const bubbleMenu2 = await resolveBubbleMenu();
+  const linkButton2 = bubbleMenu2.querySelector<HTMLElement>('[data-action="link"]');
+  if (linkButton2 === null) throw new Error("expected a link button in the bubble menu");
+  await userEvent.click(page.elementLocator(linkButton2));
+  await expect
+    .poll(() => document.querySelector(".vizel-link-editor"), { timeout: 5_000 })
+    .not.toBeNull();
+  const linkEditorAgain = document.querySelector<HTMLElement>(".vizel-link-editor");
+  if (linkEditorAgain === null) throw new Error("expected a .vizel-link-editor element");
+  await expect.element(page.elementLocator(linkEditorAgain)).toBeVisible();
+
+  const removeButton = linkEditorAgain.querySelector<HTMLElement>(".vizel-link-remove");
+  if (removeButton === null) throw new Error("expected a .vizel-link-remove button");
+  await userEvent.click(page.elementLocator(removeButton));
+
+  await waitForSelectorGone(".vizel-link-editor");
+  await expect.poll(() => editorEl.querySelectorAll("a").length, { timeout: 5_000 }).toBe(0);
+};
+
+/** Verify bold button carries `is-active` class when the cursor is inside bold text. */
+export const testBubbleMenuActiveState: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  const editorLocator = page.elementLocator(editorEl);
+  // Click to focus first; pressKeyChord does not focus the target.
+  await userEvent.click(editorLocator);
+  await pressKeyChord("Mod", "b");
+  await userEvent.keyboard("Bold");
+  await pressKeyChord("Mod", "b");
+  await pressKeyChord("Mod", "a");
+
+  const bubbleMenu = await resolveBubbleMenu();
+  await expect.element(page.elementLocator(bubbleMenu)).toBeVisible();
+
+  const boldButton = bubbleMenu.querySelector<HTMLElement>('[data-action="bold"]');
+  if (boldButton === null) throw new Error("expected a bold button in the bubble menu");
+  await expect.element(page.elementLocator(boldButton)).toHaveClass(/is-active/);
+};
+
+/** Verify the text color picker opens and applies a color span to the selection. */
+export const testBubbleMenuTextColorToggle: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const textColorButton = bubbleMenu.querySelector<HTMLElement>('[data-action="textColor"]');
+  if (textColorButton === null) throw new Error("expected a textColor button in the bubble menu");
+  await userEvent.click(page.elementLocator(textColorButton));
+
+  await expect
+    .poll(() => bubbleMenu.querySelector(".vizel-color-picker-dropdown"), { timeout: 5_000 })
+    .not.toBeNull();
+  const dropdown = bubbleMenu.querySelector<HTMLElement>(".vizel-color-picker-dropdown");
+  if (dropdown === null) throw new Error("expected a .vizel-color-picker-dropdown element");
+  await expect.element(page.elementLocator(dropdown)).toBeVisible();
+
+  const redSwatch = dropdown.querySelector<HTMLElement>('[data-color="#ef4444"]');
+  if (redSwatch === null) throw new Error("expected a red (#ef4444) color swatch");
+  await userEvent.click(page.elementLocator(redSwatch));
+
+  await expect
+    .poll(() => editorEl.querySelector('span[style*="color"]')?.textContent ?? "", {
+      timeout: 15_000,
+    })
+    .toContain("Select this text");
+};
+
+/** Verify the highlight color picker opens and applies a `<mark>` to the selection. */
+export const testBubbleMenuHighlightToggle: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const highlightButton = bubbleMenu.querySelector<HTMLElement>('[data-action="highlight"]');
+  if (highlightButton === null) throw new Error("expected a highlight button in the bubble menu");
+  await userEvent.click(page.elementLocator(highlightButton));
+
+  await expect
+    .poll(() => bubbleMenu.querySelector(".vizel-color-picker-dropdown"), { timeout: 5_000 })
+    .not.toBeNull();
+  const dropdown = bubbleMenu.querySelector<HTMLElement>(".vizel-color-picker-dropdown");
+  if (dropdown === null) throw new Error("expected a .vizel-color-picker-dropdown element");
+  await expect.element(page.elementLocator(dropdown)).toBeVisible();
+
+  const yellowSwatch = dropdown.querySelector<HTMLElement>('[data-color="#fef08a"]');
+  if (yellowSwatch === null) throw new Error("expected a yellow (#fef08a) swatch");
+  await userEvent.click(page.elementLocator(yellowSwatch));
+
+  await expect
+    .poll(() => editorEl.querySelector("mark")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Select this text");
+};
+
+/** Verify the text color resets to the default (no inline color span). */
+export const testBubbleMenuTextColorReset: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const textColorButton = bubbleMenu.querySelector<HTMLElement>('[data-action="textColor"]');
+  if (textColorButton === null) throw new Error("expected a textColor button in the bubble menu");
+
+  // Apply a color first.
+  await userEvent.click(page.elementLocator(textColorButton));
+  await expect
+    .poll(() => bubbleMenu.querySelector(".vizel-color-picker-dropdown"), { timeout: 5_000 })
+    .not.toBeNull();
+  const dropdown = bubbleMenu.querySelector<HTMLElement>(".vizel-color-picker-dropdown");
+  if (dropdown === null) throw new Error("expected a .vizel-color-picker-dropdown element");
+  const redSwatch = dropdown.querySelector<HTMLElement>('[data-color="#ef4444"]');
+  if (redSwatch === null) throw new Error("expected a red (#ef4444) color swatch");
+  await userEvent.click(page.elementLocator(redSwatch));
+
+  await expect
+    .poll(() => editorEl.querySelector('span[style*="color"]'), { timeout: 5_000 })
+    .not.toBeNull();
+
+  // Re-select and reset to default color.
+  await pressKeyChord("Mod", "a");
+  await expect
+    .poll(() => document.querySelector(BUBBLE_MENU_SELECTOR), { timeout: 5_000 })
+    .not.toBeNull();
+
+  // Re-query the dropdown after re-selection, since the bubble menu re-renders.
+  await userEvent.click(page.elementLocator(textColorButton));
+  await expect
+    .poll(() => bubbleMenu.querySelector(".vizel-color-picker-dropdown"), { timeout: 5_000 })
+    .not.toBeNull();
+  const dropdownAgain = bubbleMenu.querySelector<HTMLElement>(".vizel-color-picker-dropdown");
+  if (dropdownAgain === null) throw new Error("expected a .vizel-color-picker-dropdown element");
+  const defaultSwatch = dropdownAgain.querySelector<HTMLElement>('[data-color="inherit"]');
+  if (defaultSwatch === null) throw new Error("expected a default (inherit) color swatch");
+  await userEvent.click(page.elementLocator(defaultSwatch));
+
+  await expect
+    .poll(() => editorEl.querySelectorAll('span[style*="color"]').length, { timeout: 5_000 })
+    .toBe(0);
+};
+
+/** Verify the highlight resets to transparent (no `<mark>` element). */
+export const testBubbleMenuHighlightReset: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const highlightButton = bubbleMenu.querySelector<HTMLElement>('[data-action="highlight"]');
+  if (highlightButton === null) throw new Error("expected a highlight button in the bubble menu");
+
+  // Apply a highlight first.
+  await userEvent.click(page.elementLocator(highlightButton));
+  await expect
+    .poll(() => bubbleMenu.querySelector(".vizel-color-picker-dropdown"), { timeout: 5_000 })
+    .not.toBeNull();
+  const dropdown = bubbleMenu.querySelector<HTMLElement>(".vizel-color-picker-dropdown");
+  if (dropdown === null) throw new Error("expected a .vizel-color-picker-dropdown element");
+  const yellowSwatch = dropdown.querySelector<HTMLElement>('[data-color="#fef08a"]');
+  if (yellowSwatch === null) throw new Error("expected a yellow (#fef08a) swatch");
+  await userEvent.click(page.elementLocator(yellowSwatch));
+
+  await expect.poll(() => editorEl.querySelector("mark"), { timeout: 5_000 }).not.toBeNull();
+
+  // Re-select and remove the highlight.
+  await pressKeyChord("Mod", "a");
+  await expect
+    .poll(() => document.querySelector(BUBBLE_MENU_SELECTOR), { timeout: 5_000 })
+    .not.toBeNull();
+
+  // Re-query the dropdown after re-selection.
+  await userEvent.click(page.elementLocator(highlightButton));
+  await expect
+    .poll(() => bubbleMenu.querySelector(".vizel-color-picker-dropdown"), { timeout: 5_000 })
+    .not.toBeNull();
+  const dropdownAgain = bubbleMenu.querySelector<HTMLElement>(".vizel-color-picker-dropdown");
+  if (dropdownAgain === null) throw new Error("expected a .vizel-color-picker-dropdown element");
+  const transparentSwatch = dropdownAgain.querySelector<HTMLElement>('[data-color="transparent"]');
+  if (transparentSwatch === null) throw new Error("expected a transparent swatch");
+  await userEvent.click(page.elementLocator(transparentSwatch));
+
+  await expect.poll(() => editorEl.querySelectorAll("mark").length, { timeout: 5_000 }).toBe(0);
+};
+
+// Node Selector scenarios
+
+/** Verify the node selector component appears in the bubble menu. */
+export const testNodeSelectorAppears: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+  await expect.element(page.elementLocator(bubbleMenu)).toBeVisible();
+
+  const nodeSelector = bubbleMenu.querySelector<HTMLElement>(NODE_SELECTOR_SELECTOR);
+  if (nodeSelector === null) throw new Error("expected a [data-vizel-node-selector] element");
+  await expect.element(page.elementLocator(nodeSelector)).toBeVisible();
+};
+
+/** Verify clicking the node selector trigger opens the dropdown. */
+export const testNodeSelectorDropdownOpens: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const nodeSelector = bubbleMenu.querySelector<HTMLElement>(NODE_SELECTOR_SELECTOR);
+  if (nodeSelector === null) throw new Error("expected a [data-vizel-node-selector] element");
+  const trigger = nodeSelector.querySelector<HTMLElement>(".vizel-node-selector-trigger");
+  if (trigger === null) throw new Error("expected a .vizel-node-selector-trigger element");
+  await userEvent.click(page.elementLocator(trigger));
+
+  await expect
+    .poll(() => nodeSelector.querySelector("[data-vizel-node-selector-dropdown]"), {
+      timeout: 5_000,
+    })
+    .not.toBeNull();
+  const dropdown = nodeSelector.querySelector<HTMLElement>("[data-vizel-node-selector-dropdown]");
+  if (dropdown === null) throw new Error("expected a [data-vizel-node-selector-dropdown] element");
+  await expect.element(page.elementLocator(dropdown)).toBeVisible();
+};
+
+/** Verify selecting "Heading 1" converts the current paragraph to an H1. */
+export const testNodeSelectorHeading1: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const nodeSelector = bubbleMenu.querySelector<HTMLElement>(NODE_SELECTOR_SELECTOR);
+  if (nodeSelector === null) throw new Error("expected a [data-vizel-node-selector] element");
+  const trigger = nodeSelector.querySelector<HTMLElement>(".vizel-node-selector-trigger");
+  if (trigger === null) throw new Error("expected a .vizel-node-selector-trigger element");
+  await userEvent.click(page.elementLocator(trigger));
+
+  await expect
+    .poll(() => nodeSelector.querySelector("[data-vizel-node-selector-dropdown]"), {
+      timeout: 5_000,
+    })
+    .not.toBeNull();
+  const dropdown = nodeSelector.querySelector<HTMLElement>("[data-vizel-node-selector-dropdown]");
+  if (dropdown === null) throw new Error("expected a [data-vizel-node-selector-dropdown] element");
+
+  const options = Array.from(dropdown.querySelectorAll<HTMLElement>(".vizel-node-selector-option"));
+  const heading1Option = options.find((el) => el.textContent?.includes("Heading 1"));
+  if (heading1Option === undefined) throw new Error("expected a Heading 1 option");
+  await userEvent.click(page.elementLocator(heading1Option));
+
+  await expect
+    .poll(() => editorEl.querySelector("h1")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Select this text");
+};
+
+/** Verify selecting "Bullet List" converts the current paragraph to a list item. */
+export const testNodeSelectorBulletList: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const nodeSelector = bubbleMenu.querySelector<HTMLElement>(NODE_SELECTOR_SELECTOR);
+  if (nodeSelector === null) throw new Error("expected a [data-vizel-node-selector] element");
+  const trigger = nodeSelector.querySelector<HTMLElement>(".vizel-node-selector-trigger");
+  if (trigger === null) throw new Error("expected a .vizel-node-selector-trigger element");
+  await userEvent.click(page.elementLocator(trigger));
+
+  await expect
+    .poll(() => nodeSelector.querySelector("[data-vizel-node-selector-dropdown]"), {
+      timeout: 5_000,
+    })
+    .not.toBeNull();
+  const dropdown = nodeSelector.querySelector<HTMLElement>("[data-vizel-node-selector-dropdown]");
+  if (dropdown === null) throw new Error("expected a [data-vizel-node-selector-dropdown] element");
+
+  const options = Array.from(dropdown.querySelectorAll<HTMLElement>(".vizel-node-selector-option"));
+  const bulletListOption = options.find((el) => el.textContent?.includes("Bullet List"));
+  if (bulletListOption === undefined) throw new Error("expected a Bullet List option");
+  await userEvent.click(page.elementLocator(bulletListOption));
+
+  await expect
+    .poll(() => editorEl.querySelector("ul li")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Select this text");
+};
+
+/**
+ * Verify the active node type is reflected in the trigger label and option class.
+ *
+ * After converting to Heading 1, re-selecting the heading should show "Heading 1"
+ * in the trigger and mark the matching option as `is-active` in the dropdown.
+ */
+export const testNodeSelectorActiveState: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  const editorLocator = page.elementLocator(editorEl);
+  await userEvent.click(editorLocator);
+  await userEvent.type(editorLocator, "Heading Text");
+  await pressKeyChord("Mod", "a");
+
+  const bubbleMenu = await resolveBubbleMenu();
+  await expect.element(page.elementLocator(bubbleMenu)).toBeVisible();
+
+  const nodeSelector = bubbleMenu.querySelector<HTMLElement>(NODE_SELECTOR_SELECTOR);
+  if (nodeSelector === null) throw new Error("expected a [data-vizel-node-selector] element");
+  const trigger = nodeSelector.querySelector<HTMLElement>(".vizel-node-selector-trigger");
+  if (trigger === null) throw new Error("expected a .vizel-node-selector-trigger element");
+
+  // Convert to Heading 1.
+  await userEvent.click(page.elementLocator(trigger));
+  await expect
+    .poll(() => nodeSelector.querySelector("[data-vizel-node-selector-dropdown]"), {
+      timeout: 5_000,
+    })
+    .not.toBeNull();
+  const dropdown = nodeSelector.querySelector<HTMLElement>("[data-vizel-node-selector-dropdown]");
+  if (dropdown === null) throw new Error("expected a [data-vizel-node-selector-dropdown] element");
+
+  const options = Array.from(dropdown.querySelectorAll<HTMLElement>(".vizel-node-selector-option"));
+  const heading1Option = options.find((el) => el.textContent?.includes("Heading 1"));
+  if (heading1Option === undefined) throw new Error("expected a Heading 1 option");
+  await userEvent.click(page.elementLocator(heading1Option));
+
+  await expect
+    .poll(() => editorEl.querySelector("h1")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Heading Text");
+
+  // Re-select and verify trigger label.
+  await pressKeyChord("Mod", "a");
+  await expect
+    .poll(() => document.querySelector(BUBBLE_MENU_SELECTOR), { timeout: 5_000 })
+    .not.toBeNull();
+
+  await expect.poll(() => trigger.textContent, { timeout: 5_000 }).toContain("Heading 1");
+
+  // Verify active class on the option after opening the dropdown again. Re-query
+  // the dropdown after clicking the trigger: the dropdown re-renders on each
+  // open, so option elements from the first open are detached and stale.
+  await userEvent.click(page.elementLocator(trigger));
+  await expect
+    .poll(() => nodeSelector.querySelector("[data-vizel-node-selector-dropdown]"), {
+      timeout: 5_000,
+    })
+    .not.toBeNull();
+  const dropdown2 = nodeSelector.querySelector<HTMLElement>("[data-vizel-node-selector-dropdown]");
+  if (dropdown2 === null) throw new Error("expected a [data-vizel-node-selector-dropdown] element");
+  const updatedOptions = Array.from(
+    dropdown2.querySelectorAll<HTMLElement>(".vizel-node-selector-option")
+  );
+  const activeOption = updatedOptions.find((el) => el.textContent?.includes("Heading 1"));
+  if (activeOption === undefined) throw new Error("expected a Heading 1 option");
+  await expect.element(page.elementLocator(activeOption)).toHaveClass(/is-active/);
+};
+
+/** Verify ArrowDown focuses the next option and Enter selects it. */
+export const testNodeSelectorKeyboardNavigation: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const nodeSelector = bubbleMenu.querySelector<HTMLElement>(NODE_SELECTOR_SELECTOR);
+  if (nodeSelector === null) throw new Error("expected a [data-vizel-node-selector] element");
+  const trigger = nodeSelector.querySelector<HTMLElement>(".vizel-node-selector-trigger");
+  if (trigger === null) throw new Error("expected a .vizel-node-selector-trigger element");
+
+  await userEvent.click(page.elementLocator(trigger));
+  await expect
+    .poll(() => nodeSelector.querySelector("[data-vizel-node-selector-dropdown]"), {
+      timeout: 5_000,
+    })
+    .not.toBeNull();
+  const dropdown = nodeSelector.querySelector<HTMLElement>("[data-vizel-node-selector-dropdown]");
+  if (dropdown === null) throw new Error("expected a [data-vizel-node-selector-dropdown] element");
+  await expect.element(page.elementLocator(dropdown)).toBeVisible();
+
+  // Navigate to the first non-Text option (Heading 1).
+  await userEvent.keyboard("{ArrowDown}");
+
+  const heading1Option = Array.from(
+    dropdown.querySelectorAll<HTMLElement>(".vizel-node-selector-option")
+  ).find((el) => el.textContent?.includes("Heading 1"));
+  if (heading1Option === undefined) throw new Error("expected a Heading 1 option");
+  await expect.element(page.elementLocator(heading1Option)).toHaveClass(/is-focused/);
+
+  // Select with Enter.
+  await userEvent.keyboard("{Enter}");
+
+  await expect
+    .poll(() => editorEl.querySelector("h1")?.textContent ?? "", { timeout: 15_000 })
+    .toContain("Select this text");
+};
+
+/** Verify Escape closes the node selector dropdown without changing the node type. */
+export const testNodeSelectorEscapeCloses: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  await selectTextInEditor(editorEl);
+  const bubbleMenu = await resolveBubbleMenu();
+
+  const nodeSelector = bubbleMenu.querySelector<HTMLElement>(NODE_SELECTOR_SELECTOR);
+  if (nodeSelector === null) throw new Error("expected a [data-vizel-node-selector] element");
+  const trigger = nodeSelector.querySelector<HTMLElement>(".vizel-node-selector-trigger");
+  if (trigger === null) throw new Error("expected a .vizel-node-selector-trigger element");
+
+  await userEvent.click(page.elementLocator(trigger));
+  await expect
+    .poll(() => nodeSelector.querySelector("[data-vizel-node-selector-dropdown]"), {
+      timeout: 5_000,
+    })
+    .not.toBeNull();
+  const dropdown = nodeSelector.querySelector<HTMLElement>("[data-vizel-node-selector-dropdown]");
+  if (dropdown === null) throw new Error("expected a [data-vizel-node-selector-dropdown] element");
+  await expect.element(page.elementLocator(dropdown)).toBeVisible();
+
+  await userEvent.keyboard("{Escape}");
+  // Poll until the dropdown disappears or is no longer visible.
+  await expect
+    .poll(
+      () => {
+        const el = nodeSelector.querySelector<HTMLElement>("[data-vizel-node-selector-dropdown]");
+        if (el === null) return true;
+        const style = getComputedStyle(el);
+        return (
+          style.visibility === "hidden" || style.display === "none" || el.offsetParent === null
+        );
+      },
+      { timeout: 5_000 }
+    )
+    .toBe(true);
+};

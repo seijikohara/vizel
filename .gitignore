@@ -45,11 +45,8 @@ docs/api/generated
 
 # Finder (MacOS) folder config
 .DS_Store
-# Playwright / E2E testing
+# Playwright MCP server scratch output (unrelated to the test runner)
 .playwright-mcp/
-playwright-report/
-test-results/
-blob-report/
 
 # Claude Code (local-only)
 .claude/settings.local.json
@@ -58,3 +55,10 @@ CLAUDE.local.md
 
 # Claude Code transient lock file
 .claude/scheduled_tasks.lock
+
+# Vitest browser failure screenshots and attachments (generated).
+# The visual suite's committed baselines under tests/visual/specs/__screenshots__
+# are intentionally tracked and excluded from these patterns.
+tests/ct/*/specs/__screenshots__/
+tests/a11y/*/specs/__screenshots__/
+tests/**/.vitest-attachments/

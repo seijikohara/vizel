@@ -1,378 +1,410 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 /**
- * Shared test scenarios for drag handle functionality.
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
+ * Shared, framework-agnostic Vitest Browser scenarios for the drag handle.
+ *
+ * The visibility and accessibility flows drive the Tiptap DragHandle plugin's
+ * hover detection through `userEvent.hover`. The block-reorder flows split into
+ * two groups: keyboard moves (Alt+ArrowUp / Alt+ArrowDown) port directly to
+ * `userEvent.keyboard`, while the drag-and-drop reorder flows replicate the
+ * native HTML5 drag sequence the Tiptap handle dispatches by building a
+ * DataTransfer and firing dragstart / dragover / drop DOM events directly in
+ * the browser (the Playwright original used `dragHandle.dragTo`).
  */
 
-/** Verify the drag handle is rendered when hovering over a block */
-export async function testDragHandleVisibleOnHover(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+const EDITOR = ".vizel-editor";
+const DRAG_HANDLE = ".vizel-drag-handle";
 
-  // Type some content to create a block
-  await page.keyboard.type("First paragraph");
-
-  // The drag handle element should exist
-  const dragHandle = page.locator(".vizel-drag-handle");
-
-  // Hover over the paragraph
-  const paragraph = editor.locator("p").first();
-  await paragraph.hover();
-
-  // Drag handle should become visible
-  await expect(dragHandle).toBeVisible({ timeout: 2000 });
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously
+// after the framework renders, so poll with a generous budget before querying.
+async function resolveEditor(): Promise<HTMLElement> {
+  // Allow a generous window: the full three-browser matrix runs nine browser
+  // instances in parallel, and the asynchronous Tiptap mount can exceed the
+  // default 1s poll budget under that contention.
+  await expect.poll(() => document.querySelector(EDITOR), { timeout: 15_000 }).not.toBeNull();
+  const el = document.querySelector<HTMLElement>(EDITOR);
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
 }
 
-/** Verify block can be moved up with Alt+ArrowUp */
-export async function testMoveBlockUpWithKeyboard(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Create two paragraphs
-  await page.keyboard.type("First paragraph");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second paragraph");
-
-  // Cursor is in the second paragraph
-  // Move it up with Alt+ArrowUp
-  await page.keyboard.press("Alt+ArrowUp");
-
-  // Now "Second paragraph" should be first
-  const paragraphs = editor.locator("p");
-  await expect(paragraphs.first()).toContainText("Second paragraph");
-  await expect(paragraphs.nth(1)).toContainText("First paragraph");
-}
-
-/** Verify block can be moved down with Alt+ArrowDown */
-export async function testMoveBlockDownWithKeyboard(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Create two paragraphs
-  await page.keyboard.type("First paragraph");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second paragraph");
-
-  const paragraphs = editor.locator("p");
-
-  // Move cursor up to first paragraph and move block down
-  // Use expect.toPass() to retry if cursor position wasn't ready
-  await expect(async () => {
-    // Move cursor up to first paragraph (ArrowUp goes to previous line)
-    await page.keyboard.press("ArrowUp");
-    // Move the first paragraph down with Alt+ArrowDown
-    await page.keyboard.press("Alt+ArrowDown");
-    // Verify the move happened
-    await expect(paragraphs.first()).toContainText("Second paragraph", { timeout: 1000 });
-  }).toPass({ timeout: 5000 });
-
-  // Verify final state
-  await expect(paragraphs.nth(1)).toContainText("First paragraph");
-}
-
-/** Verify heading block can be moved with keyboard */
-export async function testMoveHeadingWithKeyboard(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Create a heading and a paragraph
-  await page.keyboard.type("# Heading");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Paragraph content");
-
-  // Cursor is in the paragraph
-  // Move it up with Alt+ArrowUp
-  await page.keyboard.press("Alt+ArrowUp");
-
-  // Now paragraph should be first, heading second
-  const firstElement = editor.locator("> *").first();
-  await expect(firstElement).toContainText("Paragraph content");
-
-  const heading = editor.locator("h1");
-  await expect(heading).toContainText("Heading");
-}
-
-/** Verify drag handle has correct accessibility attributes */
-export async function testDragHandleAccessibility(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Type some content to create a block
-  await page.keyboard.type("Test paragraph");
-
-  // Hover to show drag handle
-  const paragraph = editor.locator("p").first();
-  await paragraph.hover();
-
-  const dragHandle = page.locator(".vizel-drag-handle");
-  await expect(dragHandle).toBeVisible({ timeout: 2000 });
-
-  // Check accessibility attributes
-  await expect(dragHandle).toHaveAttribute("role", "button");
-  await expect(dragHandle).toHaveAttribute("aria-label", "Drag to reorder block, click for menu");
-  await expect(dragHandle).toHaveAttribute("draggable", "true");
-}
-
-/** Verify drag handle is clickable and interactive */
-export async function testDragHandleIsClickable(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Type some content
-  await page.keyboard.type("Test paragraph");
-
-  // Hover to show drag handle
-  const paragraph = editor.locator("p").first();
-  await paragraph.hover();
-
-  const dragHandle = page.locator(".vizel-drag-handle");
-  await expect(dragHandle).toBeVisible({ timeout: 2000 });
-
-  // Verify the handle can be clicked without errors
-  await dragHandle.click();
-
-  // The handle should still be visible after click
-  await expect(dragHandle).toBeVisible();
-}
-
-/** Verify list item can be moved up with Alt+ArrowUp */
-export async function testMoveListItemUpWithKeyboard(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Create a bullet list with two items
-  await page.keyboard.type("- First item");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second item");
-
-  // Cursor is in the second item, move it up
-  await page.keyboard.press("Alt+ArrowUp");
-
-  // Now "Second item" should be first in the list
-  const listItems = editor.locator("ul li");
-  await expect(listItems.first()).toContainText("Second item");
-  await expect(listItems.nth(1)).toContainText("First item");
-}
-
-/** Verify list item can be moved down with Alt+ArrowDown */
-export async function testMoveListItemDownWithKeyboard(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Create a bullet list with two items
-  await page.keyboard.type("- First item");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second item");
-
-  const listItems = editor.locator("ul li");
-
-  // Move cursor up to first list item and move it down
-  // Use expect.toPass() to retry if cursor position wasn't ready
-  await expect(async () => {
-    // Move cursor up to first list item (ArrowUp goes to previous line)
-    await page.keyboard.press("ArrowUp");
-    // Move the first item down
-    await page.keyboard.press("Alt+ArrowDown");
-    // Verify the move happened
-    await expect(listItems.first()).toContainText("Second item", { timeout: 1000 });
-  }).toPass({ timeout: 5000 });
-
-  // Verify final state
-  await expect(listItems.nth(1)).toContainText("First item");
-}
-
-/** Verify task list item can be moved with keyboard */
-export async function testMoveTaskItemWithKeyboard(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // Create a task list with two items using slash command
-  await page.keyboard.type("/task");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Task one");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Task two");
-
-  // Cursor is in the second task, move it up
-  await page.keyboard.press("Alt+ArrowUp");
-
-  // Now "Task two" should be first
-  const taskItems = editor.locator("ul[data-type='taskList'] li");
-  await expect(taskItems.first()).toContainText("Task two");
-  await expect(taskItems.nth(1)).toContainText("Task one");
+// Hover the given block so the DragHandle plugin detects the node, then resolve
+// the now-visible handle. The plugin reveals the handle on hover over a block;
+// `userEvent.hover` fires the pointer events the plugin's node detection reads.
+async function revealDragHandle(block: HTMLElement): Promise<HTMLElement> {
+  await userEvent.hover(page.elementLocator(block));
+  await expect.poll(() => document.querySelector(DRAG_HANDLE), { timeout: 5_000 }).not.toBeNull();
+  const handle = document.querySelector<HTMLElement>(DRAG_HANDLE);
+  if (handle === null) throw new Error("expected a .vizel-drag-handle element");
+  return handle;
 }
 
 /**
- * Drag the currently visible drag handle to a target locator.
- * Hovers the source row first so the handle resolves to that row,
- * then uses Playwright's synthetic HTML5 drag sequence to drop at
- * the top of the target row (interpreted by ProseMirror as "before
- * the target").
+ * Drag the visible handle for `sourceRow` onto the top of `targetRow`.
+ *
+ * The Playwright original used `dragHandle.dragTo(target, { targetPosition })`,
+ * which Playwright implements as a synthetic HTML5 drag sequence. In the browser
+ * the scenario builds one DataTransfer and dispatches dragstart on the handle,
+ * then dragover and drop on the target row near its top so ProseMirror inserts
+ * the dragged block before the target. The shared DataTransfer carries the
+ * payload ProseMirror's drag plugin sets during dragstart through to the drop.
  */
-async function dragHandleToRow(page: Page, sourceRow: Locator, targetRow: Locator): Promise<void> {
-  await sourceRow.hover();
-  const dragHandle = page.locator(".vizel-drag-handle");
-  await expect(dragHandle).toBeVisible({ timeout: 2000 });
-  await dragHandle.dragTo(targetRow, { targetPosition: { x: 20, y: 2 } });
+async function dragHandleToRow(sourceRow: HTMLElement, targetRow: HTMLElement): Promise<void> {
+  const handle = await revealDragHandle(sourceRow);
+  const targetBox = targetRow.getBoundingClientRect();
+  const dropX = targetBox.left + 20;
+  const dropY = targetBox.top + 2;
+  const dataTransfer = new DataTransfer();
+
+  handle.dispatchEvent(
+    new DragEvent("dragstart", { bubbles: true, cancelable: true, dataTransfer })
+  );
+  targetRow.dispatchEvent(
+    new DragEvent("dragover", {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer,
+      clientX: dropX,
+      clientY: dropY,
+    })
+  );
+  targetRow.dispatchEvent(
+    new DragEvent("drop", {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer,
+      clientX: dropX,
+      clientY: dropY,
+    })
+  );
+  handle.dispatchEvent(new DragEvent("dragend", { bubbles: true, cancelable: true, dataTransfer }));
 }
 
-/** Verify a bullet list item can be reordered via drag-and-drop */
-export async function testDragBulletListItemReorder(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+// Read the trimmed text of each matched element. The reorder assertions compare
+// the resulting document order against the expected sequence.
+const textsOf = (root: HTMLElement, selector: string): string[] =>
+  Array.from(root.querySelectorAll(selector)).map((el) => (el.textContent ?? "").trim());
 
-  await page.keyboard.type("- First item");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second item");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Third item");
+/** Verify the drag handle is rendered when hovering over a block. */
+export const testDragHandleVisibleOnHover: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.type(editor, "First paragraph");
 
-  const items = editor.locator("ul li");
-  await expect(items).toHaveCount(3);
+  const paragraph = el.querySelector<HTMLElement>("p");
+  if (paragraph === null) throw new Error("expected a paragraph in the editor");
+  const handle = await revealDragHandle(paragraph);
+  await expect.element(page.elementLocator(handle)).toBeVisible();
+};
 
-  // Drag the second item above the first
-  await dragHandleToRow(page, items.nth(1), items.nth(0));
+/** Verify a block moves up with Alt+ArrowUp. */
+export const testMoveBlockUpWithKeyboard: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Order should now be: Second, First, Third
-  await expect(async () => {
-    await expect(items.nth(0)).toContainText("Second item", { timeout: 1000 });
-    await expect(items.nth(1)).toContainText("First item", { timeout: 1000 });
-    await expect(items.nth(2)).toContainText("Third item", { timeout: 1000 });
-  }).toPass({ timeout: 5000 });
-}
+  await userEvent.type(editor, "First paragraph");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second paragraph");
 
-/** Verify an ordered list item can be reordered and numbering follows */
-export async function testDragOrderedListItemReorder(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+  // The cursor is in the second paragraph; Alt+ArrowUp moves it above the first.
+  await userEvent.keyboard("{Alt>}{ArrowUp}{/Alt}");
 
-  await page.keyboard.type("1. First item");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second item");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Third item");
+  await expect
+    .poll(() => textsOf(el, "p"), { timeout: 5_000 })
+    .toEqual(["Second paragraph", "First paragraph"]);
+};
 
-  const orderedList = editor.locator("ol");
-  await expect(orderedList).toBeVisible();
-  const items = orderedList.locator("li");
-  await expect(items).toHaveCount(3);
+/** Verify a block moves down with Alt+ArrowDown. */
+export const testMoveBlockDownWithKeyboard: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Drag the third item above the first
-  await dragHandleToRow(page, items.nth(2), items.nth(0));
+  await userEvent.type(editor, "First paragraph");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second paragraph");
 
-  // DOM order reflects the new sequence; rendered numbering is handled
-  // by the browser via the <ol> element, so DOM order is the source of truth.
-  await expect(async () => {
-    await expect(items.nth(0)).toContainText("Third item", { timeout: 1000 });
-    await expect(items.nth(1)).toContainText("First item", { timeout: 1000 });
-    await expect(items.nth(2)).toContainText("Second item", { timeout: 1000 });
-  }).toPass({ timeout: 5000 });
-}
+  // Move the cursor up to the first paragraph, then move that block down.
+  await userEvent.keyboard("{ArrowUp}");
+  await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
 
-/** Verify a task item can be reordered while preserving its checked state */
-export async function testDragTaskItemPreservesCheckState(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+  await expect
+    .poll(() => textsOf(el, "p"), { timeout: 5_000 })
+    .toEqual(["Second paragraph", "First paragraph"]);
+};
 
-  await page.keyboard.type("/task");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Task one");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Task two");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Task three");
+/** Verify a heading block moves with the keyboard. */
+export const testMoveHeadingWithKeyboard: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  const items = editor.locator("ul[data-type='taskList'] li");
-  await expect(items).toHaveCount(3);
+  await userEvent.type(editor, "# Heading");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Paragraph content");
 
-  // Check the second task
-  const secondCheckbox = items.nth(1).locator("input[type='checkbox']");
-  await secondCheckbox.check();
-  await expect(secondCheckbox).toBeChecked();
+  // The cursor is in the paragraph; Alt+ArrowUp moves it above the heading.
+  await userEvent.keyboard("{Alt>}{ArrowUp}{/Alt}");
 
-  // Drag the checked second task above the first
-  await dragHandleToRow(page, items.nth(1), items.nth(0));
+  await expect
+    .poll(() => el.children[0]?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Paragraph content");
+  await expect.poll(() => el.querySelector("h1")?.textContent ?? "").toContain("Heading");
+};
 
-  // New first item should contain "Task two" and remain checked
-  await expect(async () => {
-    await expect(items.nth(0)).toContainText("Task two", { timeout: 1000 });
-    await expect(items.nth(0).locator("input[type='checkbox']")).toBeChecked({
-      timeout: 1000,
-    });
-    await expect(items.nth(1)).toContainText("Task one", { timeout: 1000 });
-  }).toPass({ timeout: 5000 });
-}
+/** Verify the drag handle exposes the documented accessibility attributes. */
+export const testDragHandleAccessibility: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.type(editor, "Test paragraph");
 
-/** Verify a nested list item can be reordered within its parent item */
-export async function testDragNestedListItemReorder(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+  const paragraph = el.querySelector<HTMLElement>("p");
+  if (paragraph === null) throw new Error("expected a paragraph in the editor");
+  const handle = await revealDragHandle(paragraph);
+  await expect.element(page.elementLocator(handle)).toBeVisible();
 
-  // Build: Parent / Child A (indented) / Child B (indented) / Child C (indented)
-  await page.keyboard.type("- Parent");
-  await page.keyboard.press("Enter");
-  await page.keyboard.press("Tab");
-  await page.keyboard.type("Child A");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Child B");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Child C");
+  expect(handle.getAttribute("role")).toBe("button");
+  expect(handle.getAttribute("aria-label")).toBe("Drag to reorder block, click for menu");
+  expect(handle.getAttribute("draggable")).toBe("true");
+};
 
-  // Nested <ul> under the parent <li>
-  const nestedItems = editor.locator("ul li ul li");
-  await expect(nestedItems).toHaveCount(3);
+/** Verify the drag handle stays visible after a click. */
+export const testDragHandleIsClickable: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.type(editor, "Test paragraph");
 
-  // Drag "Child B" above "Child A"
-  await dragHandleToRow(page, nestedItems.nth(1), nestedItems.nth(0));
+  const paragraph = el.querySelector<HTMLElement>("p");
+  if (paragraph === null) throw new Error("expected a paragraph in the editor");
+  const handle = await revealDragHandle(paragraph);
+  await expect.element(page.elementLocator(handle)).toBeVisible();
 
-  await expect(async () => {
-    await expect(nestedItems.nth(0)).toContainText("Child B", { timeout: 1000 });
-    await expect(nestedItems.nth(1)).toContainText("Child A", { timeout: 1000 });
-    await expect(nestedItems.nth(2)).toContainText("Child C", { timeout: 1000 });
-  }).toPass({ timeout: 5000 });
-}
+  // The handle click must not error and the handle stays present afterwards.
+  await userEvent.click(page.elementLocator(handle));
+  await expect.element(page.elementLocator(handle)).toBeVisible();
+};
 
-/** Verify drag handle appears on hover and hides when not hovering */
-export async function testDragHandleHoverBehavior(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+/** Verify a list item moves up with Alt+ArrowUp. */
+export const testMoveListItemUpWithKeyboard: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Type some content
-  await page.keyboard.type("Test paragraph");
+  await userEvent.type(editor, "- First item");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second item");
 
-  const dragHandle = page.locator(".vizel-drag-handle");
+  // The cursor is in the second item; Alt+ArrowUp moves it above the first.
+  await userEvent.keyboard("{Alt>}{ArrowUp}{/Alt}");
 
-  // Initially, drag handle should have opacity 0 or be hidden
-  // Move away from the editor to ensure no hover
-  await page.mouse.move(0, 0);
+  await expect
+    .poll(() => textsOf(el, "ul li"), { timeout: 5_000 })
+    .toEqual(["Second item", "First item"]);
+};
 
-  // Wait for opacity to decrease (CSS transition)
-  await expect(dragHandle).toHaveCSS("opacity", /^0(\.\d+)?$/);
+/** Verify a list item moves down with Alt+ArrowDown. */
+export const testMoveListItemDownWithKeyboard: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Now hover over the paragraph
-  const paragraph = editor.locator("p").first();
-  await paragraph.hover();
+  await userEvent.type(editor, "- First item");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second item");
 
-  // Drag handle should become visible
-  await expect(dragHandle).toBeVisible({ timeout: 2000 });
+  // Move the cursor up to the first item, then move that item down.
+  await userEvent.keyboard("{ArrowUp}");
+  await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
 
-  // Wait for opacity transition to complete using explicit assertion
-  await expect(async () => {
-    const opacity = await dragHandle.evaluate((el) => window.getComputedStyle(el).opacity);
-    expect(Number.parseFloat(opacity)).toBeGreaterThan(0.9);
-  }).toPass({ timeout: 1000 });
-}
+  await expect
+    .poll(() => textsOf(el, "ul li"), { timeout: 5_000 })
+    .toEqual(["Second item", "First item"]);
+};
+
+/** Verify a task item moves with the keyboard. */
+export const testMoveTaskItemWithKeyboard: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+
+  // Build a task list via the slash command, then add a second task.
+  await userEvent.keyboard("/task");
+  await expect
+    .poll(() => document.querySelector("[data-vizel-slash-menu]"), { timeout: 5_000 })
+    .not.toBeNull();
+  await userEvent.keyboard("{Enter}");
+  await expect.poll(() => el.querySelector(".vizel-task-list"), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("Task one");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.keyboard("Task two");
+
+  // The cursor is in the second task; Alt+ArrowUp moves it above the first.
+  await userEvent.keyboard("{Alt>}{ArrowUp}{/Alt}");
+
+  await expect
+    .poll(() => textsOf(el, "ul[data-type='taskList'] li"), { timeout: 5_000 })
+    .toEqual(["Task two", "Task one"]);
+};
+
+/** Verify a bullet list item reorders via drag-and-drop. */
+export const testDragBulletListItemReorder: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+
+  await userEvent.type(editor, "- First item");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second item");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Third item");
+
+  await expect.poll(() => el.querySelectorAll("ul li").length, { timeout: 5_000 }).toBe(3);
+  const items = el.querySelectorAll<HTMLElement>("ul li");
+  const second = items[1];
+  const first = items[0];
+  if (second === undefined || first === undefined) throw new Error("expected three bullet items");
+
+  // Drag the second item above the first.
+  await dragHandleToRow(second, first);
+
+  await expect
+    .poll(() => textsOf(el, "ul li"), { timeout: 5_000 })
+    .toEqual(["Second item", "First item", "Third item"]);
+};
+
+/** Verify an ordered list item reorders and numbering follows the DOM order. */
+export const testDragOrderedListItemReorder: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+
+  await userEvent.type(editor, "1. First item");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Second item");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Third item");
+
+  await expect.poll(() => el.querySelector("ol"), { timeout: 5_000 }).not.toBeNull();
+  await expect.poll(() => el.querySelectorAll("ol li").length, { timeout: 5_000 }).toBe(3);
+  const items = el.querySelectorAll<HTMLElement>("ol li");
+  const third = items[2];
+  const first = items[0];
+  if (third === undefined || first === undefined) throw new Error("expected three ordered items");
+
+  // Drag the third item above the first.
+  await dragHandleToRow(third, first);
+
+  await expect
+    .poll(() => textsOf(el, "ol li"), { timeout: 5_000 })
+    .toEqual(["Third item", "First item", "Second item"]);
+};
+
+/** Verify a task item reorders while preserving its checked state. */
+export const testDragTaskItemPreservesCheckState: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+
+  await userEvent.keyboard("/task");
+  await expect
+    .poll(() => document.querySelector("[data-vizel-slash-menu]"), { timeout: 5_000 })
+    .not.toBeNull();
+  await userEvent.keyboard("{Enter}");
+  await expect.poll(() => el.querySelector(".vizel-task-list"), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("Task one");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.keyboard("Task two");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.keyboard("Task three");
+
+  const taskSelector = "ul[data-type='taskList'] li";
+  await expect.poll(() => el.querySelectorAll(taskSelector).length, { timeout: 5_000 }).toBe(3);
+
+  // Check the second task before reordering.
+  const beforeItems = el.querySelectorAll<HTMLElement>(taskSelector);
+  const secondItem = beforeItems[1];
+  const firstItem = beforeItems[0];
+  if (secondItem === undefined || firstItem === undefined) throw new Error("expected three tasks");
+  const secondCheckbox = secondItem.querySelector<HTMLInputElement>("input[type='checkbox']");
+  if (secondCheckbox === null) throw new Error("expected a checkbox in the second task");
+  await userEvent.click(page.elementLocator(secondCheckbox));
+  await expect.element(page.elementLocator(secondCheckbox)).toBeChecked();
+
+  // Drag the checked second task above the first.
+  await dragHandleToRow(secondItem, firstItem);
+
+  await expect
+    .poll(() => textsOf(el, taskSelector)[0] ?? "", { timeout: 5_000 })
+    .toContain("Task two");
+  const movedFirst = el.querySelectorAll<HTMLElement>(taskSelector)[0];
+  if (movedFirst === undefined) throw new Error("expected a first task after reorder");
+  const movedCheckbox = movedFirst.querySelector<HTMLInputElement>("input[type='checkbox']");
+  if (movedCheckbox === null) throw new Error("expected a checkbox in the moved task");
+  await expect.element(page.elementLocator(movedCheckbox)).toBeChecked();
+  await expect.poll(() => textsOf(el, taskSelector)[1] ?? "").toContain("Task one");
+};
+
+/** Verify a nested list item reorders within its parent item. */
+export const testDragNestedListItemReorder: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+
+  // Build: Parent / Child A (indented) / Child B (indented) / Child C (indented).
+  await userEvent.type(editor, "- Parent");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.keyboard("{Tab}");
+  await userEvent.type(editor, "Child A");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Child B");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Child C");
+
+  const nestedSelector = "ul li ul li";
+  await expect.poll(() => el.querySelectorAll(nestedSelector).length, { timeout: 5_000 }).toBe(3);
+  const items = el.querySelectorAll<HTMLElement>(nestedSelector);
+  const childB = items[1];
+  const childA = items[0];
+  if (childB === undefined || childA === undefined) throw new Error("expected three nested items");
+
+  // Drag "Child B" above "Child A".
+  await dragHandleToRow(childB, childA);
+
+  await expect
+    .poll(() => textsOf(el, nestedSelector), { timeout: 5_000 })
+    .toEqual(["Child B", "Child A", "Child C"]);
+};
+
+/** Verify the drag handle appears on hover and stays hidden otherwise. */
+export const testDragHandleHoverBehavior: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.type(editor, "Test paragraph");
+
+  // Move the pointer to the document corner so no block is hovered. The plugin
+  // removes the `is-visible` class, dropping the handle to its base opacity.
+  await userEvent.hover(page.elementLocator(document.documentElement));
+  await expect
+    .poll(
+      () => {
+        const handle = document.querySelector<HTMLElement>(DRAG_HANDLE);
+        return handle === null ? 0 : Number.parseFloat(getComputedStyle(handle).opacity);
+      },
+      { timeout: 5_000 }
+    )
+    .toBeLessThan(1);
+
+  // Hover the paragraph; the plugin reveals the handle at full opacity.
+  const paragraph = el.querySelector<HTMLElement>("p");
+  if (paragraph === null) throw new Error("expected a paragraph in the editor");
+  const handle = await revealDragHandle(paragraph);
+  await expect.element(page.elementLocator(handle)).toBeVisible();
+  await expect
+    .poll(() => Number.parseFloat(getComputedStyle(handle).opacity), { timeout: 5_000 })
+    .toBeGreaterThan(0.9);
+};

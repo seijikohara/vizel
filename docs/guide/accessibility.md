@@ -317,24 +317,34 @@ Respect the user's reduced motion preference:
 
 ### Automated Tools
 
-You can use automated accessibility testing tools alongside manual testing:
+Use automated accessibility testing tools alongside manual testing:
 
 - [axe-core](https://github.com/dequelabs/axe-core) — Automated accessibility testing engine
 - [Lighthouse](https://developer.chrome.com/docs/lighthouse/accessibility/) — Chrome DevTools accessibility audit
 - [WAVE](https://wave.webaim.org/) — Web accessibility evaluation tool
 
-```bash
-# Example: Run axe-core in Playwright tests
-npm install @axe-core/playwright
+Vizel's internal accessibility suite (`tests/a11y/`) runs `axe-core`
+directly inside the Vitest Browser Mode context against the mounted
+`.vizel-root` subtree. The example below shows the pattern:
 
-# In your test file
-import AxeBuilder from '@axe-core/playwright';
+```typescript
+// tests/a11y/scenarios/axe.scenario.ts (simplified)
+import axe from "axe-core";
+import { expect } from "vitest";
 
-test('editor has no accessibility violations', async ({ page }) => {
-  await page.goto('/editor');
-  const results = await new AxeBuilder({ page }).analyze();
+export async function expectNoVizelA11yViolations(): Promise<void> {
+  const root = document.querySelector(".vizel-root");
+  const results = await axe.run(root, {
+    runOnly: { type: "tag", values: ["wcag2a", "wcag2aa"] },
+  });
   expect(results.violations).toEqual([]);
-});
+}
+```
+
+Run the suite against all three frameworks with:
+
+```bash
+pnpm test:a11y
 ```
 
 ---

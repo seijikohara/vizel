@@ -1,87 +1,96 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
-/**
- * Scenario: Test that Vizel + ref pattern correctly updates editor state
- *
- * This tests the pattern commonly used in demo apps where:
- * - Vizel component is used with a ref to access the editor
- * - useVizelState is used to trigger re-renders on editor changes
- * - getVizelEditorState is used to get character/word counts
- *
- * The key issue being tested: Using useRef to store the editor reference
- * does NOT trigger re-renders when the editor is created, causing
- * character/word counts to always show 0.
- *
- * The correct pattern uses useState to store the editor, which triggers
- * a re-render when the editor is set in onCreate callback.
- */
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously,
+// so poll until the element appears. Allow 15 s: the full nine-instance matrix
+// saturates the machine and the async mount can exceed the default 1 s budget.
+async function resolveEditor(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(".vizel-editor"), { timeout: 15_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(".vizel-editor");
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
+}
 
-/**
- * Test that character count updates after typing
- * This should detect the useRef bug where counts remain 0
- */
-export async function testVizelRefStateCharacterCount(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const charCountElement = component.locator("[data-testid='character-count']");
-  const wordCountElement = component.locator("[data-testid='word-count']");
-
-  // Wait for editor to be ready
-  await expect(editor).toBeVisible();
-
-  // Click and type some text
-  await editor.click();
-  await page.keyboard.type("Hello World");
-
-  // Character and word counts should update
-  // With the useRef bug, these would remain 0
-  await expect(charCountElement).toHaveText("11", { timeout: 2000 });
-  await expect(wordCountElement).toHaveText("2", { timeout: 2000 });
+// Resolve a [data-testid] counter element. The fixture renders these counts
+// synchronously, but the editor state (which populates the counts) updates
+// only after Tiptap's onCreate fires. Poll with a relaxed budget to avoid
+// races when the browser is under load.
+async function resolveCounter(testId: string): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(`[data-testid="${testId}"]`), { timeout: 15_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+  if (el === null) throw new Error(`expected [data-testid="${testId}"]`);
+  return el;
 }
 
 /**
- * Test that initial content shows correct counts
+ * Verify character and word counts update after typing into an initially empty
+ * editor.
+ *
+ * The Playwright original tests that `useState` (not `useRef`) triggers a
+ * re-render after `onCreate`, so counts reflect the live editor state. Typing
+ * "Hello World" must produce character count 11 and word count 2.
  */
-export async function testVizelRefStateInitialContent(
-  component: Locator,
-  _page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const charCountElement = component.locator("[data-testid='character-count']");
-  const wordCountElement = component.locator("[data-testid='word-count']");
+export const testVizelRefStateCharacterCount: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  const charCounter = await resolveCounter("character-count");
+  const wordCounter = await resolveCounter("word-count");
 
-  // Wait for editor to be ready
-  await expect(editor).toBeVisible();
+  // Type into the empty editor so the reactive counts receive a transaction.
+  const editorLocator = page.elementLocator(editorEl);
+  await userEvent.click(editorLocator);
+  await userEvent.type(editorLocator, "Hello World");
 
-  // Initial content "Test content" should be reflected
-  // With the useRef bug, counts would be 0
-  await expect(charCountElement).toHaveText("12", { timeout: 2000 });
-  await expect(wordCountElement).toHaveText("2", { timeout: 2000 });
-}
+  // Poll because the count elements update asynchronously via the framework's
+  // reactive scheduler after the Tiptap transaction commits.
+  await expect.poll(() => charCounter.textContent, { timeout: 5_000 }).toBe("11");
+  await expect.poll(() => wordCounter.textContent, { timeout: 5_000 }).toBe("2");
+};
 
 /**
- * Test that counts update when adding more text to initial content
+ * Verify character and word counts reflect the initial content on mount.
+ *
+ * The fixture initialises the editor with "Test content" (12 chars, 2 words).
+ * With the `useRef` bug the counts would remain 0 because no re-render fires
+ * after `onCreate`. The `useState` pattern being tested triggers the re-render.
  */
-export async function testVizelRefStateUpdatesOnChange(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const charCountElement = component.locator("[data-testid='character-count']");
+export const testVizelRefStateInitialContent: VizelBcScenario = async () => {
+  await resolveEditor();
+  const charCounter = await resolveCounter("character-count");
+  const wordCounter = await resolveCounter("word-count");
 
-  await expect(editor).toBeVisible();
+  // Poll: the fixture's state update runs inside the React/Vue/Svelte scheduler
+  // after the Tiptap onCreate callback fires, so the DOM reflects the initial
+  // count only after the first post-mount flush.
+  await expect.poll(() => charCounter.textContent, { timeout: 5_000 }).toBe("12");
+  await expect.poll(() => wordCounter.textContent, { timeout: 5_000 }).toBe("2");
+};
 
-  // Initial content is "Test content" (12 chars)
-  await expect(charCountElement).toHaveText("12", { timeout: 2000 });
+/**
+ * Verify the character count updates when the user appends text to initial
+ * content.
+ *
+ * Starting from "Test content" (12 chars), appending " more" must raise the
+ * character count to 17. The word count is not checked here because the focus
+ * is on reactive updates after user input.
+ */
+export const testVizelRefStateUpdatesOnChange: VizelBcScenario = async () => {
+  const editorEl = await resolveEditor();
+  const charCounter = await resolveCounter("character-count");
 
-  // Add more text
-  await editor.click();
-  await page.keyboard.press("End");
-  await page.keyboard.type(" more");
+  // Confirm the initial count before interaction so a regression where both
+  // the initial and the updated counts are wrong does not go undetected.
+  await expect.poll(() => charCounter.textContent, { timeout: 5_000 }).toBe("12");
 
-  // Should now be 17 characters
-  await expect(charCountElement).toHaveText("17", { timeout: 2000 });
-}
+  // Move the caret to the end and append " more". The End key is sent via
+  // userEvent.keyboard rather than page.keyboard.press, which is a Playwright API.
+  const editorLocator = page.elementLocator(editorEl);
+  await userEvent.click(editorLocator);
+  await userEvent.keyboard("{End}");
+  await userEvent.type(editorLocator, " more");
+
+  await expect.poll(() => charCounter.textContent, { timeout: 5_000 }).toBe("17");
+};

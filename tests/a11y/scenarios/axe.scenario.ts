@@ -1,88 +1,65 @@
 /**
- * Shared axe-core scan for the Pillar 5 a11y suite.
+ * Shared axe-core scan for the Pillar 5 a11y suite (Vitest Browser Mode).
  *
- * Each per-framework spec mounts a fixture, waits for the editor to
- * render, and then defers to {@link expectNoVizelA11yViolations} to
- * run `@axe-core/playwright` against the `.vizel-root` subtree. The
- * helper asserts WCAG 2.1 AA conformance and prints the violation
- * list on failure so the diff alone identifies the regression.
+ * Each per-framework spec renders a fixture, then defers to
+ * {@link expectNoVizelA11yViolations} to run `axe-core` against the
+ * `.vizel-root` subtree. The test runs inside the browser, so it calls
+ * `axe.run` directly on the rendered DOM rather than through the
+ * `@axe-core/playwright` runner. The helper asserts WCAG 2.1 AA conformance
+ * and prints the violation list on failure so the diff alone identifies the
+ * regression.
  */
-import AxeBuilder from "@axe-core/playwright";
-import { expect, type Locator, type Page } from "@playwright/test";
+import axe from "axe-core";
+import { expect } from "vitest";
 
 /**
  * Rules disabled across every Vizel a11y scan.
  *
- * Each entry must include the upstream rule id and a one-line
- * rationale so reviewers can audit the allow-list without re-reading
- * axe-core's catalog. Keep this set as small as possible — silence a
- * rule only when the violation reflects a measurement limitation of
- * axe-core rather than a defect in Vizel.
- *
- * - `region`: Component-test fixtures do not render a `<main>`
- *   landmark; the production host page is responsible for the
- *   document-level landmark structure. axe-core flags every standalone
- *   widget without one, which is noise here.
- * - `color-contrast`: axe-core color sampling against the editor's
- *   placeholder text is unreliable inside the CT iframe because the
- *   shadow background blends with the host page. The bubble-menu /
- *   toolbar contrast tokens are validated separately at design time.
+ * - `region`: Component fixtures render no `<main>` landmark; the production
+ *   host page owns the document-level landmark structure. axe-core flags every
+ *   standalone widget without one, which is noise here.
+ * - `color-contrast`: axe-core color sampling against the editor placeholder is
+ *   unreliable inside the test iframe because the background blends with the
+ *   host page. Contrast tokens are validated separately at design time.
  * - `aria-input-field-name`: Tiptap's ProseMirror root advertises
- *   `role="textbox"` but leaves naming to the host application — the
- *   consuming page wraps Vizel inside a labelled region (`<label>`,
- *   `aria-labelledby`, or `aria-label` on the surrounding container).
- *   The CT fixture has no surrounding chrome, so this rule fires
- *   unconditionally and reflects a host-page responsibility rather
- *   than a Vizel defect.
+ *   `role="textbox"` but leaves naming to the host application. The fixture has
+ *   no surrounding chrome, so this rule fires unconditionally and reflects a
+ *   host-page responsibility rather than a Vizel defect.
  */
 const DISABLED_RULES: readonly string[] = ["region", "color-contrast", "aria-input-field-name"];
 
-/**
- * WCAG conformance tags axe-core checks for. WCAG 2.1 AA is the
- * Pillar 5 accessibility target.
- */
+/** WCAG conformance tags axe-core checks for. WCAG 2.1 AA is the Pillar 5 target. */
 const WCAG_TAGS: readonly string[] = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 interface AxeRunOptions {
   /**
-   * CSS selector for the subtree to scan. Defaults to `.vizel-root`,
-   * the wrapper every framework's `VizelProvider` and `Vizel` shell
-   * emit. Override when a fixture renders a popover into
-   * `document.body`.
+   * CSS selector for the subtree to scan. Defaults to `.vizel-root`, the
+   * wrapper every framework's `VizelProvider` and `Vizel` shell emit. Override
+   * when a fixture renders a popover into `document.body`.
    */
   readonly selector?: string;
-  /**
-   * Additional rule ids to disable beyond {@link DISABLED_RULES}.
-   * Reserve for fixture-specific quirks; prefer fixing the
-   * underlying markup over expanding the allow-list.
-   */
+  /** Additional rule ids to disable beyond {@link DISABLED_RULES}. */
   readonly disableRules?: readonly string[];
 }
 
 /**
- * Run axe-core against a Vizel component fixture and assert zero
- * WCAG 2.1 AA violations.
+ * Run axe-core against a Vizel fixture and assert zero WCAG 2.1 AA violations.
  *
- * The helper waits for the supplied component locator to be visible
- * before scanning so the editor's ARIA wiring has settled. On
- * failure the assertion message contains the full violation list as
- * pretty-printed JSON — no separate console inspection is needed.
+ * The helper polls for the scan root before analyzing so the editor's ARIA
+ * wiring has settled after the asynchronous Tiptap mount. On failure the
+ * assertion message carries the full violation list as pretty-printed JSON.
  */
-export async function expectNoVizelA11yViolations(
-  component: Locator,
-  page: Page,
-  options: AxeRunOptions = {}
-): Promise<void> {
-  await expect(component).toBeVisible();
-
+export async function expectNoVizelA11yViolations(options: AxeRunOptions = {}): Promise<void> {
   const selector = options.selector ?? ".vizel-root";
-  const disabledRules = [...DISABLED_RULES, ...(options.disableRules ?? [])];
+  await expect.poll(() => document.querySelector(selector), { timeout: 15_000 }).not.toBeNull();
+  const root = document.querySelector<HTMLElement>(selector);
+  if (root === null) throw new Error(`expected an element matching ${selector}`);
 
-  const results = await new AxeBuilder({ page })
-    .include(selector)
-    .withTags([...WCAG_TAGS])
-    .disableRules([...disabledRules])
-    .analyze();
+  const disabledRules = [...DISABLED_RULES, ...(options.disableRules ?? [])];
+  const results = await axe.run(root, {
+    runOnly: { type: "tag", values: [...WCAG_TAGS] },
+    rules: Object.fromEntries(disabledRules.map((id) => [id, { enabled: false }])),
+  });
 
   expect(
     results.violations,

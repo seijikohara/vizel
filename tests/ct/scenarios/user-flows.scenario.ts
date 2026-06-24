@@ -1,191 +1,247 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, pressKeyChord, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 /**
- * Shared test scenarios for end-to-end user flow testing.
- * These scenarios verify complete workflows that span multiple features.
+ * Shared, framework-agnostic Vitest Browser scenarios for end-to-end user flow
+ * testing. These scenarios verify complete workflows that span multiple features.
  */
 
 const SLASH_MENU_SELECTOR = "[data-vizel-slash-menu]";
 const TABLE_WRAPPER_SELECTOR = ".vizel-table-controls-wrapper";
 const TABLE_SELECTOR = ".vizel-table";
+const EDITOR_SELECTOR = ".vizel-editor";
+
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously
+// after the framework renders, so poll until the element appears rather than
+// querying once.
+async function resolveEditor(): Promise<HTMLElement> {
+  // Allow a generous window: the full three-browser matrix runs nine browser
+  // instances in parallel, and under that contention the asynchronous Tiptap
+  // mount can exceed the default 1s poll budget before the editor view appears.
+  await expect
+    .poll(() => document.querySelector(EDITOR_SELECTOR), { timeout: 15_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(EDITOR_SELECTOR);
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
+}
 
 // ============================================
 // 1. Document Creation Flow
 // ============================================
 
 /**
- * Test a complete document creation workflow:
- * heading → paragraph → bold/italic formatting → bullet list → verify structure
+ * Verify a complete document creation workflow:
+ * heading → paragraph → bold/italic formatting → bullet list → structure check.
  */
-export async function testDocumentCreationFlow(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+export const testDocumentCreationFlow: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Step 1: Create a heading using markdown input rule ("# " → h1)
-  await page.keyboard.type("# My Document Title");
+  // Step 1: Create a heading using the markdown input rule ("# " → h1).
+  await userEvent.keyboard("# My Document Title");
 
-  const heading = editor.locator("h1");
-  await expect(heading).toContainText("My Document Title");
+  await expect
+    .poll(() => el.querySelector("h1")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("My Document Title");
 
-  // Step 2: Move to new line and type a paragraph
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("This is the introduction paragraph with ");
+  // Step 2: Move to a new line and type a paragraph.
+  await userEvent.keyboard("{Enter}");
+  await userEvent.keyboard("This is the introduction paragraph with ");
 
-  // Step 3: Add bold text
-  await page.keyboard.press("ControlOrMeta+b");
-  await page.keyboard.type("bold text");
-  await page.keyboard.press("ControlOrMeta+b");
+  // Step 3: Add bold text.
+  await pressKeyChord("Mod", "b");
+  await userEvent.keyboard("bold text");
+  await pressKeyChord("Mod", "b");
 
-  await page.keyboard.type(" and ");
+  await userEvent.keyboard(" and ");
 
-  // Step 4: Add italic text
-  await page.keyboard.press("ControlOrMeta+i");
-  await page.keyboard.type("italic text");
-  await page.keyboard.press("ControlOrMeta+i");
+  // Step 4: Add italic text.
+  await pressKeyChord("Mod", "i");
+  await userEvent.keyboard("italic text");
+  await pressKeyChord("Mod", "i");
 
-  await page.keyboard.type(".");
+  await userEvent.keyboard(".");
 
-  // Step 5: Add a bullet list
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("- First item");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Second item");
+  // Step 5: Add a bullet list.
+  await userEvent.keyboard("{Enter}");
+  await userEvent.keyboard("- First item");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.keyboard("Second item");
 
-  // Verify the complete document structure
-  await expect(heading).toContainText("My Document Title");
+  // Verify the complete document structure.
+  await expect
+    .poll(() => el.querySelector("h1")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("My Document Title");
 
-  const paragraph = editor.locator("p").first();
-  await expect(paragraph).toContainText("This is the introduction paragraph");
+  // The first paragraph contains the introduction text.
+  await expect
+    .poll(
+      () => {
+        const paragraphs = el.querySelectorAll("p");
+        return Array.from(paragraphs).some((p) =>
+          p.textContent?.includes("This is the introduction paragraph")
+        );
+      },
+      { timeout: 5_000 }
+    )
+    .toBe(true);
 
-  const bold = editor.locator("strong");
-  await expect(bold).toContainText("bold text");
+  await expect
+    .poll(() => el.querySelector("strong")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("bold text");
 
-  const italic = editor.locator("em");
-  await expect(italic).toContainText("italic text");
+  await expect
+    .poll(() => el.querySelector("em")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("italic text");
 
-  const listItems = editor.locator("ul li");
-  await expect(listItems).toHaveCount(2);
-  await expect(listItems.first()).toContainText("First item");
-  await expect(listItems.nth(1)).toContainText("Second item");
-}
+  await expect.poll(() => el.querySelectorAll("ul li").length, { timeout: 5_000 }).toBe(2);
+
+  await expect
+    .poll(() => el.querySelectorAll("ul li")[0]?.textContent ?? "", { timeout: 5_000 })
+    .toContain("First item");
+
+  await expect
+    .poll(() => el.querySelectorAll("ul li")[1]?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Second item");
+};
 
 // ============================================
 // 2. Markdown Round-Trip Flow
 // ============================================
 
 /**
- * Test markdown export → clear → import round-trip:
- * Create content → export to markdown → clear editor → import from exported → verify match
+ * Verify a markdown export → clear → import round-trip:
+ * create content → export to markdown → clear → import from exported → verify match.
  *
- * Requires a fixture with:
- * - [data-testid="export-button"] — exports markdown to [data-testid="markdown-output"]
- * - [data-testid="clear-button"] — clears the editor
- * - [data-testid="import-from-output-button"] — imports from markdown-output back to editor
+ * Requires a fixture that exposes:
+ *   [data-testid="export-button"] — triggers markdown export to [data-testid="markdown-output"]
+ *   [data-testid="clear-button"] — clears the editor
+ *   [data-testid="import-from-output-button"] — imports from markdown-output back to the editor
  */
-export async function testMarkdownRoundTrip(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+export const testMarkdownRoundTrip: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Step 1: Create mixed content
-  await page.keyboard.type("# Round-Trip Test");
-  // The heading input rule should convert "# " to h1
-  await expect(editor.locator("h1")).toContainText("Round-Trip Test");
+  // Step 1: Create mixed content.
+  await userEvent.keyboard("# Round-Trip Test");
+  await expect
+    .poll(() => el.querySelector("h1")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Round-Trip Test");
 
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("A paragraph with ");
-  await page.keyboard.press("ControlOrMeta+b");
-  await page.keyboard.type("bold");
-  await page.keyboard.press("ControlOrMeta+b");
-  await page.keyboard.type(" formatting.");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.keyboard("A paragraph with ");
+  await pressKeyChord("Mod", "b");
+  await userEvent.keyboard("bold");
+  await pressKeyChord("Mod", "b");
+  await userEvent.keyboard(" formatting.");
 
-  // Step 2: Export to markdown
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
+  // Step 2: Export to markdown.
+  const exportButton = document.querySelector<HTMLElement>("[data-testid='export-button']");
+  if (exportButton === null) throw new Error("expected a [data-testid='export-button'] element");
+  await userEvent.click(page.elementLocator(exportButton));
 
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
-  await expect(markdownOutput).not.toHaveText("");
+  const markdownOutput = document.querySelector<HTMLElement>("[data-testid='markdown-output']");
+  if (markdownOutput === null)
+    throw new Error("expected a [data-testid='markdown-output'] element");
 
-  // Store the exported markdown for comparison
-  const exportedMarkdown = await markdownOutput.textContent();
+  // Wait for the output to become non-empty after clicking Export.
+  await expect.poll(() => markdownOutput.textContent ?? "", { timeout: 5_000 }).not.toBe("");
+
+  const exportedMarkdown = markdownOutput.textContent ?? "";
   expect(exportedMarkdown).toBeTruthy();
   expect(exportedMarkdown).toContain("Round-Trip Test");
   expect(exportedMarkdown).toContain("**bold**");
 
-  // Step 3: Clear the editor
-  const clearButton = component.locator("[data-testid='clear-button']");
-  await clearButton.click();
+  // Step 3: Clear the editor.
+  const clearButton = document.querySelector<HTMLElement>("[data-testid='clear-button']");
+  if (clearButton === null) throw new Error("expected a [data-testid='clear-button'] element");
+  await userEvent.click(page.elementLocator(clearButton));
 
-  // Verify editor is empty
-  await expect(editor.locator("h1")).toHaveCount(0);
-  await expect(editor.locator("strong")).toHaveCount(0);
+  await expect.poll(() => el.querySelectorAll("h1").length, { timeout: 5_000 }).toBe(0);
+  await expect.poll(() => el.querySelectorAll("strong").length, { timeout: 5_000 }).toBe(0);
 
-  // Step 4: Import from the exported markdown
-  const importFromOutputButton = component.locator("[data-testid='import-from-output-button']");
-  await importFromOutputButton.click();
+  // Step 4: Import from the exported markdown.
+  const importButton = document.querySelector<HTMLElement>(
+    "[data-testid='import-from-output-button']"
+  );
+  if (importButton === null)
+    throw new Error("expected a [data-testid='import-from-output-button'] element");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Step 5: Verify the imported content matches the original structure
-  await expect(editor.locator("h1")).toContainText("Round-Trip Test");
-  await expect(editor.locator("strong")).toContainText("bold");
-  await expect(editor.locator("p")).toContainText("A paragraph with");
-}
+  // Step 5: Verify the imported content matches the original structure.
+  await expect
+    .poll(() => el.querySelector("h1")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Round-Trip Test");
+  await expect
+    .poll(() => el.querySelector("strong")?.textContent ?? "", { timeout: 5_000 })
+    .toContain("bold");
+  await expect
+    .poll(
+      () => {
+        const paragraphs = el.querySelectorAll("p");
+        return Array.from(paragraphs).some((p) => p.textContent?.includes("A paragraph with"));
+      },
+      { timeout: 5_000 }
+    )
+    .toBe(true);
+};
 
 // ============================================
 // 3. Auto-Save Flow
 // ============================================
 
 /**
- * Test auto-save workflow:
- * Type content → verify save indicator changes → verify localStorage has content
+ * Verify auto-save workflow:
+ * type content → verify localStorage receives it → verify save indicator shows "saved".
  *
- * Requires a fixture with:
- * - Auto-save enabled with localStorage backend
- * - [data-testid="save-status"] — shows current save status
- * - Known localStorage key for verification
+ * Requires a fixture with auto-save enabled using localStorage and a
+ * [data-testid="save-status"] element.
  */
-export async function testAutoSaveFlow(
-  component: Locator,
-  page: Page,
-  storageKey: string
-): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const saveStatus = component.locator("[data-testid='save-status']");
+export const testAutoSaveFlow = async (storageKey: string): Promise<void> => {
+  const el = await resolveEditor();
+  const saveStatus = document.querySelector<HTMLElement>("[data-testid='save-status']");
+  if (saveStatus === null) throw new Error("expected a [data-testid='save-status'] element");
 
-  // Step 1: Clear any previous localStorage data
-  await page.evaluate((key) => localStorage.removeItem(key), storageKey);
+  // Step 1: Clear any previous localStorage data so the test starts clean.
+  localStorage.removeItem(storageKey);
 
-  // Step 2: Type content into the editor
-  await editor.click();
-  await page.keyboard.type("Auto-save test content");
+  // Step 2: Type content into the editor.
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
+  await userEvent.keyboard("Auto-save test content");
 
-  // Step 3: Wait for content to be saved to localStorage (primary signal)
-  await page.waitForFunction(
-    (key) => {
-      const data = localStorage.getItem(key);
-      return data?.includes("Auto-save test content");
-    },
-    storageKey,
-    { timeout: 5000 }
-  );
+  // Step 3: Wait for the content to be saved to localStorage (primary signal).
+  await expect
+    .poll(
+      () => {
+        const data = localStorage.getItem(storageKey);
+        return data?.includes("Auto-save test content") ?? false;
+      },
+      { timeout: 5_000 }
+    )
+    .toBe(true);
 
-  // Step 4: Verify save status shows "saved"
-  await expect(saveStatus).toHaveText("saved", { timeout: 5000 });
+  // Step 4: Verify the save status shows "saved".
+  await expect.element(page.elementLocator(saveStatus)).toHaveTextContent("saved");
 
-  // Step 5: Type more content and verify save updates
-  await page.keyboard.type(" with additional text");
+  // Step 5: Type more content and verify the save updates.
+  await userEvent.keyboard(" with additional text");
 
-  // Wait for updated content in localStorage
-  await page.waitForFunction(
-    (key) => {
-      const data = localStorage.getItem(key);
-      return data?.includes("additional text");
-    },
-    storageKey,
-    { timeout: 5000 }
-  );
+  await expect
+    .poll(
+      () => {
+        const data = localStorage.getItem(storageKey);
+        return data?.includes("additional text") ?? false;
+      },
+      { timeout: 5_000 }
+    )
+    .toBe(true);
 
-  await expect(saveStatus).toHaveText("saved", { timeout: 5000 });
-}
+  await expect.element(page.elementLocator(saveStatus)).toHaveTextContent("saved");
+};
 
 // ============================================
 // 4. Image Upload Flow
@@ -195,106 +251,172 @@ const TEST_IMAGE_URL =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'%3E%3Crect width='200' height='100' fill='%234CAF50'/%3E%3C/svg%3E";
 
 /**
- * Test image upload via slash command:
- * Open slash menu → select image → provide URL → verify image in editor
+ * Verify image insertion via the slash command:
+ * open slash menu → select image URL option → verify image appears in editor.
+ *
+ * The window.prompt is replaced with a stub that returns the test image URL so
+ * the fixture does not try to open a native dialog.
  */
-export async function testImageUploadFlow(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+export const testImageUploadFlow: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Step 1: Mock window.prompt to return our test image URL
-  await page.evaluate((url) => {
-    window.prompt = () => url;
-  }, TEST_IMAGE_URL);
+  // Step 1: Stub window.prompt so the image-URL command gets the test URL
+  // without opening a native dialog, which is unavailable in automated runs.
+  window.prompt = () => TEST_IMAGE_URL;
 
-  // Step 2: Open slash menu and search for image
-  await page.keyboard.type("/image");
+  // Step 2: Open the slash menu and search for image.
+  await userEvent.keyboard("/image");
 
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
+  await expect
+    .poll(() => document.querySelector(SLASH_MENU_SELECTOR), { timeout: 5_000 })
+    .not.toBeNull();
+  const slashMenu = document.querySelector<HTMLElement>(SLASH_MENU_SELECTOR);
+  if (slashMenu === null) throw new Error("expected a [data-vizel-slash-menu] element");
+  await expect.element(page.elementLocator(slashMenu)).toBeVisible();
 
-  // Step 3: Select the image URL option
-  const imageItem = slashMenu
-    .locator(".vizel-slash-menu-item")
-    .filter({ hasText: "Insert an image from URL" });
-  await imageItem.click();
+  // Step 3: Find and click the "Insert an image from URL" menu item.
+  await expect
+    .poll(
+      () => {
+        const items = slashMenu.querySelectorAll<HTMLElement>(".vizel-slash-menu-item");
+        return Array.from(items).find((item) =>
+          item.textContent?.includes("Insert an image from URL")
+        );
+      },
+      { timeout: 5_000 }
+    )
+    .not.toBeNull();
+  const imageItem = Array.from(
+    slashMenu.querySelectorAll<HTMLElement>(".vizel-slash-menu-item")
+  ).find((item) => item.textContent?.includes("Insert an image from URL"));
+  if (imageItem === undefined)
+    throw new Error('expected an "Insert an image from URL" slash menu item');
+  await userEvent.click(page.elementLocator(imageItem));
 
-  // Step 4: Verify slash menu closes
-  await expect(slashMenu).not.toBeVisible();
+  // Step 4: Verify the slash menu closes after selection.
+  await expect
+    .poll(() => document.querySelector(SLASH_MENU_SELECTOR), { timeout: 5_000 })
+    .toBeNull();
 
-  // Step 5: Verify image is inserted in the editor
-  const image = editor.locator("img.vizel-image");
-  await expect(image).toBeVisible();
-  await expect(image).toHaveAttribute("src", TEST_IMAGE_URL);
-}
+  // Step 5: Verify the image is inserted in the editor.
+  await expect.poll(() => el.querySelector("img.vizel-image"), { timeout: 5_000 }).not.toBeNull();
+  const image = el.querySelector<HTMLImageElement>("img.vizel-image");
+  if (image === null) throw new Error("expected an img.vizel-image element");
+  await expect.element(page.elementLocator(image)).toBeVisible();
+  await expect.element(page.elementLocator(image)).toHaveAttribute("src", TEST_IMAGE_URL);
+};
 
 // ============================================
 // 5. Table Editing Flow
 // ============================================
 
 /**
- * Test table editing workflow:
- * Insert table → type in cells → navigate with Tab → verify structure and content
+ * Verify table editing workflow:
+ * insert table via slash command → type in cells → navigate with Tab → verify structure.
  */
-export async function testTableEditingFlow(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
+export const testTableEditingFlow: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
+  await userEvent.click(editor);
 
-  // Step 1: Insert a table via slash command
-  await page.keyboard.type("/table");
-  const slashMenu = page.locator(SLASH_MENU_SELECTOR);
-  await expect(slashMenu).toBeVisible();
+  // Step 1: Insert a table via the slash command.
+  await userEvent.keyboard("/table");
 
-  const tableItem = slashMenu
-    .locator(".vizel-slash-menu-item")
-    .filter({ hasText: "Insert a table" });
-  await tableItem.click();
-  await expect(slashMenu).not.toBeVisible();
+  await expect
+    .poll(() => document.querySelector(SLASH_MENU_SELECTOR), { timeout: 5_000 })
+    .not.toBeNull();
+  const slashMenu = document.querySelector<HTMLElement>(SLASH_MENU_SELECTOR);
+  if (slashMenu === null) throw new Error("expected a [data-vizel-slash-menu] element");
 
-  // Step 2: Verify initial table structure (3x3 with header)
-  const wrapper = editor.locator(TABLE_WRAPPER_SELECTOR);
-  await expect(wrapper).toBeVisible();
+  await expect
+    .poll(
+      () => {
+        const items = slashMenu.querySelectorAll<HTMLElement>(".vizel-slash-menu-item");
+        return Array.from(items).find((item) => item.textContent?.includes("Insert a table"));
+      },
+      { timeout: 5_000 }
+    )
+    .not.toBeNull();
+  const tableItem = Array.from(
+    slashMenu.querySelectorAll<HTMLElement>(".vizel-slash-menu-item")
+  ).find((item) => item.textContent?.includes("Insert a table"));
+  if (tableItem === undefined) throw new Error('expected an "Insert a table" slash menu item');
+  await userEvent.click(page.elementLocator(tableItem));
 
-  const table = wrapper.locator(TABLE_SELECTOR);
-  await expect(table).toBeVisible();
+  await expect
+    .poll(() => document.querySelector(SLASH_MENU_SELECTOR), { timeout: 5_000 })
+    .toBeNull();
 
-  await expect(table.locator("th")).toHaveCount(3);
-  await expect(table.locator("td")).toHaveCount(6); // 2 rows x 3 columns
+  // Step 2: Verify the initial table structure (3×3 with header row).
+  await expect
+    .poll(() => el.querySelector(TABLE_WRAPPER_SELECTOR), { timeout: 5_000 })
+    .not.toBeNull();
+  const wrapper = el.querySelector<HTMLElement>(TABLE_WRAPPER_SELECTOR);
+  if (wrapper === null) throw new Error("expected a .vizel-table-controls-wrapper element");
+  await expect.element(page.elementLocator(wrapper)).toBeVisible();
 
-  // Step 3: Type content in header cells by clicking each cell
-  await table.locator("th").nth(0).click({ force: true });
-  await page.keyboard.type("Name");
+  await expect.poll(() => wrapper.querySelector(TABLE_SELECTOR), { timeout: 5_000 }).not.toBeNull();
+  const table = wrapper.querySelector<HTMLElement>(TABLE_SELECTOR);
+  if (table === null) throw new Error("expected a .vizel-table element");
+  await expect.element(page.elementLocator(table)).toBeVisible();
 
-  await table.locator("th").nth(1).click({ force: true });
-  await page.keyboard.type("Role");
+  await expect.poll(() => table.querySelectorAll("th").length, { timeout: 5_000 }).toBe(3);
+  // 2 body rows × 3 columns = 6 data cells.
+  await expect.poll(() => table.querySelectorAll("td").length, { timeout: 5_000 }).toBe(6);
 
-  await table.locator("th").nth(2).click({ force: true });
-  await page.keyboard.type("Status");
+  // Step 3: Type content in the header cells by clicking each one.
+  const headers = () => table.querySelectorAll<HTMLElement>("th");
 
-  // Step 4: Type content in body cells
-  await table.locator("td").nth(0).click({ force: true });
-  await page.keyboard.type("Alice");
+  await userEvent.click(page.elementLocator(headers()[0]));
+  await userEvent.keyboard("Name");
 
-  await table.locator("td").nth(1).click({ force: true });
-  await page.keyboard.type("Developer");
+  await userEvent.click(page.elementLocator(headers()[1]));
+  await userEvent.keyboard("Role");
 
-  await table.locator("td").nth(2).click({ force: true });
-  await page.keyboard.type("Active");
+  await userEvent.click(page.elementLocator(headers()[2]));
+  await userEvent.keyboard("Status");
 
-  // Step 5: Verify all header cells
-  await expect(table.locator("th").nth(0)).toContainText("Name");
-  await expect(table.locator("th").nth(1)).toContainText("Role");
-  await expect(table.locator("th").nth(2)).toContainText("Status");
+  // Step 4: Type content in the body cells.
+  const cells = () => table.querySelectorAll<HTMLElement>("td");
 
-  // Step 6: Verify all body cells in first row
-  await expect(table.locator("td").nth(0)).toContainText("Alice");
-  await expect(table.locator("td").nth(1)).toContainText("Developer");
-  await expect(table.locator("td").nth(2)).toContainText("Active");
+  await userEvent.click(page.elementLocator(cells()[0]));
+  await userEvent.keyboard("Alice");
 
-  // Step 7: Navigate with Tab and type in second row
-  await page.keyboard.press("Tab");
-  await page.keyboard.type("Bob");
+  await userEvent.click(page.elementLocator(cells()[1]));
+  await userEvent.keyboard("Developer");
 
-  // Verify second row content
-  await expect(table.locator("td").nth(3)).toContainText("Bob");
-}
+  await userEvent.click(page.elementLocator(cells()[2]));
+  await userEvent.keyboard("Active");
+
+  // Step 5: Verify all header cells contain the expected text.
+  await expect
+    .poll(() => table.querySelectorAll("th")[0]?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Name");
+  await expect
+    .poll(() => table.querySelectorAll("th")[1]?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Role");
+  await expect
+    .poll(() => table.querySelectorAll("th")[2]?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Status");
+
+  // Step 6: Verify all body cells in the first row contain the expected text.
+  await expect
+    .poll(() => table.querySelectorAll("td")[0]?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Alice");
+  await expect
+    .poll(() => table.querySelectorAll("td")[1]?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Developer");
+  await expect
+    .poll(() => table.querySelectorAll("td")[2]?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Active");
+
+  // Step 7: Navigate with Tab and type in the second row.
+  await userEvent.keyboard("{Tab}");
+  await userEvent.keyboard("Bob");
+
+  await expect
+    .poll(() => table.querySelectorAll("td")[3]?.textContent ?? "", { timeout: 5_000 })
+    .toContain("Bob");
+};

@@ -1,247 +1,137 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 /**
- * Shared test scenarios for FileHandler functionality.
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
+ * Shared, framework-agnostic Vitest Browser scenarios for the FileHandler
+ * feature.
+ *
+ * The Playwright original drove file drop and paste through `page.evaluate`,
+ * which built a DataTransfer and dispatched DragEvent / ClipboardEvent inside
+ * the page. The Vitest specs run in the browser, so these scenarios build the
+ * DataTransfer and dispatch the events directly without `page.evaluate`.
  */
 
-/**
- * Create a mock image file for testing
- */
-export function createMockImageFile(
-  name = "test-image.png",
-  type = "image/png"
-): {
-  buffer: Buffer;
-  name: string;
-  mimeType: string;
-} {
-  // Create a minimal valid PNG file (1x1 pixel, red)
-  const pngData = Buffer.from([
-    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
-    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
-    0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
-    0x00, 0x00, 0x03, 0x00, 0x01, 0x00, 0x18, 0xdd, 0x8d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45,
-    0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
-  ]);
+const EDITOR = ".vizel-editor";
+const PROSE_MIRROR = ".ProseMirror";
 
-  return {
-    buffer: pngData,
-    name,
-    mimeType: type,
-  };
+// A minimal valid 1x1 red PNG, matching the Playwright `createMockImageFile`
+// byte sequence. The bytes prove a real File reaches the drop / paste handler.
+const MOCK_PNG_BYTES = new Uint8Array([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+  0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+  0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
+  0x00, 0x00, 0x03, 0x00, 0x01, 0x00, 0x18, 0xdd, 0x8d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45,
+  0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
+]);
+
+// Build the mock image File the Playwright scenario uploaded.
+const createMockImageFile = (name = "test-image.png", type = "image/png"): File =>
+  new File([MOCK_PNG_BYTES], name, { type });
+
+// Build a DataTransfer carrying the supplied files. ProseMirror reads dropped
+// and pasted files from `dataTransfer.files`, which `items.add(file)` populates.
+const createFileDataTransfer = (files: readonly File[]): DataTransfer => {
+  const dataTransfer = new DataTransfer();
+  for (const file of files) {
+    dataTransfer.items.add(file);
+  }
+  return dataTransfer;
+};
+
+// Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously
+// after the framework renders, so poll with a generous budget before querying.
+async function resolveEditor(): Promise<HTMLElement> {
+  // Allow a generous window: the full three-browser matrix runs nine browser
+  // instances in parallel, and the asynchronous Tiptap mount can exceed the
+  // default 1s poll budget under that contention.
+  await expect.poll(() => document.querySelector(EDITOR), { timeout: 15_000 }).not.toBeNull();
+  const el = document.querySelector<HTMLElement>(EDITOR);
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
 }
 
-/**
- * Helper to simulate file drop on editor
- * Note: This uses Playwright's page.dispatchEvent with DataTransfer
- */
-export async function simulateFileDrop(
-  page: Page,
-  editor: Locator,
-  files: Array<{ buffer: Buffer; name: string; mimeType: string }>
-): Promise<void> {
-  // Get the bounding box of the editor
-  const boundingBox = await editor.boundingBox();
-  if (!boundingBox) {
-    throw new Error("Editor bounding box not found");
+/** Verify the FileHandler extension renders an editable ProseMirror view. */
+export const testFileHandlerExtensionLoaded: VizelBcScenario = async () => {
+  await resolveEditor();
+  await expect.poll(() => document.querySelector(PROSE_MIRROR), { timeout: 5_000 }).not.toBeNull();
+  const proseMirror = document.querySelector<HTMLElement>(PROSE_MIRROR);
+  if (proseMirror === null) throw new Error("expected a .ProseMirror element");
+  await expect.element(page.elementLocator(proseMirror)).toBeVisible();
+};
+
+/** Verify the file drop target is the visible, editable ProseMirror view. */
+export const testFileDropTargetExists: VizelBcScenario = async () => {
+  await resolveEditor();
+  await expect.poll(() => document.querySelector(PROSE_MIRROR), { timeout: 5_000 }).not.toBeNull();
+  const proseMirror = document.querySelector<HTMLElement>(PROSE_MIRROR);
+  if (proseMirror === null) throw new Error("expected a .ProseMirror element");
+  await expect.element(page.elementLocator(proseMirror)).toBeVisible();
+  await expect.element(page.elementLocator(proseMirror)).toHaveAttribute("contenteditable", "true");
+};
+
+/** Verify clicking the editor focuses the ProseMirror view that receives files. */
+export const testAllowedMimeTypes: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await userEvent.click(page.elementLocator(el));
+
+  // The editor is ready to receive files once the ProseMirror view holds focus.
+  await expect
+    .poll(() => document.activeElement?.classList.contains("ProseMirror") ?? false, {
+      timeout: 5_000,
+    })
+    .toBe(true);
+};
+
+/** Verify a file drop dispatched onto the editor reaches a drop listener. */
+export const testFileDropSimulation: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await userEvent.click(page.elementLocator(el));
+
+  const state = { dropReceived: false };
+  document.addEventListener(
+    "drop",
+    () => {
+      state.dropReceived = true;
+    },
+    { once: true }
+  );
+
+  const dataTransfer = createFileDataTransfer([createMockImageFile()]);
+  const rect = el.getBoundingClientRect();
+  const clientX = rect.x + rect.width / 2;
+  const clientY = rect.y + rect.height / 2;
+
+  // Dispatch the same sequence the Playwright scenario emitted: dragenter,
+  // dragover, then drop, each carrying the file-bearing DataTransfer.
+  const target = document.elementFromPoint(clientX, clientY) ?? el;
+  for (const type of ["dragenter", "dragover", "drop"] as const) {
+    target.dispatchEvent(
+      new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer, clientX, clientY })
+    );
   }
 
-  // Calculate center of editor
-  const x = boundingBox.x + boundingBox.width / 2;
-  const y = boundingBox.y + boundingBox.height / 2;
+  await expect.poll(() => state.dropReceived, { timeout: 5_000 }).toBe(true);
+};
 
-  // Create DataTransfer with files
-  await page.evaluate(
-    ({ x, y, filesData }) => {
-      const dataTransfer = new DataTransfer();
+/** Verify a file paste dispatched onto the editor reaches a paste listener. */
+export const testFilePasteSimulation: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await userEvent.click(page.elementLocator(el));
 
-      for (const fileData of filesData) {
-        const uint8Array = new Uint8Array(fileData.buffer);
-        const blob = new Blob([uint8Array], { type: fileData.mimeType });
-        const file = new File([blob], fileData.name, { type: fileData.mimeType });
-        dataTransfer.items.add(file);
-      }
-
-      // Dispatch dragenter event
-      const dragEnterEvent = new DragEvent("dragenter", {
-        bubbles: true,
-        cancelable: true,
-        dataTransfer,
-        clientX: x,
-        clientY: y,
-      });
-
-      // Dispatch dragover event
-      const dragOverEvent = new DragEvent("dragover", {
-        bubbles: true,
-        cancelable: true,
-        dataTransfer,
-        clientX: x,
-        clientY: y,
-      });
-
-      // Dispatch drop event
-      const dropEvent = new DragEvent("drop", {
-        bubbles: true,
-        cancelable: true,
-        dataTransfer,
-        clientX: x,
-        clientY: y,
-      });
-
-      const target = document.elementFromPoint(x, y);
-      if (target) {
-        target.dispatchEvent(dragEnterEvent);
-        target.dispatchEvent(dragOverEvent);
-        target.dispatchEvent(dropEvent);
-      }
+  const state = { pasteReceived: false };
+  document.addEventListener(
+    "paste",
+    () => {
+      state.pasteReceived = true;
     },
-    {
-      x,
-      y,
-      filesData: files.map((f) => ({
-        buffer: Array.from(f.buffer),
-        name: f.name,
-        mimeType: f.mimeType,
-      })),
-    }
+    { once: true }
   );
-}
 
-/**
- * Helper to simulate file paste on editor
- */
-export async function simulateFilePaste(
-  page: Page,
-  files: Array<{ buffer: Buffer; name: string; mimeType: string }>
-): Promise<void> {
-  await page.evaluate(
-    (filesData) => {
-      const dataTransfer = new DataTransfer();
-
-      for (const fileData of filesData) {
-        const uint8Array = new Uint8Array(fileData.buffer);
-        const blob = new Blob([uint8Array], { type: fileData.mimeType });
-        const file = new File([blob], fileData.name, { type: fileData.mimeType });
-        dataTransfer.items.add(file);
-      }
-
-      const clipboardEvent = new ClipboardEvent("paste", {
-        bubbles: true,
-        cancelable: true,
-        clipboardData: dataTransfer,
-      });
-
-      document.activeElement?.dispatchEvent(clipboardEvent);
-    },
-    files.map((f) => ({
-      buffer: Array.from(f.buffer),
-      name: f.name,
-      mimeType: f.mimeType,
-    }))
+  const clipboardData = createFileDataTransfer([createMockImageFile()]);
+  const target = document.activeElement ?? el;
+  target.dispatchEvent(
+    new ClipboardEvent("paste", { bubbles: true, cancelable: true, clipboardData })
   );
-}
 
-/**
- * Test that FileHandler extension is loaded and configured
- */
-export async function testFileHandlerExtensionLoaded(
-  component: Locator,
-  _page: Page
-): Promise<void> {
-  // Check that the ProseMirror editor is rendered and visible
-  const proseMirror = component.locator(".ProseMirror");
-  await expect(proseMirror).toBeVisible();
-}
-
-/**
- * Test that file drop target exists and accepts drops
- */
-export async function testFileDropTargetExists(component: Locator, _page: Page): Promise<void> {
-  // ProseMirror editor should be visible and have contenteditable attribute
-  const proseMirror = component.locator(".ProseMirror");
-  await expect(proseMirror).toBeVisible();
-  await expect(proseMirror).toHaveAttribute("contenteditable", "true");
-}
-
-/**
- * Test that allowed MIME types are respected
- * This is a basic test - full file handling tests would require
- * mocking the upload handler
- */
-export async function testAllowedMimeTypes(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  // The editor should be focused and ready to receive files
-  const isFocused = await page.evaluate(() => {
-    const activeElement = document.activeElement;
-    return activeElement?.classList.contains("ProseMirror");
-  });
-
-  expect(isFocused).toBe(true);
-}
-
-/**
- * Test file drop simulation
- * Note: This test verifies the drop event is dispatched correctly
- */
-export async function testFileDropSimulation(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  const mockFile = createMockImageFile();
-
-  // Track if drop event was received
-  await page.evaluate(() => {
-    (window as unknown as { dropEventReceived?: boolean }).dropEventReceived = false;
-    document.addEventListener(
-      "drop",
-      () => {
-        (window as unknown as { dropEventReceived?: boolean }).dropEventReceived = true;
-      },
-      { once: true }
-    );
-  });
-
-  await simulateFileDrop(page, editor, [mockFile]);
-
-  // Verify drop event was dispatched
-  const dropEventReceived = await page.evaluate(
-    () => (window as unknown as { dropEventReceived?: boolean }).dropEventReceived
-  );
-  expect(dropEventReceived).toBe(true);
-}
-
-/**
- * Test file paste simulation
- * Note: This test verifies the paste event is dispatched correctly
- */
-export async function testFilePasteSimulation(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await editor.click();
-
-  const mockFile = createMockImageFile();
-
-  // Track if paste event was received
-  await page.evaluate(() => {
-    (window as unknown as { pasteEventReceived?: boolean }).pasteEventReceived = false;
-    document.addEventListener(
-      "paste",
-      () => {
-        (window as unknown as { pasteEventReceived?: boolean }).pasteEventReceived = true;
-      },
-      { once: true }
-    );
-  });
-
-  await simulateFilePaste(page, [mockFile]);
-
-  // Verify paste event was dispatched
-  const pasteEventReceived = await page.evaluate(
-    () => (window as unknown as { pasteEventReceived?: boolean }).pasteEventReceived
-  );
-  expect(pasteEventReceived).toBe(true);
-}
+  await expect.poll(() => state.pasteReceived, { timeout: 5_000 }).toBe(true);
+};

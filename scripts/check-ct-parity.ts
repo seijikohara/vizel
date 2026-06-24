@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Playwright CT spec parity check.
+ * Vitest Browser Mode spec parity check.
  *
  * Verifies that `tests/ct/{react,vue,svelte}/specs/` contain matching
  * spec files, modulo the framework idiom prefix stripped from hook /
@@ -11,14 +11,14 @@
  *
  * Scope and conventions:
  *
- * - Only files matching `*.spec.tsx` (React) or `*.spec.ts` (Vue,
- *   Svelte) are considered. Fixture and helper files (`*Fixture.tsx`,
- *   `*.helper.ts`) are intentionally excluded — they live next to
- *   specs but do not represent a coverage unit.
+ * - Only files matching `*.test.tsx` (React) or `*.test.ts` (Vue,
+ *   Svelte) are considered. Fixture files (`*Fixture.{tsx,vue,svelte}`)
+ *   are intentionally excluded — they live next to specs but do not
+ *   represent a coverage unit.
  * - Idiom prefixes follow each framework's naming convention. React
  *   and Vue may prefix a spec with `Use` (e.g.
- *   `UseEditorState.spec.tsx`); Svelte prefixes the equivalent rune
- *   spec with `Create` (e.g. `CreateEditorState.spec.ts`). Both forms
+ *   `UseEditorState.test.tsx`); Svelte prefixes the equivalent rune
+ *   spec with `Create` (e.g. `CreateEditorState.test.ts`). Both forms
  *   reduce to the same stem `EditorState`.
  *
  * Exits with code 0 on success, 1 on any spec-name imbalance.
@@ -46,19 +46,19 @@ const FRAMEWORKS: readonly FrameworkSpec[] = [
   {
     framework: "react",
     specsDir: join(REPO_ROOT, "tests/ct/react/specs"),
-    extensions: [".spec.tsx", ".spec.ts"],
+    extensions: [".test.tsx", ".test.ts"],
     prefixes: ["Use", "Create"],
   },
   {
     framework: "vue",
     specsDir: join(REPO_ROOT, "tests/ct/vue/specs"),
-    extensions: [".spec.ts"],
+    extensions: [".test.ts"],
     prefixes: ["Use", "Create"],
   },
   {
     framework: "svelte",
     specsDir: join(REPO_ROOT, "tests/ct/svelte/specs"),
-    extensions: [".spec.ts"],
+    extensions: [".test.ts"],
     prefixes: ["Create", "Get"],
   },
 ];

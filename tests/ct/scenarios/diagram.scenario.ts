@@ -1,399 +1,292 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, pressKeyChord, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 /**
- * Shared test scenarios for Diagram (Mermaid and GraphViz) support.
- * These scenarios are framework-agnostic and can be used with React, Vue, and Svelte.
+ * Shared, framework-agnostic Vitest Browser scenarios for Diagram support
+ * (Mermaid and GraphViz). Each scenario inserts a diagram through the slash
+ * menu, then drives the node-view textarea directly.
  */
 
-const DIAGRAM_SELECTOR = ".vizel-diagram";
+const DIAGRAM = ".vizel-diagram";
+const SLASH_MENU = "[data-vizel-slash-menu]";
+const EDITOR = ".vizel-editor";
 
-/** Helper to click editor to focus it */
-async function clickEditorStart(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  // Click at the center of the editor to avoid overlap with drag handle
-  await editor.click();
-  // Dismiss any bubble menu
-  await page.keyboard.press("Escape");
+// Resolve the editor contenteditable root. Tiptap mounts asynchronously, so
+// poll until the element appears rather than querying once.
+async function resolveEditor(): Promise<HTMLElement> {
+  // Allow a generous window: the full three-browser matrix runs nine browser
+  // instances in parallel, and the asynchronous Tiptap mount can exceed the
+  // default 1s poll budget under that contention.
+  await expect.poll(() => document.querySelector(EDITOR), { timeout: 15_000 }).not.toBeNull();
+  const el = document.querySelector<HTMLElement>(EDITOR);
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
 }
 
-/** Helper to insert a diagram via slash command */
-async function insertDiagram(component: Locator, page: Page): Promise<void> {
-  await clickEditorStart(component, page);
-  await page.keyboard.type("/mermaid");
-  // Wait for slash menu to appear
-  await expect(page.locator(".vizel-slash-menu")).toBeVisible();
-  await page.keyboard.press("Enter");
-  // Wait for diagram to be inserted
-  await expect(component.locator(DIAGRAM_SELECTOR)).toBeVisible();
+// Click the editor to focus it, then dismiss any bubble menu the click raised.
+async function clickEditorStart(): Promise<HTMLElement> {
+  const el = await resolveEditor();
+  await userEvent.click(page.elementLocator(el));
+  await userEvent.keyboard("{Escape}");
+  return el;
 }
 
-/** Verify diagram can be inserted via slash command */
-export async function testDiagramInsert(component: Locator, page: Page): Promise<void> {
-  await insertDiagram(component, page);
-
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  await expect(diagram).toBeVisible();
-
-  // Should have type indicator
-  const typeIndicator = diagram.locator(".vizel-diagram-type");
-  await expect(typeIndicator).toContainText("Mermaid");
+// Resolve the inserted diagram node. The diagram renders inside the editor, so
+// it appears asynchronously after the slash-menu selection commits.
+async function resolveDiagram(): Promise<HTMLElement> {
+  await expect.poll(() => document.querySelector(DIAGRAM), { timeout: 5_000 }).not.toBeNull();
+  const diagram = document.querySelector<HTMLElement>(DIAGRAM);
+  if (diagram === null) throw new Error("expected a .vizel-diagram element");
+  return diagram;
 }
 
-/** Verify diagram shows default flowchart when inserted */
-export async function testDiagramDefaultContent(component: Locator, page: Page): Promise<void> {
-  await insertDiagram(component, page);
-
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  await expect(diagram).toBeVisible();
-
-  // Wait for Mermaid to render (SVG should appear)
-  const svg = diagram.locator(".vizel-diagram-render svg");
-  await expect(svg).toBeVisible({ timeout: 10000 });
+// Insert a diagram by typing the given slash command and pressing Enter.
+async function insertDiagram(slashQuery: string): Promise<HTMLElement> {
+  await clickEditorStart();
+  await userEvent.keyboard(slashQuery);
+  await expect.poll(() => document.querySelector(SLASH_MENU), { timeout: 5_000 }).not.toBeNull();
+  await userEvent.keyboard("{Enter}");
+  return resolveDiagram();
 }
 
-/** Verify diagram can be edited by clicking */
-export async function testDiagramClickToEdit(component: Locator, page: Page): Promise<void> {
-  await insertDiagram(component, page);
+// Open the diagram editor and resolve its textarea. The textarea is a native
+// element inside the node view, so it accepts a direct value assignment plus an
+// "input" event to drive the live preview, mirroring the Playwright original.
+async function openDiagramEditor(diagram: HTMLElement): Promise<HTMLTextAreaElement> {
+  const renderContainer = diagram.querySelector<HTMLElement>(".vizel-diagram-render");
+  if (renderContainer === null) throw new Error("expected a .vizel-diagram-render element");
+  await userEvent.click(page.elementLocator(renderContainer));
 
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  // Click the render container to start editing
-  const renderContainer = diagram.locator(".vizel-diagram-render");
-  await renderContainer.click();
-
-  // Should show edit mode with textarea
-  const textarea = diagram.locator("textarea");
-  await expect(textarea).toBeVisible();
+  await expect.poll(() => diagram.querySelector("textarea"), { timeout: 5_000 }).not.toBeNull();
+  const textarea = diagram.querySelector<HTMLTextAreaElement>("textarea");
+  if (textarea === null) throw new Error("expected a diagram textarea");
+  await expect.element(page.elementLocator(textarea)).toBeVisible();
+  return textarea;
 }
 
-/** Verify Mermaid code can be typed in diagram */
-export async function testDiagramTyping(component: Locator, page: Page): Promise<void> {
-  await insertDiagram(component, page);
+// Replace the textarea content. ProseMirror node views read the textarea value
+// from the synthetic "input" event, so set the value then dispatch it directly
+// rather than typing character by character.
+function setTextareaValue(textarea: HTMLTextAreaElement, code: string): void {
+  textarea.focus();
+  textarea.value = code;
+  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+}
 
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  // Click the render container to start editing
-  const renderContainer = diagram.locator(".vizel-diagram-render");
-  await renderContainer.click();
+/** Verify a diagram can be inserted via slash command. */
+export const testDiagramInsert: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/mermaid");
+  await expect.element(page.elementLocator(diagram)).toBeVisible();
 
-  const textarea = diagram.locator("textarea");
-  await expect(textarea).toBeVisible();
+  const typeIndicator = diagram.querySelector<HTMLElement>(".vizel-diagram-type");
+  if (typeIndicator === null) throw new Error("expected a .vizel-diagram-type element");
+  await expect.element(page.elementLocator(typeIndicator)).toHaveTextContent("Mermaid");
+};
 
-  // Clear and type new Mermaid code
-  const mermaidCode = `flowchart LR
+/** Verify a diagram shows the default flowchart when inserted. */
+export const testDiagramDefaultContent: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/mermaid");
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-render svg"), { timeout: 10_000 })
+    .not.toBeNull();
+};
+
+/** Verify a diagram can be edited by clicking. */
+export const testDiagramClickToEdit: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/mermaid");
+  const textarea = await openDiagramEditor(diagram);
+  await expect.element(page.elementLocator(textarea)).toBeVisible();
+};
+
+/** Verify Mermaid code can be typed and rendered. */
+export const testDiagramTyping: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/mermaid");
+  const textarea = await openDiagramEditor(diagram);
+
+  setTextareaValue(
+    textarea,
+    `flowchart LR
     A[Start] --> B[Process]
-    B --> C[End]`;
-
-  await textarea.evaluate((el: HTMLTextAreaElement, code: string) => {
-    el.focus();
-    el.value = code;
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-  }, mermaidCode);
-
-  // Wait for live preview to render
-  const preview = diagram.locator(".vizel-diagram-preview svg");
-  await expect(preview).toBeVisible({ timeout: 10000 });
-
-  // Blur the textarea to save content
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.blur();
-  });
-
-  // Verify the diagram is rendered in main view
-  const svg = diagram.locator(".vizel-diagram-render svg");
-  await expect(svg).toBeVisible({ timeout: 10000 });
-}
-
-/** Verify diagram shows error for invalid syntax */
-export async function testDiagramErrorHandling(component: Locator, page: Page): Promise<void> {
-  await insertDiagram(component, page);
-
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  // Click the render container to start editing
-  const renderContainer = diagram.locator(".vizel-diagram-render");
-  await renderContainer.click();
-
-  const textarea = diagram.locator("textarea");
-  await expect(textarea).toBeVisible();
-
-  // Type invalid Mermaid code
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.focus();
-    el.value = "invalid mermaid syntax {{{{";
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-  });
-
-  // Wait for error to appear in preview
-  const errorDisplay = diagram.locator(
-    ".vizel-diagram-preview .vizel-diagram-error-display, .vizel-diagram-preview:has-text('Error')"
+    B --> C[End]`
   );
-  await expect(errorDisplay).toBeVisible({ timeout: 10000 });
-}
 
-/** Verify diagram can be selected */
-export async function testDiagramSelection(component: Locator, page: Page): Promise<void> {
-  await insertDiagram(component, page);
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-preview svg"), { timeout: 10_000 })
+    .not.toBeNull();
 
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  await expect(diagram).toBeVisible();
+  textarea.blur();
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-render svg"), { timeout: 10_000 })
+    .not.toBeNull();
+};
 
-  // Wait for SVG to render
-  const svg = diagram.locator(".vizel-diagram-render svg");
-  await expect(svg).toBeVisible({ timeout: 10000 });
+/** Verify a diagram shows an error for invalid syntax. */
+export const testDiagramErrorHandling: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/mermaid");
+  const textarea = await openDiagramEditor(diagram);
 
-  // Click on the diagram to select it
-  await diagram.click();
+  setTextareaValue(textarea, "invalid mermaid syntax {{{{");
 
-  // Should have selected class
-  await expect(diagram).toHaveClass(/vizel-diagram-selected/);
-}
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-preview .vizel-diagram-error-display"), {
+      timeout: 10_000,
+    })
+    .not.toBeNull();
+};
 
-/** Verify diagram can render sequence diagram */
-export async function testDiagramSequence(component: Locator, page: Page): Promise<void> {
-  await insertDiagram(component, page);
+/** Verify a diagram can be selected. */
+export const testDiagramSelection: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/mermaid");
+  await expect.element(page.elementLocator(diagram)).toBeVisible();
 
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  const renderContainer = diagram.locator(".vizel-diagram-render");
-  await renderContainer.click();
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-render svg"), { timeout: 10_000 })
+    .not.toBeNull();
 
-  const textarea = diagram.locator("textarea");
-  await expect(textarea).toBeVisible();
+  await userEvent.click(page.elementLocator(diagram));
+  await expect.element(page.elementLocator(diagram)).toHaveClass(/vizel-diagram-selected/);
+};
 
-  // Type sequence diagram code
-  const sequenceCode = `sequenceDiagram
+/** Verify a diagram can render a sequence diagram. */
+export const testDiagramSequence: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/mermaid");
+  const textarea = await openDiagramEditor(diagram);
+
+  setTextareaValue(
+    textarea,
+    `sequenceDiagram
     Alice->>Bob: Hello Bob
-    Bob-->>Alice: Hi Alice`;
+    Bob-->>Alice: Hi Alice`
+  );
 
-  await textarea.evaluate((el: HTMLTextAreaElement, code: string) => {
-    el.focus();
-    el.value = code;
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-  }, sequenceCode);
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-preview svg"), { timeout: 10_000 })
+    .not.toBeNull();
 
-  // Wait for preview to render
-  const preview = diagram.locator(".vizel-diagram-preview svg");
-  await expect(preview).toBeVisible({ timeout: 10000 });
+  textarea.blur();
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-render svg"), { timeout: 10_000 })
+    .not.toBeNull();
+};
 
-  // Blur to save
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.blur();
-  });
+/** Verify the Escape key cancels edit mode and restores the original code. */
+export const testDiagramEscapeToCancel: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/mermaid");
+  const textarea = await openDiagramEditor(diagram);
 
-  // Verify the diagram is rendered
-  const svg = diagram.locator(".vizel-diagram-render svg");
-  await expect(svg).toBeVisible({ timeout: 10000 });
-}
+  const originalCode = textarea.value;
 
-/** Verify escape key cancels edit mode */
-export async function testDiagramEscapeToCancel(component: Locator, page: Page): Promise<void> {
-  await insertDiagram(component, page);
+  setTextareaValue(textarea, "changed content");
 
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  const renderContainer = diagram.locator(".vizel-diagram-render");
-  await renderContainer.click();
+  await userEvent.keyboard("{Escape}");
+  await expect.element(page.elementLocator(textarea)).not.toBeVisible();
 
-  const textarea = diagram.locator("textarea");
-  await expect(textarea).toBeVisible();
+  // Re-open the editor and confirm the cancelled edit did not persist.
+  const reopened = await openDiagramEditor(diagram);
+  expect(reopened.value).toBe(originalCode);
+};
 
-  // Remember original code
-  const originalCode = await textarea.inputValue();
+/** Verify Ctrl/Cmd + Enter saves the diagram. */
+export const testDiagramCtrlEnterToSave: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/mermaid");
+  const textarea = await openDiagramEditor(diagram);
 
-  // Type some changes
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.focus();
-    el.value = "changed content";
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-  });
+  setTextareaValue(
+    textarea,
+    `flowchart TD
+    A[New] --> B[Diagram]`
+  );
 
-  // Press Escape to cancel
-  await page.keyboard.press("Escape");
+  await pressKeyChord("Mod", "Enter");
+  await expect.element(page.elementLocator(textarea)).not.toBeVisible();
 
-  // Textarea should be hidden
-  await expect(textarea).not.toBeVisible();
-
-  // Click to edit again and verify original code is restored
-  await renderContainer.click();
-  await expect(textarea).toBeVisible();
-
-  const restoredCode = await textarea.inputValue();
-  expect(restoredCode).toBe(originalCode);
-}
-
-/** Verify Ctrl/Cmd + Enter saves diagram */
-export async function testDiagramCtrlEnterToSave(component: Locator, page: Page): Promise<void> {
-  await insertDiagram(component, page);
-
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  const renderContainer = diagram.locator(".vizel-diagram-render");
-  await renderContainer.click();
-
-  const textarea = diagram.locator("textarea");
-  await expect(textarea).toBeVisible();
-
-  // Type new code
-  const newCode = `flowchart TD
-    A[New] --> B[Diagram]`;
-
-  await textarea.evaluate((el: HTMLTextAreaElement, code: string) => {
-    el.focus();
-    el.value = code;
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-  }, newCode);
-
-  // Use Ctrl/Cmd + Enter to save
-  await page.keyboard.press("ControlOrMeta+Enter");
-
-  // Textarea should be hidden
-  await expect(textarea).not.toBeVisible();
-
-  // SVG should be rendered in main view
-  const svg = diagram.locator(".vizel-diagram-render svg");
-  await expect(svg).toBeVisible({ timeout: 10000 });
-}
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-render svg"), { timeout: 10_000 })
+    .not.toBeNull();
+};
 
 // ============================================
 // GraphViz Tests
 // ============================================
 
-/** Helper to insert a GraphViz diagram via slash command */
-async function insertGraphVizDiagram(component: Locator, page: Page): Promise<void> {
-  await clickEditorStart(component, page);
-  await page.keyboard.type("/graphviz");
-  // Wait for slash menu to appear
-  await expect(page.locator(".vizel-slash-menu")).toBeVisible();
-  await page.keyboard.press("Enter");
-  // Wait for diagram to be inserted
-  await expect(component.locator(DIAGRAM_SELECTOR)).toBeVisible();
-}
+/** Verify a GraphViz diagram can be inserted via slash command. */
+export const testGraphVizDiagramInsert: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/graphviz");
+  await expect.element(page.elementLocator(diagram)).toBeVisible();
 
-/** Verify GraphViz diagram can be inserted via slash command */
-export async function testGraphVizDiagramInsert(component: Locator, page: Page): Promise<void> {
-  await insertGraphVizDiagram(component, page);
+  const typeIndicator = diagram.querySelector<HTMLElement>(".vizel-diagram-type");
+  if (typeIndicator === null) throw new Error("expected a .vizel-diagram-type element");
+  await expect.element(page.elementLocator(typeIndicator)).toHaveTextContent("GraphViz");
+};
 
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  await expect(diagram).toBeVisible();
+/** Verify a GraphViz diagram shows default content when inserted. */
+export const testGraphVizDiagramDefaultContent: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/graphviz");
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-render svg"), { timeout: 10_000 })
+    .not.toBeNull();
+};
 
-  // Should have type indicator showing GraphViz
-  const typeIndicator = diagram.locator(".vizel-diagram-type");
-  await expect(typeIndicator).toContainText("GraphViz");
-}
+/** Verify GraphViz DOT code can be typed and rendered. */
+export const testGraphVizDiagramTyping: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/graphviz");
+  const textarea = await openDiagramEditor(diagram);
 
-/** Verify GraphViz diagram shows default content when inserted */
-export async function testGraphVizDiagramDefaultContent(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  await insertGraphVizDiagram(component, page);
-
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  await expect(diagram).toBeVisible();
-
-  // Wait for GraphViz to render (SVG should appear)
-  const svg = diagram.locator(".vizel-diagram-render svg");
-  await expect(svg).toBeVisible({ timeout: 10000 });
-}
-
-/** Verify GraphViz DOT code can be typed in diagram */
-export async function testGraphVizDiagramTyping(component: Locator, page: Page): Promise<void> {
-  await insertGraphVizDiagram(component, page);
-
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  // Click the render container to start editing
-  const renderContainer = diagram.locator(".vizel-diagram-render");
-  await renderContainer.click();
-
-  const textarea = diagram.locator("textarea");
-  await expect(textarea).toBeVisible();
-
-  // Clear and type new DOT code
-  const dotCode = `digraph G {
+  setTextareaValue(
+    textarea,
+    `digraph G {
     A -> B -> C
     B -> D
-  }`;
+  }`
+  );
 
-  await textarea.evaluate((el: HTMLTextAreaElement, code: string) => {
-    el.focus();
-    el.value = code;
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-  }, dotCode);
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-preview svg"), { timeout: 10_000 })
+    .not.toBeNull();
 
-  // Wait for live preview to render
-  const preview = diagram.locator(".vizel-diagram-preview svg");
-  await expect(preview).toBeVisible({ timeout: 10000 });
+  textarea.blur();
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-render svg"), { timeout: 10_000 })
+    .not.toBeNull();
+};
 
-  // Blur the textarea to save content
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.blur();
-  });
+/** Verify a GraphViz diagram shows an error for invalid syntax. */
+export const testGraphVizDiagramErrorHandling: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/graphviz");
+  const textarea = await openDiagramEditor(diagram);
 
-  // Verify the diagram is rendered in main view
-  const svg = diagram.locator(".vizel-diagram-render svg");
-  await expect(svg).toBeVisible({ timeout: 10000 });
-}
+  setTextareaValue(textarea, "digraph { invalid syntax {{{{");
 
-/** Verify GraphViz diagram shows error for invalid syntax */
-export async function testGraphVizDiagramErrorHandling(
-  component: Locator,
-  page: Page
-): Promise<void> {
-  await insertGraphVizDiagram(component, page);
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-preview .vizel-diagram-error-display"), {
+      timeout: 10_000,
+    })
+    .not.toBeNull();
+};
 
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  // Click the render container to start editing
-  const renderContainer = diagram.locator(".vizel-diagram-render");
-  await renderContainer.click();
+/** Verify GraphViz can render different graph layouts. */
+export const testGraphVizDiagramLayout: VizelBcScenario = async () => {
+  const diagram = await insertDiagram("/graphviz");
+  const textarea = await openDiagramEditor(diagram);
 
-  const textarea = diagram.locator("textarea");
-  await expect(textarea).toBeVisible();
-
-  // Type invalid DOT code
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.focus();
-    el.value = "digraph { invalid syntax {{{{";
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-  });
-
-  // Wait for error to appear in preview
-  const errorDisplay = diagram.locator(".vizel-diagram-preview .vizel-diagram-error-display");
-  await expect(errorDisplay).toBeVisible({ timeout: 10000 });
-}
-
-/** Verify GraphViz can render different graph layouts */
-export async function testGraphVizDiagramLayout(component: Locator, page: Page): Promise<void> {
-  await insertGraphVizDiagram(component, page);
-
-  const diagram = component.locator(DIAGRAM_SELECTOR);
-  const renderContainer = diagram.locator(".vizel-diagram-render");
-  await renderContainer.click();
-
-  const textarea = diagram.locator("textarea");
-  await expect(textarea).toBeVisible();
-
-  // Type a graph with left-to-right layout
-  const dotCode = `digraph G {
+  setTextareaValue(
+    textarea,
+    `digraph G {
     rankdir=LR
     node [shape=box]
     A [label="Start"]
     B [label="Process"]
     C [label="End"]
     A -> B -> C
-  }`;
+  }`
+  );
 
-  await textarea.evaluate((el: HTMLTextAreaElement, code: string) => {
-    el.focus();
-    el.value = code;
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-  }, dotCode);
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-preview svg"), { timeout: 10_000 })
+    .not.toBeNull();
 
-  // Wait for preview to render
-  const preview = diagram.locator(".vizel-diagram-preview svg");
-  await expect(preview).toBeVisible({ timeout: 10000 });
-
-  // Blur to save
-  await textarea.evaluate((el: HTMLTextAreaElement) => {
-    el.blur();
-  });
-
-  // Verify the diagram is rendered
-  const svg = diagram.locator(".vizel-diagram-render svg");
-  await expect(svg).toBeVisible({ timeout: 10000 });
-}
+  textarea.blur();
+  await expect
+    .poll(() => diagram.querySelector(".vizel-diagram-render svg"), { timeout: 10_000 })
+    .not.toBeNull();
+};

@@ -1,260 +1,327 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, pressKeyChord, userEvent, type VizelBcScenario } from "./_vitest-context";
 
-/**
- * Test that Markdown extension can export editor content as markdown
- */
-export async function testMarkdownExport(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
+// Resolve the .vizel-editor root. Tiptap mounts asynchronously after the
+// framework renders, so poll until the element appears to avoid a race with
+// the async mount.
+async function resolveEditor(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(".vizel-editor"), { timeout: 15_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(".vizel-editor");
+  if (el === null) throw new Error("expected a .vizel-editor element");
+  return el;
+}
 
-  // Type content with formatting
-  await editor.click();
-  await page.keyboard.type("Hello ");
-  await page.keyboard.press("ControlOrMeta+b");
-  await page.keyboard.type("World");
-  await page.keyboard.press("ControlOrMeta+b");
+// Resolve a button by data-testid, polling until it appears. The fixture
+// renders buttons at mount time so the poll budget is short.
+async function resolveButton(testId: string): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(`[data-testid="${testId}"]`), { timeout: 5_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+  if (el === null) throw new Error(`expected [data-testid="${testId}"]`);
+  return el;
+}
 
-  // Click export button
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
-
-  // Verify markdown output contains bold syntax
-  await expect(markdownOutput).toContainText("**World**");
+// Resolve the markdown output element and poll until its text content is non-empty.
+// The export handler sets the output synchronously after a button click, so the
+// render cycle is the only latency — a short budget is sufficient.
+async function resolveMarkdownOutput(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector("[data-testid='markdown-output']"), { timeout: 5_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>("[data-testid='markdown-output']");
+  if (el === null) throw new Error("expected [data-testid='markdown-output']");
+  return el;
 }
 
 /**
- * Test that Markdown extension can import markdown content
+ * Verify the Markdown extension exports bold text as `**Word**` syntax.
+ *
+ * Types text, toggles bold via the keyboard shortcut, then clicks the export
+ * button and checks that the output element contains the GFM bold marker.
  */
-export async function testMarkdownImport(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+export const testMarkdownExport: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
 
-  // Click import button (which sets content from markdown)
-  const importButton = component.locator("[data-testid='import-button']");
-  await importButton.click();
+  await userEvent.click(editor);
+  await userEvent.type(editor, "Hello ");
+  await pressKeyChord("Mod", "b");
+  await userEvent.keyboard("World");
+  await pressKeyChord("Mod", "b");
 
-  // Verify bold text was rendered
-  const bold = editor.locator("strong");
-  await expect(bold).toContainText("bold");
-}
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
+
+  const output = await resolveMarkdownOutput();
+  await expect.poll(() => output.textContent ?? "", { timeout: 5_000 }).toContain("**World**");
+};
 
 /**
- * Test that Markdown extension preserves heading structure
+ * Verify the Markdown extension imports markdown with bold and renders a `<strong>`.
+ *
+ * Clicking the import button calls `setContent` with a markdown string;
+ * the editor parses the bold marker and creates a `<strong>` node.
  */
-export async function testMarkdownHeading(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
+export const testMarkdownImport: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Create a heading
-  await editor.click();
-  await page.keyboard.type("My Heading");
-  await page.keyboard.press("ControlOrMeta+a");
-  await page.keyboard.press("ControlOrMeta+Alt+1");
+  const importButton = await resolveButton("import-button");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Export and verify
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
-
-  await expect(markdownOutput).toContainText("# My Heading");
-}
+  await expect.poll(() => el.querySelector("strong"), { timeout: 5_000 }).not.toBeNull();
+  const bold = el.querySelector<HTMLElement>("strong");
+  if (bold === null) throw new Error("expected a <strong> element");
+  expect(bold.textContent).toContain("bold");
+};
 
 /**
- * Test that Markdown extension handles lists correctly
+ * Verify the Markdown extension exports a heading as `# My Heading`.
+ *
+ * Types the heading text, selects all, applies H1 via the keyboard shortcut,
+ * then exports and checks the output.
  */
-export async function testMarkdownList(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
+export const testMarkdownHeading: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
 
-  // Create a bullet list
-  await editor.click();
-  await page.keyboard.type("- Item 1");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type("Item 2");
+  await userEvent.type(editor, "My Heading");
+  await pressKeyChord("Mod", "a");
+  await pressKeyChord("Mod", "Alt", "1");
 
-  // Export and verify
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
 
-  await expect(markdownOutput).toContainText("- Item 1");
-  await expect(markdownOutput).toContainText("- Item 2");
-}
+  const output = await resolveMarkdownOutput();
+  await expect.poll(() => output.textContent ?? "", { timeout: 5_000 }).toContain("# My Heading");
+};
 
 /**
- * Test that Markdown extension handles code blocks
+ * Verify the Markdown extension exports a bullet list as `- Item` syntax.
+ *
+ * Types two list items using the `- ` input rule and checks that both appear
+ * in the exported markdown.
  */
-export async function testMarkdownCodeBlock(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+export const testMarkdownList: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
 
-  // Import markdown with code block
-  const importCodeButton = component.locator("[data-testid='import-code-button']");
-  await importCodeButton.click();
+  await userEvent.type(editor, "- Item 1");
+  await userEvent.keyboard("{Enter}");
+  await userEvent.type(editor, "Item 2");
 
-  // Verify code block was rendered
-  const codeBlock = editor.locator("pre");
-  await expect(codeBlock).toBeVisible();
-  await expect(codeBlock).toContainText("const x = 1");
-}
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
+
+  const output = await resolveMarkdownOutput();
+  await expect.poll(() => output.textContent ?? "", { timeout: 5_000 }).toContain("- Item 1");
+  expect(output.textContent).toContain("- Item 2");
+};
 
 /**
- * Test that Markdown extension handles links correctly
+ * Verify the Markdown extension imports a fenced code block and renders `<pre>`.
+ *
+ * The import button calls `setContent` with a markdown code fence; the editor
+ * parses the fence and creates a `<pre>` node containing the code text.
  */
-export async function testMarkdownLink(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+export const testMarkdownCodeBlock: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Import markdown with link
-  const importLinkButton = component.locator("[data-testid='import-link-button']");
-  await importLinkButton.click();
+  const importButton = await resolveButton("import-code-button");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Verify link was rendered
-  const link = editor.locator("a");
-  await expect(link).toBeVisible();
-  await expect(link).toHaveAttribute("href", "https://example.com");
-}
+  await expect.poll(() => el.querySelector("pre"), { timeout: 5_000 }).not.toBeNull();
+  const codeBlock = el.querySelector<HTMLElement>("pre");
+  if (codeBlock === null) throw new Error("expected a <pre> element");
+  await expect.element(page.elementLocator(codeBlock)).toBeVisible();
+  expect(codeBlock.textContent).toContain("const x = 1");
+};
 
 /**
- * Test that Markdown extension handles italic text
+ * Verify the Markdown extension imports an inline link and renders `<a href>`.
+ *
+ * The import button calls `setContent` with a markdown link; the editor parses
+ * the link and creates an `<a>` element with the expected `href`.
  */
-export async function testMarkdownItalic(component: Locator, page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  const markdownOutput = component.locator("[data-testid='markdown-output']");
+export const testMarkdownLink: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Type content with italic formatting
-  await editor.click();
-  await page.keyboard.type("Hello ");
-  await page.keyboard.press("ControlOrMeta+i");
-  await page.keyboard.type("italic");
-  await page.keyboard.press("ControlOrMeta+i");
-  await page.keyboard.type(" world");
+  const importButton = await resolveButton("import-link-button");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Export and verify
-  const exportButton = component.locator("[data-testid='export-button']");
-  await exportButton.click();
-
-  await expect(markdownOutput).toContainText("*italic*");
-}
+  await expect.poll(() => el.querySelector("a"), { timeout: 5_000 }).not.toBeNull();
+  const link = el.querySelector<HTMLElement>("a");
+  if (link === null) throw new Error("expected an <a> element");
+  await expect.element(page.elementLocator(link)).toBeVisible();
+  expect(link.getAttribute("href")).toBe("https://example.com");
+};
 
 /**
- * Test that Markdown extension handles strikethrough text
+ * Verify the Markdown extension exports italic text as `*italic*` syntax.
+ *
+ * Types text, toggles italic via the keyboard shortcut, then exports and
+ * checks the output for the markdown italic marker.
  */
-export async function testMarkdownStrikethrough(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+export const testMarkdownItalic: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  const editor = page.elementLocator(el);
 
-  // Import markdown with strikethrough
-  const importButton = component.locator("[data-testid='import-strikethrough-button']");
-  await importButton.click();
+  await userEvent.click(editor);
+  await userEvent.type(editor, "Hello ");
+  await pressKeyChord("Mod", "i");
+  await userEvent.keyboard("italic");
+  await pressKeyChord("Mod", "i");
+  await userEvent.keyboard(" world");
 
-  // Verify strikethrough was rendered
-  const strike = editor.locator("s");
-  await expect(strike).toBeVisible();
-  await expect(strike).toContainText("deleted");
-}
+  const exportButton = await resolveButton("export-button");
+  await userEvent.click(page.elementLocator(exportButton));
+
+  const output = await resolveMarkdownOutput();
+  await expect.poll(() => output.textContent ?? "", { timeout: 5_000 }).toContain("*italic*");
+};
 
 /**
- * Test that Markdown extension handles inline code
+ * Verify the Markdown extension imports strikethrough markdown and renders `<s>`.
+ *
+ * The import button calls `setContent` with `~~deleted~~` syntax; the editor
+ * parses the tilde markers and creates an `<s>` element.
  */
-export async function testMarkdownInlineCode(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+export const testMarkdownStrikethrough: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Import markdown with inline code
-  const importButton = component.locator("[data-testid='import-inline-code-button']");
-  await importButton.click();
+  const importButton = await resolveButton("import-strikethrough-button");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Verify inline code was rendered
-  const code = editor.locator("code");
-  await expect(code).toBeVisible();
-  await expect(code).toContainText("variable");
-}
+  await expect.poll(() => el.querySelector("s"), { timeout: 5_000 }).not.toBeNull();
+  const strike = el.querySelector<HTMLElement>("s");
+  if (strike === null) throw new Error("expected an <s> element");
+  await expect.element(page.elementLocator(strike)).toBeVisible();
+  expect(strike.textContent).toContain("deleted");
+};
 
 /**
- * Test that Markdown extension handles images
+ * Verify the Markdown extension imports an inline code span and renders `<code>`.
+ *
+ * The import button calls `setContent` with backtick syntax; the editor parses
+ * the backtick and creates a `<code>` element.
  */
-export async function testMarkdownImage(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+export const testMarkdownInlineCode: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Import markdown with image
-  const importButton = component.locator("[data-testid='import-image-button']");
-  await importButton.click();
+  const importButton = await resolveButton("import-inline-code-button");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Verify image was rendered
-  const image = editor.locator("img");
-  await expect(image).toBeVisible();
-  await expect(image).toHaveAttribute("src", "https://example.com/image.png");
-  await expect(image).toHaveAttribute("alt", "Example");
-}
+  await expect.poll(() => el.querySelector("code"), { timeout: 5_000 }).not.toBeNull();
+  const code = el.querySelector<HTMLElement>("code");
+  if (code === null) throw new Error("expected a <code> element");
+  await expect.element(page.elementLocator(code)).toBeVisible();
+  expect(code.textContent).toContain("variable");
+};
 
 /**
- * Test that Markdown extension handles ordered lists
+ * Verify the Markdown extension imports an image and renders `<img>` with src and alt.
+ *
+ * The import button calls `setContent` with `![alt](url)` syntax; the editor
+ * parses the image marker and creates an `<img>` element.
  */
-export async function testMarkdownOrderedList(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+export const testMarkdownImage: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Import markdown with ordered list
-  const importButton = component.locator("[data-testid='import-ordered-list-button']");
-  await importButton.click();
+  const importButton = await resolveButton("import-image-button");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Verify ordered list was rendered
-  const orderedList = editor.locator("ol");
-  await expect(orderedList).toBeVisible();
-  const items = editor.locator("ol li");
-  await expect(items).toHaveCount(3);
-}
+  await expect.poll(() => el.querySelector("img"), { timeout: 5_000 }).not.toBeNull();
+  const image = el.querySelector<HTMLElement>("img");
+  if (image === null) throw new Error("expected an <img> element");
+  await expect.element(page.elementLocator(image)).toBeVisible();
+  expect(image.getAttribute("src")).toBe("https://example.com/image.png");
+  expect(image.getAttribute("alt")).toBe("Example");
+};
 
 /**
- * Test that Markdown extension handles blockquotes
+ * Verify the Markdown extension imports an ordered list and renders `<ol>` with three `<li>`.
+ *
+ * The import button calls `setContent` with `1. / 2. / 3.` syntax; the editor
+ * parses the list and creates an `<ol>` with three items.
  */
-export async function testMarkdownBlockquote(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+export const testMarkdownOrderedList: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Import markdown with blockquote
-  const importButton = component.locator("[data-testid='import-blockquote-button']");
-  await importButton.click();
+  const importButton = await resolveButton("import-ordered-list-button");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Verify blockquote was rendered
-  const blockquote = editor.locator("blockquote");
-  await expect(blockquote).toBeVisible();
-  await expect(blockquote).toContainText("This is a quote");
-}
+  await expect.poll(() => el.querySelector("ol"), { timeout: 5_000 }).not.toBeNull();
+  const orderedList = el.querySelector<HTMLElement>("ol");
+  if (orderedList === null) throw new Error("expected an <ol> element");
+  await expect.element(page.elementLocator(orderedList)).toBeVisible();
+  await expect.poll(() => el.querySelectorAll("ol li").length, { timeout: 5_000 }).toBe(3);
+};
 
 /**
- * Test that Markdown extension handles horizontal rules
+ * Verify the Markdown extension imports a blockquote and renders `<blockquote>`.
+ *
+ * The import button calls `setContent` with `> ` syntax; the editor parses
+ * the blockquote marker and creates a `<blockquote>` element.
  */
-export async function testMarkdownHorizontalRule(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+export const testMarkdownBlockquote: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Import markdown with horizontal rule
-  const importButton = component.locator("[data-testid='import-hr-button']");
-  await importButton.click();
+  const importButton = await resolveButton("import-blockquote-button");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Verify horizontal rule was rendered
-  const hr = editor.locator("hr");
-  await expect(hr).toBeVisible();
-}
+  await expect.poll(() => el.querySelector("blockquote"), { timeout: 5_000 }).not.toBeNull();
+  const blockquote = el.querySelector<HTMLElement>("blockquote");
+  if (blockquote === null) throw new Error("expected a <blockquote> element");
+  await expect.element(page.elementLocator(blockquote)).toBeVisible();
+  expect(blockquote.textContent).toContain("This is a quote");
+};
 
 /**
- * Test that Markdown extension handles tables
+ * Verify the Markdown extension imports a horizontal rule and renders `<hr>`.
+ *
+ * The import button calls `setContent` with `---` syntax; the editor parses
+ * the rule and creates an `<hr>` element.
  */
-export async function testMarkdownTable(component: Locator, _page: Page): Promise<void> {
-  const editor = component.locator(".vizel-editor");
-  await expect(editor).toBeVisible();
+export const testMarkdownHorizontalRule: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
 
-  // Import markdown with table
-  const importButton = component.locator("[data-testid='import-table-button']");
-  await importButton.click();
+  const importButton = await resolveButton("import-hr-button");
+  await userEvent.click(page.elementLocator(importButton));
 
-  // Verify table was rendered
-  const table = editor.locator("table");
-  await expect(table).toBeVisible();
-  const headerCells = editor.locator("th");
-  await expect(headerCells).toHaveCount(2);
-  const dataCells = editor.locator("td");
-  await expect(dataCells).toHaveCount(2);
-}
+  await expect.poll(() => el.querySelector("hr"), { timeout: 5_000 }).not.toBeNull();
+  const hr = el.querySelector<HTMLElement>("hr");
+  if (hr === null) throw new Error("expected an <hr> element");
+  await expect.element(page.elementLocator(hr)).toBeVisible();
+};
+
+/**
+ * Verify the Markdown extension imports a table and renders `<table>` with correct cell counts.
+ *
+ * The import button calls `setContent` with GFM table syntax; the editor
+ * parses the table and creates `<th>` header cells and `<td>` data cells.
+ */
+export const testMarkdownTable: VizelBcScenario = async () => {
+  const el = await resolveEditor();
+  await expect.element(page.elementLocator(el)).toBeVisible();
+
+  const importButton = await resolveButton("import-table-button");
+  await userEvent.click(page.elementLocator(importButton));
+
+  await expect.poll(() => el.querySelector("table"), { timeout: 5_000 }).not.toBeNull();
+  const table = el.querySelector<HTMLElement>("table");
+  if (table === null) throw new Error("expected a <table> element");
+  await expect.element(page.elementLocator(table)).toBeVisible();
+  await expect.poll(() => el.querySelectorAll("th").length, { timeout: 5_000 }).toBe(2);
+  await expect.poll(() => el.querySelectorAll("td").length, { timeout: 5_000 }).toBe(2);
+};

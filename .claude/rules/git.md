@@ -38,7 +38,7 @@ This project uses Conventional Commits. The lefthook `commit-msg` hook validates
 | `svelte` | `@vizel/svelte` package |
 | `demo` | Demo applications under `apps/demo/` |
 | `docs` | VitePress docs site under `docs/` |
-| `ct` | Playwright Component Tests under `tests/ct/` |
+| `ct` | Vitest Browser Mode component tests under `tests/ct/` |
 | `deps` | Dependency-only changes (typically `chore(deps)`) |
 | `spec` | design spec under `docs/superpowers/specs/` |
 | `guide` | User-facing guide pages under `docs/guide/` |

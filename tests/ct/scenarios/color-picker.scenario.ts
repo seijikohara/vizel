@@ -1,278 +1,314 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect } from "vitest";
+import { page, userEvent } from "./_vitest-context";
 
-/**
- * Test that ColorPicker renders the color palette grid
- */
-export async function testRendersColorPalette(_component: Locator, page: Page): Promise<void> {
-  const content = page.locator(".vizel-color-picker-content");
-  await expect(content).toBeVisible();
-  await expect(content).toHaveAttribute("role", "listbox");
+// Resolve the color picker content element. The component mounts synchronously,
+// but VDOM patches can land in the next microtask, so poll with a modest budget
+// rather than querying once.
+async function resolveColorPickerContent(): Promise<HTMLElement> {
+  await expect
+    .poll(() => document.querySelector(".vizel-color-picker-content"), { timeout: 5_000 })
+    .not.toBeNull();
+  const el = document.querySelector<HTMLElement>(".vizel-color-picker-content");
+  if (el === null) throw new Error("expected a .vizel-color-picker-content element");
+  return el;
+}
 
-  const grid = page.locator(".vizel-color-picker-grid");
-  await expect(grid).toBeVisible();
-
-  const swatches = page.locator(".vizel-color-picker-swatch");
-  const count = await swatches.count();
-  expect(count).toBeGreaterThan(0);
+// Focus a swatch by index. Playwright's `loc.focus()` becomes a direct DOM call
+// in the browser context.
+async function focusSwatchAt(index: number): Promise<HTMLElement> {
+  const swatches = document.querySelectorAll<HTMLElement>(".vizel-color-picker-swatch");
+  const swatch = swatches[index];
+  if (swatch === undefined) throw new Error(`expected swatch at index ${index}`);
+  swatch.focus();
+  await expect.poll(() => document.activeElement === swatch, { timeout: 3_000 }).toBe(true);
+  return swatch;
 }
 
 /**
- * Test that ColorPicker shows current selection with active state
+ * Verify the ColorPicker renders the color palette grid with at least one swatch.
  */
-export async function testShowsCurrentSelection(
-  _component: Locator,
-  page: Page,
-  expectedColor: string
-): Promise<void> {
-  const activeSwatch = page.locator(`.vizel-color-picker-swatch[data-color="${expectedColor}"]`);
-  await expect(activeSwatch).toHaveClass(/is-active/);
-  await expect(activeSwatch).toHaveAttribute("aria-selected", "true");
+export async function testRendersColorPalette(): Promise<void> {
+  const content = await resolveColorPickerContent();
+  await expect.element(page.elementLocator(content)).toBeVisible();
+  expect(content.getAttribute("role")).toBe("listbox");
+
+  const grid = document.querySelector<HTMLElement>(".vizel-color-picker-grid");
+  if (grid === null) throw new Error("expected a .vizel-color-picker-grid element");
+  await expect.element(page.elementLocator(grid)).toBeVisible();
+
+  const swatches = document.querySelectorAll(".vizel-color-picker-swatch");
+  expect(swatches.length).toBeGreaterThan(0);
 }
 
 /**
- * Test that ColorPicker calls onChange when color is selected
+ * Verify the swatch for `expectedColor` carries the active state attributes.
  */
-export async function testOnChangeCalledOnSelection(
-  _component: Locator,
-  page: Page
-): Promise<void> {
-  // Click on a color swatch (skip first row which may contain "none" value)
-  const targetSwatch = page.locator(".vizel-color-picker-swatch").nth(4);
-  await targetSwatch.click();
+export async function testShowsCurrentSelection(expectedColor: string): Promise<void> {
+  await resolveColorPickerContent();
 
-  // The fixture should update the selected color display
-  const selectedDisplay = page.locator("[data-testid='selected-color']");
-  await expect(selectedDisplay).not.toBeEmpty();
+  await expect
+    .poll(
+      () =>
+        document.querySelector<HTMLElement>(
+          `.vizel-color-picker-swatch[data-color="${expectedColor}"]`
+        ),
+      { timeout: 5_000 }
+    )
+    .not.toBeNull();
+
+  const activeSwatch = document.querySelector<HTMLElement>(
+    `.vizel-color-picker-swatch[data-color="${expectedColor}"]`
+  );
+  if (activeSwatch === null) {
+    throw new Error(`expected a swatch with data-color="${expectedColor}"`);
+  }
+  expect(activeSwatch.classList.contains("is-active")).toBe(true);
+  expect(activeSwatch.getAttribute("aria-selected")).toBe("true");
 }
 
 /**
- * Test keyboard navigation - ArrowRight moves to next swatch
+ * Verify clicking a color swatch calls onChange and updates the selected color display.
  */
-export async function testKeyboardNavigationArrowRight(
-  _component: Locator,
-  page: Page
-): Promise<void> {
-  const swatches = page.locator(".vizel-color-picker-swatch");
-  const firstSwatch = swatches.first();
-  const secondSwatch = swatches.nth(1);
+export async function testOnChangeCalledOnSelection(): Promise<void> {
+  await resolveColorPickerContent();
 
-  await firstSwatch.focus();
-  await expect(firstSwatch).toBeFocused();
+  const swatches = document.querySelectorAll<HTMLElement>(".vizel-color-picker-swatch");
+  const targetSwatch = swatches[4];
+  if (targetSwatch === undefined) throw new Error("expected at least 5 swatches");
+  await userEvent.click(page.elementLocator(targetSwatch));
 
-  await page.keyboard.press("ArrowRight");
-  await expect(secondSwatch).toBeFocused();
+  // The fixture writes the selected color into [data-testid="selected-color"].
+  const display = document.querySelector<HTMLElement>("[data-testid='selected-color']");
+  if (display === null) throw new Error("expected a [data-testid='selected-color'] element");
+  await expect
+    .poll(() => (display.textContent ?? "").trim().length > 0, { timeout: 5_000 })
+    .toBe(true);
 }
 
 /**
- * Test keyboard navigation - ArrowLeft moves to previous swatch
+ * Verify ArrowRight moves keyboard focus to the next swatch.
  */
-export async function testKeyboardNavigationArrowLeft(
-  _component: Locator,
-  page: Page
-): Promise<void> {
-  const swatches = page.locator(".vizel-color-picker-swatch");
-  const secondSwatch = swatches.nth(1);
-  const firstSwatch = swatches.first();
+export async function testKeyboardNavigationArrowRight(): Promise<void> {
+  await resolveColorPickerContent();
 
-  await secondSwatch.focus();
-  await expect(secondSwatch).toBeFocused();
+  await focusSwatchAt(0);
 
-  await page.keyboard.press("ArrowLeft");
-  await expect(firstSwatch).toBeFocused();
+  await userEvent.keyboard("{ArrowRight}");
+
+  const swatches = document.querySelectorAll<HTMLElement>(".vizel-color-picker-swatch");
+  const second = swatches[1];
+  if (second === undefined) throw new Error("expected at least 2 swatches");
+  await expect.poll(() => document.activeElement === second, { timeout: 3_000 }).toBe(true);
 }
 
 /**
- * Test keyboard navigation - ArrowDown moves down one row (4 items)
+ * Verify ArrowLeft moves keyboard focus to the previous swatch.
  */
-export async function testKeyboardNavigationArrowDown(
-  _component: Locator,
-  page: Page
-): Promise<void> {
-  const swatches = page.locator(".vizel-color-picker-swatch");
-  const firstSwatch = swatches.first();
-  const fifthSwatch = swatches.nth(4);
+export async function testKeyboardNavigationArrowLeft(): Promise<void> {
+  await resolveColorPickerContent();
 
-  await firstSwatch.focus();
-  await expect(firstSwatch).toBeFocused();
+  await focusSwatchAt(1);
 
-  await page.keyboard.press("ArrowDown");
-  await expect(fifthSwatch).toBeFocused();
+  await userEvent.keyboard("{ArrowLeft}");
+
+  const swatches = document.querySelectorAll<HTMLElement>(".vizel-color-picker-swatch");
+  const first = swatches[0];
+  if (first === undefined) throw new Error("expected at least 1 swatch");
+  await expect.poll(() => document.activeElement === first, { timeout: 3_000 }).toBe(true);
 }
 
 /**
- * Test keyboard navigation - ArrowUp moves up one row (4 items)
+ * Verify ArrowDown moves keyboard focus down one row (4 items).
  */
-export async function testKeyboardNavigationArrowUp(
-  _component: Locator,
-  page: Page
-): Promise<void> {
-  const swatches = page.locator(".vizel-color-picker-swatch");
-  const fifthSwatch = swatches.nth(4);
-  const firstSwatch = swatches.first();
+export async function testKeyboardNavigationArrowDown(): Promise<void> {
+  await resolveColorPickerContent();
 
-  await fifthSwatch.focus();
-  await expect(fifthSwatch).toBeFocused();
+  await focusSwatchAt(0);
 
-  await page.keyboard.press("ArrowUp");
-  await expect(firstSwatch).toBeFocused();
+  await userEvent.keyboard("{ArrowDown}");
+
+  const swatches = document.querySelectorAll<HTMLElement>(".vizel-color-picker-swatch");
+  const fifth = swatches[4];
+  if (fifth === undefined) throw new Error("expected at least 5 swatches");
+  await expect.poll(() => document.activeElement === fifth, { timeout: 3_000 }).toBe(true);
 }
 
 /**
- * Test keyboard navigation - Home moves to first swatch
+ * Verify ArrowUp moves keyboard focus up one row (4 items).
  */
-export async function testKeyboardNavigationHome(_component: Locator, page: Page): Promise<void> {
-  const swatches = page.locator(".vizel-color-picker-swatch");
-  const tenthSwatch = swatches.nth(10);
-  const firstSwatch = swatches.first();
+export async function testKeyboardNavigationArrowUp(): Promise<void> {
+  await resolveColorPickerContent();
 
-  await tenthSwatch.focus();
-  await expect(tenthSwatch).toBeFocused();
+  await focusSwatchAt(4);
 
-  await page.keyboard.press("Home");
-  await expect(firstSwatch).toBeFocused();
+  await userEvent.keyboard("{ArrowUp}");
+
+  const swatches = document.querySelectorAll<HTMLElement>(".vizel-color-picker-swatch");
+  const first = swatches[0];
+  if (first === undefined) throw new Error("expected at least 1 swatch");
+  await expect.poll(() => document.activeElement === first, { timeout: 3_000 }).toBe(true);
 }
 
 /**
- * Test keyboard navigation - End moves to last swatch
+ * Verify Home moves keyboard focus to the first swatch.
  */
-export async function testKeyboardNavigationEnd(_component: Locator, page: Page): Promise<void> {
-  const swatches = page.locator(".vizel-color-picker-swatch");
-  const firstSwatch = swatches.first();
-  const lastSwatch = swatches.last();
+export async function testKeyboardNavigationHome(): Promise<void> {
+  await resolveColorPickerContent();
 
-  await firstSwatch.focus();
-  await expect(firstSwatch).toBeFocused();
+  await focusSwatchAt(10);
 
-  await page.keyboard.press("End");
-  await expect(lastSwatch).toBeFocused();
+  await userEvent.keyboard("{Home}");
+
+  const swatches = document.querySelectorAll<HTMLElement>(".vizel-color-picker-swatch");
+  const first = swatches[0];
+  if (first === undefined) throw new Error("expected at least 1 swatch");
+  await expect.poll(() => document.activeElement === first, { timeout: 3_000 }).toBe(true);
 }
 
 /**
- * Test keyboard navigation - Enter/Space selects current swatch
+ * Verify End moves keyboard focus to the last swatch.
  */
-export async function testKeyboardNavigationEnterSelect(
-  _component: Locator,
-  page: Page
-): Promise<void> {
-  const swatches = page.locator(".vizel-color-picker-swatch");
-  const targetSwatch = swatches.nth(5);
+export async function testKeyboardNavigationEnd(): Promise<void> {
+  await resolveColorPickerContent();
 
-  await targetSwatch.focus();
-  await page.keyboard.press("Enter");
+  await focusSwatchAt(0);
 
-  // The fixture should update the selected color display
-  const selectedDisplay = page.locator("[data-testid='selected-color']");
-  await expect(selectedDisplay).not.toBeEmpty();
+  await userEvent.keyboard("{End}");
+
+  const swatches = Array.from(document.querySelectorAll<HTMLElement>(".vizel-color-picker-swatch"));
+  const last = swatches.at(-1);
+  if (last === undefined) throw new Error("expected at least 1 swatch");
+  await expect.poll(() => document.activeElement === last, { timeout: 3_000 }).toBe(true);
 }
 
 /**
- * Helper to set input value for React controlled input
- * Uses keyboard typing which properly triggers React's onChange
+ * Verify pressing Enter while a swatch is focused selects that swatch.
  */
-async function setInputValue(page: Page, input: Locator, value: string): Promise<void> {
-  // Click to focus and select all existing text
-  await input.click({ clickCount: 3 });
-  // Type new value character by character
-  await page.keyboard.type(value);
+export async function testKeyboardNavigationEnterSelect(): Promise<void> {
+  await resolveColorPickerContent();
+
+  await focusSwatchAt(5);
+
+  await userEvent.keyboard("{Enter}");
+
+  const display = document.querySelector<HTMLElement>("[data-testid='selected-color']");
+  if (display === null) throw new Error("expected a [data-testid='selected-color'] element");
+  await expect
+    .poll(() => (display.textContent ?? "").trim().length > 0, { timeout: 5_000 })
+    .toBe(true);
+}
+
+// Fill an input field using click-select-all then type, matching the Playwright
+// helper `setInputValue`. Tripling the click selects all existing text so the
+// new value replaces the old one.
+async function setInputValue(input: HTMLElement, value: string): Promise<void> {
+  const locator = page.elementLocator(input);
+  await userEvent.click(locator, { clickCount: 3 });
+  await userEvent.type(locator, value);
 }
 
 /**
- * Test custom color input works
+ * Verify the custom color input accepts a valid hex value and enables the apply button.
  */
-export async function testCustomColorInput(_component: Locator, page: Page): Promise<void> {
-  const input = page.locator(".vizel-color-picker-input");
-  await expect(input).toBeVisible();
-  await expect(input).toHaveAttribute("placeholder", "#000000");
+export async function testCustomColorInput(): Promise<void> {
+  await resolveColorPickerContent();
 
-  // Use helper to set value (includes focusing)
-  await setInputValue(page, input, "#ff5500");
+  const input = document.querySelector<HTMLElement>(".vizel-color-picker-input");
+  if (input === null) throw new Error("expected a .vizel-color-picker-input element");
+  await expect.element(page.elementLocator(input)).toBeVisible();
+  expect(input.getAttribute("placeholder")).toBe("#000000");
 
-  // Wait for state to update
-  await expect(input).toHaveValue("#ff5500");
+  await setInputValue(input, "#ff5500");
+  await expect.element(page.elementLocator(input)).toHaveValue("#ff5500");
 
-  // Apply button should be enabled
-  const applyButton = page.locator(".vizel-color-picker-apply");
-  await expect(applyButton).toBeEnabled();
+  const applyButton = document.querySelector<HTMLElement>(".vizel-color-picker-apply");
+  if (applyButton === null) throw new Error("expected a .vizel-color-picker-apply element");
+  await expect.element(page.elementLocator(applyButton)).toBeEnabled();
 
-  // Click apply
-  await applyButton.click();
+  await userEvent.click(page.elementLocator(applyButton));
 
-  // The fixture should update the selected color display
-  const selectedDisplay = page.locator("[data-testid='selected-color']");
-  await expect(selectedDisplay).toHaveText(/#[fF][fF]5500/);
+  const display = document.querySelector<HTMLElement>("[data-testid='selected-color']");
+  if (display === null) throw new Error("expected a [data-testid='selected-color'] element");
+  await expect
+    .poll(() => /#[fF][fF]5500/.test(display.textContent ?? ""), { timeout: 5_000 })
+    .toBe(true);
 }
 
 /**
- * Test custom color input validates hex colors
+ * Verify the custom color input validates hex colors and enables the apply button only for valid values.
  */
-export async function testCustomColorInputValidation(
-  _component: Locator,
-  page: Page
-): Promise<void> {
-  const input = page.locator(".vizel-color-picker-input");
-  const applyButton = page.locator(".vizel-color-picker-apply");
+export async function testCustomColorInputValidation(): Promise<void> {
+  await resolveColorPickerContent();
 
-  // Fill with an invalid color (use only 7 chars due to maxLength)
-  await setInputValue(page, input, "notacol");
-  await expect(input).toHaveValue("notacol");
-  await expect(applyButton).toBeDisabled();
+  const input = document.querySelector<HTMLElement>(".vizel-color-picker-input");
+  if (input === null) throw new Error("expected a .vizel-color-picker-input element");
+  const applyButton = document.querySelector<HTMLElement>(".vizel-color-picker-apply");
+  if (applyButton === null) throw new Error("expected a .vizel-color-picker-apply element");
 
-  // Fill with a valid short hex
-  await setInputValue(page, input, "#f00");
-  await expect(input).toHaveValue("#f00");
-  await expect(applyButton).toBeEnabled();
+  // "notacol" is 7 characters (maxLength) and is not a valid hex color.
+  await setInputValue(input, "notacol");
+  await expect.element(page.elementLocator(input)).toHaveValue("notacol");
+  await expect.element(page.elementLocator(applyButton)).toBeDisabled();
 
-  // Fill with a valid long hex
-  await setInputValue(page, input, "#ff0000");
-  await expect(input).toHaveValue("#ff0000");
-  await expect(applyButton).toBeEnabled();
+  await setInputValue(input, "#f00");
+  await expect.element(page.elementLocator(input)).toHaveValue("#f00");
+  await expect.element(page.elementLocator(applyButton)).toBeEnabled();
+
+  await setInputValue(input, "#ff0000");
+  await expect.element(page.elementLocator(input)).toHaveValue("#ff0000");
+  await expect.element(page.elementLocator(applyButton)).toBeEnabled();
 }
 
 /**
- * Test recent colors section displays
+ * Verify the recent colors section displays a label and at least one swatch.
  */
-export async function testRecentColorsDisplay(_component: Locator, page: Page): Promise<void> {
-  const _recentSection = page.locator(".vizel-color-picker-section").first();
-  const recentLabel = page.locator(".vizel-color-picker-label");
+export async function testRecentColorsDisplay(): Promise<void> {
+  await resolveColorPickerContent();
 
-  await expect(recentLabel).toHaveText("Recent");
+  const recentLabel = document.querySelector<HTMLElement>(".vizel-color-picker-label");
+  if (recentLabel === null) throw new Error("expected a .vizel-color-picker-label element");
+  await expect.element(page.elementLocator(recentLabel)).toHaveTextContent("Recent");
 
-  const recentGrid = page.locator(".vizel-color-picker-recent");
-  await expect(recentGrid).toBeVisible();
+  const recentGrid = document.querySelector<HTMLElement>(".vizel-color-picker-recent");
+  if (recentGrid === null) throw new Error("expected a .vizel-color-picker-recent element");
+  await expect.element(page.elementLocator(recentGrid)).toBeVisible();
 
-  const recentSwatches = recentGrid.locator(".vizel-color-picker-swatch");
-  const count = await recentSwatches.count();
-  expect(count).toBeGreaterThan(0);
+  const recentSwatches = recentGrid.querySelectorAll(".vizel-color-picker-swatch");
+  expect(recentSwatches.length).toBeGreaterThan(0);
 }
 
 /**
- * Test ARIA attributes for accessibility
+ * Verify ARIA attributes on the color picker content and first swatch.
  */
-export async function testAccessibilityAttributes(
-  _component: Locator,
-  page: Page,
-  label: string
-): Promise<void> {
-  const content = page.locator(".vizel-color-picker-content");
-  await expect(content).toHaveAttribute("role", "listbox");
-  await expect(content).toHaveAttribute("aria-label", label);
+export async function testAccessibilityAttributes(label: string): Promise<void> {
+  const content = await resolveColorPickerContent();
+  expect(content.getAttribute("role")).toBe("listbox");
+  expect(content.getAttribute("aria-label")).toBe(label);
 
-  const swatches = page.locator(".vizel-color-picker-swatch");
-  const firstSwatch = swatches.first();
-  await expect(firstSwatch).toHaveAttribute("role", "option");
+  const firstSwatch = document.querySelector<HTMLElement>(".vizel-color-picker-swatch");
+  if (firstSwatch === null) throw new Error("expected at least one .vizel-color-picker-swatch");
+  expect(firstSwatch.getAttribute("role")).toBe("option");
 }
 
 /**
- * Test none value displays correctly (transparent/inherit)
+ * Verify the transparent/none swatch is visible and contains an SVG icon.
  */
-export async function testNoneValueDisplay(_component: Locator, page: Page): Promise<void> {
-  // First swatch in HIGHLIGHT_COLORS is "None" with transparent
-  const noneSwatch = page.locator('.vizel-color-picker-swatch[data-color="transparent"]');
-  await expect(noneSwatch).toBeVisible();
+export async function testNoneValueDisplay(): Promise<void> {
+  await resolveColorPickerContent();
 
-  // None indicator should contain an icon (SVG)
-  const noneIndicator = noneSwatch.locator(".vizel-color-picker-none");
-  await expect(noneIndicator).toBeVisible();
-  await expect(noneIndicator.locator("svg")).toBeVisible();
+  const noneSwatch = document.querySelector<HTMLElement>(
+    '.vizel-color-picker-swatch[data-color="transparent"]'
+  );
+  if (noneSwatch === null) {
+    throw new Error('expected a swatch with data-color="transparent"');
+  }
+  await expect.element(page.elementLocator(noneSwatch)).toBeVisible();
+
+  const noneIndicator = noneSwatch.querySelector<HTMLElement>(".vizel-color-picker-none");
+  if (noneIndicator === null) throw new Error("expected a .vizel-color-picker-none element");
+  await expect.element(page.elementLocator(noneIndicator)).toBeVisible();
+
+  const svg = noneIndicator.querySelector("svg");
+  if (svg === null) throw new Error("expected an SVG inside .vizel-color-picker-none");
+  await expect.element(page.elementLocator(svg)).toBeVisible();
 }

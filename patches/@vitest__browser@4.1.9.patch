@@ -1,0 +1,13 @@
+diff --git a/dist/client/__vitest_browser__/orchestrator-KVYrTcFi.js b/dist/client/__vitest_browser__/orchestrator-KVYrTcFi.js
+index edfd26edb6abb8532b0e81fa8653d5a68b6c6432..45cee33dcee801eb9a53f17a28e649a05d16ce57 100644
+--- a/dist/client/__vitest_browser__/orchestrator-KVYrTcFi.js
++++ b/dist/client/__vitest_browser__/orchestrator-KVYrTcFi.js
+@@ -261,7 +261,7 @@ If you are using a framework that manipulates browser history (like React Router
+   }
+   createTestIframe(iframeId) {
+     const iframe = document.createElement("iframe");
+-    const src = `/?sessionId=${getBrowserState().sessionId}&iframeId=${iframeId}`;
++    const src = `/?sessionId=${getBrowserState().sessionId}&iframeId=${encodeURIComponent(iframeId)}`;
+     iframe.setAttribute("loading", "eager");
+     iframe.setAttribute("src", src);
+     iframe.setAttribute("data-vitest", "true");
