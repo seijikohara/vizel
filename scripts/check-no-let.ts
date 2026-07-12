@@ -29,7 +29,7 @@
  *
  * Escape hatch:
  *
- * Add a `// biome-ignore lint/style/noLet: <reason>` comment on the
+ * Add a `// no-let-disable: <reason>` comment on the
  * preceding line (or the same line) to opt the binding out — the
  * `<reason>` text is required and is surfaced in code review.
  */
@@ -123,7 +123,7 @@ function extractTypescriptRegions(
 }
 
 const LET_PATTERN = /^\s*let\s/;
-const IGNORE_PATTERN = /biome-ignore\s+lint\/style\/noLet\s*:/;
+const IGNORE_PATTERN = /no-let-disable\s*:/;
 
 function findRegionViolations(file: string, text: string, lineOffset: number): Violation[] {
   const lines = text.split("\n");
@@ -180,7 +180,7 @@ function main(): void {
   process.stderr.write(
     "\nVizel's TypeScript surface is immutability-first; use a typed state\n" +
       "object or a functional rewrite instead of `let`. To allow a specific\n" +
-      "binding, add `// biome-ignore lint/style/noLet: <reason>` immediately\n" +
+      "binding, add `// no-let-disable: <reason>` immediately\n" +
       "above it.\n"
   );
   process.exit(1);
