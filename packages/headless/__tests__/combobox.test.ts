@@ -11,7 +11,8 @@
  */
 
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, describe, it } from "node:test";
+
+import { afterEach, beforeEach, describe, it } from "vitest";
 
 import { buildVizelComboboxKeySpec, createVizelComboboxController } from "../src/combobox/index.ts";
 

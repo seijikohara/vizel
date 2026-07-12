@@ -5,16 +5,15 @@
  * DOM. The controller suite mocks `@floating-ui/dom` so the test observes
  * the controller's behaviour — the inline styles it writes and the
  * `autoUpdate` subscription it manages — without depending on real layout
- * geometry. `node:test`'s module mocking needs the
- * `--experimental-test-module-mocks` flag, which the package `test`
- * script supplies.
+ * geometry.
  */
 
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, describe, it, mock } from "node:test";
+
+import { afterEach, beforeEach, describe, it, vi } from "vitest";
 
 // Type-only import is erased at compile time, so it does not load the
-// module before `mock.module` registers the `@floating-ui/dom` stub.
+// module before `vi.mock` registers the `@floating-ui/dom` stub.
 import type { VizelVirtualElement } from "../src/floating/index.ts";
 
 interface FloatingMockState {
@@ -24,34 +23,37 @@ interface FloatingMockState {
   autoUpdateDisposed: number;
 }
 
-const floatingMock: FloatingMockState = {
+// `vi.mock` hoists above this file's imports, so its factory cannot close
+// over an ordinary top-level `const` (Vitest throws a "cannot access
+// before initialization" style error). `vi.hoisted` runs its callback at
+// that same hoisted position and returns a reference the factory can
+// capture safely.
+const floatingMock: FloatingMockState = vi.hoisted(() => ({
   computeCalls: [],
   autoUpdateCalls: [],
   position: { x: 12, y: 34 },
   autoUpdateDisposed: 0,
-};
+}));
 
 // Mock `@floating-ui/dom` before the module under test imports it. The
 // stub resolves `computePosition` synchronously-as-Promise and records
 // the `autoUpdate` subscription so the controller's lifecycle is
 // observable without real DOM measurement.
-mock.module("@floating-ui/dom", {
-  namedExports: {
-    computePosition: (anchor: unknown, body: unknown, config: unknown) => {
-      floatingMock.computeCalls.push({ anchor, body, config });
-      return Promise.resolve({ x: floatingMock.position.x, y: floatingMock.position.y });
-    },
-    autoUpdate: (anchor: unknown, body: unknown, update: () => void) => {
-      floatingMock.autoUpdateCalls.push({ anchor, body, update });
-      return () => {
-        floatingMock.autoUpdateDisposed += 1;
-      };
-    },
-    offset: (value: unknown) => ({ name: "offset", value }),
-    flip: () => ({ name: "flip" }),
-    shift: (value: unknown) => ({ name: "shift", value }),
+vi.mock("@floating-ui/dom", () => ({
+  computePosition: (anchor: unknown, body: unknown, config: unknown) => {
+    floatingMock.computeCalls.push({ anchor, body, config });
+    return Promise.resolve({ x: floatingMock.position.x, y: floatingMock.position.y });
   },
-});
+  autoUpdate: (anchor: unknown, body: unknown, update: () => void) => {
+    floatingMock.autoUpdateCalls.push({ anchor, body, update });
+    return () => {
+      floatingMock.autoUpdateDisposed += 1;
+    };
+  },
+  offset: (value: unknown) => ({ name: "offset", value }),
+  flip: () => ({ name: "flip" }),
+  shift: (value: unknown) => ({ name: "shift", value }),
+}));
 
 const { buildVizelFloatingSpec, createVizelFloatingController } =
   await import("../src/floating/index.ts");

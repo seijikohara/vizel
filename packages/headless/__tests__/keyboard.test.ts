@@ -10,7 +10,8 @@
  */
 
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, describe, it } from "node:test";
+
+import { afterEach, beforeEach, describe, it } from "vitest";
 
 import {
   buildVizelGridNavSpec,
