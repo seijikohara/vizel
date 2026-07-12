@@ -104,7 +104,7 @@ jobs:
         run: |
           for pkg in core headless react vue svelte; do
             echo "::group::publint @vizel/$pkg"
-            npx --yes publint@^0.3.0 packages/$pkg
+            pnpm dlx publint@^0.3.0 packages/$pkg
             echo "::endgroup::"
           done
 
