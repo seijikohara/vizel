@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Editor, VizelLocale } from "@vizel/core";
 import { computed } from "vue";
+
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelToolbarDefault from "./VizelToolbarDefault.vue";
 
@@ -38,9 +39,19 @@ const editor = computed(() => props.editor ?? contextEditor?.value ?? null);
 </script>
 
 <template>
-  <div v-if="editor" :class="['vizel-toolbar', $props.class]" role="toolbar" :aria-label="props.locale?.toolbar?.ariaLabel ?? 'Formatting'" aria-orientation="horizontal">
+  <div
+    v-if="editor"
+    :class="['vizel-toolbar', $props.class]"
+    role="toolbar"
+    :aria-label="props.locale?.toolbar?.ariaLabel ?? 'Formatting'"
+    aria-orientation="horizontal"
+  >
     <slot :editor="editor">
-      <VizelToolbarDefault v-if="showDefaultToolbar" :editor="editor" v-bind="props.locale ? { locale: props.locale } : {}" />
+      <VizelToolbarDefault
+        v-if="showDefaultToolbar"
+        :editor="editor"
+        v-bind="props.locale ? { locale: props.locale } : {}"
+      />
     </slot>
   </div>
 </template>

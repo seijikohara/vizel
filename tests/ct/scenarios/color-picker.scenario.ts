@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+
 import { page, userEvent } from "./_vitest-context";
 
 // Resolve the color picker content element. The component mounts synchronously,

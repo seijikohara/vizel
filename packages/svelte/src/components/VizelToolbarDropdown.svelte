@@ -12,22 +12,17 @@ export interface VizelToolbarDropdownProps {
 import { buildVizelToolbarDropdownSpec, formatVizelTooltip } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
 import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
+
 import VizelIcon from "./VizelIcon.svelte";
 
-let {
-  editor,
-  dropdown,
-  class: className,
-}: VizelToolbarDropdownProps = $props();
+let { editor, dropdown, class: className }: VizelToolbarDropdownProps = $props();
 
 let isOpen = $state(false);
 let focusedIndex = $state(0);
 let containerEl: HTMLDivElement | undefined = $state(undefined);
 let triggerEl: HTMLButtonElement | undefined = $state(undefined);
 
-const spec = $derived(
-  buildVizelToolbarDropdownSpec(dropdown, editor, isOpen, focusedIndex)
-);
+const spec = $derived(buildVizelToolbarDropdownSpec(dropdown, editor, isOpen, focusedIndex));
 
 function close() {
   isOpen = false;
@@ -65,7 +60,11 @@ function handleListKeyDown(e: KeyboardEvent) {
   }
   // Delegate Arrow/Home/End to the headless builder, which short-circuits
   // on `optionCount === 0` instead of computing `NaN`.
-  const next = buildVizelListNavSpec({ key: e.key, currentIndex: focusedIndex, length: optionCount });
+  const next = buildVizelListNavSpec({
+    key: e.key,
+    currentIndex: focusedIndex,
+    length: optionCount,
+  });
   if (next === null) return;
   e.preventDefault();
   focusedIndex = next;
@@ -135,7 +134,10 @@ $effect(() => {
             type="button"
             role="option"
             aria-selected={slot.attrs["aria-selected"]}
-            class="vizel-toolbar-dropdown-option {slot.data.isActive ? 'is-active' : ''} {slot.data.isFocused ? 'is-focused' : ''}"
+            class="vizel-toolbar-dropdown-option {slot.data.isActive ? 'is-active' : ''} {slot.data
+              .isFocused
+              ? 'is-focused'
+              : ''}"
             disabled={!slot.data.isEnabled}
             title={formatVizelTooltip(slot.data.option.label, slot.data.option.shortcut)}
             tabindex={slot.attrs.tabIndex}

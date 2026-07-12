@@ -14,39 +14,39 @@ This project uses Conventional Commits. The lefthook `commit-msg` hook validates
 
 ### Types
 
-| Type | Description |
-|------|-------------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `style` | Code style only (formatting, semicolons) |
+| Type       | Description                                 |
+| ---------- | ------------------------------------------- |
+| `feat`     | New feature                                 |
+| `fix`      | Bug fix                                     |
+| `docs`     | Documentation only                          |
+| `style`    | Code style only (formatting, semicolons)    |
 | `refactor` | Code change that is neither feature nor fix |
-| `perf` | Performance improvement |
-| `test` | Tests only |
-| `build` | Build system or external dependencies |
-| `ci` | CI configuration |
-| `chore` | Other changes (tooling, config) |
-| `revert` | Revert a previous commit |
+| `perf`     | Performance improvement                     |
+| `test`     | Tests only                                  |
+| `build`    | Build system or external dependencies       |
+| `ci`       | CI configuration                            |
+| `chore`    | Other changes (tooling, config)             |
+| `revert`   | Revert a previous commit                    |
 
 ### Scopes
 
-| Scope | Description |
-|-------|-------------|
-| `core` | `@vizel/core` package |
-| `react` | `@vizel/react` package |
-| `vue` | `@vizel/vue` package |
-| `svelte` | `@vizel/svelte` package |
-| `demo` | Demo applications under `apps/demo/` |
-| `docs` | VitePress docs site under `docs/` |
-| `ct` | Vitest Browser Mode component tests under `tests/ct/` |
-| `deps` | Dependency-only changes (typically `chore(deps)`) |
-| `spec` | design spec under `docs/superpowers/specs/` |
-| `guide` | User-facing guide pages under `docs/guide/` |
-| `plan` | Implementation plans under `docs/superpowers/plans/` |
-| `i18n` | Locale files |
-| `a11y` | Accessibility-only fixes |
-| `ci` | CI workflows under `.github/workflows/` |
-| (none) | Multiple packages or project-wide changes |
+| Scope    | Description                                           |
+| -------- | ----------------------------------------------------- |
+| `core`   | `@vizel/core` package                                 |
+| `react`  | `@vizel/react` package                                |
+| `vue`    | `@vizel/vue` package                                  |
+| `svelte` | `@vizel/svelte` package                               |
+| `demo`   | Demo applications under `apps/demo/`                  |
+| `docs`   | VitePress docs site under `docs/`                     |
+| `ct`     | Vitest Browser Mode component tests under `tests/ct/` |
+| `deps`   | Dependency-only changes (typically `chore(deps)`)     |
+| `spec`   | design spec under `docs/superpowers/specs/`           |
+| `guide`  | User-facing guide pages under `docs/guide/`           |
+| `plan`   | Implementation plans under `docs/superpowers/plans/`  |
+| `i18n`   | Locale files                                          |
+| `a11y`   | Accessibility-only fixes                              |
+| `ci`     | CI workflows under `.github/workflows/`               |
+| (none)   | Multiple packages or project-wide changes             |
 
 ### Rules
 
@@ -117,8 +117,8 @@ refactor/replace-starter-kit
 
 Lefthook runs the following hooks. Always ensure they pass before pushing.
 
-| Hook | Action |
-|------|--------|
+| Hook         | Action                                  |
+| ------------ | --------------------------------------- |
 | `pre-commit` | Biome lint and format, TypeScript check |
-| `commit-msg` | Conventional Commits validation |
-| `pre-push` | Full lint and typecheck |
+| `commit-msg` | Conventional Commits validation         |
+| `pre-push`   | Full lint and typecheck                 |

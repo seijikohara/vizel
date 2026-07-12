@@ -62,8 +62,7 @@ Use arrow functions for the following:
 ```typescript
 editor.on("update", ({ editor }) => {});
 const filtered = items.filter((item) => item.active);
-const isItem = (v: unknown): v is Item =>
-  typeof v === "object" && v !== null && "id" in v;
+const isItem = (v: unknown): v is Item => typeof v === "object" && v !== null && "id" in v;
 ```
 
 ## Type Safety
@@ -92,8 +91,7 @@ Replace `as` assertions with type guard functions to gain runtime safety.
 const action = data as Action | undefined;
 
 // GOOD: runtime validation.
-const isAction = (v: unknown): v is Action =>
-  typeof v === "object" && v !== null && "type" in v;
+const isAction = (v: unknown): v is Action => typeof v === "object" && v !== null && "type" in v;
 
 if (isAction(data)) {
   data.type; // narrowed safely
@@ -120,16 +118,16 @@ file scope never needs `let`.
 
 ### Scope
 
-| In scope | Excluded |
-|----------|----------|
-| `packages/core/src/**/*.ts` | `packages/svelte/src/**/*.{svelte,svelte.ts}` |
-| `packages/react/src/**/*.{ts,tsx}` | `apps/demo/svelte/src/**/*.svelte` |
-| `packages/vue/src/**/*.{ts,vue}` (`<script setup>` blocks) | `tests/ct/svelte/specs/**/*.svelte` |
-| `scripts/**/*.ts` | Any `*.svelte.ts` rune file |
-| `tests/ct/scenarios/**/*.ts` | Any `*.d.ts` |
-| `tests/ct/react/specs/**/*.{ts,tsx}` | `node_modules/`, `dist/`, `.svelte-kit/`, `.vite/`, `.cache/` |
-| `tests/ct/vue/specs/**/*.{ts,vue}` (script blocks only) | |
-| `apps/demo/{react,vue}/src/**/*.{ts,tsx,vue}` (script blocks only) | |
+| In scope                                                           | Excluded                                                      |
+| ------------------------------------------------------------------ | ------------------------------------------------------------- |
+| `packages/core/src/**/*.ts`                                        | `packages/svelte/src/**/*.{svelte,svelte.ts}`                 |
+| `packages/react/src/**/*.{ts,tsx}`                                 | `apps/demo/svelte/src/**/*.svelte`                            |
+| `packages/vue/src/**/*.{ts,vue}` (`<script setup>` blocks)         | `tests/ct/svelte/specs/**/*.svelte`                           |
+| `scripts/**/*.ts`                                                  | Any `*.svelte.ts` rune file                                   |
+| `tests/ct/scenarios/**/*.ts`                                       | Any `*.d.ts`                                                  |
+| `tests/ct/react/specs/**/*.{ts,tsx}`                               | `node_modules/`, `dist/`, `.svelte-kit/`, `.vite/`, `.cache/` |
+| `tests/ct/vue/specs/**/*.{ts,vue}` (script blocks only)            |                                                               |
+| `apps/demo/{react,vue}/src/**/*.{ts,tsx,vue}` (script blocks only) |                                                               |
 
 Svelte is excluded because Svelte 5's reactivity model treats top-level
 `let` (and runes like `$state(...)`) as the canonical reactivity primitive.
@@ -161,11 +159,11 @@ before opening a PR.
 Vizel uses a single error model rooted at `VizelError`. Errors fall
 into three categories, each with its own delivery channel:
 
-| Category | Delivery | Examples |
-|----------|----------|----------|
-| Developer mistake (boundary) | `throw new VizelError(...)` | `INVALID_CONFIG`, `MISSING_CONTEXT` |
-| Runtime error (recoverable) | `emitVizelError(err, options.onError)` | `UPLOAD_FAILED`, `EMBED_LOAD_FAILED` |
-| Warning (advisory) | `emitVizelError(err, options.onError)` with `severity: "warning"` | `MARKDOWN_LOSSY` |
+| Category                     | Delivery                                                          | Examples                             |
+| ---------------------------- | ----------------------------------------------------------------- | ------------------------------------ |
+| Developer mistake (boundary) | `throw new VizelError(...)`                                       | `INVALID_CONFIG`, `MISSING_CONTEXT`  |
+| Runtime error (recoverable)  | `emitVizelError(err, options.onError)`                            | `UPLOAD_FAILED`, `EMBED_LOAD_FAILED` |
+| Warning (advisory)           | `emitVizelError(err, options.onError)` with `severity: "warning"` | `MARKDOWN_LOSSY`                     |
 
 Rules:
 

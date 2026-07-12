@@ -5,6 +5,7 @@ import {
   type VizelSaveStatus,
 } from "@vizel/core";
 import { useEffect, useRef, useState } from "react";
+
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelSaveIndicatorProps {

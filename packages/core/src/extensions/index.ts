@@ -116,10 +116,7 @@ export {
   vizelFindReplacePluginKey,
 } from "./find-replace.ts";
 // Highlight
-export {
-  createVizelHighlightExtension,
-  type VizelHighlightOptions,
-} from "./highlight.ts";
+export { createVizelHighlightExtension, type VizelHighlightOptions } from "./highlight.ts";
 
 // Image
 export {
@@ -247,10 +244,7 @@ export {
   type VizelTextColorOptions,
 } from "./text-color.ts";
 // Typography
-export {
-  createVizelTypographyExtension,
-  type VizelTypographyOptions,
-} from "./typography.ts";
+export { createVizelTypographyExtension, type VizelTypographyOptions } from "./typography.ts";
 
 // Wiki link
 export {

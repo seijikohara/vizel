@@ -6,6 +6,7 @@ import {
 } from "@vizel/core";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
+
 import { VizelBubbleMenuDefault } from "./VizelBubbleMenuDefault.tsx";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 

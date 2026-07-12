@@ -1,5 +1,6 @@
 import { describe, test } from "vitest";
 import { render } from "vitest-browser-vue";
+
 import { testEditorPlaceholder } from "../../scenarios/editor.scenario";
 import EditorFixture from "./EditorFixture.vue";
 

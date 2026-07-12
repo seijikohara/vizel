@@ -9,6 +9,7 @@ import {
 } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
 import { useCallback, useEffect, useRef, useState } from "react";
+
 import { VizelColorPicker } from "./VizelColorPicker.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
 

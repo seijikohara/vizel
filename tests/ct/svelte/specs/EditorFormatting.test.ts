@@ -1,6 +1,7 @@
 import { describe, test } from "vitest";
-import { page } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
+import { page } from "vitest/browser";
+
 import {
   testBoldShortcut,
   testBulletList,

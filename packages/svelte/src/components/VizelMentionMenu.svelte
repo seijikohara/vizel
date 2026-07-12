@@ -94,7 +94,11 @@ function onKeyDown(event: KeyboardEvent): boolean {
   // `groupNext` (Tab) and `close` (Escape) fall through as unhandled —
   // mention has no groups and no own close path — so Tiptap consumes those
   // keys, matching the menu's pre-adoption behaviour.
-  const action = buildVizelComboboxKeySpec({ key: event.key, currentIndex: selectedIndex, length: items.length });
+  const action = buildVizelComboboxKeySpec({
+    key: event.key,
+    currentIndex: selectedIndex,
+    length: items.length,
+  });
   if (action === null) return false;
   switch (action.type) {
     case "navigate":
@@ -144,7 +148,9 @@ if (ref) {
         role={slot.attrs.role}
         aria-selected={slot.attrs["aria-selected"]}
         onclick={() => selectItem(slot.index)}
-        onkeydown={(e) => { if (e.key === "Enter") selectItem(slot.index); }}
+        onkeydown={(e) => {
+          if (e.key === "Enter") selectItem(slot.index);
+        }}
         tabindex={slot.attrs.tabIndex}
       >
         {#if renderItem}

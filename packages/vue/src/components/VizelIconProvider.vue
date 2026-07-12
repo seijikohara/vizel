@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CustomIconMap } from "@vizel/core";
+
 import { provideVizelIcons } from "./VizelIconContext.ts";
 
 /**

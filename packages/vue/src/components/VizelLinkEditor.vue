@@ -8,6 +8,7 @@ import {
 } from "@vizel/core";
 import { createVizelDismissable, createVizelFocusTrapController } from "@vizel/headless";
 import { computed, ref, useTemplateRef, watch } from "vue";
+
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -156,10 +157,7 @@ function handleVisit() {
     </div>
     <div class="vizel-link-editor-options">
       <label class="vizel-link-newtab-toggle">
-        <input
-          v-model="openInNewTab"
-          type="checkbox"
-        />
+        <input v-model="openInNewTab" type="checkbox" />
         <span>{{ labels.openInNewTab }}</span>
       </label>
       <button

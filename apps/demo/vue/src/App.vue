@@ -20,6 +20,7 @@ import {
   vizelObsidianFlavor,
 } from "@vizel/vue";
 import { computed, reactive, ref, shallowRef, watch } from "vue";
+
 import { getFlavorContent } from "../../shared/content";
 import vueLogo from "../../shared/logos/vue.svg";
 import { applyDemoPreflight } from "../../shared/preflight";
@@ -159,321 +160,342 @@ const showPanel = computed(() => features.syncPanel || features.history || featu
 <template>
   <VizelThemeProvider defaultTheme="system" storageKey="vizel-theme">
     <VizelProvider :editor="editorRef">
-    <div class="app">
-      <header class="header">
-        <div class="header-content">
-          <img :src="vueLogo" alt="Vue" class="framework-logo" />
-          <div class="header-text">
-            <h1>Vizel Editor</h1>
-            <span class="framework-badge">Vue 3</span>
+      <div class="app">
+        <header class="header">
+          <div class="header-content">
+            <img :src="vueLogo" alt="Vue" class="framework-logo" />
+            <div class="header-text">
+              <h1>Vizel Editor</h1>
+              <span class="framework-badge">Vue 3</span>
+            </div>
+            <ThemeToggle v-if="features.theme" />
           </div>
-          <ThemeToggle v-if="features.theme" />
-        </div>
-        <p class="header-description">
-          A block-based rich text editor with slash commands and inline formatting
-        </p>
-      </header>
+          <p class="header-description">
+            A block-based rich text editor with slash commands and inline formatting
+          </p>
+        </header>
 
-      <section class="features-section">
-        <div class="features-header">
-          <span class="features-title">Features</span>
-          <span class="features-hint">Toggle to see minimal vs full-featured usage</span>
-        </div>
-        <div class="features-toggles">
-          <label class="feature-toggle">
-            <input type="checkbox" v-model="features.toolbar" />
-            <span class="feature-toggle-label">Toolbar</span>
-          </label>
-          <label class="feature-toggle">
-            <input type="checkbox" v-model="features.theme" />
-            <span class="feature-toggle-label">Theme</span>
-          </label>
-          <label class="feature-toggle">
-            <input type="checkbox" v-model="features.autoSave" />
-            <span class="feature-toggle-label">Auto-save</span>
-          </label>
-          <label class="feature-toggle">
-            <input type="checkbox" v-model="features.stats" />
-            <span class="feature-toggle-label">Stats</span>
-          </label>
-          <label class="feature-toggle">
-            <input type="checkbox" v-model="features.syncPanel" />
-            <span class="feature-toggle-label">Sync Panel</span>
-          </label>
-          <label class="feature-toggle">
-            <input type="checkbox" v-model="features.comments" />
-            <span class="feature-toggle-label">Comments</span>
-          </label>
-          <label class="feature-toggle">
-            <input type="checkbox" v-model="features.history" />
-            <span class="feature-toggle-label">History</span>
-          </label>
-          <label class="feature-toggle">
-            <input type="checkbox" v-model="features.outline" />
-            <span class="feature-toggle-label">Outline</span>
-          </label>
-          <label class="feature-toggle">
-            <input type="checkbox" v-model="features.preflight" />
-            <span class="feature-toggle-label">Preflight reset</span>
-          </label>
-          <label class="feature-toggle">
-            <span class="feature-toggle-label">Flavor</span>
-            <select class="feature-select" v-model="flavorName">
-              <option value="commonmark">CommonMark</option>
-              <option value="gfm">GFM</option>
-              <option value="obsidian">Obsidian</option>
-              <option value="docusaurus">Docusaurus</option>
-            </select>
-          </label>
-        </div>
-      </section>
-
-      <main class="main">
-        <aside v-if="features.outline && editorRef" class="editor-aside" aria-label="Document outline">
-          <div class="editor-aside-panel">
-            <span class="editor-aside-title">Outline</span>
-            <VizelOutline :editor="editorRef" />
+        <section class="features-section">
+          <div class="features-header">
+            <span class="features-title">Features</span>
+            <span class="features-hint">Toggle to see minimal vs full-featured usage</span>
           </div>
-        </aside>
-        <div class="editor-section">
-          <div class="editor-container">
-            <Vizel
-              :initial-markdown="getFlavorContent(flavor)"
-              autofocus="start"
-              class="editor-content"
-              :show-toolbar="features.toolbar"
-              :flavor="flavor"
-              enable-embed
-              :extensions="findReplaceExtensions"
-              :features="{
-                content: {
-                  mathematics: true,
-                  embed: true,
-                  details: true,
-                  diagram: true,
-                  wikiLink: true,
-                  callout: true,
-                  tableOfContents: true,
-                  superscript: true,
-                  subscript: true,
-                  image: {
-                    onUpload: mockUploadImage,
-                    maxFileSize: 10 * 1024 * 1024,
-                    onValidationError: (error) => alert(`Validation error: ${error.message}`),
-                    onUploadError: (error) => alert(`Upload failed: ${error.message}`),
+          <div class="features-toggles">
+            <label class="feature-toggle">
+              <input type="checkbox" v-model="features.toolbar" />
+              <span class="feature-toggle-label">Toolbar</span>
+            </label>
+            <label class="feature-toggle">
+              <input type="checkbox" v-model="features.theme" />
+              <span class="feature-toggle-label">Theme</span>
+            </label>
+            <label class="feature-toggle">
+              <input type="checkbox" v-model="features.autoSave" />
+              <span class="feature-toggle-label">Auto-save</span>
+            </label>
+            <label class="feature-toggle">
+              <input type="checkbox" v-model="features.stats" />
+              <span class="feature-toggle-label">Stats</span>
+            </label>
+            <label class="feature-toggle">
+              <input type="checkbox" v-model="features.syncPanel" />
+              <span class="feature-toggle-label">Sync Panel</span>
+            </label>
+            <label class="feature-toggle">
+              <input type="checkbox" v-model="features.comments" />
+              <span class="feature-toggle-label">Comments</span>
+            </label>
+            <label class="feature-toggle">
+              <input type="checkbox" v-model="features.history" />
+              <span class="feature-toggle-label">History</span>
+            </label>
+            <label class="feature-toggle">
+              <input type="checkbox" v-model="features.outline" />
+              <span class="feature-toggle-label">Outline</span>
+            </label>
+            <label class="feature-toggle">
+              <input type="checkbox" v-model="features.preflight" />
+              <span class="feature-toggle-label">Preflight reset</span>
+            </label>
+            <label class="feature-toggle">
+              <span class="feature-toggle-label">Flavor</span>
+              <select class="feature-select" v-model="flavorName">
+                <option value="commonmark">CommonMark</option>
+                <option value="gfm">GFM</option>
+                <option value="obsidian">Obsidian</option>
+                <option value="docusaurus">Docusaurus</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <main class="main">
+          <aside
+            v-if="features.outline && editorRef"
+            class="editor-aside"
+            aria-label="Document outline"
+          >
+            <div class="editor-aside-panel">
+              <span class="editor-aside-title">Outline</span>
+              <VizelOutline :editor="editorRef" />
+            </div>
+          </aside>
+          <div class="editor-section">
+            <div class="editor-container">
+              <Vizel
+                :initial-markdown="getFlavorContent(flavor)"
+                autofocus="start"
+                class="editor-content"
+                :show-toolbar="features.toolbar"
+                :flavor="flavor"
+                enable-embed
+                :extensions="findReplaceExtensions"
+                :features="{
+                  content: {
+                    mathematics: true,
+                    embed: true,
+                    details: true,
+                    diagram: true,
+                    wikiLink: true,
+                    callout: true,
+                    tableOfContents: true,
+                    superscript: true,
+                    subscript: true,
+                    image: {
+                      onUpload: mockUploadImage,
+                      maxFileSize: 10 * 1024 * 1024,
+                      onValidationError: (error) => alert(`Validation error: ${error.message}`),
+                      onUploadError: (error) => alert(`Upload failed: ${error.message}`),
+                    },
                   },
-                },
-                interaction: {
-                  typography: true,
-                  mention: { items: mockMentionItems },
-                },
-              }"
-              @create="handleCreate"
-              @update="handleUpdate"
-            >
-              <!-- Vue scoped slot — the render-prop idiom for Vue.
+                  interaction: {
+                    typography: true,
+                    mention: { items: mockMentionItems },
+                  },
+                }"
+                @create="handleCreate"
+                @update="handleUpdate"
+              >
+                <!-- Vue scoped slot — the render-prop idiom for Vue.
                    The slot exposes the bound editor through its props
                    so consumers can drop in any component that needs it. -->
-              <template #default="{ editor: slotEditor }">
-                <VizelFindReplace v-if="slotEditor" :editor="slotEditor" />
-              </template>
-            </Vizel>
-            <div v-if="features.autoSave || features.stats" class="status-bar">
-              <template v-if="features.autoSave">
-                <VizelSaveIndicator :status="status" :lastSaved="lastSaved" />
-                <span v-if="features.stats" class="status-divider">·</span>
-              </template>
-              <!-- StatsBar consumes the editor through `VizelProvider`
+                <template #default="{ editor: slotEditor }">
+                  <VizelFindReplace v-if="slotEditor" :editor="slotEditor" />
+                </template>
+              </Vizel>
+              <div v-if="features.autoSave || features.stats" class="status-bar">
+                <template v-if="features.autoSave">
+                  <VizelSaveIndicator :status="status" :lastSaved="lastSaved" />
+                  <span v-if="features.stats" class="status-divider">·</span>
+                </template>
+                <!-- StatsBar consumes the editor through `VizelProvider`
                    via the selector composable. See `StatsBar.vue`
                    for the `useVizelEditorState` selector definition. -->
-              <StatsBar v-if="features.stats" />
+                <StatsBar v-if="features.stats" />
+              </div>
             </div>
           </div>
-        </div>
-        <div v-if="showPanel" class="panel-section">
-          <div class="panel-container">
-            <div class="panel-tabs">
-              <button
-                v-if="features.syncPanel"
-                type="button"
-                class="panel-tab"
-                :data-active="activeTab === 'markdown'"
-                @click="activeTab = 'markdown'"
-              >
-                Markdown
-              </button>
-              <button
-                v-if="features.syncPanel"
-                type="button"
-                class="panel-tab"
-                :data-active="activeTab === 'json'"
-                @click="activeTab = 'json'"
-              >
-                JSON
-              </button>
-              <button
-                v-if="features.history"
-                type="button"
-                class="panel-tab"
-                :data-active="activeTab === 'history'"
-                @click="activeTab = 'history'"
-              >
-                History
-              </button>
-              <button
-                v-if="features.comments"
-                type="button"
-                class="panel-tab"
-                :data-active="activeTab === 'comments'"
-                @click="activeTab = 'comments'"
-              >
-                Comments
-              </button>
-            </div>
-            <div class="panel-content">
-              <textarea
-                v-if="activeTab === 'markdown' && features.syncPanel"
-                class="panel-textarea"
-                :value="markdownInput"
-                placeholder="Edit Markdown here..."
-                @input="handleMarkdownChange"
-              />
-              <textarea
-                v-if="activeTab === 'json' && features.syncPanel"
-                class="panel-textarea"
-                :value="jsonInput"
-                placeholder="Edit JSON here..."
-                @input="handleJsonChange"
-              />
+          <div v-if="showPanel" class="panel-section">
+            <div class="panel-container">
+              <div class="panel-tabs">
+                <button
+                  v-if="features.syncPanel"
+                  type="button"
+                  class="panel-tab"
+                  :data-active="activeTab === 'markdown'"
+                  @click="activeTab = 'markdown'"
+                >
+                  Markdown
+                </button>
+                <button
+                  v-if="features.syncPanel"
+                  type="button"
+                  class="panel-tab"
+                  :data-active="activeTab === 'json'"
+                  @click="activeTab = 'json'"
+                >
+                  JSON
+                </button>
+                <button
+                  v-if="features.history"
+                  type="button"
+                  class="panel-tab"
+                  :data-active="activeTab === 'history'"
+                  @click="activeTab = 'history'"
+                >
+                  History
+                </button>
+                <button
+                  v-if="features.comments"
+                  type="button"
+                  class="panel-tab"
+                  :data-active="activeTab === 'comments'"
+                  @click="activeTab = 'comments'"
+                >
+                  Comments
+                </button>
+              </div>
+              <div class="panel-content">
+                <textarea
+                  v-if="activeTab === 'markdown' && features.syncPanel"
+                  class="panel-textarea"
+                  :value="markdownInput"
+                  placeholder="Edit Markdown here..."
+                  @input="handleMarkdownChange"
+                />
+                <textarea
+                  v-if="activeTab === 'json' && features.syncPanel"
+                  class="panel-textarea"
+                  :value="jsonInput"
+                  placeholder="Edit JSON here..."
+                  @input="handleJsonChange"
+                />
 
-              <!-- Version History -->
-              <template v-if="activeTab === 'history'">
-                <div class="panel-list">
-                  <div class="panel-action-bar">
-                    <input
-                      type="text"
-                      placeholder="Version description..."
-                      v-model="versionDescription"
-                      @keydown.enter="handleSaveVersion"
-                    />
-                    <button type="button" class="panel-action-btn" @click="handleSaveVersion">
-                      Save
-                    </button>
-                  </div>
-                  <div v-if="versionHistory.snapshots.length === 0" class="panel-list-empty">
-                    No versions saved yet
-                  </div>
-                  <div
-                    v-for="snapshot in versionHistory.snapshots"
-                    :key="snapshot.id"
-                    class="panel-item"
-                  >
-                    <div class="panel-item-header">
-                      <span class="panel-item-text">{{ snapshot.description || "Untitled" }}</span>
-                      <span class="panel-item-meta">
-                        {{ new Date(snapshot.timestamp).toLocaleString() }}
-                      </span>
-                    </div>
-                    <div class="panel-item-actions">
-                      <button type="button" class="panel-item-btn" @click="versionHistory.restoreVersion(snapshot.id)">
-                        Restore
-                      </button>
-                      <button type="button" class="panel-item-btn panel-item-btn--danger" @click="versionHistory.deleteVersion(snapshot.id)">
-                        Delete
+                <!-- Version History -->
+                <template v-if="activeTab === 'history'">
+                  <div class="panel-list">
+                    <div class="panel-action-bar">
+                      <input
+                        type="text"
+                        placeholder="Version description..."
+                        v-model="versionDescription"
+                        @keydown.enter="handleSaveVersion"
+                      />
+                      <button type="button" class="panel-action-btn" @click="handleSaveVersion">
+                        Save
                       </button>
                     </div>
-                  </div>
-                </div>
-              </template>
-
-              <!-- Comments -->
-              <template v-if="activeTab === 'comments'">
-                <div class="panel-list">
-                  <div class="panel-action-bar">
-                    <input
-                      type="text"
-                      placeholder="Select text, then add a comment..."
-                      v-model="commentText"
-                      @keydown.enter="handleAddComment"
-                    />
-                    <button type="button" class="panel-action-btn" @click="handleAddComment">
-                      Add
-                    </button>
-                  </div>
-                  <div v-if="commentManager.comments.length === 0" class="panel-list-empty">
-                    No comments yet
-                  </div>
-                  <div
-                    v-for="comment in commentManager.comments"
-                    :key="comment.id"
-                    :class="['panel-item', comment.resolved ? 'panel-item-resolved' : '']"
-                    role="button"
-                    tabindex="0"
-                    @click="commentManager.setActiveComment(comment.id)"
-                    @keydown.enter="commentManager.setActiveComment(comment.id)"
-                  >
-                    <div class="panel-item-header">
-                      <span class="panel-item-text">{{ comment.text }}</span>
-                      <span class="panel-item-meta">
-                        {{ comment.author ? comment.author + ' · ' : '' }}{{ new Date(comment.createdAt).toLocaleString() }}
-                      </span>
+                    <div v-if="versionHistory.snapshots.length === 0" class="panel-list-empty">
+                      No versions saved yet
                     </div>
-                    <div class="panel-item-actions">
-                      <button
-                        v-if="comment.resolved"
-                        type="button"
-                        class="panel-item-btn"
-                        @click.stop="commentManager.reopenComment(comment.id)"
-                      >
-                        Reopen
-                      </button>
-                      <button
-                        v-else
-                        type="button"
-                        class="panel-item-btn"
-                        @click.stop="commentManager.resolveComment(comment.id)"
-                      >
-                        Resolve
-                      </button>
-                      <button
-                        type="button"
-                        class="panel-item-btn panel-item-btn--danger"
-                        @click.stop="commentManager.removeComment(comment.id)"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div v-if="comment.replies.length > 0" class="panel-replies">
-                      <div v-for="reply in comment.replies" :key="reply.id" class="panel-reply">
-                        <span class="panel-reply-meta">
-                          {{ reply.author ? reply.author + ' · ' : '' }}{{ new Date(reply.createdAt).toLocaleString() }}
+                    <div
+                      v-for="snapshot in versionHistory.snapshots"
+                      :key="snapshot.id"
+                      class="panel-item"
+                    >
+                      <div class="panel-item-header">
+                        <span class="panel-item-text">{{
+                          snapshot.description || "Untitled"
+                        }}</span>
+                        <span class="panel-item-meta">
+                          {{ new Date(snapshot.timestamp).toLocaleString() }}
                         </span>
-                        <div>{{ reply.text }}</div>
+                      </div>
+                      <div class="panel-item-actions">
+                        <button
+                          type="button"
+                          class="panel-item-btn"
+                          @click="versionHistory.restoreVersion(snapshot.id)"
+                        >
+                          Restore
+                        </button>
+                        <button
+                          type="button"
+                          class="panel-item-btn panel-item-btn--danger"
+                          @click="versionHistory.deleteVersion(snapshot.id)"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
-                    <div class="panel-reply-input" @click.stop>
+                  </div>
+                </template>
+
+                <!-- Comments -->
+                <template v-if="activeTab === 'comments'">
+                  <div class="panel-list">
+                    <div class="panel-action-bar">
                       <input
-                        placeholder="Reply..."
-                        :value="replyTexts[comment.id] || ''"
-                        @input="(e) => { replyTexts = { ...replyTexts, [comment.id]: (e.target as HTMLInputElement).value } }"
-                        @keydown.enter="handleReply(comment.id)"
+                        type="text"
+                        placeholder="Select text, then add a comment..."
+                        v-model="commentText"
+                        @keydown.enter="handleAddComment"
                       />
-                      <button type="button" @click="handleReply(comment.id)">Reply</button>
+                      <button type="button" class="panel-action-btn" @click="handleAddComment">
+                        Add
+                      </button>
+                    </div>
+                    <div v-if="commentManager.comments.length === 0" class="panel-list-empty">
+                      No comments yet
+                    </div>
+                    <div
+                      v-for="comment in commentManager.comments"
+                      :key="comment.id"
+                      :class="['panel-item', comment.resolved ? 'panel-item-resolved' : '']"
+                      role="button"
+                      tabindex="0"
+                      @click="commentManager.setActiveComment(comment.id)"
+                      @keydown.enter="commentManager.setActiveComment(comment.id)"
+                    >
+                      <div class="panel-item-header">
+                        <span class="panel-item-text">{{ comment.text }}</span>
+                        <span class="panel-item-meta">
+                          {{ comment.author ? comment.author + " · " : ""
+                          }}{{ new Date(comment.createdAt).toLocaleString() }}
+                        </span>
+                      </div>
+                      <div class="panel-item-actions">
+                        <button
+                          v-if="comment.resolved"
+                          type="button"
+                          class="panel-item-btn"
+                          @click.stop="commentManager.reopenComment(comment.id)"
+                        >
+                          Reopen
+                        </button>
+                        <button
+                          v-else
+                          type="button"
+                          class="panel-item-btn"
+                          @click.stop="commentManager.resolveComment(comment.id)"
+                        >
+                          Resolve
+                        </button>
+                        <button
+                          type="button"
+                          class="panel-item-btn panel-item-btn--danger"
+                          @click.stop="commentManager.removeComment(comment.id)"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div v-if="comment.replies.length > 0" class="panel-replies">
+                        <div v-for="reply in comment.replies" :key="reply.id" class="panel-reply">
+                          <span class="panel-reply-meta">
+                            {{ reply.author ? reply.author + " · " : ""
+                            }}{{ new Date(reply.createdAt).toLocaleString() }}
+                          </span>
+                          <div>{{ reply.text }}</div>
+                        </div>
+                      </div>
+                      <div class="panel-reply-input" @click.stop>
+                        <input
+                          placeholder="Reply..."
+                          :value="replyTexts[comment.id] || ''"
+                          @input="
+                            (e) => {
+                              replyTexts = {
+                                ...replyTexts,
+                                [comment.id]: (e.target as HTMLInputElement).value,
+                              };
+                            }
+                          "
+                          @keydown.enter="handleReply(comment.id)"
+                        />
+                        <button type="button" @click="handleReply(comment.id)">Reply</button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
+                </template>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
 
-      <footer class="footer">
-        <p>
-          Built with <span class="footer-highlight">@vizel/vue</span>
-        </p>
-      </footer>
-    </div>
+        <footer class="footer">
+          <p>Built with <span class="footer-highlight">@vizel/vue</span></p>
+        </footer>
+      </div>
     </VizelProvider>
   </VizelThemeProvider>
 </template>

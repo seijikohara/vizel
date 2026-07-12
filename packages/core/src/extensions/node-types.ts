@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+
 import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelNodeTypeIconName } from "../icons/types.ts";
 

@@ -2,8 +2,9 @@
 // Vizel stylesheet that the Vitest config does not inject globally.
 import "@vizel/core/styles/index.scss";
 import { describe, test } from "vitest";
-import { page } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
+import { page } from "vitest/browser";
+
 import {
   testColumnHandleAppearsOnCellHover,
   testColumnHandleOpensMenu,

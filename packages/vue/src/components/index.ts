@@ -1,15 +1,7 @@
 // Vizel all-in-one component
-export {
-  default as Vizel,
-  type VizelProps,
-  type VizelRef,
-  type VizelSlotProps,
-} from "./Vizel.vue";
+export { default as Vizel, type VizelProps, type VizelRef, type VizelSlotProps } from "./Vizel.vue";
 // VizelBlockMenu component
-export {
-  default as VizelBlockMenu,
-  type VizelBlockMenuProps,
-} from "./VizelBlockMenu.vue";
+export { default as VizelBlockMenu, type VizelBlockMenuProps } from "./VizelBlockMenu.vue";
 // VizelBubbleMenu components
 export { default as VizelBubbleMenu, type VizelBubbleMenuProps } from "./VizelBubbleMenu.vue";
 export {
@@ -29,10 +21,7 @@ export {
   type VizelBubbleMenuDividerProps,
 } from "./VizelBubbleMenuDivider.vue";
 // VizelColorPicker component
-export {
-  default as VizelColorPicker,
-  type VizelColorPickerProps,
-} from "./VizelColorPicker.vue";
+export { default as VizelColorPicker, type VizelColorPickerProps } from "./VizelColorPicker.vue";
 export { useVizelContext, useVizelContextSafe } from "./VizelContext.ts";
 // Editor components
 export {
@@ -43,21 +32,12 @@ export {
 // VizelEmbedView component
 export { default as VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.vue";
 // VizelFindReplace component
-export {
-  default as VizelFindReplace,
-  type VizelFindReplaceProps,
-} from "./VizelFindReplace.vue";
+export { default as VizelFindReplace, type VizelFindReplaceProps } from "./VizelFindReplace.vue";
 // VizelIcon component
 export { default as VizelIcon, type VizelIconProps } from "./VizelIcon.vue";
 export { provideVizelIcons, useVizelIconContext } from "./VizelIconContext.ts";
-export {
-  default as VizelIconProvider,
-  type VizelIconProviderProps,
-} from "./VizelIconProvider.vue";
-export {
-  default as VizelLinkEditor,
-  type VizelLinkEditorProps,
-} from "./VizelLinkEditor.vue";
+export { default as VizelIconProvider, type VizelIconProviderProps } from "./VizelIconProvider.vue";
+export { default as VizelLinkEditor, type VizelLinkEditorProps } from "./VizelLinkEditor.vue";
 // VizelMentionMenu component
 export {
   default as VizelMentionMenu,
@@ -66,15 +46,9 @@ export {
   type VizelMentionMenuRef,
 } from "./VizelMentionMenu.vue";
 // VizelNodeSelector component
-export {
-  default as VizelNodeSelector,
-  type VizelNodeSelectorProps,
-} from "./VizelNodeSelector.vue";
+export { default as VizelNodeSelector, type VizelNodeSelectorProps } from "./VizelNodeSelector.vue";
 // VizelOutline component
-export {
-  default as VizelOutline,
-  type VizelOutlineProps,
-} from "./VizelOutline.vue";
+export { default as VizelOutline, type VizelOutlineProps } from "./VizelOutline.vue";
 // VizelPortal component
 export { default as VizelPortal, type VizelPortalProps } from "./VizelPortal.vue";
 export { default as VizelProvider, type VizelProviderProps } from "./VizelProvider.vue";

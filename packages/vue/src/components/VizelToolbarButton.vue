@@ -24,11 +24,7 @@ const emit = defineEmits<{
     type="button"
     :disabled="disabled"
     :aria-pressed="isActive"
-    :class="[
-      'vizel-toolbar-button',
-      { 'is-active': isActive },
-      $props.class,
-    ]"
+    :class="['vizel-toolbar-button', { 'is-active': isActive }, $props.class]"
     :title="title"
     :data-active="isActive || undefined"
     :data-action="props.action"

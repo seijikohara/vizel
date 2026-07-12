@@ -31,6 +31,7 @@ export interface VizelEditorProps {
 
 <script lang="ts">
 import { mountVizelEditorView } from "@vizel/core";
+
 import { getVizelContextSafe } from "./VizelContext.js";
 
 let { editor: editorProp, class: className, ref }: VizelEditorProps = $props();

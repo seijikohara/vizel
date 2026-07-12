@@ -10,6 +10,7 @@ import {
 } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
+
 import VizelColorPicker from "./VizelColorPicker.vue";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -117,15 +118,19 @@ function getTriggerStyle() {
 </script>
 
 <template>
-  <div
-    ref="containerRef"
-    :class="['vizel-color-picker', $props.class]"
-    :data-type="props.type"
-  >
+  <div ref="containerRef" :class="['vizel-color-picker', $props.class]" :data-type="props.type">
     <button
       type="button"
-      :class="['vizel-bubble-menu-button', 'vizel-color-picker-trigger', { 'has-color': currentColor }]"
-      :title="isTextColor ? (props.locale?.colorPicker?.textColor ?? 'Text Color') : (props.locale?.colorPicker?.highlight ?? 'Highlight')"
+      :class="[
+        'vizel-bubble-menu-button',
+        'vizel-color-picker-trigger',
+        { 'has-color': currentColor },
+      ]"
+      :title="
+        isTextColor
+          ? (props.locale?.colorPicker?.textColor ?? 'Text Color')
+          : (props.locale?.colorPicker?.highlight ?? 'Highlight')
+      "
       :data-action="props.type"
       :style="getTriggerStyle()"
       @click="isOpen = !isOpen"
@@ -138,7 +143,11 @@ function getTriggerStyle() {
       <VizelColorPicker
         v-model:value="selectedColor"
         :colors="colorPalette"
-        :label="isTextColor ? (props.locale?.colorPicker?.textColorPalette ?? 'Text color palette') : (props.locale?.colorPicker?.highlightPalette ?? 'Highlight color palette')"
+        :label="
+          isTextColor
+            ? (props.locale?.colorPicker?.textColorPalette ?? 'Text color palette')
+            : (props.locale?.colorPicker?.highlightPalette ?? 'Highlight color palette')
+        "
         :allow-custom-color="props.allowCustomColor"
         :recent-colors="recentColors"
         :show-recent-colors="props.showRecentColors"

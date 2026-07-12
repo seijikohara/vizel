@@ -27,6 +27,7 @@ import {
 } from "@vizel/core";
 import { createVizelFocusTrapController } from "@vizel/headless";
 import { tick } from "svelte";
+
 import { getVizelContextSafe } from "./VizelContext.js";
 
 let { editor: editorProp, class: className, locale, onclose }: VizelFindReplaceProps = $props();
@@ -231,11 +232,7 @@ function handleKeyDown(e: KeyboardEvent) {
 
     <div class="vizel-find-replace-options">
       <label class="vizel-find-replace-checkbox">
-        <input
-          type="checkbox"
-          checked={caseSensitive}
-          onchange={handleCaseSensitiveChange}
-        />
+        <input type="checkbox" checked={caseSensitive} onchange={handleCaseSensitiveChange} />
         {labels.caseSensitive}
       </label>
     </div>

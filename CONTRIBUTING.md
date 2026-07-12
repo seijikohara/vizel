@@ -39,20 +39,20 @@ refactor/replace-starter-kit
 
 ### Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev:react` | Run React demo |
-| `pnpm dev:vue` | Run Vue demo |
-| `pnpm dev:svelte` | Run Svelte demo |
-| `pnpm dev:all` | Run all demos |
-| `pnpm build` | Build all packages |
-| `pnpm lint` | Run Biome linter |
-| `pnpm check` | Run Biome check (lint + format) |
-| `pnpm typecheck` | Run type checking for all packages |
-| `pnpm test:ct` | Run all E2E tests (parallel) |
-| `pnpm test:ct:react` | Run React E2E tests |
-| `pnpm test:ct:vue` | Run Vue E2E tests |
-| `pnpm test:ct:svelte` | Run Svelte E2E tests |
+| Command               | Description                        |
+| --------------------- | ---------------------------------- |
+| `pnpm dev:react`      | Run React demo                     |
+| `pnpm dev:vue`        | Run Vue demo                       |
+| `pnpm dev:svelte`     | Run Svelte demo                    |
+| `pnpm dev:all`        | Run all demos                      |
+| `pnpm build`          | Build all packages                 |
+| `pnpm lint`           | Run Biome linter                   |
+| `pnpm check`          | Run Biome check (lint + format)    |
+| `pnpm typecheck`      | Run type checking for all packages |
+| `pnpm test:ct`        | Run all E2E tests (parallel)       |
+| `pnpm test:ct:react`  | Run React E2E tests                |
+| `pnpm test:ct:vue`    | Run Vue E2E tests                  |
+| `pnpm test:ct:svelte` | Run Svelte E2E tests               |
 
 ### Before Submitting
 
@@ -75,29 +75,29 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/). 
 
 ### Types
 
-| Type | Description |
-|------|-------------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation changes |
-| `style` | Code style changes (formatting) |
-| `refactor` | Code refactoring |
-| `perf` | Performance improvements |
-| `test` | Adding or updating tests |
-| `build` | Build system changes |
-| `ci` | CI configuration changes |
-| `chore` | Other changes |
-| `revert` | Revert previous commit |
+| Type       | Description                     |
+| ---------- | ------------------------------- |
+| `feat`     | New feature                     |
+| `fix`      | Bug fix                         |
+| `docs`     | Documentation changes           |
+| `style`    | Code style changes (formatting) |
+| `refactor` | Code refactoring                |
+| `perf`     | Performance improvements        |
+| `test`     | Adding or updating tests        |
+| `build`    | Build system changes            |
+| `ci`       | CI configuration changes        |
+| `chore`    | Other changes                   |
+| `revert`   | Revert previous commit          |
 
 ### Scopes
 
-| Scope | Description |
-|-------|-------------|
-| `core` | `@vizel/core` package |
-| `react` | `@vizel/react` package |
-| `vue` | `@vizel/vue` package |
+| Scope    | Description             |
+| -------- | ----------------------- |
+| `core`   | `@vizel/core` package   |
+| `react`  | `@vizel/react` package  |
+| `vue`    | `@vizel/vue` package    |
 | `svelte` | `@vizel/svelte` package |
-| `demo` | Demo applications |
+| `demo`   | Demo applications       |
 
 ### Examples
 

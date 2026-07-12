@@ -17,6 +17,7 @@ export interface VizelSaveIndicatorProps {
 
 <script lang="ts">
 import { createVizelRelativeTimeTicker, resolveVizelSaveIndicatorView } from "@vizel/core";
+
 import VizelIcon from "./VizelIcon.svelte";
 
 let {

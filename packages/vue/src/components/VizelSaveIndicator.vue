@@ -6,6 +6,7 @@ import {
   type VizelSaveStatus,
 } from "@vizel/core";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelSaveIndicatorProps {
@@ -73,6 +74,8 @@ const view = computed(() =>
       <VizelIcon v-else :name="view.iconName" />
     </span>
     <span class="vizel-save-indicator-text">{{ view.text }}</span>
-    <span v-if="view.shouldShowTimestamp" class="vizel-save-indicator-timestamp">{{ relativeTime }}</span>
+    <span v-if="view.shouldShowTimestamp" class="vizel-save-indicator-timestamp">{{
+      relativeTime
+    }}</span>
   </div>
 </template>

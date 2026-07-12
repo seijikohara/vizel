@@ -18,7 +18,7 @@ Every authored sentence in this repository follows a single technical-writing st
 - Use the present tense in comments and docstrings.
 - Make the subject explicit.
 - Start function and class docstrings with a verb in the infinitive form: "Return the merged Markdown".
-- Comments explain *why*, not *what*. Skip self-evident comments. Reference the cause — a constraint, a past bug, an external standard — when relevant. Do not narrate the code.
+- Comments explain _why_, not _what_. Skip self-evident comments. Reference the cause — a constraint, a past bug, an external standard — when relevant. Do not narrate the code.
 - Commit messages and pull-request titles follow Conventional Commits (`<type>(<scope>): <description>`). The subject is imperative, lower-case, has no trailing period, and stays at or under 72 characters.
 - Markdown documents use a hierarchical heading structure. Avoid passive constructions.
 
@@ -65,5 +65,7 @@ docs: record the feature-manifest parity workflow
  * The Markdown reflects the latest committed transaction; calls made
  * during a transaction read the pre-transaction state.
  */
-function getMarkdown(editor: Editor): string { /* ... */ }
+function getMarkdown(editor: Editor): string {
+  /* ... */
+}
 ```

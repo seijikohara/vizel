@@ -22,17 +22,13 @@ const {
     style="overflow: hidden; width: 100px; height: 50px; position: relative;"
   >
     <VizelPortal {layer} {disabled} class={className}>
-      <div class="test-portal-content" data-testid="portal-content">
-        Portal Content
-      </div>
+      <div class="test-portal-content" data-testid="portal-content">Portal Content</div>
     </VizelPortal>
   </div>
 {:else}
   <div data-testid="portal-fixture">
     <VizelPortal {layer} {disabled} class={className}>
-      <div class="test-portal-content" data-testid="portal-content">
-        Portal Content
-      </div>
+      <div class="test-portal-content" data-testid="portal-content">Portal Content</div>
     </VizelPortal>
   </div>
 {/if}

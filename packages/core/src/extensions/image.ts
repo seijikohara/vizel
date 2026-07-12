@@ -2,6 +2,7 @@ import { type Editor, Extension } from "@tiptap/core";
 import { FileHandler } from "@tiptap/extension-file-handler";
 import Image from "@tiptap/extension-image";
 import { Plugin } from "@tiptap/pm/state";
+
 import {
   createVizelImageUploader,
   createVizelImageUploadPlugin,

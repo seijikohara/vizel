@@ -1,6 +1,7 @@
 import { type Editor, mountVizelEditorView } from "@vizel/core";
 import type { ReactNode, Ref } from "react";
 import { useCallback, useEffect, useRef } from "react";
+
 import { useVizelContextSafe } from "./VizelContext.tsx";
 
 export interface VizelEditorProps {

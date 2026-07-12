@@ -21,15 +21,15 @@ as the browser driver; the removed pieces are
 
 ## The Seven Pillars
 
-| # | Pillar | Status | Surface |
-|---|--------|--------|---------|
-| 1 | Framework parity | shipped | `scripts/check-ct-parity.ts` + lefthook + CI |
-| 2 | Behavior tests | shipped | `tests/ct/scenarios/` + `tests/ct/{react,vue,svelte}/specs/` |
-| 3 | Markdown round-trip | shipped (sample-light); CI gating deferred | `tests/markdown-roundtrip/` + manual `workflow_dispatch` |
-| 4 | SSR | shipped (Node smoke test) | `scripts/test-static-html.ts` |
-| 5 | Accessibility | shipped (suite); CI gating deferred | `tests/a11y/{react,vue,svelte}/` + manual `workflow_dispatch` |
-| 6 | Visual regression | shipped; `workflow_dispatch`-gated | `tests/visual/` + committed baselines |
-| 7 | Coverage discipline | shipped (this document) | Required-test matrix below |
+| #   | Pillar              | Status                                     | Surface                                                       |
+| --- | ------------------- | ------------------------------------------ | ------------------------------------------------------------- |
+| 1   | Framework parity    | shipped                                    | `scripts/check-ct-parity.ts` + lefthook + CI                  |
+| 2   | Behavior tests      | shipped                                    | `tests/ct/scenarios/` + `tests/ct/{react,vue,svelte}/specs/`  |
+| 3   | Markdown round-trip | shipped (sample-light); CI gating deferred | `tests/markdown-roundtrip/` + manual `workflow_dispatch`      |
+| 4   | SSR                 | shipped (Node smoke test)                  | `scripts/test-static-html.ts`                                 |
+| 5   | Accessibility       | shipped (suite); CI gating deferred        | `tests/a11y/{react,vue,svelte}/` + manual `workflow_dispatch` |
+| 6   | Visual regression   | shipped; `workflow_dispatch`-gated         | `tests/visual/` + committed baselines                         |
+| 7   | Coverage discipline | shipped (this document)                    | Required-test matrix below                                    |
 
 The Pillar 3 Markdown round-trip and Pillar 5 accessibility suites run on
 demand. Their PR-gating is deferred as a conservative default after the
@@ -47,10 +47,10 @@ Summary` and `Quality + Parity` checks.
 Every Vitest Browser Mode spec must exist under all three framework
 packages. The single permitted asymmetry is the idiom prefix:
 
-| React / Vue | Svelte | Parity stem |
-|-------------|--------|-------------|
-| `UseEditorState.test.{tsx,ts}` | `CreateEditorState.test.ts` | `EditorState` |
-| `UseVizelContext.test.{tsx,ts}` | `GetVizelContext.test.ts` | `VizelContext` |
+| React / Vue                     | Svelte                      | Parity stem    |
+| ------------------------------- | --------------------------- | -------------- |
+| `UseEditorState.test.{tsx,ts}`  | `CreateEditorState.test.ts` | `EditorState`  |
+| `UseVizelContext.test.{tsx,ts}` | `GetVizelContext.test.ts`   | `VizelContext` |
 
 The `Use*` to `Create*` / `Get*` mapping mirrors the symbol parity
 rules in `scripts/check-ct-parity.ts`.
@@ -119,12 +119,12 @@ vitest.browser.config.ts      # Single config; test.projects defines all suites
 `vitest.browser.config.ts` uses `test.projects` to define one project
 per suite and framework:
 
-| Project name | Suite | Browsers |
-|--------------|-------|---------|
-| `react`, `vue`, `svelte` | Component behavior | Chromium, Firefox, WebKit |
-| `a11y-react`, `a11y-vue`, `a11y-svelte` | Accessibility | Chromium only |
-| `visual` | Visual regression | Chromium only |
-| `roundtrip` | Markdown round-trip | Chromium only |
+| Project name                            | Suite               | Browsers                  |
+| --------------------------------------- | ------------------- | ------------------------- |
+| `react`, `vue`, `svelte`                | Component behavior  | Chromium, Firefox, WebKit |
+| `a11y-react`, `a11y-vue`, `a11y-svelte` | Accessibility       | Chromium only             |
+| `visual`                                | Visual regression   | Chromium only             |
+| `roundtrip`                             | Markdown round-trip | Chromium only             |
 
 Each browser instance is named `<project>-<browser>` (e.g. `react-firefox`).
 Every project sets `testTimeout` and `hookTimeout` to 30 000 ms,
@@ -134,19 +134,19 @@ especially on Firefox).
 
 ### Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm test:ct` | Run all framework component tests sequentially |
-| `pnpm test:ct:react` | Run React component tests on all browsers |
-| `pnpm test:ct:vue` | Run Vue component tests on all browsers |
-| `pnpm test:ct:svelte` | Run Svelte component tests on all browsers |
-| `pnpm test:a11y` | Run all framework accessibility tests |
-| `pnpm test:a11y:react` | Run the React a11y suite (Chromium only) |
-| `pnpm test:a11y:vue` | Run the Vue a11y suite (Chromium only) |
-| `pnpm test:a11y:svelte` | Run the Svelte a11y suite (Chromium only) |
-| `pnpm test:visual` | Compare against committed baselines |
-| `pnpm test:visual:update` | Re-record baselines (commit the png changes) |
-| `pnpm test:md-roundtrip` | Run the full round-trip suite (Chromium only) |
+| Command                   | Description                                    |
+| ------------------------- | ---------------------------------------------- |
+| `pnpm test:ct`            | Run all framework component tests sequentially |
+| `pnpm test:ct:react`      | Run React component tests on all browsers      |
+| `pnpm test:ct:vue`        | Run Vue component tests on all browsers        |
+| `pnpm test:ct:svelte`     | Run Svelte component tests on all browsers     |
+| `pnpm test:a11y`          | Run all framework accessibility tests          |
+| `pnpm test:a11y:react`    | Run the React a11y suite (Chromium only)       |
+| `pnpm test:a11y:vue`      | Run the Vue a11y suite (Chromium only)         |
+| `pnpm test:a11y:svelte`   | Run the Svelte a11y suite (Chromium only)      |
+| `pnpm test:visual`        | Compare against committed baselines            |
+| `pnpm test:visual:update` | Re-record baselines (commit the png changes)   |
+| `pnpm test:md-roundtrip`  | Run the full round-trip suite (Chromium only)  |
 
 ### Browser and file selection
 
@@ -223,12 +223,12 @@ test("feature works", async () => {
 
 **Locator priority** — pick locators from the most stable source first.
 
-| Priority | Source | Example |
-|----------|--------|---------|
-| 1 | Data attribute | `page.getByTestId(...)` / `[data-vizel-*]` |
-| 2 | ARIA role | `page.getByRole("button", { name: "Bold" })` |
-| 3 | CSS class | `page.elementLocator(el)` scoped by `.vizel-*` |
-| 4 | Element type | direct `document.querySelector` |
+| Priority | Source         | Example                                        |
+| -------- | -------------- | ---------------------------------------------- |
+| 1        | Data attribute | `page.getByTestId(...)` / `[data-vizel-*]`     |
+| 2        | ARIA role      | `page.getByRole("button", { name: "Bold" })`   |
+| 3        | CSS class      | `page.elementLocator(el)` scoped by `.vizel-*` |
+| 4        | Element type   | direct `document.querySelector`                |
 
 **Portals.** Components rendered to `document.body` use
 `page.getByRole(...)` or `document.querySelector(portalSel)`.
@@ -273,7 +273,7 @@ import { userEvent, pressKeyChord } from "../../scenarios/_vitest-context";
 
 await userEvent.click(button);
 await userEvent.type(input, "hello");
-await pressKeyChord("Mod", "b");   // bold
+await pressKeyChord("Mod", "b"); // bold
 ```
 
 **Visual assertions.**
@@ -298,15 +298,15 @@ syntax). Expanding the corpus is itself a coverage task.
 
 ### Files
 
-| Path | Purpose |
-|------|---------|
-| `tests/markdown-roundtrip/samples/index.ts` | Sample buckets (one `export const` per flavor) |
-| `tests/markdown-roundtrip/specs/Roundtrip.test.ts` | Drives every sample through Vizel |
+| Path                                               | Purpose                                        |
+| -------------------------------------------------- | ---------------------------------------------- |
+| `tests/markdown-roundtrip/samples/index.ts`        | Sample buckets (one `export const` per flavor) |
+| `tests/markdown-roundtrip/specs/Roundtrip.test.ts` | Drives every sample through Vizel              |
 
 ### Commands
 
-| Command | Description |
-|---------|-------------|
+| Command                  | Description                                   |
+| ------------------------ | --------------------------------------------- |
 | `pnpm test:md-roundtrip` | Run the full round-trip suite (Chromium only) |
 
 ### How to add a new flavor
@@ -338,14 +338,14 @@ server pipeline; Vizel ships no opinionated server-HTML helper.
 
 ### Files
 
-| Path | Purpose |
-|------|---------|
+| Path                          | Purpose                                                |
+| ----------------------------- | ------------------------------------------------------ |
 | `scripts/check-ssr-safety.ts` | Static lint for top-level `document` / `window` access |
 
 ### Commands
 
-| Command | Description |
-|---------|-------------|
+| Command          | Description                                          |
+| ---------------- | ---------------------------------------------------- |
 | `pnpm check:ssr` | Confirm Core stays free of top-level browser globals |
 
 `pnpm check:ssr` runs on `pre-push` and CI to guarantee Core never
@@ -368,18 +368,18 @@ nothing but flake.
 
 ### Files
 
-| Path | Purpose |
-|------|---------|
-| `tests/a11y/scenarios/axe.scenario.ts` | Shared `expectNoVizelA11yViolations` axe-core scan |
+| Path                                   | Purpose                                                         |
+| -------------------------------------- | --------------------------------------------------------------- |
+| `tests/a11y/scenarios/axe.scenario.ts` | Shared `expectNoVizelA11yViolations` axe-core scan              |
 | `tests/a11y/{react,vue,svelte}/specs/` | Per-framework `Editor`, `Outline`, `Toolbar` fixtures and specs |
 
 ### Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm test:a11y` | Run all three framework a11y suites |
-| `pnpm test:a11y:react` | Run the React a11y suite (Chromium only) |
-| `pnpm test:a11y:vue` | Run the Vue a11y suite (Chromium only) |
+| Command                 | Description                               |
+| ----------------------- | ----------------------------------------- |
+| `pnpm test:a11y`        | Run all three framework a11y suites       |
+| `pnpm test:a11y:react`  | Run the React a11y suite (Chromium only)  |
+| `pnpm test:a11y:vue`    | Run the Vue a11y suite (Chromium only)    |
 | `pnpm test:a11y:svelte` | Run the Svelte a11y suite (Chromium only) |
 
 ### CI gate
@@ -445,14 +445,14 @@ Every new feature checks in the rows of the table below before
 merge. PR review verifies the rows are filled in or that the row
 explicitly marks the test type as not applicable.
 
-| Feature kind | Pillar 1 (parity) | Pillar 2 (behavior) | Pillar 3 (round-trip) | Pillar 4 (SSR) | Pillar 5 (a11y) | Pillar 6 (visual) |
-|--------------|:-----------------:|:-------------------:|:---------------------:|:--------------:|:---------------:|:-----------------:|
-| New component or controller | required | required | n/a | required | required | follow-up |
-| New hook / composable / rune | required | required | n/a | required | n/a | n/a |
-| New command or block operation | required | required | n/a | n/a | n/a | n/a |
-| New Markdown extension or flavor | required | required | required | required | n/a | n/a |
-| New static view mode | required | required | n/a | required | required | follow-up |
-| Pure refactor (no behavior change) | required | n/a | n/a | n/a | n/a | n/a |
+| Feature kind                       | Pillar 1 (parity) | Pillar 2 (behavior) | Pillar 3 (round-trip) | Pillar 4 (SSR) | Pillar 5 (a11y) | Pillar 6 (visual) |
+| ---------------------------------- | :---------------: | :-----------------: | :-------------------: | :------------: | :-------------: | :---------------: |
+| New component or controller        |     required      |      required       |          n/a          |    required    |    required     |     follow-up     |
+| New hook / composable / rune       |     required      |      required       |          n/a          |    required    |       n/a       |        n/a        |
+| New command or block operation     |     required      |      required       |          n/a          |      n/a       |       n/a       |        n/a        |
+| New Markdown extension or flavor   |     required      |      required       |       required        |    required    |       n/a       |        n/a        |
+| New static view mode               |     required      |      required       |          n/a          |    required    |    required     |     follow-up     |
+| Pure refactor (no behavior change) |     required      |         n/a         |          n/a          |      n/a       |       n/a       |        n/a        |
 
 "n/a" means the pillar does not apply to that feature kind.
 "follow-up" means the pillar applies once the visual suite gains broader
@@ -474,15 +474,15 @@ coverage; note the future work in the PR body so tracking is retained.
 
 GitHub Actions enforces the pillars on every push and pull request:
 
-| Job | Pillar | Notes |
-|-----|--------|-------|
-| `test` (matrix of framework × browser) | 2 | React, Vue, Svelte × Chromium, Firefox, WebKit; runs Vitest Browser Mode |
-| `a11y` (matrix of framework) | 5 | React, Vue, Svelte × Chromium; runs `pnpm test:a11y:<fw>`. On-demand (`workflow_dispatch`); PR-gating is a tracked follow-up |
-| `md-roundtrip` | 3 | Runs `pnpm test:md-roundtrip` (Chromium only). On-demand (`workflow_dispatch`); PR-gating is a tracked follow-up |
-| `visual` | 6 | Runs `pnpm test:visual` (Chromium only). On-demand (`workflow_dispatch`); baselines are environment-specific |
-| `ssr` | 4 | Builds packages, runs `pnpm check:ssr` |
-| `ct-parity` | 1 | Runs `pnpm check:ct-parity` |
-| `test-summary` | aggregator | Fails when any matrix shard failed |
+| Job                                    | Pillar     | Notes                                                                                                                        |
+| -------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `test` (matrix of framework × browser) | 2          | React, Vue, Svelte × Chromium, Firefox, WebKit; runs Vitest Browser Mode                                                     |
+| `a11y` (matrix of framework)           | 5          | React, Vue, Svelte × Chromium; runs `pnpm test:a11y:<fw>`. On-demand (`workflow_dispatch`); PR-gating is a tracked follow-up |
+| `md-roundtrip`                         | 3          | Runs `pnpm test:md-roundtrip` (Chromium only). On-demand (`workflow_dispatch`); PR-gating is a tracked follow-up             |
+| `visual`                               | 6          | Runs `pnpm test:visual` (Chromium only). On-demand (`workflow_dispatch`); baselines are environment-specific                 |
+| `ssr`                                  | 4          | Builds packages, runs `pnpm check:ssr`                                                                                       |
+| `ct-parity`                            | 1          | Runs `pnpm check:ct-parity`                                                                                                  |
+| `test-summary`                         | aggregator | Fails when any matrix shard failed                                                                                           |
 
 The `test-summary` job aggregates the framework × browser matrix and is
 the single required check. The `a11y`, `md-roundtrip`, and `visual` suites

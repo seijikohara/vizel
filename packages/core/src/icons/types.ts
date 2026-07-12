@@ -6,9 +6,10 @@
  * using Iconify or other icon libraries.
  */
 
+import lucide from "@iconify-json/lucide/icons.json";
 import type { IconifyIcon } from "@iconify/utils";
 import { getIconData, iconToSVG } from "@iconify/utils";
-import lucide from "@iconify-json/lucide/icons.json";
+
 import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
 
 /**

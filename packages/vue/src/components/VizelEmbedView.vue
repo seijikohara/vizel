@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { loadVizelEmbedScripts, resolveVizelEmbedView, type VizelEmbedData } from "@vizel/core";
 import { computed, onMounted, useTemplateRef, watch } from "vue";
+
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelEmbedViewProps {
@@ -53,10 +54,7 @@ watch(view, loadScripts);
       data-embed-type="oembed"
       :data-embed-provider="view.provider"
     >
-      <div
-        :class="view.isVideo ? 'vizel-embed-video' : 'vizel-embed-oembed'"
-        v-html="view.html"
-      />
+      <div :class="view.isVideo ? 'vizel-embed-video' : 'vizel-embed-oembed'" v-html="view.html" />
     </div>
   </template>
 
@@ -77,16 +75,13 @@ watch(view, loadScripts);
         />
         <div class="vizel-embed-card-content">
           <div v-if="view.siteName || view.favicon" class="vizel-embed-card-site">
-            <img
-              v-if="view.favicon"
-              :src="view.favicon"
-              alt=""
-              class="vizel-embed-card-favicon"
-            />
+            <img v-if="view.favicon" :src="view.favicon" alt="" class="vizel-embed-card-favicon" />
             <span v-if="view.siteName">{{ view.siteName }}</span>
           </div>
           <div v-if="view.title" class="vizel-embed-card-title">{{ view.title }}</div>
-          <div v-if="view.description" class="vizel-embed-card-description">{{ view.description }}</div>
+          <div v-if="view.description" class="vizel-embed-card-description">
+            {{ view.description }}
+          </div>
           <div class="vizel-embed-card-url">{{ view.hostname }}</div>
         </div>
       </a>

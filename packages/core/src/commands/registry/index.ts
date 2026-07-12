@@ -1,6 +1,6 @@
 import type { VizelCommand } from "../types.ts";
-import { vizelBlockCommands } from "./block.ts";
 import { vizelBlockOperationCommands } from "./block-ops.ts";
+import { vizelBlockCommands } from "./block.ts";
 import { vizelFormatCommands } from "./format.ts";
 import { vizelInsertCommands } from "./insert.ts";
 

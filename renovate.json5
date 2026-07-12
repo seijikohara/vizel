@@ -53,7 +53,14 @@
     {
       description: "Group the Vite ecosystem",
       groupName: "vite",
-      matchPackageNames: ["vite", "@vitejs/*", "vite-plugin-*", "@sveltejs/vite-plugin-svelte", "vitepress", "vitepress-plugin-*"],
+      matchPackageNames: [
+        "vite",
+        "@vitejs/*",
+        "vite-plugin-*",
+        "@sveltejs/vite-plugin-svelte",
+        "vitepress",
+        "vitepress-plugin-*",
+      ],
     },
     {
       description: "Group Playwright packages",

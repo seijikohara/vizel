@@ -20,6 +20,7 @@ import DOMPurify from "dompurify";
 import type MarkdownIt from "markdown-it";
 import type { MermaidConfig } from "mermaid";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
+
 import { registerDiagramFenceRenderer } from "./diagram-markdown.ts";
 import {
   DEFAULT_GRAPHVIZ_CODE,

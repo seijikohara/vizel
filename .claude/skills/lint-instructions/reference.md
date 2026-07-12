@@ -18,17 +18,17 @@ git diff --name-only HEAD~1
 
 ### 3. Apply the relevant rules
 
-| Changed path | Apply these rules |
-|--------------|-------------------|
-| `packages/core/**` | `code-style.md`, `writing.md`, `feature-manifest.md`, `packages/core.md` |
-| `packages/headless/**` | `code-style.md`, `writing.md`, `packages/headless.md` |
-| `packages/react/**` | `code-style.md`, `writing.md`, `feature-manifest.md`, `packages/react.md` |
-| `packages/vue/**` | `code-style.md`, `writing.md`, `feature-manifest.md`, `packages/vue.md` |
-| `packages/svelte/**` | `code-style.md`, `writing.md`, `feature-manifest.md`, `packages/svelte.md` |
-| `apps/demo/**` | `code-style.md`, `writing.md`, `demo.md` |
-| `tests/ct/**` | `code-style.md`, `writing.md`, `testing.md` |
-| `docs/**` | `writing.md` |
-| Commit message | `git.md` |
+| Changed path           | Apply these rules                                                          |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `packages/core/**`     | `code-style.md`, `writing.md`, `feature-manifest.md`, `packages/core.md`   |
+| `packages/headless/**` | `code-style.md`, `writing.md`, `packages/headless.md`                      |
+| `packages/react/**`    | `code-style.md`, `writing.md`, `feature-manifest.md`, `packages/react.md`  |
+| `packages/vue/**`      | `code-style.md`, `writing.md`, `feature-manifest.md`, `packages/vue.md`    |
+| `packages/svelte/**`   | `code-style.md`, `writing.md`, `feature-manifest.md`, `packages/svelte.md` |
+| `apps/demo/**`         | `code-style.md`, `writing.md`, `demo.md`                                   |
+| `tests/ct/**`          | `code-style.md`, `writing.md`, `testing.md`                                |
+| `docs/**`              | `writing.md`                                                               |
+| Commit message         | `git.md`                                                                   |
 
 ### 4. Verify each category
 
@@ -47,7 +47,7 @@ git diff --name-only HEAD~1
 - Explicit subjects; no ambiguous pronouns (`it`, `this`, `that`).
 - Abbreviations defined at first use.
 - Function docstrings start with an infinitive verb.
-- Comments explain *why*, not *what*.
+- Comments explain _why_, not _what_.
 
 #### Feature manifest (`feature-manifest.md`)
 
@@ -79,13 +79,16 @@ git diff --name-only HEAD~1
 ## Instruction Compliance Report
 
 ### ✅ Passing
+
 - <rule>: <description>
 
 ### ❌ Violations
+
 - <rule>: <file:line> — <issue>
   - **Fix**: <suggested fix>
 
 ### ⚠️ Warnings
+
 - <rule>: <potential issue>
 ```
 
@@ -99,22 +102,22 @@ For each fixable violation:
 
 ## Quick checks
 
-| Command | Purpose |
-|---------|---------|
-| `pnpm check` | Auto-fix Biome violations (formatting, imports, exports, naming) |
-| `pnpm typecheck` | Verify type safety |
-| `pnpm check:feature-parity` | Verify cross-framework feature parity against the manifest |
-| `pnpm build` | Verify the build succeeds |
+| Command                     | Purpose                                                          |
+| --------------------------- | ---------------------------------------------------------------- |
+| `pnpm check`                | Auto-fix Biome violations (formatting, imports, exports, naming) |
+| `pnpm typecheck`            | Verify type safety                                               |
+| `pnpm check:feature-parity` | Verify cross-framework feature parity against the manifest       |
+| `pnpm build`                | Verify the build succeeds                                        |
 
 ## Common violations
 
-| Violation | Rule | Fix |
-|-----------|------|-----|
-| `export const fn = () => {}` | `code-style.md` | Use `export function fn() {}` |
-| `data as Type` | `code-style.md` | Add a type guard function |
-| Type defined inside a framework package | `feature-manifest.md` / `packages/core.md` | Move the type to `@vizel/core` |
-| Component missing in one framework | `feature-manifest.md` | Add the equivalent component and update the manifest |
-| `default export` | Biome | Use a named export |
-| `document.addEventListener` in framework component | `packages/{react,vue,svelte}.md` | Delegate to a controller from `@vizel/core` or `@vizel/headless` |
-| Passive voice in a comment | `writing.md` | Rewrite in the active voice |
-| Component file over 120 view-template lines | `packages/{react,vue,svelte}.md` | Split or extract logic into Core / Headless |
+| Violation                                          | Rule                                       | Fix                                                              |
+| -------------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------- |
+| `export const fn = () => {}`                       | `code-style.md`                            | Use `export function fn() {}`                                    |
+| `data as Type`                                     | `code-style.md`                            | Add a type guard function                                        |
+| Type defined inside a framework package            | `feature-manifest.md` / `packages/core.md` | Move the type to `@vizel/core`                                   |
+| Component missing in one framework                 | `feature-manifest.md`                      | Add the equivalent component and update the manifest             |
+| `default export`                                   | Biome                                      | Use a named export                                               |
+| `document.addEventListener` in framework component | `packages/{react,vue,svelte}.md`           | Delegate to a controller from `@vizel/core` or `@vizel/headless` |
+| Passive voice in a comment                         | `writing.md`                               | Rewrite in the active voice                                      |
+| Component file over 120 view-template lines        | `packages/{react,vue,svelte}.md`           | Split or extract logic into Core / Headless                      |

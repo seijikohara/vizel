@@ -27,16 +27,12 @@ const props = withDefaults(defineProps<Props>(), {
     }"
   >
     <VizelPortal :layer="layer" :disabled="disabled" :class="props.class">
-      <div class="test-portal-content" data-testid="portal-content">
-        Portal Content
-      </div>
+      <div class="test-portal-content" data-testid="portal-content">Portal Content</div>
     </VizelPortal>
   </div>
   <div v-else data-testid="portal-fixture">
     <VizelPortal :layer="layer" :disabled="disabled" :class="props.class">
-      <div class="test-portal-content" data-testid="portal-content">
-        Portal Content
-      </div>
+      <div class="test-portal-content" data-testid="portal-content">Portal Content</div>
     </VizelPortal>
   </div>
 </template>

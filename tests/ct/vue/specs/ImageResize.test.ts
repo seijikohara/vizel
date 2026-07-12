@@ -2,8 +2,9 @@
 // img.offsetWidth, so the editor styles must load for the layout to compute.
 import "@vizel/core/styles/index.scss";
 import { describe, test } from "vitest";
-import { page } from "vitest/browser";
 import { render } from "vitest-browser-vue";
+import { page } from "vitest/browser";
+
 import {
   testAspectRatioMaintained,
   testLeftResizeHandleExists,

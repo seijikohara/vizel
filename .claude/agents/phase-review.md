@@ -44,17 +44,17 @@ Report findings in the following format. Cite file paths in `path:line` form.
 
 ### Plan compliance
 
-| Deliverable | Status | Notes |
-|-------------|:------:|-------|
-| Create packages/headless/src/dismissable/index.ts | ✅ | matches plan |
-| Add scripts/check-adr-compliance.ts | ❌ | declared in plan but not present |
+| Deliverable                                       | Status | Notes                            |
+| ------------------------------------------------- | :----: | -------------------------------- |
+| Create packages/headless/src/dismissable/index.ts |   ✅   | matches plan                     |
+| Add scripts/check-adr-compliance.ts               |   ❌   | declared in plan but not present |
 
 ### ADR drift
 
-| ADR | Status | Notes |
-|-----|:------:|-------|
-| 0007 | ✅ | React = 0 listener calls; Vue / Svelte intentionally deferred |
-| 0008 | ⚠️ | CSS centralisation pending a later milestone |
+| ADR  | Status | Notes                                                         |
+| ---- | :----: | ------------------------------------------------------------- |
+| 0007 |   ✅   | React = 0 listener calls; Vue / Svelte intentionally deferred |
+| 0008 |   ⚠️   | CSS centralisation pending a later milestone                  |
 
 ### Recommendations
 

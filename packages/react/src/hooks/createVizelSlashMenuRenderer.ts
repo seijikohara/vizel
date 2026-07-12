@@ -9,6 +9,7 @@ import {
 } from "@vizel/core";
 import { createElement, type RefObject } from "react";
 import { createRoot, type Root } from "react-dom/client";
+
 import { VizelSlashMenu, type VizelSlashMenuRef } from "../components/VizelSlashMenu.tsx";
 
 export type { VizelSuggestionRendererOptions };

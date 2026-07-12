@@ -13,6 +13,7 @@
  * Tiptap mount assigns them.
  */
 import { expect } from "vitest";
+
 import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 interface BlockOpCommand {

@@ -7,6 +7,7 @@ import {
 } from "@vizel/core";
 import type { MaybeRefOrGetter, ShallowRef } from "vue";
 import { onBeforeUnmount, onMounted, shallowRef, toValue, watch } from "vue";
+
 import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.ts";
 
 /**

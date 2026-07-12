@@ -6,14 +6,8 @@ export {
   type CreateVizelCollaborationResult,
   createVizelCollaboration,
 } from "./createVizelCollaboration.svelte.js";
-export {
-  type CreateVizelCommentResult,
-  createVizelComment,
-} from "./createVizelComment.svelte.js";
-export {
-  type CreateVizelEditorOptions,
-  createVizelEditor,
-} from "./createVizelEditor.svelte.js";
+export { type CreateVizelCommentResult, createVizelComment } from "./createVizelComment.svelte.js";
+export { type CreateVizelEditorOptions, createVizelEditor } from "./createVizelEditor.svelte.js";
 export {
   type CreateVizelEditorStateOptions,
   createVizelEditorState,

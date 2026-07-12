@@ -91,16 +91,22 @@ function handleImportCalloutDocusaurus() {
       <button type="button" data-testid="insert-callout" @click="handleInsertCallout">
         Insert Callout
       </button>
-      <button type="button" data-testid="export-button" @click="handleExport">
-        Export
-      </button>
+      <button type="button" data-testid="export-button" @click="handleExport">Export</button>
       <button type="button" data-testid="import-callout-gfm" @click="handleImportCalloutGfm">
         Import GFM Callout
       </button>
-      <button type="button" data-testid="import-callout-obsidian" @click="handleImportCalloutObsidian">
+      <button
+        type="button"
+        data-testid="import-callout-obsidian"
+        @click="handleImportCalloutObsidian"
+      >
         Import Obsidian Callout
       </button>
-      <button type="button" data-testid="import-callout-docusaurus" @click="handleImportCalloutDocusaurus">
+      <button
+        type="button"
+        data-testid="import-callout-docusaurus"
+        @click="handleImportCalloutDocusaurus"
+      >
         Import Docusaurus Callout
       </button>
     </div>

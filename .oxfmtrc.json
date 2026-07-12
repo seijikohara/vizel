@@ -28,6 +28,7 @@
     "pnpm-lock.yaml",
     "**/*.scss",
     "docs/**/*.md",
+    "apps/demo/shared/content-*.md",
     "**/*.html"
   ]
 }

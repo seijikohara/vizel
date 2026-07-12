@@ -11,9 +11,4 @@ interface Props {
 let { status, lastSaved, showTimestamp, class: className }: Props = $props();
 </script>
 
-<VizelSaveIndicator
-  {status}
-  {lastSaved}
-  {showTimestamp}
-  class={className}
-/>
+<VizelSaveIndicator {status} {lastSaved} {showTimestamp} class={className} />

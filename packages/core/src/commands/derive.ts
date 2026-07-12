@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+
 import type { VizelCommandSpec } from "../builders/types.ts";
 import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelCommand } from "./types.ts";

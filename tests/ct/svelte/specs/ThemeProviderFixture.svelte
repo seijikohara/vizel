@@ -1,5 +1,6 @@
 <script lang="ts">
 import { type Theme, VizelThemeProvider } from "@vizel/svelte";
+
 import ThemeContent from "./ThemeContent.svelte";
 
 interface Props {

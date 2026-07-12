@@ -1,7 +1,9 @@
 import "@vizel/react/styles.css";
 import "@vizel/react/mathematics.css";
 import { createRoot } from "react-dom/client";
+
 import { App } from "./App.tsx";
+
 import "./styles.css";
 
 const container = document.getElementById("root");

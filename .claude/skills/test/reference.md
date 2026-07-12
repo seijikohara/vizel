@@ -6,15 +6,15 @@ This document holds the long-form reference for the `test` skill. The skill's `S
 
 The pillars come from `.claude/rules/testing.md`. The skill drives every pillar that ships a runnable suite today.
 
-| Pillar | Status | How to run |
-|--------|--------|------------|
-| 1. Framework parity | shipped | `pnpm check:ct-parity` |
-| 2. Behaviour tests | shipped | `pnpm test:ct` (and the per-framework variants) |
-| 3. Markdown round-trip | shipped | `pnpm test:md-roundtrip` |
-| 4. SSR static-HTML smoke | shipped | `pnpm check:ssr` |
-| 5. Accessibility | shipped | `pnpm test:a11y` (and the per-framework variants) |
-| 6. Visual regression | shipped | `pnpm test:visual` / `pnpm test:visual:update` |
-| 7. Coverage discipline | shipped | reviewed at PR time against the Pillar 7 matrix |
+| Pillar                   | Status  | How to run                                        |
+| ------------------------ | ------- | ------------------------------------------------- |
+| 1. Framework parity      | shipped | `pnpm check:ct-parity`                            |
+| 2. Behaviour tests       | shipped | `pnpm test:ct` (and the per-framework variants)   |
+| 3. Markdown round-trip   | shipped | `pnpm test:md-roundtrip`                          |
+| 4. SSR static-HTML smoke | shipped | `pnpm check:ssr`                                  |
+| 5. Accessibility         | shipped | `pnpm test:a11y` (and the per-framework variants) |
+| 6. Visual regression     | shipped | `pnpm test:visual` / `pnpm test:visual:update`    |
+| 7. Coverage discipline   | shipped | reviewed at PR time against the Pillar 7 matrix   |
 
 ### Full local matrix
 
@@ -53,16 +53,16 @@ pnpm test:visual       # Pillar 6
 
 Pick the test scope based on the changed paths.
 
-| Changed path | Tests to run |
-|--------------|--------------|
-| `packages/core/**` | All frameworks |
-| `packages/react/**` | React only |
-| `packages/vue/**` | Vue only |
-| `packages/svelte/**` | Svelte only |
+| Changed path            | Tests to run   |
+| ----------------------- | -------------- |
+| `packages/core/**`      | All frameworks |
+| `packages/react/**`     | React only     |
+| `packages/vue/**`       | Vue only       |
+| `packages/svelte/**`    | Svelte only    |
 | `tests/ct/scenarios/**` | All frameworks |
-| `tests/ct/react/**` | React only |
-| `tests/ct/vue/**` | Vue only |
-| `tests/ct/svelte/**` | Svelte only |
+| `tests/ct/react/**`     | React only     |
+| `tests/ct/vue/**`       | Vue only       |
+| `tests/ct/svelte/**`    | Svelte only    |
 
 ### 2. Run tests
 
@@ -127,17 +127,19 @@ Failure output:
 ## Test Results
 
 ### Summary
+
 - **React**: ✅ X passed / ❌ Y failed
 - **Vue**: ✅ X passed / ❌ Y failed
 - **Svelte**: ✅ X passed / ❌ Y failed
 
 ### Failures
 
-| Framework | Test | Error |
-|-----------|------|-------|
-| React | ComponentName › test | Error message |
+| Framework | Test                 | Error         |
+| --------- | -------------------- | ------------- |
+| React     | ComponentName › test | Error message |
 
 ### Next steps
+
 - [ ] Fix the failing tests.
 - [ ] Re-run the affected suite.
 ```
@@ -170,12 +172,12 @@ ls tests/ct/react/specs/*.tsx tests/ct/vue/specs/*.ts tests/ct/svelte/specs/*.ts
 
 ### 3. Classify coverage
 
-| Status | Meaning |
-|--------|---------|
-| ✅ Direct | Has a dedicated spec file |
-| ✅ Indirect | Tested through a parent component |
+| Status        | Meaning                                        |
+| ------------- | ---------------------------------------------- |
+| ✅ Direct     | Has a dedicated spec file                      |
+| ✅ Indirect   | Tested through a parent component              |
 | ⚠️ Style-only | Pure styling component; may not require a spec |
-| ❌ Missing | Requires a spec |
+| ❌ Missing    | Requires a spec                                |
 
 ### 4. Coverage report format
 
@@ -184,22 +186,24 @@ ls tests/ct/react/specs/*.tsx tests/ct/vue/specs/*.ts tests/ct/svelte/specs/*.ts
 
 ### Components
 
-| Component | React | Vue | Svelte | Status |
-|-----------|:-----:|:---:|:------:|--------|
-| EditorRoot | ✅ | ✅ | ✅ | Direct |
-| BubbleMenu | ✅ | ✅ | ✅ | Direct |
+| Component  | React | Vue | Svelte | Status |
+| ---------- | :---: | :-: | :----: | ------ |
+| EditorRoot |  ✅   | ✅  |   ✅   | Direct |
+| BubbleMenu |  ✅   | ✅  |   ✅   | Direct |
 
 ### Hooks / Composables / Runes
 
-| Function | React | Vue | Svelte | Status |
-|----------|:-----:|:---:|:------:|--------|
-| useVizelEditor | ✅ | ✅ | ✅ | Indirect |
+| Function       | React | Vue | Svelte | Status   |
+| -------------- | :---: | :-: | :----: | -------- |
+| useVizelEditor |  ✅   | ✅  |   ✅   | Indirect |
 
 ### Summary
+
 - Components: X/Y covered (Z%).
 - Hooks/Composables/Runes: X/Y covered (Z%).
 
 ### Recommendations
+
 - [ ] Add tests for the missing items.
 ```
 

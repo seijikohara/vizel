@@ -25,6 +25,7 @@ import {
   useTemplateRef,
   watch,
 } from "vue";
+
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
 
@@ -228,14 +229,20 @@ onBeforeUnmount(() => {
         type="button"
         :class="['vizel-block-menu-item', { 'is-destructive': slot.data.isDestructive }]"
         :role="slot.attrs.role"
-        :disabled="slot.data.action.isEnabled ? !slot.data.action.isEnabled(menuState.editor, menuState.node) : false"
+        :disabled="
+          slot.data.action.isEnabled
+            ? !slot.data.action.isEnabled(menuState.editor, menuState.node)
+            : false
+        "
         @click="handleAction(slot.data.action)"
       >
         <span class="vizel-block-menu-item-icon">
           <VizelIcon :name="slot.data.action.icon" />
         </span>
         <span class="vizel-block-menu-item-label">{{ slot.data.action.label }}</span>
-        <span v-if="slot.data.action.shortcut" class="vizel-block-menu-item-shortcut">{{ slot.data.action.shortcut }}</span>
+        <span v-if="slot.data.action.shortcut" class="vizel-block-menu-item-shortcut">{{
+          slot.data.action.shortcut
+        }}</span>
       </button>
     </template>
 

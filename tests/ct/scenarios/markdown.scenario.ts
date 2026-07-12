@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+
 import { page, pressKeyChord, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 // Resolve the .vizel-editor root. Tiptap mounts asynchronously after the

@@ -10,6 +10,7 @@ import {
 import { createVizelDismissable } from "@vizel/headless";
 import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
+
 import { useVizelState } from "../composables/useVizelState.ts";
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelIcon from "./VizelIcon.vue";
@@ -216,11 +217,7 @@ function handleSelectNodeType(nodeType: VizelNodeTypeOption) {
             <VizelIcon :name="slot.data.nodeType.icon" />
           </span>
           <span class="vizel-node-selector-option-label">{{ slot.data.nodeType.label }}</span>
-          <span
-            v-if="slot.data.isActive"
-            class="vizel-node-selector-check"
-            aria-hidden="true"
-          >
+          <span v-if="slot.data.isActive" class="vizel-node-selector-check" aria-hidden="true">
             <VizelIcon name="check" />
           </span>
         </button>

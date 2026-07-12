@@ -7,6 +7,7 @@ import {
 } from "@vizel/core";
 import { createVizelDismissable, createVizelFocusTrapController } from "@vizel/headless";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
 

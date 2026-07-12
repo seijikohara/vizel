@@ -10,6 +10,7 @@ import {
   vizelDefaultToolbarActions,
 } from "@vizel/core";
 import { computed } from "vue";
+
 import { useVizelState } from "../composables/useVizelState.ts";
 import VizelIcon from "./VizelIcon.vue";
 import VizelToolbarButton from "./VizelToolbarButton.vue";

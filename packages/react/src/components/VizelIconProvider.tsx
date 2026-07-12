@@ -1,5 +1,6 @@
 import type { CustomIconMap } from "@vizel/core";
 import { type ReactNode, useMemo } from "react";
+
 import { VizelIconContext } from "./VizelIconContext.tsx";
 
 export interface VizelIconProviderProps {

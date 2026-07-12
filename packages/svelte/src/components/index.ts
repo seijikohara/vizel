@@ -5,17 +5,11 @@ export { default as Vizel, type VizelProps, type VizelRef } from "./Vizel.svelte
 // ============================================================================
 // Vizel BlockMenu component
 // ============================================================================
-export {
-  default as VizelBlockMenu,
-  type VizelBlockMenuProps,
-} from "./VizelBlockMenu.svelte";
+export { default as VizelBlockMenu, type VizelBlockMenuProps } from "./VizelBlockMenu.svelte";
 // ============================================================================
 // Vizel BubbleMenu components
 // ============================================================================
-export {
-  default as VizelBubbleMenu,
-  type VizelBubbleMenuProps,
-} from "./VizelBubbleMenu.svelte";
+export { default as VizelBubbleMenu, type VizelBubbleMenuProps } from "./VizelBubbleMenu.svelte";
 export {
   default as VizelBubbleMenuButton,
   type VizelBubbleMenuButtonProps,
@@ -35,10 +29,7 @@ export {
 // ============================================================================
 // Vizel ColorPicker component
 // ============================================================================
-export {
-  default as VizelColorPicker,
-  type VizelColorPickerProps,
-} from "./VizelColorPicker.svelte";
+export { default as VizelColorPicker, type VizelColorPickerProps } from "./VizelColorPicker.svelte";
 // ============================================================================
 // Vizel Context
 // ============================================================================
@@ -59,17 +50,11 @@ export {
 // ============================================================================
 // Vizel EmbedView component
 // ============================================================================
-export {
-  default as VizelEmbedView,
-  type VizelEmbedViewProps,
-} from "./VizelEmbedView.svelte";
+export { default as VizelEmbedView, type VizelEmbedViewProps } from "./VizelEmbedView.svelte";
 // ============================================================================
 // Vizel FindReplace component
 // ============================================================================
-export {
-  default as VizelFindReplace,
-  type VizelFindReplaceProps,
-} from "./VizelFindReplace.svelte";
+export { default as VizelFindReplace, type VizelFindReplaceProps } from "./VizelFindReplace.svelte";
 // ============================================================================
 // Vizel Icon component
 // ============================================================================
@@ -82,10 +67,7 @@ export {
 // ============================================================================
 // Vizel LinkEditor component
 // ============================================================================
-export {
-  default as VizelLinkEditor,
-  type VizelLinkEditorProps,
-} from "./VizelLinkEditor.svelte";
+export { default as VizelLinkEditor, type VizelLinkEditorProps } from "./VizelLinkEditor.svelte";
 // ============================================================================
 // Vizel MentionMenu component
 // ============================================================================
@@ -104,24 +86,15 @@ export {
 // ============================================================================
 // Vizel Outline component
 // ============================================================================
-export {
-  default as VizelOutline,
-  type VizelOutlineProps,
-} from "./VizelOutline.svelte";
+export { default as VizelOutline, type VizelOutlineProps } from "./VizelOutline.svelte";
 // ============================================================================
 // Vizel Portal component
 // ============================================================================
-export {
-  default as VizelPortal,
-  type VizelPortalProps,
-} from "./VizelPortal.svelte";
+export { default as VizelPortal, type VizelPortalProps } from "./VizelPortal.svelte";
 // ============================================================================
 // Vizel Provider component
 // ============================================================================
-export {
-  default as VizelProvider,
-  type VizelProviderProps,
-} from "./VizelProvider.svelte";
+export { default as VizelProvider, type VizelProviderProps } from "./VizelProvider.svelte";
 // ============================================================================
 // Vizel SaveIndicator component
 // ============================================================================
@@ -155,10 +128,7 @@ export {
 // ============================================================================
 // Vizel Toolbar components
 // ============================================================================
-export {
-  default as VizelToolbar,
-  type VizelToolbarProps,
-} from "./VizelToolbar.svelte";
+export { default as VizelToolbar, type VizelToolbarProps } from "./VizelToolbar.svelte";
 export {
   default as VizelToolbarButton,
   type VizelToolbarButtonProps,

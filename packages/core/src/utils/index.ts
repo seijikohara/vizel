@@ -69,14 +69,8 @@ export {
 // Submenu flip utility
 export { shouldFlipSubmenu } from "./menuPositioning.ts";
 // SSR-safe rAF helpers (used by markdown sync hooks)
-export {
-  vizelCancelAnimationFrame,
-  vizelRequestAnimationFrame,
-} from "./raf.ts";
+export { vizelCancelAnimationFrame, vizelRequestAnimationFrame } from "./raf.ts";
 // SSR utilities
-export {
-  type VizelThemeInitScriptOptions,
-  vizelThemeInitScript,
-} from "./ssr.ts";
+export { type VizelThemeInitScriptOptions, vizelThemeInitScript } from "./ssr.ts";
 // Text highlight utilities
 export { splitVizelTextByMatches, type VizelTextSegment } from "./textHighlight.ts";

@@ -33,10 +33,7 @@ export { VizelFindReplace, type VizelFindReplaceProps } from "./VizelFindReplace
 export { VizelIcon, type VizelIconProps } from "./VizelIcon.tsx";
 export { useVizelIconContext } from "./VizelIconContext.tsx";
 export { VizelIconProvider, type VizelIconProviderProps } from "./VizelIconProvider.tsx";
-export {
-  VizelLinkEditor,
-  type VizelLinkEditorProps,
-} from "./VizelLinkEditor.tsx";
+export { VizelLinkEditor, type VizelLinkEditorProps } from "./VizelLinkEditor.tsx";
 // VizelMentionMenu component
 export {
   VizelMentionMenu,
@@ -64,19 +61,7 @@ export { VizelThemeProvider, type VizelThemeProviderProps } from "./VizelThemePr
 // VizelToolbar components
 export { VizelToolbar, type VizelToolbarProps } from "./VizelToolbar.tsx";
 export { VizelToolbarButton, type VizelToolbarButtonProps } from "./VizelToolbarButton.tsx";
-export {
-  VizelToolbarDefault,
-  type VizelToolbarDefaultProps,
-} from "./VizelToolbarDefault.tsx";
-export {
-  VizelToolbarDivider,
-  type VizelToolbarDividerProps,
-} from "./VizelToolbarDivider.tsx";
-export {
-  VizelToolbarDropdown,
-  type VizelToolbarDropdownProps,
-} from "./VizelToolbarDropdown.tsx";
-export {
-  VizelToolbarOverflow,
-  type VizelToolbarOverflowProps,
-} from "./VizelToolbarOverflow.tsx";
+export { VizelToolbarDefault, type VizelToolbarDefaultProps } from "./VizelToolbarDefault.tsx";
+export { VizelToolbarDivider, type VizelToolbarDividerProps } from "./VizelToolbarDivider.tsx";
+export { VizelToolbarDropdown, type VizelToolbarDropdownProps } from "./VizelToolbarDropdown.tsx";
+export { VizelToolbarOverflow, type VizelToolbarOverflowProps } from "./VizelToolbarOverflow.tsx";

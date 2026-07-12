@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { buildVizelOutlineSpec, type Editor, type VizelLocale, vizelEnLocale } from "@vizel/core";
 import { computed } from "vue";
+
 import { useVizelState } from "../composables/useVizelState.ts";
 import { useVizelContextSafe } from "./VizelContext.ts";
 import VizelOutlineItems from "./VizelOutlineItems.vue";

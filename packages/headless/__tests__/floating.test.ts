@@ -12,6 +12,7 @@
 
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it, mock } from "node:test";
+
 // Type-only import is erased at compile time, so it does not load the
 // module before `mock.module` registers the `@floating-ui/dom` stub.
 import type { VizelVirtualElement } from "../src/floating/index.ts";
@@ -52,9 +53,8 @@ mock.module("@floating-ui/dom", {
   },
 });
 
-const { buildVizelFloatingSpec, createVizelFloatingController } = await import(
-  "../src/floating/index.ts"
-);
+const { buildVizelFloatingSpec, createVizelFloatingController } =
+  await import("../src/floating/index.ts");
 
 interface FakeElement {
   style: Record<string, string>;

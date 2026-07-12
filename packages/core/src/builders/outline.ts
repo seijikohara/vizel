@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
+
 import type { VizelLocale } from "../i18n/types.ts";
 
 /**

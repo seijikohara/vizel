@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+
 import type { VizelNodeTypeOption } from "../extensions/node-types.ts";
 import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelMenuItemAttrs, VizelMenuSpec } from "./types.ts";

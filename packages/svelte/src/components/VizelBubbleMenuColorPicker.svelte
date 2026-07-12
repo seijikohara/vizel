@@ -27,6 +27,7 @@ import {
   VIZEL_TEXT_COLORS,
 } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
+
 import VizelColorPicker from "./VizelColorPicker.svelte";
 import VizelIcon from "./VizelIcon.svelte";
 
@@ -44,7 +45,9 @@ let isOpen = $state(false);
 let recentColors = $state<string[]>([]);
 let containerRef: HTMLDivElement | null = $state(null);
 
-const colorPalette = $derived(colors ?? (type === "textColor" ? VIZEL_TEXT_COLORS : VIZEL_HIGHLIGHT_COLORS));
+const colorPalette = $derived(
+  colors ?? (type === "textColor" ? VIZEL_TEXT_COLORS : VIZEL_HIGHLIGHT_COLORS)
+);
 
 const currentColor = $derived.by(() => {
   if (type === "textColor") {
@@ -91,15 +94,13 @@ function getTriggerStyle(): string {
 }
 </script>
 
-<div
-  bind:this={containerRef}
-  class="vizel-color-picker {className ?? ''}"
-  data-type={type}
->
+<div bind:this={containerRef} class="vizel-color-picker {className ?? ''}" data-type={type}>
   <button
     type="button"
     class="vizel-bubble-menu-button vizel-color-picker-trigger {currentColor ? 'has-color' : ''}"
-    title={isTextColor ? (locale?.colorPicker?.textColor ?? "Text Color") : (locale?.colorPicker?.highlight ?? "Highlight")}
+    title={isTextColor
+      ? (locale?.colorPicker?.textColor ?? "Text Color")
+      : (locale?.colorPicker?.highlight ?? "Highlight")}
     data-action={type}
     style={getTriggerStyle()}
     onclick={() => (isOpen = !isOpen)}
@@ -116,7 +117,9 @@ function getTriggerStyle(): string {
       <VizelColorPicker
         colors={colorPalette}
         value={currentColor}
-        label={isTextColor ? (locale?.colorPicker?.textColorPalette ?? "Text color palette") : (locale?.colorPicker?.highlightPalette ?? "Highlight color palette")}
+        label={isTextColor
+          ? (locale?.colorPicker?.textColorPalette ?? "Text color palette")
+          : (locale?.colorPicker?.highlightPalette ?? "Highlight color palette")}
         {allowCustomColor}
         {recentColors}
         {showRecentColors}

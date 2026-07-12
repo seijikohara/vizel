@@ -32,6 +32,7 @@
 import type { Transaction } from "@tiptap/pm/state";
 import { type Editor, shallowEqualArray, shallowEqualObject } from "@vizel/core";
 import { useMemo, useRef, useSyncExternalStore } from "react";
+
 import { useVizelContextSafe } from "./components/VizelContext.tsx";
 
 /**

@@ -1,5 +1,6 @@
 import type { Editor, VizelLocale } from "@vizel/core";
 import type { ReactNode } from "react";
+
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelToolbarDefault } from "./VizelToolbarDefault.tsx";
 

@@ -2,6 +2,7 @@ import { Icon as IconifyIcon } from "@iconify/react";
 import type { CustomIconMap } from "@vizel/core";
 import { type VizelIconName, vizelDefaultIconIds } from "@vizel/core";
 import type { ComponentProps } from "react";
+
 import { useVizelIconContext } from "./VizelIconContext.tsx";
 
 export interface VizelIconProps extends Omit<ComponentProps<typeof IconifyIcon>, "icon"> {

@@ -15,6 +15,7 @@ import {
   type VizelMarkdownFlavor,
 } from "@vizel/core";
 import { computed, provide, watch } from "vue";
+
 import { useVizelEditor } from "../composables/useVizelEditor.ts";
 import VizelBlockMenu from "./VizelBlockMenu.vue";
 import VizelBubbleMenu from "./VizelBubbleMenu.vue";
@@ -224,7 +225,11 @@ const localeProps = computed(() => (props.locale ? { locale: props.locale } : {}
       </template>
     </VizelToolbar>
     <VizelEditor :editor="editor" />
-    <VizelBubbleMenu v-if="showBubbleMenu && editor" :enable-embed="enableEmbed" v-bind="localeProps">
+    <VizelBubbleMenu
+      v-if="showBubbleMenu && editor"
+      :enable-embed="enableEmbed"
+      v-bind="localeProps"
+    >
       <template v-if="slots['bubble-menu']" #default>
         <slot name="bubble-menu" :editor="editor" />
       </template>

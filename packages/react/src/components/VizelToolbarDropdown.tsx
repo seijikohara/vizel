@@ -3,6 +3,7 @@ import { buildVizelToolbarDropdownSpec, formatVizelTooltip } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
 import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelToolbarDropdownProps {

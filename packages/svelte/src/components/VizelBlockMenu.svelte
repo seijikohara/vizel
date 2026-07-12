@@ -34,6 +34,7 @@ import {
 } from "@vizel/core";
 import { createVizelPopoverController } from "@vizel/headless";
 import { tick } from "svelte";
+
 import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
 
@@ -48,8 +49,12 @@ let {
 const contextEditor = getVizelContextSafe();
 const boundEditor = $derived<Editor | null>(editorProp ?? contextEditor?.current ?? null);
 
-const effectiveActions = $derived(actions ?? (locale ? createVizelBlockMenuActions(locale) : vizelDefaultBlockMenuActions));
-const effectiveNodeTypes = $derived(nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes));
+const effectiveActions = $derived(
+  actions ?? (locale ? createVizelBlockMenuActions(locale) : vizelDefaultBlockMenuActions)
+);
+const effectiveNodeTypes = $derived(
+  nodeTypes ?? (locale ? createVizelNodeTypes(locale) : vizelDefaultNodeTypes)
+);
 
 let menuState = $state<VizelBlockMenuOpenDetail | null>(null);
 let showTurnInto = $state(false);
@@ -58,11 +63,11 @@ let menuRef = $state<HTMLDivElement | null>(null);
 let submenuRef = $state<HTMLDivElement | null>(null);
 
 const turnIntoOptions = $derived(
-  menuState ? getVizelTurnIntoOptions(menuState.editor, effectiveNodeTypes) : [],
+  menuState ? getVizelTurnIntoOptions(menuState.editor, effectiveNodeTypes) : []
 );
 
 const spec = $derived(
-  buildVizelBlockMenuSpec(effectiveActions, turnIntoOptions, showTurnInto, locale),
+  buildVizelBlockMenuSpec(effectiveActions, turnIntoOptions, showTurnInto, locale)
 );
 
 function close() {
@@ -120,9 +125,7 @@ function handleMenuKeyDown(e: KeyboardEvent) {
 
 $effect(() => {
   if (!menuState || !menuRef) return;
-  const firstItem = menuRef.querySelector<HTMLButtonElement>(
-    '[role="menuitem"]:not([disabled])'
-  );
+  const firstItem = menuRef.querySelector<HTMLButtonElement>('[role="menuitem"]:not([disabled])');
   firstItem?.focus();
 });
 
@@ -199,7 +202,9 @@ $effect(() => {
           type="button"
           class="vizel-block-menu-item{slot.data.isDestructive ? ' is-destructive' : ''}"
           role={slot.attrs.role}
-          disabled={slot.data.action.isEnabled ? !slot.data.action.isEnabled(menuState.editor, menuState.node) : false}
+          disabled={slot.data.action.isEnabled
+            ? !slot.data.action.isEnabled(menuState.editor, menuState.node)
+            : false}
           onclick={() => handleAction(slot.data.action)}
         >
           <span class="vizel-block-menu-item-icon">
@@ -221,8 +226,12 @@ $effect(() => {
       role={spec.submenuTrigger.attrs.role}
       aria-haspopup={spec.submenuTrigger.attrs["aria-haspopup"]}
       aria-expanded={spec.submenuTrigger.attrs["aria-expanded"]}
-      onmouseenter={() => { showTurnInto = true; }}
-      onclick={() => { showTurnInto = !showTurnInto; }}
+      onmouseenter={() => {
+        showTurnInto = true;
+      }}
+      onclick={() => {
+        showTurnInto = !showTurnInto;
+      }}
     >
       <span class="vizel-block-menu-item-icon">
         <VizelIcon name={spec.submenuTrigger.iconName} />

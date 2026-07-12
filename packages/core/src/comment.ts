@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+
 import { resolveVizelArrayStorageBackend, type VizelStorageBackend } from "./storage.ts";
 import { generateVizelId } from "./utils/id.ts";
 

@@ -37,6 +37,7 @@ import {
 } from "@vizel/core";
 import { createVizelDismissable, createVizelFocusTrapController } from "@vizel/headless";
 import { untrack } from "svelte";
+
 import { getVizelContextSafe } from "./VizelContext.js";
 import VizelIcon from "./VizelIcon.svelte";
 
@@ -123,67 +124,65 @@ function handleVisit() {
 </script>
 
 {#if viewState}
-<form
-  bind:this={formElement}
-  class="vizel-link-editor {className ?? ''}"
-  onsubmit={handleSubmit}
->
-  <div class="vizel-link-editor-row">
-    <input
-      bind:value={url}
-      type="url"
-      placeholder={labels.urlPlaceholder}
-      class="vizel-link-input"
-      aria-label={labels.urlAriaLabel}
-    />
-    <button type="submit" class="vizel-link-button" title={labels.apply} aria-label={labels.applyAriaLabel}>
-      <VizelIcon name="check" />
-    </button>
-    {#if viewState.showRemoveButton}
-      <button
-        type="button"
-        class="vizel-link-button vizel-link-remove"
-        title={labels.removeLink}
-        aria-label={labels.removeLinkAriaLabel}
-        onclick={handleRemove}
-      >
-        <VizelIcon name="x" />
-      </button>
-    {/if}
-  </div>
-  <div class="vizel-link-editor-options">
-    <label class="vizel-link-newtab-toggle">
+  <form bind:this={formElement} class="vizel-link-editor {className ?? ''}" onsubmit={handleSubmit}>
+    <div class="vizel-link-editor-row">
       <input
-        type="checkbox"
-        bind:checked={openInNewTab}
+        bind:value={url}
+        type="url"
+        placeholder={labels.urlPlaceholder}
+        class="vizel-link-input"
+        aria-label={labels.urlAriaLabel}
       />
-      <span>{labels.openInNewTab}</span>
-    </label>
-    {#if viewState.showVisitButton}
       <button
-        type="button"
-        class="vizel-link-visit"
-        title={labels.visitTitle}
-        onclick={handleVisit}
+        type="submit"
+        class="vizel-link-button"
+        title={labels.apply}
+        aria-label={labels.applyAriaLabel}
       >
-        <VizelIcon name="externalLink" />
-        <span>{labels.visit}</span>
+        <VizelIcon name="check" />
       </button>
-    {/if}
-  </div>
-  {#if viewState.showEmbedToggle}
-    <div class="vizel-link-editor-embed-toggle">
-      <!--
+      {#if viewState.showRemoveButton}
+        <button
+          type="button"
+          class="vizel-link-button vizel-link-remove"
+          title={labels.removeLink}
+          aria-label={labels.removeLinkAriaLabel}
+          onclick={handleRemove}
+        >
+          <VizelIcon name="x" />
+        </button>
+      {/if}
+    </div>
+    <div class="vizel-link-editor-options">
+      <label class="vizel-link-newtab-toggle">
+        <input type="checkbox" bind:checked={openInNewTab} />
+        <span>{labels.openInNewTab}</span>
+      </label>
+      {#if viewState.showVisitButton}
+        <button
+          type="button"
+          class="vizel-link-visit"
+          title={labels.visitTitle}
+          onclick={handleVisit}
+        >
+          <VizelIcon name="externalLink" />
+          <span>{labels.visit}</span>
+        </button>
+      {/if}
+    </div>
+    {#if viewState.showEmbedToggle}
+      <div class="vizel-link-editor-embed-toggle">
+        <!--
         Wrap the input in the label so the click target is the same as
         a `for`/`id` pair without needing a globally-unique DOM id. Two
         link editors on one page used to share `id="vizel-embed-toggle"`,
         triggering the wrong checkbox under WCAG 4.1.1.
       -->
-      <label class="vizel-link-editor-embed-toggle-label">
-        <input type="checkbox" bind:checked={asEmbed} />
-        <span>{labels.embedAsRichContent}</span>
-      </label>
-    </div>
-  {/if}
-</form>
+        <label class="vizel-link-editor-embed-toggle-label">
+          <input type="checkbox" bind:checked={asEmbed} />
+          <span>{labels.embedAsRichContent}</span>
+        </label>
+      </div>
+    {/if}
+  </form>
 {/if}

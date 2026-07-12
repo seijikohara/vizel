@@ -9,14 +9,14 @@ paths:
 
 ## What the package contains
 
-| Primitive | Purpose |
-|-----------|---------|
-| `combobox/` | Typeahead and roving tabindex for autocomplete-style menus |
-| `popover/` | Positioning, dismissal, and portal target |
-| `dismissable/` | Click-outside + Escape + focus return |
-| `focus-trap/` | Focus boundary |
-| `floating/` | `@floating-ui/dom` wrapper for positioning strategies |
-| `keyboard/` | List navigation, typeahead, roving tabindex helpers |
+| Primitive      | Purpose                                                    |
+| -------------- | ---------------------------------------------------------- |
+| `combobox/`    | Typeahead and roving tabindex for autocomplete-style menus |
+| `popover/`     | Positioning, dismissal, and portal target                  |
+| `dismissable/` | Click-outside + Escape + focus return                      |
+| `focus-trap/`  | Focus boundary                                             |
+| `floating/`    | `@floating-ui/dom` wrapper for positioning strategies      |
+| `keyboard/`    | List navigation, typeahead, roving tabindex helpers        |
 
 Each primitive exports `{ buildSpec, createController }`. The spec is a pure function; the controller owns DOM side effects behind `{ mount(target), unmount(), update(args) }`.
 

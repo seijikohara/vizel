@@ -4,6 +4,7 @@ import { buildVizelToolbarDropdownSpec, formatVizelTooltip } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
 import { buildVizelListNavSpec } from "@vizel/headless/keyboard";
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
+
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelToolbarDropdownProps {
@@ -146,7 +147,11 @@ onBeforeUnmount(() => {
           type="button"
           role="option"
           :aria-selected="slot.attrs['aria-selected']"
-          :class="['vizel-toolbar-dropdown-option', slot.data.isActive && 'is-active', slot.data.isFocused && 'is-focused']"
+          :class="[
+            'vizel-toolbar-dropdown-option',
+            slot.data.isActive && 'is-active',
+            slot.data.isFocused && 'is-focused',
+          ]"
           :disabled="!slot.data.isEnabled"
           :title="formatVizelTooltip(slot.data.option.label, slot.data.option.shortcut)"
           :tabindex="slot.attrs.tabIndex"

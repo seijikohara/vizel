@@ -20,12 +20,13 @@ import {
   formatVizelTooltip,
   groupVizelBubbleMenuActions,
 } from "@vizel/core";
+
 import { createVizelState } from "../runes/createVizelState.svelte.js";
 import VizelBubbleMenuButton from "./VizelBubbleMenuButton.svelte";
 import VizelBubbleMenuColorPicker from "./VizelBubbleMenuColorPicker.svelte";
 import VizelBubbleMenuDivider from "./VizelBubbleMenuDivider.svelte";
-import VizelLinkEditor from "./VizelLinkEditor.svelte";
 import VizelIcon from "./VizelIcon.svelte";
+import VizelLinkEditor from "./VizelLinkEditor.svelte";
 import VizelNodeSelector from "./VizelNodeSelector.svelte";
 
 let { editor, class: className, enableEmbed, locale }: VizelBubbleMenuDefaultProps = $props();
@@ -55,7 +56,12 @@ const isActive = $derived.by(() => {
 </script>
 
 {#if showLinkEditor}
-  <VizelLinkEditor {editor} {...(enableEmbed ? { enableEmbed } : {})} {...(locale ? { locale } : {})} onclose={() => (showLinkEditor = false)} />
+  <VizelLinkEditor
+    {editor}
+    {...enableEmbed ? { enableEmbed } : {}}
+    {...locale ? { locale } : {}}
+    onclose={() => (showLinkEditor = false)}
+  />
 {:else}
   <div class="vizel-bubble-menu-toolbar {className ?? ''}">
     <VizelNodeSelector {editor} />
@@ -85,7 +91,7 @@ const isActive = $derived.by(() => {
       </VizelBubbleMenuButton>
     {/if}
     <VizelBubbleMenuDivider />
-    <VizelBubbleMenuColorPicker {editor} type="textColor" {...(locale ? { locale } : {})} />
-    <VizelBubbleMenuColorPicker {editor} type="highlight" {...(locale ? { locale } : {})} />
+    <VizelBubbleMenuColorPicker {editor} type="textColor" {...locale ? { locale } : {}} />
+    <VizelBubbleMenuColorPicker {editor} type="highlight" {...locale ? { locale } : {}} />
   </div>
 {/if}

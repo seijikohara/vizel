@@ -43,8 +43,9 @@ export interface VizelSlashMenuProps {
 import { buildVizelSlashMenuSpecFromCommands, getNextVizelSlashMenuGroupIndex } from "@vizel/core";
 import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import { tick } from "svelte";
-import VizelSlashMenuItem from "./VizelSlashMenuItem.svelte";
+
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.svelte";
+import VizelSlashMenuItem from "./VizelSlashMenuItem.svelte";
 
 let {
   commands,
@@ -115,7 +116,11 @@ function onKeyDown(event: KeyboardEvent): boolean {
   // Tiptap consume the key. `groupNext` (Tab) carries the slash-only group
   // jump; `close` (Escape) is reported unhandled because the menu has no own
   // close path — Tiptap dismisses it.
-  const action = buildVizelComboboxKeySpec({ key: event.key, currentIndex: selectedIndex, length: flatItemCount });
+  const action = buildVizelComboboxKeySpec({
+    key: event.key,
+    currentIndex: selectedIndex,
+    length: flatItemCount,
+  });
   if (action === null) return false;
   switch (action.type) {
     case "navigate":

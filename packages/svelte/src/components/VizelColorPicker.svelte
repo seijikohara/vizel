@@ -35,6 +35,7 @@ export interface VizelColorPickerProps {
 import { isVizelValidHexColor, normalizeVizelHexColor } from "@vizel/core";
 import { createVizelKeyboardGridController } from "@vizel/headless";
 import { untrack } from "svelte";
+
 import VizelIcon from "./VizelIcon.svelte";
 
 const GRID_COLUMNS = 4;

@@ -7,6 +7,7 @@
  */
 
 import type MarkdownIt from "markdown-it";
+
 import type { VizelDiagramType } from "./diagram-render.ts";
 
 /**

@@ -1,5 +1,6 @@
 import type { Extensions } from "@tiptap/core";
 import { Highlight } from "@tiptap/extension-highlight";
+
 import type { VizelColorDefinition } from "./text-color.ts";
 
 /**

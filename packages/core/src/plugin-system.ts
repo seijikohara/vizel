@@ -1,5 +1,6 @@
 import type { Editor, Extensions } from "@tiptap/core";
 import type { Transaction } from "@tiptap/pm/state";
+
 import { VizelError } from "./utils/errorHandling.ts";
 
 // =============================================================================

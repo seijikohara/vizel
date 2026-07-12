@@ -1,4 +1,5 @@
 import type { Editor, JSONContent } from "@tiptap/core";
+
 import {
   isVizelJsonContent,
   resolveVizelArrayStorageBackend,

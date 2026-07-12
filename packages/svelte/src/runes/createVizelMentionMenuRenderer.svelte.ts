@@ -7,6 +7,7 @@ import {
   type VizelSuggestionRendererOptions,
 } from "@vizel/core";
 import { mount, unmount } from "svelte";
+
 import VizelMentionMenu, { type VizelMentionMenuRef } from "../components/VizelMentionMenu.svelte";
 
 export type { VizelSuggestionRendererOptions };

@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+
 import { page, userEvent } from "./_vitest-context";
 
 // Resolve the toggle button rendered by the fixture. Framework components

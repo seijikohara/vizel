@@ -7,6 +7,7 @@
  */
 
 import type katex from "katex";
+
 import { createLazyLoader } from "../utils/lazy-import.ts";
 
 /**

@@ -3,6 +3,7 @@ import type { Editor, VizelLocale, VizelToolbarActionItem } from "@vizel/core";
 import { formatVizelTooltip, isVizelToolbarDropdownAction, vizelEnLocale } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
 import { onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
+
 import VizelIcon from "./VizelIcon.vue";
 import VizelToolbarButton from "./VizelToolbarButton.vue";
 import VizelToolbarDropdown from "./VizelToolbarDropdown.vue";
@@ -90,11 +91,7 @@ onBeforeUnmount(() => {
       <VizelIcon name="ellipsis" />
     </button>
 
-    <div
-      v-if="isOpen"
-      class="vizel-toolbar-overflow-popover"
-      role="group"
-    >
+    <div v-if="isOpen" class="vizel-toolbar-overflow-popover" role="group">
       <template v-for="action in props.actions" :key="action.id">
         <VizelToolbarDropdown
           v-if="isVizelToolbarDropdownAction(action)"
