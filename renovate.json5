@@ -75,7 +75,13 @@
     {
       description: "Group linting and formatting tools",
       groupName: "linting and formatting",
-      matchPackageNames: ["@biomejs/biome", "prettier"],
+      matchPackageNames: [
+        "oxlint",
+        "oxfmt",
+        "oxlint-tsgolint",
+        "eslint-plugin-oxlint",
+        "@oxlint/*",
+      ],
     },
     {
       description: "Group TypeScript type definitions",
