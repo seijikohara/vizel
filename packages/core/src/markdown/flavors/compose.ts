@@ -33,8 +33,8 @@ export function composeVizelMarkdownFlavors(
   // flavor into a new literal — the spread variant copies every previously
   // merged key on every flavor, making the merge O(n*k) where k grows with
   // each iteration. `Object.assign` mutates the locally-constructed `const`
-  // accumulator, so the function stays referentially transparent from the
-  // caller's perspective and biome's `noAccumulatingSpread` lint is happy.
+  // accumulator internally, so the function still stays referentially
+  // transparent from the caller's perspective.
   const nodeSerializers: Record<string, VizelNodeSerializer> = {};
   const markSerializers: Record<string, VizelMarkSerializer> = {};
   const config: Record<string, unknown> = {};

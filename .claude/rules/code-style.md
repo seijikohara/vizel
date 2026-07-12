@@ -7,7 +7,7 @@ paths:
 
 # Code Style
 
-Biome enforces formatting, import order, export style, and naming. Run `pnpm check` to auto-fix Biome violations. This document covers the guidelines that Biome does not enforce.
+oxlint and oxfmt enforce formatting, import order, export style, and naming. Run `pnpm check` to auto-fix violations. This document covers the guidelines that oxlint and oxfmt do not enforce.
 
 ## Language
 
@@ -140,7 +140,7 @@ transactions) genuinely requires a mutable binding, opt out with a
 required-reason ignore comment on the preceding line or the same line:
 
 ```ts
-// biome-ignore lint/style/noLet: ProseMirror plugin state must be mutable.
+// no-let-disable: ProseMirror plugin state must be mutable.
 let decoSet = currentSet.map(tr.mapping, tr.doc);
 ```
 
@@ -167,10 +167,11 @@ into three categories, each with its own delivery channel:
 
 Rules:
 
-- **No `console` calls** inside `packages/core/src/`. Biome's
-  `noConsole` rule enforces this. The single sanctioned site is
-  `emitVizelError` itself, which falls back to `console.error` when no
-  callback is supplied.
+- **No `console` calls** inside `packages/core/src/`. An
+  `.oxlintrc.json` override escalates the `no-console` rule to `error`
+  with no allowed methods for this directory. The single sanctioned
+  site is `emitVizelError` itself, which falls back to `console.error`
+  when no callback is supplied.
 - Always pass a stable `VizelErrorCode` — do not invent ad-hoc strings.
 - Attach structured context via the `context` field (`{ url, file, ... }`)
   rather than embedding details in the message.

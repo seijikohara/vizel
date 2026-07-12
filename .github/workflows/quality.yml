@@ -42,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # `pnpm lint` runs biome with `--error-on-warnings`, so any warning
+      # `pnpm lint` runs oxlint with `--deny-warnings`, so any warning
       # fails CI. The intent is to prevent warning rot — the codebase ships
       # at zero warnings, and CI keeps it that way.
       - name: Lint (fail on warnings)
