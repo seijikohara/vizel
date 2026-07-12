@@ -18,6 +18,7 @@ import type { Node as PMNode } from "@tiptap/pm/model";
 import type MarkdownIt from "markdown-it";
 import type StateBlock from "markdown-it/lib/rules_block/state_block.mjs";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
+
 import type { VizelCalloutMarkdownFormat } from "../utils/markdown-flavors.ts";
 
 /**
@@ -173,7 +174,7 @@ function collectAlertCalloutLines(
 ): { contentLines: string[]; nextLine: number } {
   const maxCount = Math.max(0, endLine - fromLine);
   const candidates = Array.from({ length: maxCount }, (_, i) => readLine(state, fromLine + i));
-  const stopOffset = candidates.findIndex((line) => !/^>/.test(line));
+  const stopOffset = candidates.findIndex((line) => !line.startsWith(">"));
   const consumedCount = stopOffset === -1 ? candidates.length : stopOffset;
   return {
     contentLines: candidates.slice(0, consumedCount).map((line) => line.replace(/^>\s?/, "")),

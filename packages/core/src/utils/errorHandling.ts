@@ -227,7 +227,7 @@ export function emitVizelError(
     return;
   }
   if (err.severity === "error") {
-    // biome-ignore lint/suspicious/noConsole: emitVizelError is the single sanctioned console site inside packages/core/src/.
+    // oxlint-disable-next-line no-console -- emitVizelError is the single sanctioned console site inside packages/core/src/.
     console.error(err);
   }
 }

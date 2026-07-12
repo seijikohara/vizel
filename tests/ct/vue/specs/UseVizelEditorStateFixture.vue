@@ -16,7 +16,7 @@ const editor = useVizelEditor({ immediatelyRender: false });
 // and Svelte fixtures separate the provider wrapper from the consumer.
 const StateConsumer = defineComponent({
   setup() {
-    const editorReady = useVizelEditorState(({ editor }) => editor !== null);
+    const editorReady = useVizelEditorState(({ editor: current }) => current !== null);
 
     // Read the transaction directly off the snapshot. The flag flips
     // from `false` to `true` once typing dispatches the first Tiptap
@@ -25,16 +25,16 @@ const StateConsumer = defineComponent({
     const hasTransaction = useVizelEditorState(({ transaction }) => transaction !== null);
 
     const selectorMetrics = { runs: 0 };
-    const selectorRuns = useVizelEditorState(({ editor }) => {
+    const selectorRuns = useVizelEditorState(({ editor: current }) => {
       selectorMetrics.runs += 1;
-      return { runs: selectorMetrics.runs, hasEditor: editor !== null };
+      return { runs: selectorMetrics.runs, hasEditor: current !== null };
     });
 
     // Project onto a frozen tuple compared with `shallowEqualArray`.
     // The composable must keep `.value` referentially stable, so the
     // watcher below fires only on the initial mount.
     const stableProjection = useVizelEditorState<readonly string[]>(
-      ({ editor }) => (editor === null ? ["idle"] : ["ready"]),
+      ({ editor: current }) => (current === null ? ["idle"] : ["ready"]),
       { equalityFn: shallowEqualArray }
     );
 

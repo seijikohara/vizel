@@ -277,8 +277,8 @@ export function createVizelFindReplaceExtension(options: VizelFindReplaceOptions
             if (!pluginState || pluginState.matches.length === 0) return false;
 
             // Replace from back to front to preserve positions
-            const tr = [...pluginState.matches]
-              .reverse()
+            const tr = pluginState.matches
+              .toReversed()
               .reduce((acc, match) => acc.insertText(text, match.from, match.to), state.tr);
 
             if (dispatch) dispatch(tr.scrollIntoView());

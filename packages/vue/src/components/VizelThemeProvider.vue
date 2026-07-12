@@ -14,8 +14,10 @@ import {
   type VizelThemeState,
 } from "@vizel/core";
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
+
 import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext.ts";
 
+// oxlint-disable-next-line typescript/no-empty-object-type -- gives the shared VizelThemeProviderOptions a component-specific name for defineProps<T>() and public API docs
 export interface VizelThemeProviderProps extends VizelThemeProviderOptions {}
 
 const props = withDefaults(defineProps<VizelThemeProviderProps>(), {

@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import type { EditorView } from "@tiptap/pm/view";
 import type { SuggestionOptions } from "@tiptap/suggestion";
+
 import type { VizelCommand } from "../commands/types.ts";
 import type { VizelCharacterCountStorage } from "../extensions/character-count.ts";
 import { createVizelImageUploader } from "../extensions/image.ts";
@@ -50,7 +51,7 @@ export interface VizelContentNode {
   attrs?: Record<string, unknown>;
   content?: VizelContentNode[];
   text?: string;
-  marks?: Array<{ type: string; attrs?: Record<string, unknown> }>;
+  marks?: { type: string; attrs?: Record<string, unknown> }[];
 }
 
 /**
@@ -350,24 +351,24 @@ export function convertVizelCodeBlocksToDiagrams(editor: Editor): void {
   if (!diagramType) return;
 
   // Collect all diagram code blocks first (to avoid position shifting during replacement)
-  const replacements: Array<{
+  const replacements: {
     from: number;
     to: number;
     code: string;
     type: "mermaid" | "graphviz";
-  }> = [];
+  }[] = [];
 
   editor.state.doc.descendants((node, pos) => {
     if (node.type.name === "codeBlock") {
       const languageAttr = node.attrs.language;
       const language = typeof languageAttr === "string" ? languageAttr : undefined;
-      const diagramType = language ? DIAGRAM_LANGUAGES[language] : undefined;
-      if (diagramType) {
+      const resolvedDiagramType = language ? DIAGRAM_LANGUAGES[language] : undefined;
+      if (resolvedDiagramType) {
         replacements.push({
           from: pos,
           to: pos + node.nodeSize,
           code: node.textContent.trim(),
-          type: diagramType,
+          type: resolvedDiagramType,
         });
       }
     }
@@ -376,7 +377,7 @@ export function convertVizelCodeBlocksToDiagrams(editor: Editor): void {
   if (replacements.length === 0) return;
 
   // Apply replacements in reverse order to preserve positions
-  const tr = [...replacements].reverse().reduce((acc, { from, to, code, type }) => {
+  const tr = replacements.toReversed().reduce((acc, { from, to, code, type }) => {
     const diagramNode = diagramType.create({ code, type });
     return acc.replaceWith(from, to, diagramNode);
   }, editor.state.tr);

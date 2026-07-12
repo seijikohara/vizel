@@ -71,7 +71,7 @@ export function VizelMentionMenu({
     }
   }, [selectedIndex]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: reset selection when items change
+  // Reset selection when items change.
   useEffect(() => {
     setSelectedIndex(0);
   }, [items]);

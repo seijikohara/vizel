@@ -8,7 +8,6 @@
 
 // Import Tiptap extension types for ChainedCommands augmentation
 import "./tiptap-extensions.ts";
-
 // Initialize icon renderer (inline to prevent tree-shaking in Vite library builds)
 import { initVizelIconRenderer } from "@vizel/core";
 
@@ -16,7 +15,6 @@ initVizelIconRenderer();
 
 // Re-export the full @vizel/core public API so consumers can install only
 // the framework package and import every shared symbol from one place.
-// biome-ignore lint/performance/noReExportAll: mirror the full Core surface so named exports never drift whenever Core adds a symbol.
 export * from "@vizel/core";
 // First-party `useSyncExternalStore`-backed reactivity primitive.
 // Every adapter implements editor reactivity natively; React's adapter holds

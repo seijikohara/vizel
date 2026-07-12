@@ -18,7 +18,6 @@ const onItemClick = (pos: number) => {
 </script>
 
 <template>
-  <!-- biome-ignore lint/a11y/useSemanticElements: WAI-ARIA tree pattern requires role="group" on nested lists inside role="tree". -->
   <ul class="vizel-outline-list" role="group">
     <li
       v-for="item in props.items"

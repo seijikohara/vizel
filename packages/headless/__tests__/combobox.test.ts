@@ -12,6 +12,7 @@
 
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "node:test";
+
 import { buildVizelComboboxKeySpec, createVizelComboboxController } from "../src/combobox/index.ts";
 
 describe("buildVizelComboboxKeySpec", () => {
@@ -127,6 +128,7 @@ class FakeElement {
       },
       stopPropagation: () => undefined,
     } as unknown as KeyboardEvent;
+    // oxlint-disable-next-line unicorn/no-useless-spread -- snapshot before iterating so a handler unregistering itself mid-dispatch cannot skip entries
     for (const handler of [...this.listeners]) handler(event);
     return calls;
   }

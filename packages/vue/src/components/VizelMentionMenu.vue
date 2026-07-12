@@ -58,7 +58,7 @@ watch(
   () => props.items,
   () => {
     selectedIndex.value = 0;
-    itemRefs.value = new Array(props.items.length).fill(null);
+    itemRefs.value = Array.from({ length: props.items.length }, () => null);
   }
 );
 
@@ -121,7 +121,7 @@ defineExpose<VizelMentionMenuRef>({ onKeyDown });
       -->
       <slot name="empty">
         <div class="vizel-mention-menu-empty">
-          {{ props.locale?.mentionMenu?.noResults ?? 'No results' }}
+          {{ props.locale?.mentionMenu?.noResults ?? "No results" }}
         </div>
       </slot>
     </template>
@@ -130,7 +130,11 @@ defineExpose<VizelMentionMenuRef>({ onKeyDown });
         v-for="slot in slots"
         :key="slot.key"
         :id="slot.attrs.id"
-        :ref="(el) => { itemRefs[slot.index] = el as HTMLElement | null }"
+        :ref="
+          (el) => {
+            itemRefs[slot.index] = el as HTMLElement | null;
+          }
+        "
         :class="['vizel-mention-menu-item', { 'is-selected': slot.data.isSelected }]"
         :role="slot.attrs.role"
         :aria-selected="slot.attrs['aria-selected']"
@@ -150,7 +154,11 @@ defineExpose<VizelMentionMenuRef>({ onKeyDown });
           :onclick="() => selectItem(slot.index)"
         >
           <div class="vizel-mention-menu-item-avatar">
-            <img v-if="slot.data.item.avatar" :src="slot.data.item.avatar" :alt="slot.data.item.label" />
+            <img
+              v-if="slot.data.item.avatar"
+              :src="slot.data.item.avatar"
+              :alt="slot.data.item.label"
+            />
             <template v-else>{{ slot.data.item.label.charAt(0).toUpperCase() }}</template>
           </div>
           <div class="vizel-mention-menu-item-content">

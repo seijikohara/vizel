@@ -2,17 +2,6 @@
   "name": "vizel",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.12.0",
-  "engines": {
-    "node": ">=24"
-  },
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "11.12.0",
-      "onFail": "download"
-    }
-  },
   "scripts": {
     "dev:react": "pnpm --filter @vizel/demo-react dev",
     "dev:vue": "pnpm --filter @vizel/demo-vue dev",
@@ -41,12 +30,13 @@
     "test:visual": "vitest run --config vitest.browser.config.ts --project=visual",
     "test:visual:update": "vitest run --config vitest.browser.config.ts --project=visual --update",
     "typecheck": "pnpm -r --if-present run typecheck",
-    "lint": "biome lint --error-on-warnings .",
-    "lint:fix": "biome lint --write .",
-    "format": "biome format .",
-    "format:fix": "biome format --write .",
-    "check": "biome check --error-on-warnings .",
-    "check:fix": "biome check --write .",
+    "lint": "oxlint --deny-warnings",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt --check",
+    "format:fix": "oxfmt",
+    "format:check": "oxfmt --check .",
+    "check": "oxfmt --check && oxlint --deny-warnings",
+    "check:fix": "oxfmt && oxlint --fix",
     "check:feature-parity": "node scripts/check-feature-parity.ts",
     "check:aria-contract": "node scripts/check-aria-contract.ts",
     "check:scenarios": "node tests/ct/parity/check-scenarios.ts",
@@ -61,8 +51,7 @@
     "check:publishable": "node scripts/check-publishable.ts"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "0.18.5",
-    "@biomejs/biome": "^2.5.0",
+    "@arethetypeswrong/cli": "0.18.4",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tiptap/core": "^3.26.1",
     "@tiptap/extension-blockquote": "^3.26.1",
@@ -134,5 +123,16 @@
     "vitest-browser-svelte": "2.2.1",
     "vitest-browser-vue": "2.1.0",
     "vue": "^3.5.38"
-  }
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.12.0",
+      "onFail": "download"
+    }
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.12.0"
 }

@@ -4,9 +4,14 @@
 pre-commit:
   parallel: true
   commands:
-    biome-check:
-      glob: "*.{js,ts,cjs,mjs,jsx,tsx,json,jsonc,vue,svelte}"
-      run: npx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+    oxfmt:
+      glob: "*.{js,ts,cjs,mjs,jsx,tsx,json,jsonc,vue,svelte,css,yml,yaml,md}"
+      run: pnpm exec oxfmt {staged_files}
+      stage_fixed: true
+
+    oxlint:
+      glob: "*.{js,ts,cjs,mjs,jsx,tsx,vue,svelte}"
+      run: pnpm exec oxlint --fix {staged_files}
       stage_fixed: true
 
     typecheck-core:

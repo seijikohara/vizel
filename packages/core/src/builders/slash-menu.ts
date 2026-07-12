@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+
 import { deriveVizelCommandSpec } from "../commands/derive.ts";
 import type { VizelCommand } from "../commands/types.ts";
 import type { VizelLocale } from "../i18n/types.ts";
@@ -95,8 +96,7 @@ export function buildVizelSlashMenuSpecFromCommands(
   const filtered = commands
     .filter((c) => c.surfaces.slashMenu !== undefined)
     .filter((c) => matchesQuery(c, locale, query))
-    .slice()
-    .sort(compareSlashPriority);
+    .toSorted(compareSlashPriority);
 
   if (filtered.length === 0) {
     return { root: { role: "listbox", "aria-label": "Commands" }, sections: [] };

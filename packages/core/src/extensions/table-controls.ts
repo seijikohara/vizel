@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import type { TableOptions } from "@tiptap/extension-table";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
+
 import {
   renderVizelIcon,
   type VizelInternalIconName,
@@ -143,6 +144,7 @@ function setColumnAlignment(
   // Compute cumulative row offsets so each row's start position is derived
   // without a running accumulator.
   const rowOffsets = Array.from({ length: table.childCount }, (_, idx) =>
+    // oxlint-disable-next-line no-shadow -- nested throwaway index parameters conventionally reuse `_`
     Array.from({ length: idx }, (_, j) => table.child(j).nodeSize).reduce(
       (sum, size) => sum + size,
       0
@@ -153,6 +155,7 @@ function setColumnAlignment(
   // forEach over rows and stage one mark per row.
   table.forEach((row, _, rowIdx) => {
     const rowStartPos = tablePos + 1 + (rowOffsets[rowIdx] ?? 0);
+    // oxlint-disable-next-line no-shadow -- nested throwaway index parameters conventionally reuse `_`
     const cellOffset = Array.from({ length: colIndex }, (_, j) => row.child(j).nodeSize).reduce(
       (sum, size) => sum + size,
       0

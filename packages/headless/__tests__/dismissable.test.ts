@@ -9,6 +9,7 @@
 
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "node:test";
+
 import { createVizelDismissable } from "../src/dismissable/index.ts";
 
 interface Registration {
@@ -40,6 +41,7 @@ function createFakeDocument(): FakeDocument {
       if (index !== -1) state.registrations.splice(index, 1);
     },
     dispatch: (type, event) => {
+      // oxlint-disable-next-line unicorn/no-useless-spread -- snapshot before iterating so a handler unregistering itself mid-dispatch cannot skip entries
       for (const entry of [...state.registrations]) {
         if (entry.type === type) entry.handler(event);
       }
@@ -89,7 +91,7 @@ describe("createVizelDismissable", () => {
     const controller = createVizelDismissable({ onEscape: () => undefined });
     controller.mount(createFakeTarget());
 
-    const types = fake.document.registrations.map((entry) => entry.type).sort();
+    const types = fake.document.registrations.map((entry) => entry.type).toSorted();
     assert.deepEqual(types, ["focusin", "keydown", "pointerdown"]);
   });
 

@@ -3,6 +3,7 @@ import type { Mark as PMMark, Node as PMNode } from "@tiptap/pm/model";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type MarkdownIt from "markdown-it";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
+
 import {
   escapeMetadataCommentValue,
   unescapeMetadataCommentValue,
@@ -374,7 +375,7 @@ function registerWikiLinkMetadataRule(md: MarkdownIt): void {
         if (wikiIndex < 0) return;
         const wikiToken = children[wikiIndex];
         if (!wikiToken) return;
-        wikiToken.meta = { ...(wikiToken.meta ?? {}), pageName };
+        wikiToken.meta = { ...wikiToken.meta, pageName };
         removalIndices.add(idx);
       });
       if (removalIndices.size === 0) continue;
@@ -390,18 +391,20 @@ function registerWikiLinkMetadataRule(md: MarkdownIt): void {
  * comment and the link. Returns `-1` when the comment is not adjacent
  * to a recognized wiki-link token.
  */
+function isPassthroughWikiLinkToken(type: string, content: string | undefined): boolean {
+  return type === "softbreak" || (type === "text" && (content ?? "").trim().length === 0);
+}
+
 function findPrecedingWikiLinkIndex(
   children: readonly { type: string; content?: string }[],
   fromIdx: number
 ): number {
-  const isPassthrough = (type: string, content: string | undefined): boolean =>
-    type === "softbreak" || (type === "text" && (content ?? "").trim().length === 0);
   const scan = (idx: number): number => {
     if (idx < 0) return -1;
     const child = children[idx];
     if (!child) return -1;
     if (child.type === "vizel_wiki_link") return idx;
-    if (isPassthrough(child.type, child.content)) return scan(idx - 1);
+    if (isPassthroughWikiLinkToken(child.type, child.content)) return scan(idx - 1);
     return -1;
   };
   return scan(fromIdx - 1);

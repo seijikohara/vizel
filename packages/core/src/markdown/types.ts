@@ -11,7 +11,7 @@ import type { JSONContent } from "@tiptap/core";
  * call is available via a `(md as any).foo()` cast inside the callback.
  */
 export interface VizelMarkdownItInstance {
-  // biome-ignore lint/suspicious/noExplicitAny: structural placeholder mirrors markdown-it's open plugin signature
+  // oxlint-disable-next-line typescript/no-explicit-any -- structural placeholder mirrors markdown-it's open plugin signature
   use(plugin: (...args: any[]) => void, ...params: unknown[]): VizelMarkdownItInstance;
 }
 

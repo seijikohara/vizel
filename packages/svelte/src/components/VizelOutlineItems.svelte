@@ -8,6 +8,7 @@ export interface VizelOutlineItemsProps {
 </script>
 
 <script lang="ts">
+// oxlint-disable-next-line import/no-self-import -- Svelte 5 recursive components self-import as the idiomatic way to reference themselves
 import Self from "./VizelOutlineItems.svelte";
 
 let { items, editor }: VizelOutlineItemsProps = $props();
@@ -21,7 +22,6 @@ const onItemClick = (pos: number) => {
 };
 </script>
 
-<!-- biome-ignore lint/a11y/useSemanticElements: WAI-ARIA tree pattern requires role="group" on nested lists inside role="tree". -->
 <ul class="vizel-outline-list" role="group">
   {#each items as item (item.key)}
     <li

@@ -9,6 +9,7 @@ import {
 import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import type { ReactNode, Ref } from "react";
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+
 import { VizelSlashMenuEmpty } from "./VizelSlashMenuEmpty.tsx";
 import { VizelSlashMenuItem, type VizelSlashMenuItemProps } from "./VizelSlashMenuItem.tsx";
 
@@ -107,7 +108,7 @@ export function VizelSlashMenu({
     }
   }, [selectedIndex]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: reset selection when the query changes
+  // Reset selection when the query changes.
   useEffect(() => {
     setSelectedIndex(0);
   }, [query]);

@@ -48,7 +48,7 @@ function Inner() {
   // contract holds across re-renders.
   const selectorRunsRef = useRef(0);
   const [selectorRuns, setSelectorRuns] = useState(0);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the deps drive the run-count bump; the effect intentionally listens to both signals.
+  // The deps drive the run-count bump; the effect intentionally listens to both signals.
   useEffect(() => {
     selectorRunsRef.current += 1;
     setSelectorRuns(selectorRunsRef.current);
@@ -67,7 +67,7 @@ function Inner() {
   // value after the editor mount when the equality short-circuit
   // holds across every keystroke.
   const [consumerRuns, setConsumerRuns] = useState(0);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the test depends on the projection reference identity to detect equalityFn short-circuit; the dependency is intentional.
+  // The test depends on the projection reference identity to detect equalityFn short-circuit; the dependency is intentional.
   useEffect(() => {
     setConsumerRuns((value) => value + 1);
   }, [stableProjection]);

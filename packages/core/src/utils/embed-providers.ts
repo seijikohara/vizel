@@ -202,11 +202,8 @@ interface OEmbedResponse {
   height?: number;
   title?: string;
   description?: string;
-  // biome-ignore lint/style/useNamingConvention: oEmbed API uses snake_case
   thumbnail_url?: string;
-  // biome-ignore lint/style/useNamingConvention: oEmbed API uses snake_case
   provider_name?: string;
-  // biome-ignore lint/style/useNamingConvention: oEmbed API uses snake_case
   author_name?: string;
 }
 

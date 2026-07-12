@@ -9,6 +9,7 @@ import {
 import { createVizelDismissable } from "@vizel/headless";
 import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import { useEffect, useMemo, useRef, useState } from "react";
+
 import { useVizelEditorState } from "../_reactivity.ts";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
@@ -70,12 +71,12 @@ export function VizelNodeSelector({
   // the editor's active-block state: it changes when the caret enters a
   // block of a different type, so the spec rebuilds with the new active
   // highlight even though the `editor` identity stays stable.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `activeNodeName` is the reactive trigger for re-reading the editor's active block, which `buildVizelNodeSelectorSpec` reads off the live editor.
   const spec = useMemo(
     () =>
       editor
         ? buildVizelNodeSelectorSpec(editor, effectiveNodeTypes, isOpen, focusedIndex, locale)
         : null,
+    // oxlint-disable-next-line react/exhaustive-deps -- `activeNodeName` is the reactive trigger for re-reading the editor's active block, which `buildVizelNodeSelectorSpec` reads off the live editor.
     [editor, effectiveNodeTypes, isOpen, focusedIndex, locale, activeNodeName]
   );
 

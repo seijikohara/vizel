@@ -7,6 +7,7 @@ import {
 } from "@vizel/core";
 import type React from "react";
 import { useEffect, useMemo, useRef } from "react";
+
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelEmbedViewProps {
@@ -73,7 +74,7 @@ function renderEmbed(
         >
           <div
             className={view.isVideo ? "vizel-embed-video" : "vizel-embed-oembed"}
-            // biome-ignore lint/security/noDangerouslySetInnerHtml lint/style/useNamingConvention: oEmbed provider HTML is sanitized in core/extensions/embed.ts via DOMPurify before reaching this view; __html is the React API
+            // oxlint-disable-next-line react/no-danger -- oEmbed provider HTML is sanitized in core/extensions/embed.ts via DOMPurify before reaching this view; __html is the React API
             dangerouslySetInnerHTML={{ __html: view.html }}
           />
         </div>

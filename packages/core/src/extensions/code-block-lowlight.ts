@@ -12,9 +12,28 @@
 import CodeBlockLowlight, {
   type CodeBlockLowlightOptions,
 } from "@tiptap/extension-code-block-lowlight";
+
 import type { VizelLocale } from "../i18n/types.ts";
 import { renderVizelIcon } from "../icons/types.ts";
 import { VizelError } from "../utils/errorHandling.ts";
+
+/**
+ * Replace an element's children with trusted SVG icon markup from the
+ * internal @iconify system.
+ */
+function setIconContent(
+  el: HTMLElement,
+  icon: Parameters<typeof renderVizelIcon>[0],
+  size = 16
+): void {
+  // Safe: renderVizelIcon returns trusted SVG from bundled @iconify-json/lucide data
+  el.replaceChildren();
+  const template = document.createElement("template");
+  template.innerHTML = renderVizelIcon(icon, { width: size, height: size });
+  if (template.content.firstChild) {
+    el.appendChild(template.content.firstChild);
+  }
+}
 
 /**
  * Language definition for the code block language selector
@@ -76,7 +95,7 @@ export function getVizelRegisteredLanguages(): VizelCodeBlockLanguage[] {
   const registeredNames = lowlightRef.instance.listLanguages();
 
   return registeredNames
-    .sort((a, b) => a.localeCompare(b))
+    .toSorted((a, b) => a.localeCompare(b))
     .map((id) => ({
       id,
       // Capitalize first letter for display name
@@ -285,21 +304,6 @@ export async function createVizelCodeBlockExtension(
         lineNumbersBtn.title = node.attrs.lineNumbers
           ? codeBlockLabels.hideLineNumbers
           : codeBlockLabels.showLineNumbers;
-
-        // Helper to set trusted SVG icon content from the internal @iconify system
-        const setIconContent = (
-          el: HTMLElement,
-          icon: Parameters<typeof renderVizelIcon>[0],
-          size = 16
-        ) => {
-          // Safe: renderVizelIcon returns trusted SVG from bundled @iconify-json/lucide data
-          el.replaceChildren();
-          const template = document.createElement("template");
-          template.innerHTML = renderVizelIcon(icon, { width: size, height: size });
-          if (template.content.firstChild) {
-            el.appendChild(template.content.firstChild);
-          }
-        };
 
         // Copy button
         const copyBtn = document.createElement("button");

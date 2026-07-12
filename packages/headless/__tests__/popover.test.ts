@@ -29,9 +29,8 @@ mock.module("@floating-ui/dom", {
   },
 });
 
-const { createVizelPopoverController, buildVizelPopoverPositionSpec } = await import(
-  "../src/popover/index.ts"
-);
+const { createVizelPopoverController, buildVizelPopoverPositionSpec } =
+  await import("../src/popover/index.ts");
 
 interface Registration {
   readonly type: string;
@@ -61,6 +60,7 @@ function createFakeDocument(): FakeDocument {
       if (index !== -1) state.registrations.splice(index, 1);
     },
     dispatch: (type, event) => {
+      // oxlint-disable-next-line unicorn/no-useless-spread -- snapshot before iterating so a handler unregistering itself mid-dispatch cannot skip entries
       for (const entry of [...state.registrations]) {
         if (entry.type === type) entry.handler(event);
       }
