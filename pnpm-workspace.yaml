@@ -46,7 +46,7 @@ overrides:
   "@tiptap/extension-collaboration": "catalog:"
   "@tiptap/pm": "catalog:"
   "@tiptap/suggestion": "catalog:"
-  "prosemirror-model": "1.25.9"
+  "prosemirror-model": "1.25.10"
   "react": "catalog:"
   "react-dom": "catalog:"
   "vite": "catalog:"
