@@ -102,12 +102,12 @@ For each fixable violation:
 
 ## Quick checks
 
-| Command                     | Purpose                                                          |
-| --------------------------- | ---------------------------------------------------------------- |
-| `pnpm check`                | Auto-fix Biome violations (formatting, imports, exports, naming) |
-| `pnpm typecheck`            | Verify type safety                                               |
-| `pnpm check:feature-parity` | Verify cross-framework feature parity against the manifest       |
-| `pnpm build`                | Verify the build succeeds                                        |
+| Command                     | Purpose                                                                     |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `pnpm check:fix`            | Auto-fix oxlint and oxfmt violations (formatting, imports, exports, naming) |
+| `pnpm typecheck`            | Verify type safety                                                          |
+| `pnpm check:feature-parity` | Verify cross-framework feature parity against the manifest                  |
+| `pnpm build`                | Verify the build succeeds                                                   |
 
 ## Common violations
 
@@ -117,7 +117,7 @@ For each fixable violation:
 | `data as Type`                                     | `code-style.md`                            | Add a type guard function                                        |
 | Type defined inside a framework package            | `feature-manifest.md` / `packages/core.md` | Move the type to `@vizel/core`                                   |
 | Component missing in one framework                 | `feature-manifest.md`                      | Add the equivalent component and update the manifest             |
-| `default export`                                   | Biome                                      | Use a named export                                               |
+| `default export`                                   | `import/no-default-export`                 | Use a named export                                               |
 | `document.addEventListener` in framework component | `packages/{react,vue,svelte}.md`           | Delegate to a controller from `@vizel/core` or `@vizel/headless` |
 | Passive voice in a comment                         | `writing.md`                               | Rewrite in the active voice                                      |
 | Component file over 120 view-template lines        | `packages/{react,vue,svelte}.md`           | Split or extract logic into Core / Headless                      |

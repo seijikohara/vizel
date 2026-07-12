@@ -24,7 +24,7 @@ Every authored sentence in this repository follows a single technical-writing st
 
 ## Mechanical enforcement
 
-- Biome enforces line length and formatting.
+- oxfmt enforces line length and formatting.
 - Lefthook's `commit-msg` hook enforces Conventional Commits.
 - CI runs the same lint job.
 

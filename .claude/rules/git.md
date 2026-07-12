@@ -117,8 +117,8 @@ refactor/replace-starter-kit
 
 Lefthook runs the following hooks. Always ensure they pass before pushing.
 
-| Hook         | Action                                  |
-| ------------ | --------------------------------------- |
-| `pre-commit` | Biome lint and format, TypeScript check |
-| `commit-msg` | Conventional Commits validation         |
-| `pre-push`   | Full lint and typecheck                 |
+| Hook         | Action                                      |
+| ------------ | ------------------------------------------- |
+| `pre-commit` | oxfmt and oxlint auto-fix, TypeScript check |
+| `commit-msg` | Conventional Commits validation             |
+| `pre-push`   | Full lint and typecheck                     |

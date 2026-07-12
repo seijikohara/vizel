@@ -46,8 +46,8 @@ refactor/replace-starter-kit
 | `pnpm dev:svelte`     | Run Svelte demo                    |
 | `pnpm dev:all`        | Run all demos                      |
 | `pnpm build`          | Build all packages                 |
-| `pnpm lint`           | Run Biome linter                   |
-| `pnpm check`          | Run Biome check (lint + format)    |
+| `pnpm lint`           | Run oxlint                         |
+| `pnpm check`          | Verify lint and formatting         |
 | `pnpm typecheck`      | Run type checking for all packages |
 | `pnpm test:ct`        | Run all E2E tests (parallel)       |
 | `pnpm test:ct:react`  | Run React E2E tests                |
@@ -149,7 +149,7 @@ If a feature cannot be implemented for a specific framework, document the reason
 ## Code Style
 
 - **TypeScript** with strict mode enabled
-- **Biome** for linting and formatting
+- **oxlint** and **oxfmt** for linting and formatting
 - Use `function` declarations for exports, arrow functions for callbacks
 - Use `satisfies` operator over type annotations
 - Use type guards over `as` casts

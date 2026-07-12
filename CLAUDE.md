@@ -33,8 +33,8 @@ Use Node.js >=24 (the current active LTS line, pinned in `.nvmrc`) and pnpm. The
 | `pnpm install`                                                | Install dependencies                                                             |
 | `pnpm dev:react` / `dev:vue` / `dev:svelte`                   | Run a demo for one framework                                                     |
 | `pnpm dev:all`                                                | Run all demos in parallel                                                        |
-| `pnpm lint`                                                   | Run Biome lint                                                                   |
-| `pnpm check`                                                  | Run Biome with auto-fix                                                          |
+| `pnpm lint`                                                   | Run oxlint                                                                       |
+| `pnpm check`                                                  | Verify lint and formatting                                                       |
 | `pnpm typecheck`                                              | Run TypeScript checks across packages                                            |
 | `pnpm build`                                                  | Build all packages                                                               |
 | `pnpm test:ct`                                                | Run all framework component tests sequentially                                   |
