@@ -2,9 +2,16 @@
   "name": "vizel",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.9.0",
+  "packageManager": "pnpm@11.12.0",
   "engines": {
     "node": ">=24"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.12.0",
+      "onFail": "download"
+    }
   },
   "scripts": {
     "dev:react": "pnpm --filter @vizel/demo-react dev",
@@ -101,11 +108,11 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
     "@vitejs/plugin-vue": "^6.0.7",
-    "@vitest/browser-playwright": "^4.1.9",
+    "@vitest/browser-playwright": "^4.1.10",
     "@vue/compiler-dom": "^3.5.38",
     "axe-core": "^4.11.0",
     "concurrently": "^10.0.3",
-    "lefthook": "^2.1.9",
+    "lefthook": "^2.1.10",
     "linkedom": "^0.18.12",
     "mermaid": "^11.15.0",
     "oxc-minify": "^0.138.0",
@@ -122,7 +129,7 @@
     "vite": "^8.0.16",
     "vitepress": "^2.0.0-alpha.17",
     "vitepress-plugin-mermaid": "^2.0.17",
-    "vitest": "^4.1.9",
+    "vitest": "^4.1.10",
     "vitest-browser-react": "^2.2.0",
     "vitest-browser-svelte": "2.2.1",
     "vitest-browser-vue": "2.1.0",

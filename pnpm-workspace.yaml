@@ -50,6 +50,3 @@ overrides:
   "react": "catalog:"
   "react-dom": "catalog:"
   "vite": "catalog:"
-
-patchedDependencies:
-  '@vitest/browser@4.1.9': patches/@vitest__browser@4.1.9.patch
