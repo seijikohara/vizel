@@ -224,7 +224,7 @@ jobs:
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing @vizel/headless with tag: $PRERELEASE_TAG"
           fi
-          cd packages/headless && npm publish $PUBLISH_OPTS
+          cd packages/headless && pnpm publish $PUBLISH_OPTS
           echo "✅ Published @vizel/headless@$VERSION"
 
   # Publish core next: it depends on @vizel/headless and is depended on by the adapters.
@@ -284,7 +284,7 @@ jobs:
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing @vizel/core with tag: $PRERELEASE_TAG"
           fi
-          cd packages/core && npm publish $PUBLISH_OPTS
+          cd packages/core && pnpm publish $PUBLISH_OPTS
           echo "✅ Published @vizel/core@$VERSION"
 
   # Publish framework packages in parallel (each job has its own OIDC token)
@@ -352,7 +352,7 @@ jobs:
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing @vizel/${{ matrix.package }} with tag: $PRERELEASE_TAG"
           fi
-          cd packages/${{ matrix.package }} && npm publish $PUBLISH_OPTS
+          cd packages/${{ matrix.package }} && pnpm publish $PUBLISH_OPTS
           echo "✅ Published @vizel/${{ matrix.package }}@$VERSION"
 
   # Finalize: commit version changes and create release
