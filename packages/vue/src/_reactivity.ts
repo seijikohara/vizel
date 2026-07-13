@@ -35,6 +35,7 @@
 import type { Transaction } from "@tiptap/pm/state";
 import { type Editor, shallowEqualArray, shallowEqualObject } from "@vizel/core";
 import { type ComputedRef, computed, onMounted, onScopeDispose, ref, shallowRef, watch } from "vue";
+
 import { useVizelContextSafe } from "./components/VizelContext.ts";
 
 /**

@@ -1,3 +1,4 @@
+// oxlint-disable-next-line typescript/triple-slash-reference -- env.d.ts is a pure ambient declaration file; converting to `import` risks emitting a broken runtime import under `verbatimModuleSyntax`
 /// <reference path="./env.d.ts" />
 
 /**
@@ -18,13 +19,7 @@ import "./markdown/augment.ts";
 // Re-export the Tiptap symbols that adapters need. Consumers can install
 // only one Vizel framework package and import these without adding
 // @tiptap/core to their dependencies.
-export type {
-  ChainedCommands,
-  Editor,
-  Extensions,
-  JSONContent,
-  Range,
-} from "@tiptap/core";
+export type { ChainedCommands, Editor, Extensions, JSONContent, Range } from "@tiptap/core";
 export { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
 export type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 

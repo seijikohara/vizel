@@ -1,5 +1,6 @@
 <script lang="ts">
 import { createVizelEditor, VizelEditor, VizelProvider } from "@vizel/svelte";
+
 import CreateVizelEditorStateInner from "./CreateVizelEditorStateInner.svelte";
 
 const editor = createVizelEditor({

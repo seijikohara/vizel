@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+
 import { page, type VizelBcScenario } from "./_vitest-context";
 
 // Resolve the portal root element. The React VizelPortal defers mount to

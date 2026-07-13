@@ -1,5 +1,6 @@
 import type { Editor, Extensions, JSONContent } from "@tiptap/core";
 import type { SuggestionOptions } from "@tiptap/suggestion";
+
 import type { VizelCollaborationProvider } from "./collaboration-provider.ts";
 import type { VizelCommand } from "./commands/types.ts";
 import type { VizelCalloutOptions } from "./extensions/callout.ts";
@@ -13,8 +14,8 @@ import type { VizelHighlightOptions } from "./extensions/highlight.ts";
 import type { VizelMathematicsOptions } from "./extensions/mathematics.ts";
 import type { VizelMentionOptions } from "./extensions/mention.ts";
 import type { VizelPresenceOptions } from "./extensions/presence.ts";
-import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTableOfContentsOptions } from "./extensions/table-of-contents.ts";
+import type { VizelTableOptions } from "./extensions/table.ts";
 import type { VizelTaskListExtensionsOptions } from "./extensions/task-list.ts";
 import type { VizelTextColorOptions } from "./extensions/text-color.ts";
 import type { VizelTypographyOptions } from "./extensions/typography.ts";

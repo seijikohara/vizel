@@ -2,6 +2,7 @@ import { Extension } from "@tiptap/core";
 import DragHandle from "@tiptap/extension-drag-handle";
 import type { Node as PmNode } from "@tiptap/pm/model";
 import { TextSelection } from "@tiptap/pm/state";
+
 import { vizelEnLocale } from "../i18n/en.ts";
 import type { VizelLocale } from "../i18n/types.ts";
 import { renderVizelIcon } from "../icons/types.ts";
@@ -287,6 +288,7 @@ function findPreviousSiblingInfo(
   // Compute cumulative offsets for each child index so we can find the
   // matching index without mutable accumulators.
   const childOffsets = Array.from({ length: parent.childCount + 1 }, (_, i) =>
+    // oxlint-disable-next-line no-shadow -- nested throwaway index parameters conventionally reuse `_`
     Array.from({ length: i }, (_, j) => parent.child(j).nodeSize).reduce(
       (sum, size) => sum + size,
       parentStart

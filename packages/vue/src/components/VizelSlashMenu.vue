@@ -9,6 +9,7 @@ import {
 } from "@vizel/core";
 import { buildVizelComboboxKeySpec } from "@vizel/headless/combobox";
 import { computed, nextTick, ref, watch } from "vue";
+
 import VizelSlashMenuEmpty from "./VizelSlashMenuEmpty.vue";
 import VizelSlashMenuItem from "./VizelSlashMenuItem.vue";
 
@@ -166,11 +167,7 @@ defineExpose({
     <template v-else>
       <template v-for="section in spec.sections" :key="section.key">
         <!-- Section with header -->
-        <div
-          v-if="section.header"
-          class="vizel-slash-menu-group"
-          data-vizel-slash-menu-group
-        >
+        <div v-if="section.header" class="vizel-slash-menu-group" data-vizel-slash-menu-group>
           <div class="vizel-slash-menu-group-header">{{ section.header.label }}</div>
           <div
             v-for="slot in section.items"

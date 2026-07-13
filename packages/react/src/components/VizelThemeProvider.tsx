@@ -13,6 +13,7 @@ import {
   type VizelThemeState,
 } from "@vizel/core";
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+
 import { VizelThemeContext } from "./VizelThemeContext.tsx";
 
 export interface VizelThemeProviderProps extends VizelThemeProviderOptions {

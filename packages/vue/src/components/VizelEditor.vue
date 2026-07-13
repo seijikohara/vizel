@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type Editor, mountVizelEditorView } from "@vizel/core";
 import { computed, onBeforeUnmount, useTemplateRef, watch } from "vue";
+
 import { useVizelContextSafe } from "./VizelContext.ts";
 
 export interface VizelEditorProps {

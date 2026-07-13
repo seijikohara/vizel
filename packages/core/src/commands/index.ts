@@ -8,8 +8,4 @@ export {
   vizelFormatCommands,
   vizelInsertCommands,
 } from "./registry/index.ts";
-export type {
-  VizelCommand,
-  VizelCommandSurfaceSet,
-  VizelShortcut,
-} from "./types.ts";
+export type { VizelCommand, VizelCommandSurfaceSet, VizelShortcut } from "./types.ts";

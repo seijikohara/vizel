@@ -16,6 +16,7 @@ import {
 } from "@vizel/core";
 import { createVizelPopoverController } from "@vizel/headless";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { useVizelContextSafe } from "./VizelContext.tsx";
 import { VizelIcon } from "./VizelIcon.tsx";
 

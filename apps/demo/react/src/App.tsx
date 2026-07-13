@@ -22,6 +22,7 @@ import {
   vizelObsidianFlavor,
 } from "@vizel/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { getFlavorContent } from "../../shared/content";
 import reactLogo from "../../shared/logos/react.svg";
 import { applyDemoPreflight } from "../../shared/preflight";
@@ -566,7 +567,6 @@ function AppContent() {
                         <div className="panel-list-empty">No comments yet</div>
                       ) : (
                         commentManager.comments.map((comment) => (
-                          // biome-ignore lint/a11y/useSemanticElements: Card contains nested interactive elements
                           <div
                             key={comment.id}
                             className={`panel-item ${comment.resolved ? "panel-item-resolved" : ""}`}

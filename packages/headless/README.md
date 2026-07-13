@@ -12,14 +12,14 @@ Each primitive ships a pure spec builder plus a controller that owns its DOM
 side effects behind a `{ mount, unmount, update }` contract. Every primitive
 guards Server-Side Rendering (SSR) and imports no framework runtime.
 
-| Subpath | Primitive | Purpose |
-|---------|-----------|---------|
-| `@vizel/headless/combobox` | Combobox | Keyboard contract and ARIA wiring for autocomplete-style menus |
-| `@vizel/headless/popover` | Popover | Anchored popover positioning and dismissal |
-| `@vizel/headless/dismissable` | Dismissable | Outside-pointer and Escape dismissal with focus return |
-| `@vizel/headless/focus-trap` | Focus trap | Focus boundary for modal surfaces |
-| `@vizel/headless/floating` | Floating | `@floating-ui/dom` positioning wrapper |
-| `@vizel/headless/keyboard` | Keyboard | List and grid roving-selection navigation |
+| Subpath                       | Primitive   | Purpose                                                        |
+| ----------------------------- | ----------- | -------------------------------------------------------------- |
+| `@vizel/headless/combobox`    | Combobox    | Keyboard contract and ARIA wiring for autocomplete-style menus |
+| `@vizel/headless/popover`     | Popover     | Anchored popover positioning and dismissal                     |
+| `@vizel/headless/dismissable` | Dismissable | Outside-pointer and Escape dismissal with focus return         |
+| `@vizel/headless/focus-trap`  | Focus trap  | Focus boundary for modal surfaces                              |
+| `@vizel/headless/floating`    | Floating    | `@floating-ui/dom` positioning wrapper                         |
+| `@vizel/headless/keyboard`    | Keyboard    | List and grid roving-selection navigation                      |
 
 ## Design
 

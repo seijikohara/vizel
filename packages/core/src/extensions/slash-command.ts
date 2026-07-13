@@ -1,5 +1,6 @@
 import { type Editor, Extension } from "@tiptap/core";
 import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
+
 import { vizelDefaultCommands } from "../commands/registry/index.ts";
 import type { VizelCommand } from "../commands/types.ts";
 import { vizelEnLocale } from "../i18n/en.ts";

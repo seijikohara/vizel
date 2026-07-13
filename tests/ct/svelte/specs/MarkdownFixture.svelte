@@ -98,19 +98,19 @@ function handleImportTable() {
 
 <VizelProvider editor={editor.current}>
   <div class="toolbar">
-    <button type="button" data-testid="export-button" onclick={handleExport}>
-      Export
-    </button>
-    <button type="button" data-testid="import-button" onclick={handleImport}>
-      Import
-    </button>
+    <button type="button" data-testid="export-button" onclick={handleExport}> Export </button>
+    <button type="button" data-testid="import-button" onclick={handleImport}> Import </button>
     <button type="button" data-testid="import-code-button" onclick={handleImportCode}>
       Import Code
     </button>
     <button type="button" data-testid="import-link-button" onclick={handleImportLink}>
       Import Link
     </button>
-    <button type="button" data-testid="import-strikethrough-button" onclick={handleImportStrikethrough}>
+    <button
+      type="button"
+      data-testid="import-strikethrough-button"
+      onclick={handleImportStrikethrough}
+    >
       Import Strikethrough
     </button>
     <button type="button" data-testid="import-inline-code-button" onclick={handleImportInlineCode}>
@@ -119,7 +119,11 @@ function handleImportTable() {
     <button type="button" data-testid="import-image-button" onclick={handleImportImage}>
       Import Image
     </button>
-    <button type="button" data-testid="import-ordered-list-button" onclick={handleImportOrderedList}>
+    <button
+      type="button"
+      data-testid="import-ordered-list-button"
+      onclick={handleImportOrderedList}
+    >
       Import Ordered List
     </button>
     <button type="button" data-testid="import-blockquote-button" onclick={handleImportBlockquote}>

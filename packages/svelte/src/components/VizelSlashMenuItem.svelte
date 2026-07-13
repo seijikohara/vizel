@@ -26,6 +26,7 @@ export interface VizelSlashMenuItemProps {
 
 <script lang="ts">
 import { formatVizelShortcut, splitVizelTextByMatches } from "@vizel/core";
+
 import VizelIcon from "./VizelIcon.svelte";
 
 let {

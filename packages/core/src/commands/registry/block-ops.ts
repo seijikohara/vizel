@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core";
 import { NodeSelection } from "@tiptap/pm/state";
+
 import type { VizelCommand } from "../types.ts";
 
 /**

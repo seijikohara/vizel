@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+
 import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 const CODE_BLOCK_SELECTOR = ".vizel-code-block";

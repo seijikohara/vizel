@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+
 import { deriveVizelCommandSpec } from "../commands/derive.ts";
 import type { VizelCommand } from "../commands/types.ts";
 import type { VizelLocale } from "../i18n/types.ts";
@@ -32,7 +33,8 @@ export function buildVizelBubbleMenuSpec(
       if (!surface) return false;
       return surface.showWhen ? surface.showWhen(options.editor) : true;
     })
-    .slice()
-    .sort((a, b) => (a.surfaces.bubbleMenu?.priority ?? 0) - (b.surfaces.bubbleMenu?.priority ?? 0))
+    .toSorted(
+      (a, b) => (a.surfaces.bubbleMenu?.priority ?? 0) - (b.surfaces.bubbleMenu?.priority ?? 0)
+    )
     .map((command) => deriveVizelCommandSpec(command, options.editor, options.locale));
 }

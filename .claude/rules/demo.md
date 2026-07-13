@@ -50,13 +50,13 @@ All three demos share:
 
 ### Shared Elements
 
-| Element | Description |
-|---------|-------------|
-| Header | Framework logo, title, badge |
-| Feature toggles | Toolbar, theme, auto-save, stats, sync panel |
+| Element          | Description                                  |
+| ---------------- | -------------------------------------------- |
+| Header           | Framework logo, title, badge                 |
+| Feature toggles  | Toolbar, theme, auto-save, stats, sync panel |
 | Editor container | Editor with bubble menu and optional toolbar |
-| Output panel | Tabbed panel for Markdown and JSON output |
-| Footer | "Built with `@vizel/*`" |
+| Output panel     | Tabbed panel for Markdown and JSON output    |
+| Footer           | "Built with `@vizel/*`"                      |
 
 ## Dependencies
 
@@ -96,7 +96,7 @@ All three demos share:
   `features.collaboration.presence`.
 - **Configuration errors propagate even when `onError` is set.**
   `useVizelEditor` / `createVizelEditor` emit `INVALID_CONFIG` and
-  `SSR_NOT_SUPPORTED` to the consumer-supplied handler *and* rethrow so
+  `SSR_NOT_SUPPORTED` to the consumer-supplied handler _and_ rethrow so
   global handlers (Sentry, `window.onunhandledrejection`) observe them.
   Wiring an `onError` purely for telemetry no longer hides
   initialization failures, so the demos can wire a logging trampoline

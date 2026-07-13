@@ -7,6 +7,7 @@ import {
   type VizelSuggestionRendererOptions,
 } from "@vizel/core";
 import { type App, createApp, h, ref } from "vue";
+
 import { VizelMentionMenu } from "../components/index.ts";
 
 interface VizelMentionMenuRef {

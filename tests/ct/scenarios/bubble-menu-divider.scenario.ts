@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+
 import type { VizelBcScenario } from "./_vitest-context";
 
 // Resolve the divider element. `VizelBubbleMenuDivider` renders synchronously,

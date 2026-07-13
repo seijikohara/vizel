@@ -25,86 +25,83 @@ This package provides:
 
 ## Exports
 
-| Category | Examples |
-|----------|---------|
-| Types | `VizelEditorOptions`, `VizelFeatureOptions`, `VizelEditorState`, `VizelCommand` |
-| Extensions | `createVizelExtensions()`, `resolveVizelFeatures()` |
-| Utilities | `getVizelEditorState()`, `getVizelMarkdown()`, `createVizelImageUploader()` |
-| Theme | `VIZEL_DEFAULT_THEME`, `resolveVizelTheme()` |
-| Auto-save | `createVizelAutoSaveHandlers()` |
-| Collaboration | `createVizelCollaborationHandlers()` |
-| Comments | `createVizelCommentHandlers()` |
-| Version History | `createVizelVersionHistoryHandlers()` |
-| Plugin System | `VizelPluginManager`, `validateVizelPlugin()` |
-| Find & Replace | `createVizelFindReplaceExtension()`, `getVizelFindReplaceState()`, `vizelFindReplacePluginKey` |
-| i18n | `VizelLocale`, `vizelEnLocale`, `createVizelLocale()` |
-| Constants | `VIZEL_TEXT_COLORS`, `VIZEL_HIGHLIGHT_COLORS`, `vizelDefaultCommands` |
+| Category        | Examples                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------- |
+| Types           | `VizelEditorOptions`, `VizelFeatureOptions`, `VizelEditorState`, `VizelCommand`                |
+| Extensions      | `createVizelExtensions()`, `resolveVizelFeatures()`                                            |
+| Utilities       | `getVizelEditorState()`, `getVizelMarkdown()`, `createVizelImageUploader()`                    |
+| Theme           | `VIZEL_DEFAULT_THEME`, `resolveVizelTheme()`                                                   |
+| Auto-save       | `createVizelAutoSaveHandlers()`                                                                |
+| Collaboration   | `createVizelCollaborationHandlers()`                                                           |
+| Comments        | `createVizelCommentHandlers()`                                                                 |
+| Version History | `createVizelVersionHistoryHandlers()`                                                          |
+| Plugin System   | `VizelPluginManager`, `validateVizelPlugin()`                                                  |
+| Find & Replace  | `createVizelFindReplaceExtension()`, `getVizelFindReplaceState()`, `vizelFindReplacePluginKey` |
+| i18n            | `VizelLocale`, `vizelEnLocale`, `createVizelLocale()`                                          |
+| Constants       | `VIZEL_TEXT_COLORS`, `VIZEL_HIGHLIGHT_COLORS`, `vizelDefaultCommands`                          |
 
 ## CSS Entry Points
 
-| Import | Description |
-|--------|-------------|
-| `@vizel/core/styles.css` | Full stylesheet (CSS variables + component styles) |
-| `@vizel/core/styles/variables.css` | CSS variables / token catalog only |
-| `@vizel/core/styles/components.css` | Component styles only (no token catalog) |
-| `@vizel/core/mathematics.css` | KaTeX styles for math rendering |
+| Import                              | Description                                        |
+| ----------------------------------- | -------------------------------------------------- |
+| `@vizel/core/styles.css`            | Full stylesheet (CSS variables + component styles) |
+| `@vizel/core/styles/variables.css`  | CSS variables / token catalog only                 |
+| `@vizel/core/styles/components.css` | Component styles only (no token catalog)           |
+| `@vizel/core/mathematics.css`       | KaTeX styles for math rendering                    |
 
 ## Extensions
 
 All extensions are enabled by default except `collaboration`, `comment`, `wikiLink`, and `mention`:
 
-| Extension | Description |
-|-----------|-------------|
-| Base | Headings (H1-H3 by default, configurable up to H6), bold, italic, underline, strikethrough, lists, blockquotes |
-| Superscript | Superscript text formatting |
-| Subscript | Subscript text formatting |
-| Typography | Smart quotes, em dashes, and typographic transformations |
-| SlashCommand | Type `/` to open command menu |
-| Table | Table editing with row/column controls |
-| TableOfContents | Auto-collected heading navigation block |
-| Link | Autolink and paste URL detection |
-| Image | Upload, paste, drag-and-drop, resize |
-| CodeBlock | Syntax highlighting with lowlight (37+ languages) |
-| CharacterCount | Real-time character and word count |
-| TextColor | Text color and highlight |
-| TaskList | Checkbox task lists |
-| DragHandle | Per-item drag handle for every block (including individual list items at any nesting depth) plus `Alt+↑` / `Alt+↓` keyboard shortcuts |
-| Markdown | Import and export with configurable flavor (CommonMark, GFM, Obsidian, Docusaurus) |
-| Mathematics | LaTeX equations with KaTeX |
-| Embed | oEmbed/OGP URL embedding |
-| Details | Collapsible content blocks |
-| Callout | Info, warning, danger, tip, and note admonition blocks |
-| Diagram | Mermaid and GraphViz diagrams |
-| WikiLink | `[[page-name]]` internal linking (opt-in) |
-| Mention | `@user` autocomplete (opt-in) |
-| Comment | Text annotations for collaborative review (opt-in) |
+| Extension       | Description                                                                                                                           |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Base            | Headings (H1-H3 by default, configurable up to H6), bold, italic, underline, strikethrough, lists, blockquotes                        |
+| Superscript     | Superscript text formatting                                                                                                           |
+| Subscript       | Subscript text formatting                                                                                                             |
+| Typography      | Smart quotes, em dashes, and typographic transformations                                                                              |
+| SlashCommand    | Type `/` to open command menu                                                                                                         |
+| Table           | Table editing with row/column controls                                                                                                |
+| TableOfContents | Auto-collected heading navigation block                                                                                               |
+| Link            | Autolink and paste URL detection                                                                                                      |
+| Image           | Upload, paste, drag-and-drop, resize                                                                                                  |
+| CodeBlock       | Syntax highlighting with lowlight (37+ languages)                                                                                     |
+| CharacterCount  | Real-time character and word count                                                                                                    |
+| TextColor       | Text color and highlight                                                                                                              |
+| TaskList        | Checkbox task lists                                                                                                                   |
+| DragHandle      | Per-item drag handle for every block (including individual list items at any nesting depth) plus `Alt+↑` / `Alt+↓` keyboard shortcuts |
+| Markdown        | Import and export with configurable flavor (CommonMark, GFM, Obsidian, Docusaurus)                                                    |
+| Mathematics     | LaTeX equations with KaTeX                                                                                                            |
+| Embed           | oEmbed/OGP URL embedding                                                                                                              |
+| Details         | Collapsible content blocks                                                                                                            |
+| Callout         | Info, warning, danger, tip, and note admonition blocks                                                                                |
+| Diagram         | Mermaid and GraphViz diagrams                                                                                                         |
+| WikiLink        | `[[page-name]]` internal linking (opt-in)                                                                                             |
+| Mention         | `@user` autocomplete (opt-in)                                                                                                         |
+| Comment         | Text annotations for collaborative review (opt-in)                                                                                    |
 
 ## Markdown Flavor
 
 Vizel supports multiple Markdown output flavors via the `flavor` option. The flavor controls how extensions serialize content (e.g., callout format, wiki link syntax). Input parsing is always tolerant and accepts all formats.
 
-| Flavor | Callout Output | WikiLink Output | Platforms |
-|--------|---------------|-----------------|-----------|
-| `"commonmark"` | Blockquote fallback | `[text](wiki://page)` | Stack Overflow, Reddit, email |
-| `"gfm"` (default) | `> [!NOTE]` | `[text](wiki://page)` | GitHub, GitLab, DEV.to |
-| `"obsidian"` | `> [!note]` | `[[page]]` | Obsidian, Logseq, Foam |
-| `"docusaurus"` | `:::note` | `[text](wiki://page)` | Docusaurus, VitePress, Zenn, Qiita |
+| Flavor            | Callout Output      | WikiLink Output       | Platforms                          |
+| ----------------- | ------------------- | --------------------- | ---------------------------------- |
+| `"commonmark"`    | Blockquote fallback | `[text](wiki://page)` | Stack Overflow, Reddit, email      |
+| `"gfm"` (default) | `> [!NOTE]`         | `[text](wiki://page)` | GitHub, GitLab, DEV.to             |
+| `"obsidian"`      | `> [!note]`         | `[[page]]`            | Obsidian, Logseq, Foam             |
+| `"docusaurus"`    | `:::note`           | `[text](wiki://page)` | Docusaurus, VitePress, Zenn, Qiita |
 
 ### API
 
 ```typescript
-import {
-  resolveVizelFlavorConfig,
-  VIZEL_DEFAULT_FLAVOR,
-} from '@vizel/core';
+import { resolveVizelFlavorConfig, VIZEL_DEFAULT_FLAVOR } from "@vizel/core";
 import type {
   VizelMarkdownFlavor,
   VizelFlavorConfig,
   VizelCalloutMarkdownFormat,
-} from '@vizel/core';
+} from "@vizel/core";
 
 // Resolve flavor to config
-const config = resolveVizelFlavorConfig('obsidian');
+const config = resolveVizelFlavorConfig("obsidian");
 // config.calloutFormat === "obsidian-callouts"
 // config.wikiLinkSerialize === true
 ```
@@ -120,11 +117,11 @@ This package is used as a dependency of framework-specific packages:
 ### Direct Usage
 
 ```typescript
-import { resolveVizelFeatures, createVizelImageUploader } from '@vizel/core';
-import type { VizelEditorOptions, VizelFeatureOptions } from '@vizel/core';
+import { resolveVizelFeatures, createVizelImageUploader } from "@vizel/core";
+import type { VizelEditorOptions, VizelFeatureOptions } from "@vizel/core";
 
 // Import styles
-import '@vizel/core/styles.css';
+import "@vizel/core/styles.css";
 ```
 
 ## Documentation

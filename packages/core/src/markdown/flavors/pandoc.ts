@@ -2,6 +2,7 @@ import deflist from "markdown-it-deflist";
 import footnote from "markdown-it-footnote";
 import sub from "markdown-it-sub";
 import sup from "markdown-it-sup";
+
 import type { VizelMarkdownFlavor, VizelMarkdownItInstance } from "../types.ts";
 
 /**

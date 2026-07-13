@@ -6,6 +6,7 @@ import {
   type VizelLocale,
 } from "@vizel/core";
 import { computed, useTemplateRef, watch } from "vue";
+
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.vue";
 import { useVizelContextSafe } from "./VizelContext.ts";
 
@@ -107,6 +108,11 @@ watch(
     style="visibility: hidden"
   >
     <slot v-if="slots.default" />
-    <VizelBubbleMenuDefault v-else-if="showDefaultMenu" :editor="editor" :enable-embed="props.enableEmbed" v-bind="props.locale ? { locale: props.locale } : {}" />
+    <VizelBubbleMenuDefault
+      v-else-if="showDefaultMenu"
+      :editor="editor"
+      :enable-embed="props.enableEmbed"
+      v-bind="props.locale ? { locale: props.locale } : {}"
+    />
   </div>
 </template>

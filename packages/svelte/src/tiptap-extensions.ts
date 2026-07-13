@@ -21,4 +21,5 @@
 /// <reference types="@tiptap/extension-superscript" />
 /// <reference types="@tiptap/extension-subscript" />
 
+// oxlint-disable-next-line unicorn/require-module-specifiers -- forces TypeScript to treat this triple-slash-only file as a module instead of a global script
 export {};

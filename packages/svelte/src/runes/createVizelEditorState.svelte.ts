@@ -1,5 +1,6 @@
 import type { Editor } from "@vizel/core";
 import { createSubscriber } from "svelte/reactivity";
+
 import { getVizelContextSafe } from "../components/VizelContext.js";
 
 // Derive Tiptap's `Transaction` type without importing `@tiptap/pm`

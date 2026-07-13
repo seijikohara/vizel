@@ -62,3 +62,7 @@ CLAUDE.local.md
 tests/ct/*/specs/__screenshots__/
 tests/a11y/*/specs/__screenshots__/
 tests/**/.vitest-attachments/
+
+# Playwright build artifacts
+playwright-report/
+test-results/

@@ -6,6 +6,7 @@ import {
 } from "@vizel/core";
 import { createVizelKeyboardGridController } from "@vizel/headless";
 import { computed, onMounted, ref, useTemplateRef, watch } from "vue";
+
 import VizelIcon from "./VizelIcon.vue";
 
 export interface VizelColorPickerProps {
@@ -160,9 +161,9 @@ function handleKeyDown(e: KeyboardEvent, currentIndex: number) {
 // Update input value when value prop changes
 watch(
   currentValue,
-  (value) => {
-    if (value && !isNoneValue(value)) {
-      inputValue.value = value;
+  (newValue) => {
+    if (newValue && !isNoneValue(newValue)) {
+      inputValue.value = newValue;
     } else {
       inputValue.value = "";
     }
@@ -203,7 +204,11 @@ const previewColor = computed(() =>
         <button
           v-for="(color, idx) in recentColors"
           :key="color"
-          :ref="(el) => { swatchRefs[idx] = el as HTMLButtonElement | null }"
+          :ref="
+            (el) => {
+              swatchRefs[idx] = el as HTMLButtonElement | null;
+            }
+          "
           type="button"
           role="option"
           :aria-selected="currentValue === color"
@@ -215,7 +220,9 @@ const previewColor = computed(() =>
           @click="handleSelect(color)"
           @keydown="handleKeyDown($event, idx)"
         >
-          <span v-if="isNoneValue(color)" class="vizel-color-picker-none"><VizelIcon name="x" /></span>
+          <span v-if="isNoneValue(color)" class="vizel-color-picker-none"
+            ><VizelIcon name="x"
+          /></span>
         </button>
       </div>
     </div>
@@ -226,7 +233,11 @@ const previewColor = computed(() =>
         <button
           v-for="(colorDef, i) in colors"
           :key="colorDef.color"
-          :ref="(el) => { swatchRefs[paletteOffset + i] = el as HTMLButtonElement | null }"
+          :ref="
+            (el) => {
+              swatchRefs[paletteOffset + i] = el as HTMLButtonElement | null;
+            }
+          "
           type="button"
           role="option"
           :aria-selected="currentValue === colorDef.color"
@@ -238,7 +249,9 @@ const previewColor = computed(() =>
           @click="handleSelect(colorDef.color)"
           @keydown="handleKeyDown($event, paletteOffset + i)"
         >
-          <span v-if="isNoneValue(colorDef.color)" class="vizel-color-picker-none"><VizelIcon name="x" /></span>
+          <span v-if="isNoneValue(colorDef.color)" class="vizel-color-picker-none"
+            ><VizelIcon name="x"
+          /></span>
         </button>
       </div>
     </div>
@@ -259,7 +272,7 @@ const previewColor = computed(() =>
         aria-label="Custom color hex value"
         @input="inputValue = ($event.target as HTMLInputElement).value"
         @keydown="handleInputKeyDown"
-      >
+      />
       <button
         type="button"
         class="vizel-color-picker-apply"

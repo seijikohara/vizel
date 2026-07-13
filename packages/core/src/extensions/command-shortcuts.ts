@@ -1,4 +1,5 @@
 import { Extension } from "@tiptap/core";
+
 import type { VizelCommand } from "../commands/types.ts";
 import { isVizelMacPlatform } from "../utils/keyboard.ts";
 

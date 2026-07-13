@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Editor } from "@vizel/core";
 import { computed, provide, shallowRef, watch } from "vue";
+
 import { VIZEL_CONTEXT_KEY } from "./VizelContext.ts";
 
 export interface VizelProviderProps {

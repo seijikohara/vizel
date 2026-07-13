@@ -99,6 +99,7 @@ export interface VizelProps {
 // A complete editor component that includes EditorContent and BubbleMenu.
 // This is the recommended way to use Vizel for most use cases.
 import { getVizelMarkdown, setVizelMarkdown } from "@vizel/core";
+
 import { createVizelEditor } from "../runes/createVizelEditor.svelte.js";
 import VizelBlockMenu from "./VizelBlockMenu.svelte";
 import VizelBubbleMenu from "./VizelBubbleMenu.svelte";
@@ -144,17 +145,13 @@ const wrappedOnUpdate = (e: { editor: import("@vizel/core").Editor }) => {
   if (nextMarkdown === markdown) return;
   markdown = nextMarkdown;
 };
-const wrappedOnCreate = (e: { editor: import("@vizel/core").Editor }) =>
-  restProps.onCreate?.(e);
+const wrappedOnCreate = (e: { editor: import("@vizel/core").Editor }) => restProps.onCreate?.(e);
 const wrappedOnDestroy = () => restProps.onDestroy?.();
 const wrappedOnSelectionUpdate = (e: { editor: import("@vizel/core").Editor }) =>
   restProps.onSelectionUpdate?.(e);
-const wrappedOnFocus = (e: { editor: import("@vizel/core").Editor }) =>
-  restProps.onFocus?.(e);
-const wrappedOnBlur = (e: { editor: import("@vizel/core").Editor }) =>
-  restProps.onBlur?.(e);
-const wrappedOnError = (error: import("@vizel/core").VizelError) =>
-  restProps.onError?.(error);
+const wrappedOnFocus = (e: { editor: import("@vizel/core").Editor }) => restProps.onFocus?.(e);
+const wrappedOnBlur = (e: { editor: import("@vizel/core").Editor }) => restProps.onBlur?.(e);
+const wrappedOnError = (error: import("@vizel/core").VizelError) => restProps.onError?.(error);
 
 // Capture initial values for editor creation (these are intentionally not reactive)
 // The editor is created once and should not be recreated when props change
@@ -219,21 +216,29 @@ $effect(() => {
 
 <div class={className ? `vizel-root ${className}` : "vizel-root"} data-vizel-root>
   {#if showToolbar && editor && toolbar}
-    <VizelToolbar {editor} {...(restProps.locale ? { locale: restProps.locale } : {})}>
+    <VizelToolbar {editor} {...restProps.locale ? { locale: restProps.locale } : {}}>
       {#snippet children({ editor: e })}
         {@render toolbar({ editor: e })}
       {/snippet}
     </VizelToolbar>
   {:else if showToolbar && editor}
-    <VizelToolbar {editor} {...(restProps.locale ? { locale: restProps.locale } : {})} />
+    <VizelToolbar {editor} {...restProps.locale ? { locale: restProps.locale } : {}} />
   {/if}
   <VizelEditor {editor} />
   {#if showBubbleMenu && editor && bubbleMenu}
-    <VizelBubbleMenu {editor} {enableEmbed} {...(restProps.locale ? { locale: restProps.locale } : {})}>
+    <VizelBubbleMenu
+      {editor}
+      {enableEmbed}
+      {...restProps.locale ? { locale: restProps.locale } : {}}
+    >
       {@render bubbleMenu({ editor })}
     </VizelBubbleMenu>
   {:else if showBubbleMenu && editor}
-    <VizelBubbleMenu {editor} {enableEmbed} {...(restProps.locale ? { locale: restProps.locale } : {})} />
+    <VizelBubbleMenu
+      {editor}
+      {enableEmbed}
+      {...restProps.locale ? { locale: restProps.locale } : {}}
+    />
   {/if}
   {#if restProps.locale}
     <VizelBlockMenu locale={restProps.locale} />

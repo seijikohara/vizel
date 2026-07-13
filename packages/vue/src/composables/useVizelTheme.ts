@@ -1,5 +1,6 @@
 import { VizelError, type VizelResolvedTheme } from "@vizel/core";
 import { type ComputedRef, computed, inject } from "vue";
+
 import { VIZEL_THEME_CONTEXT_KEY } from "../components/VizelThemeContext";
 
 /**

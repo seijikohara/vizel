@@ -9,6 +9,7 @@
 
 import type { Graphviz as GraphvizType } from "@hpcc-js/wasm-graphviz";
 import type { MermaidConfig } from "mermaid";
+
 import { createLazyLoader } from "../utils/lazy-import.ts";
 
 /**

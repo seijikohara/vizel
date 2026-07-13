@@ -5,6 +5,7 @@ import {
 } from "@vizel/core";
 import { createVizelKeyboardGridController } from "@vizel/headless";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelColorPickerProps {

@@ -1,4 +1,5 @@
 import type { VizelMarkdownFlavor } from "@vizel/core";
+
 import commonmarkContent from "./content-commonmark.md?raw";
 import docusaurusContent from "./content-docusaurus.md?raw";
 import gfmContent from "./content-gfm.md?raw";

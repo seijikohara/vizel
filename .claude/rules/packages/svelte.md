@@ -14,12 +14,12 @@ Feature parity across React, Vue, and Svelte is enforced by the feature manifest
 
 This package uses Svelte 5 runes.
 
-| Rune | Purpose |
-|------|---------|
-| `$state` | Reactive state |
+| Rune       | Purpose         |
+| ---------- | --------------- |
+| `$state`   | Reactive state  |
 | `$derived` | Computed values |
-| `$effect` | Side effects |
-| `$props` | Component props |
+| `$effect`  | Side effects    |
+| `$props`   | Component props |
 
 ### `mount()` Behavior
 
@@ -78,7 +78,9 @@ export interface VizelSlashMenuProps {
 <script lang="ts">
 let { ref, ...other }: VizelSlashMenuProps = $props();
 
-function onKeyDown(event: KeyboardEvent): boolean { /* ... */ }
+function onKeyDown(event: KeyboardEvent): boolean {
+  /* ... */
+}
 
 // svelte-ignore state_referenced_locally
 if (ref) {
@@ -165,14 +167,14 @@ resolve the editor:
 ```typescript
 // Context form: reads the editor from <Vizel> / <VizelProvider>.
 const characters = createVizelEditorState(
-  ({ editor }) => editor?.storage.characterCount?.characters() ?? 0,
+  ({ editor }) => editor?.storage.characterCount?.characters() ?? 0
 );
 
 // Explicit-source form: pass `() => Editor | null` to subscribe to an
 // editor held OUTSIDE the provider tree (for example, a status bar).
 const stats = createVizelEditorState(
   () => editorRef,
-  ({ editor }) => getVizelEditorState(editor),
+  ({ editor }) => getVizelEditorState(editor)
 );
 // Read stats.current to trigger reactivity.
 ```

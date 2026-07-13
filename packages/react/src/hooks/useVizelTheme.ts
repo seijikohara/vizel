@@ -1,5 +1,6 @@
 import { VizelError, type VizelResolvedTheme } from "@vizel/core";
 import { useContext, useMemo } from "react";
+
 import { VizelThemeContext } from "../components/VizelThemeContext.tsx";
 
 /**

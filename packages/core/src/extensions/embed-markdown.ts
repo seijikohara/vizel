@@ -7,6 +7,7 @@
  */
 
 import type MarkdownIt from "markdown-it";
+
 import { unescapeMetadataCommentValue } from "../utils/metadata-comment.ts";
 
 /**

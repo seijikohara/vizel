@@ -26,6 +26,7 @@ export interface VizelBubbleMenuProps {
 
 <script lang="ts">
 import { BubbleMenuPlugin, createVizelBubbleMenuEscapeController } from "@vizel/core";
+
 import VizelBubbleMenuDefault from "./VizelBubbleMenuDefault.svelte";
 import { getVizelContextSafe } from "./VizelContext.js";
 
@@ -104,7 +105,11 @@ $effect(() => {
     {#if children}
       {@render children()}
     {:else if showDefaultMenu}
-      <VizelBubbleMenuDefault {editor} {...(enableEmbed ? { enableEmbed } : {})} {...(locale ? { locale } : {})} />
+      <VizelBubbleMenuDefault
+        {editor}
+        {...enableEmbed ? { enableEmbed } : {}}
+        {...locale ? { locale } : {}}
+      />
     {/if}
   </div>
 {/if}

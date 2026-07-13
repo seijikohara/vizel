@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+
 import { page, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 // Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously

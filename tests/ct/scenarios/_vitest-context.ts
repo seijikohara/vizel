@@ -53,7 +53,7 @@ export async function pressKeyChord(...keys: readonly string[]): Promise<void> {
   const held = modifiers.map((modifier) => `{${modifier}>}`).join("");
   const released = modifiers
     .map((modifier) => `{/${modifier}}`)
-    .reverse()
+    .toReversed()
     .join("");
   await userEvent.keyboard(`${held}{${finalKey}}${released}`);
 }

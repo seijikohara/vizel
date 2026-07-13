@@ -30,15 +30,17 @@ export interface VizelIconProviderProps {
 </script>
 
 <script lang="ts">
-  import { setVizelIconContext } from "./VizelIconContext.js";
+import { setVizelIconContext } from "./VizelIconContext.js";
 
-  const { icons, children }: VizelIconProviderProps = $props();
+const { icons, children }: VizelIconProviderProps = $props();
 
-  // Expose `customIcons` through a getter so descendants observe the latest
-  // `icons` prop instead of the value captured at mount.
-  setVizelIconContext({
-    get customIcons() { return icons; },
-  });
+// Expose `customIcons` through a getter so descendants observe the latest
+// `icons` prop instead of the value captured at mount.
+setVizelIconContext({
+  get customIcons() {
+    return icons;
+  },
+});
 </script>
 
 {#if children}

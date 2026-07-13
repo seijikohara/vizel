@@ -33,11 +33,16 @@ const editor = $derived(editorProp ?? contextEditor?.current ?? null);
 </script>
 
 {#if editor}
-  <div class="vizel-toolbar {className ?? ''}" role="toolbar" aria-label={locale?.toolbar?.ariaLabel ?? "Formatting"} aria-orientation="horizontal">
+  <div
+    class="vizel-toolbar {className ?? ''}"
+    role="toolbar"
+    aria-label={locale?.toolbar?.ariaLabel ?? "Formatting"}
+    aria-orientation="horizontal"
+  >
     {#if children}
       {@render children({ editor })}
     {:else if showDefaultToolbar}
-      <VizelToolbarDefault {editor} {...(locale ? { locale } : {})} />
+      <VizelToolbarDefault {editor} {...locale ? { locale } : {}} />
     {/if}
   </div>
 {/if}

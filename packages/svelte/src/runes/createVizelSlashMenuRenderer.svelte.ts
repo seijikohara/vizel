@@ -11,6 +11,7 @@ import {
   vizelEnLocale,
 } from "@vizel/core";
 import { mount, unmount } from "svelte";
+
 import VizelSlashMenu, { type VizelSlashMenuRef } from "../components/VizelSlashMenu.svelte";
 
 export type { VizelSuggestionRendererOptions };

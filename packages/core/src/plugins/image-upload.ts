@@ -1,6 +1,7 @@
 import type { EditorState } from "@tiptap/pm/state";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet, type EditorView } from "@tiptap/pm/view";
+
 import {
   VIZEL_DEFAULT_FILE_MIME_TYPES,
   VIZEL_DEFAULT_IMAGE_MAX_FILE_SIZE,

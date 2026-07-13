@@ -13,6 +13,7 @@ export interface VizelEmbedViewProps {
 
 <script lang="ts">
 import { loadVizelEmbedScripts, resolveVizelEmbedView } from "@vizel/core";
+
 import VizelIcon from "./VizelIcon.svelte";
 
 let { data, class: className, selected = false }: VizelEmbedViewProps = $props();

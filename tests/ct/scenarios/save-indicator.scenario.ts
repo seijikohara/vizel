@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+
 import { page } from "./_vitest-context";
 
 // Resolve the save-indicator root element. Framework components mount

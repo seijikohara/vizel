@@ -7,10 +7,7 @@ export {
   vizelObsidianFlavor,
   vizelPandocFlavor,
 } from "./flavors/index.ts";
-export {
-  assertMarkdownRoundtrip,
-  type VizelRoundtripSample,
-} from "./roundtrip.ts";
+export { assertMarkdownRoundtrip, type VizelRoundtripSample } from "./roundtrip.ts";
 export type {
   VizelMarkdownEncodingOptions,
   VizelMarkdownFlavor,

@@ -1,4 +1,5 @@
 import { Editor } from "@tiptap/core";
+
 import { createVizelExtensions } from "../extensions/base.ts";
 import { createVizelError } from "../utils/errorHandling.ts";
 import { getVizelMarkdown, setVizelMarkdown } from "../utils/markdown.ts";

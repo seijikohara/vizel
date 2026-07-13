@@ -16,6 +16,7 @@ import type { NodeType, Node as PMNode } from "@tiptap/pm/model";
 import type katex from "katex";
 import type MarkdownIt from "markdown-it";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
+
 import {
   BLOCK_MATH_REGEX,
   INLINE_MATH_REGEX,

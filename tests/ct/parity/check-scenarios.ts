@@ -24,6 +24,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import ts from "typescript";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
@@ -95,7 +96,7 @@ function listScenarioBasenames(): readonly string[] {
   return readdirSync(SCENARIOS_DIR)
     .filter((entry) => entry.endsWith(SCENARIO_SUFFIX))
     .map((entry) => entry.slice(0, -SCENARIO_SUFFIX.length))
-    .sort();
+    .toSorted();
 }
 
 /** List every spec file path for one framework. */

@@ -8,6 +8,7 @@ import {
   type VizelLocale,
 } from "@vizel/core";
 import { computed, ref } from "vue";
+
 import { useVizelState } from "../composables/useVizelState.ts";
 import VizelBubbleMenuButton from "./VizelBubbleMenuButton.vue";
 import VizelBubbleMenuColorPicker from "./VizelBubbleMenuColorPicker.vue";
@@ -90,7 +91,15 @@ const showLinkEditor = ref(false);
       </VizelBubbleMenuButton>
     </template>
     <VizelBubbleMenuDivider />
-    <VizelBubbleMenuColorPicker :editor="props.editor" type="textColor" v-bind="props.locale ? { locale: props.locale } : {}" />
-    <VizelBubbleMenuColorPicker :editor="props.editor" type="highlight" v-bind="props.locale ? { locale: props.locale } : {}" />
+    <VizelBubbleMenuColorPicker
+      :editor="props.editor"
+      type="textColor"
+      v-bind="props.locale ? { locale: props.locale } : {}"
+    />
+    <VizelBubbleMenuColorPicker
+      :editor="props.editor"
+      type="highlight"
+      v-bind="props.locale ? { locale: props.locale } : {}"
+    />
   </div>
 </template>

@@ -16,12 +16,12 @@ This skill validates code against the project rules in `.claude/rules/`. The ski
 
 ## Quick checks
 
-| Command | Purpose |
-|---------|---------|
-| `pnpm check` | Auto-fix Biome violations (formatting, imports, exports, naming) |
-| `pnpm typecheck` | Verify type safety |
-| `pnpm check:feature-parity` | Verify cross-framework feature parity against the manifest |
-| `pnpm build` | Verify the build succeeds |
+| Command                     | Purpose                                                                     |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `pnpm check:fix`            | Auto-fix oxlint and oxfmt violations (formatting, imports, exports, naming) |
+| `pnpm typecheck`            | Verify type safety                                                          |
+| `pnpm check:feature-parity` | Verify cross-framework feature parity against the manifest                  |
+| `pnpm build`                | Verify the build succeeds                                                   |
 
 ## Supporting files
 

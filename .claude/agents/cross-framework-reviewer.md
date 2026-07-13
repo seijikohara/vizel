@@ -38,11 +38,11 @@ Report findings in the following format. Cite file paths in `path:line` form.
 
 ### Feature: <feature name>
 
-| Framework | Status | Notes |
-|-----------|:------:|-------|
-| React | ✅ | ... |
-| Vue | ⚠️ | Missing `onOpenChange` prop |
-| Svelte | ❌ | No equivalent rune |
+| Framework | Status | Notes                       |
+| --------- | :----: | --------------------------- |
+| React     |   ✅   | ...                         |
+| Vue       |   ⚠️   | Missing `onOpenChange` prop |
+| Svelte    |   ❌   | No equivalent rune          |
 
 ### Recommendations
 

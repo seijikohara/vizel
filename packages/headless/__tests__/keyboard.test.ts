@@ -10,7 +10,9 @@
  */
 
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, describe, it } from "node:test";
+
+import { afterEach, beforeEach, describe, it } from "vitest";
+
 import {
   buildVizelGridNavSpec,
   buildVizelListNavSpec,
@@ -112,6 +114,7 @@ function createFakeRoot(itemCount: number): FakeRoot {
       if (index !== -1) state.listeners.splice(index, 1);
     },
     dispatch: (event) => {
+      // oxlint-disable-next-line unicorn/no-useless-spread -- snapshot before iterating so a handler unregistering itself mid-dispatch cannot skip entries
       for (const handler of [...state.listeners]) handler(event);
     },
   };

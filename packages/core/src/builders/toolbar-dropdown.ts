@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+
 import type { VizelIconName } from "../icons/types.ts";
 import type { VizelToolbarAction, VizelToolbarDropdownAction } from "../toolbar/actions.ts";
 import type { VizelMenuItemAttrs, VizelMenuSpec } from "./types.ts";

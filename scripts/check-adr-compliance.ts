@@ -16,6 +16,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import ts from "typescript";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
@@ -371,7 +372,7 @@ function measureReactViewLineSpan(source: string): number {
     const name = functionLikeName(node);
     const body = functionLikeBody(node);
     if (body !== null) {
-      const isComponent = name !== null && /^Vizel/.test(name);
+      const isComponent = name !== null && name.startsWith("Vizel");
       const containsJsx: ts.Node[] = [];
       collectJsxNodes(body, containsJsx);
       // Include the body's JSX when the declaration is a Vizel* component

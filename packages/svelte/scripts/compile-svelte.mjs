@@ -16,6 +16,7 @@
 import { readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import { compile } from "svelte/compiler";
 
 const distDir = fileURLToPath(new URL("../dist", import.meta.url));

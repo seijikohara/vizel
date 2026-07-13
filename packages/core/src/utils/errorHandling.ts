@@ -213,7 +213,9 @@ export function wrapAsVizelError(
  * silent.
  *
  * This is the only function inside `packages/core/src/` that calls
- * `console`; Biome's `noConsole` rule enforces this.
+ * `console`; an `.oxlintrc.json` override escalates oxlint's
+ * `no-console` rule to `error` with no allowed methods here, so the
+ * call below carries an `oxlint-disable-next-line` comment.
  *
  * @param err - The error to emit.
  * @param onError - Optional consumer callback.
@@ -227,7 +229,7 @@ export function emitVizelError(
     return;
   }
   if (err.severity === "error") {
-    // biome-ignore lint/suspicious/noConsole: emitVizelError is the single sanctioned console site inside packages/core/src/.
+    // oxlint-disable-next-line no-console -- emitVizelError is the single sanctioned console site inside packages/core/src/.
     console.error(err);
   }
 }

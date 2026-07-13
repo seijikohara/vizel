@@ -97,7 +97,7 @@ const editor = useVizelContext();
 console.log(editor.value);
 ```
 
-Destructuring the *return object* of a composable whose fields are refs is fine — only destructuring inside a single ref loses reactivity. For example, `const { theme, setTheme } = useVizelTheme()` is correct because `theme` is itself a `ComputedRef`.
+Destructuring the _return object_ of a composable whose fields are refs is fine — only destructuring inside a single ref loses reactivity. For example, `const { theme, setTheme } = useVizelTheme()` is correct because `theme` is itself a `ComputedRef`.
 
 ## Reactivity
 

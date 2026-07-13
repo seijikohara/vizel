@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+
 import { page, pressKeyChord, userEvent, type VizelBcScenario } from "./_vitest-context";
 
 const BUBBLE_MENU_SELECTOR = "[data-vizel-bubble-menu]";

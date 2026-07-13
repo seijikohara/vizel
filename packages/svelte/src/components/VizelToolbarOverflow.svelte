@@ -13,16 +13,12 @@ export interface VizelToolbarOverflowProps {
 <script lang="ts">
 import { formatVizelTooltip, isVizelToolbarDropdownAction, vizelEnLocale } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
+
 import VizelIcon from "./VizelIcon.svelte";
 import VizelToolbarButton from "./VizelToolbarButton.svelte";
 import VizelToolbarDropdown from "./VizelToolbarDropdown.svelte";
 
-let {
-  editor,
-  actions,
-  class: className,
-  locale,
-}: VizelToolbarOverflowProps = $props();
+let { editor, actions, class: className, locale }: VizelToolbarOverflowProps = $props();
 
 let isOpen = $state(false);
 let containerEl: HTMLDivElement | undefined = $state(undefined);

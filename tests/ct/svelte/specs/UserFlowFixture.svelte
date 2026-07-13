@@ -55,13 +55,13 @@ function handleImportFromOutput() {
 <VizelProvider editor={editor.current}>
   {#if currentMode === "markdown"}
     <div>
-      <button type="button" data-testid="export-button" onclick={handleExport}>
-        Export
-      </button>
-      <button type="button" data-testid="clear-button" onclick={handleClear}>
-        Clear
-      </button>
-      <button type="button" data-testid="import-from-output-button" onclick={handleImportFromOutput}>
+      <button type="button" data-testid="export-button" onclick={handleExport}> Export </button>
+      <button type="button" data-testid="clear-button" onclick={handleClear}> Clear </button>
+      <button
+        type="button"
+        data-testid="import-from-output-button"
+        onclick={handleImportFromOutput}
+      >
         Import From Output
       </button>
     </div>

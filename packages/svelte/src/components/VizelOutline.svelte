@@ -18,16 +18,12 @@ export interface VizelOutlineProps {
 
 <script lang="ts">
 import { buildVizelOutlineSpec, vizelEnLocale } from "@vizel/core";
+
 import { createVizelState } from "../runes/createVizelState.svelte.js";
 import { getVizelContextSafe } from "./VizelContext.js";
 import VizelOutlineItems from "./VizelOutlineItems.svelte";
 
-let {
-  editor: editorProp,
-  class: className,
-  currentPos,
-  locale,
-}: VizelOutlineProps = $props();
+let { editor: editorProp, class: className, currentPos, locale }: VizelOutlineProps = $props();
 
 const contextEditor = getVizelContextSafe();
 const editor = $derived(editorProp ?? contextEditor?.current ?? null);

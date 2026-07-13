@@ -6,6 +6,7 @@ import {
   vizelEnLocale,
 } from "@vizel/core";
 import { useMemo } from "react";
+
 import { useVizelEditorState } from "../_reactivity.ts";
 import { useVizelContextSafe } from "./VizelContext.tsx";
 
@@ -55,11 +56,11 @@ export function VizelOutline({
   // editor's mutable doc / selection state: it changes with every heading
   // edit or caret move, so the memo rebuilds the spec from the live editor
   // even though the `editor` identity stays stable.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `signature` is the reactive trigger for re-reading the editor's doc/selection, which `buildVizelOutlineSpec` reads off the live editor.
   const spec = useMemo(() => {
     if (!editor) return null;
     const resolvedPos = currentPos === undefined ? editor.state.selection.from : currentPos;
     return buildVizelOutlineSpec(editor, resolvedPos, resolvedLocale);
+    // oxlint-disable-next-line react/exhaustive-deps -- `signature` is the reactive trigger for re-reading the editor's doc/selection, which `buildVizelOutlineSpec` reads off the live editor.
   }, [editor, currentPos, resolvedLocale, signature]);
 
   if (!(editor && spec)) return null;
@@ -101,7 +102,6 @@ function buildVizelOutlineSignature(editor: Editor): string {
 
 function renderItems(items: readonly VizelOutlineItemSpec[], editor: Editor) {
   return (
-    // biome-ignore lint/a11y/useSemanticElements: WAI-ARIA tree pattern requires role="group" on nested lists inside role="tree".
     <ul className="vizel-outline-list" role="group">
       {items.map((item) => (
         <li

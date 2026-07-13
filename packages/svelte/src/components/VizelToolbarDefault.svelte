@@ -21,20 +21,18 @@ import {
   isVizelToolbarDropdownAction,
   vizelDefaultToolbarActions,
 } from "@vizel/core";
+
 import { createVizelState } from "../runes/createVizelState.svelte.js";
 import VizelIcon from "./VizelIcon.svelte";
 import VizelToolbarButton from "./VizelToolbarButton.svelte";
 import VizelToolbarDivider from "./VizelToolbarDivider.svelte";
 import VizelToolbarDropdown from "./VizelToolbarDropdown.svelte";
 
-let {
-  editor,
-  class: className,
-  actions,
-  locale,
-}: VizelToolbarDefaultProps = $props();
+let { editor, class: className, actions, locale }: VizelToolbarDefaultProps = $props();
 
-const effectiveActions = $derived(actions ?? (locale ? createVizelToolbarActions(locale) : vizelDefaultToolbarActions));
+const effectiveActions = $derived(
+  actions ?? (locale ? createVizelToolbarActions(locale) : vizelDefaultToolbarActions)
+);
 
 // Subscribe to editor state changes to update active/enabled states
 const editorState = createVizelState(() => editor);

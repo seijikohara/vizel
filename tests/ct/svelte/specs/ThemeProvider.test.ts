@@ -4,6 +4,7 @@
 import "@vizel/core/styles/index.scss";
 import { afterEach, beforeEach, describe, test } from "vitest";
 import { render } from "vitest-browser-svelte";
+
 import {
   testThemeProviderDarkCSS,
   testThemeProviderDefaultTheme,

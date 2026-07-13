@@ -11,6 +11,7 @@ import {
 } from "@vizel/core";
 import type { ReactNode } from "react";
 import { useEffect, useMemo } from "react";
+
 import { useLatest } from "../hooks/useLatest.ts";
 import { useVizelEditor } from "../hooks/useVizelEditor.ts";
 import { VizelBlockMenu } from "./VizelBlockMenu.tsx";

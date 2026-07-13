@@ -1,4 +1,5 @@
 import { formatVizelShortcut, splitVizelTextByMatches, type VizelCommandSpec } from "@vizel/core";
+
 import { VizelIcon } from "./VizelIcon.tsx";
 
 export interface VizelSlashMenuItemProps {

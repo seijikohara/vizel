@@ -95,7 +95,7 @@ export function formatVizelShortcut(shortcut: string | VizelPlatformShortcut): s
 
     // Apple standard modifier order: ⌃ ⌥ ⇧ ⌘
     const order = ["⌃", "⌥", "⇧", "⌘"];
-    const orderedModifiers = [...modifiers].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+    const orderedModifiers = modifiers.toSorted((a, b) => order.indexOf(a) - order.indexOf(b));
 
     return orderedModifiers.join("") + key;
   }

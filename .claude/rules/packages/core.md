@@ -11,13 +11,13 @@ The core package owns all framework-agnostic code. The framework packages wrap a
 
 The core package is the single source of truth for the following:
 
-| Category | Location | Examples |
-|----------|----------|----------|
-| Types | `core/src/types.ts` | `VizelEditorOptions`, `VizelFeatureOptions` |
-| Constants | `core/src/` | `VIZEL_UPLOAD_IMAGE_EVENT`, `VIZEL_TEXT_COLORS` |
-| Extensions | `core/src/extensions/` | `VizelSlashCommand`, `VizelImageResize` |
-| Utilities | `core/src/utils/` | `resolveVizelFeatures`, `createVizelImageUploader` |
-| Styles | `core/src/styles/` | All CSS |
+| Category   | Location               | Examples                                           |
+| ---------- | ---------------------- | -------------------------------------------------- |
+| Types      | `core/src/types.ts`    | `VizelEditorOptions`, `VizelFeatureOptions`        |
+| Constants  | `core/src/`            | `VIZEL_UPLOAD_IMAGE_EVENT`, `VIZEL_TEXT_COLORS`    |
+| Extensions | `core/src/extensions/` | `VizelSlashCommand`, `VizelImageResize`            |
+| Utilities  | `core/src/utils/`      | `resolveVizelFeatures`, `createVizelImageUploader` |
+| Styles     | `core/src/styles/`     | All CSS                                            |
 
 The core package excludes:
 
@@ -41,14 +41,14 @@ packages/core/src/
 └── index.ts
 ```
 
-| Layer | Role | DOM access | May depend on |
-|-------|------|-----------|---------------|
-| `extensions/` | Define Tiptap extensions. | Only inside ProseMirror plugins. | `utils/`, `commands/`, Tiptap |
-| `commands/` | Wrap Tiptap chain commands. Define the `VizelCommand` type. | None. | `extensions/`, `utils/` |
-| `builders/` | Build framework-neutral specs. | **None.** | `utils/`, types, locale |
-| `controllers/` | Own DOM listeners through a `{ mount, unmount }` contract. | Inside `mount()` only. Each `mount()` starts with an SSR guard. | `builders/`, `utils/` |
-| `utils/` | Provide pure helpers. | **None.** | Self, types |
-| `_internal/` | Hold implementation-private helpers. | Per the surrounding layer's rule. | Per the surrounding layer's rule |
+| Layer          | Role                                                        | DOM access                                                      | May depend on                    |
+| -------------- | ----------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------- |
+| `extensions/`  | Define Tiptap extensions.                                   | Only inside ProseMirror plugins.                                | `utils/`, `commands/`, Tiptap    |
+| `commands/`    | Wrap Tiptap chain commands. Define the `VizelCommand` type. | None.                                                           | `extensions/`, `utils/`          |
+| `builders/`    | Build framework-neutral specs.                              | **None.**                                                       | `utils/`, types, locale          |
+| `controllers/` | Own DOM listeners through a `{ mount, unmount }` contract.  | Inside `mount()` only. Each `mount()` starts with an SSR guard. | `builders/`, `utils/`            |
+| `utils/`       | Provide pure helpers.                                       | **None.**                                                       | Self, types                      |
+| `_internal/`   | Hold implementation-private helpers.                        | Per the surrounding layer's rule.                               | Per the surrounding layer's rule |
 
 Naming conventions:
 
@@ -63,29 +63,29 @@ Naming conventions:
 
 Every UI scaffold consumes one of five canonical spec types. New builders produce one of these shapes; do not introduce ad-hoc spec types.
 
-| Spec | Purpose | Examples |
-|------|---------|----------|
-| `VizelMenuSpec<TData>` | Listbox or menu | slash menu, mention menu, dropdown body |
-| `VizelPopoverSpec` | Anchored popover (trigger + body) | block menu wrapper, toolbar dropdown, node selector wrapper, color picker wrapper |
-| `VizelFormSpec<TFields>` | Inline input form | link editor, find/replace |
-| `VizelCommandSpec` | Actionable item shared across command surfaces | slash item, toolbar action, bubble menu action, block menu item |
-| `VizelGridSpec<TCell>` | Two-dimensional cell grid | color picker grid, future emoji picker |
+| Spec                     | Purpose                                        | Examples                                                                          |
+| ------------------------ | ---------------------------------------------- | --------------------------------------------------------------------------------- |
+| `VizelMenuSpec<TData>`   | Listbox or menu                                | slash menu, mention menu, dropdown body                                           |
+| `VizelPopoverSpec`       | Anchored popover (trigger + body)              | block menu wrapper, toolbar dropdown, node selector wrapper, color picker wrapper |
+| `VizelFormSpec<TFields>` | Inline input form                              | link editor, find/replace                                                         |
+| `VizelCommandSpec`       | Actionable item shared across command surfaces | slash item, toolbar action, bubble menu action, block menu item                   |
+| `VizelGridSpec<TCell>`   | Two-dimensional cell grid                      | color picker grid, future emoji picker                                            |
 
 Builder function names follow the pattern `buildVizel<Component>Spec(...)`. Each builder returns one of the five spec types above.
 
 Component composition (target state):
 
-| Component | Spec composition |
-|-----------|-----------------|
-| `VizelSlashMenu` | `VizelMenuSpec<VizelCommandSpec>` |
-| `VizelMentionMenu` | `VizelMenuSpec<VizelMentionItemView>` |
-| `VizelBubbleMenu` | `readonly VizelCommandSpec[]` |
-| `VizelToolbarDropdown` | `VizelPopoverSpec` + `VizelMenuSpec<VizelCommandSpec>` |
-| `VizelNodeSelector` | `VizelPopoverSpec` + `VizelMenuSpec<VizelNodeTypeOption>` |
-| `VizelBlockMenu` | `VizelPopoverSpec` + `VizelMenuSpec<VizelCommandSpec>` + optional submenu |
-| `VizelLinkEditor` | `VizelFormSpec<{ url, text, embed }>` |
-| `VizelFindReplace` | `VizelFormSpec<{ find, replace }>` |
-| `VizelColorPicker` | `VizelPopoverSpec` + `VizelGridSpec<VizelColorCell>` |
+| Component              | Spec composition                                                          |
+| ---------------------- | ------------------------------------------------------------------------- |
+| `VizelSlashMenu`       | `VizelMenuSpec<VizelCommandSpec>`                                         |
+| `VizelMentionMenu`     | `VizelMenuSpec<VizelMentionItemView>`                                     |
+| `VizelBubbleMenu`      | `readonly VizelCommandSpec[]`                                             |
+| `VizelToolbarDropdown` | `VizelPopoverSpec` + `VizelMenuSpec<VizelCommandSpec>`                    |
+| `VizelNodeSelector`    | `VizelPopoverSpec` + `VizelMenuSpec<VizelNodeTypeOption>`                 |
+| `VizelBlockMenu`       | `VizelPopoverSpec` + `VizelMenuSpec<VizelCommandSpec>` + optional submenu |
+| `VizelLinkEditor`      | `VizelFormSpec<{ url, text, embed }>`                                     |
+| `VizelFindReplace`     | `VizelFormSpec<{ find, replace }>`                                        |
+| `VizelColorPicker`     | `VizelPopoverSpec` + `VizelGridSpec<VizelColorCell>`                      |
 
 ## Extension Development
 
@@ -105,41 +105,41 @@ Heading.configure({
 
 ### Extension Catalog
 
-| Category | Location | Description |
-|----------|----------|-------------|
-| Base | `extensions/base.ts` | Core text editing (heading, bold, italic, etc.) |
-| SlashCommand | `extensions/slash-command.ts` | Slash command menu |
-| Table | `extensions/table.ts` | Table editing with row and column controls |
-| Link | `extensions/link.ts` | Link with autolink and paste support |
-| Image | `extensions/image.ts` | Image upload and resize |
-| CodeBlock | `extensions/code-block-lowlight.ts` | Syntax-highlighted code blocks |
-| CharacterCount | `extensions/character-count.ts` | Character and word counting |
-| TextColor | `extensions/text-color.ts` | Text color and highlight |
-| TaskList | `extensions/task-list.ts` | Checkbox task lists |
-| DragHandle | `extensions/drag-handle.ts` | Block drag handle and keyboard reordering |
-| Markdown | `extensions/markdown.ts` | Markdown import and export |
-| Mathematics | `extensions/mathematics.ts` | LaTeX math with KaTeX |
-| Embed | `extensions/embed.ts` | URL embedding (oEmbed/OGP) |
-| Details | `extensions/details.ts` | Collapsible content blocks |
-| Diagram | `extensions/diagram.ts` | Mermaid and GraphViz diagrams |
-| WikiLink | `extensions/wiki-link.ts` | Wiki-style internal links |
-| Comment | `extensions/comment.ts` | Text annotations and comments |
-| MultiBlockSelection | `extensions/multi-block-selection.ts` | Always-on multi-block range selection with block-aware Backspace / Delete / Tab / Shift+Tab |
-| BlockClipboard | `extensions/block-clipboard.ts` | Always-on block-aware copy / cut / paste; writes `application/x-vizel-blocks` (lossless JSON) plus `text/html` / `text/markdown` / `text/plain` mirrors and accepts the same payloads on paste |
-| BlockMenu | `extensions/block-menu.ts` | Block-level action menu surface (used by `VizelBlockMenu`) |
-| Mention | `extensions/mention.ts` | `@`-mention suggestion menu with markdown encoding modes |
-| FindReplace | `extensions/find-replace.ts` | In-document find / replace with highlight decorations |
-| Highlight | `extensions/highlight.ts` | Text highlight mark (yellow / orange / green / blue / pink palette) |
-| Callout | `extensions/callout.ts` | Note / tip / warning / danger callout blocks |
-| ImageResize | `extensions/image-resize.ts` | Resize handles for the `image` node |
-| FileHandler | `extensions/file-handler.ts` | Paste / drop handler for file uploads |
-| Presence | `extensions/presence.ts` | Cursor / selection presence overlays for collaboration |
-| Typography | `extensions/typography.ts` | Smart quote / em-dash / ellipsis input rules |
-| TableBase | `extensions/table-base.ts` | Base Tiptap Table family (without UI controls) |
-| TableControls | `extensions/table-controls.ts` | Row / column control overlays for the table feature |
-| TableOfContents | `extensions/table-of-contents.ts` | Live-updated outline node sourced from headings |
-| CommandShortcuts | `extensions/command-shortcuts.ts` | Keyboard shortcut bindings derived from `VizelCommand.shortcut` |
-| NodeTypes | `extensions/node-types.ts` | Helper extension for `VizelNodeTypeOption` lookups |
+| Category            | Location                              | Description                                                                                                                                                                                    |
+| ------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Base                | `extensions/base.ts`                  | Core text editing (heading, bold, italic, etc.)                                                                                                                                                |
+| SlashCommand        | `extensions/slash-command.ts`         | Slash command menu                                                                                                                                                                             |
+| Table               | `extensions/table.ts`                 | Table editing with row and column controls                                                                                                                                                     |
+| Link                | `extensions/link.ts`                  | Link with autolink and paste support                                                                                                                                                           |
+| Image               | `extensions/image.ts`                 | Image upload and resize                                                                                                                                                                        |
+| CodeBlock           | `extensions/code-block-lowlight.ts`   | Syntax-highlighted code blocks                                                                                                                                                                 |
+| CharacterCount      | `extensions/character-count.ts`       | Character and word counting                                                                                                                                                                    |
+| TextColor           | `extensions/text-color.ts`            | Text color and highlight                                                                                                                                                                       |
+| TaskList            | `extensions/task-list.ts`             | Checkbox task lists                                                                                                                                                                            |
+| DragHandle          | `extensions/drag-handle.ts`           | Block drag handle and keyboard reordering                                                                                                                                                      |
+| Markdown            | `extensions/markdown.ts`              | Markdown import and export                                                                                                                                                                     |
+| Mathematics         | `extensions/mathematics.ts`           | LaTeX math with KaTeX                                                                                                                                                                          |
+| Embed               | `extensions/embed.ts`                 | URL embedding (oEmbed/OGP)                                                                                                                                                                     |
+| Details             | `extensions/details.ts`               | Collapsible content blocks                                                                                                                                                                     |
+| Diagram             | `extensions/diagram.ts`               | Mermaid and GraphViz diagrams                                                                                                                                                                  |
+| WikiLink            | `extensions/wiki-link.ts`             | Wiki-style internal links                                                                                                                                                                      |
+| Comment             | `extensions/comment.ts`               | Text annotations and comments                                                                                                                                                                  |
+| MultiBlockSelection | `extensions/multi-block-selection.ts` | Always-on multi-block range selection with block-aware Backspace / Delete / Tab / Shift+Tab                                                                                                    |
+| BlockClipboard      | `extensions/block-clipboard.ts`       | Always-on block-aware copy / cut / paste; writes `application/x-vizel-blocks` (lossless JSON) plus `text/html` / `text/markdown` / `text/plain` mirrors and accepts the same payloads on paste |
+| BlockMenu           | `extensions/block-menu.ts`            | Block-level action menu surface (used by `VizelBlockMenu`)                                                                                                                                     |
+| Mention             | `extensions/mention.ts`               | `@`-mention suggestion menu with markdown encoding modes                                                                                                                                       |
+| FindReplace         | `extensions/find-replace.ts`          | In-document find / replace with highlight decorations                                                                                                                                          |
+| Highlight           | `extensions/highlight.ts`             | Text highlight mark (yellow / orange / green / blue / pink palette)                                                                                                                            |
+| Callout             | `extensions/callout.ts`               | Note / tip / warning / danger callout blocks                                                                                                                                                   |
+| ImageResize         | `extensions/image-resize.ts`          | Resize handles for the `image` node                                                                                                                                                            |
+| FileHandler         | `extensions/file-handler.ts`          | Paste / drop handler for file uploads                                                                                                                                                          |
+| Presence            | `extensions/presence.ts`              | Cursor / selection presence overlays for collaboration                                                                                                                                         |
+| Typography          | `extensions/typography.ts`            | Smart quote / em-dash / ellipsis input rules                                                                                                                                                   |
+| TableBase           | `extensions/table-base.ts`            | Base Tiptap Table family (without UI controls)                                                                                                                                                 |
+| TableControls       | `extensions/table-controls.ts`        | Row / column control overlays for the table feature                                                                                                                                            |
+| TableOfContents     | `extensions/table-of-contents.ts`     | Live-updated outline node sourced from headings                                                                                                                                                |
+| CommandShortcuts    | `extensions/command-shortcuts.ts`     | Keyboard shortcut bindings derived from `VizelCommand.shortcut`                                                                                                                                |
+| NodeTypes           | `extensions/node-types.ts`            | Helper extension for `VizelNodeTypeOption` lookups                                                                                                                                             |
 
 The following extensions are part of the always-on core and are NOT
 gated by `VizelFeatureOptions`: Base, Markdown, Link, CodeBlock,
@@ -154,16 +154,16 @@ lives at `flavor`, not under `features`).
 answer different consumer questions. Adding a new feature requires
 placing it in one of these three categories.
 
-| Category | Consumer question | Examples |
-|----------|--------------------|----------|
-| `content` | What can the document contain? | `image`, `table`, `mathematics`, `diagram`, `embed`, `callout`, `details`, `textColor`, `highlight`, `underline`, `superscript`, `subscript`, `taskList`, `wikiLink`, `tableOfContents` |
-| `interaction` | How does the user edit? | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth` |
-| `collaboration` | Who edits together? | `comments`, `provider`, `versionHistory`, `presence` |
+| Category        | Consumer question              | Examples                                                                                                                                                                                |
+| --------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content`       | What can the document contain? | `image`, `table`, `mathematics`, `diagram`, `embed`, `callout`, `details`, `textColor`, `highlight`, `underline`, `superscript`, `subscript`, `taskList`, `wikiLink`, `tableOfContents` |
+| `interaction`   | How does the user edit?        | `slashMenu`, `dragHandle`, `mention`, `characterCount`, `typography`, `placeholder`, `historyDepth`                                                                                     |
+| `collaboration` | Who edits together?            | `comments`, `provider`, `versionHistory`, `presence`                                                                                                                                    |
 
 ### Categorization rule
 
-When adding a new feature, ask: *what is the user's main motivation to
-turn this on?* That motivation determines the category. `mention` lives
+When adding a new feature, ask: _what is the user's main motivation to
+turn this on?_ That motivation determines the category. `mention` lives
 under `interaction` because users turn it on for the completion
 experience, not for the inline node it produces. `comments` lives under
 `collaboration` because the annotation flow only matters when other
@@ -232,7 +232,7 @@ throw new VizelError("MISSING_OPTIONAL_DEP", `[Vizel] Failed to load "${moduleNa
 
 Image-upload rejections emit `UPLOAD_FAILED` through
 `emitVizelError(error, onError)` so observability sinks see the failure,
-and *also* call the feature-level `onUploadError(error, file)` that demos
+and _also_ call the feature-level `onUploadError(error, file)` that demos
 and tests rely on.
 
 ```ts
@@ -264,13 +264,13 @@ spec for a specific editor and locale.
 
 ### Surfaces and builders
 
-| Surface | Builder | Output |
-|---------|---------|--------|
-| Slash menu | `buildVizelSlashMenuSpecFromCommands` | `VizelMenuSpec<VizelCommandSpec>` |
-| Toolbar | `buildVizelToolbarSpec` | `readonly VizelCommandSpec[]` |
-| Bubble menu | `buildVizelBubbleMenuSpec` | `readonly VizelCommandSpec[]` |
-| Block menu | `buildVizelBlockMenuSpecFromCommands` | `readonly VizelCommandSpec[]` |
-| Keyboard shortcut | `createVizelCommandShortcutsExtension` | `Extension` |
+| Surface           | Builder                                | Output                            |
+| ----------------- | -------------------------------------- | --------------------------------- |
+| Slash menu        | `buildVizelSlashMenuSpecFromCommands`  | `VizelMenuSpec<VizelCommandSpec>` |
+| Toolbar           | `buildVizelToolbarSpec`                | `readonly VizelCommandSpec[]`     |
+| Bubble menu       | `buildVizelBubbleMenuSpec`             | `readonly VizelCommandSpec[]`     |
+| Block menu        | `buildVizelBlockMenuSpecFromCommands`  | `readonly VizelCommandSpec[]`     |
+| Keyboard shortcut | `createVizelCommandShortcutsExtension` | `Extension`                       |
 
 Each builder filters by the corresponding `command.surfaces.*` entry,
 applies surface-specific tuning (priority sort, `showWhen` predicate),
@@ -284,7 +284,7 @@ components consume the resulting specs without seeing a
 `vizelFormatCommands`, `vizelBlockCommands`, and
 `vizelInsertCommands` ship in `packages/core/src/commands/registry/`.
 A command lives in exactly one registry, chosen by what the command
-*does*:
+_does_:
 
 - **`vizelFormatCommands`** — toggles a mark (bold, italic, strike,
   underline, code, superscript, subscript). Marks surface on the
@@ -370,11 +370,11 @@ representation under the chosen flavor, the extension emits
 The `markdown.encoding` field selects per-node encoding for nodes
 without a canonical Markdown representation:
 
-| Node | `"default"` | `"metadata-comment"` |
-|------|-------------|---------------------|
-| `embed` | `[Title](url)` | `[Title](url)<!-- vizel:embed type="..." id="..." -->` |
-| `mention` | `@username` | `@username <!-- vizel:mention id="..." -->` |
-| `wikiLink` | flavor-dependent (`[[page]]` for Obsidian; `[page](page)` elsewhere) | flavor-dependent + comment |
+| Node       | `"default"`                                                          | `"metadata-comment"`                                   |
+| ---------- | -------------------------------------------------------------------- | ------------------------------------------------------ |
+| `embed`    | `[Title](url)`                                                       | `[Title](url)<!-- vizel:embed type="..." id="..." -->` |
+| `mention`  | `@username`                                                          | `@username <!-- vizel:mention id="..." -->`            |
+| `wikiLink` | flavor-dependent (`[[page]]` for Obsidian; `[page](page)` elsewhere) | flavor-dependent + comment                             |
 
 `"default"` is portable; `"metadata-comment"` is lossless.
 
@@ -396,15 +396,15 @@ consumers can mix server and client without crashing at import time.
 
 ### Layer-by-layer rules
 
-| Layer | Server-callable | DOM access |
-|-------|----------------|-----------|
-| `utils/` | Yes | Never at module scope |
-| `builders/` | Yes | Never |
-| `commands/` | Yes | Never |
-| `markdown/` | Yes | Never |
-| `controllers/` | Factory yes; `mount()` no | Inside `mount()` only, with an SSR guard |
-| `extensions/` | Factory yes; ProseMirror plugin no | Inside ProseMirror plugins only |
-| `utils/editorFactory.ts` | No — throws `VizelError("SSR_NOT_SUPPORTED")` | (Throws before reaching the DOM) |
+| Layer                    | Server-callable                               | DOM access                               |
+| ------------------------ | --------------------------------------------- | ---------------------------------------- |
+| `utils/`                 | Yes                                           | Never at module scope                    |
+| `builders/`              | Yes                                           | Never                                    |
+| `commands/`              | Yes                                           | Never                                    |
+| `markdown/`              | Yes                                           | Never                                    |
+| `controllers/`           | Factory yes; `mount()` no                     | Inside `mount()` only, with an SSR guard |
+| `extensions/`            | Factory yes; ProseMirror plugin no            | Inside ProseMirror plugins only          |
+| `utils/editorFactory.ts` | No — throws `VizelError("SSR_NOT_SUPPORTED")` | (Throws before reaching the DOM)         |
 
 `pnpm check:ssr` runs `scripts/check-ssr-safety.ts`, which walks
 `utils/`, `builders/`, `commands/`, `markdown/`, plus `types.ts` and
@@ -492,11 +492,11 @@ Order exports alphabetically.
 
 ### Naming Conventions
 
-| Pattern | Example |
-|---------|---------|
-| Options type | `VizelExtensionsOptions`, `VizelImageOptions` |
+| Pattern          | Example                                            |
+| ---------------- | -------------------------------------------------- |
+| Options type     | `VizelExtensionsOptions`, `VizelImageOptions`      |
 | Factory function | `createVizelExtensions()`, `createLinkExtension()` |
-| Extension class | `SlashCommand`, `ImageResize` |
+| Extension class  | `SlashCommand`, `ImageResize`                      |
 
 ## CSS Styles
 
@@ -545,10 +545,10 @@ A single CSS entry per framework package
 render correctly. Three import patterns are supported via the
 package's subpath exports:
 
-| Pattern | Import | Use case |
-|---------|--------|----------|
-| Full | `@vizel/core/styles.css` | Default. Vizel ships its own tokens. |
-| Variables only | `@vizel/core/styles/variables.css` | Consumer supplies their own component CSS. |
+| Pattern         | Import                              | Use case                                             |
+| --------------- | ----------------------------------- | ---------------------------------------------------- |
+| Full            | `@vizel/core/styles.css`            | Default. Vizel ships its own tokens.                 |
+| Variables only  | `@vizel/core/styles/variables.css`  | Consumer supplies their own component CSS.           |
 | Components only | `@vizel/core/styles/components.css` | Consumer maps another design system to Vizel tokens. |
 
 ### Documentation policy

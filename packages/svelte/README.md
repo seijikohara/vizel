@@ -74,56 +74,56 @@ const md = createVizelMarkdown(() => editor.current);
 
 ## Components
 
-| Component | Description |
-|-----------|-------------|
-| `Vizel` | All-in-one editor with bubble menu and optional toolbar |
-| `VizelEditor` | Editor component |
-| `VizelBubbleMenu` | Floating formatting toolbar |
-| `VizelBubbleMenuDefault` | Default bubble menu layout |
-| `VizelBubbleMenuButton` | Bubble menu button |
-| `VizelBubbleMenuDivider` | Bubble menu divider |
-| `VizelBubbleMenuColorPicker` | Bubble menu color picker |
-| `VizelSlashMenu` | Slash command menu |
-| `VizelSlashMenuItem` | Slash command menu item |
-| `VizelSlashMenuEmpty` | Slash command empty state |
-| `VizelBlockMenu` | Block context menu (drag handle click) |
-| `VizelToolbar` | Fixed toolbar |
-| `VizelToolbarDefault` | Default toolbar layout |
-| `VizelToolbarButton` | Toolbar button |
-| `VizelToolbarDivider` | Toolbar divider |
-| `VizelToolbarDropdown` | Toolbar dropdown button |
-| `VizelToolbarOverflow` | Toolbar overflow menu |
-| `VizelMentionMenu` | @mention suggestion menu |
-| `VizelOutline` | Heading-tree overview / navigation panel |
-| `VizelLinkEditor` | Link editing popover |
-| `VizelNodeSelector` | Node type selector |
-| `VizelColorPicker` | Color picker |
-| `VizelFindReplace` | Find and replace panel |
-| `VizelSaveIndicator` | Auto-save status indicator |
-| `VizelEmbedView` | Embed content viewer |
-| `VizelIcon` | Icon component |
-| `VizelIconProvider` | Custom icon provider |
-| `VizelThemeProvider` | Theme provider |
-| `VizelProvider` | Editor context provider |
-| `VizelPortal` | Portal component |
+| Component                    | Description                                             |
+| ---------------------------- | ------------------------------------------------------- |
+| `Vizel`                      | All-in-one editor with bubble menu and optional toolbar |
+| `VizelEditor`                | Editor component                                        |
+| `VizelBubbleMenu`            | Floating formatting toolbar                             |
+| `VizelBubbleMenuDefault`     | Default bubble menu layout                              |
+| `VizelBubbleMenuButton`      | Bubble menu button                                      |
+| `VizelBubbleMenuDivider`     | Bubble menu divider                                     |
+| `VizelBubbleMenuColorPicker` | Bubble menu color picker                                |
+| `VizelSlashMenu`             | Slash command menu                                      |
+| `VizelSlashMenuItem`         | Slash command menu item                                 |
+| `VizelSlashMenuEmpty`        | Slash command empty state                               |
+| `VizelBlockMenu`             | Block context menu (drag handle click)                  |
+| `VizelToolbar`               | Fixed toolbar                                           |
+| `VizelToolbarDefault`        | Default toolbar layout                                  |
+| `VizelToolbarButton`         | Toolbar button                                          |
+| `VizelToolbarDivider`        | Toolbar divider                                         |
+| `VizelToolbarDropdown`       | Toolbar dropdown button                                 |
+| `VizelToolbarOverflow`       | Toolbar overflow menu                                   |
+| `VizelMentionMenu`           | @mention suggestion menu                                |
+| `VizelOutline`               | Heading-tree overview / navigation panel                |
+| `VizelLinkEditor`            | Link editing popover                                    |
+| `VizelNodeSelector`          | Node type selector                                      |
+| `VizelColorPicker`           | Color picker                                            |
+| `VizelFindReplace`           | Find and replace panel                                  |
+| `VizelSaveIndicator`         | Auto-save status indicator                              |
+| `VizelEmbedView`             | Embed content viewer                                    |
+| `VizelIcon`                  | Icon component                                          |
+| `VizelIconProvider`          | Custom icon provider                                    |
+| `VizelThemeProvider`         | Theme provider                                          |
+| `VizelProvider`              | Editor context provider                                 |
+| `VizelPortal`                | Portal component                                        |
 
 ## Runes
 
-| Rune | Description |
-|------|-------------|
-| `createVizelEditor` | Create and manage editor instance |
-| `createVizelEditorState` | Track editor state changes |
-| `createVizelState` | Trigger reactivity on editor updates |
-| `createVizelMarkdown` | Two-way Markdown synchronization |
-| `createVizelAutoSave` | Auto-save to localStorage or custom backend |
-| `createVizelCollaboration` | Real-time collaboration management |
-| `createVizelComment` | Comment and annotation management |
-| `createVizelVersionHistory` | Document version history |
-| `getVizelContext` | Access editor from context |
-| `getVizelContextSafe` | Access editor from context (returns null outside provider) |
-| `getVizelTheme` | Access theme from context |
-| `getVizelThemeSafe` | Access theme from context (returns `null` outside `VizelThemeProvider`) |
-| `getVizelIconContext` | Access icon context |
+| Rune                        | Description                                                             |
+| --------------------------- | ----------------------------------------------------------------------- |
+| `createVizelEditor`         | Create and manage editor instance                                       |
+| `createVizelEditorState`    | Track editor state changes                                              |
+| `createVizelState`          | Trigger reactivity on editor updates                                    |
+| `createVizelMarkdown`       | Two-way Markdown synchronization                                        |
+| `createVizelAutoSave`       | Auto-save to localStorage or custom backend                             |
+| `createVizelCollaboration`  | Real-time collaboration management                                      |
+| `createVizelComment`        | Comment and annotation management                                       |
+| `createVizelVersionHistory` | Document version history                                                |
+| `getVizelContext`           | Access editor from context                                              |
+| `getVizelContextSafe`       | Access editor from context (returns null outside provider)              |
+| `getVizelTheme`             | Access theme from context                                               |
+| `getVizelThemeSafe`         | Access theme from context (returns `null` outside `VizelThemeProvider`) |
+| `getVizelIconContext`       | Access icon context                                                     |
 
 ## Documentation
 

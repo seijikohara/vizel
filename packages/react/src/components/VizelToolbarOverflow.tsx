@@ -2,6 +2,7 @@ import type { Editor, VizelLocale, VizelToolbarActionItem } from "@vizel/core";
 import { formatVizelTooltip, isVizelToolbarDropdownAction, vizelEnLocale } from "@vizel/core";
 import { createVizelDismissable } from "@vizel/headless";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+
 import { VizelIcon } from "./VizelIcon.tsx";
 import { VizelToolbarButton } from "./VizelToolbarButton.tsx";
 import { VizelToolbarDropdown } from "./VizelToolbarDropdown.tsx";
@@ -81,7 +82,6 @@ export function VizelToolbarOverflow({
       </button>
 
       {isOpen && (
-        // biome-ignore lint/a11y/useSemanticElements: toolbar overflow popover groups buttons semantically, not a form fieldset
         <div className="vizel-toolbar-overflow-popover" role="group">
           {actions.map((action) =>
             isVizelToolbarDropdownAction(action) ? (

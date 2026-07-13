@@ -11,7 +11,9 @@
  */
 
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, describe, it } from "node:test";
+
+import { afterEach, beforeEach, describe, it } from "vitest";
+
 import {
   buildVizelFocusTrapSpec,
   createVizelFocusTrapController,
@@ -94,6 +96,7 @@ class FakeElement {
         calls.prevented = true;
       },
     } as unknown as KeyboardEvent;
+    // oxlint-disable-next-line unicorn/no-useless-spread -- snapshot before iterating so a handler unregistering itself mid-dispatch cannot skip entries
     for (const handler of [...this.listeners]) handler(full);
     return calls.prevented;
   }

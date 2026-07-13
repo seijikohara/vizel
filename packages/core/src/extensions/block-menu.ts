@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core";
 import type { Node } from "@tiptap/pm/model";
+
 import type { VizelLocale } from "../i18n/types.ts";
 import type { VizelBlockMenuIconName } from "../icons/types.ts";
 import { groupByConsecutiveField } from "../utils/groupByField.ts";

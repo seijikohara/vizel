@@ -9,6 +9,7 @@ import {
   type VizelLocale,
 } from "@vizel/core";
 import { useMemo, useState } from "react";
+
 import { useVizelEditorState } from "../_reactivity.ts";
 import { VizelBubbleMenuButton } from "./VizelBubbleMenuButton.tsx";
 import { VizelBubbleMenuColorPicker } from "./VizelBubbleMenuColorPicker.tsx";
@@ -95,7 +96,7 @@ export function VizelBubbleMenuDefault({
       <VizelNodeSelector editor={editor} />
       <VizelBubbleMenuDivider />
       {markGroups.map((group, groupIndex) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: groups are derived from the stable action list whose ordering is fixed at locale resolution time
+        // oxlint-disable-next-line react/no-array-index-key -- groups are derived from the stable action list whose ordering is fixed at locale resolution time
         <div key={`group-${groupIndex}`} style={{ display: "contents" }}>
           {groupIndex > 0 && <VizelBubbleMenuDivider />}
           {group.map(renderAction)}

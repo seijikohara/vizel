@@ -4,9 +4,19 @@
 pre-commit:
   parallel: true
   commands:
-    biome-check:
-      glob: "*.{js,ts,cjs,mjs,jsx,tsx,json,jsonc,vue,svelte}"
-      run: npx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+    oxfmt:
+      glob: "*.{js,ts,cjs,mjs,jsx,tsx,json,jsonc,vue,svelte,css,yml,yaml,md}"
+      # oxfmt's ignorePatterns (.oxfmtrc.json) excludes pnpm-lock.yaml, but the
+      # glob above still matches it. When a commit's staged set is
+      # lockfile-only, oxfmt receives zero effective targets after filtering
+      # and exits non-zero by default; opt into its documented flag so that
+      # case is a no-op instead of a hook failure.
+      run: pnpm exec oxfmt --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true
+
+    oxlint:
+      glob: "*.{js,ts,cjs,mjs,jsx,tsx,vue,svelte}"
+      run: pnpm exec oxlint --fix {staged_files}
       stage_fixed: true
 
     typecheck-core:

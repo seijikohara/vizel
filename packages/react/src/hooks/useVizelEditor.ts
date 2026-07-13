@@ -6,6 +6,7 @@ import {
   wrapAsVizelError,
 } from "@vizel/core";
 import { useEffect, useRef, useState } from "react";
+
 import { createVizelSlashMenuRenderer } from "./createVizelSlashMenuRenderer.ts";
 
 /**

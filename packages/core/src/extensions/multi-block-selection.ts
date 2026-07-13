@@ -27,7 +27,7 @@ import { Decoration, DecorationSet } from "@tiptap/pm/view";
  * custom CSS attribute name) can be added without changing the extension
  * signature.
  */
-// biome-ignore lint/suspicious/noEmptyInterface: reserved for future configurable knobs without breaking consumers
+// oxlint-disable-next-line typescript/no-empty-object-type -- reserved for future configurable knobs without breaking consumers
 export interface VizelMultiBlockSelectionOptions {}
 
 /**
@@ -82,7 +82,7 @@ function computeMultiBlockSelectionState(
   // Walk the doc's top-level children and collect blocks that overlap
   // the selection range. Top-level blocks live at depth 1 in the
   // ProseMirror tree (the doc node itself is depth 0).
-  const overlappingBlocks: Array<{ start: number; end: number }> = [];
+  const overlappingBlocks: { start: number; end: number }[] = [];
 
   doc.forEach((child, offset) => {
     if (!child.isBlock) return;
@@ -185,7 +185,7 @@ function applyListIndentToRange(
   rangeState: VizelMultiBlockSelectionState,
   direction: "sink" | "lift"
 ): boolean {
-  const positions = [...rangeState.blockPositions].reverse();
+  const positions = rangeState.blockPositions.toReversed();
 
   return positions.reduce<boolean>((applied, pos) => {
     const node = editor.state.doc.nodeAt(pos);
@@ -198,10 +198,8 @@ function applyListIndentToRange(
 
     // Select the list item by its node position so the Tiptap command
     // operates against exactly that block.
-    const chain = editor
-      .chain()
-      .setNodeSelection(pos)
-      [direction === "sink" ? "sinkListItem" : "liftListItem"](typeName);
+    const listCommandName = direction === "sink" ? "sinkListItem" : "liftListItem";
+    const chain = editor.chain().setNodeSelection(pos)[listCommandName](typeName);
     return chain.run() || applied;
   }, false);
 }

@@ -8,6 +8,7 @@ import {
   type VizelSuggestionRendererOptions,
 } from "@vizel/core";
 import { type App, createApp, h, ref, shallowRef } from "vue";
+
 import { VizelSlashMenu } from "../components/index.ts";
 
 export type { VizelSuggestionRendererOptions };
@@ -70,13 +71,13 @@ export function createVizelSlashMenuRenderer(
           const app = createApp({
             setup() {
               return () => {
-                const props = current.value;
-                if (!props) return null;
+                const latestProps = current.value;
+                if (!latestProps) return null;
                 return h(VizelSlashMenu, {
-                  commands: props.items,
-                  editor: props.editor,
-                  locale: getVizelSlashCommandLocale(props.editor),
-                  query: props.query,
+                  commands: latestProps.items,
+                  editor: latestProps.editor,
+                  locale: getVizelSlashCommandLocale(latestProps.editor),
+                  query: latestProps.query,
                   ...(options.className !== undefined && { class: options.className }),
                   ref: componentRef,
                   onSelect: runById,

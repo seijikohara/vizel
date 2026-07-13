@@ -1,0 +1,129 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "import",
+    "typescript",
+    "unicorn",
+    "oxc",
+    "react",
+    "react-perf",
+    "jsx-a11y",
+    "promise",
+    "node"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/.svelte-kit/**",
+    "**/.cache/**",
+    "**/.bun/**",
+    "playwright-report/**",
+    "test-results/**",
+    "coverage/**",
+    ".claude/worktrees/**"
+  ],
+  "rules": {
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-unused-vars": "error",
+    "no-var": "error",
+    "no-empty": "error",
+    "require-await": "error",
+    "prefer-const": "error",
+    "prefer-template": "error",
+    "no-template-curly-in-string": "error",
+    "no-negated-condition": "error",
+    "no-nested-ternary": "warn",
+    "import/no-default-export": "error",
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-non-null-assertion": "warn",
+    "typescript/no-namespace": "error",
+    "typescript/no-empty-object-type": "error",
+    "typescript/adjacent-overload-signatures": "error",
+    "typescript/array-type": ["error", { "default": "array" }],
+    "unicorn/prefer-date-now": "error",
+    "unicorn/prefer-node-protocol": "error",
+    "unicorn/prefer-number-properties": "error",
+    "unicorn/throw-new-error": "error",
+    "unicorn/error-message": "error",
+    "react/no-array-index-key": "error",
+    "react/no-danger": "error",
+    "react/jsx-fragments": "error",
+    "jsx-a11y/no-static-element-interactions": "warn",
+    "jsx-a11y/autocomplete-valid": "warn",
+    "react/react-in-jsx-scope": "off",
+    "import/no-unassigned-import": "off",
+    "import/no-named-as-default": "off",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "unicorn/prefer-add-event-listener": "off",
+    "promise/always-return": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.svelte", "**/*.svelte.ts", "**/*.svelte.js"],
+      "rules": {
+        "no-unused-vars": "off",
+        "prefer-const": "off",
+        "react/rules-of-hooks": "off",
+        "no-unused-expressions": "off"
+      }
+    },
+    {
+      "files": ["**/*.vue"],
+      "rules": {
+        "no-unused-vars": "off",
+        "react/rules-of-hooks": "off"
+      }
+    },
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["apps/demo/**/*"],
+      "rules": {
+        "no-console": "off",
+        "typescript/no-non-null-assertion": "off",
+        "jsx-a11y/no-autofocus": "off"
+      }
+    },
+    {
+      "files": ["packages/core/src/**/*.ts"],
+      "rules": {
+        "no-console": ["error", { "allow": [] }]
+      }
+    },
+    {
+      "files": [
+        "**/vite.config.ts",
+        "**/svelte.config.js",
+        "**/tailwind.config.ts",
+        "**/postcss.config.js",
+        "**/vitest.browser.config.ts",
+        "**/vitest.config.ts",
+        "docs/.vitepress/config.mts",
+        "docs/.vitepress/theme/index.ts"
+      ],
+      "rules": {
+        "import/no-default-export": "off"
+      }
+    },
+    {
+      "files": ["packages/*/scripts/**/*", "scripts/**/*", "tests/**/*"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["scripts/check-no-let.ts"],
+      "rules": {
+        "typescript/array-type": "off"
+      }
+    }
+  ]
+}

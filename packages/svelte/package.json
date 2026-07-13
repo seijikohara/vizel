@@ -1,38 +1,38 @@
 {
   "name": "@vizel/svelte",
   "version": "2.0.2",
-  "type": "module",
+  "description": "Svelte 5 components and runes for Vizel block-based Markdown editor",
+  "keywords": [
+    "block-editor",
+    "editor",
+    "markdown",
+    "rich-text",
+    "svelte",
+    "tiptap",
+    "vizel",
+    "wysiwyg"
+  ],
+  "homepage": "https://seijikohara.github.io/vizel/",
+  "bugs": {
+    "url": "https://github.com/seijikohara/vizel/issues"
+  },
+  "license": "MIT",
+  "author": "Seiji Kohara",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/seijikohara/vizel.git",
     "directory": "packages/svelte"
   },
-  "description": "Svelte 5 components and runes for Vizel block-based Markdown editor",
-  "license": "MIT",
-  "author": "Seiji Kohara",
-  "homepage": "https://seijikohara.github.io/vizel/",
-  "bugs": {
-    "url": "https://github.com/seijikohara/vizel/issues"
-  },
-  "engines": {
-    "node": ">=24"
-  },
-  "keywords": [
-    "vizel",
-    "tiptap",
-    "editor",
-    "markdown",
-    "svelte",
-    "wysiwyg",
-    "rich-text",
-    "block-editor"
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "./dist/index.js"
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "svelte": "./dist/index.js",
-  "sideEffects": [
-    "./dist/index.js"
-  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -45,9 +45,6 @@
     "./styles/components.css": "./dist/styles/components.css",
     "./mathematics.css": "./dist/mathematics.css"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "svelte-package -i src -o dist && node scripts/compile-svelte.mjs && node scripts/write-style-shims.mjs",
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
@@ -56,19 +53,6 @@
     "@iconify/svelte": "^5.2.2",
     "@vizel/core": "workspace:^",
     "@vizel/headless": "workspace:^"
-  },
-  "peerDependencies": {
-    "@tiptap/extension-bold": "^3.23.4",
-    "@tiptap/extension-code": "^3.23.4",
-    "@tiptap/extension-color": "^3.23.4",
-    "@tiptap/extension-highlight": "^3.23.4",
-    "@tiptap/extension-italic": "^3.23.4",
-    "@tiptap/extension-strike": "^3.23.4",
-    "@tiptap/extension-subscript": "^3.23.4",
-    "@tiptap/extension-superscript": "^3.23.4",
-    "@tiptap/extension-text-style": "^3.23.4",
-    "@tiptap/extension-underline": "^3.23.4",
-    "svelte": "^5"
   },
   "devDependencies": {
     "@sveltejs/package": "^2.5.8",
@@ -84,6 +68,22 @@
     "@tiptap/extension-text-style": "^3.26.1",
     "@tiptap/extension-underline": "^3.26.1",
     "@vizel/core": "workspace:^",
-    "svelte-check": "^4.6.0"
+    "svelte-check": "^4.7.2"
+  },
+  "peerDependencies": {
+    "@tiptap/extension-bold": "^3.23.4",
+    "@tiptap/extension-code": "^3.23.4",
+    "@tiptap/extension-color": "^3.23.4",
+    "@tiptap/extension-highlight": "^3.23.4",
+    "@tiptap/extension-italic": "^3.23.4",
+    "@tiptap/extension-strike": "^3.23.4",
+    "@tiptap/extension-subscript": "^3.23.4",
+    "@tiptap/extension-superscript": "^3.23.4",
+    "@tiptap/extension-text-style": "^3.23.4",
+    "@tiptap/extension-underline": "^3.23.4",
+    "svelte": "^5"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

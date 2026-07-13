@@ -21,6 +21,7 @@ import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import Text from "@tiptap/extension-text";
 import Underline from "@tiptap/extension-underline";
+
 import { vizelDefaultCommands } from "../commands/registry/index.ts";
 import type { VizelCommand } from "../commands/types.ts";
 import type { VizelLocale } from "../i18n/types.ts";
@@ -53,8 +54,8 @@ import { createVizelMentionExtension } from "./mention.ts";
 import { createVizelMultiBlockSelectionExtension } from "./multi-block-selection.ts";
 import { createVizelPresenceExtension } from "./presence.ts";
 import { VizelSlashCommand } from "./slash-command.ts";
-import { createVizelTableExtensions } from "./table.ts";
 import { createVizelTableOfContentsExtension } from "./table-of-contents.ts";
+import { createVizelTableExtensions } from "./table.ts";
 import { createVizelTaskListExtensions } from "./task-list.ts";
 import { createVizelTextColorExtensions } from "./text-color.ts";
 import { createVizelTypographyExtension } from "./typography.ts";

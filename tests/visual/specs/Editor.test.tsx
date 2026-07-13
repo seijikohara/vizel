@@ -1,7 +1,8 @@
 import { Vizel } from "@vizel/react";
 import { describe, expect, test } from "vitest";
-import { page } from "vitest/browser";
 import { render } from "vitest-browser-react";
+import { page } from "vitest/browser";
+
 // Load the component styles: the Vitest config does not inject them globally, and
 // a visual snapshot is meaningless without them.
 import "@vizel/core/styles/index.scss";

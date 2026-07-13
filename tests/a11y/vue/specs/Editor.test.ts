@@ -1,5 +1,6 @@
 import { describe, test } from "vitest";
 import { render } from "vitest-browser-vue";
+
 import { expectNoVizelA11yViolations } from "../../scenarios/axe.scenario";
 import EditorFixture from "./EditorFixture.vue";
 

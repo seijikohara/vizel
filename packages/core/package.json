@@ -1,37 +1,37 @@
 {
   "name": "@vizel/core",
   "version": "2.0.2",
-  "type": "module",
+  "description": "Framework-agnostic core for Vizel block-based Markdown editor built on Tiptap",
+  "keywords": [
+    "block-editor",
+    "editor",
+    "markdown",
+    "prosemirror",
+    "rich-text",
+    "tiptap",
+    "vizel",
+    "wysiwyg"
+  ],
+  "homepage": "https://seijikohara.github.io/vizel/",
+  "bugs": {
+    "url": "https://github.com/seijikohara/vizel/issues"
+  },
+  "license": "MIT",
+  "author": "Seiji Kohara",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/seijikohara/vizel.git",
     "directory": "packages/core"
   },
-  "description": "Framework-agnostic core for Vizel block-based Markdown editor built on Tiptap",
-  "license": "MIT",
-  "author": "Seiji Kohara",
-  "homepage": "https://seijikohara.github.io/vizel/",
-  "bugs": {
-    "url": "https://github.com/seijikohara/vizel/issues"
-  },
-  "engines": {
-    "node": ">=24"
-  },
-  "keywords": [
-    "vizel",
-    "tiptap",
-    "editor",
-    "markdown",
-    "wysiwyg",
-    "rich-text",
-    "block-editor",
-    "prosemirror"
+  "files": [
+    "dist"
   ],
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "type": "module",
   "sideEffects": [
     "*.css"
   ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -43,9 +43,6 @@
     "./styles/components.css": "./dist/styles/components.css",
     "./mathematics.css": "./dist/mathematics.css"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "vite build && npm run build:css",
     "build:css": "npm run build:css:styles && npm run build:css:variables && npm run build:css:components && npm run build:css:mathematics",
@@ -54,6 +51,35 @@
     "build:css:components": "sass --load-path=src/styles --load-path=node_modules src/styles/entries/components.scss dist/styles/components.css --style=compressed",
     "build:css:mathematics": "node scripts/build-mathematics-css.mjs",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tiptap/extension-list": "^3.26.1",
+    "@tiptap/extension-node-range": "^3.26.1",
+    "@tiptap/extensions": "^3.26.1",
+    "@tiptap/y-tiptap": "^3.0.5",
+    "@vizel/headless": "workspace:^",
+    "markdown-it": "^14.2.0",
+    "markdown-it-deflist": "^3.0.1",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-sub": "^2.0.0",
+    "markdown-it-sup": "^2.0.0",
+    "prosemirror-markdown": "^1.13.4",
+    "tiptap-markdown": "^0.9.0"
+  },
+  "devDependencies": {
+    "@iconify-json/lucide": "^1.2.113",
+    "@iconify/utils": "^3.1.3",
+    "@tiptap/extension-mention": "^3.26.1",
+    "@tiptap/extension-subscript": "^3.26.1",
+    "@tiptap/extension-superscript": "^3.26.1",
+    "@tiptap/extension-typography": "^3.26.1",
+    "@types/markdown-it": "^14.1.2",
+    "@types/markdown-it-footnote": "^3.0.4",
+    "dompurify": "^3.4.10",
+    "fuse.js": "^7.4.2",
+    "sass": "^1.101.0",
+    "vite": "^8.0.16",
+    "vite-plugin-dts": "^5.0.2"
   },
   "peerDependencies": {
     "@hpcc-js/wasm-graphviz": "^1.0.0",
@@ -141,33 +167,7 @@
       "optional": true
     }
   },
-  "devDependencies": {
-    "@iconify-json/lucide": "^1.2.113",
-    "@iconify/utils": "^3.1.3",
-    "@tiptap/extension-mention": "^3.26.1",
-    "@tiptap/extension-subscript": "^3.26.1",
-    "@tiptap/extension-superscript": "^3.26.1",
-    "@tiptap/extension-typography": "^3.26.1",
-    "@types/markdown-it": "^14.1.2",
-    "@types/markdown-it-footnote": "^3.0.4",
-    "dompurify": "^3.4.10",
-    "fuse.js": "^7.4.2",
-    "sass": "^1.101.0",
-    "vite": "^8.0.16",
-    "vite-plugin-dts": "^5.0.2"
-  },
-  "dependencies": {
-    "@tiptap/extension-list": "^3.26.1",
-    "@tiptap/extension-node-range": "^3.26.1",
-    "@tiptap/extensions": "^3.26.1",
-    "@tiptap/y-tiptap": "^3.0.5",
-    "@vizel/headless": "workspace:^",
-    "markdown-it": "^14.2.0",
-    "markdown-it-deflist": "^3.0.1",
-    "markdown-it-footnote": "^4.0.0",
-    "markdown-it-sub": "^2.0.0",
-    "markdown-it-sup": "^2.0.0",
-    "prosemirror-markdown": "^1.13.4",
-    "tiptap-markdown": "^0.9.0"
+  "engines": {
+    "node": ">=24"
   }
 }

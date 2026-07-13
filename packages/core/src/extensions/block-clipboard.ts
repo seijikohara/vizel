@@ -34,6 +34,7 @@ import { Extension } from "@tiptap/core";
 import { Slice } from "@tiptap/pm/model";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { EditorView } from "@tiptap/pm/view";
+
 import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
 import { getVizelMultiBlockSelectionState } from "./multi-block-selection.ts";
 
@@ -307,6 +308,7 @@ export function createVizelBlockClipboardExtension(
     },
 
     addProseMirrorPlugins() {
+      // oxlint-disable-next-line typescript/no-this-alias -- the nested Plugin event handlers below run with their own `this` binding and need the extension instance captured from the enclosing method
       const extension = this;
 
       return [

@@ -9,12 +9,12 @@ Welcome to the **Vizel Editor** - a block-based visual editor for Markdown. This
 Vizel supports rich text formatting. Try selecting text to see the **bubble menu**.
 
 - **Bold text** - `Cmd+B`
-- *Italic text* - `Cmd+I`
+- _Italic text_ - `Cmd+I`
 - ~~Strikethrough~~ - select and click S
 - <u>Underlined text</u> - `Cmd+U`
 - `Inline code` - select and click code button
 
-You can also combine formats: ***bold and italic***, **`bold code`**, or ~~*strikethrough italic*~~.
+You can also combine formats: _**bold and italic**_, **`bold code`**, or ~~_strikethrough italic_~~.
 
 ---
 
@@ -25,6 +25,7 @@ Use slash commands or keyboard shortcuts to create headings:
 ### Heading 3 - `Cmd+Alt+3`
 
 Type `/heading` or use shortcuts:
+
 - `Cmd+Alt+1` for Heading 1
 - `Cmd+Alt+2` for Heading 2
 - `Cmd+Alt+3` for Heading 3
@@ -87,12 +88,12 @@ Use `---`, `***`, or `___` followed by space, or type `/divider`:
 
 Tables support alignment, row/column insertion, and cell merging. Hover over borders to insert rows/columns. Click handles for more options.
 
-| Feature | Shortcut | Description |
-|:--------|:--------:|------------:|
-| Bold | `Cmd+B` | Make text bold |
-| Italic | `Cmd+I` | Make text italic |
-| Undo | `Cmd+Z` | Undo last action |
-| Redo | `Cmd+Shift+Z` | Redo action |
+| Feature |   Shortcut    |      Description |
+| :------ | :-----------: | ---------------: |
+| Bold    |    `Cmd+B`    |   Make text bold |
+| Italic  |    `Cmd+I`    | Make text italic |
+| Undo    |    `Cmd+Z`    | Undo last action |
+| Redo    | `Cmd+Shift+Z` |      Redo action |
 
 ---
 
@@ -122,7 +123,7 @@ def fibonacci(n: int) -> list[int]:
         return []
     elif n == 1:
         return [0]
-    
+
     fib = [0, 1]
     for _ in range(2, n):
         fib.append(fib[-1] + fib[-2])
@@ -133,7 +134,7 @@ print(fibonacci(10))  # [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
 ```
 
 ```sql
-SELECT 
+SELECT
     u.name,
     COUNT(o.id) AS order_count,
     SUM(o.total) AS total_spent
@@ -195,7 +196,7 @@ sequenceDiagram
     participant Frontend
     participant API
     participant Database
-    
+
     User->>Frontend: Click submit
     Frontend->>API: POST /data
     API->>Database: INSERT
@@ -248,7 +249,7 @@ digraph G {
     rankdir=LR
     node [shape=box, style="rounded,filled", fillcolor="#e8f4f8"]
     edge [color="#666666"]
-    
+
     Input -> Validate
     Validate -> Process [label="valid"]
     Validate -> Error [label="invalid"]
@@ -264,15 +265,15 @@ digraph G {
 digraph OrgChart {
     rankdir=TB
     node [shape=box, style="filled", fillcolor="#f0f7ff"]
-    
+
     CEO [label="CEO\nJohn Smith"]
     CTO [label="CTO\nJane Doe"]
     CFO [label="CFO\nBob Wilson"]
-    
+
     Dev1 [label="Dev Team Lead"]
     Dev2 [label="Frontend Dev"]
     Dev3 [label="Backend Dev"]
-    
+
     CEO -> CTO
     CEO -> CFO
     CTO -> Dev1
@@ -358,12 +359,12 @@ This works for paragraphs, headings, lists, and all other block types.
 
 Type `/` anywhere to open the command menu. Available commands:
 
-| Category | Commands |
-|:---------|:---------|
-| **Text** | Heading 1, Heading 2, Heading 3 |
-| **Lists** | Bullet List, Numbered List, Task List |
-| **Blocks** | Quote, Divider, Details, Code Block, Table |
-| **Media** | Image, Upload Image, Embed |
+| Category     | Commands                                      |
+| :----------- | :-------------------------------------------- |
+| **Text**     | Heading 1, Heading 2, Heading 3               |
+| **Lists**    | Bullet List, Numbered List, Task List         |
+| **Blocks**   | Quote, Divider, Details, Code Block, Table    |
+| **Media**    | Image, Upload Image, Embed                    |
 | **Advanced** | Math Equation, Inline Math, Mermaid, GraphViz |
 
 The menu supports fuzzy search - try typing `/todo` to find Task List.
@@ -372,23 +373,23 @@ The menu supports fuzzy search - try typing `/todo` to find Task List.
 
 ## Keyboard Shortcuts
 
-| Action | Mac | Windows/Linux |
-|:-------|:----|:--------------|
-| Bold | `⌘+B` | `Ctrl+B` |
-| Italic | `⌘+I` | `Ctrl+I` |
-| Underline | `⌘+U` | `Ctrl+U` |
-| Strikethrough | `⌘+Shift+S` | `Ctrl+Shift+S` |
-| Heading 1 | `⌘+Alt+1` | `Ctrl+Alt+1` |
-| Heading 2 | `⌘+Alt+2` | `Ctrl+Alt+2` |
-| Heading 3 | `⌘+Alt+3` | `Ctrl+Alt+3` |
-| Bullet List | `⌘+Shift+8` | `Ctrl+Shift+8` |
-| Ordered List | `⌘+Shift+7` | `Ctrl+Shift+7` |
-| Blockquote | `⌘+Shift+B` | `Ctrl+Shift+B` |
-| Code Block | `⌘+Alt+C` | `Ctrl+Alt+C` |
-| Undo | `⌘+Z` | `Ctrl+Z` |
-| Redo | `⌘+Shift+Z` | `Ctrl+Shift+Z` |
-| Move Block Up | `Alt+↑` | `Alt+↑` |
-| Move Block Down | `Alt+↓` | `Alt+↓` |
+| Action          | Mac         | Windows/Linux  |
+| :-------------- | :---------- | :------------- |
+| Bold            | `⌘+B`       | `Ctrl+B`       |
+| Italic          | `⌘+I`       | `Ctrl+I`       |
+| Underline       | `⌘+U`       | `Ctrl+U`       |
+| Strikethrough   | `⌘+Shift+S` | `Ctrl+Shift+S` |
+| Heading 1       | `⌘+Alt+1`   | `Ctrl+Alt+1`   |
+| Heading 2       | `⌘+Alt+2`   | `Ctrl+Alt+2`   |
+| Heading 3       | `⌘+Alt+3`   | `Ctrl+Alt+3`   |
+| Bullet List     | `⌘+Shift+8` | `Ctrl+Shift+8` |
+| Ordered List    | `⌘+Shift+7` | `Ctrl+Shift+7` |
+| Blockquote      | `⌘+Shift+B` | `Ctrl+Shift+B` |
+| Code Block      | `⌘+Alt+C`   | `Ctrl+Alt+C`   |
+| Undo            | `⌘+Z`       | `Ctrl+Z`       |
+| Redo            | `⌘+Shift+Z` | `Ctrl+Shift+Z` |
+| Move Block Up   | `Alt+↑`     | `Alt+↑`        |
+| Move Block Down | `Alt+↓`     | `Alt+↓`        |
 
 ---
 
@@ -450,4 +451,4 @@ Click the theme toggle in the header to switch between light, dark, and system t
 
 ---
 
-*This document showcases all features of the Vizel Editor. Start editing to explore!*
+_This document showcases all features of the Vizel Editor. Start editing to explore!_

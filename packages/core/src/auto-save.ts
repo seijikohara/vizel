@@ -1,4 +1,5 @@
 import type { Editor, JSONContent } from "@tiptap/core";
+
 import type { VizelLocale } from "./i18n/types.ts";
 import { formatRelativeTimeWithLocale } from "./i18n/utils.ts";
 import {

@@ -1,5 +1,6 @@
 import type { Extensions } from "@tiptap/core";
 import { TableRow } from "@tiptap/extension-table";
+
 import {
   VizelTable,
   VizelTableCell,

@@ -2,8 +2,9 @@
 // zero without the Vizel stylesheet, so the spec loads the SCSS entry.
 import "@vizel/core/styles/index.scss";
 import { describe, test } from "vitest";
-import { page } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
+import { page } from "vitest/browser";
+
 import { isWebkit } from "../../scenarios/_vitest-context";
 import {
   testDragBulletListItemReorder,

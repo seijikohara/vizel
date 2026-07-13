@@ -8,30 +8,25 @@
  * assertions cover the anchor-containment exclusion: a pointer event on
  * the trigger must not dismiss, matching the legacy core controller's
  * multi-element "outside" set.
- *
- * Module mocking needs the `--experimental-test-module-mocks` flag, which
- * the package `test` script supplies.
  */
 
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, describe, it, mock } from "node:test";
+
+import { afterEach, beforeEach, describe, it, vi } from "vitest";
 
 // Stub `@floating-ui/dom` so the popover's floating sub-controller does
 // not reach for real layout geometry. The popover suite asserts dismiss
 // behaviour only; positioning is covered by floating.test.ts.
-mock.module("@floating-ui/dom", {
-  namedExports: {
-    computePosition: () => Promise.resolve({ x: 0, y: 0 }),
-    autoUpdate: () => () => undefined,
-    offset: () => ({ name: "offset" }),
-    flip: () => ({ name: "flip" }),
-    shift: () => ({ name: "shift" }),
-  },
-});
+vi.mock("@floating-ui/dom", () => ({
+  computePosition: () => Promise.resolve({ x: 0, y: 0 }),
+  autoUpdate: () => () => undefined,
+  offset: () => ({ name: "offset" }),
+  flip: () => ({ name: "flip" }),
+  shift: () => ({ name: "shift" }),
+}));
 
-const { createVizelPopoverController, buildVizelPopoverPositionSpec } = await import(
-  "../src/popover/index.ts"
-);
+const { createVizelPopoverController, buildVizelPopoverPositionSpec } =
+  await import("../src/popover/index.ts");
 
 interface Registration {
   readonly type: string;
@@ -61,6 +56,7 @@ function createFakeDocument(): FakeDocument {
       if (index !== -1) state.registrations.splice(index, 1);
     },
     dispatch: (type, event) => {
+      // oxlint-disable-next-line unicorn/no-useless-spread -- snapshot before iterating so a handler unregistering itself mid-dispatch cannot skip entries
       for (const entry of [...state.registrations]) {
         if (entry.type === type) entry.handler(event);
       }

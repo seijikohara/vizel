@@ -10,6 +10,7 @@ import {
   vizelDefaultToolbarActions,
 } from "@vizel/core";
 import { Fragment, useMemo } from "react";
+
 import { useVizelEditorState } from "../_reactivity.ts";
 import { VizelIcon } from "./VizelIcon.tsx";
 import { VizelToolbarButton } from "./VizelToolbarButton.tsx";

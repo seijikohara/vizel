@@ -13,6 +13,7 @@ import type { Node as PMNode } from "@tiptap/pm/model";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type MarkdownIt from "markdown-it";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
+
 import {
   createVizelDefaultFetchEmbedData,
   detectVizelEmbedProvider,
@@ -107,6 +108,7 @@ declare module "@tiptap/core" {
  */
 function isValidUrl(url: string): boolean {
   try {
+    // oxlint-disable-next-line no-new -- constructing URL is the standard way to test parseability; the instance is intentionally discarded
     new URL(url);
     return true;
   } catch {
@@ -480,6 +482,7 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
       return [];
     }
 
+    // oxlint-disable-next-line typescript/no-this-alias -- the nested Plugin event handlers below run with their own `this` binding and need the extension instance captured from the enclosing method
     const extension = this;
 
     return [

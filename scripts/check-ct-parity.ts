@@ -96,7 +96,7 @@ function deriveStem(name: string, prefixes: readonly string[]): string {
  */
 function stripSpecExtension(file: string, extensions: readonly string[]): string | null {
   // Sort by descending length so `.spec.tsx` is tried before `.spec.ts`.
-  const sorted = [...extensions].sort((a, b) => b.length - a.length);
+  const sorted = extensions.toSorted((a, b) => b.length - a.length);
   for (const ext of sorted) {
     if (file.endsWith(ext)) return file.slice(0, -ext.length);
   }

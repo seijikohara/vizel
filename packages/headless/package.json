@@ -1,37 +1,37 @@
 {
   "name": "@vizel/headless",
   "version": "2.0.2",
-  "type": "module",
+  "description": "Framework-neutral UI primitives consumed by every Vizel framework adapter",
+  "keywords": [
+    "combobox",
+    "dismissable",
+    "floating",
+    "focus-trap",
+    "headless",
+    "keyboard",
+    "popover",
+    "primitives",
+    "ui",
+    "vizel"
+  ],
+  "homepage": "https://seijikohara.github.io/vizel/",
+  "bugs": {
+    "url": "https://github.com/seijikohara/vizel/issues"
+  },
+  "license": "MIT",
+  "author": "Seiji Kohara",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/seijikohara/vizel.git",
     "directory": "packages/headless"
   },
-  "description": "Framework-neutral UI primitives consumed by every Vizel framework adapter",
-  "license": "MIT",
-  "author": "Seiji Kohara",
-  "homepage": "https://seijikohara.github.io/vizel/",
-  "bugs": {
-    "url": "https://github.com/seijikohara/vizel/issues"
-  },
-  "engines": {
-    "node": ">=24"
-  },
-  "keywords": [
-    "vizel",
-    "headless",
-    "ui",
-    "primitives",
-    "combobox",
-    "popover",
-    "dismissable",
-    "focus-trap",
-    "floating",
-    "keyboard"
+  "files": [
+    "dist"
   ],
+  "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -69,19 +69,20 @@
       "default": "./dist/popover/index.js"
     }
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "vite build",
     "typecheck": "tsc --noEmit",
-    "test": "node --no-warnings --experimental-test-module-mocks --test \"__tests__/**/*.test.ts\""
+    "test": "vitest run"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.6"
   },
   "devDependencies": {
     "vite": "^8.0.16",
-    "vite-plugin-dts": "^5.0.2"
+    "vite-plugin-dts": "^5.0.2",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }
