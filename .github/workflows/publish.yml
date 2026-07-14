@@ -201,12 +201,11 @@ jobs:
       - name: Publish
         env:
           VERSION: ${{ needs.validate.outputs.version }}
-          # Token auth (granular access token with publish rights to the
-          # @vizel scope). Required to create the new @vizel/headless package;
-          # OIDC trusted publishing cannot bootstrap a package that does not
-          # exist yet. `--provenance` still attaches an attestation via the
-          # workflow's id-token permission.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # OIDC trusted publishing: no token needed. setup-node v6.4.0 injects a
+          # dummy NODE_AUTH_TOKEN when registry-url is set; force it empty so a
+          # failed OIDC exchange surfaces as a clean ENEEDAUTH rather than E404.
+          # On success npm uses the OIDC token from the id-token exchange.
+          NODE_AUTH_TOKEN: ''
         run: |
           PRERELEASE_TAG=""
           if [[ "$VERSION" == *-* ]]; then
@@ -219,12 +218,12 @@ jobs:
               PRERELEASE_TAG="next"
             fi
           fi
-          PUBLISH_OPTS="--provenance --access public --no-git-checks"
+          PUBLISH_OPTS="--provenance --access public"
           if [ -n "$PRERELEASE_TAG" ]; then
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing @vizel/headless with tag: $PRERELEASE_TAG"
           fi
-          cd packages/headless && pnpm publish $PUBLISH_OPTS
+          cd packages/headless && npm publish $PUBLISH_OPTS
           echo "✅ Published @vizel/headless@$VERSION"
 
   # Publish core next: it depends on @vizel/headless and is depended on by the adapters.
@@ -261,12 +260,11 @@ jobs:
       - name: Publish
         env:
           VERSION: ${{ needs.validate.outputs.version }}
-          # Token auth (granular access token with publish rights to the
-          # @vizel scope). Required to create the new @vizel/headless package;
-          # OIDC trusted publishing cannot bootstrap a package that does not
-          # exist yet. `--provenance` still attaches an attestation via the
-          # workflow's id-token permission.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # OIDC trusted publishing: no token needed. setup-node v6.4.0 injects a
+          # dummy NODE_AUTH_TOKEN when registry-url is set; force it empty so a
+          # failed OIDC exchange surfaces as a clean ENEEDAUTH rather than E404.
+          # On success npm uses the OIDC token from the id-token exchange.
+          NODE_AUTH_TOKEN: ''
         run: |
           PRERELEASE_TAG=""
           if [[ "$VERSION" == *-* ]]; then
@@ -279,12 +277,12 @@ jobs:
               PRERELEASE_TAG="next"
             fi
           fi
-          PUBLISH_OPTS="--provenance --access public --no-git-checks"
+          PUBLISH_OPTS="--provenance --access public"
           if [ -n "$PRERELEASE_TAG" ]; then
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing @vizel/core with tag: $PRERELEASE_TAG"
           fi
-          cd packages/core && pnpm publish $PUBLISH_OPTS
+          cd packages/core && npm publish $PUBLISH_OPTS
           echo "✅ Published @vizel/core@$VERSION"
 
   # Publish framework packages in parallel (each job has its own OIDC token)
@@ -329,12 +327,11 @@ jobs:
       - name: Publish
         env:
           VERSION: ${{ needs.validate.outputs.version }}
-          # Token auth (granular access token with publish rights to the
-          # @vizel scope). Required to create the new @vizel/headless package;
-          # OIDC trusted publishing cannot bootstrap a package that does not
-          # exist yet. `--provenance` still attaches an attestation via the
-          # workflow's id-token permission.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # OIDC trusted publishing: no token needed. setup-node v6.4.0 injects a
+          # dummy NODE_AUTH_TOKEN when registry-url is set; force it empty so a
+          # failed OIDC exchange surfaces as a clean ENEEDAUTH rather than E404.
+          # On success npm uses the OIDC token from the id-token exchange.
+          NODE_AUTH_TOKEN: ''
         run: |
           PRERELEASE_TAG=""
           if [[ "$VERSION" == *-* ]]; then
@@ -347,12 +344,12 @@ jobs:
               PRERELEASE_TAG="next"
             fi
           fi
-          PUBLISH_OPTS="--provenance --access public --no-git-checks"
+          PUBLISH_OPTS="--provenance --access public"
           if [ -n "$PRERELEASE_TAG" ]; then
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing @vizel/${{ matrix.package }} with tag: $PRERELEASE_TAG"
           fi
-          cd packages/${{ matrix.package }} && pnpm publish $PUBLISH_OPTS
+          cd packages/${{ matrix.package }} && npm publish $PUBLISH_OPTS
           echo "✅ Published @vizel/${{ matrix.package }}@$VERSION"
 
   # Finalize: commit version changes and create release
