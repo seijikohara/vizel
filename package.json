@@ -51,7 +51,7 @@
     "check:publishable": "node scripts/check-publishable.ts"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "0.18.4",
+    "@arethetypeswrong/cli": "0.18.5",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tiptap/core": "^3.26.1",
     "@tiptap/extension-blockquote": "^3.26.1",
