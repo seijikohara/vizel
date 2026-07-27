@@ -9,8 +9,8 @@
   "dependencies": {
     "@vizel/core": "workspace:*",
     "@vizel/react": "workspace:*",
-    "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@hpcc-js/wasm-graphviz": "^1.22.1",

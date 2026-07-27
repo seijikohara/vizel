@@ -37,8 +37,8 @@ catalog:
   "@tiptap/extension-collaboration": "3.27.1"
   "@tiptap/pm": "3.27.1"
   "@tiptap/suggestion": "3.27.1"
-  "react": "19.2.7"
-  "react-dom": "19.2.7"
+  "react": "19.2.8"
+  "react-dom": "19.2.8"
   "vite": "8.1.5"
 
 overrides:
