@@ -2,6 +2,14 @@ packages:
   - "packages/*"
   - "apps/demo/*"
 
+# Renovate resolves and pins every dependency itself, so CI does not re-apply
+# `minimumReleaseAge` to entries the lockfile already records. Without this
+# setting `pnpm install --frozen-lockfile` rejects the lockfile Renovate wrote
+# whenever a release is under a day old, which blocked #715 and #716.
+# Resolution-time cooldown and Renovate's own three-day hold still gate which
+# versions reach the lockfile.
+trustLockfile: true
+
 # Approve post-install build scripts for trusted tooling dependencies.
 # pnpm 10+ disables build scripts by default; these packages need their
 # build/install hooks to run for native binaries and git hook setup.
