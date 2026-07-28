@@ -120,7 +120,7 @@
     "vitepress-plugin-mermaid": "^2.0.17",
     "vitest": "^4.1.10",
     "vitest-browser-react": "^2.2.0",
-    "vitest-browser-svelte": "2.2.1",
+    "vitest-browser-svelte": "3.0.0",
     "vitest-browser-vue": "2.1.0",
     "vue": "^3.5.38"
   },
