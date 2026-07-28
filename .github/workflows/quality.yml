@@ -30,10 +30,11 @@ jobs:
 
       # Install pnpm before `setup-node` so the cache key resolution finds
       # the package manager on PATH. Reversing the order breaks the cache.
+      # Omit `version` so the action reads `packageManager` from package.json.
+      # A second version source drifts and aborts the job with
+      # "Multiple versions of pnpm specified".
       - name: Setup pnpm
         uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
-        with:
-          version: "11.17.0"
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6

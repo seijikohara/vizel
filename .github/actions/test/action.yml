@@ -17,10 +17,11 @@ runs:
       with:
         node-version-file: .nvmrc
 
+    # Omit `version` so the action reads `packageManager` from package.json.
+    # Renovate's github-actions manager updates a `version` input here
+    # independently of `packageManager`, and the two drifted apart in #699.
     - name: Setup pnpm
       uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
-      with:
-        version: "11.11.0"
 
     - name: Get pnpm store directory
       shell: bash
