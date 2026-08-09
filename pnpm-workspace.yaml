@@ -50,7 +50,7 @@ catalog:
   "@tiptap/suggestion": "3.29.2"
   "react": "19.2.8"
   "react-dom": "19.2.8"
-  "vite": "8.2.0"
+  "vite": "8.2.1"
 
 overrides:
   "@tiptap/core": "catalog:"
