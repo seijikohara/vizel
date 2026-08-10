@@ -14,7 +14,7 @@
 import { InputRule, mergeAttributes, Node } from "@tiptap/core";
 import type { NodeType, Node as PMNode } from "@tiptap/pm/model";
 import type katex from "katex";
-import type MarkdownIt from "markdown-it";
+import type { MarkdownIt } from "markdown-it";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
 
 import {

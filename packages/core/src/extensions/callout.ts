@@ -15,8 +15,8 @@
 
 import { Node } from "@tiptap/core";
 import type { Node as PMNode } from "@tiptap/pm/model";
-import type MarkdownIt from "markdown-it";
-import type StateBlock from "markdown-it/lib/rules_block/state_block.mjs";
+import type { MarkdownIt } from "markdown-it";
+import type { StateBlock } from "markdown-it";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
 
 import type { VizelCalloutMarkdownFormat } from "../utils/markdown-flavors.ts";

@@ -1,7 +1,7 @@
 import { InputRule, Mark, mergeAttributes } from "@tiptap/core";
 import type { Mark as PMMark, Node as PMNode } from "@tiptap/pm/model";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
-import type MarkdownIt from "markdown-it";
+import type { MarkdownIt } from "markdown-it";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
 
 import {

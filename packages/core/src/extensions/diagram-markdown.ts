@@ -6,7 +6,7 @@
  * `VizelDiagram.parseHTML`, so Tiptap hydrates diagram nodes directly.
  */
 
-import type MarkdownIt from "markdown-it";
+import type { MarkdownIt } from "markdown-it";
 
 import type { VizelDiagramType } from "./diagram-render.ts";
 

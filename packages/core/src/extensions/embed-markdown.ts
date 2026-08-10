@@ -6,7 +6,7 @@
  * register the markdown-it inline rule that recognizes it. No DOM access.
  */
 
-import type MarkdownIt from "markdown-it";
+import type { MarkdownIt } from "markdown-it";
 
 import { unescapeMetadataCommentValue } from "../utils/metadata-comment.ts";
 

@@ -17,7 +17,7 @@
 import { mergeAttributes, Node } from "@tiptap/core";
 import type { Node as PMNode } from "@tiptap/pm/model";
 import DOMPurify from "dompurify";
-import type MarkdownIt from "markdown-it";
+import type { MarkdownIt } from "markdown-it";
 import type { MermaidConfig } from "mermaid";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
 
