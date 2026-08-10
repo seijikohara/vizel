@@ -6,8 +6,8 @@
  * math node `parseHTML`, so markdown round-trip restores typed nodes.
  */
 
-import type MarkdownIt from "markdown-it";
-import type StateBlock from "markdown-it/lib/rules_block/state_block.mjs";
+import type { MarkdownIt } from "markdown-it";
+import type { StateBlock } from "markdown-it";
 
 /**
  * Input rule regex for inline math: $...$

@@ -10,7 +10,7 @@ import type { Editor } from "@tiptap/core";
 import Mention from "@tiptap/extension-mention";
 import type { Node as PMNode } from "@tiptap/pm/model";
 import type { SuggestionOptions } from "@tiptap/suggestion";
-import type MarkdownIt from "markdown-it";
+import type { MarkdownIt } from "markdown-it";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
 
 declare module "@tiptap/core" {

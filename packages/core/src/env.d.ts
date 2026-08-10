@@ -15,19 +15,19 @@ declare const process: {
 // is a single default export that conforms to markdown-it's plugin
 // signature `(md, options?) => void`.
 declare module "markdown-it-deflist" {
-  import type MarkdownIt from "markdown-it";
+  import type { MarkdownIt } from "markdown-it";
 
   const plugin: (md: MarkdownIt) => void;
   export default plugin;
 }
 declare module "markdown-it-sub" {
-  import type MarkdownIt from "markdown-it";
+  import type { MarkdownIt } from "markdown-it";
 
   const plugin: (md: MarkdownIt) => void;
   export default plugin;
 }
 declare module "markdown-it-sup" {
-  import type MarkdownIt from "markdown-it";
+  import type { MarkdownIt } from "markdown-it";
 
   const plugin: (md: MarkdownIt) => void;
   export default plugin;

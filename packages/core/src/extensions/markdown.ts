@@ -16,7 +16,7 @@
 
 import type { Editor, Extension, JSONContent } from "@tiptap/core";
 import { generateJSON } from "@tiptap/core";
-import type MarkdownIt from "markdown-it";
+import type { MarkdownIt } from "markdown-it";
 import { type MarkdownOptions, Markdown as TiptapMarkdownExtension } from "tiptap-markdown";
 
 import type { VizelMarkdownFlavor } from "../markdown/types.ts";
