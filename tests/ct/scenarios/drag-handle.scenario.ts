@@ -86,6 +86,13 @@ async function dragHandleToRow(sourceRow: HTMLElement, targetRow: HTMLElement): 
 const textsOf = (root: HTMLElement, selector: string): string[] =>
   Array.from(root.querySelectorAll(selector)).map((el) => (el.textContent ?? "").trim());
 
+// A task item renders as `li > label(input, span) + div`, where the node view
+// writes the checkbox's accessible label into the span. @tiptap/extension-list
+// 3.30.0 moved that label from the `aria-label` attribute into the span's text
+// content, so reading the `li` yields "Task item checkbox for XX" ahead of the
+// task text. Read the content `div` to assert on the task text alone.
+const TASK_ITEM_TEXT_SELECTOR = "ul[data-type='taskList'] li > div";
+
 /** Verify the drag handle is rendered when hovering over a block. */
 export const testDragHandleVisibleOnHover: VizelBcScenario = async () => {
   const el = await resolveEditor();
@@ -247,7 +254,7 @@ export const testMoveTaskItemWithKeyboard: VizelBcScenario = async () => {
   await userEvent.keyboard("{Alt>}{ArrowUp}{/Alt}");
 
   await expect
-    .poll(() => textsOf(el, "ul[data-type='taskList'] li"), { timeout: 5_000 })
+    .poll(() => textsOf(el, TASK_ITEM_TEXT_SELECTOR), { timeout: 5_000 })
     .toEqual(["Task two", "Task one"]);
 };
 
@@ -339,14 +346,14 @@ export const testDragTaskItemPreservesCheckState: VizelBcScenario = async () => 
   await dragHandleToRow(secondItem, firstItem);
 
   await expect
-    .poll(() => textsOf(el, taskSelector)[0] ?? "", { timeout: 5_000 })
+    .poll(() => textsOf(el, TASK_ITEM_TEXT_SELECTOR)[0] ?? "", { timeout: 5_000 })
     .toContain("Task two");
   const movedFirst = el.querySelectorAll<HTMLElement>(taskSelector)[0];
   if (movedFirst === undefined) throw new Error("expected a first task after reorder");
   const movedCheckbox = movedFirst.querySelector<HTMLInputElement>("input[type='checkbox']");
   if (movedCheckbox === null) throw new Error("expected a checkbox in the moved task");
   await expect.element(page.elementLocator(movedCheckbox)).toBeChecked();
-  await expect.poll(() => textsOf(el, taskSelector)[1] ?? "").toContain("Task one");
+  await expect.poll(() => textsOf(el, TASK_ITEM_TEXT_SELECTOR)[1] ?? "").toContain("Task one");
 };
 
 /** Verify a nested list item reorders within its parent item. */
