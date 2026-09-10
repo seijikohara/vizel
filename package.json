@@ -97,7 +97,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
     "@vitejs/plugin-vue": "^6.0.7",
-    "@vitest/browser-playwright": "^4.1.10",
+    "@vitest/browser-playwright": "^5.0.0",
     "@vue/compiler-dom": "^3.5.38",
     "axe-core": "^4.11.0",
     "concurrently": "^10.0.3",
