@@ -44,10 +44,10 @@ allowBuilds:
 # prosemirror-model ^1.25.7, so 1.25.9 unifies the tree on the newest patch.
 # See WI-10.
 catalog:
-  "@tiptap/core": "3.30.5"
-  "@tiptap/extension-collaboration": "3.30.5"
-  "@tiptap/pm": "3.30.5"
-  "@tiptap/suggestion": "3.30.5"
+  "@tiptap/core": "3.31.3"
+  "@tiptap/extension-collaboration": "3.31.3"
+  "@tiptap/pm": "3.31.3"
+  "@tiptap/suggestion": "3.31.3"
   "react": "19.3.0"
   "react-dom": "19.3.0"
   "vite": "8.3.0"
