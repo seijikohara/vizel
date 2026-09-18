@@ -50,10 +50,12 @@ export const testOutlineRendersHeadings: VizelBcScenario = async () => {
     .poll(() => outlineEl.querySelectorAll('[role="treeitem"]').length, { timeout: 5_000 })
     .toBe(3);
 
-  const items = outlineEl.querySelectorAll<HTMLElement>('[role="treeitem"]');
-  await expect.element(page.elementLocator(items[0])).toHaveTextContent("A");
-  await expect.element(page.elementLocator(items[1])).toHaveTextContent("B");
-  await expect.element(page.elementLocator(items[2])).toHaveTextContent("C");
+  // A tree item nests its child headings, so the first `<li>` reads "ABC";
+  // assert on each item's own label button instead.
+  const labels = outlineEl.querySelectorAll<HTMLElement>('[role="treeitem"] > .vizel-outline-link');
+  await expect.element(page.elementLocator(labels[0])).toHaveTextContent("A");
+  await expect.element(page.elementLocator(labels[1])).toHaveTextContent("B");
+  await expect.element(page.elementLocator(labels[2])).toHaveTextContent("C");
 };
 
 /**
