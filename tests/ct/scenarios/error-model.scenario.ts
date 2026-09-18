@@ -58,9 +58,7 @@ export const testUploadFailureReachesOnError: VizelBcScenario = async () => {
 
   const errorCode = document.querySelector(ERROR_CODE_SELECTOR);
   if (errorCode === null) throw new Error("expected a [data-error-code] element");
-  // Anchor the match: `toHaveTextContent` is a substring check by default, but
-  // the Playwright original asserted exact equality of the error code.
-  await expect.element(page.elementLocator(errorCode)).toHaveTextContent(/^UPLOAD_FAILED$/);
+  await expect.element(page.elementLocator(errorCode)).toHaveTextContent("UPLOAD_FAILED");
 };
 
 /**
@@ -72,5 +70,5 @@ export const testUploadFailureReachesOnError: VizelBcScenario = async () => {
 export const testPluginConfigErrorIsTyped: VizelBcScenario = async () => {
   const pluginErrorCode = document.querySelector(PLUGIN_ERROR_CODE_SELECTOR);
   if (pluginErrorCode === null) throw new Error("expected a [data-plugin-error-code] element");
-  await expect.element(page.elementLocator(pluginErrorCode)).toHaveTextContent(/^INVALID_CONFIG$/);
+  await expect.element(page.elementLocator(pluginErrorCode)).toHaveTextContent("INVALID_CONFIG");
 };

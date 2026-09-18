@@ -22,7 +22,7 @@ export async function testSaveIndicatorSaved(): Promise<void> {
   const locator = page.elementLocator(el);
   await expect.element(locator).toBeVisible();
   await expect.element(locator).toHaveClass(/vizel-save-indicator--saved/);
-  await expect.element(locator).toHaveTextContent(/Saved/);
+  await expect.element(locator).toMatchTextContent(/Saved/);
   await testSaveIndicatorIcons(el);
 }
 
@@ -34,7 +34,7 @@ export async function testSaveIndicatorSaving(): Promise<void> {
   const locator = page.elementLocator(el);
   await expect.element(locator).toBeVisible();
   await expect.element(locator).toHaveClass(/vizel-save-indicator--saving/);
-  await expect.element(locator).toHaveTextContent(/Saving/);
+  await expect.element(locator).toMatchTextContent(/Saving/);
   await testSaveIndicatorIcons(el);
 }
 
@@ -46,7 +46,7 @@ export async function testSaveIndicatorUnsaved(): Promise<void> {
   const locator = page.elementLocator(el);
   await expect.element(locator).toBeVisible();
   await expect.element(locator).toHaveClass(/vizel-save-indicator--unsaved/);
-  await expect.element(locator).toHaveTextContent(/Unsaved/);
+  await expect.element(locator).toMatchTextContent(/Unsaved/);
   await testSaveIndicatorIcons(el);
 }
 
@@ -58,7 +58,7 @@ export async function testSaveIndicatorError(): Promise<void> {
   const locator = page.elementLocator(el);
   await expect.element(locator).toBeVisible();
   await expect.element(locator).toHaveClass(/vizel-save-indicator--error/);
-  await expect.element(locator).toHaveTextContent(/Error/);
+  await expect.element(locator).toMatchTextContent(/Error/);
   await testSaveIndicatorIcons(el);
 }
 
@@ -80,7 +80,7 @@ export async function testSaveIndicatorTimestamp(): Promise<void> {
   if (timestamp === null) throw new Error("expected a .vizel-save-indicator-timestamp element");
   await expect.element(page.elementLocator(timestamp)).toBeVisible();
   // The ticker formats the date as "Just now" or "<n>s ago", "<n>m ago", etc.
-  await expect.element(page.elementLocator(timestamp)).toHaveTextContent(/(Just now|ago)/);
+  await expect.element(page.elementLocator(timestamp)).toMatchTextContent(/(Just now|ago)/);
 }
 
 /**
