@@ -40,6 +40,11 @@
       addLabels: ["major"],
     },
     {
+      description: "Widen peer dependency ranges instead of replacing them, so a published package keeps accepting the peer versions it already supports",
+      matchDepTypes: ["peerDependencies"],
+      rangeStrategy: "widen",
+    },
+    {
       description: "Group and label GitHub Actions updates",
       matchManagers: ["github-actions"],
       groupName: "github-actions",
