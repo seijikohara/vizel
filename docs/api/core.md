@@ -102,7 +102,7 @@ const extensions = await createVizelExtensions({
 | `superscript` | `Superscript` |
 | `subscript` | `Subscript` |
 | `typography` | `Typography` |
-| `collaboration` | Yjs extensions (`Collaboration`, `CollaborationCursor`) |
+| `collaboration` | Yjs extensions (`Collaboration`, `CollaborationCaret`) |
 
 ---
 
@@ -1064,7 +1064,7 @@ VIZEL_DEFAULT_VERSION_HISTORY_OPTIONS = {
 Real-time multi-user editing module built on Yjs. This module provides types, state management, and lifecycle utilities for integrating Yjs-based collaboration.
 
 ::: warning
-You must install your own compatible versions of `yjs`, a Yjs provider (e.g. `y-websocket`), `@tiptap/extension-collaboration`, and `@tiptap/extension-collaboration-cursor`.
+You must install your own compatible versions of `yjs`, a Yjs provider (e.g. `y-websocket`), `@tiptap/extension-collaboration`, and `@tiptap/extension-collaboration-caret`.
 :::
 
 ### createVizelCollaborationHandlers

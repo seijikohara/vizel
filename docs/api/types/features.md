@@ -413,11 +413,11 @@ const editor = useVizelEditor({
   },
   extensions: [
     Collaboration.configure({ document: ydoc }),
-    CollaborationCursor.configure({ provider, user }),
+    CollaborationCaret.configure({ provider, user }),
   ],
 });
 ```
 
 ::: warning
-You must install and configure `yjs`, a Yjs provider, `@tiptap/extension-collaboration`, and `@tiptap/extension-collaboration-cursor` separately. See the [Collaboration Guide](/guide/collaboration) for details.
+You must install and configure `yjs`, a Yjs provider, `@tiptap/extension-collaboration`, and `@tiptap/extension-collaboration-caret` separately. See the [Collaboration Guide](/guide/collaboration) for details.
 :::
