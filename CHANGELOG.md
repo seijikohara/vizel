@@ -4,6 +4,27 @@ All notable changes to Vizel are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- `@vizel/core` declares `@tiptap/extension-collaboration-caret` as its optional
+  collaboration peer instead of `@tiptap/extension-collaboration-cursor`, whose
+  3.0.0 release is deprecated. Register `CollaborationCaret` where you registered
+  `CollaborationCursor`; the options (`provider`, `user`) are unchanged.
+- `VizelEditorTransactionStore` declares `subscribe` and `getVersion` as readonly
+  function-typed properties instead of methods. Both remain safe to call
+  detached, for example from `useSyncExternalStore`.
+- A failed clipboard write from the code block copy button now emits a
+  `VizelError` with the `CLIPBOARD_FAILED` code instead of an unhandled promise
+  rejection.
+
+### Removed
+
+- The optional `linkedom` and `fuse.js` peer dependencies of `@vizel/core`. No
+  module imports either package since the Static View API and the legacy
+  slash-item search were removed.
+
 ## [2.0.0] - Unreleased
 
 v2.0.0 is a breaking rebuild of Vizel. The release abandons
