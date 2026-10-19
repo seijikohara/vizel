@@ -69,27 +69,31 @@ export interface VizelReactEditorStore {
    * subscribes to both `transaction` and `selectionUpdate` so menus
    * driven by selection changes (the bubble menu, the toolbar's active
    * state) react without forcing every consumer to track both events.
+   *
+   * Every member is a function-typed property rather than a method: the
+   * implementation does not use `this`, so `useSyncExternalStore` can
+   * receive the members detached.
    */
-  subscribe(onChange: () => void): () => void;
+  readonly subscribe: (onChange: () => void) => () => void;
   /**
    * Read the current version counter. The counter increments by one on
    * every notification with 32-bit wrap-around so it never grows
    * unbounded over long editing sessions.
    */
-  getSnapshot(): number;
+  readonly getSnapshot: () => number;
   /**
    * SSR snapshot — always zero. React calls `getServerSnapshot` during
    * server rendering, where the editor has not yet mounted. Returning a
    * stable value avoids hydration mismatches.
    */
-  getServerSnapshot(): number;
+  readonly getServerSnapshot: () => number;
   /**
    * Read the transaction that drove the most recent notification, or
    * `null` before the first `transaction` / `selectionUpdate` event. The
    * hook reads this lazily when it rebuilds the snapshot, so the value
    * never enters the version counter's referential-stability contract.
    */
-  getTransaction(): Transaction | null;
+  readonly getTransaction: () => Transaction | null;
 }
 
 /**
@@ -123,7 +127,7 @@ export function createEditorStore(editor: Editor | null): VizelReactEditorStore 
   };
 
   return {
-    subscribe(onChange) {
+    subscribe: (onChange) => {
       if (editor === null) {
         // SSR snapshot already returns zero and never changes, so React
         // never calls `subscribe` outside the browser. Guard anyway in
@@ -154,15 +158,9 @@ export function createEditorStore(editor: Editor | null): VizelReactEditorStore 
         editor.off("selectionUpdate", handler);
       };
     },
-    getSnapshot() {
-      return state.version;
-    },
-    getServerSnapshot() {
-      return 0;
-    },
-    getTransaction() {
-      return state.transaction;
-    },
+    getSnapshot: () => state.version,
+    getServerSnapshot: () => 0,
+    getTransaction: () => state.transaction,
   };
 }
 

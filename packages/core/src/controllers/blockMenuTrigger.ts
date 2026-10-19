@@ -1,3 +1,4 @@
+import { isRecord } from "../_internal/guards.ts";
 import { VIZEL_BLOCK_MENU_EVENT, type VizelBlockMenuOpenDetail } from "../extensions/block-menu.ts";
 
 /**
@@ -27,6 +28,15 @@ export interface VizelBlockMenuTriggerController {
   readonly update: (options: VizelBlockMenuTriggerControllerOptions) => void;
 }
 
+// The event crosses a DOM boundary, so validate the payload shape that
+// `dispatchEvent` callers in the block-menu extension produce.
+const isVizelBlockMenuOpenDetail = (value: unknown): value is VizelBlockMenuOpenDetail =>
+  isRecord(value) &&
+  "editor" in value &&
+  "node" in value &&
+  typeof value.pos === "number" &&
+  value.handleRect instanceof DOMRect;
+
 /**
  * Build a controller that subscribes to `VIZEL_BLOCK_MENU_EVENT`.
  *
@@ -50,7 +60,9 @@ export function createVizelBlockMenuTriggerController(
       if (state.handler !== null) return;
       const handler = (event: Event): void => {
         if (!(event instanceof CustomEvent)) return;
-        state.options.onOpen(event.detail as VizelBlockMenuOpenDetail);
+        const detail: unknown = event.detail;
+        if (!isVizelBlockMenuOpenDetail(detail)) return;
+        state.options.onOpen(detail);
       };
       state.handler = handler;
       document.addEventListener(VIZEL_BLOCK_MENU_EVENT, handler);

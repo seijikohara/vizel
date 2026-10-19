@@ -203,6 +203,7 @@ function createTableMenu(
       const icon = document.createElement("span");
       icon.className = "vizel-table-menu-item-icon";
       // Render SVG icon instead of text
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the built-in table menus use only icon names that the internal icon renderer also supports
       icon.innerHTML = renderVizelIcon(item.icon as VizelInternalIconName, {
         width: 16,
         height: 16,
@@ -222,8 +223,10 @@ function createTableMenu(
       if (typeof item.command === "function") {
         item.command(editor);
       } else {
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- menu items name commands by string so custom items can call any registered command; the typeof check below guards the call
         const command = editor.commands[item.command as keyof typeof editor.commands];
         if (typeof command === "function") {
+          // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- table commands that menu items invoke by name take no arguments
           (command as () => boolean)();
         }
       }

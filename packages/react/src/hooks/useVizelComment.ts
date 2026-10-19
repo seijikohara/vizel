@@ -129,7 +129,7 @@ export function useVizelComment(
 
   useEffect(() => {
     if (editor && enabled) {
-      handlers.loadComments();
+      void handlers.loadComments();
     }
   }, [editor, enabled, handlers]);
 

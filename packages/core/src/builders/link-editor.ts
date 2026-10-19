@@ -85,7 +85,7 @@ export function buildVizelLinkEditorSpec(
   enableEmbed: boolean
 ): VizelLinkEditorSpec {
   const linkAttrs = editor.getAttributes("link");
-  const initialUrl = (linkAttrs.href as string | undefined) ?? "";
+  const initialUrl = typeof linkAttrs.href === "string" ? linkAttrs.href : "";
   const initialOpenInNewTab = linkAttrs.target === "_blank";
   const canEmbed =
     enableEmbed && editor.extensionManager.extensions.some((ext) => ext.name === "embed");
@@ -136,17 +136,10 @@ export function applyVizelLinkEdit(
     return "";
   }
   if (params.asEmbed && canEmbed) {
-    // setEmbed is provided by the embed extension; the canEmbed guard
-    // above ensures it exists, but TypeScript can't statically prove
-    // that from the embed extension's loose typing. The cast is
-    // narrow and lives next to the guard.
-    (
-      editor.chain().focus().unsetLink() as ReturnType<typeof editor.chain> & {
-        setEmbed: (attrs: { url: string }) => ReturnType<typeof editor.chain>;
-      }
-    )
-      .setEmbed({ url: trimmed })
-      .run();
+    // The embed extension augments the chain with setEmbed, so the
+    // command type-checks; the canEmbed guard above ensures the
+    // extension is registered at runtime.
+    editor.chain().focus().unsetLink().setEmbed({ url: trimmed }).run();
     return trimmed;
   }
   editor

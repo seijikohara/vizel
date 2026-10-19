@@ -111,7 +111,7 @@ export function useVizelVersionHistory(
   // Load versions when editor becomes available
   useEffect(() => {
     if (editor && enabled) {
-      handlers.loadVersions();
+      void handlers.loadVersions();
     }
   }, [editor, enabled, handlers]);
 

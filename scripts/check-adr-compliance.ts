@@ -734,12 +734,9 @@ function emitError(line: string): void {
 }
 
 function main(): void {
-  const results: CheckResult[] = [];
-  for (const check of CHECKS) {
-    const outcome = check();
-    if (Array.isArray(outcome)) results.push(...outcome);
-    else results.push(outcome as CheckResult);
-  }
+  // flatMap accepts both a single result and a readonly array of results,
+  // which `Array.isArray` cannot narrow for readonly arrays.
+  const results: readonly CheckResult[] = CHECKS.flatMap((check) => check());
   emit("ADR compliance report");
   emit("=====================");
   for (const result of results) {

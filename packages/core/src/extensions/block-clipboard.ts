@@ -1,3 +1,9 @@
+import type { Editor, JSONContent } from "@tiptap/core";
+import { Extension } from "@tiptap/core";
+import { Slice } from "@tiptap/pm/model";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
+import type { EditorView } from "@tiptap/pm/view";
+
 /**
  * Block-aware clipboard extension.
  *
@@ -29,12 +35,7 @@
  * The extension is always-on (no feature flag) and ships under
  * `createBaseExtensions` in `extensions/base.ts`.
  */
-import type { Editor, JSONContent } from "@tiptap/core";
-import { Extension } from "@tiptap/core";
-import { Slice } from "@tiptap/pm/model";
-import { Plugin, PluginKey } from "@tiptap/pm/state";
-import type { EditorView } from "@tiptap/pm/view";
-
+import { isRecord } from "../_internal/guards.ts";
 import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
 import { getVizelMultiBlockSelectionState } from "./multi-block-selection.ts";
 
@@ -137,6 +138,11 @@ function writeClipboardPayload(view: EditorView, editor: Editor, data: DataTrans
  * Markdown output identical to what `editor.getMarkdown()` would emit
  * for the same content.
  */
+const hasMarkdownSerializer = (
+  value: unknown
+): value is { serializer: { serialize: (doc: unknown) => string } } =>
+  isRecord(value) && isRecord(value.serializer) && typeof value.serializer.serialize === "function";
+
 function serializeSliceToMarkdown(editor: EditorWithMarkdown, slice: Slice): string {
   const { schema } = editor.state;
   const docNode = schema.topNodeType.create(null, slice.content);
@@ -146,12 +152,8 @@ function serializeSliceToMarkdown(editor: EditorWithMarkdown, slice: Slice): str
   // swapping `editor.state.doc` is not possible (state is immutable),
   // so the simpler route is to read the storage's serializer
   // directly. The storage shape mirrors what `markdown.ts` documents.
-  const storage = (
-    editor.storage as unknown as {
-      markdown?: { serializer?: { serialize: (doc: unknown) => string } };
-    }
-  ).markdown;
-  if (!storage?.serializer?.serialize) return "";
+  const storage: unknown = "markdown" in editor.storage ? editor.storage.markdown : undefined;
+  if (!hasMarkdownSerializer(storage)) return "";
   try {
     return storage.serializer.serialize(docNode);
   } catch {

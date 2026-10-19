@@ -24,6 +24,15 @@ function alignmentSegment(align: string | null | undefined): string {
 }
 
 /**
+ * Toggle the `inTable` flag that tiptap-markdown's mark serializers read
+ * to emit table-safe escapes.
+ */
+function setInTable(state: MarkdownSerializerState, inTable: boolean): void {
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- prosemirror-markdown does not declare the inTable flag that tiptap-markdown reads
+  (state as unknown as { inTable: boolean }).inTable = inTable;
+}
+
+/**
  * Serialize a table node to GFM-flavored Markdown including alignment.
  *
  * The default `tiptap-markdown` table serializer drops the `textAlign`
@@ -33,7 +42,7 @@ function alignmentSegment(align: string | null | undefined): string {
 function serializeTable(state: MarkdownSerializerState, node: PMNode): void {
   // Expose `inTable` to mark-string handlers (mirrors tiptap-markdown
   // behavior so inline marks emit table-safe escapes).
-  (state as unknown as { inTable: boolean }).inTable = true;
+  setInTable(state, true);
 
   const rows: PMNode[] = [];
   for (let i = 0; i < node.childCount; i++) {
@@ -41,14 +50,14 @@ function serializeTable(state: MarkdownSerializerState, node: PMNode): void {
     rows.push(row);
   }
   if (rows.length === 0) {
-    (state as unknown as { inTable: boolean }).inTable = false;
+    setInTable(state, false);
     return;
   }
 
   // Capture header alignments from the first row's cells.
   const headerRow = rows[0];
   if (!headerRow) {
-    (state as unknown as { inTable: boolean }).inTable = false;
+    setInTable(state, false);
     return;
   }
   const alignments: (string | null)[] = [];
@@ -81,7 +90,7 @@ function serializeTable(state: MarkdownSerializerState, node: PMNode): void {
   }
 
   state.closeBlock(node);
-  (state as unknown as { inTable: boolean }).inTable = false;
+  setInTable(state, false);
 }
 
 /**

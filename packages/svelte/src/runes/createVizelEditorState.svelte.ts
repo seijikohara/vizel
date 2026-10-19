@@ -125,10 +125,12 @@ export function createVizelEditorState<T>(
   // function in that slot means the call passed `(getEditor, selector)`;
   // anything else means `(selector, options)`.
   const hasExplicitSource = typeof selectorOrOptions === "function";
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the overload implementation tells the call forms apart by the second argument, which TypeScript cannot correlate with the first argument
   const selector = (hasExplicitSource ? selectorOrOptions : selectorOrGetEditor) as (
     snapshot: VizelEditorSnapshot
   ) => T;
   const options = (hasExplicitSource ? maybeOptions : selectorOrOptions) ?? {};
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the overload implementation tells the call forms apart by the second argument, which TypeScript cannot correlate with the first argument
   const explicitSource = hasExplicitSource ? (selectorOrGetEditor as VizelEditorStateSource) : null;
 
   const equalityFn = options.equalityFn ?? Object.is;
@@ -191,12 +193,11 @@ export function createVizelEditorState<T>(
   };
 
   // Cache the last selector return so `equalityFn` can short-circuit
-  // re-emission. `hasPrevious` distinguishes "never run" from "ran and
-  // returned `undefined`", which `Object.is` treats identically.
-  const cache: { hasPrevious: boolean; previous: T } = {
-    hasPrevious: false,
-    previous: undefined as unknown as T,
-  };
+  // re-emission. The `empty` variant distinguishes "never run" from "ran
+  // and returned `undefined`", which `Object.is` treats identically, and
+  // mirrors the React primitive's snapshot cache.
+  type SelectorCache = { kind: "empty" } | { kind: "cached"; value: T };
+  const cache: { current: SelectorCache } = { current: { kind: "empty" } };
 
   const current = $derived.by(() => {
     // Register dependency on the editor source first so swapping the
@@ -226,11 +227,11 @@ export function createVizelEditorState<T>(
     };
     const next = selector(snapshot);
 
-    if (cache.hasPrevious && equalityFn(cache.previous, next)) {
-      return cache.previous;
+    const previous = cache.current;
+    if (previous.kind === "cached" && equalityFn(previous.value, next)) {
+      return previous.value;
     }
-    cache.hasPrevious = true;
-    cache.previous = next;
+    cache.current = { kind: "cached", value: next };
     return next;
   });
 

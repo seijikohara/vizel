@@ -107,9 +107,9 @@ export function VizelBlockMenu({
   closeRef.current = close;
 
   useEffect(() => {
-    if (!menuState) return;
+    if (!menuState) return undefined;
     const menu = menuRef.current;
-    if (!menu) return;
+    if (!menu) return undefined;
 
     // Anchor the menu to the captured drag-handle rect through a virtual
     // element: the handle is a transient overlay node, so the menu reads
@@ -171,7 +171,8 @@ export function VizelBlockMenu({
     );
     if (items.length === 0) return;
 
-    const currentIndex = items.indexOf(document.activeElement as HTMLButtonElement);
+    const active = document.activeElement;
+    const currentIndex = active instanceof HTMLButtonElement ? items.indexOf(active) : -1;
 
     switch (e.key) {
       case "ArrowDown":

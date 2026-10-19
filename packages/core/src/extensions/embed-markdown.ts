@@ -8,6 +8,7 @@
 
 import type { MarkdownIt } from "markdown-it";
 
+import { isRecord } from "../_internal/guards.ts";
 import { unescapeMetadataCommentValue } from "../utils/metadata-comment.ts";
 
 /**
@@ -64,12 +65,16 @@ export function registerEmbedRule(md: MarkdownIt): void {
 
   md.renderer.rules.vizel_embed = (tokens, idx) => {
     const token = tokens[idx];
-    const meta = (token?.meta as { url?: string; attrs?: Record<string, string> } | undefined) ?? {
-      url: "",
-      attrs: {},
-    };
-    const url = meta.url ?? "";
-    const attrs = meta.attrs ?? {};
+    const meta: unknown = token?.meta;
+    const url = isRecord(meta) && typeof meta.url === "string" ? meta.url : "";
+    const attrs: Record<string, string> =
+      isRecord(meta) && isRecord(meta.attrs)
+        ? Object.fromEntries(
+            Object.entries(meta.attrs).filter(
+              (entry): entry is [string, string] => typeof entry[1] === "string"
+            )
+          )
+        : {};
     const title = token?.content ?? "";
     const escapedUrl = url.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
     const titleAttr = attrs.title ?? title;

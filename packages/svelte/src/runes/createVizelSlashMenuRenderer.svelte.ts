@@ -127,7 +127,7 @@ export function createVizelSlashMenuRenderer(
 
         onExit: () => {
           if (component) {
-            unmount(component);
+            void unmount(component);
           }
           suggestionContainer?.destroy();
           component = null;

@@ -54,8 +54,8 @@ function collectHeadings(editor: Editor, maxDepth: number): VizelTOCHeading[] {
 
   doc.descendants((node, pos) => {
     if (node.type.name === "heading") {
-      const level = node.attrs.level as number;
-      if (level <= maxDepth) {
+      const level: unknown = node.attrs.level;
+      if (typeof level === "number" && level <= maxDepth) {
         headings.push({
           text: node.textContent,
           level,

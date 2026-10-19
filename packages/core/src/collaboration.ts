@@ -167,9 +167,9 @@ export function createVizelCollaborationHandlers(
     }
 
     const handleStatus = (...args: unknown[]) => {
-      const event = args[0] as { status: string } | undefined;
-      if (!event) return;
-      const isConnected = event.status === "connected";
+      const event = args[0];
+      if (typeof event !== "object" || event === null) return;
+      const isConnected = "status" in event && event.status === "connected";
       onStateChange({ isConnected });
       if (isConnected) {
         options.onConnect?.();
@@ -179,7 +179,7 @@ export function createVizelCollaborationHandlers(
     };
 
     const handleSync = (...args: unknown[]) => {
-      const isSynced = args[0] as boolean;
+      const isSynced = args[0] === true;
       onStateChange({ isSynced });
       if (isSynced) {
         options.onSynced?.();

@@ -1,5 +1,6 @@
 import type { Editor, JSONContent } from "@tiptap/core";
 
+import { isRecord } from "./_internal/guards.ts";
 import {
   isVizelJsonContent,
   resolveVizelArrayStorageBackend,
@@ -92,8 +93,8 @@ export const VIZEL_DEFAULT_VERSION_HISTORY_OPTIONS = {
  * Creates a normalized storage backend for version history
  */
 const isVizelVersionSnapshot = (value: unknown): value is VizelVersionSnapshot => {
-  if (typeof value !== "object" || value === null) return false;
-  const record = value as Record<string, unknown>;
+  if (!isRecord(value)) return false;
+  const record = value;
   return (
     typeof record.id === "string" &&
     typeof record.timestamp === "number" &&

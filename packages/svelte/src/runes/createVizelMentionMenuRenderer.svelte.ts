@@ -91,7 +91,7 @@ export function createVizelMentionMenuRenderer(
 
         onExit: () => {
           if (component) {
-            unmount(component);
+            void unmount(component);
           }
           suggestionContainer?.destroy();
           component = null;

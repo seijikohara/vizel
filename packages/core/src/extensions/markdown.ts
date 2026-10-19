@@ -19,6 +19,7 @@ import { generateJSON } from "@tiptap/core";
 import type { MarkdownIt } from "markdown-it";
 import { type MarkdownOptions, Markdown as TiptapMarkdownExtension } from "tiptap-markdown";
 
+import { isRecord } from "../_internal/guards.ts";
 import type { VizelMarkdownFlavor } from "../markdown/types.ts";
 
 /**
@@ -74,12 +75,34 @@ interface TiptapMarkdownStorage {
   options: MarkdownOptions;
   parser: {
     md: MarkdownIt;
-    parse(content: string, opts?: { inline?: boolean }): string | unknown;
+    parse(content: string, opts?: { inline?: boolean }): unknown;
   };
   serializer: {
     serialize(content: unknown): string;
   };
   getMarkdown(): string;
+}
+
+/**
+ * Return whether a value carries the `tiptap-markdown` storage members
+ * that the Vizel runtime calls.
+ */
+const isTiptapMarkdownStorage = (value: unknown): value is TiptapMarkdownStorage =>
+  isRecord(value) &&
+  typeof value.getMarkdown === "function" &&
+  isRecord(value.parser) &&
+  typeof value.parser.parse === "function" &&
+  isRecord(value.serializer) &&
+  typeof value.serializer.serialize === "function";
+
+/**
+ * Read the `tiptap-markdown` storage from an editor. Tiptap types
+ * `editor.storage` per registered extension, and `tiptap-markdown` does not
+ * declare its slot, so the slot is validated at runtime instead.
+ */
+function readTiptapMarkdownStorage(editor: Editor): TiptapMarkdownStorage | undefined {
+  const storage: unknown = "markdown" in editor.storage ? editor.storage.markdown : undefined;
+  return isTiptapMarkdownStorage(storage) ? storage : undefined;
 }
 
 /**
@@ -113,7 +136,7 @@ function registerVizelFlavorPlugins(
  * through `generateJSON` to expose a JSON shape, matching the spec.
  */
 function attachVizelMarkdownSurface(editor: Editor): void {
-  const storage = (editor.storage as unknown as { markdown?: TiptapMarkdownStorage }).markdown;
+  const storage = readTiptapMarkdownStorage(editor);
   if (!storage) return;
 
   const editorWithSurface = editor as Editor & {
@@ -124,11 +147,11 @@ function attachVizelMarkdownSurface(editor: Editor): void {
   editorWithSurface.getMarkdown = () => storage.getMarkdown();
   editorWithSurface.markdown = {
     parse: (md: string): JSONContent => {
-      const rendered = storage.parser.parse(md);
-      if (typeof rendered !== "string") {
-        // tiptap-markdown passes non-string content through unchanged.
-        return rendered as JSONContent;
-      }
+      const parsed = storage.parser.parse(md);
+      // tiptap-markdown returns non-string input unchanged and renders a
+      // string to HTML. `md` is a string, so a non-string result only
+      // appears if the library contract changes; treat it as empty input.
+      const rendered = typeof parsed === "string" ? parsed : "";
       // Resolve the editor's schema-bound extensions so generateJSON
       // honors all Vizel node types (not just the markdown defaults).
       return generateJSON(
@@ -184,11 +207,7 @@ export function createVizelMarkdownExtension(
 
   return TiptapMarkdownExtension.extend({
     onCreate() {
-      const storage = (
-        this.editor.storage as unknown as {
-          markdown?: TiptapMarkdownStorage;
-        }
-      ).markdown;
+      const storage = readTiptapMarkdownStorage(this.editor);
       if (storage?.parser?.md) {
         registerVizelFlavorPlugins(storage.parser.md, flavor);
       }

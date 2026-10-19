@@ -6,6 +6,8 @@
  * platform-appropriate symbols.
  */
 
+import { isRecord } from "../_internal/guards.ts";
+
 /**
  * Platform-specific shortcut shape accepted by {@link formatVizelShortcut}.
  *
@@ -29,9 +31,8 @@ export function isVizelMacPlatform(): boolean {
   // navigator.platform is deprecated but widely supported;
   // navigator.userAgentData is the replacement but not yet universal
   if ("userAgentData" in navigator) {
-    return (
-      (navigator as { userAgentData?: { platform?: string } }).userAgentData?.platform === "macOS"
-    );
+    const { userAgentData } = navigator;
+    return isRecord(userAgentData) && userAgentData.platform === "macOS";
   }
   return /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 }

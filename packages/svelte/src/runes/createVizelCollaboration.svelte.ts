@@ -99,7 +99,7 @@ export function createVizelCollaboration(
     // briefly point at a different `handlers` instance every cycle.
     if (!(provider && enabled)) {
       handlers = null;
-      return;
+      return undefined;
     }
 
     handlers = createVizelCollaborationHandlers(getProvider, options, handleStateChange);

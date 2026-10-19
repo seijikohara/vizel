@@ -106,7 +106,8 @@ export function findHoveredRow(
   const rows = tableElement.querySelectorAll("tr");
 
   for (let i = 0; i < rows.length; i++) {
-    const row = rows[i] as HTMLTableRowElement;
+    const row = rows[i];
+    if (row === undefined) continue;
     const rowRect = row.getBoundingClientRect();
     if (mouseY >= rowRect.top && mouseY <= rowRect.bottom) {
       return { index: i, element: row };

@@ -81,9 +81,9 @@ export function VizelNodeSelector({
   );
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return undefined;
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) return undefined;
 
     // The dropdown owns Escape and arrow-key navigation inside its own
     // `onKeyDown`; the controller only handles outside-pointer dismissal.

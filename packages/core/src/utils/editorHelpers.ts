@@ -1,7 +1,7 @@
 import type { Editor } from "@tiptap/core";
-import type { EditorView } from "@tiptap/pm/view";
 import type { SuggestionOptions } from "@tiptap/suggestion";
 
+import { isRecord } from "../_internal/guards.ts";
 import type { VizelCommand } from "../commands/types.ts";
 import type { VizelCharacterCountStorage } from "../extensions/character-count.ts";
 import { createVizelImageUploader } from "../extensions/image.ts";
@@ -181,7 +181,7 @@ export function createVizelUploadEventHandler(
       ...(onError !== undefined && { onError }),
     });
 
-    uploadFn(file, editor.view as EditorView, pos);
+    uploadFn(file, editor.view, pos);
   };
 }
 
@@ -224,10 +224,9 @@ function hasVizelCharacterCountStorage(
 
   const record = storage as Record<string, unknown>;
   const cc = record.characterCount;
-  if (typeof cc !== "object" || cc === null) return false;
+  if (!isRecord(cc)) return false;
 
-  const ccRecord = cc as Record<string, unknown>;
-  return typeof ccRecord.characters === "function" && typeof ccRecord.words === "function";
+  return typeof cc.characters === "function" && typeof cc.words === "function";
 }
 
 /**

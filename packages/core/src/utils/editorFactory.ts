@@ -69,7 +69,7 @@ function applyInitialSelection(editor: Editor, autofocus: VizelEditorOptions["au
     editor.commands.focus(clamped);
     return;
   }
-  if (autofocus === true) {
+  if (autofocus) {
     editor.commands.focus("start");
   }
 }

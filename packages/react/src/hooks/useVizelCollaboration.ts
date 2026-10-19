@@ -137,7 +137,7 @@ export function useVizelCollaboration(
 
   useEffect(() => {
     if (!(provider && enabled)) {
-      return;
+      return undefined;
     }
     return handlers.subscribe();
   }, [provider, enabled, handlers]);

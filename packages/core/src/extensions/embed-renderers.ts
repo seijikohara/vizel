@@ -8,6 +8,8 @@
 
 import DOMPurify from "dompurify";
 
+import { isRecord } from "../_internal/guards.ts";
+
 /**
  * Render loading state
  */
@@ -136,7 +138,9 @@ export function loadVizelEmbedScripts(container: HTMLElement, provider?: string)
   }
 
   if (provider === "twitter" && typeof window !== "undefined" && "twttr" in window) {
-    const twttr = (window as { twttr?: { widgets?: { load?: (el?: HTMLElement) => void } } }).twttr;
-    twttr?.widgets?.load?.(container);
+    const widgets: unknown = isRecord(window.twttr) ? window.twttr.widgets : undefined;
+    if (isRecord(widgets) && typeof widgets.load === "function") {
+      widgets.load(container);
+    }
   }
 }

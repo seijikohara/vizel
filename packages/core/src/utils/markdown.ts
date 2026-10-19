@@ -89,6 +89,7 @@ export function parseVizelMarkdown(
   const parsed = editor.markdown.parse(markdown);
 
   if (transformDiagrams && parsed?.type) {
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Tiptap's parser emits a type on every node, which VizelContentNode requires and JSONContent leaves optional
     return transformVizelDiagramCodeBlocks(parsed as VizelContentNode);
   }
 

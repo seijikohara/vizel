@@ -42,9 +42,9 @@ export function VizelToolbarDropdown({
   closeRef.current = close;
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return undefined;
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) return undefined;
 
     // `captureEscape: true` runs the Escape handler in the capture phase
     // and calls `stopImmediatePropagation()`. The dropdown popover owns

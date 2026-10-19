@@ -59,6 +59,21 @@ interface PackageResult {
   readonly coreDependencyViolations: readonly string[];
 }
 
+const isStringRecord = (value: unknown): value is Record<string, string> =>
+  typeof value === "object" &&
+  value !== null &&
+  Object.values(value).every((entry) => typeof entry === "string");
+
+const isPackedManifest = (value: unknown): value is PackedManifest =>
+  typeof value === "object" &&
+  value !== null &&
+  "name" in value &&
+  typeof value.name === "string" &&
+  DEP_SECTIONS.every(
+    (section) =>
+      !(section in value) || isStringRecord(Object.getOwnPropertyDescriptor(value, section)?.value)
+  );
+
 const isAdapter = (pkg: string): boolean => (ADAPTERS as readonly string[]).includes(pkg);
 
 const packManifest = (pkg: string): PackedManifest => {
@@ -77,7 +92,11 @@ const packManifest = (pkg: string): PackedManifest => {
       encoding: "utf8",
     }
   );
-  return JSON.parse(manifest) as PackedManifest;
+  const parsed: unknown = JSON.parse(manifest);
+  if (!isPackedManifest(parsed)) {
+    throw new Error(`@vizel/${pkg} packed package.json has an unexpected shape`);
+  }
+  return parsed;
 };
 
 const workspaceLeaks = (manifest: PackedManifest): readonly string[] =>

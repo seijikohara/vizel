@@ -1,4 +1,4 @@
-import type { VizelMentionItem } from "@vizel/core";
+import type { JSONContent, VizelMentionItem } from "@vizel/core";
 
 /**
  * Mock upload function that simulates server upload.
@@ -38,3 +38,10 @@ const MOCK_USERS: VizelMentionItem[] = [
 export function mockMentionItems(query: string): VizelMentionItem[] {
   return MOCK_USERS.filter((u) => u.label.toLowerCase().includes(query.toLowerCase()));
 }
+
+/**
+ * Return whether parsed JSON looks like Tiptap `JSONContent`: an object with
+ * a string `type`. The JSON panel only forwards such values to the editor.
+ */
+export const isJSONContent = (value: unknown): value is JSONContent =>
+  typeof value === "object" && value !== null && "type" in value && typeof value.type === "string";

@@ -94,8 +94,9 @@ export const VizelCommentMark = Mark.create<VizelCommentMarkOptions>({
         default: null,
         parseHTML: (element) => element.getAttribute("data-vizel-comment-id"),
         renderHTML: (attributes) => {
-          if (!attributes.commentId) return {};
-          return { "data-vizel-comment-id": attributes.commentId as string };
+          const { commentId } = attributes;
+          if (typeof commentId !== "string" || commentId === "") return {};
+          return { "data-vizel-comment-id": commentId };
         },
       },
     };
