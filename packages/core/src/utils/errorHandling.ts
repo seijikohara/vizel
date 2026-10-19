@@ -157,6 +157,29 @@ export interface WrapAsVizelErrorOptions {
 }
 
 /**
+ * Describe a thrown non-Error value for an error message. `String()` on a
+ * plain object yields "[object Object]", so objects go through
+ * `JSON.stringify` and fall back to the `Object.prototype.toString` tag
+ * when serialization fails (for example, on circular references).
+ */
+function describeThrownValue(value: unknown): string {
+  switch (typeof value) {
+    case "string":
+    case "number":
+    case "boolean":
+    case "bigint":
+    case "symbol":
+      return String(value);
+    default:
+      try {
+        return JSON.stringify(value) ?? Object.prototype.toString.call(value);
+      } catch {
+        return Object.prototype.toString.call(value);
+      }
+  }
+}
+
+/**
  * Wrap an unknown error as a VizelError.
  *
  * If the error is already a VizelError, returns it unchanged (the code and
@@ -201,7 +224,7 @@ export function wrapAsVizelError(
   const errorMessage =
     error === null || error === undefined
       ? "An unknown error occurred"
-      : `An unknown error occurred: ${String(error)}`;
+      : `An unknown error occurred: ${describeThrownValue(error)}`;
 
   return createVizelError(code, `${prefix}${errorMessage}`, { cause: error });
 }

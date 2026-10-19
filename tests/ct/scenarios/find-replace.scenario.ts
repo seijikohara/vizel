@@ -113,8 +113,6 @@ export const testReplaceAll: VizelBcScenario = async () => {
 
   const editor = document.querySelector<HTMLElement>(EDITOR);
   if (editor === null) throw new Error("expected a .vizel-editor element");
-  await expect
-    .poll(() => editor.textContent?.includes("alpha") === false, { timeout: 5_000 })
-    .toBe(true);
+  await expect.poll(() => !editor.textContent?.includes("alpha"), { timeout: 5_000 }).toBe(true);
   await expect.poll(() => editor.textContent?.includes("ZULU"), { timeout: 5_000 }).toBe(true);
 };

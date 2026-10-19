@@ -19,13 +19,18 @@ export interface VizelEditorTransactionStore {
   /**
    * Register a callback fired on every editor transaction. Returns an
    * unsubscribe function that detaches the listener.
+   *
+   * Declared as a function-typed property rather than a method: the
+   * implementation does not use `this`, so callers may pass it detached
+   * (for example, to React's `useSyncExternalStore`).
    */
-  subscribe(onChange: () => void): () => void;
+  readonly subscribe: (onChange: () => void) => () => void;
   /**
    * Return the current version counter, which increments by 1 (with
-   * 32-bit wrap-around) on every transaction.
+   * 32-bit wrap-around) on every transaction. Safe to call detached,
+   * like `subscribe`.
    */
-  getVersion(): number;
+  readonly getVersion: () => number;
 }
 
 /**
@@ -46,7 +51,7 @@ export function createVizelEditorTransactionStore(
   const state = { version: 0 };
 
   return {
-    subscribe(onChange) {
+    subscribe: (onChange) => {
       const editor = getEditor();
       if (!editor) {
         return () => {
@@ -62,8 +67,6 @@ export function createVizelEditorTransactionStore(
         editor.off("transaction", handler);
       };
     },
-    getVersion() {
-      return state.version;
-    },
+    getVersion: () => state.version,
   };
 }

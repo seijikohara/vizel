@@ -13,10 +13,10 @@ export function MultiBlockSelectionFixture() {
   // because synthetic keystrokes for chord combinations
   // (`ControlOrMeta+Home`, etc.) behave differently across browsers.
   useEffect(() => {
-    if (!editor) return;
-    (window as unknown as { vizelTestEditor?: unknown }).vizelTestEditor = editor;
+    if (!editor) return undefined;
+    window.vizelTestEditor = editor;
     return () => {
-      delete (window as unknown as { vizelTestEditor?: unknown }).vizelTestEditor;
+      delete window.vizelTestEditor;
     };
   }, [editor]);
 

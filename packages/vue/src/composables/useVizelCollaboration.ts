@@ -45,7 +45,7 @@ export interface UseVizelCollaborationResult {
  * import * as Y from "yjs";
  * import { WebsocketProvider } from "y-websocket";
  * import Collaboration from "@tiptap/extension-collaboration";
- * import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+ * import CollaborationCaret from "@tiptap/extension-collaboration-caret";
  * import { useVizelEditor, useVizelCollaboration } from "@vizel/vue";
  *
  * const doc = new Y.Doc();
@@ -60,7 +60,7 @@ export interface UseVizelCollaborationResult {
  *   features: { collaboration: { provider: true } },
  *   extensions: [
  *     Collaboration.configure({ document: doc }),
- *     CollaborationCursor.configure({
+ *     CollaborationCaret.configure({
  *       provider,
  *       user: { name: "Alice", color: "#ff0000" },
  *     }),

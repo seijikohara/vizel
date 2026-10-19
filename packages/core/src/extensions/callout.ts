@@ -240,6 +240,21 @@ function emitCalloutTokens(
 // ---- Serializer -----------------------------------------------------------
 
 /**
+ * MarkdownSerializerState members that prosemirror-markdown does not
+ * declare in its typings but that this helper reuses.
+ */
+interface MarkdownSerializerStateInternals {
+  readonly constructor: new (
+    nodes: Record<string, unknown>,
+    marks: Record<string, unknown>,
+    options: Record<string, unknown>
+  ) => MarkdownSerializerState;
+  readonly nodes: Record<string, unknown>;
+  readonly marks: Record<string, unknown>;
+  readonly out: string;
+}
+
+/**
  * Serialize the inner content of a callout to markdown and split it
  * into lines for prefixing.
  *
@@ -248,18 +263,12 @@ function emitCalloutTokens(
  * (`out`, `renderContent`) is part of the public class API.
  */
 function renderInnerToLines(state: MarkdownSerializerState, node: PMNode): string[] {
-  const InnerStateCtor = state.constructor as new (
-    nodes: Record<string, unknown>,
-    marks: Record<string, unknown>,
-    options: Record<string, unknown>
-  ) => MarkdownSerializerState;
-  const child = new InnerStateCtor(
-    (state as unknown as { nodes: Record<string, unknown> }).nodes,
-    (state as unknown as { marks: Record<string, unknown> }).marks,
-    state.options as unknown as Record<string, unknown>
-  );
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- prosemirror-markdown does not declare these MarkdownSerializerState members
+  const internals = state as unknown as MarkdownSerializerStateInternals;
+  const child = new internals.constructor(internals.nodes, internals.marks, state.options);
   child.renderContent(node);
-  return (child as unknown as { out: string }).out.trimEnd().split("\n");
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- prosemirror-markdown does not declare these MarkdownSerializerState members
+  return (child as unknown as MarkdownSerializerStateInternals).out.trimEnd().split("\n");
 }
 
 function serializeCalloutBlock(
@@ -369,9 +378,13 @@ export const VizelCallout = Node.create<VizelCalloutOptions>({
   addStorage() {
     return {
       markdown: {
-        serialize(state: MarkdownSerializerState, node: PMNode) {
-          const ctx = this as unknown as { options: VizelCalloutOptions };
-          const format: VizelCalloutMarkdownFormat = ctx.options.markdownFormat ?? "directives";
+        // tiptap-markdown calls `serialize` with the extension as `this`.
+        serialize(
+          this: { options: VizelCalloutOptions },
+          state: MarkdownSerializerState,
+          node: PMNode
+        ) {
+          const format: VizelCalloutMarkdownFormat = this.options.markdownFormat ?? "directives";
           serializeCalloutBlock(state, node, format);
         },
         parse: {

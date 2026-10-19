@@ -43,7 +43,7 @@ import {
  * test runner.
  */
 const hasContains = (anchor: VizelFloatingAnchor): anchor is HTMLElement =>
-  typeof (anchor as { contains?: unknown }).contains === "function";
+  "contains" in anchor && typeof anchor.contains === "function";
 
 /**
  * Options for {@link buildVizelPopoverPositionSpec}.

@@ -82,9 +82,9 @@ export function VizelBubbleMenuColorPicker({
 
   // Close dropdown on pointer activity outside the container.
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return undefined;
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) return undefined;
 
     const controller = createVizelDismissable({
       onPointerOutside: () => setIsOpen(false),
@@ -94,6 +94,11 @@ export function VizelBubbleMenuColorPicker({
   }, [isOpen]);
 
   const isTextColor = type === "textColor";
+  // React's CSSProperties omits custom properties; the intersection declares
+  // the one this button sets.
+  const highlightStyle: React.CSSProperties & { "--highlight-color": string } = {
+    "--highlight-color": currentColor || "transparent",
+  };
   const icon = isTextColor ? <VizelIcon name="textColor" /> : <VizelIcon name="highlighter" />;
 
   return (
@@ -108,11 +113,7 @@ export function VizelBubbleMenuColorPicker({
             : (locale?.colorPicker?.highlight ?? "Highlight")
         }
         data-action={type}
-        style={
-          isTextColor
-            ? { color: currentColor || "inherit" }
-            : ({ "--highlight-color": currentColor || "transparent" } as React.CSSProperties)
-        }
+        style={isTextColor ? { color: currentColor || "inherit" } : highlightStyle}
       >
         {icon}
       </button>

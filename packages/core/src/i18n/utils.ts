@@ -1,3 +1,4 @@
+import { isRecord } from "../_internal/guards.ts";
 import { vizelEnLocale } from "./en.ts";
 import type { VizelLocale, VizelLocalePartial } from "./types.ts";
 
@@ -49,6 +50,7 @@ export function resolveVizelFindReplaceLabels(
  */
 export function createVizelLocale(partial: VizelLocalePartial): VizelLocale {
   const result: Record<string, unknown> = {};
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Object.keys widens to string[]; vizelEnLocale holds exactly the VizelLocale keys
   for (const key of Object.keys(vizelEnLocale) as (keyof VizelLocale)[]) {
     const defaultSection = vizelEnLocale[key];
     const overrideSection = partial[key];
@@ -57,16 +59,14 @@ export function createVizelLocale(partial: VizelLocalePartial): VizelLocale {
       typeof defaultSection === "object" &&
       typeof overrideSection === "object"
     ) {
-      result[key] = deepMergeSection(
-        defaultSection as Record<string, unknown>,
-        overrideSection as Record<string, unknown>
-      );
+      result[key] = deepMergeSection(defaultSection, overrideSection);
     } else {
       result[key] = defaultSection;
     }
   }
   // Safe cast: all keys from vizelEnLocale are iterated and assigned,
   // so result has the complete VizelLocale shape at runtime.
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the loop above assigns every VizelLocale key, so the record is complete
   return result as unknown as VizelLocale;
 }
 
@@ -79,18 +79,8 @@ function deepMergeSection(
   for (const key of Object.keys(source)) {
     const sourceVal = source[key];
     const targetVal = target[key];
-    if (
-      sourceVal &&
-      typeof sourceVal === "object" &&
-      !Array.isArray(sourceVal) &&
-      targetVal &&
-      typeof targetVal === "object" &&
-      !Array.isArray(targetVal)
-    ) {
-      result[key] = deepMergeSection(
-        targetVal as Record<string, unknown>,
-        sourceVal as Record<string, unknown>
-      );
+    if (isRecord(sourceVal) && isRecord(targetVal)) {
+      result[key] = deepMergeSection(targetVal, sourceVal);
     } else if (sourceVal !== undefined) {
       result[key] = sourceVal;
     }

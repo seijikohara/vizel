@@ -79,9 +79,9 @@ export function VizelFindReplace({
   // itself. The effect keys on the open state so the trap mounts when the
   // panel renders and unmounts when it closes.
   useEffect(() => {
-    if (!state?.isOpen) return;
+    if (!state?.isOpen) return undefined;
     const panel = panelRef.current;
-    if (!panel) return;
+    if (!panel) return undefined;
     const focusTrap = createVizelFocusTrapController({ returnFocusOnUnmount: false });
     focusTrap.mount(panel);
     return () => focusTrap.unmount();

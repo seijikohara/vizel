@@ -75,13 +75,7 @@
     {
       description: "Group linting and formatting tools",
       groupName: "linting and formatting",
-      matchPackageNames: [
-        "oxlint",
-        "oxfmt",
-        "oxlint-tsgolint",
-        "eslint-plugin-oxlint",
-        "@oxlint/*",
-      ],
+      matchPackageNames: ["oxlint", "oxfmt", "oxlint-tsgolint", "@oxlint/*"],
     },
     {
       description: "Group TypeScript type definitions",

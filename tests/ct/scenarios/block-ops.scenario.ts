@@ -21,10 +21,31 @@ interface BlockOpCommand {
   readonly run: (editor: unknown) => void;
 }
 
-interface TestWindow extends Window {
-  vizelTestEditor?: unknown;
-  vizelBlockOperationCommands?: readonly BlockOpCommand[];
+const isBlockOpCommand = (value: unknown): value is BlockOpCommand =>
+  typeof value === "object" &&
+  value !== null &&
+  "id" in value &&
+  typeof value.id === "string" &&
+  "run" in value &&
+  typeof value.run === "function";
+
+const isBlockOpCommandList = (value: unknown): value is readonly BlockOpCommand[] =>
+  Array.isArray(value) && value.every(isBlockOpCommand);
+
+interface SelectableEditor {
+  readonly commands: {
+    readonly setTextSelection: (range: number | { from: number; to: number }) => void;
+  };
 }
+
+const isSelectableEditor = (value: unknown): value is SelectableEditor =>
+  typeof value === "object" &&
+  value !== null &&
+  "commands" in value &&
+  typeof value.commands === "object" &&
+  value.commands !== null &&
+  "setTextSelection" in value.commands &&
+  typeof value.commands.setTextSelection === "function";
 
 // Resolve the ProseMirror contenteditable root. Tiptap mounts asynchronously,
 // so poll until the element appears. Allow 15 s: the full nine-instance matrix
@@ -45,18 +66,16 @@ async function resolveTestWindow(): Promise<{
   editor: unknown;
   registry: readonly BlockOpCommand[];
 }> {
-  const win = window as unknown as TestWindow;
-
   // Both globals are set together in the fixture's mount effect, so polling
   // for the registry also implies the editor is ready.
   await expect
-    .poll(() => Array.isArray(win.vizelBlockOperationCommands), { timeout: 15_000 })
+    .poll(() => Array.isArray(window.vizelBlockOperationCommands), { timeout: 15_000 })
     .toBe(true);
 
-  const editor = win.vizelTestEditor;
-  const registry = win.vizelBlockOperationCommands;
+  const editor = window.vizelTestEditor;
+  const registry = window.vizelBlockOperationCommands;
   if (editor === undefined) throw new Error("window.vizelTestEditor not set by fixture");
-  if (!Array.isArray(registry))
+  if (!isBlockOpCommandList(registry))
     throw new Error("window.vizelBlockOperationCommands not set by fixture");
   return { editor, registry };
 }
@@ -76,12 +95,8 @@ async function runBlockOpCommand(id: string): Promise<void> {
 // in-browser, the method is reachable through the same window global.
 async function setSelection(from: number, to: number = from): Promise<void> {
   const { editor } = await resolveTestWindow();
-  const typedEditor = editor as {
-    commands: {
-      setTextSelection: (range: number | { from: number; to: number }) => void;
-    };
-  };
-  typedEditor.commands.setTextSelection(from === to ? from : { from, to });
+  if (!isSelectableEditor(editor)) throw new Error("window.vizelTestEditor lacks setTextSelection");
+  editor.commands.setTextSelection(from === to ? from : { from, to });
 }
 
 /**

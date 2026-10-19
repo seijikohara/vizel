@@ -14,16 +14,12 @@ export function BlockOpsFixture() {
   useVizelState(editor);
 
   useEffect(() => {
-    if (!editor) return;
-    const win = window as unknown as {
-      vizelTestEditor?: unknown;
-      vizelBlockOperationCommands?: unknown;
-    };
-    win.vizelTestEditor = editor;
-    win.vizelBlockOperationCommands = vizelBlockOperationCommands;
+    if (!editor) return undefined;
+    window.vizelTestEditor = editor;
+    window.vizelBlockOperationCommands = vizelBlockOperationCommands;
     return () => {
-      delete win.vizelTestEditor;
-      delete win.vizelBlockOperationCommands;
+      delete window.vizelTestEditor;
+      delete window.vizelBlockOperationCommands;
     };
   }, [editor]);
 

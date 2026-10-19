@@ -7,7 +7,6 @@
  */
 
 import lucide from "@iconify-json/lucide/icons.json";
-import type { IconifyIcon } from "@iconify/utils";
 import { getIconData, iconToSVG } from "@iconify/utils";
 
 import { emitVizelError, VizelError } from "../utils/errorHandling.ts";
@@ -286,9 +285,7 @@ export function getVizelIconId(
   // For user-supplied icon names (anything outside the built-in union), the
   // default mapping is empty; assume the name itself is already a valid
   // Iconify id (e.g. "ph:robot"), so fall back to it.
-  return (
-    customIcons?.[name] ?? vizelDefaultIconIds[name as keyof typeof vizelDefaultIconIds] ?? name
-  );
+  return customIcons?.[name] ?? vizelDefaultIconIds[name] ?? name;
 }
 
 /**
@@ -395,7 +392,7 @@ export function renderVizelIconSvg(
   if (!iconName) return "";
 
   // Get icon data from the Lucide icon set
-  const iconData = getIconData(lucide, iconName) as IconifyIcon | null;
+  const iconData = getIconData(lucide, iconName);
   if (!iconData) return "";
 
   // Convert icon data to SVG

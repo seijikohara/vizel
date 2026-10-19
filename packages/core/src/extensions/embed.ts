@@ -17,6 +17,7 @@ import type { MarkdownSerializerState } from "prosemirror-markdown";
 import {
   createVizelDefaultFetchEmbedData,
   detectVizelEmbedProvider,
+  isVizelEmbedType,
   type VizelEmbedData,
   type VizelEmbedProvider,
   type VizelEmbedType,
@@ -150,9 +151,13 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
   addStorage() {
     return {
       markdown: {
-        serialize(state: MarkdownSerializerState, node: PMNode) {
-          const ctx = this as unknown as { options: VizelEmbedOptions };
-          const encoding = ctx.options.encoding ?? "default";
+        // tiptap-markdown calls `serialize` with the extension as `this`.
+        serialize(
+          this: { options: VizelEmbedOptions },
+          state: MarkdownSerializerState,
+          node: PMNode
+        ) {
+          const encoding = this.options.encoding ?? "default";
           const url = String(node.attrs?.url ?? "");
           const titleAttr = node.attrs?.title;
           const title = typeof titleAttr === "string" && titleAttr.length > 0 ? titleAttr : url;
@@ -192,8 +197,10 @@ export const VizelEmbed = Node.create<VizelEmbedOptions>({
       },
       type: {
         default: "link" as VizelEmbedType,
-        parseHTML: (element: HTMLElement) =>
-          (element.getAttribute("data-embed-type") as VizelEmbedType | null) ?? "link",
+        parseHTML: (element: HTMLElement): VizelEmbedType => {
+          const type = element.getAttribute("data-embed-type");
+          return isVizelEmbedType(type) ? type : "link";
+        },
       },
       provider: {
         default: null,

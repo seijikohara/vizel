@@ -12,22 +12,22 @@ import CreateVizelEditorStateFixture from "./CreateVizelEditorStateFixture.svelt
 
 describe("createVizelEditorState (Vitest Browser) - Svelte", () => {
   test("selector receives the editor on mount", async () => {
-    render(CreateVizelEditorStateFixture);
+    await render(CreateVizelEditorStateFixture);
     await testSelectorReceivesEditorOnMount(page.elementLocator(document.body));
   });
 
   test("selector re-runs on every transaction", async () => {
-    render(CreateVizelEditorStateFixture);
+    await render(CreateVizelEditorStateFixture);
     await testSelectorRerunsOnTransaction(page.elementLocator(document.body));
   });
 
   test("selector reads the transaction off the snapshot", async () => {
-    render(CreateVizelEditorStateFixture);
+    await render(CreateVizelEditorStateFixture);
     await testSelectorReadsTransaction(page.elementLocator(document.body));
   });
 
   test("equalityFn short-circuits downstream consumers", async () => {
-    render(CreateVizelEditorStateFixture);
+    await render(CreateVizelEditorStateFixture);
     await testEqualityFnShortCircuitsConsumer(page.elementLocator(document.body));
   });
 });

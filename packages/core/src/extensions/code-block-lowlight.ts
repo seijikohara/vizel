@@ -15,7 +15,7 @@ import CodeBlockLowlight, {
 
 import type { VizelLocale } from "../i18n/types.ts";
 import { renderVizelIcon } from "../icons/types.ts";
-import { VizelError } from "../utils/errorHandling.ts";
+import { emitVizelError, VizelError, wrapAsVizelError } from "../utils/errorHandling.ts";
 
 /**
  * Replace an element's children with trusted SVG icon markup from the
@@ -318,18 +318,29 @@ export async function createVizelCodeBlockExtension(
           e.preventDefault();
           e.stopPropagation();
           const text = code.textContent || "";
-          navigator.clipboard.writeText(text).then(() => {
-            copyBtn.classList.add("copied");
-            setIconContent(copyBtn, "checkSmall");
-            copyBtn.title = codeBlockLabels.copied;
-            if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-            copyTimerRef.current = setTimeout(() => {
-              copyBtn.classList.remove("copied");
-              setIconContent(copyBtn, "copy");
-              copyBtn.title = codeBlockLabels.copyCode;
-              copyTimerRef.current = null;
-            }, 2000);
-          });
+          navigator.clipboard
+            .writeText(text)
+            .then(() => {
+              copyBtn.classList.add("copied");
+              setIconContent(copyBtn, "checkSmall");
+              copyBtn.title = codeBlockLabels.copied;
+              if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+              copyTimerRef.current = setTimeout(() => {
+                copyBtn.classList.remove("copied");
+                setIconContent(copyBtn, "copy");
+                copyBtn.title = codeBlockLabels.copyCode;
+                copyTimerRef.current = null;
+              }, 2000);
+            })
+            // The Clipboard API rejects when the page lacks permission or
+            // focus. Route the failure through the shared error channel
+            // instead of leaving an unhandled rejection.
+            .catch((error: unknown) => {
+              emitVizelError(
+                wrapAsVizelError(error, { context: "Copy code block", code: "CLIPBOARD_FAILED" }),
+                undefined
+              );
+            });
         });
 
         // Append in order: toggle button, language input, datalist, copy button

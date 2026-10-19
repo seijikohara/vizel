@@ -96,7 +96,7 @@ export function VizelBubbleMenu({
 
   useEffect(() => {
     if (!(editor && menuRef.current)) {
-      return;
+      return undefined;
     }
 
     const plugin = BubbleMenuPlugin({

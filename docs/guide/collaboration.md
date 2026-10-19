@@ -26,7 +26,7 @@ through `Y.UndoManager`.
 Install the required peer dependencies:
 
 ```bash
-npm install yjs y-websocket @tiptap/extension-collaboration @tiptap/extension-collaboration-cursor
+npm install yjs y-websocket @tiptap/extension-collaboration @tiptap/extension-collaboration-caret
 ```
 
 ::: warning Version compatibility
@@ -52,7 +52,7 @@ import { useState } from "react";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import Collaboration from "@tiptap/extension-collaboration";
-import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import {
   VizelEditor,
   VizelBubbleMenu,
@@ -77,7 +77,7 @@ function CollaborativeEditor() {
     features: { collaboration: true },
     extensions: [
       Collaboration.configure({ document: doc }),
-      CollaborationCursor.configure({ provider, user }),
+      CollaborationCaret.configure({ provider, user }),
     ],
   });
 
@@ -100,7 +100,7 @@ function CollaborativeEditor() {
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import Collaboration from "@tiptap/extension-collaboration";
-import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import {
   VizelEditor,
   VizelBubbleMenu,
@@ -125,7 +125,7 @@ const editor = useVizelEditor({
   features: { collaboration: true },
   extensions: [
     Collaboration.configure({ document: doc }),
-    CollaborationCursor.configure({ provider, user }),
+    CollaborationCaret.configure({ provider, user }),
   ],
 });
 </script>
@@ -148,7 +148,7 @@ const editor = useVizelEditor({
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import Collaboration from "@tiptap/extension-collaboration";
-import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import {
   VizelEditor,
   VizelBubbleMenu,
@@ -170,7 +170,7 @@ const editor = createVizelEditor({
   features: { collaboration: true },
   extensions: [
     Collaboration.configure({ document: doc }),
-    CollaborationCursor.configure({ provider, user }),
+    CollaborationCaret.configure({ provider, user }),
   ],
 });
 </script>
@@ -605,7 +605,7 @@ interface VizelVersionSnapshot {
 |---------|------------|
 | Undo / redo behaves unexpectedly | Set `features.collaboration.provider` (boolean or adapter) so the built-in `History` extension is disabled |
 | WebSocket disconnects in production | Verify the reverse proxy supports WebSocket upgrades; check the `ws://` vs `wss://` protocol |
-| Remote cursors appear without color | Pass `user.color` to both `CollaborationCursor.configure()` and the collaboration hook / composable / rune |
+| Remote cursors appear without color | Pass `user.color` to both `CollaborationCaret.configure()` and the collaboration hook / composable / rune |
 | Comments do not persist | Confirm the storage backend resolves both `save` and `load` |
 
 ## Try this if you want to ...

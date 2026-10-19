@@ -10,12 +10,12 @@ import OutlineFixture from "./OutlineFixture.svelte";
 
 describe("VizelOutline (Vitest Browser) - Svelte", () => {
   test("renders one entry per heading", async () => {
-    render(OutlineFixture);
+    await render(OutlineFixture);
     await testOutlineRendersHeadings(page.elementLocator(document.body));
   });
 
   test("clicking an entry moves the selection", async () => {
-    render(OutlineFixture);
+    await render(OutlineFixture);
     await testOutlineClickMovesSelection(page.elementLocator(document.body));
   });
 });

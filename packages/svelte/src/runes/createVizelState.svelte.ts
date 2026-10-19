@@ -33,7 +33,7 @@ export function createVizelState(getEditor: () => Editor | null | undefined): {
 
   $effect(() => {
     const editor = getEditor();
-    if (!editor) return;
+    if (!editor) return undefined;
     const store = createVizelEditorTransactionStore(() => editor);
     const unsubscribe = store.subscribe(() => {
       updateCount = store.getVersion();

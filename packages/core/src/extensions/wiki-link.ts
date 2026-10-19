@@ -4,6 +4,7 @@ import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { MarkdownIt } from "markdown-it";
 import type { MarkdownSerializerState } from "prosemirror-markdown";
 
+import { isRecord } from "../_internal/guards.ts";
 import {
   escapeMetadataCommentValue,
   unescapeMetadataCommentValue,
@@ -167,7 +168,7 @@ export const VizelWikiLink = Mark.create<VizelWikiLinkOptions>({
         default: null,
         parseHTML: (element) => element.getAttribute("data-wiki-page"),
         renderHTML: (attributes) => ({
-          "data-wiki-page": attributes.pageName as string,
+          "data-wiki-page": typeof attributes.pageName === "string" ? attributes.pageName : null,
         }),
       },
     };
@@ -182,7 +183,7 @@ export const VizelWikiLink = Mark.create<VizelWikiLinkOptions>({
   },
 
   renderHTML({ HTMLAttributes, mark }) {
-    const pageName = (mark.attrs.pageName as string) ?? "";
+    const pageName = typeof mark.attrs.pageName === "string" ? mark.attrs.pageName : "";
     const href = this.options.resolveLink?.(pageName) ?? `#${pageName}`;
     const exists = this.options.pageExists?.(pageName) ?? true;
     const statusClass = exists ? this.options.existingClass : this.options.newClass;
@@ -322,7 +323,8 @@ function registerWikiLinkRule(md: MarkdownIt): void {
 
   md.renderer.rules.vizel_wiki_link = (tokens, idx) => {
     const token = tokens[idx];
-    const pageName = String((token?.meta as { pageName?: string } | undefined)?.pageName ?? "");
+    const meta: unknown = token?.meta;
+    const pageName = isRecord(meta) && typeof meta.pageName === "string" ? meta.pageName : "";
     const escapedPage = pageName.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
     const text = (token?.content ?? "")
       .replace(/&/g, "&amp;")

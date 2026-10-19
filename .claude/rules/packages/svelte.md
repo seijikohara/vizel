@@ -48,7 +48,9 @@ build against the published files (notably the demo apps and Rolldown).
 ```ts
 // CORRECT: matches what dist/ will resolve.
 import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext.js";
+```
 
+```ts
 // WRONG: leaks ".ts" into dist and breaks downstream builds.
 import { VIZEL_THEME_CONTEXT_KEY } from "./VizelThemeContext.ts";
 ```

@@ -23,11 +23,10 @@ export function CssResetFixture() {
   useVizelState(editor);
 
   useEffect(() => {
-    if (!editor) return;
-    const win = window as unknown as { vizelTestEditor?: unknown };
-    win.vizelTestEditor = editor;
+    if (!editor) return undefined;
+    window.vizelTestEditor = editor;
     return () => {
-      delete win.vizelTestEditor;
+      delete window.vizelTestEditor;
     };
   }, [editor]);
 

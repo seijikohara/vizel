@@ -6,7 +6,7 @@ import EditorFixture from "./EditorFixture.vue";
 
 describe("Editor placeholder (Vitest Browser) - Vue", () => {
   test("shows the configured placeholder when empty", async () => {
-    render(EditorFixture, { props: { placeholder: "Write something amazing..." } });
+    await render(EditorFixture, { props: { placeholder: "Write something amazing..." } });
     await testEditorPlaceholder("Write something amazing...");
   });
 });

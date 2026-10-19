@@ -81,7 +81,17 @@ declare module "@tiptap/core" {
 /**
  * Diagram extension for block diagrams
  */
-export const VizelDiagram = Node.create<VizelDiagramOptions>({
+/**
+ * Storage the diagram node keeps per editor.
+ */
+interface VizelDiagramStorage {
+  /** Theme Mermaid was last initialized for. */
+  mermaidInitializedTheme: "default" | "dark" | null;
+  /** `tiptap-markdown` serializer and parser hooks. */
+  markdown: unknown;
+}
+
+export const VizelDiagram = Node.create<VizelDiagramOptions, VizelDiagramStorage>({
   name: "diagram",
   group: "block",
   atom: true,
@@ -174,9 +184,7 @@ export const VizelDiagram = Node.create<VizelDiagramOptions>({
   addNodeView() {
     return ({ node, getPos, editor }) => {
       const mermaidConfig = this.options.mermaidConfig;
-      const diagramStorage = this.storage as {
-        mermaidInitializedTheme: "default" | "dark" | null;
-      };
+      const diagramStorage = this.storage;
 
       const dom = document.createElement("div");
       dom.classList.add("vizel-diagram");

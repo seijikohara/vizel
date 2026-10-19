@@ -2,7 +2,6 @@
 import {
   createVizelFindReplaceExtension,
   type Editor,
-  type JSONContent,
   setVizelMarkdown,
   useVizelAutoSave,
   useVizelComment,
@@ -24,7 +23,7 @@ import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { getFlavorContent } from "../../shared/content";
 import vueLogo from "../../shared/logos/vue.svg";
 import { applyDemoPreflight } from "../../shared/preflight";
-import { mockMentionItems, mockUploadImage } from "../../shared/utils";
+import { isJSONContent, mockMentionItems, mockUploadImage } from "../../shared/utils";
 import StatsBar from "./StatsBar.vue";
 import ThemeToggle from "./ThemeToggle.vue";
 
@@ -126,8 +125,8 @@ function handleJsonChange(event: Event) {
   const value = target.value;
   jsonInput.value = value;
   try {
-    const parsed = JSON.parse(value) as JSONContent;
-    if (editorRef.value) {
+    const parsed: unknown = JSON.parse(value);
+    if (editorRef.value && isJSONContent(parsed)) {
       editorRef.value.commands.setContent(parsed);
     }
   } catch {

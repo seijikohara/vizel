@@ -124,7 +124,7 @@ export function useVizelEditor(options: UseVizelEditorOptions = {}): Editor | nu
 
   // Handle vizel:upload-image custom event from slash command
   useEffect(() => {
-    if (!editor) return;
+    if (!editor) return undefined;
 
     return registerVizelUploadEventHandler({
       getEditor: () => editor,

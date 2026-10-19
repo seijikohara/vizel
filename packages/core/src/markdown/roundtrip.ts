@@ -66,7 +66,7 @@ export async function assertMarkdownRoundtrip(
   const editor = new Editor(host === undefined ? { extensions } : { element: host, extensions });
   if (host !== undefined) {
     await new Promise<void>((resolve) => {
-      if ((editor as unknown as { isInitialized?: boolean }).isInitialized) {
+      if (editor.isInitialized) {
         resolve();
         return;
       }

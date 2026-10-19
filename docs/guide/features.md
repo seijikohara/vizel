@@ -707,7 +707,7 @@ Comment management (storage, replies, resolution) uses the framework-specific ho
 This feature enables real-time multi-user editing built on Yjs. When you enable it, Vizel disables the built-in History extension (Yjs handles undo/redo).
 
 ::: warning
-This opt-in feature requires additional dependencies: `yjs`, a Yjs provider, `@tiptap/extension-collaboration`, and `@tiptap/extension-collaboration-cursor`.
+This opt-in feature requires additional dependencies: `yjs`, a Yjs provider, `@tiptap/extension-collaboration`, and `@tiptap/extension-collaboration-caret`.
 :::
 
 ### Example
@@ -721,7 +721,7 @@ const editor = useVizelEditor({
   },
   extensions: [
     Collaboration.configure({ document: ydoc }),
-    CollaborationCursor.configure({ provider, user }),
+    CollaborationCaret.configure({ provider, user }),
   ],
 });
 ```

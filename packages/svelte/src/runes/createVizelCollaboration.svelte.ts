@@ -44,7 +44,7 @@ export interface CreateVizelCollaborationResult {
  * import * as Y from "yjs";
  * import { WebsocketProvider } from "y-websocket";
  * import Collaboration from "@tiptap/extension-collaboration";
- * import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+ * import CollaborationCaret from "@tiptap/extension-collaboration-caret";
  * import { createVizelEditor, createVizelCollaboration } from "@vizel/svelte";
  *
  * const doc = new Y.Doc();
@@ -59,7 +59,7 @@ export interface CreateVizelCollaborationResult {
  *   features: { collaboration: { provider: true } },
  *   extensions: [
  *     Collaboration.configure({ document: doc }),
- *     CollaborationCursor.configure({
+ *     CollaborationCaret.configure({
  *       provider,
  *       user: { name: "Alice", color: "#ff0000" },
  *     }),
@@ -99,7 +99,7 @@ export function createVizelCollaboration(
     // briefly point at a different `handlers` instance every cycle.
     if (!(provider && enabled)) {
       handlers = null;
-      return;
+      return undefined;
     }
 
     handlers = createVizelCollaborationHandlers(getProvider, options, handleStateChange);

@@ -208,6 +208,11 @@ function resolveModuleExports(filePath: string, visited: Set<string>): ReadonlyS
   return new Set<string>(names);
 }
 
+/** Resolve a module's export set with a fresh visited set. */
+function resolveModuleExportsFresh(target: string): ReadonlySet<string> {
+  return resolveModuleExports(target, new Set<string>());
+}
+
 /** Return whether a statement is `export * from "@vizel/core"`. */
 function reexportsCoreSurface(statement: ts.Statement): boolean {
   return (
@@ -225,10 +230,8 @@ function reexportsCoreSurface(statement: ts.Statement): boolean {
 function loadAdapterSurface(indexPath: string, coreSurface: ReadonlySet<string>): ModuleExports {
   const statements = parseSourceFile(indexPath).statements;
   const reexportsCore = statements.some(reexportsCoreSurface);
-  const recurse = (target: string): ReadonlySet<string> =>
-    resolveModuleExports(target, new Set<string>());
   const ownNames = statements.flatMap((statement) =>
-    collectStatementExportNames(statement, indexPath, recurse)
+    collectStatementExportNames(statement, indexPath, resolveModuleExportsFresh)
   );
   const names = new Set<string>(ownNames);
   if (reexportsCore) {

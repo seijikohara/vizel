@@ -10,12 +10,12 @@ import MultiBlockSelectionFixture from "./MultiBlockSelectionFixture.vue";
 
 describe("VizelMultiBlockSelection (Vitest Browser) - Vue", () => {
   test("Shift+Down selects two blocks and decorates each one", async () => {
-    render(MultiBlockSelectionFixture);
+    await render(MultiBlockSelectionFixture);
     await testShiftDownSelectsTwoBlocks(page.elementLocator(document.body));
   });
 
   test("Backspace deletes every block in the range", async () => {
-    render(MultiBlockSelectionFixture);
+    await render(MultiBlockSelectionFixture);
     await testBackspaceDeletesMultiBlockRange(page.elementLocator(document.body));
   });
 });

@@ -38,8 +38,8 @@ async function resolveEditor(): Promise<HTMLElement> {
   return el;
 }
 
-const requireElement = <T extends HTMLElement>(selector: string, root: ParentNode): T => {
-  const el = root.querySelector<T>(selector);
+const requireElement = (selector: string, root: ParentNode): HTMLElement => {
+  const el = root.querySelector<HTMLElement>(selector);
   if (el === null) throw new Error(`expected a ${selector} element`);
   return el;
 };
@@ -112,11 +112,11 @@ async function openRowMenu(wrapper: HTMLElement, cell: HTMLElement): Promise<HTM
   clickCell(cell);
   await userEvent.hover(page.elementLocator(wrapper));
   await moveOverCell(wrapper, cell);
-  const rowHandle = requireElement<HTMLElement>(ROW_HANDLE, wrapper);
+  const rowHandle = requireElement(ROW_HANDLE, wrapper);
   await expectOpacity(rowHandle, "1");
   await userEvent.click(page.elementLocator(rowHandle));
   await expect.poll(() => document.querySelector(TABLE_MENU), { timeout: 5_000 }).not.toBeNull();
-  return requireElement<HTMLElement>(TABLE_MENU, document);
+  return requireElement(TABLE_MENU, document);
 }
 
 // Reveal the column handle for the given column and click it to open the column
@@ -131,11 +131,11 @@ async function openColumnMenu(
   clickCell(targetCell);
   await userEvent.hover(page.elementLocator(wrapper));
   await moveOverCell(wrapper, targetCell);
-  const columnHandle = requireElement<HTMLElement>(COLUMN_HANDLE, wrapper);
+  const columnHandle = requireElement(COLUMN_HANDLE, wrapper);
   await expectOpacity(columnHandle, "1");
   await userEvent.click(page.elementLocator(columnHandle));
   await expect.poll(() => document.querySelector(TABLE_MENU), { timeout: 5_000 }).not.toBeNull();
-  return requireElement<HTMLElement>(TABLE_MENU, document);
+  return requireElement(TABLE_MENU, document);
 }
 
 // Find a menu item by its visible text and click it.
@@ -165,10 +165,10 @@ const expectMenuHasText = (menu: HTMLElement, text: string): void => {
 /** Verify the table wrapper renders with the default 3x3 structure. */
 export const testTableRendersWithControls: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
   await expect.element(page.elementLocator(wrapper)).toBeVisible();
 
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const table = requireElement(TABLE, wrapper);
   await expect.element(page.elementLocator(table)).toBeVisible();
   expect(table.querySelectorAll("th").length).toBe(3);
   expect(table.querySelectorAll("td").length).toBe(6);
@@ -177,8 +177,8 @@ export const testTableRendersWithControls: VizelBcScenario = async () => {
 /** Verify the column insert button is hidden until the wrapper is hovered. */
 export const testColumnInsertButtonAppearsOnHover: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const columnInsertBtn = requireElement<HTMLElement>(COLUMN_INSERT, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const columnInsertBtn = requireElement(COLUMN_INSERT, wrapper);
 
   await expectOpacity(columnInsertBtn, "0");
   await userEvent.hover(page.elementLocator(wrapper));
@@ -188,11 +188,11 @@ export const testColumnInsertButtonAppearsOnHover: VizelBcScenario = async () =>
 /** Verify clicking the column insert button adds a column. */
 export const testColumnInsertButtonAddsColumn: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
-  const columnInsertBtn = requireElement<HTMLElement>(COLUMN_INSERT, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
+  const columnInsertBtn = requireElement(COLUMN_INSERT, wrapper);
 
-  await userEvent.click(page.elementLocator(requireElement<HTMLElement>("th", table)));
+  await userEvent.click(page.elementLocator(requireElement("th", table)));
   await userEvent.hover(page.elementLocator(wrapper));
   await expectOpacity(columnInsertBtn, "1");
   await userEvent.click(page.elementLocator(columnInsertBtn));
@@ -203,8 +203,8 @@ export const testColumnInsertButtonAddsColumn: VizelBcScenario = async () => {
 /** Verify the row insert button is hidden until the wrapper is hovered. */
 export const testRowInsertButtonAppearsOnHover: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const rowInsertBtn = requireElement<HTMLElement>(ROW_INSERT, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const rowInsertBtn = requireElement(ROW_INSERT, wrapper);
 
   await expectOpacity(rowInsertBtn, "0");
   await userEvent.hover(page.elementLocator(wrapper));
@@ -214,12 +214,12 @@ export const testRowInsertButtonAppearsOnHover: VizelBcScenario = async () => {
 /** Verify clicking the row insert button adds a row. */
 export const testRowInsertButtonAddsRow: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
-  const rowInsertBtn = requireElement<HTMLElement>(ROW_INSERT, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
+  const rowInsertBtn = requireElement(ROW_INSERT, wrapper);
 
   expect(table.querySelectorAll("tr").length).toBe(3);
-  await userEvent.click(page.elementLocator(requireElement<HTMLElement>("td", table)));
+  await userEvent.click(page.elementLocator(requireElement("td", table)));
   await userEvent.hover(page.elementLocator(wrapper));
   await expectOpacity(rowInsertBtn, "1");
   await userEvent.click(page.elementLocator(rowInsertBtn));
@@ -230,8 +230,8 @@ export const testRowInsertButtonAddsRow: VizelBcScenario = async () => {
 /** Verify the row handle is hidden until the wrapper is hovered. */
 export const testRowHandleAppearsOnCellHover: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const rowHandle = requireElement<HTMLElement>(ROW_HANDLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const rowHandle = requireElement(ROW_HANDLE, wrapper);
 
   await expectOpacity(rowHandle, "0");
   await userEvent.hover(page.elementLocator(wrapper));
@@ -241,18 +241,18 @@ export const testRowHandleAppearsOnCellHover: VizelBcScenario = async () => {
 /** Verify clicking the row handle opens the row menu. */
 export const testRowHandleOpensMenu: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
-  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  const menu = await openRowMenu(wrapper, requireElement("td", table));
   await expect.element(page.elementLocator(menu)).toBeVisible();
 };
 
 /** Verify the column handle is hidden until the wrapper is hovered. */
 export const testColumnHandleAppearsOnCellHover: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const columnHandle = requireElement<HTMLElement>(COLUMN_HANDLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const columnHandle = requireElement(COLUMN_HANDLE, wrapper);
 
   await expectOpacity(columnHandle, "0");
   await userEvent.hover(page.elementLocator(wrapper));
@@ -262,8 +262,8 @@ export const testColumnHandleAppearsOnCellHover: VizelBcScenario = async () => {
 /** Verify clicking the column handle opens the column menu. */
 export const testColumnHandleOpensMenu: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
   const menu = await openColumnMenu(wrapper, table, 0);
   await expect.element(page.elementLocator(menu)).toBeVisible();
@@ -272,10 +272,10 @@ export const testColumnHandleOpensMenu: VizelBcScenario = async () => {
 /** Verify the row menu lists the expected row actions. */
 export const testMenuContainsExpectedItems: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
-  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  const menu = await openRowMenu(wrapper, requireElement("td", table));
   expectMenuHasText(menu, "Add row above");
   expectMenuHasText(menu, "Add row below");
   expectMenuHasText(menu, "Delete row");
@@ -286,11 +286,11 @@ export const testMenuContainsExpectedItems: VizelBcScenario = async () => {
 /** Verify the row menu "Add row below" action appends a row. */
 export const testMenuAddRowAction: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
   const initialRows = table.querySelectorAll("tr").length;
 
-  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  const menu = await openRowMenu(wrapper, requireElement("td", table));
   await clickMenuItem(menu, "Add row below");
 
   await expect
@@ -302,11 +302,11 @@ export const testMenuAddRowAction: VizelBcScenario = async () => {
 /** Verify the row menu "Delete row" action removes a row. */
 export const testMenuDeleteRowAction: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
   expect(table.querySelectorAll("tr").length).toBe(3);
 
-  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  const menu = await openRowMenu(wrapper, requireElement("td", table));
   await clickMenuItem(menu, "Delete row");
 
   await expect.poll(() => table.querySelectorAll("tr").length, { timeout: 5_000 }).toBe(2);
@@ -315,10 +315,10 @@ export const testMenuDeleteRowAction: VizelBcScenario = async () => {
 /** Verify the row menu "Delete table" action removes the table. */
 export const testMenuDeleteTableAction: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
-  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  const menu = await openRowMenu(wrapper, requireElement("td", table));
   await clickMenuItem(menu, "Delete table");
 
   await expect.poll(() => el.querySelector(TABLE_WRAPPER), { timeout: 5_000 }).toBeNull();
@@ -327,10 +327,10 @@ export const testMenuDeleteTableAction: VizelBcScenario = async () => {
 /** Verify the row menu closes when the Escape key is pressed. */
 export const testMenuClosesOnEscape: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
-  await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  await openRowMenu(wrapper, requireElement("td", table));
   await userEvent.keyboard("{Escape}");
 
   await expect.poll(() => document.querySelector(TABLE_MENU), { timeout: 5_000 }).toBeNull();
@@ -339,10 +339,10 @@ export const testMenuClosesOnEscape: VizelBcScenario = async () => {
 /** Verify the row menu closes when a click lands outside it. */
 export const testMenuClosesOnClickOutside: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
-  await openRowMenu(wrapper, requireElement<HTMLElement>("td", table));
+  await openRowMenu(wrapper, requireElement("td", table));
 
   // The click-outside handler registers via setTimeout, so the first click may
   // race ahead of the listener. Retry the click until the menu closes.
@@ -360,8 +360,8 @@ export const testMenuClosesOnClickOutside: VizelBcScenario = async () => {
 /** Verify the column menu lists the expected column actions. */
 export const testColumnMenuContainsExpectedItems: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
   const menu = await openColumnMenu(wrapper, table, 0);
   expectMenuHasText(menu, "Add column left");
@@ -376,10 +376,10 @@ export const testColumnMenuContainsExpectedItems: VizelBcScenario = async () => 
 /** Verify the column menu "Add column left" action inserts before the column. */
 export const testMenuAddColumnLeftAction: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
-  const firstHeaderCell = requireElement<HTMLElement>("th", table);
+  const firstHeaderCell = requireElement("th", table);
   await userEvent.click(page.elementLocator(firstHeaderCell));
   await userEvent.keyboard("First");
   expect(table.querySelectorAll("th").length).toBe(3);
@@ -397,10 +397,10 @@ export const testMenuAddColumnLeftAction: VizelBcScenario = async () => {
 /** Verify the column menu "Add column right" action inserts after the column. */
 export const testMenuAddColumnRightAction: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
-  const firstHeaderCell = requireElement<HTMLElement>("th", table);
+  const firstHeaderCell = requireElement("th", table);
   await userEvent.click(page.elementLocator(firstHeaderCell));
   await userEvent.keyboard("First");
   expect(table.querySelectorAll("th").length).toBe(3);
@@ -417,8 +417,8 @@ export const testMenuAddColumnRightAction: VizelBcScenario = async () => {
 /** Verify the column menu "Delete column" action removes a column. */
 export const testMenuDeleteColumnAction: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
   expect(table.querySelectorAll("th").length).toBe(3);
 
   const menu = await openColumnMenu(wrapper, table, 0);
@@ -430,10 +430,10 @@ export const testMenuDeleteColumnAction: VizelBcScenario = async () => {
 /** Verify the row menu "Add row above" action inserts before the row. */
 export const testMenuAddRowAboveAction: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
-  const firstBodyCell = requireElement<HTMLElement>("td", table);
+  const firstBodyCell = requireElement("td", table);
   await userEvent.click(page.elementLocator(firstBodyCell));
   await userEvent.keyboard("Original");
   expect(table.querySelectorAll("tr").length).toBe(3);
@@ -452,11 +452,11 @@ export const testMenuAddRowAboveAction: VizelBcScenario = async () => {
 /** Verify the row menu "Toggle header row" action converts the header row. */
 export const testMenuToggleHeaderRowAction: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
   expect(table.querySelectorAll("th").length).toBe(3);
 
-  const menu = await openRowMenu(wrapper, requireElement<HTMLElement>("th", table));
+  const menu = await openRowMenu(wrapper, requireElement("th", table));
   await clickMenuItem(menu, "Toggle header row");
 
   await expect.poll(() => table.querySelectorAll("th").length, { timeout: 5_000 }).toBe(0);
@@ -466,8 +466,8 @@ export const testMenuToggleHeaderRowAction: VizelBcScenario = async () => {
 /** Verify the column menu "Align center" action centres the whole column. */
 export const testTextAlignmentViaMenu: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
   const secondHeaderCell = table.querySelectorAll<HTMLElement>("th")[1];
   if (secondHeaderCell === undefined) throw new Error("expected a second header cell");
@@ -493,8 +493,8 @@ export const testTextAlignmentViaMenu: VizelBcScenario = async () => {
 /** Verify switching column alignment from center back to left. */
 export const testTextAlignmentLeftViaMenu: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
   const centerMenu = await openColumnMenu(wrapper, table, 0);
   await clickMenuItem(centerMenu, "Align center");
@@ -508,8 +508,8 @@ export const testTextAlignmentLeftViaMenu: VizelBcScenario = async () => {
 /** Verify the column menu "Align right" action right-aligns the whole column. */
 export const testTextAlignmentRightViaMenu: VizelBcScenario = async () => {
   const el = await insertTable();
-  const wrapper = requireElement<HTMLElement>(TABLE_WRAPPER, el);
-  const table = requireElement<HTMLElement>(TABLE, wrapper);
+  const wrapper = requireElement(TABLE_WRAPPER, el);
+  const table = requireElement(TABLE, wrapper);
 
   const menu = await openColumnMenu(wrapper, table, 0);
   await clickMenuItem(menu, "Align right");

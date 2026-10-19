@@ -14,32 +14,32 @@ import UseEditorStateFixture from "./UseEditorStateFixture.vue";
 
 describe("useEditorState (Vitest Browser) - Vue", () => {
   test("updates when editor state changes", async () => {
-    render(UseEditorStateFixture);
+    await render(UseEditorStateFixture);
     await testEditorStateUpdatesOnChange(page.elementLocator(document.body));
   });
 
   test("tracks bold formatting state", async () => {
-    render(UseEditorStateFixture);
+    await render(UseEditorStateFixture);
     await testEditorStateTracksBoldActive(page.elementLocator(document.body));
   });
 
   test("tracks italic formatting state", async () => {
-    render(UseEditorStateFixture);
+    await render(UseEditorStateFixture);
     await testEditorStateTracksItalicActive(page.elementLocator(document.body));
   });
 
   test("handles null editor", async () => {
-    render(UseEditorStateFixture, { props: { nullEditor: true } });
+    await render(UseEditorStateFixture, { props: { nullEditor: true } });
     await testEditorStateWithNullEditor(page.elementLocator(document.body));
   });
 
   test("tracks character and word count", async () => {
-    render(UseEditorStateFixture);
+    await render(UseEditorStateFixture);
     await testEditorStateCharacterCount(page.elementLocator(document.body));
   });
 
   test("tracks empty and focus state", async () => {
-    render(UseEditorStateFixture);
+    await render(UseEditorStateFixture);
     await testEditorStateEmptyAndFocus(page.elementLocator(document.body));
   });
 });

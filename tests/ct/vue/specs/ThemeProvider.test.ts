@@ -31,43 +31,43 @@ describe("ThemeProvider (Vitest Browser) - Vue", () => {
   });
 
   test("renders with default theme", async () => {
-    render(ThemeProviderFixture, { props: {} });
+    await render(ThemeProviderFixture, { props: {} });
     await testThemeProviderDefaultTheme();
   });
 
   test("toggles theme on button click", async () => {
-    render(ThemeProviderFixture, { props: { defaultTheme: "light" } });
+    await render(ThemeProviderFixture, { props: { defaultTheme: "light" } });
     await testThemeProviderToggle();
   });
 
   test("persists theme to localStorage", async () => {
     const storageKey = "vizel-theme-test";
-    render(ThemeProviderFixture, { props: { defaultTheme: "light", storageKey } });
+    await render(ThemeProviderFixture, { props: { defaultTheme: "light", storageKey } });
     await testThemeProviderPersistence(storageKey);
   });
 
   test("shows resolved theme", async () => {
-    render(ThemeProviderFixture, { props: { defaultTheme: "light" } });
+    await render(ThemeProviderFixture, { props: { defaultTheme: "light" } });
     await testThemeProviderShowsResolvedTheme();
   });
 
   test("applies light theme CSS variables", async () => {
-    render(ThemeProviderFixture, { props: { defaultTheme: "light" } });
+    await render(ThemeProviderFixture, { props: { defaultTheme: "light" } });
     await testThemeProviderLightCSS();
   });
 
   test("applies dark theme CSS variables", async () => {
-    render(ThemeProviderFixture, { props: { defaultTheme: "dark" } });
+    await render(ThemeProviderFixture, { props: { defaultTheme: "dark" } });
     await testThemeProviderDarkCSS();
   });
 
   test("defines typography CSS variables", async () => {
-    render(ThemeProviderFixture, { props: { defaultTheme: "light" } });
-    await testThemeProviderTypographyVariables();
+    await render(ThemeProviderFixture, { props: { defaultTheme: "light" } });
+    testThemeProviderTypographyVariables();
   });
 
   test("defines spacing CSS variables", async () => {
-    render(ThemeProviderFixture, { props: { defaultTheme: "light" } });
-    await testThemeProviderSpacingVariables();
+    await render(ThemeProviderFixture, { props: { defaultTheme: "light" } });
+    testThemeProviderSpacingVariables();
   });
 });

@@ -117,7 +117,7 @@ export function useVizelAutoSave(
   );
 
   useEffect(() => {
-    if (!(editor && enabled)) return;
+    if (!(editor && enabled)) return undefined;
 
     editor.on("update", handlers.handleUpdate);
 

@@ -1,7 +1,6 @@
 import {
   createVizelFindReplaceExtension,
   type Editor,
-  type JSONContent,
   setVizelMarkdown,
   shallowEqualObject,
   useVizelAutoSave,
@@ -26,7 +25,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getFlavorContent } from "../../shared/content";
 import reactLogo from "../../shared/logos/react.svg";
 import { applyDemoPreflight } from "../../shared/preflight";
-import { mockMentionItems, mockUploadImage } from "../../shared/utils";
+import { isJSONContent, mockMentionItems, mockUploadImage } from "../../shared/utils";
 
 const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
   [vizelCommonMarkFlavor.name]: vizelCommonMarkFlavor,
@@ -229,8 +228,8 @@ function AppContent() {
     (value: string) => {
       setJsonInput(value);
       try {
-        const parsed = JSON.parse(value) as JSONContent;
-        if (editor) {
+        const parsed: unknown = JSON.parse(value);
+        if (editor && isJSONContent(parsed)) {
           editor.commands.setContent(parsed);
         }
       } catch {
@@ -591,7 +590,7 @@ function AppContent() {
                                   className="panel-item-btn"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    commentManager.reopenComment(comment.id);
+                                    void commentManager.reopenComment(comment.id);
                                   }}
                                 >
                                   Reopen
@@ -602,7 +601,7 @@ function AppContent() {
                                   className="panel-item-btn"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    commentManager.resolveComment(comment.id);
+                                    void commentManager.resolveComment(comment.id);
                                   }}
                                 >
                                   Resolve
@@ -613,7 +612,7 @@ function AppContent() {
                                 className="panel-item-btn panel-item-btn--danger"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  commentManager.removeComment(comment.id);
+                                  void commentManager.removeComment(comment.id);
                                 }}
                               >
                                 Remove
@@ -649,7 +648,7 @@ function AppContent() {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleReply(comment.id);
+                                  void handleReply(comment.id);
                                 }}
                               >
                                 Reply

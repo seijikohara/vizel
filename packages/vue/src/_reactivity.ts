@@ -160,22 +160,25 @@ export function useVizelEditorState<T>(
     attachment.detach = null;
   };
 
+  // Bump the version counter on every transaction / selection
+  // update so the computed re-evaluates. Tiptap dispatches a
+  // `transaction` for document and metadata changes and a separate
+  // `selectionUpdate` for pure-cursor moves; the bubble menu and the
+  // toolbar's active state depend on the selection signal, so the
+  // composable subscribes to both events for parity with the React
+  // primitive in `_reactivity.ts`. The handlers live at composable
+  // scope because they capture only the composable's refs, not the
+  // attached editor.
+  const onTransaction = (payload: { editor: Editor; transaction: Transaction }): void => {
+    lastTransaction.value = payload.transaction;
+    version.value = (version.value + 1) | 0;
+  };
+  const onSelectionUpdate = (payload: { editor: Editor; transaction: Transaction }): void => {
+    lastTransaction.value = payload.transaction;
+    version.value = (version.value + 1) | 0;
+  };
+
   const attachListeners = (editor: Editor): void => {
-    // Bump the version counter on every transaction / selection
-    // update so the computed re-evaluates. Tiptap dispatches a
-    // `transaction` for document and metadata changes and a separate
-    // `selectionUpdate` for pure-cursor moves; the bubble menu and the
-    // toolbar's active state depend on the selection signal, so the
-    // composable subscribes to both events for parity with the React
-    // primitive in `_reactivity.ts`.
-    const onTransaction = (payload: { editor: Editor; transaction: Transaction }): void => {
-      lastTransaction.value = payload.transaction;
-      version.value = (version.value + 1) | 0;
-    };
-    const onSelectionUpdate = (payload: { editor: Editor; transaction: Transaction }): void => {
-      lastTransaction.value = payload.transaction;
-      version.value = (version.value + 1) | 0;
-    };
     editor.on("transaction", onTransaction);
     editor.on("selectionUpdate", onSelectionUpdate);
     attachment.editor = editor;

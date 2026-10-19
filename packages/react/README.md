@@ -28,6 +28,7 @@ Optional features require extra packages installed manually:
 
 ```tsx
 import { Vizel } from "@vizel/react";
+
 import "@vizel/core/styles.css";
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
 
 ```tsx
 import { VizelEditor, VizelBubbleMenu, useVizelEditor } from "@vizel/react";
+
 import "@vizel/core/styles.css";
 
 function App() {

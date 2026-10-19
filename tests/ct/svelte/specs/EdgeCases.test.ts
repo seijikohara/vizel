@@ -20,12 +20,12 @@ import MarkdownFixture from "./MarkdownFixture.svelte";
 describe("Edge Cases (Vitest Browser) - Svelte", () => {
   describe("Empty State", () => {
     test("empty editor has correct initial state", async () => {
-      render(EditorFixture);
+      await render(EditorFixture);
       await testEditorEmptyState(page.elementLocator(document.body));
     });
 
     test("empty editor markdown export produces empty output", async () => {
-      render(MarkdownFixture);
+      await render(MarkdownFixture);
       await testMarkdownEmptyExport(page.elementLocator(document.body));
     });
   });
@@ -33,31 +33,31 @@ describe("Edge Cases (Vitest Browser) - Svelte", () => {
   describe("Special Characters", () => {
     // Firefox ignores synthesized ClipboardEvent payloads (see _vitest-context).
     test.skipIf(isFirefox)("handles Unicode and emoji characters", async () => {
-      render(EditorFixture);
+      await render(EditorFixture);
       await testSpecialCharacters(page.elementLocator(document.body));
     });
 
     test("escapes HTML-like characters", async () => {
-      render(EditorFixture);
+      await render(EditorFixture);
       await testHtmlEscaping(page.elementLocator(document.body));
     });
   });
 
   describe("Undo/Redo", () => {
     test("undo/redo works across formatting operations", async () => {
-      render(EditorFixture);
+      await render(EditorFixture);
       await testUndoRedoFormatting(page.elementLocator(document.body));
     });
 
     test("undo works across multiple operation types", async () => {
-      render(EditorFixture);
+      await render(EditorFixture);
       await testUndoMultipleOperations(page.elementLocator(document.body));
     });
   });
 
   describe("Rapid Operations", () => {
     test("rapid formatting toggles do not corrupt state", async () => {
-      render(EditorFixture);
+      await render(EditorFixture);
       await testRapidFormattingToggles(page.elementLocator(document.body));
     });
   });
@@ -65,12 +65,12 @@ describe("Edge Cases (Vitest Browser) - Svelte", () => {
   describe("Markdown Edge Cases", () => {
     // Firefox ignores synthesized ClipboardEvent payloads (see _vitest-context).
     test.skipIf(isFirefox)("markdown export preserves special characters", async () => {
-      render(MarkdownFixture);
+      await render(MarkdownFixture);
       await testMarkdownSpecialCharsExport(page.elementLocator(document.body));
     });
 
     test("markdown import handles nested content", async () => {
-      render(MarkdownFixture);
+      await render(MarkdownFixture);
       await testMarkdownNestedContent(page.elementLocator(document.body));
     });
   });

@@ -126,10 +126,10 @@ export function useVizelMarkdown(
 
   // Subscribe to editor updates
   useEffect(() => {
-    if (!editor) return;
+    if (!editor) return undefined;
 
     const handlers = handlersRef.current;
-    if (!handlers) return;
+    if (!handlers) return undefined;
 
     const rafState: { id: number | null } = { id: null };
 

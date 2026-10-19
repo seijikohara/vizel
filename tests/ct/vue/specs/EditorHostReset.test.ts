@@ -16,17 +16,17 @@ import CssResetFixture from "./CssResetFixture.vue";
 
 describe("Editor host CSS reset (Vitest Browser) - Vue", () => {
   test("list markers survive a host CSS reset", async () => {
-    render(CssResetFixture);
+    await render(CssResetFixture);
     await testListMarkersSurviveHostReset(page.elementLocator(document.body));
   });
 
   test("block spacing survives a host CSS reset", async () => {
-    render(CssResetFixture);
+    await render(CssResetFixture);
     await testBlockSpacingSurvivesHostReset(page.elementLocator(document.body));
   });
 
   test("link input background survives a host CSS reset", async () => {
-    render(CssResetFixture);
+    await render(CssResetFixture);
     await testLinkInputBackgroundSurvivesHostReset(page.elementLocator(document.body));
   });
 });

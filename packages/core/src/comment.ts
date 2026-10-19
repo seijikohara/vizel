@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core";
 
+import { isRecord } from "./_internal/guards.ts";
 import { resolveVizelArrayStorageBackend, type VizelStorageBackend } from "./storage.ts";
 import { generateVizelId } from "./utils/id.ts";
 
@@ -107,8 +108,8 @@ export const VIZEL_DEFAULT_COMMENT_OPTIONS = {
  * Creates a normalized storage backend for comments
  */
 const isVizelComment = (value: unknown): value is VizelComment => {
-  if (typeof value !== "object" || value === null) return false;
-  const record = value as Record<string, unknown>;
+  if (!isRecord(value)) return false;
+  const record = value;
   return (
     typeof record.id === "string" &&
     typeof record.text === "string" &&

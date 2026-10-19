@@ -126,6 +126,7 @@ The `Vizel` component is the recommended way to get started. It includes a float
 
 ```tsx
 import { Vizel } from "@vizel/react";
+
 import "@vizel/core/styles.css";
 
 function App() {
@@ -176,6 +177,7 @@ For more control, use individual components with hooks/composables/runes:
 ```tsx
 // React
 import { VizelEditor, VizelBubbleMenu, useVizelEditor } from "@vizel/react";
+
 import "@vizel/core/styles.css";
 
 function Editor() {

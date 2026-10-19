@@ -26,6 +26,16 @@ export type VizelCalloutMarkdownFormat =
   | "directives"
   | "blockquote-fallback";
 
+const VIZEL_CALLOUT_MARKDOWN_FORMATS: readonly string[] = [
+  "github-alerts",
+  "obsidian-callouts",
+  "directives",
+  "blockquote-fallback",
+] satisfies readonly VizelCalloutMarkdownFormat[];
+
+const isVizelCalloutMarkdownFormat = (value: unknown): value is VizelCalloutMarkdownFormat =>
+  typeof value === "string" && VIZEL_CALLOUT_MARKDOWN_FORMATS.includes(value);
+
 /** Default Markdown flavor (GitHub Flavored Markdown). */
 export const VIZEL_DEFAULT_FLAVOR: VizelMarkdownFlavor = vizelGfmFlavor;
 
@@ -44,12 +54,15 @@ const DEFAULT_FLAVOR_CONFIG: VizelFlavorConfig = {
 export function resolveVizelFlavorConfig(
   flavor: VizelMarkdownFlavor = VIZEL_DEFAULT_FLAVOR
 ): VizelFlavorConfig {
-  const calloutFormat =
-    (flavor.config?.calloutFormat as VizelCalloutMarkdownFormat | undefined) ??
-    DEFAULT_FLAVOR_CONFIG.calloutFormat;
+  const configuredCalloutFormat = flavor.config?.calloutFormat;
+  const calloutFormat = isVizelCalloutMarkdownFormat(configuredCalloutFormat)
+    ? configuredCalloutFormat
+    : DEFAULT_FLAVOR_CONFIG.calloutFormat;
+  const configuredWikiLinkSerialize = flavor.config?.wikiLinkSerialize;
   const wikiLinkSerialize =
-    (flavor.config?.wikiLinkSerialize as boolean | undefined) ??
-    DEFAULT_FLAVOR_CONFIG.wikiLinkSerialize;
+    typeof configuredWikiLinkSerialize === "boolean"
+      ? configuredWikiLinkSerialize
+      : DEFAULT_FLAVOR_CONFIG.wikiLinkSerialize;
   return { calloutFormat, wikiLinkSerialize };
 }
 

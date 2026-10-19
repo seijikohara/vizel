@@ -1,5 +1,7 @@
 import type { JSONContent } from "@tiptap/core";
 
+import { isRecord } from "./_internal/guards.ts";
+
 /**
  * Identifier for built-in browser web-storage backends.
  *
@@ -40,8 +42,8 @@ export type VizelStorageBackend<T = JSONContent> =
  * tolerates partial documents.
  */
 export const isVizelJsonContent = (value: unknown): value is JSONContent => {
-  if (typeof value !== "object" || value === null) return false;
-  const record = value as Record<string, unknown>;
+  if (!isRecord(value)) return false;
+  const record = value;
   // `type` must be a string node name; `content`, when present, must be an
   // array of further nodes. These two invariants are what Tiptap's
   // `setContent` walks before instantiating ProseMirror nodes, so checking

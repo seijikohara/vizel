@@ -59,11 +59,11 @@ const isVizelTestEditor = (value: unknown): value is VizelTestEditor =>
 // so poll rather than read once.
 async function resolveTestEditor(): Promise<VizelTestEditor> {
   await expect
-    .poll(() => isVizelTestEditor((window as { vizelTestEditor?: unknown }).vizelTestEditor), {
+    .poll(() => isVizelTestEditor(window.vizelTestEditor), {
       timeout: 15_000,
     })
     .toBe(true);
-  const candidate = (window as { vizelTestEditor?: unknown }).vizelTestEditor;
+  const candidate = window.vizelTestEditor;
   if (!isVizelTestEditor(candidate)) {
     throw new Error("expected window.vizelTestEditor; mount a fixture that exposes the editor");
   }

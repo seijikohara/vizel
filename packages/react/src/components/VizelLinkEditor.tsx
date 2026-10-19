@@ -77,9 +77,9 @@ export function VizelLinkEditor({
   // asynchronously.
   const hasFormTarget = Boolean(editor && viewState);
   useEffect(() => {
-    if (!hasFormTarget) return;
+    if (!hasFormTarget) return undefined;
     const form = formRef.current;
-    if (!form) return;
+    if (!form) return undefined;
 
     // `captureEscape: true` runs the Escape handler in the capture phase
     // and calls `stopImmediatePropagation()`. The link editor owns Escape

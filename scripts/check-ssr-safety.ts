@@ -143,7 +143,9 @@ function findModuleScopeViolations(file: string, source: string): Violation[] {
 
   for (const [lineIdx, line] of lines.entries()) {
     const lineLexer: LineLexer = { inLineComment: false, skipNext: false };
-    const chars = [...line];
+    // Split into UTF-16 code units so `col` indexes the same position as
+    // `line[col + 1]` below; a string spread yields code points instead.
+    const chars = line.split("");
     for (const [col, ch] of chars.entries()) {
       if (stepLexer(ch, line[col + 1], lexer, lineLexer)) break;
     }

@@ -182,6 +182,7 @@ typed `VizelBcScenario`. Do not use `function` declarations.
 ```typescript
 // tests/ct/scenarios/example.scenario.ts
 import { expect } from "vitest";
+
 import { page } from "./_vitest-context";
 import type { VizelBcScenario } from "./_vitest-context";
 

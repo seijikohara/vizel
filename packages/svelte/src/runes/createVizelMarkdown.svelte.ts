@@ -102,7 +102,7 @@ export function createVizelMarkdown(
   // Watch for editor availability and subscribe to updates
   $effect(() => {
     const editor = getEditor();
-    if (!editor) return;
+    if (!editor) return undefined;
 
     const h = initHandlers();
 

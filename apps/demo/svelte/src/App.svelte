@@ -7,7 +7,6 @@ import {
   createVizelVersionHistory,
   type Editor,
   getVizelEditorState,
-  type JSONContent,
   setVizelMarkdown,
   Vizel,
   VizelFindReplace,
@@ -31,7 +30,7 @@ const FLAVOR_BY_NAME: Record<string, VizelMarkdownFlavor> = {
 import { getFlavorContent } from "../../shared/content";
 import svelteLogo from "../../shared/logos/svelte.svg";
 import { applyDemoPreflight } from "../../shared/preflight";
-import { mockMentionItems, mockUploadImage } from "../../shared/utils";
+import { isJSONContent, mockMentionItems, mockUploadImage } from "../../shared/utils";
 import ThemeToggle from "./ThemeToggle.svelte";
 
 // Feature toggles, all defaulting on so the demo opens fully featured.
@@ -162,8 +161,8 @@ function handleJsonChange(event: Event) {
   const value = target.value;
   jsonInput = value;
   try {
-    const parsed = JSON.parse(value) as JSONContent;
-    if (editorRef) {
+    const parsed: unknown = JSON.parse(value);
+    if (editorRef && isJSONContent(parsed)) {
       editorRef.commands.setContent(parsed);
     }
   } catch {

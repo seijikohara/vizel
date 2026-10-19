@@ -66,7 +66,7 @@ export function VizelEditor({ ref, editor: editorProp, className }: VizelEditorP
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!(editor && container)) return;
+    if (!(editor && container)) return undefined;
     return mountVizelEditorView(editor, container);
   }, [editor]);
 
