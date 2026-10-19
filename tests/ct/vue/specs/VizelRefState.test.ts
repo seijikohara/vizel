@@ -11,17 +11,17 @@ import VizelRefStateFixture from "./VizelRefStateFixture.vue";
 
 describe("Vizel + State Pattern (Vitest Browser) - Vue", () => {
   test("shows correct character/word count after typing", async () => {
-    render(VizelRefStateFixture, { props: { initialContent: "" } });
+    await render(VizelRefStateFixture, { props: { initialContent: "" } });
     await testVizelRefStateCharacterCount(page.elementLocator(document.body));
   });
 
   test("shows correct counts for initial content", async () => {
-    render(VizelRefStateFixture);
+    await render(VizelRefStateFixture);
     await testVizelRefStateInitialContent(page.elementLocator(document.body));
   });
 
   test("updates counts when adding more text", async () => {
-    render(VizelRefStateFixture);
+    await render(VizelRefStateFixture);
     await testVizelRefStateUpdatesOnChange(page.elementLocator(document.body));
   });
 });

@@ -6,7 +6,7 @@ import OutlineFixture from "./OutlineFixture.svelte";
 
 describe("Outline a11y (Vitest Browser) - Svelte", () => {
   test("emits no WCAG 2.1 AA violations", async () => {
-    render(OutlineFixture);
+    await render(OutlineFixture);
     await expectNoVizelA11yViolations();
   });
 });

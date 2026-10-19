@@ -26,72 +26,72 @@ import EditorFixture from "./EditorFixture.vue";
 
 describe("DragHandle (Vitest Browser) - Vue", () => {
   test("shows drag handle on hover", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testDragHandleVisibleOnHover(page.elementLocator(document.body));
   });
 
   test("hover shows and hides drag handle", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testDragHandleHoverBehavior(page.elementLocator(document.body));
   });
 
   test("drag handle is clickable", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testDragHandleIsClickable(page.elementLocator(document.body));
   });
 
   test("drag handle has correct accessibility attributes", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testDragHandleAccessibility(page.elementLocator(document.body));
   });
 
   test("moves block up with Alt+ArrowUp", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testMoveBlockUpWithKeyboard(page.elementLocator(document.body));
   });
 
   test("moves block down with Alt+ArrowDown", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testMoveBlockDownWithKeyboard(page.elementLocator(document.body));
   });
 
   test("moves heading with keyboard", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testMoveHeadingWithKeyboard(page.elementLocator(document.body));
   });
 
   test("moves list item up with Alt+ArrowUp", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testMoveListItemUpWithKeyboard(page.elementLocator(document.body));
   });
 
   test("moves list item down with Alt+ArrowDown", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testMoveListItemDownWithKeyboard(page.elementLocator(document.body));
   });
 
   test("moves task item with keyboard", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testMoveTaskItemWithKeyboard(page.elementLocator(document.body));
   });
 
   test.skipIf(isWebkit)("reorders a bullet list item by dragging", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testDragBulletListItemReorder(page.elementLocator(document.body));
   });
 
   test.skipIf(isWebkit)("reorders an ordered list item by dragging", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testDragOrderedListItemReorder(page.elementLocator(document.body));
   });
 
   test.skipIf(isWebkit)("preserves task item checked state after drag", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testDragTaskItemPreservesCheckState(page.elementLocator(document.body));
   });
 
   test.skipIf(isWebkit)("reorders a nested list item by dragging", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testDragNestedListItemReorder(page.elementLocator(document.body));
   });
 });

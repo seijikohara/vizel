@@ -6,7 +6,7 @@ import ToolbarFixture from "./ToolbarFixture.svelte";
 
 describe("Toolbar a11y (Vitest Browser) - Svelte", () => {
   test("emits no WCAG 2.1 AA violations", async () => {
-    render(ToolbarFixture);
+    await render(ToolbarFixture);
     await expectNoVizelA11yViolations();
   });
 });

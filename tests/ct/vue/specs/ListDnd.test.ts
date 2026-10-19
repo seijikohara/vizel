@@ -14,32 +14,32 @@ import EditorFixture from "./EditorFixture.vue";
 
 describe("ListDnd (Vitest Browser) - Vue", () => {
   test("Tab indents a bullet list item", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testBulletListTabIndent(page.elementLocator(document.body));
   });
 
   test("Shift+Tab outdents a bullet list item", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testBulletListShiftTabOutdent(page.elementLocator(document.body));
   });
 
   test("Tab indents a task list item", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testTaskListTabIndent(page.elementLocator(document.body));
   });
 
   test("Shift+Tab outdents a task list item", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testTaskListShiftTabOutdent(page.elementLocator(document.body));
   });
 
   test("Alt+Arrow reorders bullet list items", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testBulletListAltArrowReorder(page.elementLocator(document.body));
   });
 
   test("Alt+Arrow reorders ordered list items", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testOrderedListAltArrowReorder(page.elementLocator(document.body));
   });
 });

@@ -63,11 +63,11 @@ describe("ThemeProvider (Vitest Browser) - React", () => {
 
   test("defines typography CSS variables", async () => {
     await render(<ThemeProviderFixture defaultTheme="light" />);
-    await testThemeProviderTypographyVariables();
+    testThemeProviderTypographyVariables();
   });
 
   test("defines spacing CSS variables", async () => {
     await render(<ThemeProviderFixture defaultTheme="light" />);
-    await testThemeProviderSpacingVariables();
+    testThemeProviderSpacingVariables();
   });
 });

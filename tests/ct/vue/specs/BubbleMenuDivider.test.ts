@@ -11,17 +11,17 @@ import BubbleMenuDividerFixture from "./BubbleMenuDividerFixture.vue";
 
 describe("BubbleMenuDivider (Vitest Browser) - Vue", () => {
   test("renders with base class", async () => {
-    render(BubbleMenuDividerFixture);
+    await render(BubbleMenuDividerFixture);
     await testDividerRendersWithBaseClass(page.elementLocator(document.body));
   });
 
   test("accepts custom class", async () => {
-    render(BubbleMenuDividerFixture, { props: { class: "custom-divider" } });
+    await render(BubbleMenuDividerFixture, { props: { class: "custom-divider" } });
     await testDividerAcceptsCustomClass(page.elementLocator(document.body));
   });
 
   test("renders as span element", async () => {
-    render(BubbleMenuDividerFixture);
+    await render(BubbleMenuDividerFixture);
     await testDividerIsSpanElement(page.elementLocator(document.body));
   });
 });

@@ -7,12 +7,12 @@ import EditorFixture from "./EditorFixture.vue";
 
 describe("Editor (Vitest Browser) - Vue", () => {
   test("renders and is editable", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testEditorRenders(page.elementLocator(document.body));
   });
 
   test("accepts typed text", async () => {
-    render(EditorFixture);
+    await render(EditorFixture);
     await testEditorTyping(page.elementLocator(document.body));
   });
 });
