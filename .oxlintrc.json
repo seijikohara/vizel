@@ -11,6 +11,9 @@
     "promise",
     "node"
   ],
+  "options": {
+    "typeAware": true
+  },
   "categories": {
     "correctness": "error",
     "suspicious": "error"
@@ -122,6 +125,12 @@
       "files": ["packages/*/scripts/**/*", "scripts/**/*", "tests/**/*"],
       "rules": {
         "no-console": "off"
+      }
+    },
+    {
+      "files": ["packages/headless/__tests__/**/*.ts"],
+      "rules": {
+        "typescript/no-unsafe-type-assertion": "off"
       }
     },
     {
