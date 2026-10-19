@@ -67,7 +67,6 @@
     "@tiptap/extension-superscript": "^3.26.1",
     "@tiptap/extension-text-style": "^3.26.1",
     "@tiptap/extension-underline": "^3.26.1",
-    "@vizel/core": "workspace:^",
     "svelte-check": "^4.7.2"
   },
   "peerDependencies": {

@@ -45,7 +45,6 @@ export default defineConfig({
         "mermaid",
         "katex",
         "lowlight",
-        "fuse.js",
       ],
       output: {
         preserveModules: true,
