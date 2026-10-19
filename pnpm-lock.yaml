@@ -696,12 +696,12 @@ importers:
       sass:
         specifier: ^1.101.0
         version: 1.104.1
+      unplugin-dts:
+        specifier: ^1.1.2
+        version: 1.1.2(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
       vite:
         specifier: 8.3.4
         version: 8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1)
-      vite-plugin-dts:
-        specifier: ^5.0.2
-        version: 5.1.0(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
 
   packages/headless:
     dependencies:
@@ -709,12 +709,12 @@ importers:
         specifier: ^1.7.6
         version: 1.8.0
     devDependencies:
+      unplugin-dts:
+        specifier: ^1.1.2
+        version: 1.1.2(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
       vite:
         specifier: 8.3.4
         version: 8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1)
-      vite-plugin-dts:
-        specifier: ^5.0.2
-        version: 5.1.0(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
       vitest:
         specifier: ^5.0.0
         version: 5.0.1(@types/node@25.9.6)(@vitest/browser-playwright@5.0.1)(@vitest/ui@5.0.1)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
@@ -779,12 +779,12 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^6.0.2
         version: 6.1.1(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
+      unplugin-dts:
+        specifier: ^1.1.2
+        version: 1.1.2(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
       vite:
         specifier: 8.3.4
         version: 8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1)
-      vite-plugin-dts:
-        specifier: ^5.0.2
-        version: 5.1.0(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
 
   packages/svelte:
     dependencies:
@@ -892,12 +892,12 @@ importers:
       '@vitejs/plugin-vue':
         specifier: ^6.0.7
         version: 6.0.8(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))(vue@3.5.42(typescript@6.0.3))
+      unplugin-dts:
+        specifier: ^1.1.2
+        version: 1.1.2(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
       vite:
         specifier: 8.3.4
         version: 8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1)
-      vite-plugin-dts:
-        specifier: ^5.0.2
-        version: 5.1.0(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
       vue-tsc:
         specifier: ^3.3.7
         version: 3.3.11(typescript@6.0.3)
@@ -3622,8 +3622,8 @@ packages:
   unist-util-visit@5.1.0:
     resolution: {integrity: sha512-m+vIdyeCOpdr/QeQCu2EzxX/ohgS8KbnPDgFni4dQsfSCtpz8UqDyY5GjRru8PDKuYn7Fq19j1CQ+nJSsGKOzg==}
 
-  unplugin-dts@1.1.0:
-    resolution: {integrity: sha512-KZJ+qk+lmd9dJY/PJvDRFL9BUtVubKDiX7Ai/X6mlkCArcQNzwmupKjVqHbRA42uqO5ZfFRFc+o8/OCbQ1GonQ==}
+  unplugin-dts@1.1.2:
+    resolution: {integrity: sha512-RDqy90XUmFj6rz4U5YoTMdYdaCJe2ZnQZaWIjkWS4952Gv0zBTQyqWtlGgVMPYHa982dURvyoc+sUOFIcDFv+w==}
     peerDependencies:
       '@microsoft/api-extractor': '>=7'
       '@rspack/core': ^1
@@ -3669,20 +3669,6 @@ packages:
 
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
-
-  vite-plugin-dts@5.1.0:
-    resolution: {integrity: sha512-MfLc2G+mXPUDGGxpHQeYbdunavFP9UpT9yxiAsTgUXRxfEd3HqysSAM4E72jhz5eIz3OOexCHkqiVlQq8ok9/A==}
-    peerDependencies:
-      '@microsoft/api-extractor': '>=7'
-      rollup: '>=3'
-      vite: 8.3.4
-    peerDependenciesMeta:
-      '@microsoft/api-extractor':
-        optional: true
-      rollup:
-        optional: true
-      vite:
-        optional: true
 
   vite@8.3.4:
     resolution: {integrity: sha512-IftLE8phJhdNRIGNEV4JCCvfNScoZQVfcXaN8TQropWGJtOHcu+iAB9pHcuGvmEb/kddw0LBe/jS8ztdC6xdiQ==}
@@ -6445,7 +6431,7 @@ snapshots:
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
 
-  unplugin-dts@1.1.0(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1)):
+  unplugin-dts@1.1.2(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1)):
     dependencies:
       '@rollup/pluginutils': 5.4.0
       '@volar/typescript': 2.4.28(typescript@6.0.3)
@@ -6484,20 +6470,6 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
-
-  vite-plugin-dts@5.1.0(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1)):
-    dependencies:
-      unplugin-dts: 1.1.0(@vue/language-core@3.3.11)(rolldown@1.2.8)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1))
-    optionalDependencies:
-      vite: 8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1)
-    transitivePeerDependencies:
-      - '@rspack/core'
-      - '@vue/language-core'
-      - esbuild
-      - rolldown
-      - supports-color
-      - typescript
-      - webpack
 
   vite@8.3.4(@types/node@25.9.6)(sass@1.104.1)(yaml@2.9.1):
     dependencies:

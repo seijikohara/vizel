@@ -1,14 +1,13 @@
 import { resolve } from "node:path";
 
+import dts from "unplugin-dts/vite";
 import { defineConfig } from "vite";
-import dts from "vite-plugin-dts";
 
 export default defineConfig({
   plugins: [
     dts({
       include: ["src/**/*.ts"],
       outDir: "dist",
-      rollupTypes: true,
       // Use the build tsconfig so the declaration rollup resolves
       // @vizel/headless to its built dist types instead of following the
       // root path alias into headless source (which trips TS6059).

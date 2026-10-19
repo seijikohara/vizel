@@ -76,8 +76,8 @@
     "@types/markdown-it-footnote": "^3.0.4",
     "dompurify": "^3.4.10",
     "sass": "^1.101.0",
-    "vite": "^8.0.16",
-    "vite-plugin-dts": "^5.0.2"
+    "unplugin-dts": "^1.1.2",
+    "vite": "^8.0.16"
   },
   "peerDependencies": {
     "@hpcc-js/wasm-graphviz": "^1.0.0",

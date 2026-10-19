@@ -5,10 +5,10 @@
  * Two distinct defects produce non-resolvable specifiers, and this post-build
  * step repairs both:
  *
- * 1. Extensionless specifiers. vite-plugin-dts emits `from "./x"`, which
+ * 1. Extensionless specifiers. unplugin-dts emits `from "./x"`, which
  *    Node16 rejects. The fix appends `.js` for a sibling file or `/index.js`
  *    for a directory.
- * 2. Source-extension specifiers. vue-tsc and vite-plugin-dts emit the
+ * 2. Source-extension specifiers. vue-tsc and unplugin-dts emit the
  *    original source extension literally (`from "./_reactivity.ts"`,
  *    `from "./Vizel.tsx"`, `from "./Vizel.vue"`). Node16 / NodeNext reject a
  *    `.ts` / `.tsx` / `.vue` specifier with TS2307 / InternalResolutionError

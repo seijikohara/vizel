@@ -78,8 +78,8 @@
     "@floating-ui/dom": "^1.7.6"
   },
   "devDependencies": {
+    "unplugin-dts": "^1.1.2",
     "vite": "^8.0.16",
-    "vite-plugin-dts": "^5.0.2",
     "vitest": "^5.0.0"
   },
   "engines": {

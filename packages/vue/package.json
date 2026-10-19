@@ -64,8 +64,8 @@
     "@tiptap/extension-underline": "^3.26.1",
     "@tiptap/pm": "^3.26.1",
     "@vitejs/plugin-vue": "^6.0.7",
+    "unplugin-dts": "^1.1.2",
     "vite": "^8.0.16",
-    "vite-plugin-dts": "^5.0.2",
     "vue-tsc": "^3.3.7"
   },
   "peerDependencies": {
