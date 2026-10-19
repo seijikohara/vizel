@@ -7,10 +7,23 @@
  * re-exports the public symbols, so the consumer import path is unchanged.
  */
 
+import { isRecord } from "../_internal/guards.ts";
+
 /**
  * Embed type based on available metadata
  */
 export type VizelEmbedType = "oembed" | "ogp" | "title" | "link";
+
+const VIZEL_EMBED_TYPES: readonly string[] = [
+  "oembed",
+  "ogp",
+  "title",
+  "link",
+] satisfies readonly VizelEmbedType[];
+
+/** Return whether a value names a {@link VizelEmbedType}. */
+export const isVizelEmbedType = (value: unknown): value is VizelEmbedType =>
+  typeof value === "string" && VIZEL_EMBED_TYPES.includes(value);
 
 /**
  * oEmbed provider definition
@@ -208,6 +221,26 @@ interface OEmbedResponse {
 }
 
 /**
+ * Keep the oEmbed fields whose runtime type matches {@link OEmbedResponse}.
+ * Providers return untyped JSON, so a mistyped field is dropped instead of
+ * flowing into {@link VizelEmbedData} with the wrong type.
+ */
+function parseOEmbedResponse(value: unknown): OEmbedResponse | null {
+  if (!isRecord(value)) return null;
+  return {
+    ...(typeof value.type === "string" && { type: value.type }),
+    ...(typeof value.html === "string" && { html: value.html }),
+    ...(typeof value.width === "number" && { width: value.width }),
+    ...(typeof value.height === "number" && { height: value.height }),
+    ...(typeof value.title === "string" && { title: value.title }),
+    ...(typeof value.description === "string" && { description: value.description }),
+    ...(typeof value.thumbnail_url === "string" && { thumbnail_url: value.thumbnail_url }),
+    ...(typeof value.provider_name === "string" && { provider_name: value.provider_name }),
+    ...(typeof value.author_name === "string" && { author_name: value.author_name }),
+  };
+}
+
+/**
  * Fetch oEmbed data from a provider endpoint
  */
 async function fetchOEmbed(
@@ -233,7 +266,7 @@ async function fetchOEmbed(
       return null;
     }
 
-    return (await response.json()) as OEmbedResponse;
+    return parseOEmbedResponse(await response.json());
   } catch {
     return null;
   }
