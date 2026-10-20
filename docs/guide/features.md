@@ -494,6 +494,8 @@ Use the slash command `/details` or `/toggle` to insert a collapsible block.
 
 This feature supports Mermaid and GraphViz diagrams.
 
+Install `mermaid` (11.15 or later, or 12) for Mermaid diagrams and `@hpcc-js/wasm-graphviz` for GraphViz diagrams. Mermaid 12 lays out flowchart, state, class, ER and requirement diagrams with ELK and uses the `neo` look by default. Set `layout: 'dagre'` and `look: 'classic'` in `mermaidConfig` to keep the Mermaid 11 rendering.
+
 ### Options
 
 | Property | Type | Default | Description |

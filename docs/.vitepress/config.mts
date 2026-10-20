@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { withMermaid } from "vitepress-plugin-mermaid";
+import { defineConfig } from "vitepress";
 
 const siteUrl = "https://seijikohara.github.io/vizel";
 
@@ -16,7 +16,7 @@ const typedocSidebar: Record<string, unknown>[] = fs.existsSync(typedocSidebarPa
   ? JSON.parse(fs.readFileSync(typedocSidebarPath, "utf8"))
   : [];
 
-export default withMermaid({
+export default defineConfig({
   title: "Vizel",
   description:
     "A block-based visual editor for Markdown built with Tiptap, supporting React, Vue, and Svelte",
@@ -276,13 +276,19 @@ export default withMermaid({
 
   lastUpdated: true,
 
-  // Mermaid configuration
-  mermaid: {
-    theme: "neutral",
-  },
-
-  // Mermaid plugin configuration
-  mermaidPlugin: {
-    class: "mermaid",
+  markdown: {
+    config(md) {
+      // Mermaid needs the DOM, so emit a placeholder that theme/Mermaid.vue renders in the browser.
+      const fence = md.renderer.rules.fence;
+      md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+        const token = tokens[idx];
+        if (token?.info.trim() === "mermaid") {
+          return `<Mermaid graph="${encodeURIComponent(token.content)}"></Mermaid>`;
+        }
+        return fence
+          ? fence(tokens, idx, options, env, self)
+          : self.renderToken(tokens, idx, options);
+      };
+    },
   },
 });
