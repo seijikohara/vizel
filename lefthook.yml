@@ -16,7 +16,11 @@ pre-commit:
 
     oxlint:
       glob: "*.{js,ts,cjs,mjs,jsx,tsx,vue,svelte}"
-      run: pnpm exec oxlint --fix {staged_files}
+      # oxlint skips files that match its ignorePatterns (.oxlintrc.json).
+      # When every staged file is skipped, oxlint exits non-zero with "No
+      # files found to lint."; the documented flag turns that case into a
+      # no-op. Lint errors in the remaining files still fail the hook.
+      run: pnpm exec oxlint --fix --no-error-on-unmatched-pattern {staged_files}
       stage_fixed: true
 
     typecheck-core:
