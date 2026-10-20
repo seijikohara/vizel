@@ -18,6 +18,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - A failed clipboard write from the code block copy button now emits a
   `VizelError` with the `CLIPBOARD_FAILED` code instead of an unhandled promise
   rejection.
+- `@vizel/core` accepts Mermaid 12 for its optional `mermaid` peer
+  (`^11.15.0 || ^12.0.0`). Mermaid 12 lays out flowchart, state, class, ER
+  and requirement diagrams with ELK, draws them with the `neo` look by
+  default, and targets ES2024 browsers (Safari 17.4 or later). To keep the
+  Mermaid 11 rendering, pass `layout: "dagre"` and `look: "classic"` in the
+  diagram feature's `mermaidConfig`.
 
 ### Removed
 

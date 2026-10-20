@@ -35,3 +35,11 @@
 .vizel-demo-status .divider {
   color: var(--vp-c-divider);
 }
+
+/*
+ * Mermaid measures node labels outside .vp-doc, so the 28px paragraph line
+ * height of .vp-doc would overflow the measured label boxes and clip the text.
+ */
+.vp-doc .mermaid p {
+  line-height: inherit;
+}
