@@ -16,6 +16,7 @@ const props = defineProps<{
 
 const { isDark } = useData();
 const svg = ref("");
+const error = ref("");
 const latestRender = { id: 0 };
 
 const render = async (): Promise<void> => {
@@ -30,13 +31,24 @@ const render = async (): Promise<void> => {
     // Mermaid 12 defaults to the ELK layout and the neo look; keep the pre-12 rendering.
     layout: "dagre",
     look: "classic",
+    // Without this, a failed render leaves Mermaid's error SVG in document.body, and the next
+    // render uses a new ID, so nothing ever removes it.
+    suppressErrorRendering: true,
   });
-  const result = await mermaid.render(`mermaid-${renderId}`, decodeURIComponent(props.graph));
   // A theme toggle or a hot update can start a newer render before this one finishes.
   // Mermaid applies the configuration that is current when a queued render runs,
   // so only the newest render is guaranteed to match the current theme and source.
-  if (renderId === latestRender.id) {
-    svg.value = result.svg;
+  try {
+    const result = await mermaid.render(`mermaid-${renderId}`, decodeURIComponent(props.graph));
+    if (renderId === latestRender.id) {
+      svg.value = result.svg;
+      error.value = "";
+    }
+  } catch (cause) {
+    if (renderId === latestRender.id) {
+      svg.value = "";
+      error.value = cause instanceof Error ? cause.message : String(cause);
+    }
   }
 };
 
@@ -46,5 +58,6 @@ watch([isDark, () => props.graph], render);
 </script>
 
 <template>
-  <div class="mermaid" v-html="svg"></div>
+  <pre v-if="error" class="mermaid-error">{{ error }}</pre>
+  <div v-else class="mermaid" v-html="svg"></div>
 </template>
