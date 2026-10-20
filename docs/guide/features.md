@@ -8,7 +8,7 @@ Vizel enables most features by default. Set any feature to `false` to disable it
 
 ```mermaid
 graph TB
-    subgraph default["All Features (Enabled by Default)"]
+    subgraph enabled["All Features (Enabled by Default)"]
         SlashCommand["Slash Commands"]
         Table["Tables"]
         ToC["Table of Contents"]
