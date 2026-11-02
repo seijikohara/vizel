@@ -38,9 +38,10 @@
       separateMajorMinor: false,
     },
     {
-      description: "Group TypeScript type definitions",
+      // group:react groups the React types with React; this rule runs later, so it excludes them.
+      description: "Group TypeScript type definitions other than the React ones",
       groupName: "type definitions",
-      matchPackageNames: ["@types/*"],
+      matchPackageNames: ["@types/*", "!@types/react", "!@types/react-dom"],
     },
   ],
 }
