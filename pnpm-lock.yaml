@@ -658,7 +658,7 @@ importers:
         version: 12.2.0
       prosemirror-markdown:
         specifier: ^1.13.4
-        version: 1.13.7
+        version: 1.13.9
       tiptap-markdown:
         specifier: ^0.9.0
         version: 0.9.0(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))
@@ -3365,8 +3365,8 @@ packages:
   prosemirror-keymap@1.2.3:
     resolution: {integrity: sha512-4HucRlpiLd1IPQQXNqeo81BGtkY8Ai5smHhKW9jjPKRc2wQIxksg7Hl1tTI2IfT2B/LgX6bfYvXxEpJl7aKYKw==}
 
-  prosemirror-markdown@1.13.7:
-    resolution: {integrity: sha512-NV57Oxe3fXR+bNGXS5XW4sKt/XGIyY3n0eHVUoJORcismeF4FFMpLBnl0YESy2BvJQHloexX+9P+zT3VqFj/CQ==}
+  prosemirror-markdown@1.13.9:
+    resolution: {integrity: sha512-qAI3I9YdtjWHjTCBErc08ivr24KSrUjcTh5dYncCxFM+JS02kT0iHeWYjO35xeTPwt5t8rhFrelewXhXz16WZQ==}
 
   prosemirror-model@1.25.12:
     resolution: {integrity: sha512-Ue2gTmXMa7EhpLNhC7J+h4+ykD8ha12K6rrZFFKKJHBForfIStw5gJ6Zrf1mqqAa9NmpmEB4wp9bKmA4eUVjWg==}
@@ -6174,7 +6174,7 @@ snapshots:
       prosemirror-state: 1.4.4
       w3c-keyname: 2.2.8
 
-  prosemirror-markdown@1.13.7:
+  prosemirror-markdown@1.13.9:
     dependencies:
       '@types/markdown-it': 14.2.0
       markdown-it: 14.3.2
@@ -6445,7 +6445,7 @@ snapshots:
       '@types/markdown-it': 13.0.9
       markdown-it: 14.3.2
       markdown-it-task-lists: 2.1.1
-      prosemirror-markdown: 1.13.7
+      prosemirror-markdown: 1.13.9
 
   totalist@3.0.1: {}
 
