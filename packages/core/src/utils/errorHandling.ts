@@ -77,10 +77,6 @@ export class VizelError extends Error {
     if (options?.context !== undefined) {
       this.context = options.context;
     }
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, VizelError);
-    }
   }
 }
 
