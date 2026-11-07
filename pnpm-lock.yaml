@@ -334,7 +334,7 @@ importers:
         version: 2.2.2
       mermaid:
         specifier: ^12.2.0
-        version: 12.2.0
+        version: 12.3.0
       oxfmt:
         specifier: 0.76.0
         version: 0.76.0(svelte@5.57.0)
@@ -425,7 +425,7 @@ importers:
         version: 3.3.0
       mermaid:
         specifier: ^12.2.0
-        version: 12.2.0
+        version: 12.3.0
       vite:
         specifier: 8.3.5
         version: 8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1)
@@ -456,7 +456,7 @@ importers:
         version: 3.3.0
       mermaid:
         specifier: ^12.2.0
-        version: 12.2.0
+        version: 12.3.0
       vite:
         specifier: 8.3.5
         version: 8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1)
@@ -487,7 +487,7 @@ importers:
         version: 3.3.0
       mermaid:
         specifier: ^12.2.0
-        version: 12.2.0
+        version: 12.3.0
       vite:
         specifier: 8.3.5
         version: 8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1)
@@ -655,7 +655,7 @@ importers:
         version: 2.0.0
       mermaid:
         specifier: ^11.15.0 || ^12.0.0
-        version: 12.2.0
+        version: 12.3.0
       prosemirror-markdown:
         specifier: ^1.13.4
         version: 1.13.9
@@ -2751,8 +2751,8 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  elkjs@0.9.3:
-    resolution: {integrity: sha512-f/ZeWvW/BCXbhGEf1Ujp29EASo/lk1FDnETgNKwJrsVvGZhUWCZyg3xLJjAsxfOmt8KjswHmI5EwCQcPMpOYhQ==}
+  elkjs@0.12.1:
+    resolution: {integrity: sha512-IhMYKHE4S2vtx0QrhBP3lYOIKDeIiJXBrdq9MGYkuB8ZHqhrBnHNfSUndjXFewrX1CPK8chwq+2NA0K0hliYuw==}
 
   emoji-regex@10.6.0:
     resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
@@ -3168,8 +3168,8 @@ packages:
   mdurl@2.1.0:
     resolution: {integrity: sha512-1+HBaOx0zi/dQWht8rNv9MYf9qqpqL/kxI0hXImU6Y547zM6Sni8BQibt7ifgMcYtQg41ao3Ivd6cnSM86inpg==}
 
-  mermaid@12.2.0:
-    resolution: {integrity: sha512-w7nr/SFrLO7BaVTs3dQTvYSV6nYSBj0Yy9DjBhsIJtAcHqRzXSq4Pg32ujHZ/AdWsAMNEvvhbm5dt9E2tOiHzw==}
+  mermaid@12.3.0:
+    resolution: {integrity: sha512-4113TdXeLAsMruJ79OpFL5O8+LTFXhQqZ260rF3tgUmiNAtRm4Uume04I+65PRN6yZ69J4f8rVYWW8zRk65UYw==}
     engines: {node: '>=22.12.0'}
 
   micromark-util-character@2.1.1:
@@ -3720,10 +3720,6 @@ packages:
   unplugin@2.3.11:
     resolution: {integrity: sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==}
     engines: {node: '>=18.12.0'}
-
-  uuid@14.0.2:
-    resolution: {integrity: sha512-xZe/16rV4aa+HGSOCiY2YeLT1OybRLrrkL/Rqaq7p7GMVXjFh+6wN4oMYgjFmnSnhY8t6Xpdl2l9qmnHYuMHwQ==}
-    hasBin: true
 
   validate-npm-package-name@5.0.1:
     resolution: {integrity: sha512-OljLrQ9SQdOUqTaQxqL5dEfZWrXExyyWsozYlAWFawPVNuD83igl7uJD2RTkNMbniIYgt8l81eCJGIdQF7avLQ==}
@@ -5571,7 +5567,7 @@ snapshots:
       minimatch: 10.2.6
       semver: 7.8.5
 
-  elkjs@0.9.3: {}
+  elkjs@0.12.1: {}
 
   emoji-regex@10.6.0: {}
 
@@ -5922,7 +5918,7 @@ snapshots:
 
   mdurl@2.1.0: {}
 
-  mermaid@12.2.0:
+  mermaid@12.3.0:
     dependencies:
       '@braintree/sanitize-url': 7.1.2
       '@iconify/utils': 3.1.7
@@ -5938,7 +5934,7 @@ snapshots:
       dagre-d3-es: 7.0.14
       dayjs: 1.11.23
       dompurify: 3.4.17
-      elkjs: 0.9.3
+      elkjs: 0.12.1
       es-toolkit: 1.52.0
       katex: 0.18.10
       khroma: 2.1.0
@@ -5946,7 +5942,6 @@ snapshots:
       roughjs: 4.6.6
       stylis: 4.4.0
       ts-dedent: 2.3.0
-      uuid: 14.0.2
 
   micromark-util-character@2.1.1:
     dependencies:
@@ -6571,8 +6566,6 @@ snapshots:
       acorn: 8.18.0
       picomatch: 4.0.7
       webpack-virtual-modules: 0.6.2
-
-  uuid@14.0.2: {}
 
   validate-npm-package-name@5.0.1: {}
 
