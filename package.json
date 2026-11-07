@@ -92,7 +92,7 @@
     "@tiptap/extension-underline": "^3.26.1",
     "@tiptap/pm": "^3.26.1",
     "@tiptap/suggestion": "^3.26.1",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.0.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@typescript/native": "npm:typescript@^7.0.2",
