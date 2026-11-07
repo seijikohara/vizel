@@ -181,7 +181,7 @@ importers:
         version: 0.18.5
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.1.2
-        version: 7.3.1(svelte@5.57.0)(vite@8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1))
+        version: 7.3.1(svelte@5.57.3)(vite@8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1))
       '@tiptap/core':
         specifier: 3.32.1
         version: 3.32.1(@tiptap/pm@3.32.1)
@@ -337,7 +337,7 @@ importers:
         version: 12.2.0
       oxfmt:
         specifier: 0.76.0
-        version: 0.76.0(svelte@5.57.0)
+        version: 0.76.0(svelte@5.57.3)
       oxlint:
         specifier: 1.91.0
         version: 1.91.0(oxlint-tsgolint@7.0.2006)
@@ -355,7 +355,7 @@ importers:
         version: 19.3.1(react@19.3.1)
       svelte:
         specifier: ^5.56.3
-        version: 5.57.0
+        version: 5.57.3
       typedoc:
         specifier: ^0.28.19
         version: 0.28.20(@typescript/typescript6@6.0.2)
@@ -382,7 +382,7 @@ importers:
         version: 2.3.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vitest@5.1.0)
       vitest-browser-svelte:
         specifier: 3.1.0
-        version: 3.1.0(svelte@5.57.0)(vitest@5.1.0)
+        version: 3.1.0(svelte@5.57.3)(vitest@5.1.0)
       vitest-browser-vue:
         specifier: 3.1.0
         version: 3.1.0(@vue/compiler-dom@3.5.44)(@vue/server-renderer@3.5.44)(vitest@5.1.0)(vue@3.5.44(@typescript/typescript6@6.0.2))
@@ -440,14 +440,14 @@ importers:
         version: link:../../../packages/svelte
       svelte:
         specifier: ^5.56.3
-        version: 5.57.0
+        version: 5.57.3
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: ^1.22.1
         version: 1.29.0
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.1.2
-        version: 7.3.1(svelte@5.57.0)(vite@8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1))
+        version: 7.3.1(svelte@5.57.3)(vite@8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1))
       katex:
         specifier: ^0.19.0
         version: 0.19.0
@@ -790,7 +790,7 @@ importers:
     dependencies:
       '@iconify/svelte':
         specifier: ^5.2.2
-        version: 5.2.4(svelte@5.57.0)
+        version: 5.2.4(svelte@5.57.3)
       '@vizel/core':
         specifier: workspace:^
         version: link:../core
@@ -799,14 +799,14 @@ importers:
         version: link:../headless
       svelte:
         specifier: ^5
-        version: 5.57.0
+        version: 5.57.3
     devDependencies:
       '@sveltejs/package':
         specifier: ^3.0.1
-        version: 3.0.2(@typescript/typescript6@6.0.2)(svelte@5.57.0)
+        version: 3.0.2(@typescript/typescript6@6.0.2)(svelte@5.57.3)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.1.2
-        version: 7.3.1(svelte@5.57.0)(vite@8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1))
+        version: 7.3.1(svelte@5.57.3)(vite@8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1))
       '@tiptap/extension-bold':
         specifier: ^3.26.1
         version: 3.31.3(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))
@@ -839,7 +839,7 @@ importers:
         version: 3.31.3(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))
       svelte-check:
         specifier: ^4.7.2
-        version: 4.7.6(@typescript/typescript6@6.0.2)(picomatch@4.0.7)(svelte@5.57.0)
+        version: 4.7.6(@typescript/typescript6@6.0.2)(picomatch@4.0.7)(svelte@5.57.3)
 
   packages/vue:
     dependencies:
@@ -3564,8 +3564,8 @@ packages:
       svelte: ^3.55 || ^4.0.0-next.0 || ^4.0 || ^5.0.0-next.0
       typescript: ^4.9.4 || ^5.0.0 || ^6.0.0
 
-  svelte@5.57.0:
-    resolution: {integrity: sha512-NdbDn7fl4be1ViUG0oq/lvG6OZy3oENolV2ONjiqqsfVoeAfzaQAKUcEX3MrQod/Bebv1PgwET9rfXhgn9s4Kg==}
+  svelte@5.57.3:
+    resolution: {integrity: sha512-5mAftM3SoDV9X0zdF386F9p2pv8iKOwi/KfBS1XnBAkVCKFzVOLHUoa8iGWAt4buoicLmyWVRpuuD5wplXOQsg==}
     engines: {node: '>=18'}
 
   tabbable@6.5.0:
@@ -4083,10 +4083,10 @@ snapshots:
       '@iconify/types': 2.0.0
       react: 19.3.1
 
-  '@iconify/svelte@5.2.4(svelte@5.57.0)':
+  '@iconify/svelte@5.2.4(svelte@5.57.3)':
     dependencies:
       '@iconify/types': 2.0.0
-      svelte: 5.57.0
+      svelte: 5.57.3
 
   '@iconify/types@2.0.0': {}
 
@@ -4449,27 +4449,27 @@ snapshots:
 
   '@sveltejs/load-config@0.2.3': {}
 
-  '@sveltejs/package@3.0.2(@typescript/typescript6@6.0.2)(svelte@5.57.0)':
+  '@sveltejs/package@3.0.2(@typescript/typescript6@6.0.2)(svelte@5.57.3)':
     dependencies:
       '@sveltejs/load-config': 0.2.3
       chokidar: 6.0.0
-      svelte: 5.57.0
-      svelte2tsx: 0.7.61(@typescript/typescript6@6.0.2)(svelte@5.57.0)
+      svelte: 5.57.3
+      svelte2tsx: 0.7.61(@typescript/typescript6@6.0.2)(svelte@5.57.3)
     optionalDependencies:
       typescript: '@typescript/typescript6@6.0.2'
 
-  '@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.0)(vite@8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1))':
+  '@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3)(vite@8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1))':
     dependencies:
       deepmerge: 4.3.1
       magic-string: 1.4.5
       obug: 2.2.1
-      svelte: 5.57.0
+      svelte: 5.57.3
       vite: 8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1)
       vitefu: 1.1.3(vite@8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1))
 
-  '@testing-library/svelte-core@1.1.3(svelte@5.57.0)':
+  '@testing-library/svelte-core@1.1.3(svelte@5.57.3)':
     dependencies:
-      svelte: 5.57.0
+      svelte: 5.57.3
 
   '@tiptap/core@3.32.1(@tiptap/pm@3.32.1)':
     dependencies:
@@ -6026,7 +6026,7 @@ snapshots:
 
   orderedmap@2.1.1: {}
 
-  oxfmt@0.76.0(svelte@5.57.0):
+  oxfmt@0.76.0(svelte@5.57.3):
     dependencies:
       tinypool: 2.2.0
     optionalDependencies:
@@ -6049,7 +6049,7 @@ snapshots:
       '@oxfmt/binding-win32-arm64-msvc': 0.76.0
       '@oxfmt/binding-win32-ia32-msvc': 0.76.0
       '@oxfmt/binding-win32-x64-msvc': 0.76.0
-      svelte: 5.57.0
+      svelte: 5.57.3
 
   oxlint-tsgolint@7.0.2006:
     optionalDependencies:
@@ -6387,7 +6387,7 @@ snapshots:
       has-flag: 4.0.0
       supports-color: 7.2.0
 
-  svelte-check@4.7.6(@typescript/typescript6@6.0.2)(picomatch@4.0.7)(svelte@5.57.0):
+  svelte-check@4.7.6(@typescript/typescript6@6.0.2)(picomatch@4.0.7)(svelte@5.57.3):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       '@sveltejs/load-config': 0.2.3
@@ -6395,19 +6395,19 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.7)
       picocolors: 1.1.1
       sade: 1.8.1
-      svelte: 5.57.0
+      svelte: 5.57.3
       typescript: '@typescript/typescript6@6.0.2'
     transitivePeerDependencies:
       - picomatch
 
-  svelte2tsx@0.7.61(@typescript/typescript6@6.0.2)(svelte@5.57.0):
+  svelte2tsx@0.7.61(@typescript/typescript6@6.0.2)(svelte@5.57.3):
     dependencies:
       dedent-js: 1.0.1
       scule: 1.3.0
-      svelte: 5.57.0
+      svelte: 5.57.3
       typescript: '@typescript/typescript6@6.0.2'
 
-  svelte@5.57.0:
+  svelte@5.57.3:
     dependencies:
       '@jridgewell/remapping': 2.3.5
       '@jridgewell/sourcemap-codec': 1.6.0
@@ -6659,10 +6659,10 @@ snapshots:
       '@types/react': 19.3.0
       '@types/react-dom': 19.3.0(@types/react@19.3.0)
 
-  vitest-browser-svelte@3.1.0(svelte@5.57.0)(vitest@5.1.0):
+  vitest-browser-svelte@3.1.0(svelte@5.57.3)(vitest@5.1.0):
     dependencies:
-      '@testing-library/svelte-core': 1.1.3(svelte@5.57.0)
-      svelte: 5.57.0
+      '@testing-library/svelte-core': 1.1.3(svelte@5.57.3)
+      svelte: 5.57.3
       vitest: 5.1.0(@types/node@25.9.9)(@vitest/browser-playwright@5.1.0)(@vitest/ui@5.1.0)(vite@8.3.5(@types/node@25.9.9)(sass@1.104.1)(yaml@2.9.1))
 
   vitest-browser-vue@3.1.0(@vue/compiler-dom@3.5.44)(@vue/server-renderer@3.5.44)(vitest@5.1.0)(vue@3.5.44(@typescript/typescript6@6.0.2)):
