@@ -29,6 +29,7 @@ Optional features require extra packages installed manually:
 ```vue
 <script setup lang="ts">
 import { Vizel } from "@vizel/vue";
+
 import "@vizel/core/styles.css";
 </script>
 
@@ -42,6 +43,7 @@ import "@vizel/core/styles.css";
 ```vue
 <script setup lang="ts">
 import { VizelEditor, VizelBubbleMenu, useVizelEditor } from "@vizel/vue";
+
 import "@vizel/core/styles.css";
 
 const editor = useVizelEditor({

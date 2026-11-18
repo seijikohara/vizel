@@ -16,6 +16,7 @@ Use the `<script setup lang="ts">` syntax.
 ```vue
 <script setup lang="ts">
 import { computed, ref } from "vue";
+
 import type { ComponentProps } from "./types";
 
 const props = defineProps<{
