@@ -144,6 +144,7 @@ function App() {
 ```vue
 <script setup lang="ts">
 import { Vizel } from "@vizel/vue";
+
 import "@vizel/core/styles.css";
 
 function handleUpdate({ editor }: { editor: any }) {
@@ -203,6 +204,7 @@ function Editor() {
 <!-- Vue -->
 <script setup lang="ts">
 import { VizelEditor, VizelBubbleMenu, useVizelEditor } from "@vizel/vue";
+
 import "@vizel/core/styles.css";
 
 const editor = useVizelEditor({
