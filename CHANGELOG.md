@@ -6,8 +6,16 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-11-18
+
 ### Changed
 
+- `@vizel/core` requires KaTeX 0.19 for its optional `katex` peer (`^0.19.0`
+  instead of `^0.17.0`). Upgrade KaTeX before you upgrade Vizel if you use the
+  mathematics feature.
+- `@vizel/core` depends on `markdown-it` 15 and `markdown-it-deflist` 4 instead
+  of `markdown-it` 14 and `markdown-it-deflist` 3.
+- The DOMPurify copy bundled in `@vizel/core` moves from 3.4.11 to 3.4.17.
 - `@vizel/core` declares `@tiptap/extension-collaboration-caret` as its optional
   collaboration peer instead of `@tiptap/extension-collaboration-cursor`, whose
   3.0.0 release is deprecated. Register `CollaborationCaret` where you registered
@@ -31,7 +39,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   module imports either package since the Static View API and the legacy
   slash-item search were removed.
 
-## [2.0.0] - Unreleased
+## [2.0.0] - 2026-06-17
 
 v2.0.0 is a breaking rebuild of Vizel. The release abandons
 backward compatibility with v1.x: no API, type, prop, event, or runtime contract
