@@ -396,6 +396,11 @@ jobs:
       - name: Commit version changes
         env:
           VERSION: ${{ needs.validate.outputs.version }}
+          # `pnpm install` runs `lefthook install`, so the commit and push below would
+          # run the local Git hooks, including the pre-push checks. v2.0.2 reached npm
+          # but stopped here when a pre-push check failed, leaving no tag or release.
+          # CI and the jobs above already verified this commit.
+          LEFTHOOK: "0"
         run: |
           pnpm --filter @vizel/core exec npm version "$VERSION" --no-git-tag-version --allow-same-version
           pnpm --filter @vizel/headless exec npm version "$VERSION" --no-git-tag-version --allow-same-version
